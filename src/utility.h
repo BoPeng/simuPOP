@@ -1490,10 +1490,14 @@ private:
 	unsigned long m_seed;
 };
 
+/// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 
+/// CPPONLY
 double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 
+/// CPPONLY
+double hweTest(const vectorlu & cnt);
 
 // weighted sampling using Walker's alias algorithm
 class weightedSampler

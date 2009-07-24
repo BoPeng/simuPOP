@@ -659,16 +659,16 @@ public:
 	bool apply(population & pop);
 
 private:
-	void alleleChiSqTest(const ALLELECNTLIST & caseCnt,
-		const ALLELECNTLIST & controlCnt, intDict & chisq,
-		intDict & chisq_p);
+	void alleleChiSqTest(const ALLELECNT & caseCnt,
+		const ALLELECNT & controlCnt, double & chisq,
+		double & chisq_p);
 
-	void genoChiSqTest(const GENOCNTLIST & caseCnt,
-		const GENOCNTLIST & controlCnt, intDict & chisq,
-		intDict & chisq_p);
+	void genoChiSqTest(const GENOCNT & caseCnt,
+		const GENOCNT & controlCnt, double & chisq,
+		double & chisq_p);
 
-	void armitageTest(const GENOCNTLIST & caseCnt,
-		const GENOCNTLIST & controlCnt, intDict & pvalues);
+	double armitageTest(const GENOCNT & caseCnt,
+		const GENOCNT & controlCnt);
 
 private:
 	/// Association
@@ -693,7 +693,8 @@ public:
 	bool apply(population & pop);
 
 private:
-	double calcPi(IndIterator & it);
+	typedef vector<vectora> HAPLOLIST;
+	double calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end);
 
 private:
 	/// Neutrality
@@ -736,6 +737,10 @@ private:
 #define  HWE_String     "HWE"
 #define  HWE_sp_String  "HWE_sp"
 
+private:
+	typedef map<std::pair<UINT, UINT>, ULONG>  GENOCNT;
+	typedef vector<GENOCNT> GENOCNTLIST;
+
 public:
 	statHWE(const vectorlu & loci, const subPopList & subPops,
 		const stringList & vars);
@@ -743,8 +748,9 @@ public:
 	bool apply(population & pop);
 
 private:
-	double calcHWE(const vectorlu & cnt);
+	vectorlu mapToCount(const GENOCNT & cnt);
 
+private:
 	vectorlu m_loci;
 	subPopList m_subPops;
 	stringList m_vars;
@@ -1041,6 +1047,15 @@ public:
 	 *  \li \c Armitage_p_sp A dictionary of \e p-values of the Cochran-
 	 *       Armitage tests, using cases and controls from each subpopulation.
 	 *
+	 *  <b>neutrality</b>: This parameter performs neutrality tests (detection
+	 *  of natural selection) on specified loci. It currently only outputs
+	 *  \e Pi, which is the average number of pairwise difference between loci.
+	 *  This statistic outputs the following variables:
+	 *  \li \c Pi Mean pairwise difference between all sequences from all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c Pi_sp Mean paiewise difference between all sequences in each
+	 *       (virtual) subpopulation.
+	 *
 	 *  <b>Fst</b>: Parameter \c Fst accepts a list of loci at which level of
 	 *  population structure is measured by statistic \e Fst using an algorithm
 	 *  developed in Cockerham & Weir, 1984. \e Fst is by default calculated
@@ -1058,6 +1073,14 @@ public:
 	 *  \li \c Fis A dictionary of locus level \e Fis values.
 	 *  \li \c Fit A dictionary of locus level \e Fit values.
 	 *
+	 *  <b>HWE</b>: Parameter \c HWE accepts a list of loci at which exact
+	 *  two-side tests for Hardy-Weinberg equilibrium will be performed. This
+	 *  statistic is only available for diallelic loci in diploid populations.
+	 *  It outputs the following variables:
+	 *  \li \c HWE (default) A dictionary of p-values of HWE tests using
+	 *       genotypes in all or specified (virtual) subpopulations.
+	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
+	 *       in each (virtual) subpopulation.
 	 **/
 	stat(bool popSize = false,
 		//
@@ -1083,7 +1106,6 @@ public:
 		const intMatrix & LD = intMatrix(),
 		//
 		const uintList & association = uintList(),
-		//const strDict & association_param = strDict(),
 		//
 		const uintList & neutrality = uintList(),
 		//

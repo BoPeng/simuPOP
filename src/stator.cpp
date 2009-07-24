@@ -1592,147 +1592,139 @@ statAssociation::statAssociation(const vectorlu & loci,
 }
 
 
-void statAssociation::alleleChiSqTest(const ALLELECNTLIST & caseCnt,
-                                      const ALLELECNTLIST & controlCnt, intDict & chisq,
-                                      intDict & chisq_p)
+void statAssociation::alleleChiSqTest(const ALLELECNT & caseCnt,
+                                      const ALLELECNT & controlCnt, double & chisq,
+                                      double & chisq_p)
 {
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		// figure out alleles
-		map<Allele, int> alleles;
-		ALLELECNT::const_iterator cnt = caseCnt[idx].begin();
-		ALLELECNT::const_iterator cntEnd = caseCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			if (alleles.find(cnt->first) == alleles.end()) {
-				UINT idx = alleles.size();
-				alleles[cnt->first] = idx;
-			}
-		cnt = controlCnt[idx].begin();
-		cntEnd = controlCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			if (alleles.find(cnt->first) == alleles.end()) {
-				UINT idx = alleles.size();
-				alleles[cnt->first] = idx;
-			}
+	// figure out alleles
+	map<Allele, int> alleles;
+	ALLELECNT::const_iterator cnt = caseCnt.begin();
+	ALLELECNT::const_iterator cntEnd = caseCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		if (alleles.find(cnt->first) == alleles.end()) {
+			UINT idx = alleles.size();
+			alleles[cnt->first] = idx;
+		}
+	cnt = controlCnt.begin();
+	cntEnd = controlCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		if (alleles.find(cnt->first) == alleles.end()) {
+			UINT idx = alleles.size();
+			alleles[cnt->first] = idx;
+		}
 
-		vector<vectoru> table(2);
-		for (size_t i = 0; i < 2; ++i)
-			table[i].resize(alleles.size(), 0);
-		// fill the table
-		cnt = caseCnt[idx].begin();
-		cntEnd = caseCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			table[0][alleles[cnt->first]] = cnt->second;
-		cnt = controlCnt[idx].begin();
-		cntEnd = controlCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			table[1][alleles[cnt->first]] = cnt->second;
-		chisqTest(table, chisq[m_loci[idx]], chisq_p[m_loci[idx]]);
-	}
+	vector<vectoru> table(2);
+	for (size_t i = 0; i < 2; ++i)
+		table[i].resize(alleles.size(), 0);
+	// fill the table
+	cnt = caseCnt.begin();
+	cntEnd = caseCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		table[0][alleles[cnt->first]] = cnt->second;
+	cnt = controlCnt.begin();
+	cntEnd = controlCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		table[1][alleles[cnt->first]] = cnt->second;
+	chisqTest(table, chisq, chisq_p);
 }
 
 
-void statAssociation::genoChiSqTest(const GENOCNTLIST & caseCnt,
-                                    const GENOCNTLIST & controlCnt, intDict & chisq,
-                                    intDict & chisq_p)
+void statAssociation::genoChiSqTest(const GENOCNT & caseCnt,
+                                    const GENOCNT & controlCnt, double & chisq,
+                                    double & chisq_p)
 {
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		// figure out alleles
-		map<std::pair<UINT, UINT>, int> genotypes;
-		GENOCNT::const_iterator cnt = caseCnt[idx].begin();
-		GENOCNT::const_iterator cntEnd = caseCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			if (genotypes.find(cnt->first) == genotypes.end()) {
-				UINT idx = genotypes.size();
-				genotypes[cnt->first] = idx;
-			}
-		cnt = controlCnt[idx].begin();
-		cntEnd = controlCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			if (genotypes.find(cnt->first) == genotypes.end()) {
-				UINT idx = genotypes.size();
-				genotypes[cnt->first] = idx;
-			}
+	// figure out alleles
+	map<std::pair<UINT, UINT>, int> genotypes;
+	GENOCNT::const_iterator cnt = caseCnt.begin();
+	GENOCNT::const_iterator cntEnd = caseCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		if (genotypes.find(cnt->first) == genotypes.end()) {
+			UINT idx = genotypes.size();
+			genotypes[cnt->first] = idx;
+		}
+	cnt = controlCnt.begin();
+	cntEnd = controlCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		if (genotypes.find(cnt->first) == genotypes.end()) {
+			UINT idx = genotypes.size();
+			genotypes[cnt->first] = idx;
+		}
 
-		vector<vectoru> table(2);
-		for (size_t i = 0; i < 2; ++i)
-			table[i].resize(genotypes.size(), 0);
-		// fill the table
-		cnt = caseCnt[idx].begin();
-		cntEnd = caseCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			table[0][genotypes[cnt->first]] = cnt->second;
-		cnt = controlCnt[idx].begin();
-		cntEnd = controlCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt)
-			table[1][genotypes[cnt->first]] = cnt->second;
-		chisqTest(table, chisq[m_loci[idx]], chisq_p[m_loci[idx]]);
-	}
+	vector<vectoru> table(2);
+	for (size_t i = 0; i < 2; ++i)
+		table[i].resize(genotypes.size(), 0);
+	// fill the table
+	cnt = caseCnt.begin();
+	cntEnd = caseCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		table[0][genotypes[cnt->first]] = cnt->second;
+	cnt = controlCnt.begin();
+	cntEnd = controlCnt.end();
+	for (; cnt != cntEnd; ++cnt)
+		table[1][genotypes[cnt->first]] = cnt->second;
+	chisqTest(table, chisq, chisq_p);
 }
 
 
-void statAssociation::armitageTest(const GENOCNTLIST & caseCnt,
-                                   const GENOCNTLIST & ctrlCnt, intDict & pvalues)
+double statAssociation::armitageTest(const GENOCNT & caseCnt,
+                                     const GENOCNT & ctrlCnt)
 {
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		// figure out alleles and their frequencies
-		map<UINT, int> alleles;
-		GENOCNT::const_iterator cnt = caseCnt[idx].begin();
-		GENOCNT::const_iterator cntEnd = caseCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt) {
-			alleles[cnt->first.first] += cnt->second;
-			alleles[cnt->first.second] += cnt->second;
-		}
-		cnt = ctrlCnt[idx].begin();
-		cntEnd = ctrlCnt[idx].end();
-		for (; cnt != cntEnd; ++cnt) {
-			alleles[cnt->first.first] += cnt->second;
-			alleles[cnt->first.second] += cnt->second;
-		}
-		// figure out major and minor allele
-		DBG_FAILIF(alleles.size() > 2, ValueError,
-			"Armitage trend test can only be applied to diallelic markers.");
-		if (alleles.size() != 2) {
-			pvalues[m_loci[idx]] = 1.;
-			continue;
-		}
-		map<UINT, int>::const_iterator first = alleles.begin();
-		map<UINT, int>::const_iterator second = ++first;
-		UINT major = 0;
-		UINT minor = 0;
-		if (first->second > second->second) {
-			major = first->first;
-			minor = second->first;
-		} else {
-			major = second->first;
-			minor = first->first;
-		}
-		vector<vectoru> table(2);
-		for (size_t i = 0; i < 2; ++i)
-			table[i].resize(3, 0);
-		// fill the table
-		GENOCNT::const_iterator it = caseCnt[idx].find(GENOCNT::key_type(major, major));
-		if (it != caseCnt[idx].end())
-			table[1][0] = it->second;
-		it = caseCnt[idx].find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
-		if (it != caseCnt[idx].end())
-			table[1][1] = it->second;
-		it = caseCnt[idx].find(GENOCNT::key_type(minor, minor));
-		if (it != caseCnt[idx].end())
-			table[1][2] = it->second;
-		it = ctrlCnt[idx].find(GENOCNT::key_type(major, major));
-		if (it != ctrlCnt[idx].end())
-			table[0][0] = it->second;
-		it = ctrlCnt[idx].find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
-		if (it != ctrlCnt[idx].end())
-			table[0][1] = it->second;
-		it = ctrlCnt[idx].find(GENOCNT::key_type(minor, minor));
-		if (it != ctrlCnt[idx].end())
-			table[0][2] = it->second;
-		vectorf weight(3);
-		for (size_t i = 0; i < 3; ++i)
-			weight[i] = i;
-		pvalues[m_loci[idx]] = armitageTrendTest(table, weight);
+	// figure out alleles and their frequencies
+	map<UINT, int> alleles;
+	GENOCNT::const_iterator cnt = caseCnt.begin();
+	GENOCNT::const_iterator cntEnd = caseCnt.end();
+	for (; cnt != cntEnd; ++cnt) {
+		alleles[cnt->first.first] += cnt->second;
+		alleles[cnt->first.second] += cnt->second;
 	}
+	cnt = ctrlCnt.begin();
+	cntEnd = ctrlCnt.end();
+	for (; cnt != cntEnd; ++cnt) {
+		alleles[cnt->first.first] += cnt->second;
+		alleles[cnt->first.second] += cnt->second;
+	}
+	// figure out major and minor allele
+	DBG_FAILIF(alleles.size() > 2, ValueError,
+		"Armitage trend test can only be applied to diallelic markers.");
+	if (alleles.size() != 2)
+		return 1.;
+	map<UINT, int>::const_iterator first = alleles.begin();
+	map<UINT, int>::const_iterator second = ++first;
+	UINT major = 0;
+	UINT minor = 0;
+	if (first->second > second->second) {
+		major = first->first;
+		minor = second->first;
+	} else {
+		major = second->first;
+		minor = first->first;
+	}
+	vector<vectoru> table(2);
+	for (size_t i = 0; i < 2; ++i)
+		table[i].resize(3, 0);
+	// fill the table
+	GENOCNT::const_iterator it = caseCnt.find(GENOCNT::key_type(major, major));
+	if (it != caseCnt.end())
+		table[1][0] = it->second;
+	it = caseCnt.find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
+	if (it != caseCnt.end())
+		table[1][1] = it->second;
+	it = caseCnt.find(GENOCNT::key_type(minor, minor));
+	if (it != caseCnt.end())
+		table[1][2] = it->second;
+	it = ctrlCnt.find(GENOCNT::key_type(major, major));
+	if (it != ctrlCnt.end())
+		table[0][0] = it->second;
+	it = ctrlCnt.find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
+	if (it != ctrlCnt.end())
+		table[0][1] = it->second;
+	it = ctrlCnt.find(GENOCNT::key_type(minor, minor));
+	if (it != ctrlCnt.end())
+		table[0][2] = it->second;
+	vectorf weight(3);
+	for (size_t i = 0; i < 3; ++i)
+		weight[i] = i;
+	return armitageTrendTest(table, weight);
 }
 
 
@@ -1821,7 +1813,8 @@ bool statAssociation::apply(population & pop)
 		if (m_vars.contains(Allele_ChiSq_sp_String) || m_vars.contains(Allele_ChiSq_p_sp_String)) {
 			intDict chisq;
 			intDict chisq_p;
-			alleleChiSqTest(caseAlleleCnt, ctrlAlleleCnt, chisq, chisq_p);
+			for (size_t i = 0; i < m_loci.size(); ++i)
+				alleleChiSqTest(caseAlleleCnt[i], ctrlAlleleCnt[i], chisq[m_loci[i]], chisq_p[m_loci[i]]);
 			if (m_vars.contains(Allele_ChiSq_sp_String))
 				pop.setIntDictVar(subPopVar_String(*it, Allele_ChiSq_String), chisq);
 			if (m_vars.contains(Allele_ChiSq_p_sp_String))
@@ -1830,7 +1823,8 @@ bool statAssociation::apply(population & pop)
 		if (m_vars.contains(Geno_ChiSq_sp_String) || m_vars.contains(Geno_ChiSq_p_sp_String)) {
 			intDict chisq;
 			intDict chisq_p;
-			genoChiSqTest(caseGenoCnt, ctrlGenoCnt, chisq, chisq_p);
+			for (size_t i = 0; i < m_loci.size(); ++i)
+				genoChiSqTest(caseGenoCnt[i], ctrlGenoCnt[i], chisq[m_loci[i]], chisq_p[m_loci[i]]);
 			if (m_vars.contains(Geno_ChiSq_sp_String))
 				pop.setIntDictVar(subPopVar_String(*it, Geno_ChiSq_String), chisq);
 			if (m_vars.contains(Geno_ChiSq_p_sp_String))
@@ -1838,7 +1832,8 @@ bool statAssociation::apply(population & pop)
 		}
 		if (m_vars.contains(Armitage_p_sp_String)) {
 			intDict pvalues;
-			armitageTest(caseGenoCnt, ctrlGenoCnt, pvalues);
+			for (size_t i = 0; i < m_loci.size(); ++i)
+				pvalues[m_loci[i]] = armitageTest(caseGenoCnt[i], ctrlGenoCnt[i]);
 			pop.setIntDictVar(subPopVar_String(*it, Armitage_p_String), pvalues);
 		}
 		// total allele count
@@ -1871,7 +1866,9 @@ bool statAssociation::apply(population & pop)
 	if (m_vars.contains(Allele_ChiSq_String) || m_vars.contains(Allele_ChiSq_p_String)) {
 		intDict chisq;
 		intDict chisq_p;
-		alleleChiSqTest(allCaseAlleleCnt, allCtrlAlleleCnt, chisq, chisq_p);
+		for (size_t i = 0; i < m_loci.size(); ++i)
+			alleleChiSqTest(allCaseAlleleCnt[i], allCtrlAlleleCnt[i],
+				chisq[m_loci[i]], chisq_p[m_loci[i]]);
 		// output variable.
 		if (m_vars.contains(Allele_ChiSq_String))
 			pop.setIntDictVar(Allele_ChiSq_String, chisq);
@@ -1881,7 +1878,9 @@ bool statAssociation::apply(population & pop)
 	if (m_vars.contains(Geno_ChiSq_String) || m_vars.contains(Geno_ChiSq_p_String)) {
 		intDict chisq;
 		intDict chisq_p;
-		genoChiSqTest(allCaseGenoCnt, allCtrlGenoCnt, chisq, chisq_p);
+		for (size_t i = 0; i < m_loci.size(); ++i)
+			genoChiSqTest(allCaseGenoCnt[i], allCtrlGenoCnt[i],
+				chisq[m_loci[i]], chisq_p[m_loci[i]]);
 		if (m_vars.contains(Geno_ChiSq_String))
 			pop.setIntDictVar(Geno_ChiSq_String, chisq);
 		if (m_vars.contains(Geno_ChiSq_p_String))
@@ -1889,7 +1888,8 @@ bool statAssociation::apply(population & pop)
 	}
 	if (m_vars.contains(Armitage_p_String)) {
 		intDict pvalues;
-		armitageTest(allCaseGenoCnt, allCtrlGenoCnt, pvalues);
+		for (size_t i = 0; i < m_loci.size(); ++i)
+			pvalues[m_loci[i]] = armitageTest(allCaseGenoCnt[i], allCtrlGenoCnt[i]);
 		pop.setIntDictVar(Armitage_p_String, pvalues);
 	}
 	return true;
@@ -1915,36 +1915,24 @@ statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops
 }
 
 
-double statNeutrality::calcPi(IndIterator & it)
+double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end)
 {
-	UINT ploidy = it->ploidy();
 	double diffCnt = 0;
 	int numComparison = 0;
-	GenoIterator gt, gt1;
 
-	for (; it.valid(); ++it)
-		for (IndIterator it1 = it; it1.valid(); ++it1)
-			for (UINT p = 0; p < ploidy ; p++)
-				for (UINT p1 = 0; p1 < ploidy; p1++) {
-					// count numbers of the same person
-					if (it == it1) {
-						if (p < p1) {
-							gt = it->genoBegin(p);
-							gt1 = it->genoBegin(p1);
-							for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc)
-								diffCnt += *(gt + *loc) != *(gt1 + *loc);
-							++numComparison;
-						}
-					}
-					// count numbers of different persons
-					else {
-						gt = it->genoBegin(p);
-						gt1 = it1->genoBegin(p1);
-						for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc)
-							diffCnt += *(gt + *loc) != *(gt1 + *loc);
-						++numComparison;
-					}
-				}
+	HAPLOLIST::const_iterator it = begin;
+
+	for (; it != end; ++it) {
+		HAPLOLIST::const_iterator it1 = it;
+		for (++it1; it != end; ++it1) {
+			const vectora & seq1 = *it;
+			const vectora & seq2 = *it1;
+			size_t sz = seq1.size();
+			for (size_t i = 0; i < sz; ++i)
+				diffCnt += seq1[i] != seq2[i];
+			++numComparison;
+		}
+	}
 	// return 0 if there is only one sequence
 	return numComparison == 0 ? 0 : diffCnt / numComparison;
 }
@@ -1955,12 +1943,56 @@ bool statNeutrality::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	DBG_FAILIF(m_loci.size() > pop.totNumLoci(), IndexError,
-		"Locus index out of range");
+	UINT nLoci = m_loci.size();
+	int chromType = pop.chromType(pop.chromLocusPair(m_loci[0]).first);
+#ifndef OPTIMIZED
+	for (size_t i = 1; i < nLoci; ++i) {
+		DBG_ASSERT(chromType == pop.chromType(pop.chromLocusPair(m_loci[i]).first),
+			ValueError, "All loci must be from chromosomes of the same type.");
+	}
+#endif
+	// count for all specified subpopulations
+	HAPLOLIST allHaplotypes;
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	UINT ply = pop.ploidy();
+	HAPLOLIST::iterator spBegin = allHaplotypes.begin();
+	for (; it != itEnd; ++it) {
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-	pop.removeVar(Neutra_Pi_String);
-	IndIterator it = pop.indIterator();
-	pop.setDoubleVar(Neutra_Pi_String, calcPi(it));
+		spBegin = allHaplotypes.begin();
+		// go through all individual
+		IndIterator ind = pop.indIterator(it->subPop());
+		for (; ind.valid(); ++ind) {
+			vectora haplotype(nLoci);
+			for (size_t p = 0; p < ply; ++p) {
+				if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+					continue;
+				if (chromType == ChromosomeY && ind->sex() == Female)
+					continue;
+				if (((chromType == ChromosomeX && p == 1) ||
+				     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					continue;
+				for (size_t idx = 0; idx < nLoci; ++idx)
+					haplotype[idx] = ind->allele(m_loci[idx], p);
+				allHaplotypes.push_back(haplotype);
+			}
+		}
+		// output variable.
+		if (m_vars.contains(Neutra_Pi_sp_String))
+			pop.setDoubleVar(subPopVar_String(*it, Neutra_Pi_String),
+				calcPi(spBegin, allHaplotypes.end())
+			    );
+		if (it->isVirtual())
+			pop.deactivateVirtualSubPop(it->subPop());
+	}
+
+	if (m_vars.contains(Neutra_Pi_String))
+		pop.setDoubleVar(Neutra_Pi_String, calcPi(allHaplotypes.begin(), allHaplotypes.end()));
 	return true;
 }
 
@@ -2163,88 +2195,24 @@ statHWE::statHWE(const vectorlu & loci,  const subPopList & subPops,
 }
 
 
-double statHWE::calcHWE(const vectorlu & cnt)
+vectorlu statHWE::mapToCount(const GENOCNT & cnt)
 {
-	// Calculates exact two-sided hardy-weinberg p-value. Parameters
-	// are number of genotypes, number of rare alleles observed and
-	// number of heterozygotes observed.
-	//
-	// (c) 2003 Jan Wigginton, Goncalo Abecasis
-	int obsAA = cnt[2];                                             // in this algorithm, AA is rare.
-	int obsAB = cnt[1];
-	int obsBB = cnt[0];
+	vectorlu res(3, 0);
 
-	int diplotypes = obsAA + obsAB + obsBB;
-	int rare = (obsAA * 2) + obsAB;
-	int hets = obsAB;
+	DBG_FAILIF(cnt.size() > 3, ValueError,
+		"More than three genotypes are detected for HWE test");
 
-
-	//make sure "rare" allele is really the rare allele
-	if (rare > diplotypes)
-		rare = 2 * diplotypes - rare;
-
-	//make sure numbers aren't screwy
-	if (hets > rare)
-		throw ValueError("HW test: " + toStr(hets) + "heterozygotes but only " + toStr(rare) + "rare alleles.");
-
-	vectorf tailProbs(rare + 1, 0.0);
-
-	//start at midpoint
-	//all the casting is to make sure we don't overflow ints if there are 10's of 1000's of inds
-	int mid = (int)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
-
-	//check to ensure that midpoint and rare alleles have same parity
-	if (((rare & 1) ^ (mid & 1)) != 0) {
-		mid++;
-	}
-	int het = mid;
-	int hom_r = (rare - mid) / 2;
-	int hom_c = diplotypes - het - hom_r;
-
-	//Calculate probability for each possible observed heterozygote
-	//count up to a scaling constant, to avoid underflow and overflow
-	tailProbs[mid] = 1.0;
-	double sum = tailProbs[mid];
-	for (het = mid; het > 1; het -= 2) {
-		tailProbs[het - 2] = (tailProbs[het] * het * (het - 1.0)) / (4.0 * (hom_r + 1.0) * (hom_c + 1.0));
-		sum += tailProbs[het - 2];
-		//2 fewer hets for next iteration -> add one rare and one common homozygote
-		hom_r++;
-		hom_c++;
-	}
-
-	het = mid;
-	hom_r = (rare - mid) / 2;
-	hom_c = diplotypes - het - hom_r;
-	for (het = mid; het <= rare - 2; het += 2) {
-		tailProbs[het + 2] = (tailProbs[het] * 4.0 * hom_r * hom_c) / ((het + 2.0) * (het + 1.0));
-		sum += tailProbs[het + 2];
-		//2 more hets for next iteration -> subtract one rare and one common homozygote
-		hom_r--;
-		hom_c--;
-	}
-
-	for (size_t z = 0; z < tailProbs.size(); z++)
-		tailProbs[z] /= sum;
-
-	double top = tailProbs[hets];
-	for (int i = hets + 1; i <= rare; i++)
-		top += tailProbs[i];
-
-	double otherSide = tailProbs[hets];
-	for (int i = hets - 1; i >= 0; i--)
-		otherSide += tailProbs[i];
-
-	if (top > 0.5 && otherSide > 0.5) {
-		return 1.0;
-	} else {
-		if (top < otherSide)
-			return top * 2;
+	GENOCNT::const_iterator it = cnt.begin();
+	GENOCNT::const_iterator itEnd = cnt.end();
+	for (; it != itEnd; ++it) {
+		if (it->first.first != it->first.second)
+			res[1] = it->second;
+		else if (res[0] == 0)
+			res[0] = it->second;
 		else
-			return otherSide * 2;
+			res[2] = it->second;
 	}
-
-	return 1.0;
+	return res;
 }
 
 
@@ -2253,46 +2221,65 @@ bool statHWE::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	UINT numSP = pop.numSubPop();
-	UINT numLoci = m_loci.size();
+	DBG_FAILIF(pop.ploidy() != 2, ValueError,
+		"HWE test is only available for diploid populations.");
 
-	pop.removeVar(HWE_String);
-	for (UINT sp = 0; sp < numSP; ++sp)
-		pop.removeVar(subPopVar_String(sp, HWE_String));
-
-	// calculate HWE for the whole population
-	vectorf HWE(numLoci);
-	for (size_t i = 0; i < numLoci; ++i) {
-		UINT loc = m_loci[i];
-
-		DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
-			"Locus index out of range.");
-
-		if (HWE.size() <= loc)
-			HWE.resize(loc + 1, 0);
-
-		HWE[loc] = calcHWE(vectorlu(0));         //m_genoFreq.countGenotype(pop, loc, 0));
+#ifndef OPTIMIZED
+	for (size_t i = 0; i < m_loci.size(); ++i) {
+		int chromType = pop.chromType(pop.chromLocusPair(m_loci[i]).first);
+		DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY, ValueError,
+			"Can not run HWE test on loci on sex chromosomes.");
 	}
-	pop.setDoubleVectorVar(HWE_String, HWE);
+#endif
+	// count for all specified subpopulations
+	UINT nLoci = m_loci.size();
+	GENOCNTLIST allGenoCnt(nLoci);
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		GENOCNTLIST genoCnt(nLoci);
 
-	if (numSP == 1) {
-		string varname = subPopVar_String(0, HWE_String);
-		pop.setDoubleVectorVar(varname, HWE);
-		return true;
-	}
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-	for (UINT sp = 0; sp < numSP; ++sp) {
-		vectorf HWE(numLoci);
-		for (size_t i = 0; i < numLoci; ++i) {
-			UINT loc = m_loci[i];
-			if (HWE.size() <= loc)
-				HWE.resize(loc + 1);
-			HWE[loc] = calcHWE(vectorlu(0));         //m_genoFreq.countGenotype(pop, loc, sp, 0));
+		IndIterator ind = pop.indIterator(it->subPop());
+		for (; ind.valid(); ++ind) {
+			GenoIterator geno1 = ind->genoBegin(0);
+			GenoIterator geno2 = ind->genoBegin(1);
+			for (size_t idx = 0; idx < nLoci; ++idx) {
+				Allele a1 = *(geno1 + m_loci[idx]);
+				Allele a2 = *(geno2 + m_loci[idx]);
+				if (a1 > a2)
+					std::swap(a1, a2);
+				genoCnt[idx][GENOCNT::key_type(a1, a2)]++;
+			}
 		}
-		string varname = subPopVar_String(sp, HWE_String);
-		pop.setDoubleVectorVar(varname, HWE);
+		//
+		// output variable.
+		if (m_vars.contains(HWE_sp_String)) {
+			intDict hwe;
+			for (size_t i = 0; i < m_loci.size(); ++i) {
+				hwe[m_loci[i]] = hweTest(mapToCount(genoCnt[i]));
+			}
+			pop.setIntDictVar(subPopVar_String(*it, HWE_String), hwe);
+		}
+		for (size_t idx = 0; idx < nLoci; ++idx) {
+			GENOCNT::const_iterator cnt = genoCnt[idx].begin();
+			GENOCNT::const_iterator cntEnd = genoCnt[idx].end();
+			for (; cnt != cntEnd; ++cnt)
+				allGenoCnt[idx][cnt->first] += cnt->second;
+		}
 	}
-
+	//
+	if (m_vars.contains(HWE_String)) {
+		intDict hwe;
+		for (size_t i = 0; i < m_loci.size(); ++i)
+			hwe[m_loci[i]] = hweTest(mapToCount(allGenoCnt[i]));
+		pop.setIntDictVar(HWE_String, hwe);
+	}
 	return true;
 }
 
