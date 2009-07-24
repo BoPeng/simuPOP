@@ -2382,41 +2382,49 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m-1)*(n-1));
 }
 
-void armitageTest(const vector<vectoru> & table, const vectorf & weight, double & pvalue)
+double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 {
 	UINT m = table.size();
 	UINT n = table[0].size();
 
-	DBG_FAILIF(m != 2, ValueError,
-		"Current Cochran-Armitage test can only handle 2 by n tables.");
+	DBG_FAILIF(m != 2 or n != 3, ValueError,
+		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
 	
-	DBG_FAILIF(weight.size() != n, ValueError,
-		"Weight for Cochran-Armitage test should have length n");
-
-	vectorf rowSum(m, 0.);
-	vectorf colSum(n, 0.);
-	double N = 0;
+	DBG_FAILIF(s.size() != n, ValueError,
+		"Weight for Cochran-Armitage test should have length 3");
+	// formula is copied from HelixTree
+	// www.goldenhelix.com/SNP_Variation/Manual/svs7/general_statistics.html
 	//
-	for (size_t i = 0; i < m; ++i) {
-		for (size_t j = 0; j < n; ++j) {
-			rowSum[i] += table[i][j];
-			colSum[j] += table[i][j];
-			N += table[i][j];
-		}
+	double N = 0;
+	vectorf p1i(3);
+	for (size_t i = 0; i < n; ++i) {
+		p1i[i] = table[1][i] * 1.0 / (table[0][i] + table[1][i]);
+		for (size_t j = 0; j < 2; ++j)
+			N += table[j][i];
 	}
-	double T = 0;
+	// s_bar
+	double s_bar = 0;
 	for (size_t i = 0; i < n; ++i)
-		T += weight[i] * (table[0][i]*rowSum[1] - table[1][i]*rowSum[0]);
-	double varT = 0;
+		s_bar += (table[0][i] + table[1][i])*s[i];
+	s_bar /= N;
+	// p_case
+	double p_case = (table[1][0] + table[1][1] + table[1][2])/N;
+	// b
+	double b;
+	double b1 = 0;
+	double b2 = 0;
+	for (size_t i = 0; i < n; ++i) {
+		b1 += (table[0][i] + table[1][i])*(p1i[i] - p_case)*(s[i] - s_bar);
+		b2 += (table[0][i] + table[1][i])*(s[i] - s_bar)*(s[i] - s_bar);
+	}
+	b = b1/b2;
+	//
+	double z2 = 0;
 	for (size_t i = 0; i < n; ++i)
-		varT += weight[i] * weight[i] * colSum[i]*(N-colSum[i]);
-	for (size_t i = 0; i < m; ++i)
-		for (size_t j = i + 1; j < n; ++j)
-			varT -= 2 * weight[i] * weight[j] * colSum[i] * colSum[j];
-	
-	T = T * T / (rowSum[0]*rowSum[1]/N*varT);
-	// two side?
-	pvalue = 1 - gsl_cdf_chisq_P(T, 1);
+		z2 += (table[0][i] + table[1][i])*(s[i] - s_bar)*(s[i] - s_bar);
+	z2 = z2 * b * b / (p_case * (1 - p_case));
+	// 
+	return 1 - gsl_cdf_chisq_P(z2, 1);
 }
 
 

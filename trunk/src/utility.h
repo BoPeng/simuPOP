@@ -1490,9 +1490,9 @@ private:
 	unsigned long m_seed;
 };
 
-void chisqTest(const vector<vectorf> & table, double & chisq, double & chisq_p);
+void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 
-void armitageTest(const vector<vectorf> & table, double & pvalue);
+double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 
 
 // weighted sampling using Walker's alias algorithm

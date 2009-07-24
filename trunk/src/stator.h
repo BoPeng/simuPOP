@@ -1007,7 +1007,8 @@ public:
 	 *       populations.
 	 *  \li A genotype-based Chi-square test using genotype counts. This test
 	 *       can be applied to loci with more than two alleles (more than 3
-	 *       genotypes) in diploid populations.
+	 *       genotypes) in diploid populations. \c aA and \c Aa are considered
+	 *       to be the same genotype.
 	 *  \li A genotype-based Cochran-Armitage trend test. This test can only
 	 *       be applied to diallelic loci in diploid populations. A codominant
 	 *       model is assumed.
