@@ -2354,6 +2354,72 @@ bool RNG::randBit()
 }
 
 
+double pvalChiSq(double chisq, unsigned int df)
+{
+	return 1 - gsl_cdf_chisq_P(chisq, df);
+}
+
+void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
+{
+	UINT m = table.size();
+	UINT n = table[0].size();
+	vectoru rowSum(m, 0);
+	vectoru colSum(n, 0);
+	ULONG N = 0;
+	//
+	for (size_t i = 0; i < m; ++i) {
+		for (size_t j = 0; j < n; ++j) {
+			rowSum[i] += table[i][j];
+			colSum[j] += table[i][j];
+			N += table[i][j];
+		}
+	}
+	chisq = 0;
+	for (size_t i = 0; i < m; ++i)
+		for (size_t j = 0; j < n; ++j)
+			chisq += pow(N * table[i][j] -  rowSum[i] * colSum[j], 2)
+				              / (N * rowSum[i] * colSum[j]);
+	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m-1)*(n-1));
+}
+
+void armitageTest(const vector<vectoru> & table, const vectorf & weight, double & pvalue)
+{
+	UINT m = table.size();
+	UINT n = table[0].size();
+
+	DBG_FAILIF(m != 2, ValueError,
+		"Current Cochran-Armitage test can only handle 2 by n tables.");
+	
+	DBG_FAILIF(weight.size() != n, ValueError,
+		"Weight for Cochran-Armitage test should have length n");
+
+	vectorf rowSum(m, 0.);
+	vectorf colSum(n, 0.);
+	double N = 0;
+	//
+	for (size_t i = 0; i < m; ++i) {
+		for (size_t j = 0; j < n; ++j) {
+			rowSum[i] += table[i][j];
+			colSum[j] += table[i][j];
+			N += table[i][j];
+		}
+	}
+	double T = 0;
+	for (size_t i = 0; i < n; ++i)
+		T += weight[i] * (table[0][i]*rowSum[1] - table[1][i]*rowSum[0]);
+	double varT = 0;
+	for (size_t i = 0; i < n; ++i)
+		varT += weight[i] * weight[i] * colSum[i]*(N-colSum[i]);
+	for (size_t i = 0; i < m; ++i)
+		for (size_t j = i + 1; j < n; ++j)
+			varT -= 2 * weight[i] * weight[j] * colSum[i] * colSum[j];
+	
+	T = T * T / (rowSum[0]*rowSum[1]/N*varT);
+	// two side?
+	pvalue = 1 - gsl_cdf_chisq_P(T, 1);
+}
+
+
 void weightedSampler::set(const vectorf & weight)
 {
 	m_N = weight.size();

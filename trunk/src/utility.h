@@ -1482,13 +1482,6 @@ public:
 	}
 
 
-	/// right hand side (single side) p-value for ChiSq value
-	double pvalChiSq(double chisq, unsigned int df)
-	{
-		return 1 - gsl_cdf_chisq_P(chisq, df);
-	}
-
-
 private:
 	/// global random number generator
 	gsl_rng * m_RNG;
@@ -1496,6 +1489,10 @@ private:
 	/// seed used
 	unsigned long m_seed;
 };
+
+void chisqTest(const vector<vectorf> & table, double & chisq, double & chisq_p);
+
+void armitageTest(const vector<vectorf> & table, double & pvalue);
 
 
 // weighted sampling using Walker's alias algorithm

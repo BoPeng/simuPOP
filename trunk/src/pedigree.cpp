@@ -438,7 +438,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 					++numOffspring[m];
 				} else if (numOffspring[p] == numOffspring[m]) {
 					// not the original spouse
-					if (ind(p).intInfo(spouseIdx) != m)
+					if (ind(p).intInfo(spouseIdx) != static_cast<int>(m))
 						continue;
 					// no room for another offspring
 					if (numOffspring[p] >= maxOffspring)

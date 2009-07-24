@@ -601,7 +601,7 @@ public:
 	// calculated only once. However, this appear to be a rare case that does
 	// not worth special optimization. The newer version calculates allele and
 	// haplotype frequencies locally and in a more readable way.
-	statLD(const intMatrix & LD,  const subPopList & subPops,
+	statLD(const intMatrix & LD, const subPopList & subPops,
 		const stringList & vars);
 
 	// calculate, right now,  do not tempt to save values
@@ -633,39 +633,61 @@ private:
 class statAssociation
 {
 private:
-#define Asso_ChiSq_String   "ChiSq"
-#define Asso_ChiSq_P_String "ChiSq_P"
+#define Allele_ChiSq_String      "Allele_ChiSq"
+#define Allele_ChiSq_p_String    "Allele_ChiSq_p"
+#define Geno_ChiSq_String        "Geno_ChiSq"
+#define Geno_ChiSq_p_String      "Geno_ChiSq_p"
+#define Armitage_p_String        "Armitage_p"
+
+#define Allele_ChiSq_sp_String   "Allele_ChiSq_sp"
+#define Allele_ChiSq_p_sp_String "Allele_ChiSq_p_sp"
+#define Geno_ChiSq_sp_String     "Geno_ChiSq_sp"
+#define Geno_ChiSq_p_sp_String   "Geno_ChiSq_p_sp"
+#define Armitage_p_sp_String     "Armitage_p_sp"
+
+private:
+	typedef map<UINT, ULONG>  ALLELECNT;
+	typedef vector<ALLELECNT> ALLELECNTLIST;
+	typedef map<std::pair<UINT, UINT>, ULONG>  GENOCNT;
+	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statAssociation(const vectorlu & loci = vectorlu(),
-		const subPopList & subPops = AllSubPops);
+	statAssociation(const vectorlu & loci,
+		const subPopList & subPops, const stringList & vars);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
 private:
-	void calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG unaff_1,
-		double & chisq, double & pvalue);
+	void alleleChiSqTest(const ALLELECNTLIST & caseCnt,
+		const ALLELECNTLIST & controlCnt, intDict & chisq,
+		intDict & chisq_p);
 
-	void countAlleles(IndIterator & it, UINT loc,
-		ULONG & aff_0, ULONG & aff_1, ULONG & unaff_0, ULONG & unaff_1);
+	void genoChiSqTest(const GENOCNTLIST & caseCnt,
+		const GENOCNTLIST & controlCnt, intDict & chisq,
+		intDict & chisq_p);
+
+	void armitageTest(const GENOCNTLIST & caseCnt,
+		const GENOCNTLIST & controlCnt, intDict & pvalues);
 
 private:
 	/// Association
 	vectorlu m_loci;
 
 	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
 class statNeutrality
 {
 private:
-#define Neutra_Pi_String   "Pi"
+#define Neutra_Pi_String      "Pi"
+#define Neutra_Pi_sp_String   "Pi_sp"
 
 public:
-	statNeutrality(const vectorlu & loci = vectorlu(),
-		const subPopList & subPops = AllSubPops);
+	statNeutrality(const vectorlu & loci, const subPopList & subPops,
+		const stringList & vars);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -678,6 +700,7 @@ private:
 	vectorlu m_loci;
 
 	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY currently there is no need to retrieve calculated value
@@ -685,9 +708,9 @@ class statFst
 {
 
 private:
-#define  Fst_String		"Fst"
-#define  Fis_String		"Fis"
-#define  Fit_String		"Fit"
+#define  Fst_String     "Fst"
+#define  Fis_String     "Fis"
+#define  Fit_String     "Fit"
 #define  AvgFst_String  "AvgFst"
 #define  AvgFis_String  "AvgFis"
 #define  AvgFit_String  "AvgFit"
@@ -698,7 +721,6 @@ public:
 	bool apply(population & pop);
 
 private:
-
 	/// Fst
 	vectorlu m_loci;
 
@@ -711,26 +733,21 @@ private:
 class statHWE
 {
 private:
-#define  HWE_String  "HWE"
+#define  HWE_String     "HWE"
+#define  HWE_sp_String  "HWE_sp"
 
 public:
-	statHWE(statGenoFreq & genoFreq, const vectorlu & loci = vectorlu());
-
-	/// CPPONLY: for copy constructor
-	statHWE(statGenoFreq & genoFreq, const statHWE & rhs) :
-		m_genoFreq(genoFreq), m_loci(rhs.m_loci)
-	{
-	}
-
+	statHWE(const vectorlu & loci, const subPopList & subPops,
+		const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
 	double calcHWE(const vectorlu & cnt);
 
-	statGenoFreq & m_genoFreq;
-
 	vectorlu m_loci;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 
@@ -953,7 +970,7 @@ public:
 	 *  disequilibrium values are calculated with non-primary alleles are
 	 *  combined. Otherwise, absolute values of diallelic measures are combined
 	 *  to yield positive measure of LD. Association measures are calculated
-	 *  from a \c m by \c n contigency of haplotype frequencies (<tt>m=n=2</tt>
+	 *  from a \c m by \c n contigency of haplotype counts (<tt>m=n=2</tt>
 	 *  if primary alleles are specified). Please refer to the simuPOP user's
 	 *  guide for detailed information. This statistic sets the following
 	 *  variables:
@@ -980,6 +997,48 @@ public:
 	 *  \li \c LD_ChiSq_p_sp p value for the ChiSq statistics for each
 	 *       (virtual) subpopulation.
 	 *  \li \c CramerV_sp Cramer V statistics for each (virtual) subpopulation.
+	 *
+	 *  <b>association</b>: Parameter \c association accepts a list of loci.
+	 *  At each locus, one or more statistical tests will be performed to test
+	 *  association between this locus and individual affection status.
+	 *  Currently, simuPOP provides the following tests:
+	 *  \li An allele-based Chi-square test using alleles counts. This test
+	 *       can be applied to loci with more than two alleles, and to haploid
+	 *       populations.
+	 *  \li A genotype-based Chi-square test using genotype counts. This test
+	 *       can be applied to loci with more than two alleles (more than 3
+	 *       genotypes) in diploid populations.
+	 *  \li A genotype-based Cochran-Armitage trend test. This test can only
+	 *       be applied to diallelic loci in diploid populations. A codominant
+	 *       model is assumed.
+	 *
+	 *  This statistic sets the following variables:
+	 *  \li \c Allele_ChiSq A dictionary of allele-based Chi-Square statistics
+	 *       for each locus, using cases and controls in all or specified
+	 *       (virtual) subpopulations.
+	 *  \li \c Allele_ChiSq_p (default) A dictionary of \e p-values of the
+	 *       corresponding Chi-square statistics.
+	 *  \li \c Geno_ChiSq A dictionary of genotype-based Chi-Square statistics
+	 *       for each locus, using cases and controls in all or specified
+	 *       (virtual) subpopulations.
+	 *  \li \c Geno_ChiSq_p A dictionary of \e p-values of the corresponding
+	 *       genotype-based Chi-square test.
+	 *  \li \c Armitage_p A dictionary of \e p-values of the Cochran-Armitage
+	 *       tests, using cases and controls in all or specified (virtual)
+	 *       subpopulations.
+	 *  \li \c Allele_ChiSq_sp A dictionary of allele-based Chi-Square
+	 *       statistics for each locus, using cases and controls from each
+	 *       subpopulation.
+	 *  \li \c Allele_ChiSq_p_sp A dictionary of p-values of allele-based
+	 *       Chi-square tests, using cases and controls from each
+	 *       (virtual) subpopulation.
+	 *  \li \c Geno_ChiSq_sp A dictionary of genotype-based Chi-Square tests for
+	 *       each locus, using cases and controls from each subpopulation.
+	 *  \li \c Geno_ChiSq_p_sp A dictionary of p-values of genotype-based
+	 *       Chi-Square tests, using cases and controls from each
+	 *       subpopulation.
+	 *  \li \c Armitage_p_sp A dictionary of \e p-values of the Cochran-
+	 *       Armitage tests, using cases and controls from each subpopulation.
 	 *
 	 *  <b>Fst</b>: Parameter \c Fst accepts a list of loci at which level of
 	 *  population structure is measured by statistic \e Fst using an algorithm
