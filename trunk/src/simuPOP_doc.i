@@ -8389,18 +8389,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::pvalChiSq "
-
-Description:
-
-    right hand side (single side) p-value for ChiSq value
-
-Usage:
-
-    x.pvalChiSq(chisq, df)
-
-"; 
-
 %feature("docstring") simuPOP::RuntimeError "
 
 Description:
@@ -9674,10 +9662,9 @@ Details:
     calculated with non-primary alleles are combined. Otherwise,
     absolute values of diallelic measures are combined to yield
     positive measure of LD. Association measures are calculated from a
-    m by n contigency of haplotype frequencies (m=n=2 if primary
-    alleles are specified). Please refer to the simuPOP user's guide
-    for detailed information. This statistic sets the following
-    variables:
+    m by n contigency of haplotype counts (m=n=2 if primary alleles
+    are specified). Please refer to the simuPOP user's guide for
+    detailed information. This statistic sets the following variables:
     *   LD (default) Basic LD measure for haplotypes in all or
     specified (virtual) subpopulations. Signed if primary alleles are
     specified.
@@ -9703,10 +9690,59 @@ Details:
     *   LD_ChiSq_p_sp p value for the ChiSq statistics for each
     (virtual) subpopulation.
     *   CramerV_sp Cramer V statistics for each (virtual)
-    subpopulation.Fst: Parameter Fst accepts a list of loci at which
-    level of population structure is measured by statistic Fst using
-    an algorithm developed in Cockerham & Weir, 1984. Fst is by
-    default calculated for all subpopulation but a subset of
+    subpopulation.association: Parameter association accepts a list of
+    loci. At each locus, one or more statistical tests will be
+    performed to test association between this locus and individual
+    affection status. Currently, simuPOP provides the following tests:
+    *   An allele-based Chi-square test using alleles counts. This
+    test can be applied to loci with more than two alleles, and to
+    haploid populations.
+    *   A genotype-based Chi-square test using genotype counts. This
+    test can be applied to loci with more than two alleles (more than
+    3 genotypes) in diploid populations. aA and Aa are considered to
+    be the same genotype.
+    *   A genotype-based Cochran-Armitage trend test. This test can
+    only be applied to diallelic loci in diploid populations. A
+    codominant model is assumed. This statistic sets the following
+    variables:
+    *   Allele_ChiSq A dictionary of allele-based Chi-Square
+    statistics for each locus, using cases and controls in all or
+    specified (virtual) subpopulations.
+    *   Allele_ChiSq_p (default) A dictionary of p-values of the
+    corresponding Chi-square statistics.
+    *   Geno_ChiSq A dictionary of genotype-based Chi-Square
+    statistics for each locus, using cases and controls in all or
+    specified (virtual) subpopulations.
+    *   Geno_ChiSq_p A dictionary of p-values of the corresponding
+    genotype-based Chi-square test.
+    *   Armitage_p A dictionary of p-values of the Cochran-Armitage
+    tests, using cases and controls in all or specified (virtual)
+    subpopulations.
+    *   Allele_ChiSq_sp A dictionary of allele-based Chi-Square
+    statistics for each locus, using cases and controls from each
+    subpopulation.
+    *   Allele_ChiSq_p_sp A dictionary of p-values of allele-based
+    Chi-square tests, using cases and controls from each (virtual)
+    subpopulation.
+    *   Geno_ChiSq_sp A dictionary of genotype-based Chi-Square tests
+    for each locus, using cases and controls from each subpopulation.
+    *   Geno_ChiSq_p_sp A dictionary of p-values of genotype-based
+    Chi-Square tests, using cases and controls from each
+    subpopulation.
+    *   Armitage_p_sp A dictionary of p-values of the Cochran-
+    Armitage tests, using cases and controls from each
+    subpopulation.neutrality: This parameter performs neutrality tests
+    (detection of natural selection) on specified loci. It currently
+    only outputs Pi, which is the average number of pairwise
+    difference between loci. This statistic outputs the following
+    variables:
+    *   Pi Mean pairwise difference between all sequences from all or
+    specified (virtual) subpopulations.
+    *   Pi_sp Mean paiewise difference between all sequences in each
+    (virtual) subpopulation.Fst: Parameter Fst accepts a list of loci
+    at which level of population structure is measured by statistic
+    Fst using an algorithm developed in Cockerham & Weir, 1984. Fst is
+    by default calculated for all subpopulation but a subset of
     subpopulations could be specified using parameter subPops. Virtual
     subpopulations are supported which makes it possible to estimate
     population structure from groups of individuals from the same
@@ -9718,7 +9754,15 @@ Details:
     *   AvgFit The Fit statistic estimated for all specified loci.
     *   Fst A dictionary of locus level Fst values.
     *   Fis A dictionary of locus level Fis values.
-    *   Fit A dictionary of locus level Fit values.
+    *   Fit A dictionary of locus level Fit values.HWE: Parameter HWE
+    accepts a list of loci at which exact two-side tests for Hardy-
+    Weinberg equilibrium will be performed. This statistic is only
+    available for diallelic loci in diploid populations. It outputs
+    the following variables:
+    *   HWE (default) A dictionary of p-values of HWE tests using
+    genotypes in all or specified (virtual) subpopulations.
+    *   HWE_sp A dictionary of p-values of HWS tests using genotypes
+    in each (virtual) subpopulation.
 
 "; 
 
@@ -9803,7 +9847,7 @@ Usage:
 
 Usage:
 
-    statAssociation(loci=[], subPops=AllSubPops)
+    statAssociation(loci, subPops, vars)
 
 "; 
 
@@ -9901,11 +9945,9 @@ Usage:
 
 Usage:
 
-    statHWE(genoFreq, loci=[])
+    statHWE(loci, subPops, vars)
 
 "; 
-
-%ignore simuPOP::statHWE::statHWE(statGenoFreq &genoFreq, const statHWE &rhs);
 
 %feature("docstring") simuPOP::statHWE::apply "
 
@@ -9966,7 +10008,7 @@ Usage:
 
 Usage:
 
-    statNeutrality(loci=[], subPops=AllSubPops)
+    statNeutrality(loci, subPops, vars)
 
 "; 
 
@@ -10892,6 +10934,12 @@ Details:
     raised if output does not exist or it has already been closed.
 
 "; 
+
+%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
+
+%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
+
+%ignore simuPOP::hweTest(const vectorlu &cnt);
 
 %feature("docstring") simuPOP::GetRNG "
 

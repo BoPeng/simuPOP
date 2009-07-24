@@ -996,8 +996,8 @@ next:
 		if (name[s] == '\'' || name[s] == '\"')
 			keyType = 2;
 		else if (name[s] == '(')
-            keyType = 1;
-        else
+			keyType = 1;
+		else
 			keyType = 0;
 
 		for ( ; name[i] != '}' && i < name.size(); ++i) ;
@@ -1006,7 +1006,7 @@ next:
 
 		PyObject * childKey;
 
-	    if (keyType == 0)
+		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
 		else if (keyType == 1) {
 			vectori key;
@@ -1019,8 +1019,8 @@ next:
 				PyTuple_SetItem(childKey, j, PyInt_FromLong(key[j]));
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
-	
-        // ready for iteration
+
+		// ready for iteration
 		curType = 1;
 		curParent = curChild;
 		Py_XDECREF(curKey);
@@ -2359,6 +2359,7 @@ double pvalChiSq(double chisq, unsigned int df)
 	return 1 - gsl_cdf_chisq_P(chisq, df);
 }
 
+
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
 	UINT m = table.size();
@@ -2366,6 +2367,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	vectoru rowSum(m, 0);
 	vectoru colSum(n, 0);
 	ULONG N = 0;
+
 	//
 	for (size_t i = 0; i < m; ++i) {
 		for (size_t j = 0; j < n; ++j) {
@@ -2377,19 +2379,19 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	chisq = 0;
 	for (size_t i = 0; i < m; ++i)
 		for (size_t j = 0; j < n; ++j)
-			chisq += pow(N * table[i][j] -  rowSum[i] * colSum[j], 2)
-				              / (N * rowSum[i] * colSum[j]);
-	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m-1)*(n-1));
+			chisq += pow(N * table[i][j] - rowSum[i] * colSum[j], 2)
+			         / (N * rowSum[i] * colSum[j]);
+	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m - 1) * (n - 1));
 }
+
 
 double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 {
-	UINT m = table.size();
+	DBG_FAILIF(table.size() != 2 or table[0].size() != 3, ValueError,
+		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
+
 	UINT n = table[0].size();
 
-	DBG_FAILIF(m != 2 or n != 3, ValueError,
-		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
-	
 	DBG_FAILIF(s.size() != n, ValueError,
 		"Weight for Cochran-Armitage test should have length 3");
 	// formula is copied from HelixTree
@@ -2405,26 +2407,111 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 	// s_bar
 	double s_bar = 0;
 	for (size_t i = 0; i < n; ++i)
-		s_bar += (table[0][i] + table[1][i])*s[i];
+		s_bar += (table[0][i] + table[1][i]) * s[i];
 	s_bar /= N;
 	// p_case
-	double p_case = (table[1][0] + table[1][1] + table[1][2])/N;
+	double p_case = (table[1][0] + table[1][1] + table[1][2]) / N;
 	// b
 	double b;
 	double b1 = 0;
 	double b2 = 0;
 	for (size_t i = 0; i < n; ++i) {
-		b1 += (table[0][i] + table[1][i])*(p1i[i] - p_case)*(s[i] - s_bar);
-		b2 += (table[0][i] + table[1][i])*(s[i] - s_bar)*(s[i] - s_bar);
+		b1 += (table[0][i] + table[1][i]) * (p1i[i] - p_case) * (s[i] - s_bar);
+		b2 += (table[0][i] + table[1][i]) * (s[i] - s_bar) * (s[i] - s_bar);
 	}
-	b = b1/b2;
+	b = b1 / b2;
 	//
 	double z2 = 0;
 	for (size_t i = 0; i < n; ++i)
-		z2 += (table[0][i] + table[1][i])*(s[i] - s_bar)*(s[i] - s_bar);
+		z2 += (table[0][i] + table[1][i]) * (s[i] - s_bar) * (s[i] - s_bar);
 	z2 = z2 * b * b / (p_case * (1 - p_case));
-	// 
+	//
 	return 1 - gsl_cdf_chisq_P(z2, 1);
+}
+
+
+double hweTest(const vectorlu & cnt)
+{
+	// Calculates exact two-sided hardy-weinberg p-value. Parameters
+	// are number of genotypes, number of rare alleles observed and
+	// number of heterozygotes observed.
+	//
+	// (c) 2003 Jan Wigginton, Goncalo Abecasis
+	int obsAA = cnt[2];                                             // in this algorithm, AA is rare.
+	int obsAB = cnt[1];
+	int obsBB = cnt[0];
+
+	int diplotypes = obsAA + obsAB + obsBB;
+	int rare = (obsAA * 2) + obsAB;
+	int hets = obsAB;
+
+
+	//make sure "rare" allele is really the rare allele
+	if (rare > diplotypes)
+		rare = 2 * diplotypes - rare;
+
+	//make sure numbers aren't screwy
+	if (hets > rare)
+		throw ValueError("HW test: " + toStr(hets) + "heterozygotes but only " + toStr(rare) + "rare alleles.");
+
+	vectorf tailProbs(rare + 1, 0.0);
+
+	//start at midpoint
+	//all the casting is to make sure we don't overflow ints if there are 10's of 1000's of inds
+	int mid = (int)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
+
+	//check to ensure that midpoint and rare alleles have same parity
+	if (((rare & 1) ^ (mid & 1)) != 0) {
+		mid++;
+	}
+	int het = mid;
+	int hom_r = (rare - mid) / 2;
+	int hom_c = diplotypes - het - hom_r;
+
+	//Calculate probability for each possible observed heterozygote
+	//count up to a scaling constant, to avoid underflow and overflow
+	tailProbs[mid] = 1.0;
+	double sum = tailProbs[mid];
+	for (het = mid; het > 1; het -= 2) {
+		tailProbs[het - 2] = (tailProbs[het] * het * (het - 1.0)) / (4.0 * (hom_r + 1.0) * (hom_c + 1.0));
+		sum += tailProbs[het - 2];
+		//2 fewer hets for next iteration -> add one rare and one common homozygote
+		hom_r++;
+		hom_c++;
+	}
+
+	het = mid;
+	hom_r = (rare - mid) / 2;
+	hom_c = diplotypes - het - hom_r;
+	for (het = mid; het <= rare - 2; het += 2) {
+		tailProbs[het + 2] = (tailProbs[het] * 4.0 * hom_r * hom_c) / ((het + 2.0) * (het + 1.0));
+		sum += tailProbs[het + 2];
+		//2 more hets for next iteration -> subtract one rare and one common homozygote
+		hom_r--;
+		hom_c--;
+	}
+
+	for (size_t z = 0; z < tailProbs.size(); z++)
+		tailProbs[z] /= sum;
+
+	double top = tailProbs[hets];
+	for (int i = hets + 1; i <= rare; i++)
+		top += tailProbs[i];
+
+	double otherSide = tailProbs[hets];
+	for (int i = hets - 1; i >= 0; i--)
+		otherSide += tailProbs[i];
+
+	if (top > 0.5 && otherSide > 0.5) {
+		return 1.0;
+	} else {
+		if (top < otherSide)
+			return top * 2;
+		else
+			return otherSide * 2;
+	}
+
+	return 1.0;
 }
 
 
