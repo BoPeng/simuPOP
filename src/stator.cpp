@@ -1369,7 +1369,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				UINT B = m_LD[idx][3];
 
 				// calculate association
-				vector<vectorf> cont_table(2);
+				vector<vectoru> cont_table(2);
 				for (size_t i = 0; i < 2; ++i)
 					cont_table[i].resize(2);
 				// get P_ij
@@ -1385,7 +1385,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				CramerV[idx] = sqrt(ChiSq[idx] / allHaplo);
 			} else {
 				// calculate association
-				vector<vectorf> cont_table(nAllele1);
+				vector<vectoru> cont_table(nAllele1);
 				for (size_t i = 0; i < nAllele1; ++i)
 					cont_table[i].resize(nAllele2);
 				// get P_ij
@@ -1614,7 +1614,7 @@ void statAssociation::alleleChiSqTest(const ALLELECNTLIST & caseCnt,
 				alleles[cnt->first] = idx;
 			}
 
-		vector<vectorf> table(2);
+		vector<vectoru> table(2);
 		for (size_t i = 0; i < 2; ++i)
 			table[i].resize(alleles.size(), 0);
 		// fill the table
@@ -1635,12 +1635,104 @@ void statAssociation::genoChiSqTest(const GENOCNTLIST & caseCnt,
                                     const GENOCNTLIST & controlCnt, intDict & chisq,
                                     intDict & chisq_p)
 {
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		// figure out alleles
+		map<std::pair<UINT, UINT>, int> genotypes;
+		GENOCNT::const_iterator cnt = caseCnt[idx].begin();
+		GENOCNT::const_iterator cntEnd = caseCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			if (genotypes.find(cnt->first) == genotypes.end()) {
+				UINT idx = genotypes.size();
+				genotypes[cnt->first] = idx;
+			}
+		cnt = controlCnt[idx].begin();
+		cntEnd = controlCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			if (genotypes.find(cnt->first) == genotypes.end()) {
+				UINT idx = genotypes.size();
+				genotypes[cnt->first] = idx;
+			}
+
+		vector<vectoru> table(2);
+		for (size_t i = 0; i < 2; ++i)
+			table[i].resize(genotypes.size(), 0);
+		// fill the table
+		cnt = caseCnt[idx].begin();
+		cntEnd = caseCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			table[0][genotypes[cnt->first]] = cnt->second;
+		cnt = controlCnt[idx].begin();
+		cntEnd = controlCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			table[1][genotypes[cnt->first]] = cnt->second;
+		chisqTest(table, chisq[m_loci[idx]], chisq_p[m_loci[idx]]);
+	}
 }
 
 
 void statAssociation::armitageTest(const GENOCNTLIST & caseCnt,
-                                   const GENOCNTLIST & controlCnt, intDict & pvalues)
+                                   const GENOCNTLIST & ctrlCnt, intDict & pvalues)
 {
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		// figure out alleles and their frequencies
+		map<UINT, int> alleles;
+		GENOCNT::const_iterator cnt = caseCnt[idx].begin();
+		GENOCNT::const_iterator cntEnd = caseCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt) {
+			alleles[cnt->first.first] += cnt->second;
+			alleles[cnt->first.second] += cnt->second;
+		}
+		cnt = ctrlCnt[idx].begin();
+		cntEnd = ctrlCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt) {
+			alleles[cnt->first.first] += cnt->second;
+			alleles[cnt->first.second] += cnt->second;
+		}
+		// figure out major and minor allele
+		DBG_FAILIF(alleles.size() > 2, ValueError,
+			"Armitage trend test can only be applied to diallelic markers.");
+		if (alleles.size() != 2) {
+			pvalues[m_loci[idx]] = 1.;
+			continue;
+		}
+		map<UINT, int>::const_iterator first = alleles.begin();
+		map<UINT, int>::const_iterator second = ++first;
+		UINT major = 0;
+		UINT minor = 0;
+		if (first->second > second->second) {
+			major = first->first;
+			minor = second->first;
+		} else {
+			major = second->first;
+			minor = first->first;
+		}
+		vector<vectoru> table(2);
+		for (size_t i = 0; i < 2; ++i)
+			table[i].resize(3, 0);
+		// fill the table
+		GENOCNT::const_iterator it = caseCnt[idx].find(GENOCNT::key_type(major, major));
+		if (it != caseCnt[idx].end())
+			table[1][0] = it->second;
+		it = caseCnt[idx].find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
+		if (it != caseCnt[idx].end())
+			table[1][1] = it->second;
+		it = caseCnt[idx].find(GENOCNT::key_type(minor, minor));
+		if (it != caseCnt[idx].end())
+			table[1][2] = it->second;
+		it = ctrlCnt[idx].find(GENOCNT::key_type(major, major));
+		if (it != ctrlCnt[idx].end())
+			table[0][0] = it->second;
+		it = ctrlCnt[idx].find(major > minor ? GENOCNT::key_type(minor, major) : GENOCNT::key_type(major, minor));
+		if (it != ctrlCnt[idx].end())
+			table[0][1] = it->second;
+		it = ctrlCnt[idx].find(GENOCNT::key_type(minor, minor));
+		if (it != ctrlCnt[idx].end())
+			table[0][2] = it->second;
+		vectorf weight(3);
+		for (size_t i = 0; i < 3; ++i)
+			weight[i] = i;
+		pvalues[m_loci[idx]] = armitageTrendTest(table, weight);
+	}
 }
 
 
@@ -1809,7 +1901,7 @@ statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops
 	m_loci(loci), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
-		Neutra_Pi_String, Neutra_Pi_sp_String,       ""
+		Neutra_Pi_String, Neutra_Pi_sp_String, ""
 	};
 	const char * defaultVars[] = { Neutra_Pi_String, "" };
 
@@ -2063,7 +2155,7 @@ statHWE::statHWE(const vectorlu & loci,  const subPopList & subPops,
 	: m_loci(loci), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
-		HWE_String, HWE_sp_String,		""
+		HWE_String, HWE_sp_String, ""
 	};
 	const char * defaultVars[] = { HWE_String, "" };
 
