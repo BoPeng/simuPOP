@@ -297,10 +297,10 @@ stat::stat(
 	m_haploFreq(haploFreq, subPops, vars),
 	m_info(sumOfInfo.elems(), meanOfInfo.elems(), varOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars),
 	m_LD(LD, subPops, vars),
-	m_association(association.elems(), subPops),
-	m_neutrality(neutrality.elems(), subPops),
+	m_association(association.elems(), subPops, vars),
+	m_neutrality(neutrality.elems(), subPops, vars),
 	m_Fst(Fst.elems(), subPops, vars),
-	m_HWE(m_genoFreq, HWE.elems())
+	m_HWE(HWE.elems(), subPops, vars)
 {
 }
 
@@ -1369,63 +1369,31 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				UINT B = m_LD[idx][3];
 
 				// calculate association
-				vector<vectorf> cont_table(3);
-				for (size_t i = 0; i <= 2; ++i)
-					cont_table[i].resize(3);
-				// initialize last line/column
+				vector<vectorf> cont_table(2);
 				for (size_t i = 0; i < 2; ++i)
-					cont_table[i][2] = 0;
-				for (size_t j = 0; j <= 2; ++j)
-					cont_table[2][j] = 0;
+					cont_table[i].resize(2);
 				// get P_ij
 				HAPLOCNT::const_iterator hCnt = haplos.begin();
 				HAPLOCNT::const_iterator hCntEnd = haplos.end();
 				for (; hCnt != hCntEnd; ++hCnt) {
 					UINT i = hCnt->first.first != A;
 					UINT j = hCnt->first.second != B ;
-					cont_table[i][j] += hCnt->second / allHaplo;
-					cont_table[i][2] += cont_table[i][j];
-					cont_table[2][j] += cont_table[i][j];
-					cont_table[2][2] += cont_table[i][j];
+					cont_table[i][j] += hCnt->second;
 				}
-				DBG_ASSERT(fcmp_eq(cont_table[2][2], 1.), ValueError,
-					"Sum of haplotype frequencies is not 1. Association will not be computed.");
 				// calculate statistics
-				//ChiSq
-				for (size_t i = 0; i < 2; ++i)
-					for (size_t j = 0; j < 2; ++j)
-						ChiSq[idx] += pow((allHaplo * cont_table[i][j] - allHaplo * cont_table[i][2] * cont_table[2][j]), 2)
-						              / (allHaplo * cont_table[i][2] * cont_table[2][j]);
-				ChiSq_p[idx] = GetRNG().pvalChiSq(ChiSq[idx], 1);
+				chisqTest(cont_table, ChiSq[idx], ChiSq_p[idx]);
 				CramerV[idx] = sqrt(ChiSq[idx] / allHaplo);
 			} else {
 				// calculate association
-				vector<vectorf> cont_table(nAllele1 + 1);
-				for (size_t i = 0; i <= nAllele1; ++i)
-					cont_table[i].resize(nAllele2 + 1);
-				// initialize last line/column
+				vector<vectorf> cont_table(nAllele1);
 				for (size_t i = 0; i < nAllele1; ++i)
-					cont_table[i][nAllele2] = 0;
-				for (size_t j = 0; j <= nAllele2; ++j)
-					cont_table[nAllele1][j] = 0;
+					cont_table[i].resize(nAllele2);
 				// get P_ij
-				for (size_t i = 0; i < nAllele1; ++i) {
-					for (size_t j = 0; j < nAllele2; ++j) {
-						cont_table[i][j] = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]))->second / allHaplo;
-						cont_table[i][nAllele2] += cont_table[i][j];
-						cont_table[nAllele1][j] += cont_table[i][j];
-						cont_table[nAllele2][nAllele1] += cont_table[i][j];
-					}
-				}
-				DBG_ASSERT(fcmp_eq(cont_table[nAllele1][nAllele2], 1.), ValueError,
-					"Sum of haplotype frequencies is not 1. Association will not be computed.");
-				// calculate statistics
-				//ChiSq
 				for (size_t i = 0; i < nAllele1; ++i)
 					for (size_t j = 0; j < nAllele2; ++j)
-						ChiSq[idx] += pow((allHaplo * cont_table[i][j] - allHaplo * cont_table[i][nAllele2] * cont_table[nAllele1][j]), 2)
-						              / (allHaplo * cont_table[i][nAllele2] * cont_table[nAllele1][j]);
-				ChiSq_p[idx] = GetRNG().pvalChiSq(ChiSq[idx], (nAllele1 - 1) * (nAllele2 - 1));
+						cont_table[i][j] = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]))->second;
+				// calculate statistics
+				chisqTest(cont_table, ChiSq[idx], ChiSq_p[idx]);
 				CramerV[idx] = sqrt(ChiSq[idx] / (allHaplo * std::min(nAllele1 - 1, nAllele2 - 1)));
 			}   // with/without primary alleles
 		}       // association
@@ -1507,15 +1475,15 @@ bool statLD::apply(population & pop)
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
 			for (size_t p = 0; p < ply; ++p) {
-				if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+				if (ply == 2 && p == 1 && ind->sex() == Male && pop.isHaplodiploid())
 					continue;
 				GenoIterator geno = ind->genoBegin(p);
 				// allele frequency
 				for (size_t idx = 0; idx < nLoci; ++idx) {
-					if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+					if (ply == 2 && chromTypes[idx] == ChromosomeY && ind->sex() == Female)
 						continue;
-					if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-					     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (ply == 2 && ((chromTypes[idx] == ChromosomeX && p == 1) ||
+					                 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
 						continue;
 					alleleCnt[idx][*(geno + loci[idx])]++;
 				}
@@ -1609,66 +1577,70 @@ bool statLD::apply(population & pop)
 }
 
 
-statAssociation::statAssociation(const vectorlu & loci, const subPopList & subPops) :
-	m_loci(loci), m_subPops(subPops)
+statAssociation::statAssociation(const vectorlu & loci,
+	const subPopList & subPops, const stringList & vars)
+	: m_loci(loci), m_subPops(subPops), m_vars()
 {
+	const char * allowedVars[] = {
+		Allele_ChiSq_String,	Allele_ChiSq_p_String,
+		Allele_ChiSq_sp_String, Allele_ChiSq_p_sp_String,
+		""
+	};
+	const char * defaultVars[] = { Allele_ChiSq_p_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
-void statAssociation::calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG unaff_1,
-                                double & chisq, double & pvalue)
+void statAssociation::alleleChiSqTest(const ALLELECNTLIST & caseCnt,
+                                      const ALLELECNTLIST & controlCnt, intDict & chisq,
+                                      intDict & chisq_p)
 {
-	double cases = aff_0 + aff_1;
-	double controls = unaff_0 + unaff_1;
-	double total = cases + controls;
-	double allele0 = aff_0 + unaff_0;
-	double allele1 = aff_1 + unaff_1;
-
-	if (cases == 0 || controls == 0 || allele0 == 0 || allele1 == 0) {
-		chisq = 0;
-		pvalue = 1;
-		return;
-	}
-	chisq = 0;
-	double nij = cases * allele0 / total;
-	chisq += pow(aff_0 - nij, 2) / nij;
-	nij = cases * allele1 / total;
-	chisq += pow(aff_1 - nij, 2) / nij;
-	nij = controls * allele0 / total;
-	chisq += pow(unaff_0 - nij, 2) / nij;
-	nij = controls * allele1 / total;
-	chisq += pow(unaff_1 - nij, 2) / nij;
-	DBG_DO(DBG_STATOR, cout << " counts: "
-		                    << aff_0 << " " << aff_1 << " " << unaff_0 << " " << unaff_1 << " ChiSq: " << chisq << endl);
-
-	pvalue = GetRNG().pvalChiSq(chisq, 1);
-}
-
-
-void statAssociation::countAlleles(IndIterator & it, UINT loc,
-                                   ULONG & aff_0, ULONG & aff_1, ULONG & unaff_0, ULONG & unaff_1)
-{
-	UINT ploidy = it->ploidy();
-
-	aff_0 = 0;
-	aff_1 = 0;
-	unaff_0 = 0;
-	unaff_1 = 0;
-	for (; it.valid(); ++it) {
-		for (UINT p = 0; p < ploidy; ++p) {
-			if (it->affected()) {
-				if (ToAllele(it->allele(loc, p)) == 0)
-					++aff_0;
-				else
-					++aff_1;
-			} else {
-				if (ToAllele(it->allele(loc, p)) == 0)
-					++unaff_0;
-				else
-					++unaff_1;
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		// figure out alleles
+		map<Allele, int> alleles;
+		ALLELECNT::const_iterator cnt = caseCnt[idx].begin();
+		ALLELECNT::const_iterator cntEnd = caseCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			if (alleles.find(cnt->first) == alleles.end()) {
+				UINT idx = alleles.size();
+				alleles[cnt->first] = idx;
 			}
-		}
+		cnt = controlCnt[idx].begin();
+		cntEnd = controlCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			if (alleles.find(cnt->first) == alleles.end()) {
+				UINT idx = alleles.size();
+				alleles[cnt->first] = idx;
+			}
+
+		vector<vectorf> table(2);
+		for (size_t i = 0; i < 2; ++i)
+			table[i].resize(alleles.size(), 0);
+		// fill the table
+		cnt = caseCnt[idx].begin();
+		cntEnd = caseCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			table[0][alleles[cnt->first]] = cnt->second;
+		cnt = controlCnt[idx].begin();
+		cntEnd = controlCnt[idx].end();
+		for (; cnt != cntEnd; ++cnt)
+			table[1][alleles[cnt->first]] = cnt->second;
+		chisqTest(table, chisq[m_loci[idx]], chisq_p[m_loci[idx]]);
 	}
+}
+
+
+void statAssociation::genoChiSqTest(const GENOCNTLIST & caseCnt,
+                                    const GENOCNTLIST & controlCnt, intDict & chisq,
+                                    intDict & chisq_p)
+{
+}
+
+
+void statAssociation::armitageTest(const GENOCNTLIST & caseCnt,
+                                   const GENOCNTLIST & controlCnt, intDict & pvalues)
+{
 }
 
 
@@ -1677,34 +1649,176 @@ bool statAssociation::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	pop.removeVar(Asso_ChiSq_String);
-	pop.removeVar(Asso_ChiSq_P_String);
-	pop.removeVar(Fit_String);
+	vectoru chromTypes;
+	for (size_t i = 0; i < m_loci.size(); ++i)
+		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
 
-	vectorf chisq(pop.totNumLoci());
-	vectorf pvalue(pop.totNumLoci());
-	ULONG aff_0, aff_1, unaff_0, unaff_1;
-
-	for (UINT i = 0; i < m_loci.size(); ++i) {
-		UINT loc = m_loci[i];
-		IndIterator it = pop.indIterator();
-		countAlleles(it, loc, aff_0, aff_1, unaff_0, unaff_1);
-		calcChiSq(aff_0, aff_1, unaff_0, unaff_1, chisq[loc], pvalue[loc]);
-		DBG_DO(DBG_STATOR, cout << "Locus: " << loc << " ChiSq: " << chisq[loc]
-			                    << " p-value: " << pvalue[loc] << endl);
+	UINT ply = pop.ploidy();
+	bool hasAlleleTest = false;
+	bool hasGenoTest = false;
+	for (size_t i = 0; i < m_vars.elems().size(); ++i) {
+		if (m_vars.elems()[i].compare(0, 6, "Allele") == 0)
+			hasAlleleTest = true;
+		if (m_vars.elems()[i].compare(0, 4, "Geno") == 0 || m_vars.elems()[i].compare(0, 8, "Armitage")) {
+			DBG_FAILIF(ply != 2, ValueError, "Genotype test can only be performed for diploid populations.");
+			hasGenoTest = true;
+		}
 	}
-	pop.setDoubleVectorVar(Asso_ChiSq_String, chisq);
-	pop.setDoubleVectorVar(Asso_ChiSq_P_String, pvalue);
+
+	// count for all specified subpopulations
+	UINT nLoci = m_loci.size();
+	ALLELECNTLIST allCaseAlleleCnt(nLoci);
+	ALLELECNTLIST allCtrlAlleleCnt(nLoci);
+	GENOCNTLIST allCaseGenoCnt(nLoci);
+	GENOCNTLIST allCtrlGenoCnt(nLoci);
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		ALLELECNTLIST caseAlleleCnt(nLoci);
+		ALLELECNTLIST ctrlAlleleCnt(nLoci);
+		GENOCNTLIST caseGenoCnt(nLoci);
+		GENOCNTLIST ctrlGenoCnt(nLoci);
+
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
+
+		IndIterator ind = pop.indIterator(it->subPop());
+		for (; ind.valid(); ++ind) {
+			if (hasAlleleTest) {
+				for (UINT p = 0; p < ply; ++p) {
+					if (ply == 2 && p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+						continue;
+					GenoIterator geno = ind->genoBegin(p);
+					// allele count
+					for (size_t idx = 0; idx < nLoci; ++idx) {
+						if (ply == 2 && chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+							continue;
+						if (ply == 2 && ((chromTypes[idx] == ChromosomeX && p == 1) ||
+						                 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+							continue;
+						if (ind->affected())
+							caseAlleleCnt[idx][*(geno + m_loci[idx])]++;
+						else
+							ctrlAlleleCnt[idx][*(geno + m_loci[idx])]++;
+					}
+				}
+			}
+			// genotype
+			if (hasGenoTest) {
+				GenoIterator geno1 = ind->genoBegin(0);
+				GenoIterator geno2 = ind->genoBegin(1);
+				for (size_t idx = 0; idx < nLoci; ++idx) {
+					if (chromTypes[idx] == ChromosomeX || chromTypes[idx] == ChromosomeY)
+						continue;
+					Allele a1 = *(geno1 + m_loci[idx]);
+					Allele a2 = *(geno2 + m_loci[idx]);
+					if (a1 > a2)
+						std::swap(a1, a2);
+					if (ind->affected())
+						caseGenoCnt[idx][GENOCNT::key_type(a1, a2)]++;
+					else
+						caseGenoCnt[idx][GENOCNT::key_type(a1, a2)]++;
+				}
+			}
+		}
+		//
+		// output variable.
+		if (m_vars.contains(Allele_ChiSq_sp_String) || m_vars.contains(Allele_ChiSq_p_sp_String)) {
+			intDict chisq;
+			intDict chisq_p;
+			alleleChiSqTest(caseAlleleCnt, ctrlAlleleCnt, chisq, chisq_p);
+			if (m_vars.contains(Allele_ChiSq_sp_String))
+				pop.setIntDictVar(subPopVar_String(*it, Allele_ChiSq_String), chisq);
+			if (m_vars.contains(Allele_ChiSq_p_sp_String))
+				pop.setIntDictVar(subPopVar_String(*it, Allele_ChiSq_p_String), chisq_p);
+		}
+		if (m_vars.contains(Geno_ChiSq_sp_String) || m_vars.contains(Geno_ChiSq_p_sp_String)) {
+			intDict chisq;
+			intDict chisq_p;
+			genoChiSqTest(caseGenoCnt, ctrlGenoCnt, chisq, chisq_p);
+			if (m_vars.contains(Geno_ChiSq_sp_String))
+				pop.setIntDictVar(subPopVar_String(*it, Geno_ChiSq_String), chisq);
+			if (m_vars.contains(Geno_ChiSq_p_sp_String))
+				pop.setIntDictVar(subPopVar_String(*it, Geno_ChiSq_p_String), chisq_p);
+		}
+		if (m_vars.contains(Armitage_p_sp_String)) {
+			intDict pvalues;
+			armitageTest(caseGenoCnt, ctrlGenoCnt, pvalues);
+			pop.setIntDictVar(subPopVar_String(*it, Armitage_p_String), pvalues);
+		}
+		// total allele count
+		if (hasAlleleTest) {
+			for (size_t idx = 0; idx < nLoci; ++idx) {
+				ALLELECNT::const_iterator cnt = caseAlleleCnt[idx].begin();
+				ALLELECNT::const_iterator cntEnd = caseAlleleCnt[idx].end();
+				for (; cnt != cntEnd; ++cnt)
+					allCaseAlleleCnt[idx][cnt->first] += cnt->second;
+				cnt = ctrlAlleleCnt[idx].begin();
+				cntEnd = ctrlAlleleCnt[idx].end();
+				for (; cnt != cntEnd; ++cnt)
+					allCtrlAlleleCnt[idx][cnt->first] += cnt->second;
+			}
+		}
+		if (hasGenoTest) {
+			for (size_t idx = 0; idx < nLoci; ++idx) {
+				GENOCNT::const_iterator cnt = caseGenoCnt[idx].begin();
+				GENOCNT::const_iterator cntEnd = caseGenoCnt[idx].end();
+				for (; cnt != cntEnd; ++cnt)
+					allCaseGenoCnt[idx][cnt->first] += cnt->second;
+				cnt = ctrlGenoCnt[idx].begin();
+				cntEnd = ctrlGenoCnt[idx].end();
+				for (; cnt != cntEnd; ++cnt)
+					allCtrlGenoCnt[idx][cnt->first] += cnt->second;
+			}
+		}
+	}
+	//
+	if (m_vars.contains(Allele_ChiSq_String) || m_vars.contains(Allele_ChiSq_p_String)) {
+		intDict chisq;
+		intDict chisq_p;
+		alleleChiSqTest(allCaseAlleleCnt, allCtrlAlleleCnt, chisq, chisq_p);
+		// output variable.
+		if (m_vars.contains(Allele_ChiSq_String))
+			pop.setIntDictVar(Allele_ChiSq_String, chisq);
+		if (m_vars.contains(Allele_ChiSq_p_String))
+			pop.setIntDictVar(Allele_ChiSq_p_String, chisq_p);
+	}
+	if (m_vars.contains(Geno_ChiSq_String) || m_vars.contains(Geno_ChiSq_p_String)) {
+		intDict chisq;
+		intDict chisq_p;
+		genoChiSqTest(allCaseGenoCnt, allCtrlGenoCnt, chisq, chisq_p);
+		if (m_vars.contains(Geno_ChiSq_String))
+			pop.setIntDictVar(Geno_ChiSq_String, chisq);
+		if (m_vars.contains(Geno_ChiSq_p_String))
+			pop.setIntDictVar(Geno_ChiSq_p_String, chisq_p);
+	}
+	if (m_vars.contains(Armitage_p_String)) {
+		intDict pvalues;
+		armitageTest(allCaseGenoCnt, allCtrlGenoCnt, pvalues);
+		pop.setIntDictVar(Armitage_p_String, pvalues);
+	}
 	return true;
 }
 
 
-statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops) :
-	m_loci(loci), m_subPops(subPops)
+statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops,
+	const stringList & vars) :
+	m_loci(loci), m_subPops(subPops), m_vars()
 {
+	const char * allowedVars[] = {
+		Neutra_Pi_String, Neutra_Pi_sp_String,       ""
+	};
+	const char * defaultVars[] = { Neutra_Pi_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+
 	sort(m_loci.begin(), m_loci.end());
 	for (UINT i = 1; i < m_loci.size(); ++i) {
-		DBG_FAILIF(m_loci[i - 1] == m_loci[i], ValueError, "Duplicated loci occurred in the loci list.");
+		DBG_FAILIF(m_loci[i - 1] == m_loci[i], ValueError,
+			"Duplicated loci occurred in the loci list.");
 	}
 }
 
@@ -1944,9 +2058,16 @@ bool statFst::apply(population & pop)
 }
 
 
-statHWE::statHWE(statGenoFreq & genoFreq, const vectorlu & loci)
-	: m_genoFreq(genoFreq), m_loci(loci)
+statHWE::statHWE(const vectorlu & loci,  const subPopList & subPops,
+	const stringList & vars)
+	: m_loci(loci), m_subPops(subPops), m_vars()
 {
+	const char * allowedVars[] = {
+		HWE_String, HWE_sp_String,		""
+	};
+	const char * defaultVars[] = { HWE_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
