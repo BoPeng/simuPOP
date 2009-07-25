@@ -2391,7 +2391,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 
 double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 {
-	DBG_FAILIF(table.size() != 2 or table[0].size() != 3, ValueError,
+	DBG_FAILIF(table.size() != 2 || table[0].size() != 3, ValueError,
 		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
 
 	UINT n = table[0].size();
