@@ -1390,8 +1390,11 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 					cont_table[i].resize(nAllele2);
 				// get P_ij
 				for (size_t i = 0; i < nAllele1; ++i)
-					for (size_t j = 0; j < nAllele2; ++j)
-						cont_table[i][j] = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]))->second;
+					for (size_t j = 0; j < nAllele2; ++j) {
+						HAPLOCNT::iterator it = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]));
+						if (it != haplos.end())
+							cont_table[i][j] = it->second;
+					}
 				// calculate statistics
 				chisqTest(cont_table, ChiSq[idx], ChiSq_p[idx]);
 				CramerV[idx] = sqrt(ChiSq[idx] / (allHaplo * std::min(nAllele1 - 1, nAllele2 - 1)));
@@ -1924,7 +1927,7 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 
 	for (; it != end; ++it) {
 		HAPLOLIST::const_iterator it1 = it;
-		for (++it1; it != end; ++it1) {
+		for (++it1; it1 != end; ++it1) {
 			const vectora & seq1 = *it;
 			const vectora & seq2 = *it1;
 			size_t sz = seq1.size();
@@ -1959,12 +1962,11 @@ bool statNeutrality::apply(population & pop)
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
-	HAPLOLIST::iterator spBegin = allHaplotypes.begin();
 	for (; it != itEnd; ++it) {
 		if (it->isVirtual())
 			pop.activateVirtualSubPop(*it);
 
-		spBegin = allHaplotypes.begin();
+		UINT spBegin = allHaplotypes.size();
 		// go through all individual
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
@@ -1985,8 +1987,7 @@ bool statNeutrality::apply(population & pop)
 		// output variable.
 		if (m_vars.contains(Neutra_Pi_sp_String))
 			pop.setDoubleVar(subPopVar_String(*it, Neutra_Pi_String),
-				calcPi(spBegin, allHaplotypes.end())
-			    );
+				calcPi(allHaplotypes.begin() + spBegin, allHaplotypes.end()));
 		if (it->isVirtual())
 			pop.deactivateVirtualSubPop(it->subPop());
 	}
