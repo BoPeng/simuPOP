@@ -1391,7 +1391,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				// get P_ij
 				for (size_t i = 0; i < nAllele1; ++i)
 					for (size_t j = 0; j < nAllele2; ++j) {
-						HAPLOCNT::iterator it = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]));
+						HAPLOCNT::const_iterator it = haplos.find(HAPLOCNT::key_type(alleles1[i], alleles2[j]));
 						if (it != haplos.end())
 							cont_table[i][j] = it->second;
 					}
