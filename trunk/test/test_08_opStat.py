@@ -375,15 +375,15 @@ class TestStat(unittest.TestCase):
         #
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
-            vars=['LD_ChiSq', 'CramerV'])
+            vars=['LD_ChiSq', 'CramerV', 'alleleNum', 'alleleFreq', 'haploNum', 'haploNum_sp'])
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1
-            for allele1, p in enumerate(var.alleleFreq[loc1]):
-                for allele2, q in enumerate(var.alleleFreq[loc2]):
-                    pq = var.haploFreq[(loc1, loc2)].setdefault((allele1, allele2), 0)
+            for allele1, p in enumerate(var.alleleNum[loc1]):
+                for allele2, q in enumerate(var.alleleNum[loc2]):
+                    pq = var.haploNum[(loc1, loc2)].setdefault((allele1, allele2), 0)
                     if p > 0 and q > 0:
-                        ChiSq += (var.popSize * 2 * pq - var.popSize * 2 * p * q) ** 2 / (var.popSize * 2 * p * q)
+                        ChiSq += (pq * var.popSize * 2. - p * q) ** 2 / (var.popSize * 2. * p * q)
             return ChiSq
         def ChiSq_P(var, loc1, loc2):
             a = len(var.alleleFreq[loc1])
@@ -399,7 +399,7 @@ class TestStat(unittest.TestCase):
             self.assertAlmostEqual(ChiSq_P(pop.dvars(), 2, 4), pop.dvars().LD_ChiSq_P[2][4])
         self.assertAlmostEqual(CramerV(pop.dvars(), 2, 4), pop.dvars().CramerV[2][4])
         Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
-            vars=['alleleFreq_sp', 'haploFreq_sp', 'LD_ChiSq_sp', 'CramerV_sp', 'popSize_sp'])
+            vars=['alleleFreq_sp', 'alleleNum_sp', 'haploFreq_sp', 'LD_ChiSq_sp', 'CramerV_sp', 'popSize_sp'])
         for sp in range(3):
             self.assertAlmostEqual(ChiSq(pop.dvars(sp), 2, 4), pop.dvars(sp).LD_ChiSq[2][4])
             self.assertAlmostEqual(CramerV(pop.dvars(sp), 2, 4), pop.dvars(sp).CramerV[2][4])

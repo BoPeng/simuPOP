@@ -2366,8 +2366,11 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	UINT n = table[0].size();
 	vectoru rowSum(m, 0);
 	vectoru colSum(n, 0);
-	ULONG N = 0;
+	double N = 0;
 
+	DBG_DO(DBG_STATOR, cout << "ChiSq test with table " <<
+		table[0] << endl << table[1] << endl <<
+		(table.size() <= 2 ? vectoru() : table[2]) << endl);
 	//
 	for (size_t i = 0; i < m; ++i) {
 		for (size_t j = 0; j < n; ++j) {
@@ -2379,8 +2382,9 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	chisq = 0;
 	for (size_t i = 0; i < m; ++i)
 		for (size_t j = 0; j < n; ++j)
-			chisq += pow(N * table[i][j] - rowSum[i] * colSum[j], 2)
-			         / (N * rowSum[i] * colSum[j]);
+			if (rowSum[i] > 0 && colSum[j] > 0)
+				chisq += pow(table[i][j] - rowSum[i] * colSum[j] / N, 2)
+				         / (rowSum[i] * colSum[j] / N);
 	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m - 1) * (n - 1));
 }
 
