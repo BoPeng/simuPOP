@@ -13188,44 +13188,6 @@ output
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-stat
-\family default
- operator supports parameter 
-\emph on
-subPops
-\emph default
- and can calculate statistics in specified subpopulations.
- For example
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
-\end_layout
-
-\end_inset
-
-will calculate the frequencies of alleles at locus 0, among individuals
- in two virtual subpopulations.
- If the virtual subpopulation is defined by sex (using a 
-\family typewriter
-sexSplitter
-\family default
-), the above operator will calculate allele frequency among all males in
- the first and second subpopulations.
- If 
-\family typewriter
-subPops
-\family default
- is not specified, allele frequency of the whole population (all subpopulations)
- will be calculated.
-\end_layout
-
-\begin_layout Standard
 Statistics calculated by the 
 \family typewriter
 stat
@@ -13267,6 +13229,44 @@ pyEval
 pyExec
 \family default
  to manipuate and output statistics in any format.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+stat
+\family default
+ operator supports parameter 
+\emph on
+subPops
+\emph default
+ and can calculate statistics in specified subpopulations.
+ For example
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
+\end_layout
+
+\end_inset
+
+will calculate the frequencies of alleles at locus 0, among individuals
+ in two virtual subpopulations.
+ If the virtual subpopulation is defined by sex (using a 
+\family typewriter
+sexSplitter
+\family default
+), the above operator will calculate allele frequency among all males in
+ the first and second subpopulations.
+ If 
+\family typewriter
+subPops
+\family default
+ is not specified, allele frequency of the whole population (all subpopulations)
+ will be calculated.
 \end_layout
 
 \begin_layout Standard
@@ -13340,6 +13340,32 @@ population.dvars(sp)
 \family default
  are provided as shortcuts to access these variables but the full variable
  names have to be specified if these variables are used in expressions.
+\end_layout
+
+\begin_layout Note
+The 
+\family typewriter
+stat
+\family default
+ opeartor accepts overlapping or even duplicate virtual subpopulations.
+ During the calculation of summary statistics, these subpopulations are
+ treated as separate subpopulations so some individuals can be counted more
+ than once.
+ For example, individuals in virtual subpopulation (0, 1) will be counted
+ twice during the calculation of allele frequency and population size in
+ operator 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -13458,11 +13484,24 @@ lstparams "caption={Count individuals by sex and/or affection status},label={sta
 \end_layout
 
 \begin_layout Subsection
-Allele, genotype and haplotype frequency and count
+Allele, genotype, heterozygotes, haplotype count and frequency
 \end_layout
 
 \begin_layout Standard
-Parameter 
+The 
+\family typewriter
+stat
+\family default
+ operator can be used to count alleles, genotypes, homozygotes and heterozygotes
+, and haplotypes of a population, using parameters 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+alleleFreq
+\series default
+: Parameter 
 \emph on
 alleleFreq
 \emph default
@@ -13531,48 +13570,12 @@ alleleFreq[loc][1]
  will exist even if there is no allele 1 in the population).
 \end_layout
 
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "statAlleleFreq"
+\begin_layout Itemize
 
-\end_inset
-
- demonstrates an advanced usage of this statistic.
- In this example, two virtual subpopulations are defined by individual affection
- status.
- During evolution, a multi-allele penetrance operator is used to determine
- individual affection status and a 
-\family typewriter
-stat
-\family default
- operator is used to calculate allele frequencies in these two virtual subpopula
-tions, and in the whole population.
- Because the simulated disease is largely caused by the existence of allele
- 1 at the first locus, it is expected that the frequency of allele 1 is
- higher in the case group than in the control group.
- It is worth noting that 
-\family typewriter
-alleleFreq[0][1]
-\family default
- in this example is the frequency of allele 1 in the whole population because
- these two virtual subpopulations add up to the whole population.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/statAlleleFreq.log"
-lstparams "caption={Calculate allele frequency in affected and unaffected individuals},label={statAlleleFreq}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Genotype frequency is the same as allele frequency in a haploid population
+\series bold
+genoFreq
+\series default
+: Genotype frequency is the same as allele frequency in a haploid population
  because individual genotype consists of only one allele at each locus.
  
 \series bold
@@ -13594,40 +13597,7 @@ In a diploid population, a genotype is represented as an ordered pair of
 (2, 1)
 \family default
  are different genotypes.
-\end_layout
-
-\begin_layout Standard
-Haplotypes refer to alleles on the same homologous copy of a chromosome
- at specified loci.
- For example, an diploid individual can have haplotypes 
-\family typewriter
-(0, 2, 1)
-\family default
- and 
-\family typewriter
-(0, 1, 1)
-\family default
- at loci 
-\family typewriter
-(2, 3, 5)
-\family default
- if he or she has genotype 
-\family typewriter
-(0, 0)
-\family default
-, 
-\family typewriter
-(2, 1)
-\family default
- and 
-\family typewriter
-(1,1)
-\family default
- at loci 2, 3 and 5 respectively.
-\end_layout
-
-\begin_layout Standard
-Parameter 
+ Parameter 
 \emph on
 genoFreq
 \emph default
@@ -13669,24 +13639,88 @@ haploFreq[(0,1,2)][(0,1,1)]
 , if such a haplotype exists in the population.
 \end_layout
 
-\begin_layout Note
+\begin_layout Itemize
 
-\emph on
+\series bold
+heteroFreq
+\series default
+: In a diploid population, a heterozygote is a genotype with two different
+ alleles and a homozygote is a genotype with two identical alleles.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
 haploFreq
-\emph default
- does not check if loci in a haplotype site belong to the same chromosome,
- or if loci are duplicated or in order.
- It faithfully assemble alleles at specified loci as haplotypes although
- these haplotypes might not be biologically meaningful.
+\series default
+: Haplotypes refer to alleles on the same homologous copy of a chromosome
+ at specified loci.
+ For example, an diploid individual can have haplotypes 
+\family typewriter
+(0, 2, 1)
+\family default
+ and 
+\family typewriter
+(0, 1, 1)
+\family default
+ at loci 
+\family typewriter
+(2, 3, 5)
+\family default
+ if he or she has genotype 
+\family typewriter
+(0, 0)
+\family default
+, 
+\family typewriter
+(2, 1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ at loci 2, 3 and 5 respectively.
 \end_layout
 
-\begin_layout --Separator--
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statAlleleFreq"
 
+\end_inset
+
+ demonstrates an advanced usage of this statistic.
+ In this example, two virtual subpopulations are defined by individual affection
+ status.
+ During evolution, a multi-allele penetrance operator is used to determine
+ individual affection status and a 
+\family typewriter
+stat
+\family default
+ operator is used to calculate allele frequencies in these two virtual subpopula
+tions, and in the whole population.
+ Because the simulated disease is largely caused by the existence of allele
+ 1 at the first locus, it is expected that the frequency of allele 1 is
+ higher in the case group than in the control group.
+ It is worth noting that 
+\family typewriter
+alleleFreq[0][1]
+\family default
+ in this example is the frequency of allele 1 in the whole population because
+ these two virtual subpopulations add up to the whole population.
 \end_layout
 
-\begin_layout Note
-Counting a large number of haplotypes on long haplotype sites may exhaust
- the RAM of your computer.
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statAlleleFreq.log"
+lstparams "caption={Calculate allele frequency in affected and unaffected individuals},label={statAlleleFreq}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -13719,6 +13753,30 @@ lstparams "caption={Counting genotypes and haplotypes in a population},label={st
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Note
+
+\emph on
+haploFreq
+\emph default
+ does not check if loci in a haplotype site belong to the same chromosome,
+ or if loci are duplicated or in order.
+ It faithfully assemble alleles at specified loci as haplotypes although
+ these haplotypes might not be biologically meaningful.
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Note
+Counting a large number of haplotypes on long haplotype sites may exhaust
+ the RAM of your computer.
+\end_layout
+
+\begin_layout Standard
 
 \end_layout
 

@@ -429,6 +429,12 @@ private:
 #define  AlleleNum_sp_String     "alleleNum_sp"
 #define  AlleleFreq_sp_String    "alleleFreq_sp"
 
+private:
+	typedef intDict ALLELECNT;
+	typedef vector<ALLELECNT> ALLELECNTLIST;
+	typedef intDict ALLELEFREQ;
+	typedef vector<ALLELEFREQ> ALLELEFREQLIST;
+
 public:
 	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars);
 

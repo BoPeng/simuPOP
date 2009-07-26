@@ -540,7 +540,7 @@ bool statAlleleFreq::apply(population & pop)
 	DBG_DO(DBG_STATOR, cout << "Calculated allele frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
-	vector<vectori> alleleCnt(m_loci.size(), vectori(2, 0));
+	ALLELECNTLIST alleleCnt(m_loci.size());
 	vectorlu allAllelesCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
@@ -559,7 +559,7 @@ bool statAlleleFreq::apply(population & pop)
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			UINT loc = m_loci[idx];
 
-			vectori alleles(2, 0);
+			intDict alleles;
 			size_t allAlleles = 0;
 
 			// go through all alleles
@@ -567,28 +567,25 @@ bool statAlleleFreq::apply(population & pop)
 			// use allAllelel here because some marker does not have full number
 			// of alleles (e.g. markers on chromosome X and Y).
 			for (; a.valid(); ++a) {
-				if (AlleleUnsigned(*a) >= alleles.size())
-					alleles.resize(*a + 1, 0);
 				alleles[*a]++;
 				allAlleles++;
 			}
+			// total allele count
+			intDict::iterator cnt = alleles.begin();
+			intDict::iterator cntEnd = alleles.end();
+			for ( ; cnt != cntEnd; ++cnt)
+				alleleCnt[idx][cnt->first] += cnt->second;
+			allAllelesCnt[idx] += allAlleles;
 			// output variable.
 			if (m_vars.contains(AlleleNum_sp_String))
-				pop.setIntVectorVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
+				pop.setIntDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
 			if (m_vars.contains(AlleleFreq_sp_String)) {
-				vectorf freq(alleles.size(), 0.);
-				if (allAlleles != 0) {
-					for (size_t i = 0; i < alleles.size(); ++i)
-						freq[i] = static_cast<double>(alleles[i]) / allAlleles;
-				}
-				pop.setDoubleVectorVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", freq);
+				intDict::iterator cnt = alleles.begin();
+				intDict::iterator cntEnd = alleles.end();
+				for ( ; cnt != cntEnd; ++cnt)
+					cnt->second /= allAlleles;
+				pop.setIntDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", alleles);
 			}
-			// total allele count
-			if (alleleCnt[idx].size() < alleles.size())
-				alleleCnt[idx].resize(alleles.size(), 0);
-			for (size_t i = 0; i < alleles.size(); ++i)
-				alleleCnt[idx][i] += alleles[i];
-			allAllelesCnt[idx] += allAlleles;
 		}
 		if (it->isVirtual())
 			pop.deactivateVirtualSubPop(it->subPop());
@@ -597,19 +594,20 @@ bool statAlleleFreq::apply(population & pop)
 	if (m_vars.contains(AlleleNum_String)) {
 		pop.removeVar(AlleleNum_String);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx)
-			pop.setIntVectorVar(string(AlleleNum_String) + "{" + toStr(m_loci[idx]) + "}",
+			pop.setIntDictVar(string(AlleleNum_String) + "{" + toStr(m_loci[idx]) + "}",
 				alleleCnt[idx]);
 	}
 	if (m_vars.contains(AlleleFreq_String)) {
 		pop.removeVar(AlleleFreq_String);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			vectorf freq(alleleCnt[idx].size(), 0.);
 			if (allAllelesCnt[idx] != 0) {
-				for (size_t i = 0; i < alleleCnt[idx].size(); ++i)
-					freq[i] = static_cast<double>(alleleCnt[idx][i]) / allAllelesCnt[idx];
+				intDict::iterator cnt = alleleCnt[idx].begin();
+				intDict::iterator cntEnd = alleleCnt[idx].end();
+				for ( ; cnt != cntEnd; ++cnt)
+					cnt->second /= allAllelesCnt[idx];
 			}
-			pop.setDoubleVectorVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
-				freq);
+			pop.setIntDictVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
+				alleleCnt[idx]);	
 		}
 	}
 	return true;

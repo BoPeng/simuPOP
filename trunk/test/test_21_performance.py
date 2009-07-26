@@ -504,9 +504,18 @@ class TestPerformance(unittest.TestCase):
             c3 = time.clock()
             print 'LD: %.2f' % (c3 - c2)
             c2 = c3
-        # version 0.9.6:
-        # allele freq: 2.56s (std and op)
+        pop.save('LD.pop')
+        # version 0.9.6: 
+        #
+        # (List implementation of allele frequency)
+        # allele freq: 2.56s (std and op) (440M of RAM)
         # LD: 0.38 (10k), 1.09 (20k), 3.68 (50k), 10.50 (100k)
+        # Filesize: 12,240,399
+        #
+        # (Dict implementation of allele frequency)
+        #
+        #
+        # (defaultdict implementation of allele frequency)
         #
         # Old version: 0.9.5
         # allele freq: 5.06
