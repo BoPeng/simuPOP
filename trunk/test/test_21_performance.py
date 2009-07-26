@@ -504,13 +504,15 @@ class TestPerformance(unittest.TestCase):
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         c2 = time.clock()
         print c2 - c1
-
+        # NOTE that this test is unfair in the sense that it only has two alleles
+        # and the list implementation is supposed to be faster.
+        #
         # On vista, using a dictionary implementation.
-        # binary alleles: 25.55s, optimzied using vectorlu: 22.0s
-        # short alleles: 16.89s
+        # binary alleles: 25.55s, optimzied using vectorlu: 22.0s (better)
+        # short alleles: 16.89s (worse)
         #
         # On vista, using 0.9.5 (list implementation)
-        # binary allele
+        # binary allele: 25.5s
         # short alleles: 11.74s
 
     def TestLD(self):
