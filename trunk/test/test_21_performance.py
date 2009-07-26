@@ -490,6 +490,28 @@ class TestPerformance(unittest.TestCase):
     #
 
 
+    def TestDict(self):
+        '''Testing the performance of using list, dict and defaultdict to calculate
+        and store allele frequencies
+        '''
+        pop = LoadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
+        for i in range(4):
+            pop1 = pop.clone();
+            print pop1.popSize()
+            pop.addIndFrom(pop1)
+        print pop.popSize()
+        c1 = time.clock()
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        c2 = time.clock()
+        print c2 - c1
+
+        # On vista, using a dictionary implementation.
+        # binary alleles: 25.55s, optimzied using vectorlu: 22.0s
+        # short alleles: 16.89s
+        #
+        # On vista, using 0.9.5 (list implementation)
+        # binary allele
+        # short alleles: 11.74s
 
     def TestLD(self):
         'Testing the performance of calculating LD for a large number of loci'
