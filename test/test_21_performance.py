@@ -508,8 +508,9 @@ class TestPerformance(unittest.TestCase):
         # and the list implementation is supposed to be faster.
         #
         # On vista, using a dictionary implementation.
-        # binary alleles: 25.55s, optimzied using vectorlu: 22.0s (better)
-        # short alleles: 16.89s (worse)
+        # binary alleles: 22.0s (better)
+        # short alleles: 12.25s (a little worse)
+        # long alleles: (not runnable for 32 bit system)
         #
         # On vista, using 0.9.5 (list implementation)
         # binary allele: 25.5s
