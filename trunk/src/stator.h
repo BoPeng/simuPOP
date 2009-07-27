@@ -430,11 +430,7 @@ private:
 #define  AlleleFreq_sp_String    "alleleFreq_sp"
 
 private:
-#ifdef BINARYALLELE
-	typedef vectorlu ALLELECNT;
-#else
 	typedef intDict ALLELECNT;
-#endif
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
