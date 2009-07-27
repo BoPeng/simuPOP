@@ -2337,12 +2337,8 @@ lstparams "caption={Ranges and iterators},label={iterator.log}"
 \begin_layout Subsection
 
 \family typewriter
-\series medium
-\size normal
 carray
 \family default
-\series default
-\size default
  datatype
 \begin_inset CommandInset label
 LatexCommand label
@@ -13231,6 +13227,10 @@ pyExec
  to manipuate and output statistics in any format.
 \end_layout
 
+\begin_layout Subsection
+Support for virtual subpopulations
+\end_layout
+
 \begin_layout Standard
 The 
 \family typewriter
@@ -13366,6 +13366,85 @@ stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+The 
+\family typewriter
+defaultdict
+\family default
+ datatype
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+stat
+\family default
+ operator makes use of dictionaries to save counts and frequencies of alleles,
+ genotypes and haplotypes.
+ For example, if a population have alleles 0 and 2 at a locus 5, variable
+ 
+\family typewriter
+\lang english
+alleleFreq[5]
+\family default
+ will be set by 
+\family typewriter
+stat(alleleFreq=[5])
+\family default
+ to a dictionary similar to 
+\family typewriter
+{0: 0.2, 2: 0.8}
+\family default
+.
+ You can use 
+\family typewriter
+alleleFreq[5][2]
+\family default
+ to get allele frequency for allele 2, and 
+\family typewriter
+alleleFreq[5].keys()
+\family default
+ to get available alleles.
+ 
+\end_layout
+
+\begin_layout Standard
+Because it is sometimes unclear whether or not a key exists in such a dictionary
+, 
+\series bold
+the stat operator uses a special 
+\family typewriter
+defaultdict
+\family default
+ object with a 
+\family typewriter
+int
+\family default
+ default factory for dictionaries whose keys are determined from a population
+\series default
+.
+ When an invalid key is used, these dictionaries return value 0 instead
+ of raising a 
+\family typewriter
+KeyError
+\family default
+ exception.
+ That is to say, 
+\family typewriter
+alleleFreq[5][1]
+\family default
+ and 
+\family typewriter
+alleleFreq[5][100]
+\family default
+ are valid expressions with values 0 and it is safe to use expressions such
+ as 
+\family typewriter
+alleleFreq[5][1] == 0
+\family default
+ to test the existence of alleles, haplotypes and haplotypes.
 \end_layout
 
 \begin_layout Subsection

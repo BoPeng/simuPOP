@@ -1307,7 +1307,7 @@ PyObject * PyDefDict_New()
 }
 
 
-bool is_defdict(PyTypeObject * type)
+bool is_defaultdict(PyTypeObject * type)
 {
 	return type == &defdict_type;
 }
