@@ -665,18 +665,6 @@ void PyObj_As_Array(PyObject * obj, vectorf & val);
 void PyObj_As_IntArray(PyObject * obj, vectori & val);
 
 /// CPPONLY
-void PyObj_As_Matrix(PyObject * obj, matrix & val);
-
-/// CPPONLY
-void PyObj_As_StrDict(PyObject * obj, strDict & val);
-
-/// CPPONLY
-void PyObj_As_IntDict(PyObject * obj, intDict & val);
-
-/// CPPONLY
-void PyObj_As_TupleDict(PyObject * obj, tupleDict & val);
-
-/// CPPONLY
 bool PyObj_Is_IntNumArray(PyObject * obj);
 
 /// CPPONLY
@@ -806,7 +794,7 @@ public:
 	PyObject * setIntDefDictVar(const string & name, const intDict & val);
 
 	///CPPONLY
-	PyObject * setTupleDictVar(const string & name, const tupleDict & val);
+	PyObject * setTupleDefDictVar(const string & name, const tupleDict & val);
 
 	/// CPPONLY
 	bool getVarAsBool(const string & name, bool nameError = true)
@@ -847,26 +835,6 @@ public:
 		string val;
 
 		PyObj_As_String(getVar(name, nameError), val);
-		return val;
-	}
-
-
-	/// CPPONLY
-	strDict getVarAsStrDict(const string & name, bool nameError = true)
-	{
-		strDict val;
-
-		PyObj_As_StrDict(getVar(name, nameError), val);
-		return val;
-	}
-
-
-	/// CPPONLY
-	intDict getVarAsIntDict(const string & name, bool nameError = true)
-	{
-		intDict val;
-
-		PyObj_As_IntDict(getVar(name, nameError), val);
 		return val;
 	}
 
@@ -982,7 +950,7 @@ public:
 	/// CPPONLY  return bool value
 	bool valueAsBool();
 
-	/// CPPONLY  return int value
+	/// CPPONLY  return dictionary value
 	int valueAsInt();
 
 	/// CPPONLY  return double value
@@ -993,12 +961,6 @@ public:
 
 	/// CPPONLY  return array value
 	vectorf valueAsArray();
-
-	/// CPPONLY  return dictionary value
-	strDict valueAsStrDict();
-
-	/// CPPONLY  return dictionary value
-	intDict valueAsIntDict();
 
 private:
 	/// compile expression into byte code

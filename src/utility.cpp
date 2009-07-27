@@ -94,6 +94,8 @@ extern "C" char * carray_data(PyObject * a);
 
 extern "C" PyObject * PyDefDict_New();
 
+extern "C" bool is_defaultdict(PyTypeObject * type);
+
 extern "C" int initcarray(void);
 
 extern "C" PyTypeObject Arraytype;
@@ -422,37 +424,6 @@ void PyObj_As_String(PyObject * obj, string & val)
 }
 
 
-void PyObj_As_StrDict(PyObject * obj, strDict & val)
-{
-	if (obj == NULL) {
-		val = strDict();
-		return;
-	}
-
-	if (!PyMapping_Check(obj) )
-		throw ValueError("Return value can not be converted to dictionary");
-
-	// get key and vals
-	PyObject * keys = PyMapping_Keys(obj);
-	PyObject * vals = PyMapping_Values(obj);
-
-	// number of items
-	UINT sz = PyList_Size(keys);
-
-	val.clear();
-
-	// assign values
-	for (size_t i = 0; i < sz; ++i) {
-		string k;
-		double v;
-		PyObj_As_String(PyList_GetItem(keys, i), k);
-		PyObj_As_Double(PyList_GetItem(vals, i), v);
-
-		val.insert(strDict::value_type(k, v));
-	}
-}
-
-
 void PyObj_As_Array(PyObject * obj, vectorf & val)
 {
 	if (obj == NULL) {
@@ -494,97 +465,6 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		val.resize(1);
 		PyObj_As_Int(obj, val[0]);
 	}
-}
-
-
-void PyObj_As_Matrix(PyObject * obj, matrix & val)
-{
-	if (obj == NULL) {
-		val = matrix();
-		return;
-	}
-	DBG_ASSERT(PySequence_Check(obj), ValueError, "PyObj_As_Matrix: Expecting a sequence");
-	val.resize(PySequence_Size(obj), vectorf());
-	//
-	for (size_t i = 0; i < val.size(); ++i) {
-		PyObject * item = PySequence_GetItem(obj, i);
-		DBG_ASSERT(PySequence_Check(item), ValueError, "PyObj_As_Matrix: Expecting a nested sequence");
-
-		size_t sz = PySequence_Size(item);
-		val[i].resize(sz);
-		for (size_t j = 0; j < sz; ++j) {
-			PyObject * it = PySequence_GetItem(item, j);
-			PyObj_As_Double(it, val[i][j]);
-			Py_DECREF(it);
-		}
-		Py_DECREF(item);
-	}
-}
-
-
-void PyObj_As_IntDict(PyObject * obj, intDict & val)
-{
-	if (obj == NULL) {
-		val = intDict();
-		return;
-	}
-
-	if (!PyMapping_Check(obj) )
-		throw ValueError("Return value can not be converted to dictionary");
-
-	// get key and vals
-	PyObject * keys = PyMapping_Keys(obj);
-	PyObject * vals = PyMapping_Values(obj);
-
-	// number of items
-	UINT sz = PyList_Size(keys);
-
-	val.clear();
-
-	// assign values
-	for (size_t i = 0; i < sz; ++i) {
-		int k;
-		double v;
-		PyObj_As_Int(PyList_GetItem(keys, i), k);
-		PyObj_As_Double(PyList_GetItem(vals, i), v);
-
-		val.insert(intDict::value_type(k, v));
-	}
-	Py_XDECREF(keys);
-	Py_XDECREF(vals);
-}
-
-
-void PyObj_As_TupleDict(PyObject * obj, tupleDict & val)
-{
-	if (obj == NULL) {
-		val = tupleDict();
-		return;
-	}
-
-	if (!PyMapping_Check(obj) )
-		throw ValueError("Return value can not be converted to dictionary");
-
-	// get key and vals
-	PyObject * keys = PyMapping_Keys(obj);
-	PyObject * vals = PyMapping_Values(obj);
-
-	// number of items
-	UINT sz = PyList_Size(keys);
-
-	val.clear();
-
-	// assign values
-	for (size_t i = 0; i < sz; ++i) {
-		vectori k;
-		double v;
-		PyObj_As_IntArray(PyList_GetItem(keys, i), k);
-		PyObj_As_Double(PyList_GetItem(vals, i), v);
-
-		val.insert(tupleDict::value_type(k, v));
-	}
-	Py_XDECREF(keys);
-	Py_XDECREF(vals);
 }
 
 
@@ -1131,14 +1011,13 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 	return setVar(name, obj);
 }
 
+
 PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict & val)
 {
 	PyObject * obj = PyDefDict_New();
-	cout << "Dict created" << endl;
 	PyObject * u, * v;
 
 	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
-	cout << "set " << i->first << "  " << i->second << endl;
 		PyObject_SetItem(obj,
 			u = PyInt_FromLong(i->first),
 			v = PyFloat_FromDouble(i->second));
@@ -1148,9 +1027,10 @@ PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict 
 	return setVar(name, obj);
 }
 
-PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict & val)
+
+PyObject * SharedVariables::setTupleDefDictVar(const string & name, const tupleDict & val)
 {
-	PyObject * obj = PyDict_New();
+	PyObject * obj = PyDefDict_New();
 	PyObject * u, * v;
 
 	tupleDict::const_iterator it = val.begin();
@@ -1162,7 +1042,7 @@ PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict
 		for (size_t i = 0; i < key.size(); ++i)
 			PyTuple_SetItem(u, i, PyInt_FromLong(key[i]));
 		v = PyFloat_FromDouble(it->second);
-		PyDict_SetItem(obj, u, v);
+		PyObject_SetItem(obj, u, v);
 		Py_XDECREF(u);
 		Py_XDECREF(v);
 	}
@@ -1308,6 +1188,40 @@ PyObject * load_dict(const string & vars, size_t & offset)
 }
 
 
+void save_defdict(string & str, PyObject * args)
+{
+	PyObject * key = 0, * value = 0;
+
+	str += 'D';                                                                       // dictionary
+	Py_ssize_t i = 0;
+	while (PyDict_Next(args, &i, &key, &value)) {
+		saveObj(str, key);
+		saveObj(str, value);
+	}
+	str += 'e';                                                                       // ending of a dictionary
+}
+
+
+PyObject * load_defdict(const string & vars, size_t & offset)
+{
+	// skip 'D'
+	offset++;
+	PyObject * d = PyDefDict_New();
+	while (vars[offset] != 'e') {
+		// get key
+		PyObject * key = loadObj(vars, offset);
+		// get value
+		PyObject * val = loadObj(vars, offset);
+		PyObject_SetItem(d, key, val);
+		// Is this needed???
+		Py_DECREF(key);
+		Py_DECREF(val);
+	}
+	offset++;                                                                         // skip 'e'
+	return d;
+}
+
+
 void save_list(string & str, PyObject * args)
 {
 	str += 'L';                                                                       // dictionary
@@ -1375,35 +1289,6 @@ PyObject * load_tuple(const string & vars, size_t & offset)
 }
 
 
-// can not save or load binary carray.
-/*
-   void save_carray(string& str, PyObject* args)
-   {
-   DBG_ASSERT(carray_type(args) != 'a', ValueError,
-    "Binary carray can not be saved");
-
-   char* d = carray_data(args);
-   size_t len = carray_length(args);
-   str += 'a' + toStr(len) + ' ' + carray_type(args)
- + string(d, d+len*carray_itemsize(args));
-   }
-
-   PyObject* load_carray(const string& vars, size_t& offset)
-   {
-   // skip 'a'
-   size_t lenlen = 0;
-   while( vars[offset+lenlen+1] != ' ' ) lenlen ++;
-   size_t len = atoi( const_cast<char*>(vars.substr(offset+1, lenlen).c_str()));
-   // get type
-   offset += lenlen+2;
-   char type = vars[offset];
-   char * ptr = const_cast<char*>(vars.c_str()) + offset + 1;
-   PyObject* arr = newcarrayobject(type, len, ptr, true);
-   offset += len*carray_itemsize(arr) + 1;
-   return arr;
-   }
- */
-
 void saveObj(string & str, PyObject * args)
 {
 	PyTypeObject * type;
@@ -1428,6 +1313,8 @@ void saveObj(string & str, PyObject * args)
 		save_tuple(str, args);
 	else if (type == &PyFloat_Type)
 		save_float(str, args);
+	else if (is_defaultdict(type))
+		save_float(str, args);
 	else {
 		// some other unknown type
 		DBG_DO(DBG_UTILITY, cout << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
@@ -1441,6 +1328,8 @@ PyObject * loadObj(const string & vars, size_t & offset)
 	switch (vars[offset]) {
 	case 'd':                                                                         //
 		return load_dict(vars, offset);
+	case 'D':
+		return load_defdict(vars, offset);
 	case 'i':
 		return load_int(vars, offset);
 	case 's':
@@ -1697,32 +1586,6 @@ vectorf Expression::valueAsArray()
 		return vectorf();
 	vectorf val;
 	PyObj_As_Array(res, val);
-	Py_XDECREF(res);
-	return val;
-}
-
-
-strDict Expression::valueAsStrDict()
-{
-	PyObject * res = evaluate();
-
-	if (res == NULL)
-		return strDict();
-	strDict val;
-	PyObj_As_StrDict(res, val);
-	Py_XDECREF(res);
-	return val;
-}
-
-
-intDict Expression::valueAsIntDict()
-{
-	PyObject * res = evaluate();
-
-	if (res == NULL)
-		return intDict();
-	intDict val;
-	PyObj_As_IntDict(res, val);
 	Py_XDECREF(res);
 	return val;
 }

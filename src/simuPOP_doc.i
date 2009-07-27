@@ -1053,10 +1053,6 @@ Usage:
 
 %ignore simuPOP::Expression::valueAsArray();
 
-%ignore simuPOP::Expression::valueAsStrDict();
-
-%ignore simuPOP::Expression::valueAsIntDict();
-
 %feature("docstring") simuPOP::floatList "
 
 "; 
@@ -6563,45 +6559,9 @@ Details:
 
 %ignore simuPOP::population::dict(int subPop=-1);
 
+%ignore simuPOP::population::getVars();
+
 %ignore simuPOP::population::setDict(PyObject *dict);
-
-%ignore simuPOP::population::hasVar(const string &name);
-
-%ignore simuPOP::population::removeVar(const string &name);
-
-%ignore simuPOP::population::setBoolVar(const string &name, const bool val);
-
-%ignore simuPOP::population::setIntVar(const string &name, const int val);
-
-%ignore simuPOP::population::setDoubleVar(const string &name, const double val);
-
-%ignore simuPOP::population::setStringVar(const string &name, const string &val);
-
-%ignore simuPOP::population::setIntVectorVar(const string &name, const vectori &val);
-
-%ignore simuPOP::population::setTupleDictVar(const string &name, const tupleDict &val);
-
-%ignore simuPOP::population::setDoubleVectorVar(const string &name, const vectorf &val);
-
-%ignore simuPOP::population::setStrDictVar(const string &name, const strDict &val);
-
-%ignore simuPOP::population::setIntDictVar(const string &name, const intDict &val);
-
-%ignore simuPOP::population::setVar(const string &name, PyObject *val);
-
-%ignore simuPOP::population::getVar(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsBool(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsInt(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsDouble(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsString(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsStrDict(const string &name, bool nameError=true);
-
-%ignore simuPOP::population::getVarAsIntDict(const string &name, bool nameError=true);
 
 %ignore simuPOP::population::varsAsString() const;
 
@@ -8902,7 +8862,9 @@ Usage:
 
 %ignore simuPOP::SharedVariables::setIntDictVar(const string &name, const intDict &val);
 
-%ignore simuPOP::SharedVariables::setTupleDictVar(const string &name, const tupleDict &val);
+%ignore simuPOP::SharedVariables::setIntDefDictVar(const string &name, const intDict &val);
+
+%ignore simuPOP::SharedVariables::setTupleDefDictVar(const string &name, const tupleDict &val);
 
 %ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true);
 
@@ -8911,10 +8873,6 @@ Usage:
 %ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true);
 
 %ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true);
-
-%ignore simuPOP::SharedVariables::getVarAsStrDict(const string &name, bool nameError=true);
-
-%ignore simuPOP::SharedVariables::getVarAsIntDict(const string &name, bool nameError=true);
 
 %feature("docstring") simuPOP::SharedVariables::dict "
 
@@ -10879,14 +10837,6 @@ Details:
 %ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
 
 %ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
-
-%ignore simuPOP::PyObj_As_Matrix(PyObject *obj, matrix &val);
-
-%ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
-
-%ignore simuPOP::PyObj_As_IntDict(PyObject *obj, intDict &val);
-
-%ignore simuPOP::PyObj_As_TupleDict(PyObject *obj, tupleDict &val);
 
 %ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
 

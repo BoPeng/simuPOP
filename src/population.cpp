@@ -1839,10 +1839,10 @@ PyObject * population::vars(vspID vsp)
 	DBG_ASSERT(static_cast<UINT>(vsp.subPop()) < numSubPop(),
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
-	DBG_ASSERT(hasVar("subPop"), ValueError,
+	DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
 		"subPop statistics does not exist yet.");
 
-	PyObject * spObj = getVar("subPop");
+	PyObject * spObj = m_vars.getVar("subPop");
 	// vsp? A tube with (sp, vsp)
 	PyObject * key = NULL;
 	if (vsp.isVirtual())
@@ -1871,10 +1871,10 @@ PyObject * population::dict(int subPop)
 		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
 			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
-		DBG_ASSERT(hasVar("subPop"), ValueError,
+		DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
 			"subPop statistics does not exist yet.");
 
-		PyObject * spObj = getVar("subPop");
+		PyObject * spObj = m_vars.getVar("subPop");
 		spObj = PyList_GetItem(spObj, subPop);
 
 		DBG_ASSERT(spObj != NULL, SystemError,

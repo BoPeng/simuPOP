@@ -1307,6 +1307,11 @@ PyObject * PyDefDict_New()
 }
 
 
+bool is_defdict(PyTypeObject * type)
+{
+	return type == &defdict_type;
+}
+
 // we do not import or export hings,
 // carray is defined within simuPOP.
 /// CPPONLY
