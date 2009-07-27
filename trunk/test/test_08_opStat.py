@@ -114,6 +114,16 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars([1, 1]).numOfUnaffected, 350)
 
+    def testDefDict(self):
+        'Testing the default dictionary feature of statistics'
+        pop = population(size=1000, loci=[10])
+        InitByFreq(pop, [0, 0.2, 0.8])
+        Stat(pop, alleleFreq=range(10))
+        if AlleleType == 'binary':
+            self.assertEqual(pop.dvars().alleleFreq.keys(), (1))
+        else:
+            self.assertEqual(pop.dvars().alleleFreq.keys(), (1, 2))
+
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
         pop = population(size=[500,100,1000], ploidy=2, loci = [1])

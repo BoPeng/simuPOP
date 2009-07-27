@@ -595,13 +595,13 @@ bool statAlleleFreq::apply(population & pop)
 			// output variable.
 #ifdef LONGALLELE
 			if (allAlleles != 0 && m_vars.contains(AlleleNum_sp_String))
-				pop.setIntDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
+				pop.setIntDefDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
 			if (allAlleles != 0 && m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= allAlleles;
-				pop.setIntDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", alleles);
+				pop.setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", alleles);
 			}
 #else
 			if (allAlleles != 0 && m_vars.contains(AlleleNum_sp_String)) {
@@ -610,7 +610,7 @@ bool statAlleleFreq::apply(population & pop)
                     d[0] = alleles[0];
                 if (alleles[1] != 0)
                     d[1] = alleles[1];
-				pop.setIntDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", d);
+				pop.setIntDefDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", d);
 			}
             if (allAlleles != 0 && m_vars.contains(AlleleFreq_sp_String)) {
                 intDict d;
@@ -618,7 +618,7 @@ bool statAlleleFreq::apply(population & pop)
                     d[0] = alleles[0] / allAlleles;
                 if (alleles[1] != 0)
                     d[1] = alleles[1] / allAlleles;
-				pop.setIntDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", d);
+				pop.setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", d);
 			}
 #endif
 		}
@@ -629,7 +629,7 @@ bool statAlleleFreq::apply(population & pop)
 	if (m_vars.contains(AlleleNum_String)) {
 		pop.removeVar(AlleleNum_String);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx)
-			pop.setIntDictVar(string(AlleleNum_String) + "{" + toStr(m_loci[idx]) + "}",
+			pop.setIntDefDictVar(string(AlleleNum_String) + "{" + toStr(m_loci[idx]) + "}",
 				alleleCnt[idx]);
 	}
 	if (m_vars.contains(AlleleFreq_String)) {
@@ -641,7 +641,7 @@ bool statAlleleFreq::apply(population & pop)
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= allAllelesCnt[idx];
 			}
-			pop.setIntDictVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
+			pop.setIntDefDictVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
 				alleleCnt[idx]);	
 		}
 	}

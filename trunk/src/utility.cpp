@@ -84,15 +84,17 @@ extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
 extern "C" bool is_carrayobject(PyObject *);
 
-extern "C" int    carray_length(PyObject * a);
+extern "C" int carray_length(PyObject * a);
 
-extern "C" int    carray_itemsize(PyObject * a);
+extern "C" int carray_itemsize(PyObject * a);
 
-extern "C" char   carray_type(PyObject * a);
+extern "C" char carray_type(PyObject * a);
 
 extern "C" char * carray_data(PyObject * a);
 
-extern "C" void initcarray(void);
+extern "C" PyObject * PyDefDict_New();
+
+extern "C" int initcarray(void);
 
 extern "C" PyTypeObject Arraytype;
 
@@ -1129,6 +1131,22 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 	return setVar(name, obj);
 }
 
+PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict & val)
+{
+	PyObject * obj = PyDefDict_New();
+	cout << "Dict created" << endl;
+	PyObject * u, * v;
+
+	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
+	cout << "set " << i->first << "  " << i->second << endl;
+		PyObject_SetItem(obj,
+			u = PyInt_FromLong(i->first),
+			v = PyFloat_FromDouble(i->second));
+		Py_XDECREF(u);
+		Py_XDECREF(v);
+	}
+	return setVar(name, obj);
+}
 
 PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict & val)
 {
@@ -3488,7 +3506,8 @@ bool initialize()
 		throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
     // load carray function and type
-    initcarray();
+    if (initcarray() < 0)
+		throw SystemError("Failed to initialize carray and defaultdict types");
 
     // set gsl error handler
     gsl_set_error_handler(&gsl_error_handler);
@@ -3497,7 +3516,6 @@ bool initialize()
 #  ifdef BINARYALLELE
     // binary level genotype copy is compiler dependent and may
     // fail on some systems. Such a test will make sure the binary
-    // library work fine.
     testCopyGenotype();
 #  endif
 #endif
