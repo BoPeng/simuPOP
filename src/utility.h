@@ -803,6 +803,9 @@ public:
 	PyObject * setIntDictVar(const string & name, const intDict & val);
 
 	///CPPONLY
+	PyObject * setIntDefDictVar(const string & name, const intDict & val);
+
+	///CPPONLY
 	PyObject * setTupleDictVar(const string & name, const tupleDict & val);
 
 	/// CPPONLY

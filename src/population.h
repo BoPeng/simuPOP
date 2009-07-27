@@ -1367,13 +1367,17 @@ public:
 		return m_vars.setStrDictVar(name, val);
 	}
 
-
 	/// CPPONLY
 	PyObject * setIntDictVar(const string & name, const intDict & val)
 	{
 		return m_vars.setIntDictVar(name, val);
 	}
 
+	/// CPPONLY
+	PyObject * setIntDefDictVar(const string & name, const intDict & val)
+	{
+		return m_vars.setIntDefDictVar(name, val);
+	}
 
 	/// CPPONLY
 	PyObject * setVar(const string & name, PyObject * val)
