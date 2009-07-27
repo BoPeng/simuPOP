@@ -1291,147 +1291,17 @@ public:
 	PyObject * dict(int subPop = -1);
 
 	/// CPPONLY
+	SharedVariables & getVars()
+	{
+		return m_vars;
+	}
+
+
+	/// CPPONLY
 	void setDict(PyObject * dict)
 	{
 		DBG_ASSERT(dict != NULL, SystemError, "Dictionary is empty");
 		m_vars.setDict(dict);
-	}
-
-
-	/// CPPONLY
-	bool hasVar(const string & name)
-	{
-		return m_vars.hasVar(name);
-	}
-
-
-	/// CPPONLY
-	void removeVar(const string & name)
-	{
-		m_vars.removeVar(name);
-	}
-
-
-	/// CPPONLY
-	PyObject * setBoolVar(const string & name, const bool val)
-	{
-		return m_vars.setBoolVar(name, val);
-	}
-
-
-	/// CPPONLY
-	PyObject * setIntVar(const string & name, const int val)
-	{
-		return m_vars.setIntVar(name, val);
-	}
-
-
-	/// CPPONLY
-	PyObject * setDoubleVar(const string & name, const double val)
-	{
-		return m_vars.setDoubleVar(name, val);
-	}
-
-
-	/// CPPONLY
-	PyObject * setStringVar(const string & name, const string & val)
-	{
-		return m_vars.setStringVar(name, val);
-	}
-
-
-	///CPPONLY
-	PyObject * setIntVectorVar(const string & name, const vectori & val)
-	{
-		return m_vars.setIntVectorVar(name, val);
-	}
-
-
-	///CPPONLY
-	PyObject * setTupleDictVar(const string & name, const tupleDict & val)
-	{
-		return m_vars.setTupleDictVar(name, val);
-	}
-
-
-	///CPPONLY
-	PyObject * setDoubleVectorVar(const string & name, const vectorf & val)
-	{
-		return m_vars.setDoubleVectorVar(name, val);
-	}
-
-
-	/// CPPONLY
-	PyObject * setStrDictVar(const string & name, const strDict & val)
-	{
-		return m_vars.setStrDictVar(name, val);
-	}
-
-	/// CPPONLY
-	PyObject * setIntDictVar(const string & name, const intDict & val)
-	{
-		return m_vars.setIntDictVar(name, val);
-	}
-
-	/// CPPONLY
-	PyObject * setIntDefDictVar(const string & name, const intDict & val)
-	{
-		return m_vars.setIntDefDictVar(name, val);
-	}
-
-	/// CPPONLY
-	PyObject * setVar(const string & name, PyObject * val)
-	{
-		return m_vars.setVar(name, val);
-	}
-
-
-	/// CPPONLY
-	PyObject * getVar(const string & name, bool nameError = true)
-	{
-		return m_vars.getVar(name, nameError);
-	}
-
-
-	/// CPPONLY
-	bool getVarAsBool(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsBool(name, nameError);
-	}
-
-
-	/// CPPONLY
-	int getVarAsInt(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsInt(name, nameError);
-	}
-
-
-	/// CPPONLY
-	double getVarAsDouble(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsDouble(name, nameError);
-	}
-
-
-	/// CPPONLY
-	string getVarAsString(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsString(name, nameError);
-	}
-
-
-	/// CPPONLY
-	strDict getVarAsStrDict(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsStrDict(name, nameError);
-	}
-
-
-	/// CPPONLY
-	intDict getVarAsIntDict(const string & name, bool nameError = true)
-	{
-		return m_vars.getVarAsIntDict(name, nameError);
 	}
 
 

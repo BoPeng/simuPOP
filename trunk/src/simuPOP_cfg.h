@@ -179,12 +179,12 @@ enum ConversionMode {
 
 // For pedigree tracing
 enum RelativeType {
-	Self = 50,               // individual himself or herself.
-	Offspring = 51,          // All offspring with all spouses (if there are more than one spouse)
-	Spouse = 52,             // All spouses (with at least one offspring)
-	FullSibling = 53,        // Siblings who share two parents
-	Sibling = 54,            // Siblings who share at least one parent
-	SpouseAndOffspring = 55, // One spouse and their common offspring.
+	Self = 50,                  // individual himself or herself.
+	Offspring = 51,             // All offspring with all spouses (if there are more than one spouse)
+	Spouse = 52,                // All spouses (with at least one offspring)
+	FullSibling = 53,           // Siblings who share two parents
+	Sibling = 54,               // Siblings who share at least one parent
+	SpouseAndOffspring = 55,    // One spouse and their common offspring.
 };
 
 // For pedigree tracing
@@ -318,6 +318,7 @@ public:
 	Exception(const string & msg) : m_msg(msg)
 	{
 	}
+
 
 	/// return error message
 	const char * message()

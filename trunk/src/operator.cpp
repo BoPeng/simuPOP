@@ -30,14 +30,14 @@ namespace simuPOP {
 subPopList::subPopList(const vectorvsp & subPops)
 	: m_subPops(subPops), m_expand(false)
 {
-	if (m_subPops.size() == 1 && ! m_subPops[0].valid()) {
+	if (m_subPops.size() == 1 && !m_subPops[0].valid()) {
 		m_subPops.clear();
 		m_expand = true;
 	}
-    for (size_t i = 0; i < m_subPops.size(); ++i) {
-        DBG_ASSERT(m_subPops[i].valid(), ValueError,
-            "Invalid subpopulation ID");
-    }
+	for (size_t i = 0; i < m_subPops.size(); ++i) {
+		DBG_ASSERT(m_subPops[i].valid(), ValueError,
+			"Invalid subpopulation ID");
+	}
 }
 
 
