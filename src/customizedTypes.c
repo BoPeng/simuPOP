@@ -1083,15 +1083,16 @@ defdict_init(PyObject *self, PyObject *args, PyObject *kwds)
 }
 
 PyDoc_STRVAR(defdict_doc,
-"defdict(default_factory) --> dict with default factory\n\
+"defdict() --> dict with default value 0\n\
 \n\
-The default factory is called without arguments to produce\n\
-a new value when a key is not present, in __getitem__ only.\n\
 A defdict compares equal to a dict with the same items.\n\
 ");
 
 /* See comment in xxsubtype.c */
 #define DEFERRED_ADDRESS(ADDR) 0
+
+// will change one of them to my...
+static PyMappingMethods defdict_as_mapping = *PyDict_Type.tp_as_mapping;
 
 static PyTypeObject defdict_type = {
 	PyObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type))
@@ -1108,7 +1109,7 @@ static PyTypeObject defdict_type = {
 	(reprfunc)defdict_repr,		/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
+	&defdict_as_mapping,		/* tp_as_mapping */
 	0,	       			/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
@@ -1151,7 +1152,6 @@ PyObject * PyDefDict_New()
 		return PyErr_NoMemory();
 	}
 	// initialize this object (call PyDict_Type.tp_init)
-	Py_INCREF(&PyInt_Type);
 	PyObject * args = PyTuple_New(0);
 	PyDict_Type.tp_init((PyObject*)obj, args, NULL);
 	Py_DECREF(args);
@@ -1178,9 +1178,8 @@ int initCustomizedTypes(void)
 	//
     defdict_type.ob_type = &PyType_Type;
 	defdict_type.tp_base = &PyDict_Type;
-	defdict_type.tp_as_mapping = PyDict_Type.tp_as_mapping;
-	if (defdict_type.tp_as_mapping != NULL)
 	defdict_type.tp_as_mapping->mp_subscript = (binaryfunc)dict_subscript;
+
 	if (PyType_Ready(&defdict_type) < 0)
 		return -1;
 	//Py_INCREF(&defdict_type);

@@ -219,7 +219,8 @@ class TestUtility(unittest.TestCase):
     def testMemoryLeakLoadPopulation(self):
         'Testing if loadPopulation leaks memory'
         # run this and see if memory usage goes up continuously
-        pop = population(100, loci=[1000]*10)
+        pop = population(100, loci=[400])
+        InitByFreq(pop, [0.2, 0.8])
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         pop.save('test.bin')
         for i in range(4):

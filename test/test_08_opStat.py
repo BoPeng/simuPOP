@@ -123,7 +123,6 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1])
         else:
             self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1, 2])
-        print 'Factory', pop.dvars().alleleFreq[0]
         self.assertEqual(pop.dvars().alleleFreq[0][0], 0)
 
     def testAlleleFreq(self):

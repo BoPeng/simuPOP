@@ -94,7 +94,7 @@ extern "C" char * carray_data(PyObject * a);
 
 extern "C" PyObject * PyDefDict_New();
 
-extern "C" bool is_defdict(PyTypeObject * type);
+extern "C" bool is_defdict(PyObject * type);
 
 extern "C" int initCustomizedTypes(void);
 
@@ -1313,7 +1313,7 @@ void saveObj(string & str, PyObject * args)
 		save_tuple(str, args);
 	else if (type == &PyFloat_Type)
 		save_float(str, args);
-	else if (is_defdict(type))
+	else if (is_defdict(args))
 		save_float(str, args);
 	else {
 		// some other unknown type
