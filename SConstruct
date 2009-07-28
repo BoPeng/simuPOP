@@ -201,7 +201,7 @@ for mod in targets:
     env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
         ['src/simuPOP_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
         HEADER_FILES)
-    env.Depends('src/utility_%s.cpp' % mod, 'src/arraymodule.c')
+    env.Depends('src/utility_%s.cpp' % mod, 'src/customizedTypes.c')
     #
     Alias(mod, lib)
     Alias('all', lib)

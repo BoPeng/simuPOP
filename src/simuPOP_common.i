@@ -60,7 +60,7 @@
 %{
 extern "C"
 {
-#include "arraymodule.c"
+#include "customizedTypes.c"
 }
 %}
 

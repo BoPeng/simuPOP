@@ -600,24 +600,22 @@ bool statAlleleFreq::apply(population & pop)
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
-					cnt->second /= allAlleles;
+					cnt->second /= static_cast<double>(allAlleles);
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", alleles);
 			}
 #else
 			if (allAlleles != 0 && m_vars.contains(AlleleNum_sp_String)) {
 				intDict d;
-				if (alleles[0] != 0)
-					d[0] = alleles[0];
-				if (alleles[1] != 0)
-					d[1] = alleles[1];
+			    for (size_t i = 0; i < alleles.size(); ++i)
+			    	if (alleles[i] != 0)
+    					d[i] = alleles[i];
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", d);
 			}
 			if (allAlleles != 0 && m_vars.contains(AlleleFreq_sp_String)) {
 				intDict d;
-				if (alleles[0] != 0)
-					d[0] = alleles[0] / allAlleles;
-				if (alleles[1] != 0)
-					d[1] = alleles[1] / allAlleles;
+			    for (size_t i = 0; i < alleles.size(); ++i)
+				    if (alleles[i] != 0)
+					    d[i] = alleles[i] / static_cast<double>(allAlleles);
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", d);
 			}
 #endif
@@ -639,7 +637,7 @@ bool statAlleleFreq::apply(population & pop)
 				intDict::iterator cnt = alleleCnt[idx].begin();
 				intDict::iterator cntEnd = alleleCnt[idx].end();
 				for ( ; cnt != cntEnd; ++cnt)
-					cnt->second /= allAllelesCnt[idx];
+					cnt->second /= static_cast<double>(allAllelesCnt[idx]);
 			}
 			pop.getVars().setIntDefDictVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
 				alleleCnt[idx]);

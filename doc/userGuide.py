@@ -21,18 +21,12 @@ if not os.path.isdir('log'):
     print "Failed to make output directory log"
     sys.exit(1)
 
-#
-
-#file log/standard.log
 from simuPOP import *
-pop = population(10, loci=[2])
-pop.locusPos(10)
-pop.individual(20).setAllele(1, 0)
-#end
 
+#
 # make sure each run generates the same output to avoid unnecessary
 # documentation changes.
-rng().setSeed(12345)
+GetRNG().setSeed(12345)
 
 #file log/importSimuPOP.log
 import simuOpt
@@ -2107,7 +2101,34 @@ simu.evolve(
 )
 #end
 
-#file log/statGenoHaploFreq.log
+#file log/statGenoFreq.log
+pop = population(100, loci=[3])
+InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
+InitByFreq(pop, [0.1, 0.9], loci=2)
+Stat(pop, genoFreq=[0, 1, 2])
+print 'Available genotypes:', stat.genoFreq.keys()
+print 'Genotype frequency:'
+for i in range(3):
+    for j in range(2):
+        print '%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[(0,2)][(i,j)])
+
+#end
+
+#file log/statHeteroFreq.log
+pop = population(100, loci=[0])
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = initByFreq([0.5, 0.5]),
+    ops = [
+        stat(heteroFreq=0, step=10),
+        pyEval(r"'Gen: %d, HeteroFreq: %.2f\n' % (gen, heteroFreq[0]", step=10)
+    ],
+    gen = 50
+)
+
+#end
+
+#file log/statHaploFreq.log
 pop = population(100, loci=[3])
 InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
 InitByFreq(pop, [0.2, 0.8], loci=2)
@@ -2116,6 +2137,7 @@ Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
 from simuUtil import ViewVars
 ViewVars(pop.vars(), gui=False)
 #end
+
 
 #file log/statInfo.log
 import random
@@ -2935,4 +2957,12 @@ def peneFunc(table):
 PyPenetrance(pop, loci=(0, 1, 2),
     func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
 #end
+
+#file log/standard.log
+from simuPOP import *
+pop = population(10, loci=[2])
+pop.locusPos(10)
+pop.individual(20).setAllele(1, 0)
+#end
+
 

@@ -1,5 +1,5 @@
 /**
- *  $File: arraymodule.c $
+ *  $File: customizedTypes.c $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -24,7 +24,9 @@
  */
 
 
-/* this is modified from arraymodule.c from the standard python distribution. */
+/* this file defined carrary and defdict datatypes that are customzied from
+   corresponding types defined in arraymodule.c and collections.c in the
+   standard python distribution. */
 
 #include "Python.h"
 #include "structmember.h"
@@ -1001,7 +1003,7 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 
 
 
-/* defaultdict type *********************************************************/
+/* defdict type *********************************************************/
 
 typedef struct {
 	PyDictObject dict;
@@ -1009,37 +1011,6 @@ typedef struct {
 } defdictobject;
 
 //static PyTypeObject defdict_type; /* Forward */
-
-PyDoc_STRVAR(defdict_missing_doc,
-"__missing__(key) # Called by __getitem__ for missing key; pseudo-code:\n\
-  if self.default_factory is None: raise KeyError((key,))\n\
-  self[key] = value = self.default_factory()\n\
-  return value\n\
-");
-
-static PyObject *
-defdict_missing(defdictobject *dd, PyObject *key)
-{
-	PyObject *factory = dd->default_factory;
-	PyObject *value;
-	if (factory == NULL || factory == Py_None) {
-		/* XXX Call dict.__missing__(key) */
-		PyObject *tup;
-		tup = PyTuple_Pack(1, key);
-		if (!tup) return NULL;
-		PyErr_SetObject(PyExc_KeyError, tup);
-		Py_DECREF(tup);
-		return NULL;
-	}
-	value = PyEval_CallObject(factory, NULL);
-	if (value == NULL)
-		return value;
-	if (PyObject_SetItem((PyObject *)dd, key, value) < 0) {
-		Py_DECREF(value);
-		return NULL;
-	}
-	return value;
-}
 
 PyDoc_STRVAR(defdict_copy_doc, "D.copy() -> a shallow copy of D.");
 
@@ -1100,10 +1071,42 @@ defdict_reduce(defdictobject *dd)
 	return result;
 }
 
+
+static PyObject *
+dict_subscript(PyDictObject *mp, register PyObject *key)
+{
+	PyObject *v;
+	long hash;
+	PyDictEntry *ep;
+	assert(mp->ma_table != NULL);
+	if (!PyString_CheckExact(key) ||
+	    (hash = ((PyStringObject *) key)->ob_shash) == -1) {
+		hash = PyObject_Hash(key);
+		if (hash == -1)
+			return NULL;
+	}
+	ep = (mp->ma_lookup)(mp, key, hash);
+	if (ep == NULL)
+		return NULL;
+	v = ep->me_value;
+	if (v == NULL) {
+		if (!PyDict_CheckExact(mp))
+			return PyInt_FromLong(0);
+		return NULL;
+	}
+	else
+		Py_INCREF(v);
+	return v;
+}
+
+
 PyDoc_STRVAR(reduce_doc, "Return state information for pickling.");
+
+PyDoc_STRVAR(getitem__doc__, "x.__getitem__(y) <==> x[y]");
+
 static PyMethodDef defdict_methods[] = {
-	{"__missing__", (PyCFunction)defdict_missing, METH_O,
-	 defdict_missing_doc},
+	/*{"__getitem__", (PyCFunction)dict_subscript,	METH_O | METH_COEXIST,
+	 getitem__doc__}, */
 	{"copy", (PyCFunction)defdict_copy, METH_NOARGS,
 	 defdict_copy_doc},
 	{"__copy__", (PyCFunction)defdict_copy, METH_NOARGS,
@@ -1132,7 +1135,7 @@ static int
 defdict_print(defdictobject *dd, FILE *fp, int flags)
 {
 	int sts;
-	fprintf(fp, "defaultdict(");
+	fprintf(fp, "defdict(");
 	if (dd->default_factory == NULL)
 		fprintf(fp, "None");
 	else {
@@ -1171,7 +1174,7 @@ defdict_repr(defdictobject *dd)
 		Py_DECREF(baserepr);
 		return NULL;
 	}
-	result = PyString_FromFormat("defaultdict(%s, %s)",
+	result = PyString_FromFormat("defdict(%s, %s)",
 				     PyString_AS_STRING(defrepr),
 				     PyString_AS_STRING(baserepr));
 	Py_DECREF(defrepr);
@@ -1196,9 +1199,6 @@ defdict_tp_clear(defdictobject *dd)
 static int
 defdict_init(PyObject *self, PyObject *args, PyObject *kwds)
 {
-    PyErr_SetString(PyExc_TypeError,
-        "Can not create defdict object from python.");
-	return -1;
 	defdictobject *dd = (defdictobject *)self;
 	PyObject *olddefault = dd->default_factory;
 	PyObject *newdefault = NULL;
@@ -1229,11 +1229,11 @@ defdict_init(PyObject *self, PyObject *args, PyObject *kwds)
 }
 
 PyDoc_STRVAR(defdict_doc,
-"defaultdict(default_factory) --> dict with default factory\n\
+"defdict(default_factory) --> dict with default factory\n\
 \n\
 The default factory is called without arguments to produce\n\
 a new value when a key is not present, in __getitem__ only.\n\
-A defaultdict compares equal to a dict with the same items.\n\
+A defdict compares equal to a dict with the same items.\n\
 ");
 
 /* See comment in xxsubtype.c */
@@ -1242,7 +1242,7 @@ A defaultdict compares equal to a dict with the same items.\n\
 static PyTypeObject defdict_type = {
 	PyObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type))
 	0,				/* ob_size */
-	"collections.defaultdict",	/* tp_name */
+	"collections.defdict",	/* tp_name */
 	sizeof(defdictobject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
@@ -1284,13 +1284,13 @@ static PyTypeObject defdict_type = {
 	PyObject_GC_Del,		/* tp_free */
 };
 
+
 PyObject * PyDefDict_New()
 {
 	defdictobject * obj;
 
-	// This is almost a hack, but I do not know how to create a defdict
-	// object that calls dict_new properly.
-	obj = (defdictobject*)PyDict_Type.tp_new((PyTypeObject*)(&defdict_type), NULL, NULL);
+	// This should call PyDict_Type.tp_new and create an object
+	obj = (defdictobject*)defdict_type.tp_new((PyTypeObject*)(&defdict_type), NULL, NULL);
 	if (obj == NULL)
 	{
 		PyObject_Del(obj);
@@ -1307,7 +1307,7 @@ PyObject * PyDefDict_New()
 }
 
 
-bool is_defaultdict(PyTypeObject * type)
+bool is_defdict(PyTypeObject * type)
 {
 	return type == &defdict_type;
 }
@@ -1315,7 +1315,7 @@ bool is_defaultdict(PyTypeObject * type)
 // we do not import or export hings,
 // carray is defined within simuPOP.
 /// CPPONLY
-int initcarray(void)
+int initCustomizedTypes(void)
 {
     // this will be done in PyType_Ready() is your read this
     // from python reference manual.
@@ -1325,6 +1325,7 @@ int initcarray(void)
 	//
     defdict_type.ob_type = &PyType_Type;
 	defdict_type.tp_base = &PyDict_Type;
+	//defdict_type.tp_as_mapping->mp_subscript = (binaryfunc)dict_subscript;
 	if (PyType_Ready(&defdict_type) < 0)
 		return -1;
 	//Py_INCREF(&defdict_type);

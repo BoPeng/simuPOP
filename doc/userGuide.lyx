@@ -13373,7 +13373,7 @@ The
 \family typewriter
 defaultdict
 \family default
- datatype
+ datatype (Python >= 2.5)
 \end_layout
 
 \begin_layout Standard
@@ -13445,6 +13445,29 @@ alleleFreq[5][100]
 alleleFreq[5][1] == 0
 \family default
  to test the existence of alleles, haplotypes and haplotypes.
+\end_layout
+
+\begin_layout Note
+The default dict object behaves slight different from the Python defaultdict
+ in that a key will not be added to the dictionary with the dict[key] operation.
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Note
+Because Python 2.4 does not support defaultdict, this feature is only available
+ in Python version 2.5 and later.
+ The variables are still shown as type 
+\family typewriter
+defaultdict
+\family default
+ in Python 2.4, but an 
+\family typewriter
+KeyError
+\family default
+ will be raised if a key does not exist.
 \end_layout
 
 \begin_layout Subsection
@@ -13563,24 +13586,11 @@ lstparams "caption={Count individuals by sex and/or affection status},label={sta
 \end_layout
 
 \begin_layout Subsection
-Allele, genotype, heterozygotes, haplotype count and frequency
+Allele count and frequency
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-stat
-\family default
- operator can be used to count alleles, genotypes, homozygotes and heterozygotes
-, and haplotypes of a population, using parameters 
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-alleleFreq
-\series default
-: Parameter 
+Parameter 
 \emph on
 alleleFreq
 \emph default
@@ -13616,150 +13626,24 @@ alleleNum_sp
 vars
 \emph default
 , these variables will be set for all or specified (virtual) subpopulations.
- At the Python level, 
-\family typewriter
-alleleNum
-\family default
- and 
-\family typewriter
-alleleFreq
-\family default
- are dictionaries with loci indexes as keys, and 
-\family typewriter
-alleleNum[loc]
-\family default
- and 
+ 
+\series bold
+At the Python level, these variables of dictionaries of default dictionaries.
+
+\series default
+ That is to say, 
 \family typewriter
 alleleFreq[loc]
 \family default
- are lists.
- The length of variables 
+ at a unspecified locus will raise a 
 \family typewriter
-alleleNum[loc]
+KeyError
 \family default
- and 
+ exception, and 
 \family typewriter
-alleleFreq[loc]
+alleleFreq[loc][allele]
 \family default
- are determined by available alleles, but are guaranteed to have at least
- two elements (
-\family typewriter
-alleleFreq[loc][1]
-\family default
- will exist even if there is no allele 1 in the population).
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-genoFreq
-\series default
-: Genotype frequency is the same as allele frequency in a haploid population
- because individual genotype consists of only one allele at each locus.
- 
-\series bold
-In a diploid population, a genotype is represented as an ordered pair of
- alleles 
-\series default
-(a tuple of two numbers) such as 
-\family typewriter
-(1, 2)
-\family default
- where 1 and 2 are alleles at a locus on, respectively, the first and second
- homologous copies of chromosomes.
- Note that 
-\family typewriter
-(1, 2)
-\family default
- and 
-\family typewriter
-(2, 1)
-\family default
- are different genotypes.
- Parameter 
-\emph on
-genoFreq
-\emph default
- accepts a list of loci at which genotype counts and frequencies will be
- calculated and outputted.
- Parameter 
-\emph on
-haploFreq
-\emph default
- accept one or more lists of loci specifying one or more haplotype sites
- (e.g.
- 
-\family typewriter
-haploFreq=[(0,1,2), (2,3)]
-\family default
- specifies two haplotype sites).
- The results are saved to dictionaries of genotypes or haplotypes, within
- a dictionary indexed by locus index (for 
-\family typewriter
-genoFreq
-\family default
-) or haplotype site (for 
-\family typewriter
-haploFreq
-\family default
-).
- For example, 
-\family typewriter
-haploFreq[(0,1,2)][(0,1,1)]
-\family default
- will be the frequency of haplotype 
-\family typewriter
-(0, 1, 1)
-\family default
- at loci 
-\family typewriter
-(0, 1, 2)
-\family default
-, if such a haplotype exists in the population.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-heteroFreq
-\series default
-: In a diploid population, a heterozygote is a genotype with two different
- alleles and a homozygote is a genotype with two identical alleles.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-haploFreq
-\series default
-: Haplotypes refer to alleles on the same homologous copy of a chromosome
- at specified loci.
- For example, an diploid individual can have haplotypes 
-\family typewriter
-(0, 2, 1)
-\family default
- and 
-\family typewriter
-(0, 1, 1)
-\family default
- at loci 
-\family typewriter
-(2, 3, 5)
-\family default
- if he or she has genotype 
-\family typewriter
-(0, 0)
-\family default
-, 
-\family typewriter
-(2, 1)
-\family default
- and 
-\family typewriter
-(1,1)
-\family default
- at loci 2, 3 and 5 respectively.
+ of an invalid allele will return 0.
 \end_layout
 
 \begin_layout Standard
@@ -13770,7 +13654,7 @@ reference "statAlleleFreq"
 
 \end_inset
 
- demonstrates an advanced usage of this statistic.
+ demonstrates an advanced usage of allele counting statistic.
  In this example, two virtual subpopulations are defined by individual affection
  status.
  During evolution, a multi-allele penetrance operator is used to determine
@@ -13802,11 +13686,56 @@ lstparams "caption={Calculate allele frequency in affected and unaffected indivi
 
 \end_layout
 
+\begin_layout Subsection
+Genotype count and frequency
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\emph on
+genoFreq
+\emph default
+ accepts a list of loci at which genotype counts and frequencies are calculated
+ and outputted.
+ A genotype is represented as a tuple of alleles at a locus.
+ The length of the tupples
+\series bold
+ 
+\series default
+is determined by the number of homologous copy of chromosomes in a population.
+ For example, genotypes in a diploid population are ordered pairs such as
+ 
+\family typewriter
+(1, 2)
+\family default
+ where 1 and 2 are alleles at a locus on, respectively, the first and second
+ homologous copies of chromosomes.
+ 
+\family typewriter
+(1, 2)
+\family default
+ and 
+\family typewriter
+(2, 1)
+\family default
+ are different genotypes.
+ This statistic sets dictionaries (with locus indexes as keys) of default
+ dictionaries (with genotypes as keys) 
+\family typewriter
+genoFreq
+\family default
+ and 
+\family typewriter
+genoNum
+\family default
+.
+\end_layout
+
 \begin_layout Standard
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "statGenoHaploFreq"
+reference "statGenoFreq"
 
 \end_inset
 
@@ -13827,8 +13756,125 @@ stat
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/statGenoHaploFreq.log"
-lstparams "caption={Counting genotypes and haplotypes in a population},label={statGenoHaploFreq}"
+filename "log/statGenoFreq.log"
+lstparams "caption={Counting genotypes in a population},label={statGenoFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Homozygote and heterozygote count and frequency
+\end_layout
+
+\begin_layout Standard
+In a diploid population, a heterozygote is a genotype with two different
+ alleles and a homozygote is a genotype with two identical alleles.
+ Parameter 
+\family typewriter
+heteroFreq
+\family default
+ accepts a list of loci and outputs variables 
+\family typewriter
+heteroFreq
+\family default
+ which is a dictionary of heterozygote frequencies at specfied loci.
+ Optional variables 
+\family typewriter
+heteroNum
+\family default
+, 
+\family typewriter
+homoFreq
+\family default
+ and 
+\family typewriter
+homoNum
+\family default
+ can be outputted for all and each (virtual) subpopulations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statHeteroFreq.log"
+lstparams "caption={Counting homozygotes and heterozygotes in a population},label={statHeteroFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Haplotype count and frequency
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+haploFreq
+\series default
+: Haplotypes refer to alleles on the same homologous copy of a chromosome
+ at specified loci.
+ For example, an diploid individual can have haplotypes 
+\family typewriter
+(0, 2, 1)
+\family default
+ and 
+\family typewriter
+(0, 1, 1)
+\family default
+ at loci 
+\family typewriter
+(2, 3, 5)
+\family default
+ if he or she has genotype 
+\family typewriter
+(0, 0)
+\family default
+, 
+\family typewriter
+(2, 1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ at loci 2, 3 and 5 respectively.
+ Parameter 
+\emph on
+haploFreq
+\emph default
+ accept one or more lists of loci specifying one or more haplotype sites
+ (e.g.
+ 
+\family typewriter
+haploFreq=[(0,1,2), (2,3)]
+\family default
+ specifies two haplotype sites).
+ The results are saved to dictionaries (with haplotype site as keys) of
+ default dictionaries (with haplotype as keys).
+ For example, 
+\family typewriter
+haploFreq[(0,1,2)][(0,1,1)]
+\family default
+ will be the frequency of haplotype 
+\family typewriter
+(0, 1, 1)
+\family default
+ at loci 
+\family typewriter
+(0, 1, 2)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statHaploFreq.log"
+lstparams "caption={Counting haplotypes in a population},label={statHaploFreq}"
 
 \end_inset
 
