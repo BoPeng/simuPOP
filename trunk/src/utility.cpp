@@ -76,8 +76,8 @@ using boost::cmatch;
 #define MacroQuote_(x) # x
 #define MacroQuote(x) MacroQuote_(x)
 
-// these functions are defined in arraymodule.c which is included
-// in simuPOP_wrap.cpp CPPONLY
+// these functions are defined in customizedTypes.c which is included
+// in simuPOP_wrap.cpp
 extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
 
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
@@ -94,9 +94,9 @@ extern "C" char * carray_data(PyObject * a);
 
 extern "C" PyObject * PyDefDict_New();
 
-extern "C" bool is_defaultdict(PyTypeObject * type);
+extern "C" bool is_defdict(PyTypeObject * type);
 
-extern "C" int initcarray(void);
+extern "C" int initCustomizedTypes(void);
 
 extern "C" PyTypeObject Arraytype;
 
@@ -1313,7 +1313,7 @@ void saveObj(string & str, PyObject * args)
 		save_tuple(str, args);
 	else if (type == &PyFloat_Type)
 		save_float(str, args);
-	else if (is_defaultdict(type))
+	else if (is_defdict(type))
 		save_float(str, args);
 	else {
 		// some other unknown type
@@ -3369,8 +3369,8 @@ bool initialize()
 		throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
     // load carray function and type
-    if (initcarray() < 0)
-		throw SystemError("Failed to initialize carray and defaultdict types");
+    if (initCustomizedTypes() < 0)
+		throw SystemError("Failed to initialize carray and defdict types");
 
     // set gsl error handler
     gsl_set_error_handler(&gsl_error_handler);

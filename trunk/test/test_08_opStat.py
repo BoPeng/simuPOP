@@ -120,9 +120,11 @@ class TestStat(unittest.TestCase):
         InitByFreq(pop, [0, 0.2, 0.8])
         Stat(pop, alleleFreq=range(10))
         if AlleleType == 'binary':
-            self.assertEqual(pop.dvars().alleleFreq.keys(), (1))
+            self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1])
         else:
-            self.assertEqual(pop.dvars().alleleFreq.keys(), (1, 2))
+            self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1, 2])
+        print 'Factory', pop.dvars().alleleFreq[0]
+        self.assertEqual(pop.dvars().alleleFreq[0][0], 0)
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
@@ -133,19 +135,23 @@ class TestStat(unittest.TestCase):
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, alleleFreq=[0])
-        self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
-        self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
+        self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
+        self.assertEqual(pop.dvars().alleleFreq[0], {0:1230./3200, 1:1970./3200})
         #
         Stat(pop, alleleFreq=[0], subPops=(0, 1, 2), vars=['alleleFreq_sp', 'alleleNum_sp'])
-        self.assertEqual(pop.dvars(0).alleleFreq[0], [.5, .5])
-        self.assertEqual(pop.dvars(0).alleleNum[0], [500, 500])
+        self.assertEqual(pop.dvars(0).alleleNum[0][0], 500)
+        self.assertEqual(pop.dvars(0).alleleNum[0][1], 500)
+        self.assertEqual(pop.dvars(0).alleleFreq[0][0], 0.5)
+        self.assertEqual(pop.dvars(0).alleleFreq[0][1], 0.5)
         # can not use assertEqual for floating numbers in this case
         assert abs(pop.dvars(1).alleleFreq[0][0] - 13./20) < 1e-5
         assert abs(pop.dvars(1).alleleFreq[0][1] -  7./20) < 1e-5
-        self.assertEqual(pop.dvars(1).alleleNum[0], [130, 70])
+        self.assertEqual(pop.dvars(1).alleleNum[0][0], 130)
+        self.assertEqual(pop.dvars(1).alleleNum[0][1], 70)
         assert abs(pop.dvars(2).alleleFreq[0][0] - 0.3) < 1e-5
         assert abs(pop.dvars(2).alleleFreq[0][1] - 0.7) < 1e-5
-        self.assertEqual(pop.dvars(2).alleleNum[0], [600, 1400])
+        self.assertEqual(pop.dvars(2).alleleNum[0][0], 600)
+        self.assertEqual(pop.dvars(2).alleleNum[0][1], 1400)
         Stat(pop, alleleFreq=[0], vars ='alleleNum')
         assert pop.vars().has_key('alleleNum')
         # assert not pop.vars().has_key('alleleFreq')
@@ -389,11 +395,12 @@ class TestStat(unittest.TestCase):
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1
-            for allele1, p in enumerate(var.alleleNum[loc1]):
-                for allele2, q in enumerate(var.alleleNum[loc2]):
-                    pq = var.haploNum[(loc1, loc2)].setdefault((allele1, allele2), 0)
+            N = var.popSize * 2.
+            for allele1, p in var.alleleNum[loc1].iteritems():
+                for allele2, q in var.alleleNum[loc2].iteritems():
+                    pq = var.haploNum[(loc1, loc2)][(allele1, allele2)]
                     if p > 0 and q > 0:
-                        ChiSq += (pq * var.popSize * 2. - p * q) ** 2 / (var.popSize * 2. * p * q)
+                        ChiSq += (pq  - p * q / N) ** 2 / (p * q / N)
             return ChiSq
         def ChiSq_P(var, loc1, loc2):
             a = len(var.alleleFreq[loc1])

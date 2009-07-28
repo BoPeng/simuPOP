@@ -40,7 +40,7 @@ include src/pedigree.h
 include src/virtualSubPop.h
 
 # source files
-include src/arraymodule.c
+include src/customizedTypes.c
 include src/utility.cpp
 include src/genoStru.cpp
 include src/individual.cpp
