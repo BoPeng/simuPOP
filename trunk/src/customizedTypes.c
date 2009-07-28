@@ -191,10 +191,10 @@ i_setitem(arrayobject * ap, int i, PyObject * v)
 /* Description of types */
 static struct arraydescr descriptors[] =
 {
-	{ 'a', 0,              a_getitem, a_setitem },
-	{ 'f', sizeof(float),  f_getitem, f_setitem },
-	{ 'd', sizeof(double), d_getitem, d_setitem },
-	{ 'i', sizeof(int),    i_getitem, i_setitem },
+	{ 'a', 0,              a_getitem,              a_setitem },
+	{ 'f', sizeof(float),  f_getitem,              f_setitem },
+	{ 'd', sizeof(double), d_getitem,              d_setitem },
+	{ 'i', sizeof(int),    i_getitem,              i_setitem },
 	{                                                                                             /* Sentinel */
 		'\0', 0, 0, 0
 	}
@@ -336,14 +336,14 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		} else if (op == Py_NE) {
 			Py_INCREF(Py_True);
 			res = Py_True;
-		} else  {
+		} else {
 			/* Compare the final item again using the proper operator */
 			res = PyObject_RichCompare(vi, wi, op);
 		}
 		Py_DECREF(vi);
 		Py_DECREF(wi);
 		return res;
-	} else  {
+	} else {
 		arrayobject * va;
 		PyObject * wa, * res;
 		bool dir;
@@ -354,7 +354,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 			va = (arrayobject *)v;
 			wa = w;
 			dir = true;
-		} else  {
+		} else {
 			va = (arrayobject *)w;
 			wa = v;
 			dir = false;
@@ -428,13 +428,13 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		} else if (op == Py_NE) {
 			Py_INCREF(Py_True);
 			res = Py_True;
-		} else  {
+		} else {
 			/* Compare the final item again using the proper operator */
 			int r = PyObject_RichCompareBool(vi, wi, op);
 			if ( (r == 0 && dir) || (r != 0 && !dir) ) {           // false
 				Py_INCREF(Py_False);
 				res = Py_False;
-			} else  {
+			} else {
 				Py_INCREF(Py_True);
 				res = Py_True;
 			}
@@ -624,7 +624,7 @@ static PyObject * array_count(arrayobject * self, PyObject * args)
 static char count_doc [] =
     "count(x)\n\
 \n\
-Return number of occurences of x in the array."                     ;
+Return number of occurences of x in the array."                                          ;
 
 /// CPPONLY
 static PyObject * array_index(arrayobject * self, PyObject * args)
@@ -651,7 +651,7 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 static char index_doc [] =
     "index(x)\n\
 \n\
-Return index of first occurence of x in the array."                     ;
+Return index of first occurence of x in the array."                                          ;
 
 /// CPPONLY
 static PyObject * array_tolist(arrayobject * self, PyObject * args)
@@ -678,7 +678,7 @@ static PyObject * array_tolist(arrayobject * self, PyObject * args)
 static char tolist_doc [] =
     "tolist() -> list\n\
 \n\
-Convert array to an ordinary list with the same items."                             ;
+Convert array to an ordinary list with the same items."                                                          ;
 
 PyMethodDef array_methods[] =
 {
@@ -818,7 +818,7 @@ Variables:\n\
 \n\
 typecode -- the typecode character used to create the array\n\
 itemsize -- the length in bytes of one array item\n\
-        "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
+        "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
 
 PyTypeObject Arraytype =
 {
@@ -1013,22 +1013,6 @@ defdict_print(defdictobject * dd, FILE * fp, int flags)
 }
 
 
-static PyObject *
-defdict_repr(defdictobject * dd)
-{
-	PyObject * baserepr;
-	PyObject * result;
-
-	baserepr = PyDict_Type.tp_repr((PyObject *)dd);
-	if (baserepr == NULL)
-		return NULL;
-	result = PyString_FromFormat("defdict(%s)",
-		PyString_AS_STRING(baserepr));
-	Py_DECREF(baserepr);
-	return result;
-}
-
-
 static int
 defdict_init(PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -1081,7 +1065,7 @@ static PyTypeObject defdict_type = {
 	0,                              /* tp_getattr */
 	0,                              /* tp_setattr */
 	0,                              /* tp_compare */
-	(reprfunc)defdict_repr,         /* tp_repr */
+	0,                              /* tp_repr */
 	0,                              /* tp_as_number */
 	0,                              /* tp_as_sequence */
 	&defdict_as_mapping,            /* tp_as_mapping */

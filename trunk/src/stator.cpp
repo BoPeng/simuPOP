@@ -594,9 +594,9 @@ bool statAlleleFreq::apply(population & pop)
 			allAllelesCnt[idx] += allAlleles;
 			// output variable.
 #ifdef LONGALLELE
-			if (allAlleles != 0 && m_vars.contains(AlleleNum_sp_String))
+			if (m_vars.contains(AlleleNum_sp_String))
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
-			if (allAlleles != 0 && m_vars.contains(AlleleFreq_sp_String)) {
+			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
@@ -604,18 +604,18 @@ bool statAlleleFreq::apply(population & pop)
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", alleles);
 			}
 #else
-			if (allAlleles != 0 && m_vars.contains(AlleleNum_sp_String)) {
+			if (m_vars.contains(AlleleNum_sp_String)) {
 				intDict d;
-			    for (size_t i = 0; i < alleles.size(); ++i)
-			    	if (alleles[i] != 0)
-    					d[i] = alleles[i];
+				for (size_t i = 0; i < alleles.size(); ++i)
+					if (alleles[i] != 0)
+						d[i] = alleles[i];
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", d);
 			}
-			if (allAlleles != 0 && m_vars.contains(AlleleFreq_sp_String)) {
+			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict d;
-			    for (size_t i = 0; i < alleles.size(); ++i)
-				    if (alleles[i] != 0)
-					    d[i] = alleles[i] / static_cast<double>(allAlleles);
+				for (size_t i = 0; i < alleles.size(); ++i)
+					if (alleles[i] != 0)
+						d[i] = alleles[i] / static_cast<double>(allAlleles);
 				pop.getVars().setIntDefDictVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", d);
 			}
 #endif

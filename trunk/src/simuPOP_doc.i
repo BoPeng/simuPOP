@@ -9450,26 +9450,30 @@ Details:
     statistics.  Calculated statistics are saved as variables in a
     population's local namespace. These variables can be numbers,
     lists or dictionaries and can be retrieved using functions
-    population.vars() or population.dvars(). If the same variable is
-    calculated for one or more (virtual) subpopulation, the variables
-    are stored in vars()['subPop'][sp]['var'] where sp is a
-    subpopulation ID (sp) or a tuple of virtual subpopulation ID ((sp,
-    vsp)). population.vars(sp) and population.dvars(sp) provide
-    shortcuts to these variables.  Operator stat outputs a number of
-    most useful variables for each type of statistic. For example,
-    alleleFreq calculates both allele counts and allele frequencies
-    and it by default sets variable alleleFreq (dvars().alleleFreq)
-    for all or specified subpopulations. If this does not fit your
-    need, you can use parameter vars to output additional parameters,
-    or limit the output of existing parameters. More specifically, for
-    this particular statistic, the available variables are
-    'alleleFreq', 'alleleNum', 'alleleFreq_sp' ('alleleFreq' in each
-    subpopulation), and 'alleleNum_sp' ('alleleNum' in each
-    subpopulation). You can set vars=['alleleNum_sp'] to output only
-    subpopulation specific allele count.  Operator stat supports the
-    following statistics:  popSize: If popSize=True, number of
-    individuals in all or specified subpopulations (parameter subPops)
-    will be set to the following variables:
+    population.vars() or population.dvars(). A special default
+    dictionary (defdict) is used for dictionaries whose keys are
+    determined dynamically. Accessing elements of such a dictionary
+    with an invalid key will yield value 0 instead of a KeyError. If
+    the same variables are calculated for one or more (virtual)
+    subpopulation, the variables are stored in
+    vars()['subPop'][sp]['var'] where sp is a subpopulation ID (sp) or
+    a tuple of virtual subpopulation ID ((sp, vsp)).
+    population.vars(sp) and population.dvars(sp) provide shortcuts to
+    these variables.  Operator stat outputs a number of most useful
+    variables for each type of statistic. For example, alleleFreq
+    calculates both allele counts and allele frequencies and it by
+    default sets variable alleleFreq (dvars().alleleFreq) for all or
+    specified subpopulations. If this does not fit your need, you can
+    use parameter vars to output additional parameters, or limit the
+    output of existing parameters. More specifically, for this
+    particular statistic, the available variables are 'alleleFreq',
+    'alleleNum', 'alleleFreq_sp' ('alleleFreq' in each subpopulation),
+    and 'alleleNum_sp' ('alleleNum' in each subpopulation). You can
+    set vars=['alleleNum_sp'] to output only subpopulation specific
+    allele count.  Operator stat supports the following statistics:
+    popSize: If popSize=True, number of individuals in all or
+    specified subpopulations (parameter subPops) will be set to the
+    following variables:
     *   popSize (default): Number of individuals in all or specified
     subpopulations. Because subPops does not have to cover all
     individuals, it may not be the actual population size.
@@ -9510,13 +9514,12 @@ Details:
     *   propOfUnaffected_sp: Proportion of unaffected individuals in
     each (virtual) subpopulation.alleleFreq: This parameter accepts a
     list of loci (by indexes), at which allele frequencies will be
-    calculated. This statistic outputs the following variables:
+    calculated. This statistic outputs the following variables, all of
+    which are dictionary (with loci indexes as keys) of default
+    dictionaries (with alleles as keys). For example,
+    alleleFreq[loc][a] returns 0 if allele a does not exist.
     *   alleleFreq (default): alleleFreq[loc][a] is the frequency of
     allele a at locus for all or specified (virtual) subpopulations.
-    Variable alleleFreq is a dictionary (with loci indexes as keys) of
-    lists. The length of the frequency list is determined by the
-    maximum allele, but is guaranteed to have at least 2 items
-    (frequency for alleles 0 and 1).
     *   alleleNum (default): alleleNum[loc][a] is the number of allele
     a at locus for all or specified (virtual) subpopulations.
     *   alleleFreq_sp: Allele frequency in each (virtual)
@@ -9546,40 +9549,45 @@ Details:
     *   homoNum_sp: A dictionary of number of homozygotes in each
     (virtual) subpopulation.genoFreq: This parameter accept a list of
     loci (by index) at which number and frequency of all genotypes are
-    outputed as a dictionary (indexed by loci indexes) of dictionaries
-    (indexed by tuples of possible indexes). This statistic is
-    available for all population types with genotype defined as
-    ordered alleles at a locus. The length of genotype is determined
-    by population ploidy. Because genotypes are ordered, (1, 0) and
-    (0, 1) (two possible genotypes in a diploid population) are
-    considered as different genotypes. This statistic outputs the
-    following variables:
-    *   genoFreq (default): A dictionary (by loci indexes) of
+    outputed as a dictionary (indexed by loci indexes) of default
+    dictionaries (indexed by tuples of possible indexes). This
+    statistic is available for all population types with genotype
+    defined as ordered alleles at a locus. The length of genotype
+    equals the number of homologous copies of chromosomes (ploidy) of
+    a population. Genotypes for males or females on sex chromosomes or
+    in haplodiploid populations will have different length. Because
+    genotypes are ordered, (1, 0) and (0, 1) (two possible genotypes
+    in a diploid population) are considered as different genotypes.
+    This statistic outputs the following variables:
+    *   genoFreq (default): A dictionary (by loci indexes) of default
     dictionaries (by genotype) of genotype frequencies. For example,
     genoFreq[1][(1, 0)] is the frequency of genotype (1, 0) at locus
     1.
-    *   genoNum (default): A dictionary of dictionaries of genotype
-    counts of all or specified (virtual) subpopulations.
+    *   genoNum (default): A dictionary of default dictionaries of
+    genotype counts of all or specified (virtual) subpopulations.
     *   genoFreq_sp: genotype frequency in each specified (virtual)
     subpopulation.
     *   genoFreq_sp: genotype count in each specified (virtual)
     subpopulation.haploFreq: This parameter accepts one or more lists
     of loci (by index) at which number and frequency of haplotypes are
-    outputted as dictionaries. [(1,2)] can be abbreviated to (1,2).
-    For example, using parameter haploFreq=(1,2,4), all haplotypes at
-    these three loci are counted. Results are saved in variables such
-    as haploFreq[(1,2,4)][(1,1,0)] (frequency of haplotype (1,1,0)).
-    This statistic works for all population types. Number of
-    haplotypes for each individual equals to his/her ploidy number.
-    Haplodiploid populations are supported in the sense that the
-    second homologous copy of the haplotype is not counted for male
-    individuals. This statistic outputs the following variables:
+    outputted as default dictionaries. [(1,2)] can be abbreviated to
+    (1,2). For example, using parameter haploFreq=(1,2,4), all
+    haplotypes at loci 1, 2 and 4 are counted. This statistic saves
+    results to dictionary (with loci index as keys) of default
+    dictionaries (with haplotypes as keys) such as
+    haploFreq[(1,2,4)][(1,1,0)] (frequency of haplotype (1,1,0) at
+    loci (1,2,3)). This statistic works for all population types.
+    Number of haplotypes for each individual equals to his/her ploidy
+    number. Haplodiploid populations are supported in the sense that
+    the second homologous copy of the haplotype is not counted for
+    male individuals. This statistic outputs the following variables:
     *   haploFreq (default): A dictionary (with tuples of loci indexes
-    as keys) of dictionaries of haplotype frequencies. For example,
-    haploFreq[(0, 1)][(1,1)] records the frequency of haplotype (1,1)
-    at loci (0, 1) in all or specified (virtual) subpopulations.
-    *   haploNum (default): A dictionary of dictionaries of haplotype
-    counts in all or specified (virtual) subpopulations.
+    as keys) of default dictionaries of haplotype frequencies. For
+    example, haploFreq[(0, 1)][(1,1)] records the frequency of
+    haplotype (1,1) at loci (0, 1) in all or specified (virtual)
+    subpopulations.
+    *   haploNum (default): A dictionary of default dictionaries of
+    haplotype counts in all or specified (virtual) subpopulations.
     *   haploFreq_sp: Halptype frequencies in each (virtual)
     subpopulation.
     *   haploNum_sp: Halptype count in each (virtual)

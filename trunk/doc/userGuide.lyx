@@ -2422,6 +2422,118 @@ lstparams "caption={The carray datatype},label={carraydatatype}"
 \end_layout
 
 \begin_layout Subsection
+
+\family typewriter
+defdict
+\family default
+ datatype
+\end_layout
+
+\begin_layout Standard
+simuPOP uses dictionaries to save statistics such as allele frequencies.
+ For example, 
+\family typewriter
+alleleFreq[5]
+\family default
+ can be 
+\family typewriter
+{0:0.2, 3:0.8}
+\family default
+ meaning there are 20% allele 0 and 80% allele 3 at locus 5 in a population.
+ However, because it is sometimes unclear whether or not a particular allele
+ exists in a population, 
+\family typewriter
+alleleFreq[5][allele]
+\family default
+ can fail with a 
+\family typewriter
+KeyError
+\family default
+ exception if 
+\family typewriter
+alleleFreq[5]
+\family default
+ does not have key 
+\family typewriter
+allele
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+To address this problem, a special default dictionary type 
+\family typewriter
+defdict
+\family default
+ is used for dictionaries with keys determined from a population.
+ This derived dictionary type works just like a regular dictionay, but it
+ returns 0, instead of raising a 
+\family typewriter
+KeyError
+\family default
+ exception, when an invalid key is used.
+ For example, subpopulations in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "defdictType"
+
+\end_inset
+
+ have different alleles, but the same 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/defdict.log"
+lstparams "caption={The defdict datatype},label={defdictType}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Note
+The standard 
+\family typewriter
+collections
+\family default
+ module of Python has a 
+\family typewriter
+defaultdict
+\family default
+ type that accepts a default factory function that will be used when an
+ invalid key is encountered.
+ The 
+\family typewriter
+defdict
+\family default
+ type is similar to 
+\family typewriter
+defaultdict(int)
+\family default
+ but with an important difference: when an invalid key is encountered, 
+\family typewriter
+d[key]
+\family default
+ with a default value will be inserted to a 
+\family typewriter
+defaultdict(int)
+\family default
+, but will not be inserted to a 
+\family typewriter
+defdict
+\family default
+.
+ That is to say, it is safe to use 
+\family typewriter
+alleleFreq[loc].keys()
+\family default
+ to get available alleles after non-assignment 
+\family typewriter
+alleleFreq[loc][allele]
+\family default
+ operations.
+\end_layout
+
+\begin_layout Subsection
 Parameter names and single and list input of parameters
 \end_layout
 
@@ -13369,108 +13481,6 @@ stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
 \end_layout
 
 \begin_layout Subsection
-The 
-\family typewriter
-defaultdict
-\family default
- datatype (Python >= 2.5)
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-stat
-\family default
- operator makes use of dictionaries to save counts and frequencies of alleles,
- genotypes and haplotypes.
- For example, if a population have alleles 0 and 2 at a locus 5, variable
- 
-\family typewriter
-\lang english
-alleleFreq[5]
-\family default
- will be set by 
-\family typewriter
-stat(alleleFreq=[5])
-\family default
- to a dictionary similar to 
-\family typewriter
-{0: 0.2, 2: 0.8}
-\family default
-.
- You can use 
-\family typewriter
-alleleFreq[5][2]
-\family default
- to get allele frequency for allele 2, and 
-\family typewriter
-alleleFreq[5].keys()
-\family default
- to get available alleles.
- 
-\end_layout
-
-\begin_layout Standard
-Because it is sometimes unclear whether or not a key exists in such a dictionary
-, 
-\series bold
-the stat operator uses a special 
-\family typewriter
-defaultdict
-\family default
- object with a 
-\family typewriter
-int
-\family default
- default factory for dictionaries whose keys are determined from a population
-\series default
-.
- When an invalid key is used, these dictionaries return value 0 instead
- of raising a 
-\family typewriter
-KeyError
-\family default
- exception.
- That is to say, 
-\family typewriter
-alleleFreq[5][1]
-\family default
- and 
-\family typewriter
-alleleFreq[5][100]
-\family default
- are valid expressions with values 0 and it is safe to use expressions such
- as 
-\family typewriter
-alleleFreq[5][1] == 0
-\family default
- to test the existence of alleles, haplotypes and haplotypes.
-\end_layout
-
-\begin_layout Note
-The default dict object behaves slight different from the Python defaultdict
- in that a key will not be added to the dictionary with the dict[key] operation.
-\end_layout
-
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Note
-Because Python 2.4 does not support defaultdict, this feature is only available
- in Python version 2.5 and later.
- The variables are still shown as type 
-\family typewriter
-defaultdict
-\family default
- in Python 2.4, but an 
-\family typewriter
-KeyError
-\family default
- will be raised if a key does not exist.
-\end_layout
-
-\begin_layout Subsection
 Counting individuals by sex and affection status
 \end_layout
 
@@ -13739,8 +13749,8 @@ reference "statGenoFreq"
 
 \end_inset
 
- creates a small population and initializes three loci with different allele
- frequencies.
+ creates a small population and initializes a locus with rare alleles 0,
+ 1 and a common allele 2.
  A function 
 \family typewriter
 Stat
@@ -13749,8 +13759,13 @@ Stat
 \family typewriter
 stat
 \family default
-) is used to count the number of different genotypes and haplotypes at these
- loci.
+) is used to count the available genotypes.
+ Note that 
+\family typewriter
+pop.dvars().genoFreq[0][(i,j)]
+\family default
+ can be used to print frequencies of all genotypes even when not all genotypes
+ are available in the population.
 \end_layout
 
 \begin_layout Standard
@@ -13793,6 +13808,14 @@ homoFreq
 homoNum
 \family default
  can be outputted for all and each (virtual) subpopulations.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statHeteroFreq"
+
+\end_inset
+
+ demonstrates the decay of heterozygosity of a locus due to genetic drift.
 \end_layout
 
 \begin_layout Standard
@@ -13811,11 +13834,7 @@ Haplotype count and frequency
 \end_layout
 
 \begin_layout Standard
-
-\series bold
-haploFreq
-\series default
-: Haplotypes refer to alleles on the same homologous copy of a chromosome
+Haplotypes refer to alleles on the same homologous copy of a chromosome
  at specified loci.
  For example, an diploid individual can have haplotypes 
 \family typewriter
@@ -13868,6 +13887,25 @@ haploFreq[(0,1,2)][(0,1,1)]
 (0, 1, 2)
 \family default
 .
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statHaploFreq"
+
+\end_inset
+
+ prints the numbers of genotypes and haplotypes at loci 0, 1 and 2 of a
+ small population.
+ Note that the 
+\family typewriter
+ViewVars
+\family default
+ function defined in module 
+\family typewriter
+simuUtil
+\family default
+ can make use of a wxPython window to view all variables if it is called
+ in GUI mode.
 \end_layout
 
 \begin_layout Standard
@@ -14067,7 +14105,19 @@ Assuming that two loci are both diallelic, one with alleles
 \begin_inset Formula $xy$
 \end_inset
 
-, respectively, the standard linkage disequilibrium measure is
+, respectively, the linkage disequilibrium measures 
+\series bold
+with respect to primaries alleles
+\series default
+ 
+\emph on
+A
+\emph default
+ and 
+\emph on
+B
+\emph default
+ are
 \end_layout
 
 \begin_layout Itemize
@@ -14154,6 +14204,11 @@ r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\]
 
 \end_layout
 
+\begin_layout Standard
+If one or both loci have more than 2 alleles, or if no primary allele is
+ specified, the LD measures are calculated as follows:
+\end_layout
+
 \begin_layout Itemize
 If primary alleles are specified, all other alleles are considered as minor
  alleles with combined frequency (e.g.
@@ -14162,6 +14217,15 @@ If primary alleles are specified, all other alleles are considered as minor
 \end_inset
 
 ).
+ The same formulas applie which leads to signed 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $D'$
+\end_inset
+
+ measures.
 \end_layout
 
 \begin_layout Itemize

@@ -15,11 +15,11 @@
 import os, sys
 
 if not os.path.isdir('log'):
-  try:
-    os.mkdir('log')
-  except:
-    print "Failed to make output directory log"
-    sys.exit(1)
+    try:
+        os.mkdir('log')
+    except:
+        print "Failed to make output directory log"
+        sys.exit(1)
 
 from simuPOP import *
 
@@ -87,6 +87,20 @@ print arr              # arr is change
 print geno             # but not geno
 arr[2:5] = 4           # can use regular Python slice operation
 print ind.genotype()
+#end
+
+#file log/defdict.log
+pop = population([100]*2, loci=[1])
+simu = simulator(pop, randomMating())
+InitByFreq(pop, [0, 0.2, 0.8], subPops=0)
+InitByFreq(pop, [0.2, 0.8], subPops=1)
+Stat(pop, alleleFreq=[0], vars=['alleleFreq_sp'])
+for sp in range(2):
+    print 'Subpop %d: ' % sp,
+    for a in range(3):
+        print '%.2f ' % pop.dvars(sp).alleleFreq[0][a],
+    print
+
 #end
 
 #file log/genoStru.log
@@ -2102,30 +2116,28 @@ simu.evolve(
 #end
 
 #file log/statGenoFreq.log
-pop = population(100, loci=[3])
-InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
-InitByFreq(pop, [0.1, 0.9], loci=2)
-Stat(pop, genoFreq=[0, 1, 2])
-print 'Available genotypes:', stat.genoFreq.keys()
+pop = population(100, loci=[1])
+InitByFreq(pop, [0.01, 0.05, 0.94])
+Stat(pop, genoFreq=[0])
+print 'Available genotypes:', pop.dvars().genoFreq[0].keys()
 print 'Genotype frequency:'
 for i in range(3):
-    for j in range(2):
-        print '%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[(0,2)][(i,j)])
+    for j in range(3):
+        print '%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[0][(i,j)])
 
 #end
 
 #file log/statHeteroFreq.log
-pop = population(100, loci=[0])
+pop = population(100, loci=[1])
 simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = initByFreq([0.5, 0.5]),
     ops = [
         stat(heteroFreq=0, step=10),
-        pyEval(r"'Gen: %d, HeteroFreq: %.2f\n' % (gen, heteroFreq[0]", step=10)
+        pyEval(r"'Gen: %d, HeteroFreq: %.2f\n' % (gen, heteroFreq[0])", step=20)
     ],
-    gen = 50
+    gen = 100
 )
-
 #end
 
 #file log/statHaploFreq.log
@@ -2168,6 +2180,8 @@ simu.evolve(
 #end
 
 #file log/simuTrajectory.log
+from simuUtil import BackwardTrajectory
+
 def Nt(gen, oldSize=[]):
     '''
     Return population size at generation gen defined by the
@@ -2507,12 +2521,12 @@ class ne(pyOperator):
         Stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
-            freq = pop.dvars().alleleFreq[loc][1:]
+            freq = pop.dvars().alleleFreq[loc]
             sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
         # save the result to the population.
         pop.dvars().ne = ne
         return True
@@ -2567,12 +2581,12 @@ class ne(pyOperator):
         Stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
-            freq = pop.dvars().alleleFreq[loc][1:]
+            freq = pop.dvars().alleleFreq[loc]
             sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
         # save the result to the population.
         pop.dvars().ne = ne
         return True
