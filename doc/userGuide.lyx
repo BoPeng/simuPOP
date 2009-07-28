@@ -14217,7 +14217,7 @@ If primary alleles are specified, all other alleles are considered as minor
 \end_inset
 
 ).
- The same formulas applie which leads to signed 
+ The same formulas apply which lead to signed 
 \begin_inset Formula $D$
 \end_inset
 
@@ -14444,15 +14444,83 @@ LD_sp
 R2_sp
 \family default
 .
- 
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statLD"
+
+\end_inset
+
+ demonstrates how to calculate various LD measures and output selected variables.
 \end_layout
 
-\begin_layout Subsection
-Heterozygosity
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statLD.log"
+lstparams "caption={Linkage disequilibrium measures},label={statLD}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Genetic association
+\end_layout
+
+\begin_layout Standard
+Genetic association refers to association between individual genotype (alleles
+ or genotype) and phenotype (affection status).
+ There are a large number of statistics tests based on different study designs
+ (e.g.
+ case-control, pedigree, longitudinal) with different covariate variables.
+ Although specialized software applications should be used for sophisticated
+ statistical analysis, simuPOP provides a number of simple genetic association
+ tests for convenience.
+ These tests
+\end_layout
+
+\begin_layout Itemize
+Are single-locus tests that test specified loci separately.
+\end_layout
+
+\begin_layout Itemize
+Are based on individual affection status.
+ Associations between genotype and quantitative traits are currently unsupported.
+\end_layout
+
+\begin_layout Itemize
+Apply to all individuals in specified (virtual) subpopulations.
+ Because a population usually has much more unaffected individuals than
+ affected ones, it is a common practice to draw certain types of samples
+ (e.g.
+ a case-control sample with the same number of cases and controls) before
+ statistical tests are applied.
+\end_layout
+
+\begin_layout Standard
+simuPOP currently supports the following tests:
+\end_layout
+
+\begin_layout Itemize
+Allele-based 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test.
+\end_layout
+
+\begin_layout Itemize
+Genotype-based 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test.
+\end_layout
+
+\begin_layout Itemize
+Genotype-based Armitage trend test.
 \end_layout
 
 \begin_layout Subsection
