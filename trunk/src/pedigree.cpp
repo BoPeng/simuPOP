@@ -413,7 +413,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			if (numOffspring.empty())
 				numOffspring.resize(popSize(), 0);
 			std::fill(numOffspring.begin(), numOffspring.end(), 0);
-			setIndInfo(vectorf(-1), spouseIdx);
+			setIndInfo(-1, spouseIdx);
 			//
 			for (size_t idx = 0; idx < father.size(); ++idx) {
 				DBG_FAILIF(fcmp_eq(father[idx], -1) || fcmp_eq(mother[idx], -1), ValueError,
