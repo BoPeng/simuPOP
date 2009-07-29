@@ -7875,12 +7875,13 @@ Details:
     between adjacent loci.  If a list of recombination rates are
     specified in rates, a parameter loci with the same length should
     also be specified. Different recombination rates can then be used
-    for these loci.  A recombination intensity (intensity) can be used
-    to specify recombination rates that are proportional to physical
-    distances between adjacent markers. If the physical distance
-    between two markers is d, the recombination rate between them will
-    be intensity * d. No unit is assume for loci position and
-    recombination intensity.  Gene conversion is controlled using
+    after these loci (between specified loci and their immediate
+    neighbor to the right).  A recombination intensity (intensity) can
+    be used to specify recombination rates that are proportional to
+    physical distances between adjacent markers. If the physical
+    distance between two markers is d, the recombination rate between
+    them will be intensity * d. No unit is assume for loci position
+    and recombination intensity.  Gene conversion is controlled using
     parameter convMode, which can be
     *   NoConversion: no gene conversion (default).
     *   (NumMarkers, prob, n): With probability prob, convert a fixed

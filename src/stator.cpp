@@ -849,8 +849,8 @@ bool statGenoFreq::apply(population & pop)
 						if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
 							continue;
 						if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-							 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
-							 continue;
+						     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+							continue;
 						genotype.push_back(ind->allele(loc, p));
 					}
 					genotypes[genotype]++;
@@ -1640,8 +1640,8 @@ statAssociation::statAssociation(const vectorlu & loci,
 {
 	const char * allowedVars[] = {
 		Allele_ChiSq_String,	Allele_ChiSq_p_String,
-		Geno_ChiSq_String,	Geno_ChiSq_p_String,
-		Armitage_p_String,	Armitage_p_String,
+		Geno_ChiSq_String,		Geno_ChiSq_p_String,
+		Armitage_p_String,		Armitage_p_String,
 		Allele_ChiSq_sp_String, Allele_ChiSq_p_sp_String,
 		Geno_ChiSq_sp_String,	Geno_ChiSq_p_sp_String,
 		Armitage_p_sp_String,	Armitage_p_sp_String,
@@ -1750,7 +1750,8 @@ double statAssociation::armitageTest(const GENOCNT & caseCnt,
 	if (alleles.size() != 2)
 		return 1.;
 	map<UINT, int>::const_iterator first = alleles.begin();
-	map<UINT, int>::const_iterator second = ++first;
+	map<UINT, int>::const_iterator second = first;
+	++second;
 	UINT major = 0;
 	UINT minor = 0;
 	if (first->second > second->second) {
@@ -1865,7 +1866,7 @@ bool statAssociation::apply(population & pop)
 					if (ind->affected())
 						caseGenoCnt[idx][GENOCNT::key_type(a1, a2)]++;
 					else
-						caseGenoCnt[idx][GENOCNT::key_type(a1, a2)]++;
+						ctrlGenoCnt[idx][GENOCNT::key_type(a1, a2)]++;
 				}
 			}
 		}
