@@ -2198,6 +2198,63 @@ pprint(pop.vars())
 #end
 
 #file log/statAssociation.log
+from simuUtil import *
+
+def assoTest(pop):
+    'Draw case-control sample and apply association tests'
+    Stat(pop, numOfAffected=True, vars='propOfAffected')
+    sample = CaseControlSample(pop, cases=500, controls=500)[0]
+    Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
+    print 'Prevalence: %.2f, Allele_ChiSq: %.5f, %.5f, Geno_ChiSq: %.5f, %.5f, Amitage: %.5f, %.5f' \
+        % (pop.dvars().propOfAffected, sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
+        sample.dvars().Geno_ChiSq_p[0], sample.dvars().Geno_ChiSq_p[2],
+        sample.dvars().Armitage_p[0], sample.dvars().Armitage_p[2])
+    return True
+
+simu = simulator(population(size=100000, loci=[3]),
+    randomMating())
+simu.evolve(
+    preOps = initByValue([[0]*3, [1]*3], proportions=[0.5, 0.5]),
+    ops = [
+        recombinator(loci=[0, 1], rates=[0.01, 0.0001]),
+        maPenetrance(loci=1, penetrance=[0.1, 0.2, 0.4]),
+        pyOperator(func=assoTest, step=20),
+    ],
+    gen = 100
+)
+        
+#end
+
+#file log/statFst.log
+from simuUtil import MigrIslandRates
+
+simu = simulator(population([5000]*3, loci=[10], infoFields='migrate_to'),
+    randomMating(), rep=2)
+simu.evolve(
+    preOps = initByFreq([0.5, 0.5]),
+    ops = [
+        migrator(rate=MigrIslandRates(0.01, 3), reps=1),
+        stat(Fst=range(10), step=40),
+        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (AvgFst, rep)", step=40),
+        pyOutput('\n', reps=-1, step=40)
+    ],
+    gen = 200
+)
+#end
+
+#file log/statHWE.log
+simu = simulator(population([1000], loci=[1]), randomMating())
+simu.evolve(
+    preOps = initByValue([[0,0], [0, 1], [1,1]], proportions=[0.4, 0.4, 0.2]),
+    ops = [
+        stat(HWE=0, genoFreq=0, stage=PrePostMating),
+        pyEval(r'"HWE p-value: %.5f (AA: %.2f, Aa: %.2f, aa: %.2f)\n" % (HWE[0], '
+            'genoFreq[0][(0,0)], genoFreq[0][(0,1)] + genoFreq[0][(1,0)], genoFreq[0][(1,1)])',
+            stage=PrePostMating),
+    ],
+    gen = 1
+)
+
 #end
 
 #file log/simuTrajectory.log
