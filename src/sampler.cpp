@@ -99,7 +99,7 @@ namespace simuPOP {
 //  //
 //  // find sibpairs from the parental generation.
 //  pop.useAncestralGen(1);
-//  vectorlu off;
+//  vectoru off;
 //  int pedIdx = 0;
 //  // valid sibpairs for each subpopulation
 //  for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
@@ -186,7 +186,7 @@ namespace simuPOP {
 //      acceptedSibs.insert(acceptedSibs.end(), allSibs.begin(), allSibs.begin() + N);
 //  } else {                                                                          // for each subpop
 //      for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-//          vectorlu & sibpairs = m_validSibs[sp];
+//          vectoru & sibpairs = m_validSibs[sp];
 //
 //          UINT N = sibpairs.size();
 //          if (N > m_size[sp]) {
@@ -201,9 +201,9 @@ namespace simuPOP {
 //  // population
 //  pop.useAncestralGen(1);
 //
-//  vectorlu offspring;
+//  vectoru offspring;
 //  int pedIdx = 0;
-//  vectorlu off;
+//  vectoru off;
 //  UINT spouseIdx = pop.infoIdx("spouse");
 //  UINT pedindexIdx = pop.infoIdx("pedindex");
 //  UINT off0Idx = pop.infoIdx("offspring0");
@@ -299,7 +299,7 @@ namespace simuPOP {
 //          if (pop.ind(grandspouse).affected())
 //              numAffected++;
 //          //
-//          vectorlu parentsTmp;
+//          vectoru parentsTmp;
 //          for (size_t x = 0; x < m_maxOffspring; ++x) {
 //              int off = pop.ind(idx).intInfo(offspringIdx[x]);
 //              if (off != -1)
@@ -311,11 +311,11 @@ namespace simuPOP {
 //              continue;
 //          // go to parent generation
 //          pop.useAncestralGen(1);
-//          vectorlu spouseofparents;
-//          vectorlu childrenTmp;
+//          vectoru spouseofparents;
+//          vectoru childrenTmp;
 //          // verify parents
-//          vectorlu parents;
-//          for (vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par) {
+//          vectoru parents;
+//          for (vectoru::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par) {
 //              if (pop.ind(*par).info(pedindexIdx) == -1.) {
 //                  int ind_p = pop.ind(*par).intInfo(fatherIdx);
 //                  int ind_m = pop.ind(*par).intInfo(motherIdx);
@@ -332,7 +332,7 @@ namespace simuPOP {
 //              }
 //          }
 //          //
-//          for (vectorlu::iterator par = parents.begin(); par != parents.end(); ++par) {
+//          for (vectoru::iterator par = parents.begin(); par != parents.end(); ++par) {
 //              int spouse = pop.ind(*par).intInfo(spouseIdx);
 //              // if there is spouse, add it in
 //              if (spouse >= 0 && pop.ind(*par).info(pedindexIdx) == -1.) {
@@ -355,8 +355,8 @@ namespace simuPOP {
 //              continue;
 //          pop.useAncestralGen(0);
 //          // verify children
-//          vectorlu children;
-//          for (vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child) {
+//          vectoru children;
+//          for (vectoru::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child) {
 //              // unoccupied.
 //              if (pop.ind(*child).info(pedindexIdx) == -1.) {
 //                  ULONG ind_p = pop.ind(*child).intInfo(fatherIdx);
@@ -385,14 +385,14 @@ namespace simuPOP {
 //          pop.ind(grandspouse).setInfo(pedindex, pedindexIdx);
 //          // parents and their spouse
 //          pop.useAncestralGen(1);
-//          for (vectorlu::iterator it = parents.begin(); it != parents.end(); ++it)
+//          for (vectoru::iterator it = parents.begin(); it != parents.end(); ++it)
 //              pop.ind(*it).setInfo(pedindex, pedindexIdx);
 //          // spouse of parents
-//          for (vectorlu::iterator it = spouseofparents.begin(); it != spouseofparents.end(); ++it)
+//          for (vectoru::iterator it = spouseofparents.begin(); it != spouseofparents.end(); ++it)
 //              pop.ind(*it).setInfo(pedindex, pedindexIdx);
 //          // now children
 //          pop.useAncestralGen(0);
-//          for (vectorlu::iterator it = children.begin(); it != children.end(); ++it)
+//          for (vectoru::iterator it = children.begin(); it != children.end(); ++it)
 //              pop.ind(*it).setInfo(pedindex, pedindexIdx);
 //          // is this family qualified?
 //          m_validPedigrees[sp].push_back(boost::tie(pedindex, pedSize));

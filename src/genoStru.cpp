@@ -462,8 +462,8 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, v
 }
 
 
-GenoStructure & GenoStruTrait::gsRemoveLoci(const vectorlu & loci,
-                                            vectorlu & kept)
+GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
+                                            vectoru & kept)
 {
 	if (kept.empty()) {
 		for (size_t loc = 0; loc < totNumLoci(); ++loc) {
@@ -477,7 +477,7 @@ GenoStructure & GenoStruTrait::gsRemoveLoci(const vectorlu & loci,
 	vectoru numLoci(numChrom(), 0);
 	vectorf lociPos;
 	vectorstr lociNames;
-	vectorlu::iterator loc = kept.begin();
+	vectoru::iterator loc = kept.begin();
 	for (; loc != kept.end(); ++loc) {
 		UINT ch = chromLocusPair(*loc).first;
 		numLoci[ch]++;
@@ -534,7 +534,7 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 }
 
 
-GenoStructure & GenoStruTrait::gsAddLoci(const vectorlu & chrom, const vectorf & lociPos,
+GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
                                          const vectorstr & lociNames, vectoru & newIndex) const
 {
 	DBG_ASSERT(chrom.size() == lociPos.size(), ValueError,

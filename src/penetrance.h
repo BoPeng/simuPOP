@@ -185,7 +185,7 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// penetrance for each genotype
 	strDict m_dict;
@@ -257,13 +257,13 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// penetrance for each genotype
 	vectorf m_penetrance;
 
 	///
-	vectorlu m_wildtype;
+	vectoru m_wildtype;
 };
 /// penetrance according to the genotype according to a multiple loci multiplicative model
 /**
@@ -420,7 +420,7 @@ public:
 
 private:
 	/// susceptibility loci
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;

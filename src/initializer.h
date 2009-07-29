@@ -167,10 +167,10 @@ private:
 	bool m_identicalInds;
 
 	//
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	//
-	vectorlu m_ploidy;
+	vectoru m_ploidy;
 
 	//
 	bool m_initSex;
@@ -234,10 +234,10 @@ private:
 	vectorf m_proportion;
 
 	//
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	//
-	vectorlu m_ploidy;
+	vectoru m_ploidy;
 
 	//
 	bool m_initSex;

@@ -145,8 +145,7 @@ public:
 	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
 	 *    \e lociPos should be arranged chromosome by chromosome. If \c lociPos
 	 *    are not in order within a chromosome, they will be re-arranged along
-	 *    with corresponding \e lociNames (if specified). A nested list that
-	 *    specifies positions of loci on each chromosome is also acceptable.
+	 *    with corresponding \e lociNames (if specified).
 	 *  \param ancGen Number of the most recent ancestral generations to keep
 	 *    during evolution. Default to \c 0, which means only the current
 	 *    generation will be kept. If it is set to \c -1, all ancestral
@@ -157,11 +156,10 @@ public:
 	 *  \param alleleNames A list of allele names for all markers. For example,
 	 *    <tt>alleleNames=('A','C','T','G')</tt> gives names \c A, \c C, \c T,
 	 *    and \c G to alleles \c 0, \c 1, \c 2, and \c 3 respectively.
-	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
-	 *    for each locus. It can be empty or a list of names for each locus.
-	 *    Empty name can be used but non-empty names must be unique. If loci
-	 *    are not specified in order, loci names will be rearranged according
-	 *    to their position on the chromosome.
+	 *  \param lociNames A list of names for each locus. It can be empty or a
+	 *    list of unique names for each locus. If loci are not specified in
+	 *    order, loci names will be rearranged according to their position on
+	 *    the chromosome.
 	 *  \param subPopNames A list of subpopulation names. All subpopulations
 	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
@@ -171,16 +169,16 @@ public:
 	 *  information is very important, you can save allele names in the local
 	 *  namespace of a population.
 	 */
-	population(const vectorlu & size = vectorlu(),
+	population(const uintList & size = uintList(),
 		float ploidy = 2,
-		const vectoru & loci = vectoru(),
-		const vectoru & chromTypes = vectoru(),
-		const vectorf & lociPos = vectorf(),
+		const uintList & loci = uintList(),
+		const uintList & chromTypes = uintList(),
+		const floatList & lociPos = floatList(),
 		int ancGen = 0,
-		const vectorstr & chromNames = vectorstr(),
-		const vectorstr & alleleNames = vectorstr(),
-		const vectorstr & lociNames = vectorstr(),
-		const vectorstr & subPopNames = vectorstr(),
+		const stringList & chromNames = stringList(),
+		const stringList & alleleNames = stringList(),
+		const stringList & lociNames = stringList(),
+		const stringList & subPopNames = stringList(),
 		const stringList & infoFields = stringList());
 
 	/// CPPONLY copy constructor
@@ -240,7 +238,7 @@ public:
 	 * Fix a population, resize it if necessary. The content
 	 * of the population will be cleared.
 	 */
-	void fitSubPopStru(const vectorlu & newSubPopSizes,
+	void fitSubPopStru(const vectoru & newSubPopSizes,
 		const vectorstr & newSubPopNames);
 
 	/** if a population has any activated virtual subpopulations
@@ -307,7 +305,7 @@ public:
 	 *    population size should not changed.
 	 *  <group>2-subpop</group>
 	 */
-	void setSubPopStru(const vectorlu & newSubPopSizes, const vectorstr & newSubPopNames);
+	void setSubPopStru(const vectoru & newSubPopSizes, const vectorstr & newSubPopNames);
 
 	/** Return the number of subpopulations in a population. Return 1 if there
 	 *  is no subpopulation structure.
@@ -370,7 +368,7 @@ public:
 	 *  subpopulations are not considered.
 	 *  <group>2-subpopsize</group>
 	 */
-	vectorlu subPopSizes() const
+	vectoru subPopSizes() const
 	{
 		return m_subPopSize;
 	}
@@ -842,7 +840,7 @@ public:
 	 *  split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru splitSubPop(UINT subPop, const vectorlu & sizes, const vectorstr & names = vectorstr());
+	vectoru splitSubPop(UINT subPop, const vectoru & sizes, const vectorstr & names = vectorstr());
 
 	/** Remove subpopulation(s) \e subPop and all their individuals. Indexes of
 	 *  subpopulations after removed subpopulations will be shifted.
@@ -1715,13 +1713,13 @@ private:
 	ULONG m_popSize;
 
 	/// size of each subpopulation
-	vectorlu m_subPopSize;
+	vectoru m_subPopSize;
 
 	/// names of each subpopulation
 	vectorstr m_subPopNames;
 
 	/// index to subPop \todo change to vectorl
-	vectorlu m_subPopIndex;
+	vectoru m_subPopIndex;
 
 	///
 	vspSplitter * m_vspSplitter;
@@ -1746,7 +1744,7 @@ private:
 	/// need to store: subPopSize, genotype and m_inds
 	struct popData
 	{
-		vectorlu m_subPopSize;
+		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
 		vectora m_genotype;
 		vectorinfo m_info;

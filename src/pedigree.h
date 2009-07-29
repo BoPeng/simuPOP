@@ -191,7 +191,7 @@ private:
 //  /// Because pedigree can be large, it makes sense to treat
 //  /// them separately.
 //
-//  typedef vector<vectorlu> Pedigree;
+//  typedef vector<vectoru> Pedigree;
 //  // pedigree subpopulation size information ...
 //  typedef Pedigree PedSize;
 //  typedef vector<vector<vectorf> > PedInfo;
@@ -227,10 +227,10 @@ private:
 ////  /// Add a generation to the existing pedigree, with given subpopulation sizes
 //  /// \c subPopSize . All parental indexes and information will be set to zero
 //  /// for the new generation.
-//  void addGen(const vectorlu & subPopSize);
+//  void addGen(const vectoru & subPopSize);
 //
 //  /// Return the subpopulation sizes of generation \c gen
-//  vectorlu subPopSizes(ULONG gen);
+//  vectoru subPopSizes(ULONG gen);
 //
 //  /// Return the subpopulation size of subpopulation \c subPop of generation \c gen
 //  ULONG subPopSize(ULONG gen, SubPopID subPop);
@@ -272,7 +272,7 @@ private:
 //
 //  /// Mark individuals \c inds as 'unrelated' in the last generation
 //  /// \c removeUnrelated function will remove these individuals from the pdeigree
-//  void selectIndividuals(const vectorlu & inds);
+//  void selectIndividuals(const vectoru & inds);
 //
 //  /// mark individuals that are unrelated to the visible individuals at the
 //  /// last generation (not marked by selectIndividuals) from the pedigree.

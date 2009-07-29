@@ -1176,7 +1176,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 		vectori res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", gen, curSize);
 		Py_XDECREF(curSize);
 
-		vectorlu sz(res.size());
+		vectoru sz(res.size());
 
 		for (size_t i = 0; i < res.size(); i++)
 			sz[i] = static_cast<ULONG>(res[i]);
@@ -1487,7 +1487,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
 			"Overall weight is zero");
 		//
-		vectorlu vspSize(m.size());
+		vectoru vspSize(m.size());
 		ULONG all = scratch.subPopSize(sp);
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
@@ -1530,7 +1530,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// it points to the first mating scheme.
 		it = m.begin();
 		it_end = m.end();
-		vectorlu::iterator itSize = vspSize.begin();
+		vectoru::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
 			"Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");

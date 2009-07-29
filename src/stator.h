@@ -434,7 +434,7 @@ private:
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
-	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars);
+	statAlleleFreq(const vectoru & loci, const subPopList & subPops, const stringList & vars);
 
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq()
@@ -446,7 +446,7 @@ public:
 
 private:
 	/// which alleles?
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 
@@ -467,14 +467,14 @@ private:
 #define HomoFreq_sp_String      "homoFreq_sp"
 
 public:
-	statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
+	statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
 		const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
 	/// heteroFreq
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -491,14 +491,14 @@ private:
 #define  GenotypeFreq_sp_String  "genoFreq_sp"
 
 public:
-	statGenoFreq(const vectorlu & genoFreq,
+	statGenoFreq(const vectoru & genoFreq,
 		const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
 	/// which genotypes
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -656,7 +656,7 @@ private:
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statAssociation(const vectorlu & loci,
+	statAssociation(const vectoru & loci,
 		const subPopList & subPops, const stringList & vars);
 
 	// calculate, right now,  do not tempt to save values
@@ -676,7 +676,7 @@ private:
 
 private:
 	/// Association
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -690,7 +690,7 @@ private:
 #define Neutra_Pi_sp_String   "Pi_sp"
 
 public:
-	statNeutrality(const vectorlu & loci, const subPopList & subPops,
+	statNeutrality(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars);
 
 	// calculate, right now,  do not tempt to save values
@@ -702,7 +702,7 @@ private:
 
 private:
 	/// Neutrality
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -721,13 +721,13 @@ private:
 #define  AvgFit_String  "AvgFit"
 
 public:
-	statFst(const vectorlu & Fst, const subPopList & subPops, const stringList & vars);
+	statFst(const vectoru & Fst, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
 	/// Fst
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -746,16 +746,16 @@ private:
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statHWE(const vectorlu & loci, const subPopList & subPops,
+	statHWE(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
-	vectorlu mapToCount(const GENOCNT & cnt);
+	vectoru mapToCount(const GENOCNT & cnt);
 
 private:
-	vectorlu m_loci;
+	vectoru m_loci;
 	subPopList m_subPops;
 	stringList m_vars;
 };

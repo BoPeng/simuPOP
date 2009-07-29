@@ -519,7 +519,7 @@ bool statNumOfAffected::apply(population & pop)
 }
 
 
-statAlleleFreq::statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
+statAlleleFreq::statAlleleFreq(const vectoru & loci, const subPopList & subPops, const stringList & vars)
 	: m_loci(loci), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
@@ -541,7 +541,7 @@ bool statAlleleFreq::apply(population & pop)
 
 	// count for all specified subpopulations
 	ALLELECNTLIST alleleCnt(m_loci.size());
-	vectorlu allAllelesCnt(m_loci.size(), 0);
+	vectoru allAllelesCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
 	subPops.useSubPopsFrom(pop);
@@ -562,7 +562,7 @@ bool statAlleleFreq::apply(population & pop)
 #ifdef LONGALLELE
 			intDict alleles;
 #else
-			vectorlu alleles(2, 0);
+			vectoru alleles(2, 0);
 #endif
 			size_t allAlleles = 0;
 
@@ -647,7 +647,7 @@ bool statAlleleFreq::apply(population & pop)
 }
 
 
-statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
+statHeteroFreq::statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
 	const subPopList & subPops, const stringList & vars)
 	: m_loci(heteroFreq), m_subPops(subPops), m_vars()
 {
@@ -781,7 +781,7 @@ bool statHeteroFreq::apply(population & pop)
 }
 
 
-statGenoFreq::statGenoFreq(const vectorlu & genoFreq, const subPopList & subPops, const stringList & vars)
+statGenoFreq::statGenoFreq(const vectoru & genoFreq, const subPopList & subPops, const stringList & vars)
 	: m_loci(genoFreq), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
@@ -807,7 +807,7 @@ bool statGenoFreq::apply(population & pop)
 
 	// count for all specified subpopulations
 	vector<tupleDict> genotypeCnt(m_loci.size());
-	vectorlu allGenotypeCnt(m_loci.size(), 0);
+	vectoru allGenotypeCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
 	subPops.useSubPopsFrom(pop);
@@ -943,7 +943,7 @@ bool statHaploFreq::apply(population & pop)
 
 	// count for all specified subpopulations
 	vector<tupleDict> haplotypeCnt(m_loci.size());
-	vectorlu allHaplotypeCnt(m_loci.size());
+	vectoru allHaplotypeCnt(m_loci.size());
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
 	subPops.useSubPopsFrom(pop);
@@ -1110,10 +1110,10 @@ bool statInfo::apply(population & pop)
 
 	vectorf allSumVal(numSumFld);
 	vectorf allMeanSumVal(numMeanFld);
-	vectorlu allMeanNumVal(numMeanFld);
+	vectoru allMeanNumVal(numMeanFld);
 	vectorf allVarSumVal(numVarFld);
 	vectorf allVarSum2Val(numVarFld);
-	vectorlu allVarNumVal(numVarFld);
+	vectoru allVarNumVal(numVarFld);
 	vectorf allMaxVal(0);
 	vectorf allMinVal(0);
 	// for each subpopulation.
@@ -1124,10 +1124,10 @@ bool statInfo::apply(population & pop)
 	for (; sp != spEnd; ++sp) {
 		vectorf sumVal(numSumFld, 0.);
 		vectorf meanSumVal(numMeanFld, 0.);
-		vectorlu meanNumVal(numMeanFld, 0);
+		vectoru meanNumVal(numMeanFld, 0);
 		vectorf varSumVal(numVarFld, 0.);
 		vectorf varSum2Val(numVarFld, 0.);
-		vectorlu varNumVal(numVarFld, 0);
+		vectoru varNumVal(numVarFld, 0);
 		vectorf maxVal(0);
 		vectorf minVal(0);
 
@@ -1634,7 +1634,7 @@ bool statLD::apply(population & pop)
 }
 
 
-statAssociation::statAssociation(const vectorlu & loci,
+statAssociation::statAssociation(const vectoru & loci,
 	const subPopList & subPops, const stringList & vars)
 	: m_loci(loci), m_subPops(subPops), m_vars()
 {
@@ -1958,7 +1958,7 @@ bool statAssociation::apply(population & pop)
 }
 
 
-statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops,
+statNeutrality::statNeutrality(const vectoru & loci, const subPopList & subPops,
 	const stringList & vars) :
 	m_loci(loci), m_subPops(subPops), m_vars()
 {
@@ -2057,7 +2057,7 @@ bool statNeutrality::apply(population & pop)
 }
 
 
-statFst::statFst(const vectorlu & Fst, const subPopList & subPops, const stringList & vars)
+statFst::statFst(const vectoru & Fst, const subPopList & subPops, const stringList & vars)
 	: m_loci(Fst), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
@@ -2165,7 +2165,7 @@ bool statFst::apply(population & pop)
 		double r = numSP;
 		double n = popSize;
 		double n_bar = n / r;
-		vectorlu n_i = pop.subPopSizes();
+		vectoru n_i = pop.subPopSizes();
 
 		// n_c
 		double n_c = n;
@@ -2242,7 +2242,7 @@ bool statFst::apply(population & pop)
 }
 
 
-statHWE::statHWE(const vectorlu & loci,  const subPopList & subPops,
+statHWE::statHWE(const vectoru & loci,  const subPopList & subPops,
 	const stringList & vars)
 	: m_loci(loci), m_subPops(subPops), m_vars()
 {
@@ -2255,9 +2255,9 @@ statHWE::statHWE(const vectorlu & loci,  const subPopList & subPops,
 }
 
 
-vectorlu statHWE::mapToCount(const GENOCNT & cnt)
+vectoru statHWE::mapToCount(const GENOCNT & cnt)
 {
-	vectorlu res(3, 0);
+	vectoru res(3, 0);
 
 	DBG_FAILIF(cnt.size() > 3, ValueError,
 		"More than three genotypes are detected for HWE test");

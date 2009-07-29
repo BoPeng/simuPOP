@@ -552,7 +552,7 @@ private:
 	bool matchSingle(const individual * ind, const vectori & alleles) const;
 
 private:
-	vectorlu m_loci;
+	vectoru m_loci;
 	intMatrix m_alleles;
 	bool m_phase;
 };

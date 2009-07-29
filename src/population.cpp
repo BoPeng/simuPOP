@@ -34,23 +34,23 @@
 
 namespace simuPOP {
 
-population::population(const vectorlu & size,
+population::population(const uintList & size,
 	float ploidy,
-	const vectoru & loci,
-	const vectoru & chromTypes,
-	const vectorf & lociPos,
+	const uintList & loci,
+	const uintList & chromTypes,
+	const floatList & lociPos,
 	int ancGen,
-	const vectorstr & chromNames,
-	const vectorstr & alleleNames,
-	const vectorstr & lociNames,
-	const vectorstr & subPopNames,
+	const stringList & chromNames,
+	const stringList & alleleNames,
+	const stringList & lociNames,
+	const stringList & subPopNames,
 	const stringList & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(0),
-	m_subPopSize(size),
+	m_subPopSize(size.elems()),
 	m_subPopNames(),
-	m_subPopIndex(size.size() + 1),
+	m_subPopIndex(size.elems().size() + 1),
 	m_vspSplitter(NULL),
 	m_genotype(0),
 	m_info(0),
@@ -75,8 +75,8 @@ population::population(const vectorlu & size,
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
-		loci, chromTypes, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
-		lociNames, infoFields.elems());
+		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
+		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl
@@ -90,7 +90,7 @@ population::population(const vectorlu & size,
 	if (m_subPopSize.empty())
 		m_subPopSize.resize(1, 0);
 
-	fitSubPopStru(m_subPopSize, subPopNames);
+	fitSubPopStru(m_subPopSize, subPopNames.elems());
 }
 
 
@@ -520,7 +520,7 @@ void population::validate(const string & msg) const
 }
 
 
-void population::fitSubPopStru(const vectorlu & newSubPopSizes,
+void population::fitSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
 {
 	ULONG newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
@@ -590,7 +590,7 @@ void population::fitGenoStru(size_t stru)
 }
 
 
-void population::setSubPopStru(const vectorlu & newSubPopSizes,
+void population::setSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -603,7 +603,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 
 	if (newSubPopSizes.empty())
-		m_subPopSize = vectorlu(1, 0);
+		m_subPopSize = vectoru(1, 0);
 	else
 		m_subPopSize = newSubPopSizes;
 	m_subPopIndex.resize(numSubPop() + 1);
@@ -694,7 +694,7 @@ void population::setSubPopByIndInfo(const string & field)
 }
 
 
-vectoru population::splitSubPop(UINT subPop, const vectorlu & sizes, const vectorstr & names)
+vectoru population::splitSubPop(UINT subPop, const vectoru & sizes, const vectorstr & names)
 {
 	if (sizes.size() <= 1)
 		return vectoru(1, subPop);
@@ -708,7 +708,7 @@ vectoru population::splitSubPop(UINT subPop, const vectorlu & sizes, const vecto
 	if (!names.empty() && m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 
-	vectorlu subPopSizes;
+	vectoru subPopSizes;
 	vectorstr subPopNames;
 	vectoru ret(sizes.size());
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
@@ -736,16 +736,16 @@ vectoru population::splitSubPop(UINT subPop, const vectorlu & sizes, const vecto
 
 void population::removeSubPops(const uintList & subPopList)
 {
-	const vectorlu & subPops = subPopList.elems();
+	const vectoru & subPops = subPopList.elems();
 
 #ifndef OPTIMIZED
 	// check if subPops are valid
-	for (vectorlu::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
+	for (vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
 		DBG_FAILIF(*sp >= numSubPop(), IndexError, "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
 	sortIndividuals();
-	vectorlu new_size;
+	vectoru new_size;
 	vectorstr new_spNames;
 
 	UINT step = genoSize();
@@ -796,10 +796,10 @@ void population::removeSubPops(const uintList & subPopList)
 
 void population::removeIndividuals(const uintList & indList)
 {
-	const vectorlu & inds = indList.elems();
+	const vectoru & inds = indList.elems();
 
 	sortIndividuals();
-	vectorlu new_size = m_subPopSize;
+	vectoru new_size = m_subPopSize;
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
@@ -812,8 +812,8 @@ void population::removeIndividuals(const uintList & indList)
 
 	// which ones are removed?
 	vector<bool> removed(popSize(), false);
-	vectorlu::const_iterator it = inds.begin();
-	vectorlu::const_iterator it_end = inds.end();
+	vectoru::const_iterator it = inds.begin();
+	vectoru::const_iterator it_end = inds.end();
 	for (; it != it_end; ++it) {
 		DBG_FAILIF(*it >= removed.size(), IndexError,
 			"Individual index " + toStr(*it) + " out of range.");
@@ -864,7 +864,7 @@ UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 	// merge all subpopulations
 	if (subPops.empty()) {
 		// [ popSize() ]
-		vectorlu sz(1, popSize());
+		vectoru sz(1, popSize());
 		if (m_subPopNames.empty())
 			setSubPopStru(sz, m_subPopNames);
 		else
@@ -887,7 +887,7 @@ UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 			break;
 		}
 	// new subpopulation sizes and names
-	vectorlu new_size;
+	vectoru new_size;
 	vectorstr new_names;
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
@@ -1160,7 +1160,7 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 vectoru population::addLoci(const uintList & chromList, const floatList & posList,
                             const vectorstr & names)
 {
-	const vectorlu & chrom = chromList.elems();
+	const vectoru & chrom = chromList.elems();
 	const vectorf & pos = posList.elems();
 
 	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
@@ -1217,7 +1217,7 @@ vectoru population::addLoci(const uintList & chromList, const floatList & posLis
 
 void population::resize(const uintList & sizeList, bool propagate)
 {
-	const vectorlu & newSubPopSizes = sizeList.elems();
+	const vectoru & newSubPopSizes = sizeList.elems();
 
 	DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
 		"Resize should give subpopulation size for each subpopulation");
@@ -1372,7 +1372,7 @@ population & population::extract(bool removeInd, const string & field,
 			ped->sortIndividuals();
 		}
 		// determine the number of individuals
-		vectorlu spSizes;
+		vectoru spSizes;
 		vector<vectoru> indIdx;
 		ULONG size;
 		if (!removeInd) {
@@ -1523,8 +1523,8 @@ population & population::extract(bool removeInd, const string & field,
 
 void population::removeLoci(const uintList & lociList, const uintList & keepList)
 {
-	const vectorlu & loci = lociList.elems();
-	const vectorlu & keep = keepList.elems();
+	const vectoru & loci = lociList.elems();
+	const vectoru & keep = keepList.elems();
 
 	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
 		"Please specify only one of parameters loci and keep");
@@ -1532,7 +1532,7 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 	if (loci.empty() && keep.empty())
 		return;
 
-	vectorlu kept = keep;
+	vectoru kept = keep;
 	// kept must be in order so that genotypes could be copied correctly
 	std::sort(kept.begin(), kept.end());
 	UINT oldTotNumLoci = totNumLoci();
@@ -1553,7 +1553,7 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
 			for (UINT p = 0; p < pEnd; ++p) {
-				vectorlu::iterator loc = kept.begin();
+				vectoru::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc)
 					// this line needs ordered kept array
 					*(newPtr++) = oldPtr[*loc];

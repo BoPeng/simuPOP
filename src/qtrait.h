@@ -166,7 +166,7 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// qtrait for each genotype
 	strDict m_dict;
@@ -235,7 +235,7 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// qtrait for each genotype
 	vectorf m_qtrait;
@@ -244,7 +244,7 @@ private:
 	vectorf m_sigma;
 
 	///
-	vectorlu m_wildtype;
+	vectoru m_wildtype;
 };
 
 /// quantitative trait according to genotypes from a multiple loci multiplicative model
@@ -387,7 +387,7 @@ public:
 
 private:
 	/// susceptibility loci
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;

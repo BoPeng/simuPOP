@@ -326,11 +326,11 @@ protected:
 class uintList
 {
 public:
-	typedef vectorlu::iterator iterator;
-	typedef vectorlu::const_iterator const_iterator;
+	typedef vectoru::iterator iterator;
+	typedef vectoru::const_iterator const_iterator;
 
 public:
-	uintList(const vectorlu & values = vectorlu()) : m_elems(values)
+	uintList(const vectoru & values = vectoru()) : m_elems(values)
 	{
 	}
 
@@ -341,14 +341,14 @@ public:
 
 
 	/// CPPONLY
-	const vectorlu & elems() const
+	const vectoru & elems() const
 	{
 		return m_elems;
 	}
 
 
 protected:
-	vectorlu m_elems;
+	vectoru m_elems;
 };
 
 
@@ -526,7 +526,7 @@ private:
 class uintListFunc : public uintList
 {
 public:
-	uintListFunc(const vectorlu & values = vectorlu()) :
+	uintListFunc(const vectoru & values = vectoru()) :
 		uintList(values), m_func(NULL)
 	{
 	}
@@ -1425,7 +1425,10 @@ public:
 	{
 		// if sum p_i != 1, it will be normalized.
 		// the size of n is not checked!
-		gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], & * n);
+		vector<unsigned int> val(p.size());
+		gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &val[0]);
+		for (size_t i = 0; i < p.size(); ++i)
+			*(n++) = val[i];
 	}
 
 
@@ -1433,10 +1436,12 @@ public:
 	{
 		// if sum p_i != 1, it will be normalized.
 		// the size of n is not checked!
-		vectoru val(p.size());
-
+		vector<unsigned int> val(p.size());
+		vectoru res(p.size());
 		gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &val[0]);
-		return val;
+		for (size_t i = 0; i < p.size(); ++i)
+			res[i] = val[i];
+		return res;
 	}
 
 
@@ -1462,7 +1467,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 
 /// CPPONLY
-double hweTest(const vectorlu & cnt);
+double hweTest(const vectoru & cnt);
 
 // weighted sampling using Walker's alias algorithm
 class weightedSampler
@@ -1503,7 +1508,7 @@ public:
 
 	// sample without replacement from 0,...,n-1,
 	// with weight freq
-	ULONG get(vectorlu & res, ULONG shift = 0)
+	ULONG get(vectoru & res, ULONG shift = 0)
 	{
 		double rN;
 		size_t K;
@@ -1512,7 +1517,7 @@ public:
 			std::fill(res.begin(), res.end(), m_fixedValue);
 			return 0;
 		}
-		for (vectorlu::iterator it = res.begin(); it != res.end(); ++it) {
+		for (vectoru::iterator it = res.begin(); it != res.end(); ++it) {
 			rN = m_RNG->randUniform01() * m_N;
 			K = static_cast<size_t>(rN);
 
@@ -1560,7 +1565,7 @@ public:
 	}
 
 
-	vectorlu a()
+	vectoru a()
 	{
 		return m_a;
 	}
@@ -1578,7 +1583,7 @@ private:
 	/// internal table.
 	vectorf m_q;
 
-	vectorlu m_a;
+	vectoru m_a;
 
 	// handle special case
 	bool m_fixed;

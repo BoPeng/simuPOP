@@ -467,7 +467,7 @@ public:
 	//@{
 
 	/// CPPONLY
-	void display(ostream & out, int width = 1, const vectorlu & loci = vectorlu() );
+	void display(ostream & out, int width = 1, const vectoru & loci = vectoru() );
 
 	//@}
 

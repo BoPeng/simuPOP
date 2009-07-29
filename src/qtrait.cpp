@@ -59,7 +59,7 @@ double mapQuanTrait::qtrait(individual * ind)
 {
 	string key;
 
-	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ToAllele(ind->allele(*loc, 0));
 		Allele b = ToAllele(ind->allele(*loc, 1));
@@ -105,7 +105,7 @@ double maQuanTrait::qtrait(individual * ind)
 {
 	UINT index = 0;
 
-	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ToAllele(ind->allele(*loc, 0));
 		Allele b = ToAllele(ind->allele(*loc, 1));

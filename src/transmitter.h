@@ -442,7 +442,7 @@ public:
 	 *  If a list of recombination rates are specified in \e rates, a parameter
 	 *  \e loci with the same length should also be specified. Different
 	 *  recombination rates can then be used after these loci (between
-     *  specified loci and their immediate neighbor to the right).
+	 *  specified loci and their immediate neighbor to the right).
 	 *
 	 *  A recombination intensity (\e intensity) can be used to specify
 	 *  recombination rates that are proportional to physical distances between
@@ -553,7 +553,7 @@ private:
 	vectorf m_rates;
 
 	/// initial parameter
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;
