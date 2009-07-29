@@ -1181,11 +1181,11 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
 
-%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectorlu &loci, vectorlu &kept);
+%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectorlu &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const;
 
@@ -2362,7 +2362,7 @@ Usage:
 
 %ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
-%ignore simuPOP::individual::display(ostream &out, int width=1, const vectorlu &loci=vectorlu());
+%ignore simuPOP::individual::display(ostream &out, int width=1, const vectoru &loci=vectoru());
 
 %feature("docstring") simuPOP::IndividualIterator "
 
@@ -4150,7 +4150,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::migrator::setRates(int mode, const subPopList &fromSubPops, const vectorlu &toSubPops);
+%ignore simuPOP::migrator::setRates(int mode, const subPopList &fromSubPops, const vectoru &toSubPops);
 
 %feature("docstring") simuPOP::migrator::apply "
 
@@ -4657,7 +4657,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mutator::setRate(const vectorf &rates, const vectorlu &loci=vectorlu());
+%ignore simuPOP::mutator::setRate(const vectorf &rates, const vectoru &loci=vectoru());
 
 %ignore simuPOP::mutator::mutRate(UINT loc);
 
@@ -5713,9 +5713,7 @@ Arguments:
                     chromosome. lociPos should be arranged chromosome
                     by chromosome. If lociPos are not in order within
                     a chromosome, they will be re-arranged along with
-                    corresponding lociNames (if specified). A nested
-                    list that specifies positions of loci on each
-                    chromosome is also acceptable.
+                    corresponding lociNames (if specified).
     ancGen:         Number of the most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be kept. If it is
@@ -5728,12 +5726,11 @@ Arguments:
                     example, alleleNames=('A','C','T','G') gives names
                     A, C, T, and G to alleles 0, 1, 2, and 3
                     respectively.
-    lociNames:      A list or a matrix (separated by chromosomes) of
-                    names for each locus. It can be empty or a list of
-                    names for each locus. Empty name can be used but
-                    non-empty names must be unique. If loci are not
-                    specified in order, loci names will be rearranged
-                    according to their position on the chromosome.
+    lociNames:      A list of names for each locus. It can be empty or
+                    a list of unique names for each locus. If loci are
+                    not specified in order, loci names will be
+                    rearranged according to their position on the
+                    chromosome.
     subPopNames:    A list of subpopulation names. All subpopulations
                     will have name '' if this parameter is not
                     specified.
@@ -5792,7 +5789,7 @@ Usage:
 
 %ignore simuPOP::population::validate(const string &msg) const;
 
-%ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes, const vectorstr &newSubPopNames);
+%ignore simuPOP::population::fitSubPopStru(const vectoru &newSubPopSizes, const vectorstr &newSubPopNames);
 
 %ignore simuPOP::population::hasActivatedVirtualSubPop() const;
 
@@ -10898,7 +10895,7 @@ Details:
 
 %ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
 
-%ignore simuPOP::hweTest(const vectorlu &cnt);
+%ignore simuPOP::hweTest(const vectoru &cnt);
 
 %feature("docstring") simuPOP::GetRNG "
 

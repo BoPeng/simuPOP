@@ -247,7 +247,7 @@ class TestPopulation(unittest.TestCase):
 
     def testAddChrom(self):
         'Testing population::addChrom'
-        pop = self.getPop(chromNames=['c1', 'c2'], lociPos=[[1], [3, 5]], lociNames = ['l1', 'l2', 'l3'], ancGen=5)
+        pop = self.getPop(chromNames=['c1', 'c2'], lociPos=[1, 3, 5], lociNames = ['l1', 'l2', 'l3'], ancGen=5)
         pop1 = pop.clone()
         pop.addChrom([7, 8, 9], ['l4', 'l5', 'l6'], 'c3')
         self.assertEqual(pop.numChrom(), 3)
@@ -316,9 +316,9 @@ class TestPopulation(unittest.TestCase):
 
     def testAddLociFrom(self):
         'Testing population::addLociFrom(pop)'
-        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[[1], [2, 5]], lociNames = ['l1', 'l2', 'l3'])
+        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 2, 5], lociNames = ['l1', 'l2', 'l3'])
         pop1 = pop.clone()
-        pop2 = self.getPop(chromNames=["c3", "c4"], ancGen=5, lociPos=[[4], [3, 6]], lociNames = ['l4', 'l5', 'l6'])
+        pop2 = self.getPop(chromNames=["c3", "c4"], ancGen=5, lociPos=[4, 3, 6], lociNames = ['l4', 'l5', 'l6'])
         pop.addLociFrom(pop2);
         self.assertEqual(pop.numLoci(), (2, 4))
         self.assertEqual(pop.lociPos(), (1, 4, 2, 3, 5, 6))
@@ -339,7 +339,7 @@ class TestPopulation(unittest.TestCase):
 
     def testAddLoci(self):
         'Testing population::addLoci(chrom, pos, names=[])'
-        pop = self.getPop(size = 100, chromNames=["c1", "c2"], ancGen=5, lociPos=[[1], [3, 5]], lociNames = ['l1', 'l2', 'l3'])
+        pop = self.getPop(size = 100, chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 3, 5], lociNames = ['l1', 'l2', 'l3'])
         pop1 = pop.clone()
         newpos = pop.addLoci([0, 1, 1], [2, 6, 7], ['l4', 'l5', 'l6'])
         self.assertEqual(pop.numLoci(), (2, 4))
