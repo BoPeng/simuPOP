@@ -21,11 +21,11 @@ class TestIndividual(unittest.TestCase):
     def getPop(self):
         if AlleleType() != 'binary':
             pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
-                lociPos=[ [2, 3, 4, 5, 6], [2, 4, 6, 8, 10, 12, 14]],
+                lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
                 alleleNames=['_', 'A', 'C', 'T', 'G'])
         else: # binary
             pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
-                lociPos=[ [2, 3, 4, 5, 6], [2, 4, 6, 8, 10, 12, 14]],
+                lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
                 alleleNames=['1', '2'])
         return pop
 
