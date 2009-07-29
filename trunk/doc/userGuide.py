@@ -506,6 +506,9 @@ print open('R2.txt').read()    # Only the last write operation succeed.
 print open('LD_2.txt').read()  # Each replicate writes to a different file.
 #end
 
+for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt']:
+    os.remove(file)
+
 #file log/outputFunc.log
 import logging
 # logging to a file simulation.log, with detailed debug information
@@ -540,8 +543,7 @@ print open('simulation.log').read()
 #end
 
 logging.shutdown()
-for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt', 'LD_2.txt', 'simulation.log']:
-    os.remove(file)
+os.remove('simulation.log')
 
 #file log/transmitter.log
 simu = simulator(population(size=10000, loci=[2]), randomMating())
@@ -1480,10 +1482,11 @@ simu.evolve(
     ops = [
         stat(alleleFreq=[0]),
         ifElse('alleleNum[0][0] == 0',
-            turnOnDebug(DBG_MUTATOR),
-            turnOffDebug(DBG_MUTATOR)),
-        ifElse('alleleNum[0][0] == 0',
-            pointMutator(loci=0, allele=0, inds=0)),
+            ifOps = [
+                turnOnDebug(DBG_MUTATOR),
+                pointMutator(loci=0, allele=0, inds=0),
+            ],
+            elseOps = turnOffDebug(DBG_MUTATOR)),
     ],
     gen = 100
 )
@@ -2116,14 +2119,16 @@ simu.evolve(
 #end
 
 #file log/statGenoFreq.log
-pop = population(100, loci=[1])
+pop = population(100, loci=[1, 1, 1], chromTypes=[Autosome, ChromosomeX, ChromosomeY])
 InitByFreq(pop, [0.01, 0.05, 0.94])
-Stat(pop, genoFreq=[0])
-print 'Available genotypes:', pop.dvars().genoFreq[0].keys()
-print 'Genotype frequency:'
+Stat(pop, genoFreq=[0, 1])
+print 'Available genotypes on autosome:', pop.dvars().genoFreq[0].keys()
 for i in range(3):
     for j in range(3):
         print '%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[0][(i,j)])
+
+print 'Genotype frequency on chromosome X:\n', \
+    '\n'.join(['%s: %.3f' % (x,y) for x,y in pop.dvars().genoFreq[1].iteritems()])
 
 #end
 
@@ -2229,7 +2234,7 @@ def simulation(loci, genEnd, freq):
             #stat(alleleFreq=[0]),
             #pyEval(r"'%.3f\t' % alleleFreq[0][0]")
             #],
-        gen=1000
+        gen=0
     )
 
 simulation(loci=[2], genEnd = 1000, freq=[0.01, 0.02])

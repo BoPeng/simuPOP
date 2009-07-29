@@ -799,6 +799,10 @@ bool statGenoFreq::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
+	vectoru chromTypes;
+	for (size_t i = 0; i < m_loci.size(); ++i)
+		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
+
 	DBG_DO(DBG_STATOR, cout << "Calculated genotype frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
@@ -827,12 +831,31 @@ bool statGenoFreq::apply(population & pop)
 
 			// go through all alleles
 			IndIterator ind = pop.indIterator(it->subPop());
-			for (; ind.valid(); ++ind) {
-				vectori genotype(ply);
-				for (size_t p = 0; p < ply; ++p)
-					genotype[p] = ind->allele(loc, p);
-				genotypes[genotype]++;
-				allGenotypes++;
+			// the simple case, the speed is potentially faster
+			if (!pop.isHaplodiploid() && (chromTypes[idx] == Autosome || chromTypes[idx] == Customized)) {
+				for (; ind.valid(); ++ind) {
+					vectori genotype(ply);
+					for (size_t p = 0; p < ply; ++p)
+						genotype[p] = ind->allele(loc, p);
+					genotypes[genotype]++;
+					allGenotypes++;
+				}
+			} else {
+				for (; ind.valid(); ++ind) {
+					vectori genotype;
+					for (size_t p = 0; p < ply; ++p) {
+						if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+							continue;
+						if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+							continue;
+						if (((chromTypes[idx] == ChromosomeX && p == 1) ||
+							 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+							 continue;
+						genotype.push_back(ind->allele(loc, p));
+					}
+					genotypes[genotype]++;
+					allGenotypes++;
+				}
 			}
 			// total allele count
 			tupleDict::iterator dct = genotypes.begin();
