@@ -2199,14 +2199,12 @@ pprint(pop.vars())
 
 #file log/statAssociation.log
 from simuUtil import *
-
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
-    Stat(pop, numOfAffected=True, vars='propOfAffected')
     sample = CaseControlSample(pop, cases=500, controls=500)[0]
     Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
-    print 'Prevalence: %.2f, Allele_ChiSq: %.5f, %.5f, Geno_ChiSq: %.5f, %.5f, Amitage: %.5f, %.5f' \
-        % (pop.dvars().propOfAffected, sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
+    print 'Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
+        % (sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
         sample.dvars().Geno_ChiSq_p[0], sample.dvars().Geno_ChiSq_p[2],
         sample.dvars().Armitage_p[0], sample.dvars().Armitage_p[2])
     return True
@@ -2216,7 +2214,7 @@ simu = simulator(population(size=100000, loci=[3]),
 simu.evolve(
     preOps = initByValue([[0]*3, [1]*3], proportions=[0.5, 0.5]),
     ops = [
-        recombinator(loci=[0, 1], rates=[0.01, 0.0001]),
+        recombinator(loci=[0, 1], rates=[0.01, 0.005]),
         maPenetrance(loci=1, penetrance=[0.1, 0.2, 0.4]),
         pyOperator(func=assoTest, step=20),
     ],

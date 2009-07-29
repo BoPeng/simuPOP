@@ -2249,7 +2249,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	vectoru colSum(n, 0);
 	double N = 0;
 
-	DBG_DO(DBG_STATOR, cout << "ChiSq test with table " <<
+	DBG_DO(DBG_STATOR, cout << "ChiSq test with table\n" <<
 		table[0] << endl << table[1] << endl <<
 		(table.size() <= 2 ? vectoru() : table[2]) << endl);
 	//
@@ -2279,6 +2279,9 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 
 	DBG_FAILIF(s.size() != n, ValueError,
 		"Weight for Cochran-Armitage test should have length 3");
+	//
+	DBG_DO(DBG_STATOR, cout << "Armitage trend test with table\n" <<
+		table[0] << endl << table[1] << endl);
 	// formula is copied from HelixTree
 	// www.goldenhelix.com/SNP_Variation/Manual/svs7/general_statistics.html
 	//
