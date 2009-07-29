@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14452,6 +14452,9 @@ reference "statLD"
 \end_inset
 
  demonstrates how to calculate various LD measures and output selected variables.
+ Note that the significant overall LD between two loci is an artifact of
+ population structure because loci are in linkage equilibrium in each subpopulat
+ion.
 \end_layout
 
 \begin_layout Standard
@@ -14508,7 +14511,58 @@ Allele-based
 \begin_inset Formula $\chi^{2}$
 \end_inset
 
- test.
+ test: This is the basic allele-based 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test that can be applied to diploid as well as haploid populations.
+ Basically, a 2 by 
+\begin_inset Formula $n$
+\end_inset
+
+ contigency table is set up for each locus with 
+\begin_inset Formula $n_{ij}$
+\end_inset
+
+ being the number of alleles 
+\begin_inset Formula $j$
+\end_inset
+
+ in cases 
+\begin_inset Formula $\left(i=0\right)$
+\end_inset
+
+ and controls 
+\begin_inset Formula $\left(i=1\right)$
+\end_inset
+
+.
+ A 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test is applied to each locus and set variables 
+\family typewriter
+Allele_ChiSq
+\family default
+ and 
+\family typewriter
+Allele_ChiSq_p
+\family default
+ to the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic and its two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+ value (with degrees freedom 
+\begin_inset Formula $n-1$
+\end_inset
+
+).
+ Note that genotype information is not preserved in such a test.
 \end_layout
 
 \begin_layout Itemize
@@ -14517,22 +14571,265 @@ Genotype-based
 \end_inset
 
  test.
+ This is the genotype-based 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test for diploid populations.
+ Basically, a 2 by 
+\begin_inset Formula $n$
+\end_inset
+
+ contigency table is set up for each locus with 
+\begin_inset Formula $n_{ij}$
+\end_inset
+
+ being the number of genotype 
+\begin_inset Formula $j$
+\end_inset
+
+ (unordered pairs of alleles) in cases 
+\begin_inset Formula $\left(i=0\right)$
+\end_inset
+
+ and controls 
+\begin_inset Formula $\left(i=1\right)$
+\end_inset
+
+.
+ A 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test is applied to each locus and set variables 
+\family typewriter
+Geno_ChiSq
+\family default
+ and 
+\family typewriter
+Geno_ChiSq_p
+\family default
+ to the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic and its two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+ value (with degrees freedom 
+\begin_inset Formula $n-1$
+\end_inset
+
+).
+ This test is usually applied to diallelic loci with 3 genotypes (
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+) but it can be applied to loci with more than two alleles as well.
 \end_layout
 
 \begin_layout Itemize
 Genotype-based Armitage trend test.
+ This Cochran-Armitage test can only be applied to diallelic loci in diploid
+ populations.
+ For each locus, a 2 by 3 contigency table is set up with 
+\begin_inset Formula $n_{ij}$
+\end_inset
+
+ being the number of genotype 
+\begin_inset Formula $j$
+\end_inset
+
+ (
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+ with 
+\emph on
+A
+\emph default
+ being the wildtype allele) in cases 
+\begin_inset Formula $\left(i=0\right)$
+\end_inset
+
+ and controls 
+\begin_inset Formula $\left(i=1\right)$
+\end_inset
+
+.
+ A Cochran-Armitage trend test is applied to each locus and set variables
+ 
+\family typewriter
+Armitage_p
+\family default
+ to its two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+ value.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statAssociation"
+
+\end_inset
+
+ demonstrates how to apply a penetrance model, draw a case-control sample
+ and apply genetic association tests to an evolving population.
+ In this example, a penetrance model is applied to a locus (locus 3).
+ A Python operator is then used to draw a case-control sample from the populatio
+n and test genetic association at two surrounding loci.
+ Because these two loci are tightly linked to the disease predisposing locus,
+ they are in strong association with the disease initially.
+ However, because of recombination, such association decays with time.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statAssociation.log"
+lstparams "caption={Genetic association tests},label={statAssociation}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Population structure
 \end_layout
 
+\begin_layout Standard
+Parameter 
+\family typewriter
+Fst
+\family default
+ measures the 
+\begin_inset Formula $F_{st}$
+\end_inset
+
+ statistic for population structure at each specified locus (variables 
+\family typewriter
+Fst
+\family default
+, 
+\family typewriter
+Fis
+\family default
+ and 
+\family typewriter
+Fit
+\family default
+), and a summary statistic for all loci (variables 
+\family typewriter
+AvgFst
+\family default
+, 
+\family typewriter
+AvgFis
+\family default
+ and 
+\family typewriter
+AvgFit
+\family default
+).
+ This statistic by default uses all existing subpopulations, but it can
+ also be applied to a subset of subpopulations, or even virtual subpopulations
+ using parameter 
+\emph on
+subPops
+\emph default
+.
+ That is to say, you can measure the genetic difference between males and
+ females using 
+\family typewriter
+subPops=[(0,0), (0,1)]
+\family default
+ if a sexSplitter is used to define two virtual subpopulations with male
+ and female individuals respectively.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statFst"
+
+\end_inset
+
+ demonstrate a simulation with two replicates.
+ In the first replicate, three subpopulations evolve separately without
+ migration and become more and more genetically distant.
+ In the second replicate, a low level migration is applied between subpopulation
+s so the population structure is kept at a low level.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statFst.log"
+lstparams "caption={Measure of population structure (Fst)},label={statFst}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Hardy Weinberg equilibrium
 \end_layout
 
-\begin_layout Subsection
-Self-defined statistics
+\begin_layout Standard
+Parameter 
+\family typewriter
+HWE
+\family default
+ accepts a list of loci at which exact Hardy Weinberg equilibrium tests
+ are applied.
+ The 
+\emph on
+p
+\emph default
+-values of the tests are assigned to a dictionary 
+\family typewriter
+HWE
+\family default
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statHWE"
+
+\end_inset
+
+ demonstrates how Hardy Weinberg equilibrium is reached in one generation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statHWE.log"
+lstparams "caption={Hardy Weinberg Equilibrium test},label={statHWE}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

@@ -441,7 +441,8 @@ public:
 	 *
 	 *  If a list of recombination rates are specified in \e rates, a parameter
 	 *  \e loci with the same length should also be specified. Different
-	 *  recombination rates can then be used for these loci.
+	 *  recombination rates can then be used after these loci (between
+     *  specified loci and their immediate neighbor to the right).
 	 *
 	 *  A recombination intensity (\e intensity) can be used to specify
 	 *  recombination rates that are proportional to physical distances between

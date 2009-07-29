@@ -1640,7 +1640,11 @@ statAssociation::statAssociation(const vectorlu & loci,
 {
 	const char * allowedVars[] = {
 		Allele_ChiSq_String,	Allele_ChiSq_p_String,
+		Geno_ChiSq_String,	Geno_ChiSq_p_String,
+		Armitage_p_String,	Armitage_p_String,
 		Allele_ChiSq_sp_String, Allele_ChiSq_p_sp_String,
+		Geno_ChiSq_sp_String,	Geno_ChiSq_p_sp_String,
+		Armitage_p_sp_String,	Armitage_p_sp_String,
 		""
 	};
 	const char * defaultVars[] = { Allele_ChiSq_p_String, "" };
