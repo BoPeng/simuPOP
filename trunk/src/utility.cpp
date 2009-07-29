@@ -2318,7 +2318,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 }
 
 
-double hweTest(const vectorlu & cnt)
+double hweTest(const vectoru & cnt)
 {
 	// Calculates exact two-sided hardy-weinberg p-value. Parameters
 	// are number of genotypes, number of rare alleles observed and

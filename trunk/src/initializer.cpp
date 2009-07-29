@@ -90,12 +90,12 @@ bool initByFreq::apply(population & pop)
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != subPops.size(),
 		ValueError, "Ranges and values should have the same length");
 
-	vectorlu loci = m_loci;
+	vectoru loci = m_loci;
 	if (m_loci.empty())
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
 
-	vectorlu ploidy = m_ploidy;
+	vectoru ploidy = m_ploidy;
 	if (m_ploidy.empty())
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);
@@ -121,13 +121,13 @@ bool initByFreq::apply(population & pop)
 		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; it.valid(); ++it) {
 			if (!m_identicalInds || it == left) {
-				for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc)
-					for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						it->setAllele(ToAllele(ws.get()), *loc, *p);
 			} else {
 				// identical individuals
-				for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc)
-					for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						it->setAllele(ToAllele(left->allele(*loc, *p)), *loc, *p);
 			}
 		}
@@ -173,12 +173,12 @@ bool initByValue::apply(population & pop)
 	if (subPops.empty())
 		subPops.useSubPopsFrom(pop);
 
-	vectorlu loci = m_loci;
+	vectoru loci = m_loci;
 	if (m_loci.empty())
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
 
-	vectorlu ploidy = m_ploidy;
+	vectoru ploidy = m_ploidy;
 	if (m_ploidy.empty())
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);
@@ -207,7 +207,7 @@ bool initByValue::apply(population & pop)
 		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; it.valid(); ++it) {
 			if (m_value[0].size() == loci.size()) { // for each ploidy
-				for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 					vectori & value = m_proportion.empty() ?
 					                  (m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 					for (size_t i = 0; i < value.size(); ++i)
@@ -218,8 +218,8 @@ bool initByValue::apply(population & pop)
 				vectori & value = m_proportion.empty() ?
 				                  (m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 				size_t i = 0;
-				for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-					for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++i)
+				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++i)
 						it->setAllele(ToAllele(value[i]), *loc, *p);
 			}
 		}

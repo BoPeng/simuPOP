@@ -175,7 +175,7 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// fitness for each genotype
 	strDict m_dict;
@@ -254,13 +254,13 @@ public:
 
 private:
 	/// one locus
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// fitness for each genotype
 	vectorf m_fitness;
 
 	///
-	vectorlu m_wildtype;
+	vectoru m_wildtype;
 };
 
 /// selection according to genotypes at multiple loci in a multiplicative model
@@ -411,7 +411,7 @@ public:
 
 private:
 	/// susceptibility loci
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;

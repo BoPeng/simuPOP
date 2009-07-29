@@ -242,10 +242,10 @@ private:
 	void getExpectedAlleles(const population & pop, vectorf & expFreq);
 
 	/// locus at which mating is controlled.
-	vectorlu m_loci;
+	vectoru m_loci;
 	//
 	/// allele to be controlled at each locus
-	vectorlu m_alleles;
+	vectoru m_alleles;
 
 	/// function that return an array of frquency range
 	pyFunc m_freqFunc;

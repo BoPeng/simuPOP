@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14507,11 +14507,11 @@ simuPOP currently supports the following tests:
 \end_layout
 
 \begin_layout Itemize
-Allele-based 
-\begin_inset Formula $\chi^{2}$
-\end_inset
 
- test: This is the basic allele-based 
+\series bold
+Allele-based Chi-square test
+\series default
+: This is the basic allele-based 
 \begin_inset Formula $\chi^{2}$
 \end_inset
 
@@ -14566,12 +14566,11 @@ Allele_ChiSq_p
 \end_layout
 
 \begin_layout Itemize
-Genotype-based 
-\begin_inset Formula $\chi^{2}$
-\end_inset
 
- test.
- This is the genotype-based 
+\series bold
+Genotype-based Chi-square test
+\series default
+: This is the genotype-based 
 \begin_inset Formula $\chi^{2}$
 \end_inset
 
@@ -14638,8 +14637,11 @@ aa
 \end_layout
 
 \begin_layout Itemize
-Genotype-based Armitage trend test.
- This Cochran-Armitage test can only be applied to diallelic loci in diploid
+
+\series bold
+Genotype-based trend test
+\series default
+: This Cochran-Armitage test can only be applied to diallelic loci in diploid
  populations.
  For each locus, a 2 by 3 contigency table is set up with 
 \begin_inset Formula $n_{ij}$
@@ -14701,7 +14703,9 @@ reference "statAssociation"
 n and test genetic association at two surrounding loci.
  Because these two loci are tightly linked to the disease predisposing locus,
  they are in strong association with the disease initially.
- However, because of recombination, such association decays with time.
+ However, because of recombination, such association decays with time at
+ rates depending on their genetic distances to the disease predisposing
+ locus.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -14792,7 +14796,7 @@ lstparams "caption={Measure of population structure (Fst)},label={statFst}"
 \end_layout
 
 \begin_layout Subsection
-Hardy Weinberg equilibrium
+Hardy-Weinberg equilibrium test
 \end_layout
 
 \begin_layout Standard

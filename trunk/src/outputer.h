@@ -168,7 +168,7 @@ private:
 	int m_width;
 
 	///
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	/// only output first ... individuals. Good for large population
 	UINT m_max;

@@ -195,7 +195,7 @@ public:
 private:
 	/// number of offspring from each subpopulation, counted
 	/// from the origin of parent
-	vectorlu m_subPopSize;
+	vectoru m_subPopSize;
 };
 
 
@@ -264,7 +264,7 @@ public:
 private:
 	/// number of offspring from each subpopulation, counted
 	/// from the origin of parents
-	vectorlu m_subPopSize;
+	vectoru m_subPopSize;
 };
 
 

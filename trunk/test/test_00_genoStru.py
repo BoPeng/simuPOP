@@ -20,7 +20,7 @@ class TestGenoStru(unittest.TestCase):
     # define a function to create basic populations
     def getPop(self):
         pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
-            lociPos=[ [2, 3, 4, 5, 6], [2, 4, 6, 8, 10, 12, 14]],
+            lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
             alleleNames=['_', 'A', 'C', 'T', 'G'],
             infoFields=['a', 'b'])
         InitSex(pop)

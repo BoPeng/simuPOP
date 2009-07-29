@@ -492,7 +492,7 @@ void recombinator::initialize(const population & pop)
 			// get loci distance * m_rates and then recombinant points
 			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
 				// if this locus will be recombined.
-				vectorlu::iterator pos = find(m_loci.begin(), m_loci.end(), loc);
+				vectoru::iterator pos = find(m_loci.begin(), m_loci.end(), loc);
 				if (pos != m_loci.end()) {
 					double r = 0;
 					if (useLociDist)

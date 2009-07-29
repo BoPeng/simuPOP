@@ -260,7 +260,7 @@ string individual::__repr__()
 		width = 1;
 	else
 		width = 3;
-	display(os, width, vectorlu());
+	display(os, width, vectoru());
 	const string & str = os.str();
 	if (str.size() < 100)
 		return str;
@@ -269,7 +269,7 @@ string individual::__repr__()
 }
 
 
-void individual::display(ostream & out, int width, const vectorlu & loci)
+void individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << sexChar() << affectedChar() << " ";
 	UINT pEnd = ploidy();
@@ -281,7 +281,7 @@ void individual::display(ostream & out, int width, const vectorlu & loci)
 				out << " ";
 			}
 		} else {
-			for (vectorlu::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+			for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
 				out << setw(width) << alleleChar(*loc, p);
 			out << " ";
 		}

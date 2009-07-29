@@ -129,7 +129,7 @@ public:
 
 
 	/// CPPONLY set an array of mutation rates
-	void setRate(const vectorf & rates, const vectorlu & loci = vectorlu())
+	void setRate(const vectorf & rates, const vectoru & loci = vectoru())
 	{
 		if (rates.size() != 1 && rates.size() != loci.size() )
 			throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
@@ -145,7 +145,7 @@ public:
 	/// CPPONLY
 	double mutRate(UINT loc)
 	{
-		vectorlu::iterator it = find(m_loci.begin(), m_loci.end(), loc);
+		vectoru::iterator it = find(m_loci.begin(), m_loci.end(), loc);
 
 		DBG_ASSERT(it != m_loci.end(), RuntimeError,
 			"Failed to find mutation rate for locus " + toStr(loc));
@@ -194,7 +194,7 @@ protected:
 	vectorf m_rates;
 
 	/// applicable loci.
-	vectorlu m_loci;
+	vectoru m_loci;
 
 	uintListFunc m_mapIn;
 
@@ -662,10 +662,10 @@ public:
 
 private:
 	/// applicable loci.
-	vectorlu m_loci;
+	vectoru m_loci;
 	Allele m_allele;
-	vectorlu m_ploidy;
-	vectorlu m_inds;
+	vectoru m_ploidy;
+	vectoru m_inds;
 };
 
 }

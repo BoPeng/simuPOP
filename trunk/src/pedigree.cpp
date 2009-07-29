@@ -105,7 +105,7 @@ int pedigree::mother(ULONG idx, SubPopID subPop)
 
 void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields, int ancGen)
 {
-	const vectorlu & fullType = fullRelType.elems();
+	const vectoru & fullType = fullRelType.elems();
 
 	if (fullType.empty() || relFields.empty())
 		return;
@@ -511,7 +511,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 	for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
 		// start from one individual from pathGen[0]
 		Sex mySex = ind->sex();
-		vectorlu inds = vectorlu(1, idx);
+		vectoru inds = vectoru(1, idx);
 		// go through the path
 		for (size_t path = 0; path < pathFields.size(); ++path) {
 			DBG_DO(DBG_POPULATION, cout << "Start of path " << path
@@ -527,7 +527,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 			const vectori & fields = pathIdx[path];
 			SexChoice sex = sexes[path];
 
-			vectorlu newInds;
+			vectoru newInds;
 			// for all individuals
 			for (size_t i = 0; i < inds.size(); ++i) {
 				// for all fields
@@ -571,7 +571,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //      load(pedfile);
 // }
 ////
-// vectorlu pedigree::subPopSizes(ULONG gen)
+// vectoru pedigree::subPopSizes(ULONG gen)
 // {
 //  CHECK_GEN(gen);
 //  return m_pedSize[gen];
@@ -587,13 +587,13 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 // }
 //
 //
-// void pedigree::addGen(const vectorlu & sizes)
+// void pedigree::addGen(const vectoru & sizes)
 // {
 //  ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
 //
-//  m_paternal.push_back(vectorlu(popSize));
+//  m_paternal.push_back(vectoru(popSize));
 //  if (m_numParents == 2)
-//      m_maternal.push_back(vectorlu(popSize));
+//      m_maternal.push_back(vectoru(popSize));
 //  if (m_info.size() > 0) {
 //      UINT infoSize = m_infoNames.size();
 //      m_info.push_back(vector<vectorf>(popSize));
@@ -618,8 +618,8 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //  while (getline(ifs, line)) {
 //      istringstream input(line);
 //      long int idx;
-//      vectorlu values;
-//      vectorlu sizes;
+//      vectoru values;
+//      vectoru sizes;
 //      while (!input.eof()) {
 //          input >> idx;
 //          values.push_back(idx == -1 ? UnusedIndividual : static_cast<ULONG>(idx));
@@ -651,14 +651,14 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //          "Line: " + toStr(m_paternal.size() + 1) + ", Individuals read: "
 //          + toStr(values.size()) +
 //          ", Pop size: " + toStr(popSize));
-//      m_pedSize.push_back(vectorlu());
+//      m_pedSize.push_back(vectoru());
 //      m_pedSize.back().swap(sizes);
 //      if (m_numParents == 1) {
-//          m_paternal.push_back(vectorlu());
+//          m_paternal.push_back(vectoru());
 //          m_paternal.back().swap(values);
 //      } else if (m_numParents == 2) {
-//          m_paternal.push_back(vectorlu(popSize));
-//          m_maternal.push_back(vectorlu(popSize));
+//          m_paternal.push_back(vectoru(popSize));
+//          m_maternal.push_back(vectoru(popSize));
 //          for (size_t i = 0; i < popSize; ++i) {
 //              m_paternal.back()[i] = values[2 * i];
 //              m_maternal.back()[i] = values[2 * i + 1];
@@ -812,15 +812,15 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 // }
 //
 //
-// void pedigree::selectIndividuals(const vectorlu & inds)
+// void pedigree::selectIndividuals(const vectoru & inds)
 // {
 //  DBG_FAILIF(m_paternal.empty(), ValueError,
 //      "Can not select individuals from an empty pedigree");
 //
 //  size_t size = m_paternal.back().size();
 //  vector<bool> used(size, false);
-//  vectorlu::const_iterator it = inds.begin();
-//  vectorlu::const_iterator it_end = inds.end();
+//  vectoru::const_iterator it = inds.begin();
+//  vectoru::const_iterator it_end = inds.end();
 //  for (; it != it_end; ++it) {
 //      DBG_FAILIF(*it >= size, IndexError,
 //          "Index exceeded the size of the last generation");
@@ -870,8 +870,8 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //  // starting from the last generation, gen=0 etc will be replaced.
 //  if (shift_index) {
 //      for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
-//          vectorlu & curGen = m_paternal[gen];
-//          vectorlu & nextGen = m_paternal[gen + 1];
+//          vectoru & curGen = m_paternal[gen];
+//          vectoru & nextGen = m_paternal[gen + 1];
 //          size_t shift = 0;
 //          for (size_t idx = 0; idx < curGen.size(); ++idx)
 //              if (curGen[idx] == UnusedIndividual) {
@@ -885,8 +885,8 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //      // maternal
 //      if (m_numParents == 2) {
 //          for (size_t gen = 0; gen < m_maternal.size() - 1; ++gen) {
-//              vectorlu & curGen = m_maternal[gen];
-//              vectorlu & nextGen = m_maternal[gen + 1];
+//              vectoru & curGen = m_maternal[gen];
+//              vectoru & nextGen = m_maternal[gen + 1];
 //              size_t shift = 0;
 //              for (size_t idx = 0; idx < curGen.size(); ++idx)
 //                  if (curGen[idx] == UnusedIndividual) {
@@ -911,8 +911,8 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 //  }
 //  // remove individuals
 //  // new pedigree generation entries
-//  vectorlu l_pat;
-//  vectorlu l_mat;
+//  vectoru l_pat;
+//  vectoru l_mat;
 //  vector<vectorf> l_info;
 //  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
 //      l_pat.clear();

@@ -155,7 +155,7 @@ public:
 
 	/** CPPONLY  set migration rate.
 	 */
-	void setRates(int mode, const subPopList & fromSubPops, const vectorlu & toSubPops);
+	void setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops);
 
 	/// apply the migrator to populaiton \e pop.
 	virtual bool apply(population & pop);
@@ -176,7 +176,7 @@ protected:
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	vectorlu m_to;
+	vectoru m_to;
 };
 
 
@@ -228,7 +228,7 @@ public:
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
-	splitSubPops(const subPopList & subPops = AllSubPops, const vectorlu & sizes = vectorlu(),
+	splitSubPops(const subPopList & subPops = AllSubPops, const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = AllReps, const stringList & infoFields = stringList())
@@ -270,7 +270,7 @@ public:
 
 private:
 	/// new subpopulation size
-	vectorlu m_subPopSizes;
+	vectoru m_subPopSizes;
 
 	/// new subpopulation proportions.
 	vectorf m_proportions;
@@ -363,7 +363,7 @@ public:
 	 *  all parameters.
 	 */
 	resizeSubPops(const subPopList & subPops = AllSubPops,
-		const vectorlu & sizes = vectorlu(), const vectorf & proportions = vectorf(),
+		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
 		bool propagate = true, int stage = PreMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = AllReps, const stringList & infoFields = stringList())
@@ -411,7 +411,7 @@ public:
 
 private:
 	///
-	vectorlu m_sizes;
+	vectoru m_sizes;
 
 	vectorf m_proportions;
 	///

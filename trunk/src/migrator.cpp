@@ -42,7 +42,7 @@ migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 }
 
 
-void migrator::setRates(int mode, const subPopList & fromSubPops, const vectorlu & toSubPops)
+void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
 {
 	if (mode == ByIndInfo)
 		return;
@@ -75,7 +75,7 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectorlu
 			UINT spFrom = fromSubPops[i].subPop();
 			double sum = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0);
 			//
-			vectorlu::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
+			vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
 			if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
 				if (fcmp_gt(sum, 1.0) )
 					throw ValueError("Sum of migrate rate from one subPop should <= 1");
@@ -124,7 +124,7 @@ bool migrator::apply(population & pop)
 	if (fromSubPops.empty())
 		fromSubPops.useSubPopsFrom(pop);
 
-	vectorlu toSubPops = m_to;
+	vectoru toSubPops = m_to;
 	if (m_to.empty() )
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			toSubPops.push_back(i);
@@ -177,7 +177,7 @@ bool migrator::apply(population & pop)
 			// 2nd, or 3rd method
 			// first find out how many people will move to other subPop
 			// then randomly assign individuals to move
-			vectorlu toNum(toSize);
+			vectoru toNum(toSize);
 			if (m_mode == ByProportion) {
 				// in case that to sub is not in from sub, the last added
 				// element is not used. sum of toNum is not spSize.
@@ -189,7 +189,7 @@ bool migrator::apply(population & pop)
 			}
 			// create a vector and assign indexes, then random shuffle
 			// and assign info
-			vectorlu toIndices(spSize);
+			vectoru toIndices(spSize);
 			UINT k = 0;
 			for (UINT i = 0; i < toSize && k < spSize; ++i)
 				for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
@@ -215,7 +215,7 @@ bool migrator::apply(population & pop)
 	pop.setSubPopByIndInfo(infoField(0));
 	// try to keep number of subpopulations.
 	if (pop.numSubPop() < oldNumSubPop) {
-		vectorlu split(oldNumSubPop - pop.numSubPop() + 1, 0);
+		vectoru split(oldNumSubPop - pop.numSubPop() + 1, 0);
 		split[0] = pop.subPopSize(pop.numSubPop() - 1);
 		pop.splitSubPop(pop.numSubPop() - 1, split);
 	}
@@ -262,7 +262,7 @@ bool splitSubPops::apply(population & pop)
 		if (!m_subPopSizes.empty())
 			pop.splitSubPop(sp, m_subPopSizes, m_names);
 		else if (!m_proportions.empty()) {
-			vectorlu sizes;
+			vectoru sizes;
 			for (size_t i = 0; i < m_proportions.size(); ++i)
 				sizes.push_back(static_cast<ULONG>(pop.subPopSize(sp) * m_proportions[i]));
 			// floating point problem.
@@ -274,7 +274,7 @@ bool splitSubPops::apply(population & pop)
 			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp), indCompare(idx));
 			ConstRawIndIterator it = pop.rawIndBegin(sp);
 			ConstRawIndIterator it_end = pop.rawIndEnd(sp);
-			vectorlu spSize(1, 1);
+			vectoru spSize(1, 1);
 			double value = it->info(idx);
 			for (++it; it != it_end; ++it) {
 				if (fcmp_ne(it->info(idx), value)) {
@@ -304,7 +304,7 @@ bool mergeSubPops::apply(population & pop)
 
 bool resizeSubPops::apply(population & pop)
 {
-	vectorlu newSizes = pop.subPopSizes();
+	vectoru newSizes = pop.subPopSizes();
 
 	subPopList subPops = applicableSubPops();
 

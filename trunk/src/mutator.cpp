@@ -89,7 +89,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 		for (size_t i = 0; i < m_context.size(); ++i) {
 			if (m_context[i] == -1)
 				continue;
-			vectorlu const & mapInList = m_mapIn.elems();
+			vectoru const & mapInList = m_mapIn.elems();
 			if (mapInList.size() > 0) {
 				if (static_cast<UINT>(m_context[i]) < mapInList.size())
 					m_context[i] = mapInList[m_context[i]];
@@ -115,11 +115,11 @@ bool mutator::apply(population & pop)
 
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
-	vectorlu const & mapInList = m_mapIn.elems();
+	vectoru const & mapInList = m_mapIn.elems();
 	pyFunc mapInFunc = m_mapIn.func();
 	UINT numMapInAllele = mapInList.size();
 	bool mapOut = !m_mapOut.empty() || m_mapOut.func().isValid();
-	vectorlu const & mapOutList = m_mapOut.elems();
+	vectoru const & mapOutList = m_mapOut.elems();
 	UINT numMapOutAllele = mapOutList.size();
 	pyFunc mapOutFunc = m_mapOut.func();
 	// mutate each mutable locus
@@ -427,7 +427,7 @@ bool pointMutator::apply(population & pop)
 {
 	// mutate each mutable locus
 	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-		for (vectorlu::iterator ind = m_inds.begin();
+		for (vectoru::iterator ind = m_inds.begin();
 		     ind != m_inds.end(); ++ind) {
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
 				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + m_loci[i]) = m_allele;
