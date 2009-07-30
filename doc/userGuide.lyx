@@ -2479,7 +2479,37 @@ reference "defdictType"
 
 \end_inset
 
- have different alleles, but the same 
+ have different alleles.
+ Although 
+\family typewriter
+pop.dvars(sp).alleleFreq[0]
+\family default
+ have only two keys for 
+\family typewriter
+sp=0
+\family default
+ or 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+pop.dvars(sp).alleleFreq[0][x]
+\family default
+ are used to print frequencies of alleles 
+\family typewriter
+0
+\family default
+, 
+\family typewriter
+1
+\family default
+ and 
+\family typewriter
+2
+\family default
+.
+ 
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/defdict.log"
@@ -16565,108 +16595,122 @@ Trajectory simulation
 \end_layout
 
 \begin_layout Standard
-For the purpose of analyzing human populations with complex diseases 
-\shape italic
-in silico
-\shape default
-, two main approaches have been used for such simulations, backward-time
- (coalescent) 
+A forward-time simulation, by its nature, is directly influenced by random
+ genetic drift.
+ Starting from the same parental generation, allele frequencies in the offspring
+ generation would vary from simulation to simulation, with perhaps a predictable
+ mean frequency which is determined by factors such as parental allele frequency
+, natural selection, mutation and migration.
+\end_layout
+
+\begin_layout Standard
+Genetic drift is unavoidable and is in many cases the target of theoretical
+ and simulation studies.
+ However, in certain types of studies, there is often a need to control
+ the frequencies of certain alleles in the present generation.
+ For example, if we are studying a particular penetrance model with pre-specifie
+d frequencies of disease predisposing alleles, the simulated populations
+ would better have consistent allele frequencies at the disease predisposing
+ loci, and consequently consistent disease prevalence.
+\end_layout
+
+\begin_layout Standard
+simuPOP provides a special offspring generator 
+\family typewriter
+controlledOffspringGenerator
+\family default
+ and an associated mating scheme called 
+\family typewriter
+controlledRandomMating
+\family default
+ that can be used to generate offspring generations conditioning on frequencies
+ of one or more alleles.
+ This offspring generator essentially uses a reject-sampling algorithm to
+ select (or reject) offspring according to their genotypes at specified
+ loci.
+ A detailed description of this algorithm is given in 
 \begin_inset CommandInset citation
-LatexCommand citep
-key "Kingman1982"
+LatexCommand citet
+key "Peng2007a"
 
 \end_inset
 
- and forward-time.
- Given current allele frequencies, demographic models and selection pressure,
- the simuTrajectory module defines a function that refers to allele frequencies
- in all simulated generations.
- This utility module is introduced for realizing forward-time simulations
- [Peng2008].
- 
-\begin_inset Newline newline
-\end_inset
-
-
+.
 \end_layout
 
 \begin_layout Standard
-Although coalescent-based methods can simulate many neutral and non-neutral
- processes with simple selection models, they cannot yet simulate realistic
- samples of complex human diseases.
- This technique has been challenged in several aspects.
- It cannot handle diploid-specific effects such as non-additive selection
- or penetrance models.
- It can only solve simplest scenario of evolutionary process, one disease
- susceptibility loci (DSL) under constant selection pressure.
- It is built up by a number of assumptions and approximations that are regarded
- as only working for limited parameter sets.
- 
-\begin_inset Newline newline
+The controlled random mating scheme accepts a user-defined trajectory function
+ that tells the mating scheme the desired allele frequencies at each generation.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "controlledOffGenerator"
+
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Compared to coalescent methods, a forward-time simulation has no theoretical
- constraints and usually starts from an initial population and follows its
- evolution generation by generation, subject to a certain number of genetic
- or demographic changes.
- Although the forward-time simulation is less efficient than coalescent
- approach and there is lack of suitable simulation frameworks
+ uses a manually defined function that raises the frequency of an allele
+ steadily.
+ However, given known demographic and genetic factors, 
+\series bold
+a trajectory should be simulated randomly so that it represents a random
+ sample from all possible trajectories that match the allele frequency requireme
+nt
+\series default
+.
+ If such a condition is met, the controlled evolutionary process can be
+ considered as a random processes condition on allele frequencies at the
+ present generation.
+ Please refer to 
 \begin_inset CommandInset citation
-LatexCommand citep
-key "Balloux2002,Abdallah2003"
+LatexCommand citet
+key "Peng2007a"
 
 \end_inset
 
-, the increasing power of computer and the availability of simuPOP compensate
- the efficacy problem very well, let alone the gain of capability of dealing
- with complex evolutionary scenarios as well as complex selection and penetrance
- models in forward-time simulations.
- 
-\begin_inset Newline newline
-\end_inset
-
-
+ for a detailed discussion about the theoretical requirements of a valid
+ trajectory simulator.
 \end_layout
 
 \begin_layout Standard
-We introduce a suitable forward-time simulation framework that allows us
- to generate large multi-generation populations with complex diseases according
- to specified demographic and evolutionary properties and allele frequencies
- at the present generation.
- We define a population as a collection of diploid individuals with the
- same genotype structure.
- During evolution, individuals are chosen randomly, with probabilities that
- are proportional to their relative fitness values, to mate and produce
- offspring that populate the next generation.
- When subpopulations are present, mating occurs only within subpopulations.
- It is assumed that a genetic disease is caused by mutations at one or several
- binary DSL.
- They are located on different chromosomes and are thus unlinked (Our algorithm
- cannot yet handle linked DSL).
- These loci only have wild-type alleles until one mutant (disease allele)
- is introduced at each locus.
- These disease mutants spread in the population during evolution, subject
- to genetic drift and positive or negative selection pressure, reaching
- certain allele frequencies at the present generation.
- We assume that we know the exact demographic history (the size of population
- and number and sizes of subpopulations at each generation) and the selection
- pressure for all genotypes.
- The selection pressure may vary during evolution.
- 
-\begin_inset Newline newline
-\end_inset
+The 
+\family typewriter
+simuUtil
+\family default
+ module provides functions and classes that implement two trajectory simulation
+ methods that can be used in different situations.
+\end_layout
 
-
+\begin_layout Subsubsection
+Forward-time trajectory simulations.
 \end_layout
 
 \begin_layout Standard
-A descriptive simulation framework is shown below and example 4.2.1 demonstrates
- a simple case of how to generate a forward-time evolutionary process with
- complex diseases, which are introduced by point mutations.
+A forward simulation starts at a specified generation with specified allele
+ frequencies and simulates allele frequencies generation by generation until
+ it reaches the present generation.
+ The simulation will restart if the present allele frequencies do not fall
+ into a specified range.
+ The length of the trajectory (in generations) is fixed.
+ This method can be used to simulate trajectories of existing alleles.
+\end_layout
+
+\begin_layout Subsubsection
+Backward-time trajectory simulations.
+\end_layout
+
+\begin_layout Standard
+A backward simulation starts from specified frequencies at the present generatio
+n.
+ In the single-allele case, the simulations goes backward-in-time until
+ an allele gets lost.
+ The length of such a trajectory is random, which is usually a desired property
+ because the age of a mutant in the present generation is usually unknown
+ and is assumed to be random.
+\end_layout
+
+\begin_layout Standard
+se of how to generate a forward-time evolutionary process with complex diseases,
+ which are introduced by point mutations.
  
 \end_layout
 
@@ -18553,7 +18597,8 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
+pyEval('1./sum([(alleleFreq[0][x]/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0].
+keys() if x != 0])')
 \end_layout
 
 \end_inset
@@ -18586,12 +18631,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval(stmts='''freq = alleleFreq[0][1:]
-\end_layout
-
-\begin_layout Plain Layout
-
-if alleleFreq[i][0] == 1:
+pyEval(stmts='''if alleleFreq[0][0] == 1:
 \end_layout
 
 \begin_layout Plain Layout
@@ -18606,7 +18646,12 @@ else:
 
 \begin_layout Plain Layout
 
-    ne = 1./sum([(x/(1-alleleFreq[0][0])**2 for x in freq])
+    freq = [freq[0][x] for x in alleleFreq[0].keys() if x != 0]
+\end_layout
+
+\begin_layout Plain Layout
+
+    ne = 1./sum([(f/(1-alleleFreq[0][0])**2 for x in freq])
 \end_layout
 
 \begin_layout Plain Layout
@@ -18661,7 +18706,8 @@ def ne(pop, loci):
 
 \begin_layout Plain Layout
 
-        freq = pop.dvars().alleleFreq[loc][1:]
+        freq = [y for x,y in pop.dvars().alleleFreq[loc].iteritems() if x !=
+ 0]
 \end_layout
 
 \begin_layout Plain Layout

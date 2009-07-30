@@ -95,7 +95,7 @@ InitByFreq(pop, [0, 0.2, 0.8], subPops=0)
 InitByFreq(pop, [0.2, 0.8], subPops=1)
 Stat(pop, alleleFreq=0, vars=['alleleFreq_sp'])
 for sp in range(2):
-    print 'Subpop %d: ' % sp,
+    print 'Subpop %d (with %d alleles): ' % (sp, len(pop.dvars(sp).alleleFreq[0])),
     for a in range(3):
         print '%.2f ' % pop.dvars(sp).alleleFreq[0][a],
     print
@@ -418,7 +418,7 @@ simu.evolve(
     preOps = initByFreq([0.5, 0.5]),
     ops = [
         stat(alleleFreq=0),
-        terminateIf('alleleFreq[0][0] == 0. or alleleFreq[0][0] == 1.')
+        terminateIf('len(alleleFreq[0]) == 1')
     ]
 )
 #end
@@ -1269,7 +1269,7 @@ simu.evolve(
             pyEval(r"'Allele 0 is lost in rep %d at gen %d\n' % (rep, gen)")),
         ifElse('alleleNum[5][0] == 50',
             pyEval(r"'Allele 0 is fixed in rep %d at gen %d\n' % (rep, gen)")),
-        terminateIf('alleleNum[5][0] == 0 or alleleNum[5][0] == 50'),
+        terminateIf('len(alleleNum[5]) == 1'),
     ],
 )
 simu.gen()
@@ -1463,9 +1463,9 @@ simu.evolve(
             pyExec('below40 += 1')),
         ifElse('alleleFreq[0][1] > 0.6',
             pyExec('above60 += 1')),
-        ifElse('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1',
+        ifElse('len(alleleFreq[0]) == 1',
             pyExec('stoppedAt = gen')),
-        terminateIf('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1')
+        terminateIf('len(alleleFreq[0]) == 1')
     ]
 )
 for pop in simu.populations():
