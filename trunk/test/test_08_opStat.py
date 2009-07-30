@@ -119,11 +119,13 @@ class TestStat(unittest.TestCase):
         pop = population(size=1000, loci=[10])
         InitByFreq(pop, [0, 0.2, 0.8])
         Stat(pop, alleleFreq=range(10))
+        d = pop.dvars().alleleFreq[0]
         if AlleleType == 'binary':
-            self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1])
+            self.assertEqual(d.keys(), [1])
         else:
-            self.assertEqual(pop.dvars().alleleFreq[0].keys(), [1, 2])
-        self.assertEqual(pop.dvars().alleleFreq[0][0], 0)
+            self.assertEqual(d.keys(), [1, 2])
+        self.assertEqual(d[0], 0)
+        
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
