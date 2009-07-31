@@ -2271,7 +2271,8 @@ def fitness(gen):
 # simulate a trajectory backward in time, from generation 1000
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=1,
      genEnd=1000, freq=0.2)
-    
+if traj.empty():
+
     print 'Trajectory simulated: ', len(traj.traj)
     print Nt(min(traj.traj.keys()))
     pop = population(size=Nt(min(traj.traj.keys())), loci=loci)
