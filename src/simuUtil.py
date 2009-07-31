@@ -578,8 +578,7 @@ class simuProgress:
 
   
 class trajectory:
-    '''
-    A trajectory object returned by class trajectorySimulator(...) with several user-
+    '''A trajectory object returned by trajectory simulation class trajectorySimulator(...) with several user-
     friendly built-in functions.
     Function func() could refer to allele frequencies in any simulated generation
     in cases of single/multiple loci with single population/multiple subpopulations. 

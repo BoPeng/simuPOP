@@ -2255,26 +2255,22 @@ simu.evolve(
 #end
 
 #file log/simuTrajectory.log
-from simuUtil import BackwardTrajectory
+from simuUtil import trajectory, BackwardTrajectory
+from math import exp
 
 def Nt(gen, oldSize=[]):
+    '''An exponential population growth demographic model.
     '''
-    Return population size at generation gen defined by the
-    demographic model.
-    '''
-    #return int((10**4) * exp(.00115 * gen))
-    return [1000]
+    return int((10**4) * exp(.00115 * gen))
 
 def fitness(gen):
+    '''Constant positive selection pressure.
     '''
-    Return selection pressure.
-    '''
-    return [1, 1, 1]
+    return [1, 1.001, 1.002]
 
-def simulation(loci, genEnd, freq):
-    
-    traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=loci[0],
-                              genEnd=genEnd, freq=freq)
+# simulate a trajectory backward in time, from generation 1000
+traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=1,
+     genEnd=1000, freq=0.2)
     
     print 'Trajectory simulated: ', len(traj.traj)
     print Nt(min(traj.traj.keys()))
