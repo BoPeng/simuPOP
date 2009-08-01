@@ -145,19 +145,24 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(0).alleleFreq[0][0], 0.5)
         self.assertEqual(pop.dvars(0).alleleFreq[0][1], 0.5)
         # can not use assertEqual for floating numbers in this case
-        assert abs(pop.dvars(1).alleleFreq[0][0] - 13./20) < 1e-5
-        assert abs(pop.dvars(1).alleleFreq[0][1] -  7./20) < 1e-5
+        self.assertAlmostEqual(pop.dvars(1).alleleFreq[0][0], 13./20)
+        self.assertAlmostEqual(pop.dvars(1).alleleFreq[0][1],  7./20)
         self.assertEqual(pop.dvars(1).alleleNum[0][0], 130)
         self.assertEqual(pop.dvars(1).alleleNum[0][1], 70)
-        assert abs(pop.dvars(2).alleleFreq[0][0] - 0.3) < 1e-5
-        assert abs(pop.dvars(2).alleleFreq[0][1] - 0.7) < 1e-5
+        self.assertAlmostEqual(pop.dvars(2).alleleFreq[0][0], 0.3)
+        self.assertAlmostEqual(pop.dvars(2).alleleFreq[0][1], 0.7)
         self.assertEqual(pop.dvars(2).alleleNum[0][0], 600)
         self.assertEqual(pop.dvars(2).alleleNum[0][1], 1400)
-        Stat(pop, alleleFreq=[0], vars ='alleleNum')
-        assert pop.vars().has_key('alleleNum')
-        # assert not pop.vars().has_key('alleleFreq')
-        # This assert fails right now because of some implementation issue
-        #assert not pop.vars(0).has_key('alleleNum')
+        pop.vars().clear()
+        Stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'])
+        self.assertEqual(pop.vars().has_key('alleleNum'), True)
+        self.assertEqual(pop.vars().has_key('alleleFreq'), False)
+        self.assertEqual(pop.vars(0).has_key('alleleNum'), False)
+        # Virtual subpopulation?
+        Stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'], subPops=[(0,0), (1,3), (1,4)])
+        self.assertEqual(pop.dvars((0,0)).alleleFreq[0][0], 1)
+        self.assertEqual(pop.dvars((1,3)).alleleFreq[0][0], 1)
+        self.assertEqual(pop.dvars((1,4)).alleleFreq[0][0], 0.5)
 
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'
