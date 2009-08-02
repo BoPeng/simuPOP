@@ -1,16 +1,19 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.12) Gecko/2009070611 Firefox/3.0.12 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1238094979
 host=127.0.0.1
 name=Main.ImportAndExport
-rev=27
-targets=Cookbook.LinkageUtil,Cookbook.FstatUtil,Cookbook.SolarUtil,Cookbook.MerlinUtil,Cookbook.PopgeneUtil
-text=(:title Interoperation with other software applications:)%0a%0aThis page lists some functions that may allow you to import/export files into/from simuPOP.%0a%0a%25red%25 [++This page is under construction. All save/load functions currently defined in the simuUtil module will be moved here.++]%25%25%0a%0a!! LINKAGE%0a%0a* [[Cookbook/LinkageUtil]] This script allows you to export your simulated populations into LINKAGE format. %0a%0a!! FSTAT%0a%0a* [[Cookbook/FstatUtil]] This script allows you to export the simulated population into a FSTAT readable file format.  %0a%0a!! SOLAR%0a%0a* [[Cookbook/SolarUtil]] This script exports your simulated population into a frequency file in the SOLAR readable format. %0a%0a!! MERLIN%0a%0a* [[Cookbook/MerlinUtil]] This script exports your simulated populations into MERLIN input files in QTDT format.%0a%0a!! POPGENE%0a%0a* [[Cookbook/PopgeneUtil]] This script exports your simulated populations into a POPGENE data file.%0a
-time=1248196685
+rev=28
+targets=Cookbook.LoadHapMap,Cookbook.LoadHapMapR22,Cookbook.ChooseMarker,Cookbook.LinkageUtil,Cookbook.FstatUtil,Cookbook.SolarUtil,Cookbook.MerlinUtil,Cookbook.PopgeneUtil
+text=(:title Interoperation with other software applications:)%0a%0aThis page lists some functions that may allow you to import/export files into/from simuPOP.%0a%0a%25red%25 [++This page is under construction. All save/load functions currently defined in the simuUtil module will be moved here.++]%25%25%0a%0a!!HapMap related%0a%0a* [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%0a%0a!! LINKAGE%0a%0a* [[Cookbook/LinkageUtil]] This script allows you to export your simulated populations into LINKAGE format. %0a%0a!! FSTAT%0a%0a* [[Cookbook/FstatUtil]] This script allows you to export the simulated population into a FSTAT readable file format.  %0a%0a!! SOLAR%0a%0a* [[Cookbook/SolarUtil]] This script exports your simulated population into a frequency file in the SOLAR readable format. %0a%0a!! MERLIN%0a%0a* [[Cookbook/MerlinUtil]] This script exports your simulated populations into MERLIN input files in QTDT format.%0a%0a!! POPGENE%0a%0a* [[Cookbook/PopgeneUtil]] This script exports your simulated populations into a POPGENE data file.%0a
+time=1249056336
 title=Interoperation with other software applications
+author:1249056336=
+diff:1249056336:1248196685:=6,14d5%0a%3c %0a%3c !!HapMap related%0a%3c %0a%3c * [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%3c %0a%3c * [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a%3c %0a%3c * [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%3c %0a
+host:1249056336=127.0.0.1
 author:1248196685=
 diff:1248196685:1247641137:=25c25%0a%3c * [[Cookbook/PopgeneUtil]] This script exports your simulated populations into a POPGENE data file.%0a---%0a> * [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a
 host:1248196685=127.0.0.1

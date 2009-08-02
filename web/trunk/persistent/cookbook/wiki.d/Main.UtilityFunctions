@@ -1,15 +1,18 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080418 Ubuntu/7.10 (gutsy) Firefox/2.0.0.14
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.12) Gecko/2009070611 Firefox/3.0.12 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1233719170
 host=127.0.0.1
 name=Main.UtilityFunctions
-rev=4
-targets=Cookbook.LoadHapMap,Cookbook.LoadHapMapR22,Cookbook.ChooseMarker
-text=This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%0a%0a!!HapMap related%0a%0a* [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%0a
-time=1238095526
+rev=5
+targets=
+text=This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%0a%0a
+time=1249056261
+author:1249056261=
+diff:1249056261:1238095526:=2a3,10%0a> %0a> !!HapMap related%0a> %0a> * [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a> %0a> * [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a> %0a> * [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a
+host:1249056261=127.0.0.1
 author:1238095526=
 diff:1238095526:1235966092:=6,8c6,8%0a%3c * [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%3c %0a%3c * [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a---%0a> * [[Cookbook/loadHapMap]] This script download and save the hapMap dataset chromosome by chromosome.%0a> %0a> * [[Cookbook/loadHapMap_r22]] This script download and save the release 22 of the HapMap dataset chromosome by chromosome.%0a
 host:1238095526=127.0.0.1
