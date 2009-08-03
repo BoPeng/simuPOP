@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14754,9 +14754,47 @@ Population structure
 \begin_layout Standard
 Parameter 
 \family typewriter
-Fst
+structure
 \family default
- measures the 
+ measures the structure of a population, including inbreeding and population
+ structure using the following statistics:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ (
+\begin_inset Formula $\theta$
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Weir1984"
+
+\end_inset
+
+) measures defree of genetic differentiation among subpopulations.
+ This statistic considers the sample as a random sample from a larger population
+ from which they are drawn and takes sampling error (difference between
+ sample allele frequency and population frequency) into account when estimating
+ allele frequecy difference among subpopulations.
+ This statistics can be negative, which means alleles drawn from within
+ a population are less similar to one another than those drawn from different
+ subpopulations.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $G_{ST}$
+\end_inset
+
+ () can be used to summarize the distribution of variation within and among
+ populations.
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula $F_{st}$
 \end_inset
 
@@ -14799,6 +14837,26 @@ subPops=[(0,0), (0,1)]
 \family default
  if a sexSplitter is used to define two virtual subpopulations with male
  and female individuals respectively.
+ These statistics are based on (
+\emph on
+I
+\emph default
+)ndividual observed heterozygosities, (
+\emph on
+S
+\emph default
+)subpopulation expected heterozygosities, and (
+\emph on
+T
+\emph default
+)otal expected heterozygosities, and could be interpretted as 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $F_{IS}$
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard

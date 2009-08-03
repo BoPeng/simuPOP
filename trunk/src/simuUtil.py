@@ -625,7 +625,9 @@ class trajectory:
         '''
         '''
         mut = []
-        for gen in self.traj.keys():
+        gens =self.traj.keys()
+        gens.sort()
+        for gen in gens:
             if gen == max(self.traj.keys()):
                 break
             curNSP = len(self.traj[gen]) / self.nLoci
@@ -945,7 +947,7 @@ class trajectorySimulator:
                         y2 = (-b - b2_4ac**0.5) / (2 * a)
 
                     # choose one of the solutions
-                    if y1 >= 0 or y1 <= 1:
+                    if y1 >= 0 and y1 <= 1:
                          y = y1
                     else:
                          y = y2
