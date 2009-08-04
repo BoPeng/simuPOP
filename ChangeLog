@@ -38,6 +38,9 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		and frequencies.
   - CHG: Disallow the use of nested list for parameter lociPos of population().
   - NEW: Allow single-form parameter for parameters of function population().
+  - CHG: Rename paramter Fst of operator stat to structure, change associated
+		variable names. This leaves room for the implementation of other
+		structure related statistics.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

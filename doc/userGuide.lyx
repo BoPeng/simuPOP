@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14757,72 +14757,42 @@ Parameter
 structure
 \family default
  measures the structure of a population, including inbreeding and population
- structure using the following statistics:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $F_{ST}$
-\end_inset
-
- (
-\begin_inset Formula $\theta$
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Weir1984"
-
-\end_inset
-
-) measures defree of genetic differentiation among subpopulations.
- This statistic considers the sample as a random sample from a larger population
- from which they are drawn and takes sampling error (difference between
- sample allele frequency and population frequency) into account when estimating
- allele frequecy difference among subpopulations.
- This statistics can be negative, which means alleles drawn from within
- a population are less similar to one another than those drawn from different
- subpopulations.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $G_{ST}$
-\end_inset
-
- () can be used to summarize the distribution of variation within and among
- populations.
- 
-\end_layout
-
-\begin_layout Standard
+ structure using the 
 \begin_inset Formula $F_{st}$
 \end_inset
 
  statistic for population structure at each specified locus (variables 
 \family typewriter
-Fst
+f_st
 \family default
 , 
 \family typewriter
-Fis
+f_is
 \family default
  and 
 \family typewriter
-Fit
+f_it
 \family default
 ), and a summary statistic for all loci (variables 
 \family typewriter
-AvgFst
+F_st
 \family default
 , 
 \family typewriter
-AvgFis
+F_is
 \family default
  and 
 \family typewriter
-AvgFit
+F_it
 \family default
-).
+) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Weir1984"
+
+\end_inset
+
+.
  This statistic by default uses all existing subpopulations, but it can
  also be applied to a subset of subpopulations, or even virtual subpopulations
  using parameter 
@@ -14837,33 +14807,13 @@ subPops=[(0,0), (0,1)]
 \family default
  if a sexSplitter is used to define two virtual subpopulations with male
  and female individuals respectively.
- These statistics are based on (
-\emph on
-I
-\emph default
-)ndividual observed heterozygosities, (
-\emph on
-S
-\emph default
-)subpopulation expected heterozygosities, and (
-\emph on
-T
-\emph default
-)otal expected heterozygosities, and could be interpretted as 
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $F_{IS}$
-\end_inset
-
- 
 \end_layout
 
 \begin_layout Standard
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "statFst"
+reference "statStructure"
 
 \end_inset
 
@@ -14875,8 +14825,8 @@ s so the population structure is kept at a low level.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/statFst.log"
-lstparams "caption={Measure of population structure (Fst)},label={statFst}"
+filename "log/statStructure.log"
+lstparams "caption={Measure of population structure},label={statStructure}"
 
 \end_inset
 
@@ -14922,6 +14872,30 @@ lstparams "caption={Hardy Weinberg Equilibrium test},label={statHWE}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Other statistics
+\end_layout
+
+\begin_layout Standard
+If you need other statistics, a popular approach is to define them using
+ Python operators.
+ If your statistics is based on existing statistics such as allele frequency,
+ it is a good idea to calculate existing statistics using a 
+\family typewriter
+Stat
+\family default
+ function and derive your statistics from population variables.
+ Please refer to the last chapter of this guide on an example.
+\end_layout
+
+\begin_layout Standard
+If performance becomes a problem, you might want to have a look at the source
+ code of simuPOP and implement your statistics at the C++ level.
+ If you believe that your statistics are popular enough, please send your
+ implementation to the simuPOP mailinglist for possible inclusion of your
+ statistics into simuPOP.
 \end_layout
 
 \begin_layout Section

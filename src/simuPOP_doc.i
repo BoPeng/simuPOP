@@ -9422,7 +9422,7 @@ Usage:
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], Fst=[], HWE=[], vars=[], output=\"\",
+      neutrality=[], structure=[], HWE=[], vars=[], output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, infoFields=[])
 
@@ -9703,22 +9703,23 @@ Details:
     *   Pi Mean pairwise difference between all sequences from all or
     specified (virtual) subpopulations.
     *   Pi_sp Mean paiewise difference between all sequences in each
-    (virtual) subpopulation.Fst: Parameter Fst accepts a list of loci
-    at which level of population structure is measured by statistic
-    Fst using an algorithm developed in Cockerham & Weir, 1984. Fst is
-    by default calculated for all subpopulation but a subset of
-    subpopulations could be specified using parameter subPops. Virtual
-    subpopulations are supported which makes it possible to estimate
-    population structure from groups of individuals from the same
-    subpopulation. This statistic calulates Fis, Fit and Fst for each
-    locus and for all loci and set variables:
-    *   AvgFst (default) The Fst statistic estimated for all specified
+    (virtual) subpopulation.structure: Parameter structure accepts a
+    list of loci at which statistics that measure population structure
+    are calculated. This parameter currently supports locus-level and
+    overall Fst, Fis and Fit measures using an algorithm developed in
+    Cockerham & Weir, 1984. Fst is by default calculated for all
+    subpopulation but a subset of subpopulations could be specified
+    using parameter subPops. Virtual subpopulations are supported
+    which makes it possible to estimate population structure from
+    groups of individuals from the same subpopulation. This statistic
+    set variables:
+    *   F_st (default) The Fst statistic estimated for all specified
     loci.
-    *   AvgFis The Fis statistic estimated for all specified loci.
-    *   AvgFit The Fit statistic estimated for all specified loci.
-    *   Fst A dictionary of locus level Fst values.
-    *   Fis A dictionary of locus level Fis values.
-    *   Fit A dictionary of locus level Fit values.HWE: Parameter HWE
+    *   F_is The Fis statistic estimated for all specified loci.
+    *   F_it The Fit statistic estimated for all specified loci.
+    *   f_st A dictionary of locus level Fst values.
+    *   f_is A dictionary of locus level Fis values.
+    *   f_it A dictionary of locus level Fit values.HWE: Parameter HWE
     accepts a list of loci at which exact two-side tests for Hardy-
     Weinberg equilibrium will be performed. This statistic is only
     available for diallelic loci in diploid populations. It outputs
@@ -9816,24 +9817,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAssociation::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statFst;
-
-%feature("docstring") simuPOP::statFst::statFst "
-
-Usage:
-
-    statFst(Fst, subPops, vars)
-
-"; 
-
-%feature("docstring") simuPOP::statFst::apply "
 
 Usage:
 
@@ -10031,6 +10014,24 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statPopSize::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statStructure;
+
+%feature("docstring") simuPOP::statStructure::statStructure "
+
+Usage:
+
+    statStructure(Fst, subPops, vars)
+
+"; 
+
+%feature("docstring") simuPOP::statStructure::apply "
 
 Usage:
 
