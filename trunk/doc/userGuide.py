@@ -2222,7 +2222,7 @@ simu.evolve(
         
 #end
 
-#file log/statFst.log
+#file log/statStructure.log
 from simuUtil import MigrIslandRates
 
 simu = simulator(population([5000]*3, loci=[10], infoFields='migrate_to'),
@@ -2231,8 +2231,8 @@ simu.evolve(
     preOps = initByFreq([0.5, 0.5]),
     ops = [
         migrator(rate=MigrIslandRates(0.01, 3), reps=1),
-        stat(Fst=range(10), step=40),
-        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (AvgFst, rep)", step=40),
+        stat(structure=range(10), step=40),
+        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (F_st, rep)", step=40),
         pyOutput('\n', reps=-1, step=40)
     ],
     gen = 200

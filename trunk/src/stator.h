@@ -709,21 +709,31 @@ private:
 };
 
 /// CPPONLY currently there is no need to retrieve calculated value
-class statFst
+class statStructure
 {
 
 private:
-#define  Fst_String     "Fst"
-#define  Fis_String     "Fis"
-#define  Fit_String     "Fit"
-#define  AvgFst_String  "AvgFst"
-#define  AvgFis_String  "AvgFis"
-#define  AvgFit_String  "AvgFit"
+#define  fst_String     "f_st"
+#define  fis_String     "f_is"
+#define  fit_String     "f_it"
+#define  Fst_String     "F_st"
+#define  Fis_String     "F_is"
+#define  Fit_String     "F_it"
 
 public:
-	statFst(const vectoru & Fst, const subPopList & subPops, const stringList & vars);
+	statStructure(const vectoru & Fst, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
+
+private:
+	typedef map<UINT, float> FREQ;
+	typedef map<UINT, FREQ> LOCIFREQ;
+	typedef vector<LOCIFREQ> LOCIFREQLIST;
+	typedef map<Allele, bool> ALLELES;
+	typedef vector<ALLELES> ALLELELIST;
+	void calcFst(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
+		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
+		intDict & fst, intDict & fis, intDict & fit);
 
 private:
 	/// Fst
@@ -1068,22 +1078,22 @@ public:
 	 *  \li \c Pi_sp Mean paiewise difference between all sequences in each
 	 *       (virtual) subpopulation.
 	 *
-	 *  <b>Fst</b>: Parameter \c Fst accepts a list of loci at which level of
-	 *  population structure is measured by statistic \e Fst using an algorithm
-	 *  developed in Cockerham & Weir, 1984. \e Fst is by default calculated
-	 *  for all subpopulation but a subset of subpopulations could be specified
-	 *  using parameter \e subPops. Virtual subpopulations are supported which
-	 *  makes it possible to estimate population structure from groups of
-	 *  individuals from the same subpopulation. This statistic calulates
-	 *  \e Fis, \e Fit and \e Fst for each locus and for all loci and set
-	 *  variables:
-	 *  \li \c AvgFst (default) The \e Fst statistic estimated for all
+	 *  <b>structure</b>: Parameter \c structure accepts a list of loci at
+	 *  which statistics that measure population structure are calculated.
+	 *  This parameter currently supports locus-level and overall \e Fst,
+	 *  \e Fis and \e Fit measures using an algorithm developed in
+	 *  Cockerham & Weir, 1984. \e Fst is by default calculated for all
+	 *  subpopulation but a subset of subpopulations could be specified using
+	 *  parameter \e subPops. Virtual subpopulations are supported which makes
+	 *  it possible to estimate population structure from groups of individuals
+	 *  from the same subpopulation. This statistic set variables:
+	 *  \li \c F_st (default) The \e Fst statistic estimated for all
 	 *       specified loci.
-	 *  \li \c AvgFis The \e Fis statistic estimated for all specified loci.
-	 *  \li \c AvgFit The \e Fit statistic estimated for all specified loci.
-	 *  \li \c Fst A dictionary of locus level \e Fst values.
-	 *  \li \c Fis A dictionary of locus level \e Fis values.
-	 *  \li \c Fit A dictionary of locus level \e Fit values.
+	 *  \li \c F_is The \e Fis statistic estimated for all specified loci.
+	 *  \li \c F_it The \e Fit statistic estimated for all specified loci.
+	 *  \li \c f_st A dictionary of locus level \e Fst values.
+	 *  \li \c f_is A dictionary of locus level \e Fis values.
+	 *  \li \c f_it A dictionary of locus level \e Fit values.
 	 *
 	 *  <b>HWE</b>: Parameter \c HWE accepts a list of loci at which exact
 	 *  two-side tests for Hardy-Weinberg equilibrium will be performed. This
@@ -1121,7 +1131,7 @@ public:
 		//
 		const uintList & neutrality = uintList(),
 		//
-		const uintList & Fst = uintList(),
+		const uintList & structure = uintList(),
 		//
 		const uintList & HWE = uintList(),
 		//
@@ -1169,7 +1179,7 @@ private:
 	statLD m_LD;
 	statAssociation m_association;
 	statNeutrality m_neutrality;
-	statFst m_Fst;
+	statStructure m_structure;
 	statHWE m_HWE;
 };
 

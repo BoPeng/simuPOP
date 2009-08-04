@@ -277,14 +277,17 @@ class TestStat(unittest.TestCase):
         #        1	-0.103	 0.102	-0.229	 0.228
         #        2	-0.103	 0.102	-0.229	 0.228
         #    All	-0.103	 0.102	-0.229	 0.228	 0.373	 0.051	-0.102	 0.550
-        Stat(pop, Fst=[0])
-        assert pop.vars().has_key('AvgFst')
-        assert not pop.vars().has_key('Fit')
-        assert not pop.vars().has_key('Fst')
-        Stat(pop, Fst=[0], vars=['Fis', 'Fit', 'Fst'])
-        self.assertAlmostEqual(pop.dvars().Fis[0], -0.2290202)
-        self.assertAlmostEqual(pop.dvars().Fit[0], -0.1034594)
-        self.assertAlmostEqual(pop.dvars().Fst[0],  0.1021633)
+        Stat(pop, structure=[0])
+        assert pop.vars().has_key('F_st')
+        assert not pop.vars().has_key('f_it')
+        assert not pop.vars().has_key('f_st')
+        Stat(pop, structure=[0], vars=['f_is', 'f_it', 'f_st', 'F_is', 'F_it'])
+        self.assertAlmostEqual(pop.dvars().f_is[0], -0.2290202)
+        self.assertAlmostEqual(pop.dvars().f_it[0], -0.1034594)
+        self.assertAlmostEqual(pop.dvars().f_st[0],  0.1021633)
+        self.assertAlmostEqual(pop.dvars().F_is, -0.2290202)
+        self.assertAlmostEqual(pop.dvars().F_it, -0.1034594)
+        self.assertAlmostEqual(pop.dvars().F_st,  0.1021633)
 
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
