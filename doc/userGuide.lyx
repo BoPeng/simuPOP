@@ -13326,12 +13326,91 @@ output
 \end_layout
 
 \begin_layout Standard
-Statistics calculated by the 
+The 
 \family typewriter
 stat
 \family default
- operator are stored in a population's local namespace, which can be retrieved
- using functions 
+ operator is usually used in conjection with a 
+\family typewriter
+pyEval
+\family default
+ or 
+\family typewriter
+pyExec
+\family default
+ operator which execute Python statements and/or expressions in a population's
+ local namespace.
+ For example, operators 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ops = [
+\end_layout
+
+\begin_layout Plain Layout
+
+    stat(alleleFreq=[0]),
+\end_layout
+
+\begin_layout Plain Layout
+
+    pyEval("'%.2f' % alleleFreq[0][0]")
+\end_layout
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\end_inset
+
+in the 
+\family typewriter
+ops
+\family default
+ parameter of the 
+\family typewriter
+simulator.evolve
+\family default
+ function will be applied to populations during evolution.
+ The first operator calculates allele frequency at the first locus and store
+ the results in each population's local namespace.
+ The second operator formats and outputs one of the variables.
+ Because of the flexiblity of the 
+\family typewriter
+pyEval
+\family default
+ operator, you can output statistics, even simple derived statistics, in
+ any format.
+ For example, you can output expected heterozygosity (
+\begin_inset Formula $1-\sum p_{i}^{2}$
+\end_inset
+
+) using calculated allele frequencies as follows:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pyEval("'H_exp=%.2f' % (1-sum([x*x for x in alleleFreq[0].values()]))")
+\end_layout
+
+\end_inset
+
+Note that 
+\family typewriter
+alleleFreq[0]
+\family default
+ is a dictionary.
+\end_layout
+
+\begin_layout Standard
+You can also retrieve variables in a population directly using functions
+ 
 \family typewriter
 population.vars()
 \family default
@@ -13357,16 +13436,34 @@ vars()['alleleFreq']
 dvars().alleleFreq
 \family default
 ).
- More importantly, arbitrary expressions and statements can be evalulated
- in a population's local namespace which allows operators such as 
+ This method is usually used when the function form of the 
 \family typewriter
-pyEval
+stat
 \family default
- and 
+ operator is used.
+ For example,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Stat(pop, alleleFreq=[0])
+\end_layout
+
+\begin_layout Plain Layout
+
+H_exp = 1 - sum([x*x for x in pop.dvars().alleleFreq[0].values()])
+\end_layout
+
+\end_inset
+
+uses the 
 \family typewriter
-pyExec
+Stat
 \family default
- to manipuate and output statistics in any format.
+ function (note the capital S) to count frequencies of alleles for a given
+ population and calculates expected heterozygosity using these variables.
 \end_layout
 
 \begin_layout Subsection
@@ -14757,43 +14854,69 @@ Parameter
 structure
 \family default
  measures the structure of a population, including inbreeding and population
- structure using the 
+ structure using a number of statistics.
+\end_layout
+
+\begin_layout Itemize
+The 
 \begin_inset Formula $F_{st}$
 \end_inset
 
- statistic for population structure at each specified locus (variables 
-\family typewriter
-f_st
-\family default
-, 
-\family typewriter
-f_is
-\family default
- and 
-\family typewriter
-f_it
-\family default
-), and a summary statistic for all loci (variables 
-\family typewriter
-F_st
-\family default
-, 
-\family typewriter
-F_is
-\family default
- and 
-\family typewriter
-F_it
-\family default
-) 
+ statistic for population structure calculated using an algorithm developed
+ by 
 \begin_inset CommandInset citation
-LatexCommand citep
+LatexCommand citet
 key "Weir1984"
 
 \end_inset
 
 .
- This statistic by default uses all existing subpopulations, but it can
+ This statistic is designed to esimate 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ from a random sample of a larger population.
+ This statistic sets dictionaries of locus level 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+, 
+\begin_inset Formula $F_{IT}$
+\end_inset
+
+ and 
+\begin_inset Formula $F_{IS}$
+\end_inset
+
+ (variables 
+\family typewriter
+WC84_f_st
+\family default
+, 
+\family typewriter
+WC84_f_is
+\family default
+ and 
+\family typewriter
+WC84_f_it
+\family default
+), and summary statistics for all loci (variables 
+\family typewriter
+WC84_F_st
+\family default
+, 
+\family typewriter
+WC84_F_is
+\family default
+ and 
+\family typewriter
+WC84_F_it
+\family default
+) .
+\end_layout
+
+\begin_layout Standard
+These statistics by default uses all existing subpopulations, but it can
  also be applied to a subset of subpopulations, or even virtual subpopulations
  using parameter 
 \emph on

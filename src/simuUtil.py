@@ -593,15 +593,23 @@ class trajectory:
         '''
         beginGen and endGen  are inclusive. (frequency for endGen exists)
         parameters description:
-        self.traj  built-in dictionary which records allele frequencies at multiple
-                   loci within all subpopulations and has generation numbers as keys.
-        self.beginGen  passed in value which represents the beginning generation
-                   number in the forward trajectory. Default None in backward
-                   trajectory.
-        self.endGen    passed in value which is the ending generation number in
-                       forward trajectory and namely the current generation number
-                       in backward trajectory where simulations begin.
-        self.nLoci passed in value of number of loci
+        
+        traj
+            built-in dictionary which records allele frequencies at multiple
+            loci within all subpopulations and has generation numbers as keys.
+            
+        beginGen
+            passed in value which represents the beginning generation
+            number in the forward trajectory. Default None in backward
+            trajectory.
+
+        endGen
+            passed in value which is the ending generation number in
+            forward trajectory and namely the current generation number
+            in backward trajectory where simulations begin.
+
+        nLoci
+            passed in value of number of loci
         '''
         self.traj = {}
         self.beginGen = beginGen
@@ -685,7 +693,10 @@ class trajectory:
     def plot(self, r, **kwargs):
         '''
         Plot current trajectory.
+
+        r
             The R object defined in a rpy module.
+
         kwargs
             Additional keyword arguments that will be passed to the plot function.
         '''
@@ -723,16 +734,24 @@ class trajectorySimulator:
 
     Class trajectory(...) takes four arguments, at least three (N, fitness, nLoci) need to be
     specified by the user:
-    N: population size, which may be passed in as a constant number or an array of subpop sizes
-       or a user defined function, NtFunc(gen), which returns population size at each generation.
-    fitness: selection pressure for all loci, which can be passed in as a constant array showing
-       fitness for [AA, Aa, aa, BB, Bb, bb,...] or a user defined function, fitnessFunc(gen),
-       which returns selection pressure at each generation.
-    nLoci: number of Loci, which should be passed in as a constant integer number with its value
-       equal to or larger than 1.
-    logger: Logged messages have levels of importance associated with them. The default levels
-       provided are DEBUG, INFO, WARNING, ERROR and CRITICAL. User should indicate the importance
-       of a logged message. Default value for logger is None.
+
+    N
+        population size, which may be passed in as a constant number or an array of subpop sizes
+        or a user defined function, NtFunc(gen), which returns population size at each generation.
+        
+    fitness
+        selection pressure for all loci, which can be passed in as a constant array showing
+        fitness for [AA, Aa, aa, BB, Bb, bb,...] or a user defined function, fitnessFunc(gen),
+        which returns selection pressure at each generation.
+    
+    nLoci
+        number of Loci, which should be passed in as a constant integer number with its value
+        equal to or larger than 1.
+
+    logger
+        Logged messages have levels of importance associated with them. The default levels
+        provided are DEBUG, INFO, WARNING, ERROR and CRITICAL. User should indicate the importance
+        of a logged message. Default value for logger is None.
     '''
 
     def __init__(self, N, fitness, nLoci, logger=None):
@@ -740,17 +759,27 @@ class trajectorySimulator:
         Initialization of global parameters.
         
         Parameter description:
-        self.N:  pass in population size ''N'' to global variable self.N, which may be a number, a list
-                 of subpop sizes or a user-defined function.
-        self.fitness:  pass in selection pressure ''fitness'' to global variable self.fitness, which may take
-                 forms such as, a list of three values in the case of single locus or same fitness for any
-                 locus within multiple loci, a list of 3 * nLoci values in the case of multi-loci without
-                 interaction, a list of 3**nLoci values when multi-loci and interaction situation are both considered.
-        self.nLoci:  pass in number of loci ''nLoci'' to global variable self.nLoci.
-        self.logger:  pass in level of importance ''logger'' to global variable self.logger, which is a logging
-                 object that can be used to record warnings and error messages. 
-        self.errorCount:  define global dictionary object self.errorCount as the variable to
-                 record counts of distinct forms of errors that occur during the simulation.        
+
+        N
+            pass in population size ''N'' to global variable self.N, which may be a number, a list
+            of subpop sizes or a user-defined function.
+
+        fitness
+            pass in selection pressure ''fitness'' to global variable self.fitness, which may take
+            forms such as, a list of three values in the case of single locus or same fitness for any
+            locus within multiple loci, a list of 3 * nLoci values in the case of multi-loci without
+            interaction, a list of 3**nLoci values when multi-loci and interaction situation are both considered.
+
+        nLoci
+            pass in number of loci ''nLoci'' to global variable self.nLoci.
+
+        logger
+            pass in level of importance ''logger'' to global variable self.logger, which is a logging
+            object that can be used to record warnings and error messages. 
+
+        errorCount
+            define global dictionary object self.errorCount as the variable to
+            record counts of distinct forms of errors that occur during the simulation.        
         '''
         # a vector of subpopulation sizes is needed
         if type(N) in [type(1), type(1L)]:
@@ -958,10 +987,9 @@ class trajectorySimulator:
         
     def _simuForward(self, freq, destFreq, genBegin, genEnd, ploidy, maxAttempts,
                      logger=None):
-        '''
-        This function simulates forward trajectory for one time.
+        '''This function simulates forward trajectory for one time.
         During the simulation, variable number of subpopulations within different
-        generations will be allowed. It's introduced by merging events and splitting
+        generations will be allowed. It is introduced by merging events and splitting
         events in forward sense. Changes of subpopulation sizes need to meet specific
         requirements. If subpopulations are merged, they must combine into *one*
         population. If a splitting event has to occur, it can only originate from
@@ -1027,8 +1055,7 @@ class trajectorySimulator:
                 
     def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, ploidy,
                      restartIfFail, logger=None):
-        '''
-        This function simulates backward trajectory for one time.
+        '''This function simulates backward trajectory for one time.
         During the simulation, variable number of subpopulations within different
         generations will be allowed. It's introduced by merging events and splitting
         events in forward sense, correspondingly splitting and merging in backward
@@ -1136,23 +1163,34 @@ class trajectorySimulator:
             
     def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000,
                     logger=None):
-        '''
-        simulate trajectories of multiple disease susceptibility loci using a forward time approach
+        '''simulate trajectories of multiple disease susceptibility loci using a forward time approach
 
         Return the trajectory for each locus at each subpopulation. In the order of
-            LOC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
+        LOC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
         Each trajectory will have length genEnd - genBegin + 1
         
         parameter description:
-            genBegin  starting generation number
-            genEnd    ending generation number
-            freq      allele frequencies of alleles of multiple unlinked loci at the beginning
-                      generation.
-            destFreq  expected *range* of allele frequencies of alleles of multiple unlinked loci,
-                      at generation genEnd , with all subpopulation combined. If there are two loci,
-                      it can be [[0.08, 0.12], [0.19, 0.21]]
-            ploidy    number of chromosomes will be N*ploidy
-            maxAttempts  How many times to try to get a valid path? Default 10,000
+
+        genBegin
+            starting generation number
+        
+        genEnd
+            ending generation number
+        
+        freq
+            allele frequencies of alleles of multiple unlinked loci at the beginning
+            generation.
+        
+        destFreq
+            expected *range* of allele frequencies of alleles of multiple unlinked loci,
+            at generation genEnd , with all subpopulation combined. If there are two loci,
+            it can be [[0.08, 0.12], [0.19, 0.21]]
+        
+        ploidy
+            number of chromosomes will be N*ploidy
+
+        maxAttempts
+            How many times to try to get a valid path? Default 10,000
         '''
         for i in range(self.nLoci):
             if len(destFreq[i]) != 2:
@@ -1174,32 +1212,47 @@ class trajectorySimulator:
     def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
                      restartIfFail = False, maxAttempts = 1000,
                      logger=None):
-        '''
-        simulate trajectories of multiple disease susceptibility loci using an extension of the
+        '''simulate trajectories of multiple disease susceptibility loci using an extension of the
         backward method described in Slatkin 2001.
 
         parameter description:
-            genEnd    genenration number in the end, namely the current generation number in the
-                      backward trajectory.
-            freq      expected allele frequencies of alleles of multiple unlinked loci.
-                      It may take forms of a single value or a list of values with number of elememts
-                      equal to nLoci. In the case of single value, such freq will be shared by all loci. 
-                      FIXME: There are multiple subpopultions and only one frequency is given,
-                      the same frequency will be used for all subpopulations. Users can specify
-                      different allele frequencies for each subpopulation using the long form...
-            minMutAge minimum generation number. The process will restart if the trajectory is
-                      less than it. Default to 0.
-            maxMutAge maximum generation number. The process will terminate or restart if it can
-                      not reach allele zero after T generations. Default to 100,000, roughly
-                      2,000,000 years which is longer than human history.
-            ploidy    number of chromosomes will be N * ploidy
-            restartIfFail  If the process can not finish after T generations, restart if
-                           restartIfFail = True, otherwise return. Default to False.
-            maxAttempts    How many times to try to get a valid path? Default to 1000.
-            logger    return potential problems if not None. Default to None.
+        
+        genEnd
+            genenration number in the end, namely the current generation number in the
+            backward trajectory.
+        
+        freq
+            expected allele frequencies of alleles of multiple unlinked loci.
+            It may take forms of a single value or a list of values with number of elememts
+            equal to nLoci. In the case of single value, such freq will be shared by all loci. 
+            FIXME: There are multiple subpopultions and only one frequency is given,
+            the same frequency will be used for all subpopulations. Users can specify
+            different allele frequencies for each subpopulation using the long form...
+            
+        minMutAge
+            minimum generation number. The process will restart if the trajectory is
+            less than it. Default to 0.
+        
+        maxMutAge
+            maximum generation number. The process will terminate or restart if it can
+            not reach allele zero after T generations. Default to 100,000, roughly
+            2,000,000 years which is longer than human history.
+        
+        ploidy
+            number of chromosomes will be N * ploidy
+        
+        restartIfFail
+            If the process can not finish after T generations, restart if
+            restartIfFail = True, otherwise return. Default to False.
+        
+        maxAttempts
+            How many times to try to get a valid path? Default to 1000.
+        
+        logger
+            return potential problems if not None. Default to None.
 
         Return the trajectory for each locus at each subpopulation. In the order of
-            LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
+        LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
         '''
         self.maxMutAge = maxMutAge
         self.minMutAge = minMutAge
