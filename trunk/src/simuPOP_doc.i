@@ -9707,7 +9707,7 @@ Details:
     list of loci at which statistics that measure population structure
     are calculated. This parameter currently supports locus-level and
     overall Fst, Fis and Fit measures using an algorithm developed in
-    Cockerham & Weir, 1984. Fst is by default calculated for all
+    Weir and Cockerham 1984. Fst is by default calculated for all
     subpopulation but a subset of subpopulations could be specified
     using parameter subPops. Virtual subpopulations are supported
     which makes it possible to estimate population structure from
@@ -9719,11 +9719,17 @@ Details:
     *   F_it The Fit statistic estimated for all specified loci.
     *   f_st A dictionary of locus level Fst values.
     *   f_is A dictionary of locus level Fis values.
-    *   f_it A dictionary of locus level Fit values.HWE: Parameter HWE
-    accepts a list of loci at which exact two-side tests for Hardy-
-    Weinberg equilibrium will be performed. This statistic is only
-    available for diallelic loci in diploid populations. It outputs
-    the following variables:
+    *   f_it A dictionary of locus level Fit values.
+    *   WC84_F_st The WC84 version of the F_st statistic.
+    *   WC84_F_is The WC84 version of the F_it statistic.
+    *   WC84_F_it The WC84 version of the F_it statistic.
+    *   WC84_f_st The WC84 version of the f_st statistic.
+    *   WC84_f_is The WC84 version of the f_is statistic.
+    *   WC84_f_it The WC84 version of the f_it statistic.HWE:
+    Parameter HWE accepts a list of loci at which exact two-side tests
+    for Hardy-Weinberg equilibrium will be performed. This statistic
+    is only available for diallelic loci in diploid populations. It
+    outputs the following variables:
     *   HWE (default) A dictionary of p-values of HWE tests using
     genotypes in all or specified (virtual) subpopulations.
     *   HWE_sp A dictionary of p-values of HWS tests using genotypes
