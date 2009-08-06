@@ -720,12 +720,8 @@ private:
 #define  Fis_String     "F_is"
 #define  Fit_String     "F_it"
 
-#define  WC84_fst_String     "WC84_f_st"
-#define  WC84_fis_String     "WC84_f_is"
-#define  WC84_fit_String     "WC84_f_it"
-#define  WC84_Fst_String     "WC84_F_st"
-#define  WC84_Fis_String     "WC84_F_is"
-#define  WC84_Fit_String     "WC84_F_it"
+#define  Gst_String     "G_st"
+#define  gst_String     "g_st"
 
 public:
 	statStructure(const vectoru & Fst, const subPopList & subPops, const stringList & vars);
@@ -739,11 +735,8 @@ private:
 	typedef map<Allele, bool> ALLELES;
 	typedef vector<ALLELES> ALLELELIST;
 
-	void calcExpHetero(LOCIFREQ & alleleFreq, intDict & h_exp);
-
-	void calcFst_direct(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
-		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-		intDict & fst, intDict & fis, intDict & fit);
+	void calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
+		const ALLELELIST & alleles, double & Gst, intDict & gst);
 
 	void calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
 		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
@@ -1094,26 +1087,27 @@ public:
 	 *
 	 *  <b>structure</b>: Parameter \c structure accepts a list of loci at
 	 *  which statistics that measure population structure are calculated.
-	 *  This parameter currently supports locus-level and overall \e Fst,
-	 *  \e Fis and \e Fit measures using an algorithm developed in Weir and
-	 *  Cockerham 1984. \e Fst is by default calculated for all
-	 *  subpopulation but a subset of subpopulations could be specified using
-	 *  parameter \e subPops. Virtual subpopulations are supported which makes
-	 *  it possible to estimate population structure from groups of individuals
-	 *  from the same subpopulation. This statistic set variables:
-	 *  \li \c F_st (default) The \e Fst statistic estimated for all
+	 *  This parameter currently supports the following statistics:
+	 *  \li Weir and Cockerham's Fst (1984). This is the most widely used
+	 *       estimator of Wright's fixation index and can be used to measure
+	 *       population differentiation. However, this method is designed to
+	 *       estimate Fst from samples of larger populations and might not be
+	 *       appropriate for the calculation of Fst of large populations.
+	 *  \li Nei's Gst (1973). The Gst estimator is another estimator for
+	 *       Wright's fixation index but it is extended for multi-allele (more
+	 *       than two alleles) and multi-loci cases. This statistics should
+	 *       be used if you would like to obtain a \e true Fst value of a large
+	 *       population.
+	 *  \li \c F_st (default) The WC84 \e Fst statistic estimated for all
 	 *       specified loci.
-	 *  \li \c F_is The \e Fis statistic estimated for all specified loci.
-	 *  \li \c F_it The \e Fit statistic estimated for all specified loci.
-	 *  \li \c f_st A dictionary of locus level \e Fst values.
-	 *  \li \c f_is A dictionary of locus level \e Fis values.
-	 *  \li \c f_it A dictionary of locus level \e Fit values.
-	 *  \li \c WC84_F_st The WC84 version of the \c F_st statistic.
-	 *  \li \c WC84_F_is The WC84 version of the \c F_it statistic.
-	 *  \li \c WC84_F_it The WC84 version of the \c F_it statistic.
-	 *  \li \c WC84_f_st The WC84 version of the \c f_st statistic.
-	 *  \li \c WC84_f_is The WC84 version of the \c f_is statistic.
-	 *  \li \c WC84_f_it The WC84 version of the \c f_it statistic.
+	 *  \li \c F_is The WC84 \e Fis statistic estimated for all specified loci.
+	 *  \li \c F_it The WC84 \e Fit statistic estimated for all specified loci.
+	 *  \li \c f_st A dictionary of locus level WC84 \e Fst values.
+	 *  \li \c f_is A dictionary of locus level WC84 \e Fis values.
+	 *  \li \c f_it A dictionary of locus level WC84 \e Fit values.
+	 *  \li \c G_st Nei's Gst statistic estimated for all specified loci.
+	 *  \li \c g_st A dictionary of Nei's Gst statistic estimated for each
+	 *	     locus.
 	 *
 	 *  <b>HWE</b>: Parameter \c HWE accepts a list of loci at which exact
 	 *  two-side tests for Hardy-Weinberg equilibrium will be performed. This
@@ -1156,6 +1150,7 @@ public:
 		const uintList & HWE = uintList(),
 		//
 		const stringList & vars = stringList(),
+        const string & suffix = string(),
 		// regular parameters
 		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),

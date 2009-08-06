@@ -2063,9 +2063,7 @@ statStructure::statStructure(const vectoru & Fst, const subPopList & subPops, co
 	const char * allowedVars[] = {
 		fst_String, fis_String, fit_String,
 		Fst_String, Fis_String, Fit_String,
-		WC84_fst_String, WC84_fis_String, WC84_fit_String,
-		WC84_Fst_String, WC84_Fis_String, WC84_Fit_String,
-		""
+		Gst_String, gst_String, ""
 	};
 	const char * defaultVars[] = { Fst_String, "" };
 
@@ -2073,69 +2071,64 @@ statStructure::statStructure(const vectoru & Fst, const subPopList & subPops, co
 }
 
 
-void statStructure::calcFst_direct(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
-                            const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-                            intDict & fst, intDict & fis, intDict & fit)
+void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
+                                  const ALLELELIST & alleles, double & Gst, intDict & gst)
 {
-	/*
-	double aa = 0.;
-	double bb = 0.;
-	double cc = 0.;
-	
+	double H_t_all = 0.;
+	double D_st_all = 0.;
+
+	UINT numSP = n_i.size();
+	double n = accumulate(n_i.begin(), n_i.end(), 0);
+
 	// for each locus
 	for (size_t st = 0; st < m_loci.size(); ++st) {
-		double H_t = 0;
-		double H_i = 0;
-		double H_s = 0;
-		
-		// for each allele
+		UINT loc = m_loci[st];
+		// D_st = Sum_i,j D_ij / s^2
+		double D_st = 0;
+		// i, j for subpopulation
+		for (size_t i = 0; i < numSP; ++i) {
+			for (size_t j = 0; j < numSP; ++j) {
+				// D_ij = Sum_k (x_ik - x_jk)^2 /2 (i,j are subpops, k is allele)
+				double D_ij = 0;
+				// for each allele
+				ALLELES::const_iterator aIt = alleles[st].begin();
+				ALLELES::const_iterator aEnd = alleles[st].end();
+				for (; aIt != aEnd; ++aIt) {
+					Allele allele = aIt->first;
+					D_ij += pow(alleleFreq[i][loc][allele] - alleleFreq[j][loc][allele], 2);
+				}
+				D_ij /= 2.;
+				D_st += D_ij;
+			}
+		}
+		D_st /= (numSP * numSP);
+		//
+		// J_t = Sum_k (x_dot_k^2)
+		//
+		// NOTE: w_i is chosen as n_i/n instead of 1/numSP as
+		// used in the paper.
+		double J_t = 0;
 		ALLELES::const_iterator aIt = alleles[st].begin();
 		ALLELES::const_iterator aEnd = alleles[st].end();
 		for (; aIt != aEnd; ++aIt) {
 			Allele allele = aIt->first;
-			// p_bar (use 2*n_i is the same as n_i)
-			double p_bar = 0;
-			for (int sp = 0; sp < r; ++sp)
-				p_bar += n_i[sp] * alleleFreq[sp][loc][allele];
-			p_bar /= n;
-			
-			H_t += p_bar * p_bar;
-
-			// h_bar
-			double H_i = 0;
-			for (int sp = 0; sp < r; ++sp)
-				h_bar += heteroFreq[sp][loc][allele] * n_i[sp];
-			h_bar /= n;
-
-			// a, b, c
-			a += n_bar / n_c * (s_2 - (p_bar * (1 - p_bar) - (r - 1.) / r * s_2 - h_bar / 4.) / (n_bar - 1.) );
-			b += n_bar / (n_bar - 1) * (p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1) / (4. * n_bar) * h_bar);
-			c += h_bar / 2.;
-
-		}   
-		// H_t = 1 - Sum(p_i) 
-		// where p_i is the overall allele frequency for all subpopulations.
-		H_t = 1 - H_t;  
-
-		DBG_DO(DBG_STATOR, cout << "Fst= " << a / (a + b + c) << endl);
-
-		fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / (a + b + c));
-		fit[loc] = fcmp_eq(a + b + c, 0.) ? 1. : (1 - c / (a + b + c));
-		fis[loc] = fcmp_eq(b + c, 0.) ? 1. : (1 - c / (b + c));
-
-		aa += a;
-		bb += b;
-		cc += c;
+			double x_dotk = 0;
+			for (size_t i = 0; i < numSP; ++i)
+				x_dotk += n_i[i] * alleleFreq[i][loc][allele];
+			x_dotk /= n;
+			J_t += pow(x_dotk, 2);
+		}
+		gst[loc] = D_st / (1 - J_t);
+		H_t_all += 1 - J_t;
+		D_st_all += D_st;
 	}
-	Fst = fcmp_eq(aa + bb + cc, 0.) ? 0 : (aa / (aa + bb + cc));
-	Fit = fcmp_eq(aa + bb + cc, 0.) ? 1. : (1 - cc / (aa + bb + cc));
-	Fis = fcmp_eq(aa + bb + cc, 0.) ? 1. : (1 - cc / (bb + cc));
-	*/
+	Gst = D_st_all / H_t_all;
 }
 
+
 void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
-                            const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-                            intDict & fst, intDict & fis, intDict & fit)
+                                 const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
+                                 intDict & fst, intDict & fis, intDict & fit)
 {
 	double aa = 0.;
 	double bb = 0.;
@@ -2213,20 +2206,6 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 }
 
 
-void statStructure::calcExpHetero(LOCIFREQ & alleleFreq, intDict & h_exp)
-{
-	LOCIFREQ::iterator it = alleleFreq.begin();
-	LOCIFREQ::iterator itEnd = alleleFreq.end();
-	for (; it != itEnd; ++it) {
-		double h = 0;
-		FREQ::iterator freq = it->second.begin();
-		FREQ::iterator freqEnd = it->second.end();
-		h += freq->second * freq->second;
-		// it->first is the locus number
-		h_exp[it->first] = 1- h;
-	}
-}
-
 bool statStructure::apply(population & pop)
 {
 	if (m_loci.empty())
@@ -2301,17 +2280,24 @@ bool statStructure::apply(population & pop)
 		n_i.push_back(spSize);
 	}
 
-	// dicitonary to save values.
+	// Nei's Gst
+	double Gst = 0;
+	intDict gst;
+	calcGst_Nei73(n_i, alleleFreq, allAlleles, Gst, gst);
+	if (m_vars.contains(Gst_String))
+		pop.getVars().setDoubleVar(Gst_String, Gst);
+	if (m_vars.contains(gst_String))
+		pop.getVars().setIntDictVar(gst_String, gst);
+
+	// Weir and Cockerham 1984 Fst
 	double Fst = 0;
 	double Fis = 0;
 	double Fit = 0;
 	intDict fst;
 	intDict fis;
 	intDict fit;
-	
-	// Regular Fst, pending.
-	/*
-	calcFst_direct(alleleFreq, heteroFreq, allAlleles, Fst, Fis, Fit, fst, fis, fit);
+	calcFst_WC84(n_i, alleleFreq, heteroFreq, allAlleles, Fst, Fis, Fit, fst, fis, fit);
+	// post results
 	if (m_vars.contains(Fst_String))
 		pop.getVars().setDoubleVar(Fst_String, Fst);
 	if (m_vars.contains(Fis_String))
@@ -2324,22 +2310,6 @@ bool statStructure::apply(population & pop)
 		pop.getVars().setIntDictVar(fis_String, fis);
 	if (m_vars.contains(fit_String))
 		pop.getVars().setIntDictVar(fit_String, fit);
-	*/
-	// Weir and Cockerham 1984 Fst
-	calcFst_WC84(n_i, alleleFreq, heteroFreq, allAlleles, Fst, Fis, Fit, fst, fis, fit);
-	// post results
-	if (m_vars.contains(WC84_Fst_String))
-		pop.getVars().setDoubleVar(WC84_Fst_String, Fst);
-	if (m_vars.contains(WC84_Fis_String))
-		pop.getVars().setDoubleVar(WC84_Fis_String, Fis);
-	if (m_vars.contains(WC84_Fit_String))
-		pop.getVars().setDoubleVar(WC84_Fit_String, Fit);
-	if (m_vars.contains(WC84_fst_String))
-		pop.getVars().setIntDictVar(WC84_fst_String, fst);
-	if (m_vars.contains(WC84_fis_String))
-		pop.getVars().setIntDictVar(WC84_fis_String, fis);
-	if (m_vars.contains(WC84_fit_String))
-		pop.getVars().setIntDictVar(WC84_fit_String, fit);
 	return true;
 }
 
