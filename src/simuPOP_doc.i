@@ -70,8 +70,8 @@ Details:
 
 Usage:
 
-    alphaParentsChooser(alphaSex=Male, alphaNum=0,
-      alphaField=string, selectionField=\"fitness\")
+    alphaParentsChooser(alphaSex=Male, alphaNum=0, alphaField=\"\",
+      selectionField=\"fitness\")
 
 Details:
 
@@ -361,7 +361,7 @@ Usage:
 
     basePenetrance(ancestralGen=-1, stage=DuringMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Arguments:
 
@@ -603,7 +603,7 @@ Details:
 Usage:
 
     cloneGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -764,7 +764,7 @@ Usage:
     contextMutator(rates=[], loci=[], mutators=[], contexts=[],
       mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -907,7 +907,8 @@ Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, loci=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -1019,7 +1020,7 @@ Usage:
 
 Usage:
 
-    Expression(expr=string, stmts=string, locals=None)
+    Expression(expr=\"\", stmts=\"\", locals=None)
 
 "; 
 
@@ -1576,7 +1577,7 @@ Details:
 Usage:
 
     genoTransmitter(begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -1766,7 +1767,7 @@ Details:
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -1994,7 +1995,7 @@ Usage:
 
     ifElse(cond, ifOps=[], elseOps=[], output=\">\", stage=PostMating,
       begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -2432,9 +2433,9 @@ Note:
 
 Usage:
 
-    infoEval(expr=string, stmts=string, usePopVars=False,
-      exposeInd=string, output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -2533,9 +2534,9 @@ Details:
 
 Usage:
 
-    infoExec(stmts=string, usePopVars=False, exposeInd=string,
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+    infoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -2644,7 +2645,7 @@ Details:
 
 Usage:
 
-    infoParentsChooser(infoFields=[], func=None, param=None,
+    infoParentsChooser(infoFields=\"\"List, func=None, param=None,
       selectionField=\"fitness\")
 
 Details:
@@ -2800,7 +2801,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=[],
+      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=\"\"List,
       TAG_InheritFields[1])
 
 Arguments:
@@ -2867,7 +2868,7 @@ Usage:
     initByFreq(alleleFreq=[], loci=[], ploidy=[],
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -2952,7 +2953,7 @@ Usage:
     initByValue(value=[], loci=[], ploidy=[], proportions=[],
       initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
       end=1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -3038,7 +3039,8 @@ Details:
 Usage:
 
     initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -3143,7 +3145,7 @@ Usage:
 
     kamMutator(k=0, rates=[], loci=[], mapIn=[], mapOut=[],
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -3227,7 +3229,7 @@ Usage:
 
     maPenetrance(loci, penetrance, wildtype=[], ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -3309,7 +3311,7 @@ Usage:
 
     mapPenetrance(loci, penetrance, phase=False, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -3390,7 +3392,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -3478,7 +3480,7 @@ Usage:
 
     mapSelector(loci, fitness, phase=False, stage=PreMating,
       begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -3566,7 +3568,7 @@ Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -3662,7 +3664,7 @@ Usage:
 
     maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -3819,7 +3821,7 @@ Usage:
 
     matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -3890,7 +3892,7 @@ Details:
 Usage:
 
     mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -3965,8 +3967,8 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=AllSubPops, name=string, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=AllReps, infoFields=[])
+    mergeSubPops(subPops=AllSubPops, name=\"\", stage=PreMating,
+      begin=0, end=-1, step=1, at=[], reps=AllReps, infoFields=\"\"List)
 
 Details:
 
@@ -4088,7 +4090,7 @@ Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4196,7 +4198,7 @@ Details:
 Usage:
 
     mitochondrialGenoTransmitter(chroms=[], begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4254,7 +4256,7 @@ Usage:
     mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
       mapOut=[], context=0, output=\">\", stage=PostMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -4337,7 +4339,7 @@ Usage:
 
     mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -4421,7 +4423,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4516,7 +4518,7 @@ Usage:
 
     mlSelector(selectors, mode=Multiplicative, stage=PreMating,
       begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4582,7 +4584,7 @@ Usage:
 
     mutator(rates=[], loci=[], mapIn=[], mapOut=[], context=0,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4709,7 +4711,7 @@ Details:
 Usage:
 
     noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -4925,7 +4927,7 @@ Details:
 
 Usage:
 
-    parentChooser(selectionField=string)
+    parentChooser(selectionField=\"\")
 
 "; 
 
@@ -4996,7 +4998,8 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, output=\"\", infoFields=[], ParentsFields[1])
+      subPops=AllSubPops, output=\"\", infoFields=\"\"List,
+      ParentsFields[1])
 
 "; 
 
@@ -5074,7 +5077,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, output=\"\", infoFields=[])
+      subPops=AllSubPops, output=\"\", infoFields=\"\"List)
 
 "; 
 
@@ -5143,7 +5146,7 @@ Usage:
 
     pause(stopOnKeyStroke=False, prompt=True, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -5227,7 +5230,7 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+    pedigree(pop, loci=[], infoFields=\"\"List, ancGen=-1,
       fatherField=\"father_idx\", motherField=\"mother_idx\")
 
 Details:
@@ -5476,7 +5479,7 @@ Usage:
 
     pedigreeTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, stage=PostMating, output=\">\",
-      pedigreeFields=[])
+      pedigreeFields=\"\"List)
 
 "; 
 
@@ -5504,7 +5507,7 @@ Usage:
 
     pointMutator(loci, allele, ploidy=[], inds=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -5662,8 +5665,8 @@ Details:
 Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
-      lociPos=[], ancGen=0, chromNames=[], alleleNames=[],
-      lociNames=[], subPopNames=[], infoFields=[])
+      lociPos=[], ancGen=0, chromNames=\"\"List, alleleNames=\"\"List,
+      lociNames=\"\"List, subPopNames=\"\"List, infoFields=\"\"List)
 
 Details:
 
@@ -6256,7 +6259,7 @@ Details:
 
 Usage:
 
-    x.addChrom(lociPos, lociNames=[], chromName=string,
+    x.addChrom(lociPos, lociNames=[], chromName=\"\",
       chromType=Autosome)
 
 Details:
@@ -6455,7 +6458,8 @@ Details:
 
 Usage:
 
-    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
+    x.updateInfoFieldsFrom(fields, pop, fromFields=\"\"List,
+      ancGen=-1)
 
 Details:
 
@@ -6643,9 +6647,9 @@ Details:
 
 Usage:
 
-    pyEval(expr=string, stmts=string, exposePop=string, output=\">\",
+    pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -6747,9 +6751,9 @@ Details:
 
 Usage:
 
-    pyExec(stmts=string, exposePop=string, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+    pyExec(stmts=\"\", exposePop=\"\", output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -6890,7 +6894,8 @@ Usage:
 
     pyMutator(rates=[], loci=[], func=None, context=0, mapIn=[],
       mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -6995,7 +7000,8 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       isTransmitter=False, offspringOnly=False, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -7074,9 +7080,9 @@ Details:
 
 Usage:
 
-    pyOutput(msg=string, output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+    pyOutput(msg=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -7239,7 +7245,7 @@ Usage:
 
     pyPenetrance(loci, func, ancGen=-1, stage=DuringMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Arguments:
 
@@ -7370,7 +7376,7 @@ Usage:
 
     pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -7453,7 +7459,7 @@ Description:
 Usage:
 
     pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Arguments:
 
@@ -7526,7 +7532,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=[])
+      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=\"\"List)
 
 Arguments:
 
@@ -7600,7 +7606,7 @@ Description:
 Usage:
 
     quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 "; 
 
@@ -7855,7 +7861,7 @@ Usage:
 
     recombinator(rates=[], intensity=-1, loci=[],
       convMode=NoConversion, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -8027,7 +8033,7 @@ Usage:
 
     resizeSubPops(subPops=AllSubPops, sizes=[], proportions=[],
       propagate=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, infoFields=[])
+      reps=AllReps, infoFields=\"\"List)
 
 Details:
 
@@ -8376,7 +8382,8 @@ Details:
 Usage:
 
     savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -8494,7 +8501,7 @@ Description:
 Usage:
 
     selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 "; 
 
@@ -8566,7 +8573,7 @@ Details:
 Usage:
 
     selfingGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -8693,7 +8700,7 @@ Usage:
 
     setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
       end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
-      infoFields=[])
+      infoFields=\"\"List)
 
 Details:
 
@@ -9226,7 +9233,7 @@ Usage:
     smmMutator(rates=[], loci=[], incProb=0.5, maxAllele=0,
       mutStep=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
       begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -9307,8 +9314,8 @@ Details:
 Usage:
 
     splitSubPops(subPops=AllSubPops, sizes=[], proportions=[],
-      names=[], randomize=True, stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=AllReps, infoFields=[])
+      names=\"\"List, randomize=True, stage=PreMating, begin=0, end=-1,
+      step=1, at=[], reps=AllReps, infoFields=\"\"List)
 
 Details:
 
@@ -9420,11 +9427,12 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
-      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], vars=[], output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
-      subPops=AllSubPops, infoFields=[])
+      haploFreq=[], sumOfInfo=\"\"List, meanOfInfo=\"\"List,
+      varOfInfo=\"\"List, maxOfInfo=\"\"List, minOfInfo=\"\"List, LD=[],
+      association=[], neutrality=[], structure=[], HWE=[],
+      vars=\"\"List, suffix=\"\", output=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=\"\"List)
 
 Details:
 
@@ -9468,10 +9476,13 @@ Details:
     'alleleNum', 'alleleFreq_sp' ('alleleFreq' in each subpopulation),
     and 'alleleNum_sp' ('alleleNum' in each subpopulation). You can
     set vars=['alleleNum_sp'] to output only subpopulation specific
-    allele count.  Operator stat supports the following statistics:
-    popSize: If popSize=True, number of individuals in all or
-    specified subpopulations (parameter subPops) will be set to the
-    following variables:
+    allele count. An optional suffix (parameter suffix) can be used to
+    append a suffix to default parameter names. This parameter can be
+    used, for example, to calculate and store the same statistics for
+    different subpopulations (e.g. pairwise Fst).  Operator stat
+    supports the following statistics:  popSize: If popSize=True,
+    number of individuals in all or specified subpopulations
+    (parameter subPops) will be set to the following variables:
     *   popSize (default): Number of individuals in all or specified
     subpopulations. Because subPops does not have to cover all
     individuals, it may not be the actual population size.
@@ -9788,7 +9799,7 @@ Usage:
 
 Usage:
 
-    statAlleleFreq(loci, subPops, vars)
+    statAlleleFreq(loci, subPops, vars, suffix)
 
 "; 
 
@@ -9818,7 +9829,7 @@ Usage:
 
 Usage:
 
-    statAssociation(loci, subPops, vars)
+    statAssociation(loci, subPops, vars, suffix)
 
 "; 
 
@@ -9836,7 +9847,7 @@ Usage:
 
 Usage:
 
-    statGenoFreq(genoFreq, subPops, vars)
+    statGenoFreq(genoFreq, subPops, vars, suffix)
 
 "; 
 
@@ -9854,7 +9865,7 @@ Usage:
 
 Usage:
 
-    statHaploFreq(haploFreq, subPops, vars)
+    statHaploFreq(haploFreq, subPops, vars, suffix)
 
 "; 
 
@@ -9880,7 +9891,7 @@ Usage:
 
 Usage:
 
-    statHeteroFreq(heteroFreq, homoFreq, subPops, vars)
+    statHeteroFreq(heteroFreq, homoFreq, subPops, vars, suffix)
 
 "; 
 
@@ -9898,7 +9909,7 @@ Usage:
 
 Usage:
 
-    statHWE(loci, subPops, vars)
+    statHWE(loci, subPops, vars, suffix)
 
 "; 
 
@@ -9917,7 +9928,7 @@ Usage:
 Usage:
 
     statInfo(sumOfInfo, meanOfInfo, varOfInfo, maxOfInfo, minOfInfo,
-      subPops, vars)
+      subPops, vars, suffix)
 
 "; 
 
@@ -9943,7 +9954,7 @@ Usage:
 
 Usage:
 
-    statLD(LD, subPops, vars)
+    statLD(LD, subPops, vars, suffix)
 
 "; 
 
@@ -9961,7 +9972,7 @@ Usage:
 
 Usage:
 
-    statNeutrality(loci, subPops, vars)
+    statNeutrality(loci, subPops, vars, suffix)
 
 "; 
 
@@ -9979,7 +9990,7 @@ Usage:
 
 Usage:
 
-    statNumOfAffected(numOfAffected, subPops, vars)
+    statNumOfAffected(numOfAffected, subPops, vars, suffix)
 
 "; 
 
@@ -9997,7 +10008,7 @@ Usage:
 
 Usage:
 
-    statNumOfMale(numOfMale, subPops, vars)
+    statNumOfMale(numOfMale, subPops, vars, suffix)
 
 "; 
 
@@ -10015,7 +10026,7 @@ Usage:
 
 Usage:
 
-    statPopSize(popSize, subPops, vars)
+    statPopSize(popSize, subPops, vars, suffix)
 
 "; 
 
@@ -10033,7 +10044,7 @@ Usage:
 
 Usage:
 
-    statStructure(Fst, subPops, vars)
+    statStructure(Fst, subPops, vars, suffix)
 
 "; 
 
@@ -10248,7 +10259,7 @@ Description:
 Usage:
 
     tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 "; 
 
@@ -10296,9 +10307,9 @@ Details:
 
 Usage:
 
-    terminateIf(condition=string, stopAll=False, message=string,
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllReps, subPops=AllSubPops, infoFields=[])
+    terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -10377,7 +10388,7 @@ Details:
 Usage:
 
     ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -10433,7 +10444,7 @@ Details:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -10494,7 +10505,7 @@ Details:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=\"\"List)
 
 Details:
 
@@ -10883,7 +10894,7 @@ Details:
 
 Usage:
 
-    CloseOutput(output=string)
+    CloseOutput(output=\"\")
 
 Details:
 
@@ -10926,7 +10937,7 @@ Description:
 
 Usage:
 
-    SetRNG(rng=string, seed=0)
+    SetRNG(rng=\"\", seed=0)
 
 "; 
 
@@ -11078,7 +11089,7 @@ Description:
 
 Usage:
 
-    setLogOutput(filename=string)
+    setLogOutput(filename=\"\")
 
 "; 
 

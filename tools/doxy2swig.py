@@ -472,6 +472,7 @@ class Doxy2SWIG:
                 # re function used to repalce the following sentances
                 vect = re.compile('vector(info|u|l|i|f|a|op|splitter|str|vsp)')
                 defVal = vect.sub('[]', defVal)
+                defVal = defVal.replace('string','""')
                 defVal = defVal.replace('strDict','{}')
                 defVal = defVal.replace('intDict','{}')
                 defVal = defVal.replace('matrix','[]')

@@ -357,7 +357,8 @@ private:
 #define  popSize_sp_String     "popSize_sp"
 
 public:
-	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars);
+	statPopSize(bool popSize, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -367,6 +368,7 @@ private:
 	subPopList m_subPops;
 
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY
@@ -383,7 +385,8 @@ private:
 #define  propOfFemale_sp_String   "propOfFemale_sp"
 
 public:
-	statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars);
+	statNumOfMale(bool numOfMale, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -392,6 +395,7 @@ private:
 	bool m_isActive;
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY
@@ -408,7 +412,8 @@ private:
 #define  propOfUnaffected_sp_String  "propOfUnaffected_sp"
 
 public:
-	statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars);
+	statNumOfAffected(bool numOfAffected, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -417,6 +422,7 @@ private:
 	bool m_isActive;
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -434,7 +440,8 @@ private:
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
-	statAlleleFreq(const vectoru & loci, const subPopList & subPops, const stringList & vars);
+	statAlleleFreq(const vectoru & loci, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq()
@@ -451,6 +458,7 @@ private:
 	subPopList m_subPops;
 
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY
@@ -468,7 +476,7 @@ private:
 
 public:
 	statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
-		const subPopList & subPops, const stringList & vars);
+		const subPopList & subPops, const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -478,6 +486,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -491,8 +500,8 @@ private:
 #define  GenotypeFreq_sp_String  "genoFreq_sp"
 
 public:
-	statGenoFreq(const vectoru & genoFreq,
-		const subPopList & subPops, const stringList & vars);
+	statGenoFreq(const vectoru & genoFreq,  const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -502,6 +511,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -515,7 +525,8 @@ private:
 #define  HaplotypeFreq_sp_String   "haploFreq_sp"
 
 public:
-	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars);
+	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	~statHaploFreq()
 	{
@@ -534,6 +545,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -555,8 +567,8 @@ private:
 public:
 	statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
 		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
-		const vectorstr & minOfInfo,
-		const subPopList & subPops, const stringList & vars);
+		const vectorstr & minOfInfo, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	~statInfo()
 	{
@@ -574,6 +586,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -606,7 +619,7 @@ public:
 	// not worth special optimization. The newer version calculates allele and
 	// haplotype frequencies locally and in a more readable way.
 	statLD(const intMatrix & LD, const subPopList & subPops,
-		const stringList & vars);
+		const stringList & vars, const string & suffix);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -631,6 +644,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY
@@ -656,8 +670,8 @@ private:
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statAssociation(const vectoru & loci,
-		const subPopList & subPops, const stringList & vars);
+	statAssociation(const vectoru & loci, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -680,6 +694,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY
@@ -691,7 +706,7 @@ private:
 
 public:
 	statNeutrality(const vectoru & loci, const subPopList & subPops,
-		const stringList & vars);
+		const stringList & vars, const string & suffix);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -706,6 +721,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 /// CPPONLY currently there is no need to retrieve calculated value
@@ -724,7 +740,8 @@ private:
 #define  gst_String     "g_st"
 
 public:
-	statStructure(const vectoru & Fst, const subPopList & subPops, const stringList & vars);
+	statStructure(const vectoru & Fst, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -748,6 +765,7 @@ private:
 
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -764,7 +782,7 @@ private:
 
 public:
 	statHWE(const vectoru & loci, const subPopList & subPops,
-		const stringList & vars);
+		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
 
@@ -775,6 +793,7 @@ private:
 	vectoru m_loci;
 	subPopList m_subPops;
 	stringList m_vars;
+	string m_suffix;
 };
 
 
@@ -830,7 +849,10 @@ public:
 	 *  \c 'alleleFreq_sp' (\c 'alleleFreq' in each subpopulation), and
 	 *  \c 'alleleNum_sp' (\c 'alleleNum' in each subpopulation). You can set
 	 *  <tt>vars=['alleleNum_sp']</tt> to output only subpopulation specific
-	 *  allele count.
+	 *  allele count. An optional suffix (parameter \e suffix) can be used
+	 *  to append a suffix to default parameter names. This parameter can be
+	 *  used, for example, to calculate and store the same statistics for
+	 *  different subpopulations (e.g. pairwise \c Fst).
 	 *
 	 *  Operator \c stat supports the following statistics:
 	 *
@@ -1150,7 +1172,7 @@ public:
 		const uintList & HWE = uintList(),
 		//
 		const stringList & vars = stringList(),
-        const string & suffix = string(),
+		const string & suffix = string(),
 		// regular parameters
 		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
