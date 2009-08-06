@@ -5756,7 +5756,7 @@ reference "sub:Function-form"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyOperator.py"
-lstparams "caption={A frequency dependent mutation operator},firstline=5,label={pyOperator},lastline=19"
+lstparams "caption={A frequency dependent mutation operator},label={pyOperator},lastline=15"
 
 \end_inset
 
