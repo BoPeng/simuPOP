@@ -2231,8 +2231,8 @@ simu.evolve(
     preOps = initByFreq([0.5, 0.5]),
     ops = [
         migrator(rate=MigrIslandRates(0.01, 3), reps=1),
-        stat(structure=range(10), vars=['WC84_F_st'], step=40),
-        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (WC84_F_st, rep)", step=40),
+        stat(structure=range(10), step=40),
+        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (F_st, rep)", step=40),
         pyOutput('\n', reps=-1, step=40)
     ],
     gen = 200

@@ -9705,31 +9705,31 @@ Details:
     *   Pi_sp Mean paiewise difference between all sequences in each
     (virtual) subpopulation.structure: Parameter structure accepts a
     list of loci at which statistics that measure population structure
-    are calculated. This parameter currently supports locus-level and
-    overall Fst, Fis and Fit measures using an algorithm developed in
-    Weir and Cockerham 1984. Fst is by default calculated for all
-    subpopulation but a subset of subpopulations could be specified
-    using parameter subPops. Virtual subpopulations are supported
-    which makes it possible to estimate population structure from
-    groups of individuals from the same subpopulation. This statistic
-    set variables:
-    *   F_st (default) The Fst statistic estimated for all specified
-    loci.
-    *   F_is The Fis statistic estimated for all specified loci.
-    *   F_it The Fit statistic estimated for all specified loci.
-    *   f_st A dictionary of locus level Fst values.
-    *   f_is A dictionary of locus level Fis values.
-    *   f_it A dictionary of locus level Fit values.
-    *   WC84_F_st The WC84 version of the F_st statistic.
-    *   WC84_F_is The WC84 version of the F_it statistic.
-    *   WC84_F_it The WC84 version of the F_it statistic.
-    *   WC84_f_st The WC84 version of the f_st statistic.
-    *   WC84_f_is The WC84 version of the f_is statistic.
-    *   WC84_f_it The WC84 version of the f_it statistic.HWE:
-    Parameter HWE accepts a list of loci at which exact two-side tests
-    for Hardy-Weinberg equilibrium will be performed. This statistic
-    is only available for diallelic loci in diploid populations. It
-    outputs the following variables:
+    are calculated. This parameter currently supports the following
+    statistics:
+    *   Weir and Cockerham's Fst (1984). This is the most widely used
+    estimator of Wright's fixation index and can be used to measure
+    population differentiation. However, this method is designed to
+    estimate Fst from samples of larger populations and might not be
+    appropriate for the calculation of Fst of large populations.
+    *   Nei's Gst (1973). The Gst estimator is another estimator for
+    Wright's fixation index but it is extended for multi-allele (more
+    than two alleles) and multi-loci cases. This statistics should be
+    used if you would like to obtain a true Fst value of a large
+    population.
+    *   F_st (default) The WC84 Fst statistic estimated for all
+    specified loci.
+    *   F_is The WC84 Fis statistic estimated for all specified loci.
+    *   F_it The WC84 Fit statistic estimated for all specified loci.
+    *   f_st A dictionary of locus level WC84 Fst values.
+    *   f_is A dictionary of locus level WC84 Fis values.
+    *   f_it A dictionary of locus level WC84 Fit values.
+    *   G_st Nei's Gst statistic estimated for all specified loci.
+    *   g_st A dictionary of Nei's Gst statistic estimated for each
+    locus.HWE: Parameter HWE accepts a list of loci at which exact
+    two-side tests for Hardy-Weinberg equilibrium will be performed.
+    This statistic is only available for diallelic loci in diploid
+    populations. It outputs the following variables:
     *   HWE (default) A dictionary of p-values of HWE tests using
     genotypes in all or specified (virtual) subpopulations.
     *   HWE_sp A dictionary of p-values of HWS tests using genotypes
