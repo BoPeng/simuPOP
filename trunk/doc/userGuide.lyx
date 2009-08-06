@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.5 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.6 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -13579,6 +13579,59 @@ population.dvars(sp)
 \family default
  are provided as shortcuts to access these variables but the full variable
  names have to be specified if these variables are used in expressions.
+\end_layout
+
+\begin_layout Standard
+By default, the same variables will be set for a statistic, regardless of
+ the values of the 
+\family typewriter
+subPops
+\family default
+ parameter.
+ This can be a problem if multiple 
+\family typewriter
+stat
+\family default
+ operators are used to calculate the same statistics for different sets
+ of subpopulations.
+ To avoid name conflict, you can use parameter 
+\emph on
+suffix
+\emph default
+ to add a suffix to all variables outputted by a stat operator.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statSuffix"
+
+\end_inset
+
+ uses 4 
+\family typewriter
+stat
+\family default
+ operators to calculate overall and pairwise 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ values for three subpopulations.
+ Different suffixes are used for pairwise 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ estimators so that variables set by these operators will not override each
+ other.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statSuffix.log"
+lstparams "caption={Add suffixes to variables set by multiple stat operators},label={statSuffix}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Note

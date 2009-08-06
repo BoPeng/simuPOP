@@ -2072,6 +2072,22 @@ simu.evolve(
 #end
 
 
+#file log/statSuffix.log
+simu = simulator(population([5000]*3, loci=5), randomMating())
+simu.evolve(
+    preOps = initByFreq([0.5, 0.5]),
+    ops = [
+        stat(structure=range(5), subPops=(0, 1), suffix='_01', step=40),
+        stat(structure=range(5), subPops=(1, 2), suffix='_12', step=40),
+        stat(structure=range(5), subPops=(0, 2), suffix='_02', step=40),
+        stat(structure=range(5), step=40),
+        pyEval(r"'Fst=%.3f (pairwise: %.3f %.3f %.3f)\n' % (F_st, F_st_01, F_st_12, F_st_02)",
+            step=40),
+    ],
+    gen = 200
+)
+#end
+
 #file log/statCount.log
 pop = population(10000, loci=1)
 pop.setVirtualSplitter(combinedSplitter(
@@ -2225,7 +2241,7 @@ simu.evolve(
 #file log/statStructure.log
 from simuUtil import MigrIslandRates
 
-simu = simulator(population([5000]*3, loci=[10], infoFields='migrate_to'),
+simu = simulator(population([5000]*3, loci=10, infoFields='migrate_to'),
     randomMating(), rep=2)
 simu.evolve(
     preOps = initByFreq([0.5, 0.5]),
