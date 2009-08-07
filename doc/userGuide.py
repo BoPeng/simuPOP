@@ -2248,7 +2248,8 @@ simu.evolve(
     ops = [
         migrator(rate=MigrIslandRates(0.01, 3), reps=1),
         stat(structure=range(10), step=40),
-        pyEval("'Fst=%.3f (rep=%d, with migration) ' % (F_st, rep)", step=40),
+        pyEval("'Fst=%.3f (rep=%d without migration) ' % (F_st, rep)", step=40, reps=0),
+        pyEval("'Fst=%.3f (rep=%d with migration) ' % (F_st, rep)", step=40, reps=1),
         pyOutput('\n', reps=-1, step=40)
     ],
     gen = 200

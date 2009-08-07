@@ -14906,17 +14906,59 @@ Parameter
 \family typewriter
 structure
 \family default
- measures the structure of a population, including inbreeding and population
- structure using a number of statistics.
+ measures the structure of a population using the following statistics:
 \end_layout
 
 \begin_layout Itemize
 The 
-\begin_inset Formula $F_{st}$
+\begin_inset Formula $G_{ST}$
 \end_inset
 
- statistic for population structure calculated using an algorithm developed
- by 
+ statistic developed by Nei 
+\begin_inset CommandInset citation
+LatexCommand citeyearpar
+key "Nei1973"
+
+\end_inset
+
+.
+ This statistic is equivalent to Wright's fixation index 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ in the diallelic case so it can be considered as the multi-allele and multi-loc
+us extension of Wright's 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+.
+ It assumes known genotype frequency so it can be used to calculate true
+ 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ of a population when all genotype information is available.
+ This statistic sets a dictionary of locus level 
+\begin_inset Formula $G_{ST}$
+\end_inset
+
+ (variable 
+\family typewriter
+g_st
+\family default
+) and a summary statistics for all loci (variable 
+\family typewriter
+G_st
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Wright's fixation index 
+\begin_inset Formula $F_{ST}$
+\end_inset
+
+ calculated using an algorithm developed by 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Weir1984"
@@ -14924,11 +14966,10 @@ key "Weir1984"
 \end_inset
 
 .
- This statistic is designed to esimate 
-\begin_inset Formula $F_{ST}$
-\end_inset
-
- from a random sample of a larger population.
+ This statistic considers existing populations as random samples from an
+ infinite pool of populations with the same ancestral population so it is
+ best to be applied to random samples where true genotype frequencies are
+ unknown.
  This statistic sets dictionaries of locus level 
 \begin_inset Formula $F_{ST}$
 \end_inset
@@ -14943,27 +14984,27 @@ key "Weir1984"
 
  (variables 
 \family typewriter
-WC84_f_st
+f_st
 \family default
 , 
 \family typewriter
-WC84_f_is
+f_is
 \family default
  and 
 \family typewriter
-WC84_f_it
+f_it
 \family default
 ), and summary statistics for all loci (variables 
 \family typewriter
-WC84_F_st
+F_st
 \family default
 , 
 \family typewriter
-WC84_F_is
+F_is
 \family default
  and 
 \family typewriter
-WC84_F_it
+F_it
 \family default
 ) .
 \end_layout
@@ -14995,7 +15036,7 @@ reference "statStructure"
 
  demonstrate a simulation with two replicates.
  In the first replicate, three subpopulations evolve separately without
- migration and become more and more genetically distant.
+ migration and become more and more genetically distinct.
  In the second replicate, a low level migration is applied between subpopulation
 s so the population structure is kept at a low level.
  
