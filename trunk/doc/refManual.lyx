@@ -1938,35 +1938,35 @@ simuUtilRef
 
 
 \backslash
-simuUtilViewVars
+simuUtilViewVarsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilMigrIslandRates
+simuUtilMigrIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilMigrHierarchicalIslandRates
+simuUtilMigrHierarchicalIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilMigrSteppingStoneRates
+simuUtilMigrSteppingStoneRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilSaveCSV
+simuUtilSaveCSVRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1980,28 +1980,28 @@ simuUtilsimuProgressRef
 
 
 \backslash
-simuUtiltrajectory
+simuUtiltrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtiltrajectorySimulator
+simuUtiltrajectorySimulatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilForwardTrajectory
+simuUtilForwardTrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilBackwardTrajectory
+simuUtilBackwardTrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
