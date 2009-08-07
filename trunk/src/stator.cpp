@@ -2129,11 +2129,11 @@ void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq
 			x_dotk /= n;
 			J_t += pow(x_dotk, 2);
 		}
-		gst[loc] = D_st / (1 - J_t);
+		gst[loc] = fcmp_eq(J_t, 1.0) ? 0 : D_st / (1.0 - J_t);
 		H_t_all += 1 - J_t;
 		D_st_all += D_st;
 	}
-	Gst = D_st_all / H_t_all;
+	Gst = fcmp_eq(H_t_all, 0.) ? 0 : D_st_all / H_t_all;
 }
 
 
