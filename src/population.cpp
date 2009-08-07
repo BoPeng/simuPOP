@@ -1278,15 +1278,18 @@ population & population::extract(bool removeInd, const string & field,
 	DBG_DO(DBG_POPULATION, cout << "Remove ind: " << removeInd
 		                        << "\nRemove loci: " << removeLoci
 		                        << "\nRemove info: " << removeInfo << endl);
+
+	vectorstr keptInfoFields = removeLoci ? infoFields : this->infoFields();
+	vectorstr allInfoFields(keptInfoFields.begin(), keptInfoFields.end());
+	allInfoFields.insert(allInfoFields.end(), pedFields.begin(), pedFields.end());
+
 	// population strcture.
 	if (!removeLoci && !removeInfo && pedFields.empty())
 		pop.setGenoStruIdx(genoStruIdx());
 	else if (!removeLoci) {
 		// only change information fields
-		vectorstr allFields = infoFields;
-		allFields.insert(allFields.end(), pedFields.begin(), pedFields.end());
 		pop.setGenoStructure(ploidy(), numLoci(), chromTypes(), isHaplodiploid(),
-			lociPos(), chromNames(), alleleNames(), lociNames(), allFields);
+			lociPos(), chromNames(), alleleNames(), lociNames(), allInfoFields);
 	} else {
 		// figure out number of loci.
 		vectoru new_numLoci;
@@ -1294,8 +1297,6 @@ population & population::extract(bool removeInd, const string & field,
 		vectorstr new_lociNames;
 		vectoru new_chromTypes;
 		vectorstr new_chromNames;
-		vectorstr new_infoFields = removeInfo ? infoFields : this->infoFields();
-		new_infoFields.insert(new_infoFields.end(), pedFields.begin(), pedFields.end());
 		if (removeLoci && !loci.empty()) {
 			sort(new_loci.begin(), new_loci.end());
 			vectoru::const_iterator it = new_loci.begin();
@@ -1323,7 +1324,7 @@ population & population::extract(bool removeInd, const string & field,
 			}
 		}
 		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
-			new_lociPos, new_chromNames, alleleNames(), new_lociNames, new_infoFields);
+			new_lociPos, new_chromNames, alleleNames(), new_lociNames, allInfoFields);
 		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << pop.numLoci()
 			                        << "\nchromType: " << pop.chromTypes()
 			                        << "\nlociPos: " << pop.lociPos()
@@ -1342,8 +1343,8 @@ population & population::extract(bool removeInd, const string & field,
 	//
 	UINT info = removeInd ? (ped ? ped->infoIdx(field) : infoIdx(field)) : 0;
 	vectoru infoList;
-	vectorstr::const_iterator iit = infoFields.begin();
-	vectorstr::const_iterator iit_end = infoFields.end();
+	vectorstr::const_iterator iit = keptInfoFields.begin();
+	vectorstr::const_iterator iit_end = keptInfoFields.end();
 	for (; iit != iit_end; ++iit)
 		infoList.push_back(infoIdx(*iit));
 	vectoru pedInfoList;

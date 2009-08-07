@@ -1,6 +1,8 @@
 ChangeLog of simuPOP
 
 version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - BUG: Fix a population.extract() bug with the copy of existing information fields
+		when parameter pedFields is specified.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

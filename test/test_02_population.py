@@ -465,7 +465,13 @@ class TestPopulation(unittest.TestCase):
         ped = pedigree(pop, infoFields=['x'], fatherField='', motherField='' )
         ped.addInfoFields('z')
         ped.setIndInfo([2], 'z')
-        sample = pop.extract(ped=ped, infoFields='y', pedFields='z')
+        sample = pop.extract(ped=ped)
+        self.assertEqual(sample.indInfo('x'), tuple([0]*80))
+        self.assertEqual(sample.indInfo('y'), tuple([1]*80))
+        self.assertEqual('z' in sample.infoFields(), False)
+        sample = pop.extract(ped=ped, pedFields='z')
+        self.assertEqual(sample.indInfo('x'), tuple([0]*80))
+        self.assertEqual(sample.indInfo('y'), tuple([1]*80))
         self.assertEqual(sample.indInfo('z'), tuple([2.0]*80))
 
         # FIXME: test extraction of loci and ancestral generations
