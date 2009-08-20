@@ -1,16 +1,22 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1245944552
 host=127.0.0.1
 name=Main.CourtesyRules
-rev=3
+rev=5
 targets=
-text=(:title License, distribution and maintenance:)%0a%0aAlthough this site is based on a wiki system, please try to follow the following courtesy rules when you contribute to this cookbook:%0a%0a* Functions and scripts hosted in this website is NOT part of simuPOP. They are contributed by users of simuPOP in the hope that they will be useful but there is no guarantee that they  work as expected.%0a%0a* Functions and scripts hosted in this website is maintained by the simuPOP user community. If you notice a bug or have a better implementation of certain function, please make the changes by yourself. If you are uncertain about your changes, please feel free to discuss them in the simuPOP mailinglist.%0a%0a* Unless explicitly stated in individual pages or files, functions and scripts hosted in this website is NOT protected by simuPOP's GPL license. You can redistribute them and/or modify them freely.%0a%0a* The copyright of contributed functions and scripts belongs to their author(s). Authors are encouraged to leave their contact information for future discussions. The original author(s) can choose to protected his/her contribution(s) by a license.%0a%0a* Unless explicitly forbidden by author(s) of a function or a script, you can freely modify files and pages hosted in this website. However, you are encouraged to discuss your changes with the original author(s) or in the simuPOP mailinglist if authorship is unclear.%0a
-time=1245944685
+text=(:title License, distribution and maintenance:)%0a%0aAlthough this site is based on a wiki system, please try to follow the following courtesy rules when you contribute to this cookbook:%0a%0a* Functions and scripts hosted in this website are NOT part of simuPOP. They are contributed by users of simuPOP in the hope that they will be useful but there is no guarantee that they  work as expected.%0a%0a* Functions and scripts hosted in this website are maintained by the simuPOP user community. If you notice a bug or have a better implementation of certain function, please make the changes by yourself. If you are uncertain about your changes, please feel free to discuss them in the simuPOP mailinglist.%0a%0a* Unless explicitly stated in individual pages or files, functions and scripts hosted in this website are NOT protected by simuPOP's GPL license. You can redistribute them and/or modify them freely.%0a%0a* The copyright of contributed functions and scripts belongs to their author(s). Authors are encouraged to leave their contact information for future discussions. The original author(s) can choose to protected his/her contribution(s) by a license.%0a%0a* Unless explicitly forbidden by author(s) of a function or a script, you can freely modify files and pages hosted in this website. However, you are encouraged to discuss your changes with the original author(s) or in the simuPOP mailinglist if authorship is unclear.%0a
+time=1249522332
 title=License, distribution and maintenance
+author:1249522332=
+diff:1249522332:1249522194:=7,9c7,9%0a%3c * Functions and scripts hosted in this website are maintained by the simuPOP user community. If you notice a bug or have a better implementation of certain function, please make the changes by yourself. If you are uncertain about your changes, please feel free to discuss them in the simuPOP mailinglist.%0a%3c %0a%3c * Unless explicitly stated in individual pages or files, functions and scripts hosted in this website are NOT protected by simuPOP's GPL license. You can redistribute them and/or modify them freely.%0a---%0a> * Functions and scripts hosted in this website is maintained by the simuPOP user community. If you notice a bug or have a better implementation of certain function, please make the changes by yourself. If you are uncertain about your changes, please feel free to discuss them in the simuPOP mailinglist.%0a> %0a> * Unless explicitly stated in individual pages or files, functions and scripts hosted in this website is NOT protected by simuPOP's GPL license. You can redistribute them and/or modify them freely.%0a
+host:1249522332=127.0.0.1
+author:1249522194=
+diff:1249522194:1245944685:=5c5%0a%3c * Functions and scripts hosted in this website are NOT part of simuPOP. They are contributed by users of simuPOP in the hope that they will be useful but there is no guarantee that they  work as expected.%0a---%0a> * Functions and scripts hosted in this website is NOT part of simuPOP. They are contributed by users of simuPOP in the hope that they will be useful but there is no guarantee that they  work as expected.%0a
+host:1249522194=127.0.0.1
 author:1245944685=
 diff:1245944685:1245944650:=
 host:1245944685=127.0.0.1
