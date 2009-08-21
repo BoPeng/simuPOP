@@ -1732,6 +1732,13 @@ simuPOPContextMutateRef
 simuPOPPointMutateRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPStatRef
+\end_layout
+
 \end_inset
 
 
