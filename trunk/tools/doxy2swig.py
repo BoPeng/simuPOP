@@ -472,7 +472,6 @@ class Doxy2SWIG:
                 # re function used to repalce the following sentances
                 vect = re.compile('vector(info|u|l|i|f|a|op|splitter|str|vsp)')
                 defVal = vect.sub('[]', defVal)
-                defVal = defVal.replace('string','""')
                 defVal = defVal.replace('strDict','{}')
                 defVal = defVal.replace('intDict','{}')
                 defVal = defVal.replace('matrix','[]')
@@ -490,6 +489,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('stringList','[]')
                 defVal = defVal.replace('subPopList', 'AllSubPops')
                 defVal = defVal.replace('opList','[]')
+                defVal = defVal.replace('string','""')
                 #defVal = defVal.replace('""', "''")
                 out.append(var + '=' + defVal)
             else:

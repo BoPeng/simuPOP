@@ -1131,6 +1131,12 @@ def PointMutate(pop, *args, **kwargs):
     'Function form of operator ``pointMutator``'
     pointMutator(*args, **kwargs).apply(pop)
 
+def Stat(pop, *args, **kwargs):
+    '''Apply operator ``stat`` with specified parameters to population ``pop`` and
+    return the local namespace of ``pop`` (``pop.vars()``).'''
+    stat(*args, **kwargs).apply(pop)
+    return pop.vars()
+
 
 def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
     mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)
@@ -1203,12 +1209,6 @@ def PyQuanTrait(pop, *args, **kwargs):
 
 if pyQuanTrait.__init__.__doc__ is not None:
     PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
-
-def Stat(pop, *args, **kwargs):
-    stat(*args, **kwargs).apply(pop)
-
-if stat.__init__.__doc__ is not None:
-    Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
 
 
 
