@@ -122,11 +122,11 @@ bool dumper::apply(population & pop)
 	if (m_showStructure)
 		displayStructure(pop, out);
 
-	subPopList subPops = applicableSubPops();
-	if (subPops.empty())
-		subPops.useSubPopsFrom(pop);
-
 	if (m_showGenotype) {
+		subPopList subPops = applicableSubPops();
+		if (subPops.empty())
+			subPops.useSubPopsFrom(pop);
+
 		UINT cnt = displayGenotype(pop, subPops, out);
 		if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
 			out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
@@ -137,6 +137,10 @@ bool dumper::apply(population & pop)
 			ancGen = pop.ancestralGens();
 		for (int gen = 1; gen <= ancGen; ++gen) {
 			pop.useAncestralGen(gen);
+			subPopList subPops = applicableSubPops();
+			if (subPops.empty())
+				subPops.useSubPopsFrom(pop);
+
 			out << endl << "Ancestry population " << gen << endl;
 			UINT cnt = displayGenotype(pop, subPops, out);
 			if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
