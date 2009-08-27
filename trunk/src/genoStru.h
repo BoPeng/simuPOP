@@ -359,6 +359,11 @@ public:
 	 */
 	GenoStructure & gsAddChrom(const vectorf & lociPos,
 		const vectorstr & lociNames, const string & chromName, UINT chromType) const;
+	
+	/** CPPONLY
+	 *  Create a geno structure using new allele names.
+	 */
+	GenoStructure & gsSetAlleleNames(const vectorstr & alleleNames);
 
 	/** CPPONLY
 	 *  add some loci to genotype structure, newIndex

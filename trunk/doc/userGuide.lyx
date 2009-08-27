@@ -3607,6 +3607,41 @@ s, and a local Python dictionary to hold arbitrary population information.
 \end_layout
 
 \begin_layout Subsection
+Access and change individual genotype
+\end_layout
+
+\begin_layout Standard
+FIXME:
+\end_layout
+
+\begin_layout Standard
+Another way to change alleles across the whole population is to recode existing
+ alleles to other numbers.
+ This is sometimes needed if you need to change allele states to conform
+ with a particular mutation model, assumptions of other software applications
+ or genetic samples.
+ For example, if the dataset you obtained uses 1, 2, 3, 4 for A, C, T, G
+ alleles, and you would like to use alleles 0, 1, 2 and 3 for A, C, G, T
+ ( a convention for simuPOP when nucleotide mutation models are involved),
+ you can use
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.recodeAlleles([0, 0, 1, 3, 2], alleleNames=['A', 'C', 'G', 'T'])
+\end_layout
+
+\end_inset
+
+to convert and rename the alleles (1 allele to 0, 2 allele to 1, etc).
+ This operation will be applied to all subpopulations for all ancestral
+ generations, but can be restricted to selected loci.
+ 
+\end_layout
+
+\begin_layout Subsection
 Subpopulations
 \end_layout
 
@@ -12832,8 +12867,14 @@ Allele mapping **
 
 \begin_layout Standard
 If alleles in your simulation do not follow the convention of a mutation
- model, you will have to use a general mutation model with your own mutation
- matrix, or an advanced feature called 
+ model, you may want to use the 
+\family typewriter
+pop.recodeAlleles()
+\family default
+ function to recode your alleles so that appropriate mutation models could
+ be applied.
+ If this is not possible, you can use a general mutation model with your
+ own mutation matrix, or an advanced feature called 
 \series bold
 allele mapping
 \series default

@@ -959,6 +959,21 @@ public:
 	 */
 	void removeLoci(const uintList & loci = uintList(), const uintList & keep = uintList());
 
+	/** Recode alleles at \e loci (default to all loci in a population) to
+	 *  other values according to parameter \e alleles. This parameter can
+	 *  a list of new allele numbers for alleles \c 0, \c 1, \c 2, ... (allele
+	 *  \c x will be recoded to <tt>newAlleles[x]</tt>) or a Python function.
+	 *  In the latter case, each allele and the index of the locus it resides
+	 *  are passed to this function. The return value will become the new
+	 *  allele. If a new set of allele names are given, they will replace the
+	 *  existing allele names originally specified in the \c alleleNames
+	 *  parameter of the \c population function. This function recode alleles
+	 *  for all subpopulations in all ancestral generations.
+	 *  <group>7-manipulate</group>
+	 */
+	void recodeAlleles(const uintListFunc & alleles, const uintList & loci = uintList(),
+		const vectorstr & alleleNames = vectorstr());
+
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is
 	 *  discarded if \e ancestralDepth (maximum number of ancestral generations

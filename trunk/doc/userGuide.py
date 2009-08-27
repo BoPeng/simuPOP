@@ -383,6 +383,16 @@ pop.removeLoci([8])
 Dump(pop)
 #end
 
+#file log/recode.log
+pop = population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
+InitByFreq(pop, [0.2, 0.3, 0.4, 0.1])
+Dump(pop, structure=False)
+print pop.genotype()
+pop.recodeAlleles([0, 3, 1, 2], alleleNames=['A', 'C', 'G', 'T'])
+Dump(pop, structure=False)
+print pop.genotype()
+#end
+
 #file log/extract.log
 import random
 pop = population(size=[10, 10], loci=[5, 5],
