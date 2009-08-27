@@ -533,6 +533,13 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 		newLociPos, newChromNames, gs.m_alleleNames, newLociNames, gs.m_infoFields);
 }
 
+GenoStructure & GenoStruTrait::gsSetAlleleNames(const vectorstr & alleleNames)
+{
+	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
+	return * new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
+		gs.m_lociPos, gs.m_chromNames, alleleNames, gs.m_lociNames, gs.m_infoFields);
+}
+
 
 GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
                                          const vectorstr & lociNames, vectoru & newIndex) const

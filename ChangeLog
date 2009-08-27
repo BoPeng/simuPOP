@@ -7,6 +7,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Install to dist-packages instead of built-in site-packages under ubuntu/python2.6.
   - BUG: Fix a bug in Dumper() when ancestral generations have different numbers of subpopulations
 		than the current generation.
+  - NEW: Add population.recodeAlleles to recode alleles.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

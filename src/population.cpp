@@ -1567,6 +1567,73 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 }
 
 
+void population::recodeAlleles(const uintListFunc & newAlleles, const uintList & lociList,
+                               const vectorstr & alleleNames)
+{
+	DBG_FAILIF(newAlleles.empty() && !newAlleles.func().isValid(), ValueError,
+		"Please specify new alleles or a conversion function");
+
+	if (!alleleNames.empty()) {
+		setGenoStructure(gsSetAlleleNames(alleleNames));
+		for (int depth = ancestralGens(); depth >= 0; --depth) {
+			useAncestralGen(depth);
+			RawIndIterator it = rawIndBegin();
+			RawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it)
+				it->setGenoStruIdx(genoStruIdx());
+		}
+	}
+
+	const vectoru & loci = lociList.elems();
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+
+		GenoIterator ptr = m_genotype.begin();
+		GenoIterator ptrEnd = m_genotype.end();
+		if (!newAlleles.empty()) {
+			const vectoru & map = newAlleles.elems();
+			if (loci.empty()) {
+				for (; ptr != ptrEnd; ++ptr) {
+					DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
+						ValueError, "Allele " + toStr(int(*ptr)) + " can not be recoded");
+					*ptr = ToAllele(map[*ptr]);
+				}
+			} else {
+				UINT numLoci = totNumLoci();
+				UINT iEnd = loci.size();
+				for (; ptr != ptrEnd; ptr += numLoci) {
+					for (size_t i = 0; i < iEnd; ++i) {
+						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
+						DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
+							ValueError, "Allele " + toStr(int(*ptr)) + " can not be recoded");
+						*(ptr + loci[i]) = ToAllele(map[*(ptr + loci[i])]);
+					}
+				}
+			}
+			continue;
+		} else {
+			pyFunc func = newAlleles.func();
+			UINT numLoci = totNumLoci();
+			UINT iEnd = loci.size();
+			for (; ptr != ptrEnd; ptr += numLoci) {
+				if (loci.empty()) {
+					for (size_t i = 0; i < numLoci; ++i) {
+						*(ptr + i) = ToAllele(func(PyObj_As_Int, "(ii)",
+								static_cast<int>(*(ptr + i)), i));
+					}
+				} else {
+					for (size_t i = 0; i < iEnd; ++i) {
+						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
+						*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, "(ii)",
+								static_cast<int>(*(ptr + loci[i])), loci[i]));
+					}
+				}
+			}
+		}
+	}
+}
+
+
 void population::push(population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,

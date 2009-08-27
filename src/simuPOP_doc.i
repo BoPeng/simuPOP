@@ -1185,6 +1185,8 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
 
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const vectorstr &alleleNames);
+
 %ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const;
@@ -6348,6 +6350,27 @@ Details:
     Remove loci (absolute indexes) and genotypes at these loci from
     the current population. Alternatively, a parameter keep can be
     used to specify loci that will not be removed.
+
+"; 
+
+%feature("docstring") simuPOP::population::recodeAlleles "
+
+Usage:
+
+    x.recodeAlleles(alleles, loci=[], alleleNames=[])
+
+Details:
+
+    Recode alleles at loci (default to all loci in a population) to
+    other values according to parameter alleles. This parameter can a
+    list of new allele numbers for alleles 0, 1, 2, ... (allele x will
+    be recoded to newAlleles[x]) or a Python function. In the latter
+    case, each allele and the index of the locus it resides are passed
+    to this function. The return value will become the new allele. If
+    a new set of allele names are given, they will replace the
+    existing allele names originally specified in the alleleNames
+    parameter of the population function. This function recode alleles
+    for all subpopulations in all ancestral generations.
 
 "; 
 
