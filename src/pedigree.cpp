@@ -472,11 +472,13 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 
 
 bool pedigree::traceRelatives(const vectoru & pathGen,
-                              const stringMatrix & pathFields, const vectori & pathSex,
+                              const stringMatrix & pathFieldsMatrix, const vectori & pathSex,
                               const vectorstr & resultFields)
 {
 	if (pathGen.empty())
 		return true;
+
+	const matrixstr & pathFields = pathFieldsMatrix.elems();
 
 	DBG_ASSERT(pathGen.size() == pathFields.size() + 1, ValueError,
 		"Parameter pathGen should be one element longer than pathFields");

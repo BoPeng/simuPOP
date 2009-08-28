@@ -487,6 +487,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('floatList','[]')
                 defVal = defVal.replace('repList','[]')
                 defVal = defVal.replace('stringList','[]')
+                defVal = defVal.replace('stringMatrix','[]')
                 defVal = defVal.replace('subPopList', 'AllSubPops')
                 defVal = defVal.replace('opList','[]')
                 defVal = defVal.replace('string','""')

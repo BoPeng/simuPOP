@@ -41,7 +41,7 @@ population::population(const uintList & size,
 	const floatList & lociPos,
 	int ancGen,
 	const stringList & chromNames,
-	const stringList & alleleNames,
+	const stringMatrix & alleleNames,
 	const stringList & lociNames,
 	const stringList & subPopNames,
 	const stringList & infoFields)
@@ -76,7 +76,7 @@ population::population(const uintList & size,
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
 		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
-		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
+		chromNames.elems(), alleleNames.elems().back(), lociNames.elems(), infoFields.elems());
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl

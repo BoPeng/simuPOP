@@ -331,7 +331,7 @@ void stringList::addString(PyObject * str)
 
 	if (res == NULL)
 		return;
-	string value = string(PyString_AsString(str));
+	string value = string(PyString_AsString(res));
 	m_elems.push_back(value);
 	Py_DECREF(res);
 }
@@ -358,6 +358,39 @@ void stringList::obtainFrom(const stringList & items, const char * allowedItems[
 			m_elems.push_back(defaultItems[i]);
 }
 
+
+// additional types
+stringMatrix::stringMatrix(PyObject * obj) : m_elems(1, vectorstr())
+{
+	if (obj == NULL)
+		return;
+    DBG_ASSERT(PySequence_Check(obj), ValueError,
+        "A list or a nested list of strings is expected");
+
+	UINT numItems = PySequence_Size(obj);
+	for (size_t i = 0; i < numItems; ++i) {
+		PyObject * item = PySequence_GetItem(obj, i);
+        if (PyString_Check(item)) {
+            DBG_FAILIF(m_elems.size() > 1, ValueError,
+                "A mixture of string and list is not allowed.")
+        	string value = string(PyString_AsString(item));
+            m_elems[0].push_back(value);
+        } else if (PySequence_Check(item)) {
+            m_elems.push_back(vectorstr());
+            for (int j = 0; j < PySequence_Size(item); ++j) {
+                PyObject * str = PySequence_GetItem(item, j);
+                DBG_ASSERT(PyString_Check(str), ValueError,
+                    "A list or nested list of string is expected");
+                string value = string(PyString_AsString(str));
+                m_elems.back().push_back(value);
+                Py_DECREF(str);
+            }
+        } else {
+            DBG_FAILIF(true, ValueError, "Can not create a string matrix from input.");
+        }
+		Py_DECREF(item);
+    }
+}
 
 //
 // shared variables
