@@ -93,7 +93,7 @@ public:
 	   \param length of info field
 	 */
 	GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
-		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
+		const vectorf & lociPos, const vectorstr & chromNames, const matrixstr & alleleNames,
 		const vectorstr & lociNames, const vectorstr & infoFields);
 
 	bool operator==(const GenoStructure & rhs);
@@ -223,7 +223,7 @@ private:
 	vectorstr m_chromNames;
 
 	/// allele names
-	vectorstr m_alleleNames;
+	matrixstr m_alleleNames;
 
 	/// loci names
 	vectorstr m_lociNames;
@@ -286,7 +286,7 @@ public:
 
 	/// CPPONLY set genotypic structure
 	void setGenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
-		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
+		const vectorf & lociPos, const vectorstr & chromNames, const matrixstr & alleleNames,
 		const vectorstr & lociNames, const vectorstr & infoFields);
 
 	/// CPPONLY set an existing geno structure
@@ -359,11 +359,11 @@ public:
 	 */
 	GenoStructure & gsAddChrom(const vectorf & lociPos,
 		const vectorstr & lociNames, const string & chromName, UINT chromType) const;
-	
+
 	/** CPPONLY
 	 *  Create a geno structure using new allele names.
 	 */
-	GenoStructure & gsSetAlleleNames(const vectorstr & alleleNames);
+	GenoStructure & gsSetAlleleNames(const vectoru & loci, const matrixstr & alleleNames);
 
 	/** CPPONLY
 	 *  add some loci to genotype structure, newIndex
@@ -673,26 +673,34 @@ public:
 	}
 
 
-	/** return the name of allele \e allele specified by the \e alleleNames parameter of
-	 *  the \c population function. If the name of an allele is not specified, its
-	 *  index (\c '0', \c '1', \c '2', etc) is returned. An \c IndexError will be
-	 *  raised if \e allele is larger than the maximum allowed allele state of this
-	 *  module (<tt>MaxAllele()</tt>).
+	/** return the name of allele \e allele at \e lcous specified by the
+	 *  \e alleleNames parameter of the \c population function. \e locus could
+	 *  be ignored if alleles at all loci share the same names. If the name of
+	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
+	 *  returned. An \c IndexError will be raised if \e allele is larger than
+	 *  the maximum allowed allele state of this module (<tt>MaxAllele()</tt>).
 	 *  <group>4-allele</group>
 	 */
-	string alleleName(const UINT allele) const;
+	string alleleName(const UINT allele, const UINT locus = 0) const;
 
-	/** return a list of allele names given by the \e alleleNames parameter of the
-	 *  \c population function. This list does not have to cover all possible allele
-	 *  states of a population so <tt>alleleNames()[</tt><em>allele</em><tt>]</tt>
-	 *  might fail (use <tt>alleleNames(</tt><em>allele</em><tt>)</tt> instead).
-	 *  <group>4-allele</group>
+	/** CPPONLY
+	 *  Return all allele names
 	 */
-	vectorstr alleleNames() const
+	matrixstr allAlleleNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 	}
 
+
+	/** return a list of allele names at \locus given by the \e alleleNames
+	 *  parameter of the \c population function. \e locus could be ignored if
+	 *  alleles at all loci share the same names. This list does not have to
+	 *  cover all possible allele states of a population so
+	 *  <tt>alleleNames()[</tt><em>allele</em><tt>]</tt> might fail
+	 *  (use <tt>alleleNames(</tt><em>allele</em><tt>)</tt> instead).
+	 *  <group>4-allele</group>
+	 */
+	vectorstr alleleNames(const UINT locus = 0) const;
 
 	/** return the name of locus \e loc specified by the \e lociNames parameter of
 	 *  the \c population function. An empty string will be returned if no name

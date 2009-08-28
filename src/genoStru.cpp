@@ -32,7 +32,7 @@ using namespace boost::lambda;
 namespace simuPOP {
 
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
-	const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
+	const vectorf & lociPos, const vectorstr & chromNames, const matrixstr & alleleNames,
 	const vectorstr & lociNames, const vectorstr & infoFields)
 	: m_ploidy(ploidy), m_numLoci(loci), m_chromTypes(),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
@@ -62,6 +62,8 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 
 	DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
 		"Loci names, if specified, should be given to every loci");
+	DBG_FAILIF(m_alleleNames.size() > 1 && m_alleleNames.size() != m_totNumLoci,
+		ValueError, "Please specify a common set allele names or names for all loci.");
 
 	// if lociPos not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
 	if (m_lociPos.empty() ) {
@@ -111,11 +113,17 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 					"Loci on the same chromosome should have different positions.");
 			}
 			// lociNames?
-			if (m_lociNames.empty())
-				continue;
-			vectorstr lociNames(m_lociNames.begin() + begin, m_lociNames.begin() + end);
-			for (size_t i = 0; i < rank.size(); ++i)
-				m_lociNames[begin + i] = lociNames[rank[i]];
+			if (!m_lociNames.empty()) {
+				vectorstr lociNames(m_lociNames.begin() + begin, m_lociNames.begin() + end);
+				for (size_t i = 0; i < rank.size(); ++i)
+					m_lociNames[begin + i] = lociNames[rank[i]];
+			}
+			// allele names
+			if (m_alleleNames.size() > 1) {
+				matrixstr alleleNames(m_alleleNames.begin() + begin, m_alleleNames.begin() + end);
+				for (size_t i = 0; i < rank.size(); ++i)
+					m_alleleNames[begin + i] = alleleNames[rank[i]];
+			}
 		}
 	}
 
@@ -161,8 +169,9 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	}
 #endif
 	//
-	if (m_alleleNames.size() > ModuleMaxAllele + 1)
-		m_alleleNames.resize(ModuleMaxAllele + 1);
+	for (size_t i = 0; i < m_alleleNames.size(); ++i)
+		if (m_alleleNames[i].size() > ModuleMaxAllele + 1)
+			m_alleleNames[i].resize(ModuleMaxAllele + 1);
 }
 
 
@@ -296,7 +305,7 @@ UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 
 
 void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
-                                     const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
+                                     const vectorf & lociPos, const vectorstr & chromNames, const matrixstr & alleleNames,
                                      const vectorstr & lociNames, const vectorstr & infoFields)
 {
 	// only allow for MaxTraitIndex-1 different genotype structures
@@ -381,6 +390,7 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, v
 	vectoru chromTypes;
 	vectorf lociPos;
 	vectorstr lociNames;
+	matrixstr alleleNames;
 
 	for (size_t ch = 0; ch < loci.size(); ++ch) {
 		DBG_FAILIF(ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size()
@@ -485,8 +495,8 @@ GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 		if (!gs.m_lociNames.empty())
 			lociNames.push_back(locusName(*loc));
 	}
-	return *new GenoStructure(ploidy(), numLoci, chromTypes(), isHaplodiploid(),
-		lociPos, chromNames(), alleleNames(), lociNames, infoFields());
+	return *new GenoStructure(gs.m_ploidy, numLoci, gs.m_chromTypes, isHaplodiploid(),
+		lociPos, gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
 }
 
 
@@ -533,11 +543,44 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 		newLociPos, newChromNames, gs.m_alleleNames, newLociNames, gs.m_infoFields);
 }
 
-GenoStructure & GenoStruTrait::gsSetAlleleNames(const vectorstr & alleleNames)
+
+GenoStructure & GenoStruTrait::gsSetAlleleNames(const vectoru & loci, const matrixstr & alleleNames)
 {
-	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
-	return * new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
-		gs.m_lociPos, gs.m_chromNames, alleleNames, gs.m_lociNames, gs.m_infoFields);
+	GenoStructure gs = s_genoStruRepository[m_genoStruIdx];
+	matrixstr names = gs.m_alleleNames;
+
+	// expand
+	if (names.empty()) {
+		names.resize(gs.m_totNumLoci, vectorstr());
+		for (size_t i = 0; i < loci.size(); ++i) {
+			DBG_FAILIF(loci[i] >= names.size(), IndexError, "Allele name index out of range.");
+			names[loci[i]] = alleleNames[ alleleNames.size() == 1 ? 0 : i];
+		}
+	} else if (names.size() == 1) {
+		if (gs.m_totNumLoci == 1) {
+			DBG_ASSERT(alleleNames.size() == 1 && loci.size() == 1 && loci[0] == 0, SystemError,
+				"Something wrong with allele names.");
+			names[0] = alleleNames[0];
+		} else if (alleleNames.size() != 1 || alleleNames[0] != names[0]) {
+			// expand
+			for (size_t i = 1; i < gs.m_totNumLoci; ++i)
+				names.push_back(names[0]);
+			for (size_t i = 0; i < loci.size(); ++i) {
+				DBG_FAILIF(loci[i] >= names.size(), IndexError, "Allele name index out of range.");
+				names[loci[i]] = alleleNames[ alleleNames.size() == 1 ? 0 : i];
+			}
+		}
+	} else {
+		DBG_ASSERT(names.size() == gs.m_totNumLoci, SystemError,
+			"Inconsistent length of allele names.");
+		for (size_t i = 0; i < loci.size(); ++i) {
+			DBG_FAILIF(loci[i] >= names.size(), IndexError, "Allele name index out of range.");
+			names[loci[i]] = alleleNames[ alleleNames.size() == 1 ? 0 : i];
+		}
+	}
+	// replace common alleles
+	return *new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
+		gs.m_lociPos, gs.m_chromNames, names, gs.m_lociNames, gs.m_infoFields);
 }
 
 
@@ -670,17 +713,29 @@ std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
 }
 
 
-string GenoStruTrait::alleleName(const UINT allele) const
+string GenoStruTrait::alleleName(const UINT allele, const UINT locus) const
 {
 	DBG_FAILIF(allele > ModuleMaxAllele,
 		IndexError, "Allele " + toStr(allele) + " out of range of 0 ~ " +
 		toStr(ModuleMaxAllele));
-	if (allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ) {
-		DBG_FAILIF(allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size(),
-			IndexError, "No name for allele " + toStr(allele));
-		return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
+	const matrixstr & allNames = s_genoStruRepository[m_genoStruIdx].m_alleleNames;
+	if (allNames.empty())
+		return toStr(allele);
+	const vectorstr & names = allNames.size() > locus ? allNames[locus] : allNames[0];
+	if (allele < names.size()) {
+		return names[allele];
 	} else
 		return toStr(allele);
+}
+
+
+vectorstr GenoStruTrait::alleleNames(const UINT locus) const
+{
+	const matrixstr & names = s_genoStruRepository[m_genoStruIdx].m_alleleNames;
+
+	if (names.empty())
+		return vectorstr();
+	return names.size() > locus ? names[locus] : names[0];
 }
 
 

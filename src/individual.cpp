@@ -149,17 +149,17 @@ string individual::alleleChar(UINT idx, int p, int chrom) const
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-		return validIndex(idx) ? alleleName(allele(idx)) : "_";
+		return validIndex(idx) ? alleleName(allele(idx), idx % totNumLoci()) : "_";
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		return validIndex(idx, p) ? alleleName(allele(idx, p)) : "_";
+		return validIndex(idx, p) ? alleleName(allele(idx, p), idx) : "_";
 	} else {
 		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
 		CHECKRANGEPLOIDY(static_cast<UINT>(p));
 		CHECKRANGECHROM(static_cast<UINT>(chrom));
 
-		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom)) : "_";
+		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom), idx + chromBegin(chrom)) : "_";
 	}
 }
 

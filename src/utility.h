@@ -446,13 +446,6 @@ class stringMatrix
 public:
 	stringMatrix(PyObject * str = NULL);
 
-	/*
-    /// CPPONLY
-	stringMatrix(const vectorstr & str) : m_elems(1, str)
-	{
-	}
-    */
-
 	/// CPPONLY
 	bool empty() const
 	{
@@ -465,6 +458,7 @@ public:
 	{
 		return m_elems;
 	}
+
 
 protected:
 	matrixstr m_elems;

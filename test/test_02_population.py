@@ -612,7 +612,7 @@ class TestPopulation(unittest.TestCase):
         for x,y in zip(old, new):
             self.assertEqual(x + y, 1)
         # clear to 0
-        pop.recodeAlleles([0, 0], alleleNames=['A'])
+        pop.recodeAlleles([0, 0], alleleNames=[['A']])
         self.assertEqual(pop.genotype(), [0]*(pop.totNumLoci()*pop.popSize()*pop.ploidy()))
         # use a function?
         def func(allele, locus):
