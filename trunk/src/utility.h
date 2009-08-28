@@ -985,6 +985,15 @@ private:
 class simpleStmt
 {
 public:
+	enum OperationType {
+		NoOperation = 100,
+		Assignment = 101,
+		Increment = 102,
+		Decrement = 103,
+		MultipliedBy = 104,
+	};
+
+public:
 	simpleStmt(const string & stmt);
 
 	string var() const
