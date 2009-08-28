@@ -10192,6 +10192,22 @@ Usage:
 
 %ignore simuPOP::stringList::elems() const;
 
+%feature("docstring") simuPOP::stringMatrix "
+
+"; 
+
+%feature("docstring") simuPOP::stringMatrix::stringMatrix "
+
+Usage:
+
+    stringMatrix(str=None)
+
+"; 
+
+%ignore simuPOP::stringMatrix::empty() const;
+
+%ignore simuPOP::stringMatrix::elems() const;
+
 %feature("docstring") simuPOP::subPopList "
 
 Details:

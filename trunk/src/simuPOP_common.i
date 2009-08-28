@@ -157,7 +157,6 @@ namespace std
 
     %template()         vector< vector<int> >;
     %template()         vector< vector<double> >;
-	%template()         vector< vector<string> >;
 }
 
 
@@ -244,6 +243,7 @@ namespace std
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;
 %implicitconv stringList;
+%implicitconv stringMatrix;
 %implicitconv stringFunc;
 %implicitconv opList;
 

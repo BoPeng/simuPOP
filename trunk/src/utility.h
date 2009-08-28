@@ -441,6 +441,36 @@ protected:
 };
 
 
+class stringMatrix
+{
+public:
+	stringMatrix(PyObject * str = NULL);
+
+	/*
+    /// CPPONLY
+	stringMatrix(const vectorstr & str) : m_elems(1, str)
+	{
+	}
+    */
+
+	/// CPPONLY
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	/// CPPONLY
+	const matrixstr & elems() const
+	{
+		return m_elems;
+	}
+
+protected:
+	matrixstr m_elems;
+};
+
+
 class uintString
 {
 public:

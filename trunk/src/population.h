@@ -176,7 +176,7 @@ public:
 		const floatList & lociPos = floatList(),
 		int ancGen = 0,
 		const stringList & chromNames = stringList(),
-		const stringList & alleleNames = stringList(),
+		const stringMatrix & alleleNames = stringMatrix(),
 		const stringList & lociNames = stringList(),
 		const stringList & subPopNames = stringList(),
 		const stringList & infoFields = stringList());

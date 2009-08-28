@@ -286,7 +286,7 @@ typedef std::vector<LONG>                  vectorl;
 typedef std::vector<ULONG>                 vectoru;
 typedef std::vector<std::string>           vectorstr;
 typedef std::vector<std::vector<int > >    intMatrix;
-typedef std::vector<std::vector<std::string > >    stringMatrix;
+typedef std::vector<std::vector<std::string > >    matrixstr;
 typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;
 
