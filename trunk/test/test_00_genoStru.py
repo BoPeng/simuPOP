@@ -35,6 +35,16 @@ class TestGenoStru(unittest.TestCase):
         pop = population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5], lociNames=['1', '2', '3', '4', '5', '6'])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
         self.assertEqual(pop.lociNames(), ('1', '3', '2', '4', '6', '5'))
+        #
+        pop = population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5],
+            alleleNames=[['1', 'x'], ['2', 'a'], ['3', 'y', 'z'], ['4', 'b'], ['5', 'd'], ['6', 'c']])
+        self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
+        self.assertEqual(pop.alleleNames(0), ('1', 'x'))
+        self.assertEqual(pop.alleleNames(1), ('3', 'y', 'z'))
+        self.assertEqual(pop.alleleNames(2), ('2', 'a'))
+        self.assertEqual(pop.alleleNames(3), ('4', 'b'))
+        self.assertEqual(pop.alleleNames(4), ('6', 'c'))
+        self.assertEqual(pop.alleleNames(5), ('5', 'd'))
 
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
@@ -245,6 +255,21 @@ class TestGenoStru(unittest.TestCase):
         else:
             self.assertEqual(pop.alleleNames(), ('_', 'A'))
         self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
+        # test locus-specific allele names
+        pop = population(size=[20, 80], ploidy=2, loci=[1, 2],
+            alleleNames = [['A1', 'A2'], ['B1', 'B2', 'B3'], ['C1', 'C2', 'C3', 'C4']])
+        self.assertEqual(pop.alleleName(0), 'A1')
+        self.assertEqual(pop.alleleName(1), 'A2')
+        self.assertEqual(pop.alleleName(0, 1), 'B1')
+        self.assertEqual(pop.alleleName(1, 2), 'C2')
+        if AlleleType() != 'binary':
+            self.assertEqual(pop.alleleName(2), '2')
+            self.assertEqual(pop.alleleNames(1), ('B1', 'B2', 'B3'))
+        else:
+            self.assertEqual(pop.alleleName(2), '1')
+            self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
+        self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
+
 
     def testInfoField(self):
         'Testing genoStruTrait::infoField(idx), infoFields(), infoIdx(name)'

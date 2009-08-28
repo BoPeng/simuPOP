@@ -1089,7 +1089,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::GenoStructure();
 
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
 
@@ -1151,7 +1151,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
 
@@ -1185,7 +1185,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const vectorstr &alleleNames);
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const vectoru &loci, const matrixstr &alleleNames);
 
 %ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
 
@@ -1432,30 +1432,35 @@ Details:
 
 Usage:
 
-    x.alleleName(allele)
+    x.alleleName(allele, locus=0)
 
 Details:
 
-    return the name of allele allele specified by the alleleNames
-    parameter of the population function. If the name of an allele is
-    not specified, its index ('0', '1', '2', etc) is returned. An
-    IndexError will be raised if allele is larger than the maximum
-    allowed allele state of this module ( MaxAllele()).
+    return the name of allele allele at lcous specified by the
+    alleleNames parameter of the population function. locus could be
+    ignored if alleles at all loci share the same names. If the name
+    of an allele is unspecified, its index ('0', '1', '2', etc) is
+    returned. An IndexError will be raised if allele is larger than
+    the maximum allowed allele state of this module ( MaxAllele()).
 
 "; 
+
+%ignore simuPOP::GenoStruTrait::allAlleleNames() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::alleleNames "
 
 Usage:
 
-    x.alleleNames()
+    x.alleleNames(locus=0)
 
 Details:
 
-    return a list of allele names given by the alleleNames parameter
-    of the population function. This list does not have to cover all
-    possible allele states of a population so alleleNames()[allele]
-    might fail (use alleleNames(allele) instead).
+    return a list of allele names at given by the alleleNames
+    parameter of the population function. locus could be ignored if
+    alleles at all loci share the same names. This list does not have
+    to cover all possible allele states of a population so
+    alleleNames()[allele] might fail (use alleleNames(allele)
+    instead).
 
 "; 
 
@@ -5724,10 +5729,13 @@ Arguments:
                     quickly).
     chromNames:     A list of chromosome names. Default to chrom1,
                     chrom2, ... etc.
-    alleleNames:    A list of allele names for all markers. For
-                    example, alleleNames=('A','C','T','G') gives names
-                    A, C, T, and G to alleles 0, 1, 2, and 3
-                    respectively.
+    alleleNames:    A list or a nested list of allele names. If a list
+                    of alleles is given, it will be used for all loci
+                    in this population. For example,
+                    alleleNames=('A','C','T','G') gives names A, C, T,
+                    and G to alleles 0, 1, 2, and 3 respectively. If a
+                    nested list of names is given, it should specify
+                    alleles names for all loci.
     lociNames:      A list of names for each locus. It can be empty or
                     a list of unique names for each locus. If loci are
                     not specified in order, loci names will be
@@ -5738,12 +5746,6 @@ Arguments:
                     specified.
     infoFields:     Names of information fields (named float number)
                     that will be attached to each individual.
-
-Note:
-
-    simuPOP does not yet support locus-specific allele names. If this
-    information is very important, you can save allele names in the
-    local namespace of a population.
 
 "; 
 
@@ -6366,11 +6368,11 @@ Details:
     list of new allele numbers for alleles 0, 1, 2, ... (allele x will
     be recoded to newAlleles[x]) or a Python function. In the latter
     case, each allele and the index of the locus it resides are passed
-    to this function. The return value will become the new allele. If
-    a new set of allele names are given, they will replace the
-    existing allele names originally specified in the alleleNames
-    parameter of the population function. This function recode alleles
-    for all subpopulations in all ancestral generations.
+    to this function. The return value will become the new allele. A
+    new list of allele names could be specified for these loci.
+    Different sets of names could be specified for each locus if a
+    nested list of names are given. This function recode alleles for
+    all subpopulations in all ancestral generations.
 
 "; 
 

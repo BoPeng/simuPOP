@@ -149,13 +149,16 @@ public:
 	 *  \param ancGen Number of the most recent ancestral generations to keep
 	 *    during evolution. Default to \c 0, which means only the current
 	 *    generation will be kept. If it is set to \c -1, all ancestral
-	 *    generations will be kept in this population (and exhaust your computer
-	 *    RAM quickly).
+	 *    generations will be kept in this population (and exhaust your
+	 *    computer RAM quickly).
 	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
 	 *    \c chrom2, ... etc.
-	 *  \param alleleNames A list of allele names for all markers. For example,
-	 *    <tt>alleleNames=('A','C','T','G')</tt> gives names \c A, \c C, \c T,
-	 *    and \c G to alleles \c 0, \c 1, \c 2, and \c 3 respectively.
+	 *  \param alleleNames A list or a nested list of allele names. If a list
+	 *    of alleles is given, it will be used for all loci in this population.
+	 *    For example, <tt>alleleNames=('A','C','T','G')</tt> gives names \c A,
+	 *    \c C, \c T, and \c G to alleles \c 0, \c 1, \c 2, and \c 3
+	 *    respectively. If a nested list of names is given, it should specify
+	 *    alleles names for all loci.
 	 *  \param lociNames A list of names for each locus. It can be empty or a
 	 *    list of unique names for each locus. If loci are not specified in
 	 *    order, loci names will be rearranged according to their position on
@@ -164,10 +167,6 @@ public:
 	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
-	 *
-	 *  \note simuPOP does not yet support locus-specific allele names. If this
-	 *  information is very important, you can save allele names in the local
-	 *  namespace of a population.
 	 */
 	population(const uintList & size = uintList(),
 		float ploidy = 2,
@@ -965,14 +964,14 @@ public:
 	 *  \c x will be recoded to <tt>newAlleles[x]</tt>) or a Python function.
 	 *  In the latter case, each allele and the index of the locus it resides
 	 *  are passed to this function. The return value will become the new
-	 *  allele. If a new set of allele names are given, they will replace the
-	 *  existing allele names originally specified in the \c alleleNames
-	 *  parameter of the \c population function. This function recode alleles
-	 *  for all subpopulations in all ancestral generations.
+	 *  allele. A new list of allele names could be specified for these \e loci.
+	 *  Different sets of names could be specified for each locus if a nested
+	 *  list of names are given. This function recode alleles for all
+	 *  subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
 	void recodeAlleles(const uintListFunc & alleles, const uintList & loci = uintList(),
-		const vectorstr & alleleNames = vectorstr());
+		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is
