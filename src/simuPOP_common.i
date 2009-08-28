@@ -67,6 +67,9 @@ extern "C"
 ////////////////////////// CLEAN EXTRA SYMBOLS //////////////////////////
 
 // do not load these constants in ../config.h
+%ignore HAVE_DECL_ASINH;
+%ignore HAVE_DECL_LOG1P;
+%ignore HAVE__BOOL;
 %ignore HAVE_DECL_ACOSH;
 %ignore HAVE_DECL_ATANH;
 %ignore HAVE_DECL_EXPM1;
@@ -112,6 +115,7 @@ extern "C"
 %ignore SIMUPOP_VAR_NAME;
 %ignore SIMUPOP_VER;
 %ignore PopSWIGType;
+%ignore IndSWIGType;
 
 ////////////////////////// VECTOR/MATRIX TYPES //////////////////////////
 

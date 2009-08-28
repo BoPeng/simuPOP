@@ -180,11 +180,11 @@ bool infoExec::apply(population & pop)
 	if (subPops.empty())
 		subPops.useSubPopsFrom(pop);
 
-	OperationType oType = m_simpleStmt.operation();
+	simpleStmt::OperationType oType = m_simpleStmt.operation();
 	string oVar = m_simpleStmt.var();
 	double oValue = m_simpleStmt.value();
 	UINT oVarIdx = 0;
-	if (oType != NoOperation)
+	if (oType != simpleStmt::NoOperation)
 		oVarIdx = pop.infoIdx(oVar);
 
 	subPopList::const_iterator sp = subPops.begin();
@@ -195,19 +195,19 @@ bool infoExec::apply(population & pop)
 		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
-			case NoOperation:
+			case simpleStmt::NoOperation:
 				evalInfo(& * ind, true);
 				break;
-			case Assignment:
+			case simpleStmt::Assignment:
 				ind->setInfo(oValue, oVarIdx);
 				break;
-			case Increment:
+			case simpleStmt::Increment:
 				ind->setInfo(ind->info(oVarIdx) + oValue, oVarIdx);
 				break;
-			case Decrement:
+			case simpleStmt::Decrement:
 				ind->setInfo(ind->info(oVarIdx) - oValue, oVarIdx);
 				break;
-			case MultipliedBy:
+			case simpleStmt::MultipliedBy:
 				ind->setInfo(ind->info(oVarIdx) * oValue, oVarIdx);
 				break;
 			default:
