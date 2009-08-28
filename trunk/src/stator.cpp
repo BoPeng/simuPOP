@@ -871,7 +871,7 @@ bool statGenoFreq::apply(population & pop)
 			// output variable.
 			if (m_vars.contains(GenotypeNum_sp_String))
 				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, GenotypeNum_String)
-                    + m_suffix + "{" + toStr(loc) + "}", genotypes);
+					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(GenotypeFreq_sp_String)) {
 				if (allGenotypes != 0) {
@@ -881,7 +881,7 @@ bool statGenoFreq::apply(population & pop)
 						dct->second /= allGenotypes;
 				}
 				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, GenotypeFreq_String)
-                    + m_suffix + "{" + toStr(loc) + "}", genotypes);
+					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
 			}
 		}
 		if (it->isVirtual())

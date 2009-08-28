@@ -1112,14 +1112,15 @@ void population::addLociFrom(const population & pop)
 
 
 void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
-                          const string & chromName, UINT chromType)
+                          const string & chromName, const stringMatrix & alleleNames,
+                          UINT chromType)
 {
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
 		"Please specifiy locus name for all inserted loci.");
 
 	size_t oldNumLoci = totNumLoci();
 	// obtain new genotype structure and set it
-	setGenoStructure(gsAddChrom(lociPos, lociNames, chromName, chromType));
+	setGenoStructure(gsAddChrom(lociPos, lociNames, chromName, alleleNames.elems(), chromType));
 
 	DBG_ASSERT(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
 		"Failed to add chromosome.");
@@ -1158,20 +1159,21 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 
 
 vectoru population::addLoci(const uintList & chromList, const floatList & posList,
-                            const vectorstr & names)
+                            const vectorstr & lociNames, const stringMatrix & alleleNamesMatrix)
 {
 	const vectoru & chrom = chromList.elems();
 	const vectorf & pos = posList.elems();
+	const matrixstr & alleleNames = alleleNamesMatrix.elems();
 
 	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
 		"Chromosome and position lists should have the same length");
-	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
+	DBG_ASSERT(lociNames.empty() || pos.size() == lociNames.size(), ValueError,
 		"Please specifiy locus name for all inserted loci.");
 
 	vectoru newIndex;
 	vectoru loci(totNumLoci());
 	// obtain new genotype structure and set it
-	setGenoStructure(gsAddLoci(chrom, pos, names, newIndex));
+	setGenoStructure(gsAddLoci(chrom, pos, lociNames, alleleNames, newIndex));
 	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex << endl);
 	// loci at newIndex should have zero alleles...
 	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
@@ -1295,6 +1297,7 @@ population & population::extract(bool removeInd, const string & field,
 		vectoru new_numLoci;
 		vectorf new_lociPos;
 		vectorstr new_lociNames;
+		matrixstr new_alleleNames;
 		vectoru new_chromTypes;
 		vectorstr new_chromNames;
 		if (removeLoci && !loci.empty()) {
@@ -1321,10 +1324,11 @@ population & population::extract(bool removeInd, const string & field,
 				++new_numLoci.back();
 				new_lociPos.push_back(locusPos(*it));
 				new_lociNames.push_back(locusName(*it));
+				new_alleleNames.push_back(alleleNames(*it));
 			}
 		}
 		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
-			new_lociPos, new_chromNames, allAlleleNames(), new_lociNames, allInfoFields);
+			new_lociPos, new_chromNames, new_alleleNames, new_lociNames, allInfoFields);
 		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << pop.numLoci()
 			                        << "\nchromType: " << pop.chromTypes()
 			                        << "\nlociPos: " << pop.lociPos()

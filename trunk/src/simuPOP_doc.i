@@ -1183,11 +1183,11 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
 
-%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
+%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
 
 %ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const vectoru &loci, const matrixstr &alleleNames);
 
-%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const;
 
@@ -6260,7 +6260,7 @@ Details:
 
 Usage:
 
-    x.addChrom(lociPos, lociNames=[], chromName=\"\",
+    x.addChrom(lociPos, lociNames=[], chromName=\"\", alleleNames=[],
       chromType=Autosome)
 
 Details:
@@ -6268,8 +6268,10 @@ Details:
     Add chromosome chromName with given type chromType to a
     population, with loci lociNames inserted at position lociPos.
     lociPos should be ordered. lociNames and chromName should not
-    exist in the current population. Empty loci names will be used if
-    lociNames is not specified.
+    exist in the current population. Allele names could be specified
+    for all loci (a list of names) or differently for each locus (a
+    nested list of names), using parameter alleleNames. Empty loci
+    names will be used if lociNames is not specified.
 
 "; 
 
@@ -6277,19 +6279,20 @@ Details:
 
 Usage:
 
-    x.addLoci(chrom, pos, names=[])
+    x.addLoci(chrom, pos, lociNames=[], alleleNames=[])
 
 Details:
 
-    Insert loci names at positions pos on chromosome chrom. These
+    Insert loci lociNames at positions pos on chromosome chrom. These
     parameters should be lists of the same length, although names may
     be ignored, in which case empty strings will be assumed. Single-
     value input is allowed for parameter chrom and pos if only one
     locus is added. Alleles at inserted loci are initialized with zero
     alleles. Note that loci have to be added to existing chromosomes.
     If loci on a new chromosome need to be added, function addChrom
-    should be used. This function returns indexes of the inserted
-    loci.
+    should be used. Optionally, allele names could be specified either
+    for all loci (a single list) or each loci (a nested list). This
+    function returns indexes of the inserted loci.
 
 "; 
 

@@ -358,7 +358,8 @@ public:
 	 *  add a new chromosome to genotype structure and create a new structure.
 	 */
 	GenoStructure & gsAddChrom(const vectorf & lociPos,
-		const vectorstr & lociNames, const string & chromName, UINT chromType) const;
+		const vectorstr & lociNames, const string & chromName,
+		const matrixstr & alleleNames, UINT chromType) const;
 
 	/** CPPONLY
 	 *  Create a geno structure using new allele names.
@@ -371,7 +372,7 @@ public:
 	 *  structure
 	 */
 	GenoStructure & gsAddLoci(const vectoru & chrom, const vectorf & pos,
-		const vectorstr & names, vectoru & newIndex) const;
+		const vectorstr & lociNames, const matrixstr & alleleNames, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure
 	GenoStructure & genoStru() const

@@ -296,6 +296,28 @@ class TestPopulation(unittest.TestCase):
         pop2 = population(size=200, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
             lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
         self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop2)
+        # see what happens to alleleNames
+        pop1 = population(size=100, ploidy=2, loci=[1, 2], chromNames=["c1", "c2"],
+            lociNames = ['l1', 'l2', 'l3'], alleleNames=['A', 'B'])
+        pop2 = population(size=100, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
+            lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
+        pop1.addChromFrom(pop2)
+        self.assertEqual(pop1.alleleNames(0), ('A', 'B'))
+        self.assertEqual(pop1.alleleNames(2), ('A', 'B'))
+        self.assertEqual(pop1.alleleNames(3), ())
+        self.assertEqual(pop1.alleleNames(4), ())
+        self.assertEqual(pop1.alleleNames(7), ())
+        #
+        pop1 = population(size=100, ploidy=2, loci=[1, 2], chromNames=["c1", "c2"],
+            lociNames = ['l1', 'l2', 'l3'], alleleNames=['A', 'B'])
+        pop2 = population(size=100, ploidy=2, loci=[2], chromNames=["c3"],
+            lociNames = ['l4', 'l5'],
+            alleleNames=[['E', 'F'], ['C', 'D']])
+        pop1.addChromFrom(pop2)
+        self.assertEqual(pop1.alleleNames(0), ('A', 'B'))
+        self.assertEqual(pop1.alleleNames(2), ('A', 'B'))
+        self.assertEqual(pop1.alleleNames(3), ('E', 'F'))
+        self.assertEqual(pop1.alleleNames(4), ('C', 'D'))
 
     def testAddIndFrom(self):
         'Testing population::addIndFrom(pop)'
@@ -336,6 +358,18 @@ class TestPopulation(unittest.TestCase):
                 for i, src, j in [(0, 0, 0), (1, 1, 0), (2, 0, 1), (3, 1, 1), (4, 0, 2), (5, 1, 2)]:
                     for p in range(pop.ploidy()):
                         self.assertEqual(ind.allele(i, p), inds[src].allele(j, p))
+        # allele names
+        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 2, 5],
+            lociNames = ['l1', 'l2', 'l3'], alleleNames=['A'])
+        pop2 = self.getPop(chromNames=["c3", "c4"], ancGen=5, lociPos=[4, 3, 6],
+            lociNames = ['l4', 'l5', 'l6'], alleleNames=[['B'], ['C', 'D'], ['E']])
+        pop.addLociFrom(pop2);
+        self.assertEqual(pop.alleleNames(0), ('A',))
+        self.assertEqual(pop.alleleNames(1), ('B',))
+        self.assertEqual(pop.alleleNames(2), ('A',))
+        self.assertEqual(pop.alleleNames(3), ('C', 'D'))
+        self.assertEqual(pop.alleleNames(4), ('A',))
+        self.assertEqual(pop.alleleNames(5), ('E',))
 
     def testAddLoci(self):
         'Testing population::addLoci(chrom, pos, names=[])'

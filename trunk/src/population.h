@@ -894,25 +894,30 @@ public:
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
 	 *  \e lociPos should be ordered. \e lociNames and \e chromName should not
-	 *  exist in the current population. Empty loci names will be used if
-	 *  \e lociNames is not specified.
+	 *  exist in the current population. Allele names could be specified for
+	 *  all loci (a list of names) or differently for each locus (a nested
+	 *  list of names), using parameter \e alleleNames. Empty loci names will
+	 *  be used if \e lociNames is not specified.
 	 *  <group>7-manipulate</group>
 	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
-		const string & chromName = string(), UINT chromType = Autosome);
+		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
+		UINT chromType = Autosome);
 
-	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
+	/** Insert loci \e lociNames at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
 	 *  \e names may be ignored, in which case empty strings will be assumed.
 	 *  Single-value input is allowed for parameter \e chrom and \e pos if only
 	 *  one locus is added. Alleles at inserted loci are initialized with zero
 	 *  alleles. Note that loci have to be added to existing chromosomes. If
 	 *  loci on a new chromosome need to be added, function <tt>addChrom</tt>
-	 *  should be used. This function returns indexes of the inserted loci.
+	 *  should be used. Optionally, allele names could be specified either
+	 *  for all loci (a single list) or each loci (a nested list). This
+	 *  function returns indexes of the inserted loci.
 	 *  <group>7-manipulate</group>
 	 */
 	vectoru addLoci(const uintList & chrom, const floatList & pos,
-		const vectorstr & names = vectorstr());
+		const vectorstr & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
 	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  Individuals at the end of some subpopulations will be removed if the

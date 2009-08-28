@@ -40,7 +40,10 @@ class TestGenoStru(unittest.TestCase):
             alleleNames=[['1', 'x'], ['2', 'a'], ['3', 'y', 'z'], ['4', 'b'], ['5', 'd'], ['6', 'c']])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
         self.assertEqual(pop.alleleNames(0), ('1', 'x'))
-        self.assertEqual(pop.alleleNames(1), ('3', 'y', 'z'))
+        if AlleleType() == 'binary':
+            self.assertEqual(pop.alleleNames(1), ('3', 'y'))
+        else:
+            self.assertEqual(pop.alleleNames(1), ('3', 'y', 'z'))
         self.assertEqual(pop.alleleNames(2), ('2', 'a'))
         self.assertEqual(pop.alleleNames(3), ('4', 'b'))
         self.assertEqual(pop.alleleNames(4), ('6', 'c'))
@@ -266,7 +269,7 @@ class TestGenoStru(unittest.TestCase):
             self.assertEqual(pop.alleleName(2), '2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2', 'B3'))
         else:
-            self.assertEqual(pop.alleleName(2), '1')
+            self.assertEqual(pop.alleleName(1), '1')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
         self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
 
