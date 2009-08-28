@@ -377,7 +377,7 @@ pop1.setGenotype([2])
 # 1 1 1, 0 0 0, 2 2 2
 pop.addChromFrom(pop1)
 # 1 1 1, 0 0 0, 2 0 2 2 0
-pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], names=['rs7', 'rs8'])
+pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], lociNames=['rs7', 'rs8'])
 # 1 1 1, 0 0 0, 2 0 2 0
 pop.removeLoci([8])
 Dump(pop)
