@@ -1153,7 +1153,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(const GenoStructure &rhs);
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
 
@@ -1566,6 +1566,10 @@ Details:
 %ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
+
+%ignore simuPOP::GenoStruTrait::incGenoStruRef();
+
+%ignore simuPOP::GenoStruTrait::decGenoStruRef();
 
 %feature("docstring") simuPOP::genoTransmitter "
 

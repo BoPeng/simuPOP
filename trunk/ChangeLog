@@ -12,6 +12,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		population, population.addChrom, population.addChromFrom, population.recodeAlleles,
 		population.addLoci, population.addLociFrom, and genotructure trait functions
 		alleleName and alleleNames.
+  - NEW (internal): Recycle unused genotypic structure to save some memory.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
