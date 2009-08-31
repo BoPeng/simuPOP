@@ -1,0 +1,19 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7
+author=
+charset=ISO-8859-1
+csum=
+ctime=1251668836
+host=127.0.0.1
+name=Cookbook.HapMapUtil
+rev=2
+targets=
+text=(:title Handle HapMap datasets:)%0a%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:hapMapUtil.py | http://simupop.sourceforge.net/images/download.jpg]]|hapMapUtil.py%0a%0aThis module provides three functions%0a%0a* @@mergeHapMapPops(HapMap_dir, HapMap_pops, chrom, logger)@@: load and merges several hapMap populations after removing non-overlapping markers (markers that do not exist in all populations).%0a%0a* @@getHapMapMarkers(HapMap_dir, names, chroms, HapMap_pops, startPos, endPos, numMarkers, minAF, minDist, logger)@@: Create a new population using specified names, chromosomes, starting and ending positions, number of markers on each chromosome and other conditions.%0a%0aThis module can also be used as a script to create a population according to specified conditions. Please use @@hapMapUtil.py --help@@ for details.
+time=1251754223
+title=Handle HapMap datasets
+author:1251754223=
+diff:1251754223:1251668836:=5,11d4%0a%3c This module provides three functions%0a%3c %0a%3c * @@mergeHapMapPops(HapMap_dir, HapMap_pops, chrom, logger)@@: load and merges several hapMap populations after removing non-overlapping markers (markers that do not exist in all populations).%0a%3c %0a%3c * @@getHapMapMarkers(HapMap_dir, names, chroms, HapMap_pops, startPos, endPos, numMarkers, minAF, minDist, logger)@@: Create a new population using specified names, chromosomes, starting and ending positions, number of markers on each chromosome and other conditions.%0a%3c %0a%3c This module can also be used as a script to create a population according to specified conditions. Please use @@hapMapUtil.py --help@@ for details.%0a\ No newline at end of file%0a
+host:1251754223=127.0.0.1
+author:1251668836=
+diff:1251668836:1251668836:=1,4d0%0a%3c (:title Handle HapMap datasets:)%0a%3c %0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:hapMapUtil.py | http://simupop.sourceforge.net/images/download.jpg]]|hapMapUtil.py%0a%3c %0a
+host:1251668836=127.0.0.1

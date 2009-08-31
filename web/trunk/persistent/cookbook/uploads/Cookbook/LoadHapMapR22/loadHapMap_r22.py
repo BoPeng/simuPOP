@@ -1,8 +1,53 @@
 #!/usr/bin/env python
-
+#
+# Purpose:
+#     This python module provides function loadHapMapPop to download and import
+#     the HapMap populations. It can also be served as a script to download
+#     part or all HapMap populations.
+#
+# License:
+#     This program is freely available in the simuPOP's online cookbook
+#     (http://simupop.sourceforge.net/cookbook). You can redistribute it and/or
+#     modify it freely, with or without this license notice. However, this
+#     license notice should be present in the online version of this file.
+#
+#     This program is NOT part of simuPOP and is NOT protected by simuPOP's GPL
+#     license. It is provided in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY. If you notice any bug or have some new ideas, you can
+#     modify this file and, as a courtesy to other simuPOP users, incoporate
+#     your changes to the online version of this file. If you are uncertain
+#     about your changes, please feel free to discuss your changes in the
+#     simuPOP mailinglist (simupop-list@lists.sourceforge.net, subscription
+#     required).
+#
+# Change Log:
+#     2009-08-31 Bo Peng <bpeng@mdanderson.org>
+#       - Add logging support to script loadHapMap_r22.py.
+#       - Polish function loadHapMapPop and hide others.
+#       - Use temporary directory to save downloaded files.
+# 
 '''
 This script downloads and loads release 22 of hapmap datasets in 
-http://www.hapmap.org/downloads/phasing/2007-08_rel22/phased.
+http://www.hapmap.org/downloads/phasing/2007-08_rel22/phased. It
+also downloads the fine-scale recombination map from
+http://ftp.hapmap.org/recombination/2008-03_rel22_B36/rates/
+and saves the genetic distance of each marker in a dictionary
+(genDist) in each population's local namespace.
+
+The saved populations have the following features:
+
+1. Different populations are saved in different files. These populations
+  may not be merged directly because they have different set of markers.
+  Subpopulation name is specified ('CEU', 'YRI' or 'JPT+CHT'.
+
+2. Chromosome name is saved as "1", "2", "3", ...
+
+3. Basepairs are used to specify physical distances of loci.
+
+4. Alleles are saved as 0 and 1 as appear in the HapMap datafile. Allele
+  names such as 'A', 'G' are saved for each marker.
+
+5. A dictionary 'genDist' is used to store genetic distance of each marker.
 
 Please refer to 
 http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LoadHapMap22 for 
@@ -12,9 +57,8 @@ for details about this script.
 from simuOpt import *
 setOptions(optimized=True, alleleType='binary')
 from simuPOP import *
-from simuUtil import simuProgress
 
-import os, sys, urllib, gzip, exceptions
+import os, sys, urllib, gzip, exceptions, tempfile, shutil
 
 # URL and revision number. You can choose to download other hapmap files
 release = 22
@@ -27,28 +71,32 @@ legend_file = 'genotypes_chr%d_%s_r22_nr.b36_fwd_legend.txt.gz'
 genotype_file = {
     'CEU': 'genotypes_chr%d_CEU_r22_nr.b36_fwd.phase.gz',
     'YRI': 'genotypes_chr%d_YRI_r22_nr.b36_fwd.phase.gz',
-    'JPT+CHB': 'genotypes_chr%d_JPT+CHB_r22_nr.b36_fwd.phased.gz'  # Come on, what is going on?
+    'JPT+CHB': 'genotypes_chr%d_JPT+CHB_r22_nr.b36_fwd.phased.gz'  # Come on, what is going on? (Note the d in phased)
 }
 recom_file = 'genetic_map_chr%s_b36.txt'
 
-def downloadIfNeeded(URL, path, file):
+def downloadIfNeeded(URL, path, file, logger=None):
     '''Download file from hapmap website'''
     diskfile = os.path.join(path, file)
+    # this actually will not happen because files are downloaded to
+    # a temporary directory.
     if os.path.isfile(diskfile):
         return        
-    print 'Downloading %s to %s ...' % (file, path)
+    if logger is not None:
+        logger.info('Downloading %s ...' % file)
     urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
     if not os.path.isfile(diskfile):
         raise exceptions.SystemError('Failed to download file %s from URL %s' \
             % (file, URL))
 
 
-def getLoci(ch, sample, dest):
+def _getLegend(ch, sample, dest, logger=None):
     '''Loci information is retrieved from legend files'''
     lociPos = []
     lociName = []
+    alleleNames = []
     file = legend_file % (ch, sample)
-    downloadIfNeeded(Genotype_URL, dest, file)
+    downloadIfNeeded(Genotype_URL, dest, file, logger)
     try:
         legend = gzip.open(os.path.join(dest, file))
         legend.readline()  # skip first line
@@ -56,34 +104,36 @@ def getLoci(ch, sample, dest):
             fields = line.split()
             lociName.append(fields[0])
             lociPos.append(float(fields[1]))
+            alleleNames.append((fields[2], fields[3]))
     except Exception, e:
-        print 'Failed to read file ', file
-        print 'You may want to remove your local copy and let this script re-download it.'
-        print
+        if logger is not None:
+            logger.error('Failed to read file %s' % file)
+            logger.error('You may want to remove your local copy and let this script re-download it.')
         raise e
-    return (lociPos, lociName)
+    return (lociPos, lociName, alleleNames)
 
 
-def getPopSize(numLoci, ch, sample, dest):
+def _getPopSize(numLoci, ch, sample, dest, logger=None):
     '''Get population size of a sample
       This function also checks if each line has desired number of alleles.
     '''
     count = 0
     ll = 0
     genotype = genotype_file[sample] % ch
-    downloadIfNeeded(Genotype_URL, dest, genotype)
+    downloadIfNeeded(Genotype_URL, dest, genotype, logger)
     for line in gzip.open(os.path.join(dest, genotype)).readlines():
         if (ll == 0 and len(line.split()) != numLoci) or \
             (ll != 0 and len(line) != ll):
-            print "Number of loci does not match in %s " % ceu
-            print "Number of loci: %d, number of fields: %d" % (numLoci, len(line.split()))
+            if logger is not None:
+                logger.error("Number of loci does not match in %s " % ceu)
+                logger.error("Number of loci: %d, number of fields: %d" % (numLoci, len(line.split())))
             sys.exit(1)
         ll = len(line)
         count += 1
     return count/2
     
 
-def load_population(pop, ch, sample, dest):
+def load_population(pop, ch, sample, dest, logger=None):
     '''Load population from file, with type (subpopulation type)'''
 # For the CEU and YRI the haplotypes are arranged as follows:
 #  
@@ -111,22 +161,21 @@ def load_population(pop, ch, sample, dest):
 # populations.
 # 
     file = genotype_file[sample] % ch
-    downloadIfNeeded(Genotype_URL, dest, file)
-    progress = simuProgress('Load genotype from %s ' % file, pop.popSize())
+    downloadIfNeeded(Genotype_URL, dest, file, logger)
     for line_no,line in enumerate(gzip.open(os.path.join(dest, file)).readlines()):
         genotype = [int(x) for x in line.split()]
         ind = line_no / 2
         ploidy = line_no % 2
         # always chromosome 0, because each population has only one chromosome
         pop.individual(ind).setGenotype(genotype, ploidy)
-        progress.update(ind + 1)
 
 
-def set_map_dist(pop, ch, dest):
+def set_map_dist(pop, ch, dest, logger=None):
     '''Set map distance for each locus'''
     file = recom_file % ch
-    downloadIfNeeded(Recom_URL, dest, file)
-    print 'Reading genetic map file %s...' % file,
+    downloadIfNeeded(Recom_URL, dest, file, logger)
+    if logger is not None:
+        logger.info('Using genetic map file %s' % file)
     dist = {}
     for line in open(os.path.join(dest, file)).readlines():
         try:
@@ -135,7 +184,8 @@ def set_map_dist(pop, ch, dest):
             dist[pos] = float(fields[2])
         except:
             pass
-    print ' map distance of %d markers are found' % len(dist)
+    if logger is not None:
+        logger.info('Map distance of %d markers are found' % len(dist))
     totNumLoci = pop.totNumLoci()
     # now, try to set genetic map
     map_dist = [-1]*totNumLoci;
@@ -151,7 +201,6 @@ def set_map_dist(pop, ch, dest):
         prev = -1     # name of the previous marker with map distance
         next = -1     # name of the next marker with map distance
         loc = 0
-        progress = simuProgress('Estimating map distance of unspecified loci', totNumLoci)
         while (loc < totNumLoci):
             # already has value
             if map_dist[loc] != -1:
@@ -184,43 +233,67 @@ def set_map_dist(pop, ch, dest):
                         map_dist[n] = map_dist[prev] + (pop.locusPos(n) - prev_pos) / (next_pos - prev_pos) * (next_dis - prev_dis)
                 prev = next
                 loc = next + 1
-            progress.update(loc)
-        progress.done()
-    print 'Map distance of %d markers (%.2f%% of %d) are estimated' % (totNumLoci - cnt,
-        (totNumLoci - cnt) * 100.0/totNumLoci, totNumLoci)
+    if totNumLoci != cnt and logger is not None:
+        logger.info('Map distance of %d markers (%.2f%% of %d) are estimated' % (totNumLoci - cnt,
+            (totNumLoci - cnt) * 100.0/totNumLoci, totNumLoci))
     map = {}
     for loc in range(totNumLoci):
         map[pop.locusName(loc)] = map_dist[loc]
     pop.dvars().genDist = map
 
     
-def loadHapMap(ch, sample, dest='.'):
-    '''Download, import and save hapmap data of given chromosomes'''
-    ps = None
-    popFile = os.path.join(dest, "HapMap_%s_chr%d.pop" % (sample, ch))
+def loadHapMapPop(chrom, popName, dir=None, logger=None):
+    '''Download and import the specified chromosome of a hapmap population.
+    If a directory is specified, the loaded population will be saved in
+    simuPOP format with filename HapMap_XXX_chrY.pop where XXX is population
+    name and Y is chromosome number. If a file already exists, this function
+    will try to load the file directly.
+    
+    chrom
+        chromosome to download (1, 2, ..., 22.
+
+    popName
+        Name of the population, should be one of 'CEU', 'YRI' or 'JPT+CHB'
+
+    dir
+        Name of the directory to save the imported population in simuPOP
+        format.
+    
+    logger
+        An optional logger object (c.f. the Python logging module) where all
+        logging and debugging information is written to.
+
+    This function returns the loaded population.
+    '''
+    popFile = os.path.join(dir, "HapMap_%s_chr%d.pop" % (popName, chrom))
     if os.path.isfile(popFile):
-        print "Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile
-        return
-    print "\n\nLoading HapMap chromosome %d for population %s" % (ch, sample)
-    (lociPos, lociName) = getLoci(ch, sample, dest)
-    print "%d loci (%.2f - %.2f cM) are located" % (len(lociPos), lociPos[0], lociPos[-1])
-    popSize = getPopSize(len(lociPos), ch, sample, dest)
-    print 'Sample size is %d' % popSize
-    if ps is None:
-        ps = popSize
-    elif ps != popSize:
-        print "Population size does not match across chromosomes"
-        sys.exit(1)
-    print 'Creating population %s' % popFile
+        if logger is not None:
+            logger.info("Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile)
+        try:
+            pop = LoadPopulation(popFile)
+            return pop
+        except:
+            # continue to load file
+            pass
+    if logger is not None:
+        logger.info("Loading HapMap chromosome %d of population %s" % (chrom, popName))
+    tmpdir = tempfile.mkdtemp()
+    (lociPos, lociName, alleleNames) = _getLegend(chrom, popName, tmpdir, logger)
+    if logger is not None:
+        logger.info("%d loci (%d - %d bp) are located" % (len(lociPos), lociPos[0], lociPos[-1]))
+    popSize = _getPopSize(len(lociPos), chrom, popName, tmpdir, logger)
+    if logger is not None:
+        logger.info('Sample size is %d' % popSize)
     pop = population(size=popSize, ploidy=2, loci=[len(lociPos)],
-        lociPos=lociPos, lociNames=lociName, chromNames=[str(ch)],
-        subPopNames=[sample])
-    load_population(pop, ch, sample, dest=dest)
-    set_map_dist(pop, ch, dest)
-    print "Saving population to %s..." % popFile
+        lociPos=lociPos, lociNames=lociName, chromNames=[str(chrom)],
+        alleleNames=alleleNames, subPopNames=[popName])
+    load_population(pop, chrom, popName, tmpdir, logger)
+    set_map_dist(pop, chrom, tmpdir, logger)
+    logger.info("Save population to %s." % popFile)
     pop.dvars().HapMap_rel = release
     pop.save(popFile)
-        
+    shutil.rmtree(tmpdir)
+    return pop
 
 options = [
     {'longarg': 'dest=',
@@ -228,7 +301,8 @@ options = [
      'useDefault': True,
      'label': 'Destination directory',
      'allowedTypes': [type('')],
-     'validate': valueValidDir()
+     'validate': valueValidDir(),
+     'description': 'A directory to save HapMap data in simuPOP format.',
     },
     {'longarg': 'chroms=',
      'default': range(1, 23),
@@ -236,14 +310,23 @@ options = [
      'label': 'Chromosomes to download',
      'allowedTypes': [type([]), type(())],
      'chooseFrom': range(1, 23),
-     'validate': valueListOf(valueBetween(1, 22))
+     'validate': valueListOf(valueBetween(1, 22)),
+     'description': 'Which chromosomes to download and process',
     },
 ]
 
 if __name__ == '__main__':
-    pars = simuOpt(options, __doc__)
+    pars = simuOpt(options, 
+        'This script downloads the 22 release of the HapMap datasets\n'
+        'and saves them in simuPOP format. It also downloads the fine-scale\n'
+        'recombination map and saves the genetic distance of each marker in\n'
+        'a dictionary (genDist) in the population\'s local namespace.',
+        __doc__)
     if not pars.getParam():
         sys.exit(1)
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger('loadHapMap')
     for chrom in pars.chroms:
         for sample in ['CEU', 'YRI', 'JPT+CHB']:
-            loadHapMap(chrom, sample, pars.dest)
+            loadHapMapPop(chrom, sample, pars.dest, logger)
