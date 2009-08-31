@@ -99,6 +99,8 @@ population::~population()
 	if (m_vspSplitter)
 		delete m_vspSplitter;
 
+	decGenoStruRef();
+
 	DBG_DO(DBG_POPULATION,
 		cout << "Destructor of population is called" << endl);
 }
@@ -138,7 +140,9 @@ population::population(const population & rhs) :
 	// by using their copied pointer
 	// population, however, need to set this pointer correctly
 	//
+	decGenoStruRef();   // dec ref to the old
 	setGenoStruIdx(rhs.genoStruIdx());
+	incGenoStruRef();   // inc ref to the new
 
 	// copy genotype one by one so individual genoPtr will not
 	// point outside of subpopulation region.
@@ -568,7 +572,9 @@ void population::fitGenoStru(size_t stru)
 	UINT oldSize = genoSize();
 	UINT oldInfoSize = infoSize();
 
+	decGenoStruRef();   // dec ref to the old
 	setGenoStruIdx(stru);
+	incGenoStruRef();   // inc ref to the new
 	UINT newSize = genoSize();
 	UINT newInfoSize = infoSize();
 

@@ -76,7 +76,8 @@ public:
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
 		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_customized(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0)
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0),
+		m_refCount(0)
 	{
 	}
 
@@ -234,6 +235,8 @@ private:
 	/// name of the information field
 	vectorstr m_infoFields;
 
+	mutable UINT m_refCount;
+
 	friend class GenoStruTrait;
 };
 }
@@ -294,7 +297,7 @@ public:
 	   \note This is \em NOT efficient! However, this function has to be used when, for example,
 	   loading a structure from a file.
 	 */
-	void setGenoStructure(GenoStructure & rhs);
+	void setGenoStructure(const GenoStructure & rhs);
 
 	/// CPPONLY set index directly
 	void setGenoStruIdx(size_t idx)
@@ -818,6 +821,22 @@ public:
 	void swap(GenoStruTrait & rhs)
 	{
 		std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
+	}
+
+
+	/// CPPONLY Increase the reference count of this structure
+	void incGenoStruRef()
+	{
+		++s_genoStruRepository[m_genoStruIdx].m_refCount;
+	}
+
+
+	/// CPPONLY Decrease the reference count of this structure
+	void decGenoStruRef()
+	{
+		DBG_FAILIF(s_genoStruRepository[m_genoStruIdx].m_refCount == 0,
+			SystemError, "Unknow error for reference counting of genotypic structure.");
+		--s_genoStruRepository[m_genoStruIdx].m_refCount;
 	}
 
 

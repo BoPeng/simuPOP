@@ -330,6 +330,15 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const ve
                                      const vectorf & lociPos, const vectorstr & chromNames, const matrixstr & alleleNames,
                                      const vectorstr & lociNames, const vectorstr & infoFields)
 {
+	GenoStructure tmp = GenoStructure(ploidy, loci, chromTypes, haplodiploid,
+		lociPos, chromNames, alleleNames, lociNames, infoFields);
+
+	setGenoStructure(tmp);
+}
+
+
+void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
+{
 	// only allow for MaxTraitIndex-1 different genotype structures
 	// As a matter of fact, most simuPOP scripts have only one
 	// population type.
@@ -340,20 +349,35 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const ve
 			+ "recompile simuPOP.");
 	}
 
-	GenoStructure tmp = GenoStructure(ploidy, loci, chromTypes, haplodiploid,
-		lociPos, chromNames, alleleNames, lociNames, infoFields);
+	if (m_genoStruIdx != MaxTraitIndex)
+		decGenoStruRef();
 
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size(); ++it) {
 		// object comparison
-		if (s_genoStruRepository[it] == tmp) {
+		if (s_genoStruRepository[it] == rhs) {
 			m_genoStruIdx = it;
+			incGenoStruRef();
 			return;
 		}
 	}
-	// if not found
-	s_genoStruRepository.push_back(tmp);
+	// if not found, replace zero-referenced structure if necessary
+	for (TraitIndexType it = 0; it < s_genoStruRepository.size(); ++it) {
+		if (s_genoStruRepository[it].m_refCount == 0) {
+			DBG_DO(DBG_POPULATION, cout << "Replacing an existing geno structure." << endl);
+			s_genoStruRepository[it] = rhs;
+			m_genoStruIdx = it;
+			incGenoStruRef();
+			return;
+		}
+	}
+	// no zero-referenced structure
+	s_genoStruRepository.push_back(rhs);
+	DBG_DO(DBG_POPULATION, cout << "Adding an geno structure. (tot size: "
+		                        << s_genoStruRepository.size() << ")" << endl);
 	// the last one.
 	m_genoStruIdx = s_genoStruRepository.size() - 1;
+	// increase reference count
+	incGenoStruRef();
 }
 
 
@@ -765,23 +789,6 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 				ret->m_lociPos.begin() + ret->m_chromIndex[ch + 1], pos) - ret->m_lociPos.begin());
 	}
 	return *ret;
-}
-
-
-void GenoStruTrait::setGenoStructure(GenoStructure & rhs)
-{
-	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
-	     ++it) {
-		// object comparison
-		if (s_genoStruRepository[it] == rhs) {
-			m_genoStruIdx = it;
-			return;
-		}
-	}
-
-	// if not found, make a copy and store it.
-	s_genoStruRepository.push_back(rhs);
-	m_genoStruIdx = s_genoStruRepository.size() - 1;
 }
 
 
