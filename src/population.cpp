@@ -1371,7 +1371,7 @@ population & population::extract(bool removeInd, const string & field,
 	//
 	// copy individuals, from ancestor to current.
 	int depth = ancestralGens();
-	if (ancGen > 0 && ancGen < depth)
+	if (ancGen >= 0 && ancGen < depth)
 		depth = ancGen;
 	// ancestral depth can be -1
 	pop.setAncestralDepth(m_ancestralGens);
