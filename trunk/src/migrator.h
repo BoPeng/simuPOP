@@ -131,7 +131,7 @@ public:
 	 */
 	migrator(const matrix & rate = matrix(), int mode = ByProbability, const uintList & toSubPops = uintList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("migrate_to"));
 
 	/// destructor
@@ -228,10 +228,10 @@ public:
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
-	splitSubPops(const subPopList & subPops = AllSubPops, const vectoru & sizes = vectoru(),
+	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
@@ -300,9 +300,9 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	mergeSubPops(const subPopList & subPops = AllSubPops, const string & name = string(),
+	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_name(name)
 	{
@@ -362,11 +362,11 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	resizeSubPops(const subPopList & subPops = AllSubPops,
+	resizeSubPops(const subPopList & subPops = subPopList(),
 		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
 		bool propagate = true, int stage = PreMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{

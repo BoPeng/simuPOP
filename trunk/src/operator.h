@@ -66,7 +66,12 @@ public:
 
 public:
 	///
-	subPopList(const vectorvsp & subPops = vectorvsp());
+	subPopList() : m_subPops(), m_expand(true)
+	{
+	}
+
+	///
+	subPopList(const vectorvsp & subPops);
 
 	/// CPPONLY
 	bool empty() const
@@ -156,7 +161,6 @@ private:
 	bool m_expand;
 };
 
-const subPopList AllSubPops = subPopList(subPopList::vectorvsp(1, vspID()));
 
 /** Operators are objects that act on populations. They can be applied to
  *  populations directly using their function forms, but they are usually
@@ -237,19 +241,18 @@ public:
 	 *  \param at A list of applicable generations. Parameters \c begin,
 	 *    \c end, and \c step will be ignored if this parameter is specified.
 	 *    A single generation number is also acceptable.
-	 *  \param reps A list of applicable replicates. A default value \c AllReps
-	 *    is interpreted as all replicates in a simulator. Negative indexes such
+	 *  \param reps A list of applicable replicates. A default value \c None is
+	 *    interpreted as all replicates in a simulator. Negative indexes such
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
 	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. <tt>subPops=[sp1]</tt>
 	 *    can be simplied as <tt>subPops=sp1</tt>. Negative indexes are not
-	 *    supported. The default value of this parameter is usually
-	 *    \c AllSubPops which reprents all subpopulations of the population
-	 *    being aplied. Suport for this parameter vary from operator to operator
-	 *    and some operators do not support virtual subpopulations at all.
-	 *    Please refer to the reference manual of individual operators for their
-	 *    support for this parameter.
+	 *    supported. The default value (\c None) of this parameter reprents all
+	 *    subpopulations of the population being aplied. Suport for this
+	 *    parameter vary from operator to operator and some operators do not
+	 *    support virtual subpopulations at all. Please refer to the reference
+	 *    manual of individual operators for their support for this parameter.
 	 *  \param infoFields A list of information fields that will be used by an
 	 *    operator. You usually do not need to specify this parameter because
 	 *    operators that use information fields usually have default values for
@@ -662,7 +665,7 @@ public:
 	pause(char stopOnKeyStroke = false, bool prompt = true,
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
@@ -712,7 +715,7 @@ public:
 	 */
 	noneOp(const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -773,7 +776,7 @@ public:
 	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
@@ -829,7 +832,7 @@ public:
 	 */
 	ticToc(const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 		time(&m_startTime);
@@ -879,7 +882,7 @@ public:
 	 */
 	setAncestralDepth(int depth, const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_depth(depth)
@@ -936,7 +939,7 @@ public:
 	 */
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -987,7 +990,7 @@ public:
 	 */
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -1070,7 +1073,7 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
 
 	/// HIDDEN

@@ -352,6 +352,21 @@ protected:
 };
 
 
+class lociList : public uintList
+{
+public:
+	lociList() : uintList(vectoru()), m_allLoci(true)
+	{
+	}
+
+	lociList(const vectoru & values) : uintList(values), m_allLoci(false)
+	{
+	}
+
+private:
+	bool m_allLoci;
+};
+
 class floatList
 {
 public:
@@ -646,8 +661,12 @@ private:
 class repList : public intList
 {
 public:
-	repList(const vectorl & reps = vectorl(), bool allReps = false) :
-		intList(reps), m_allReps(allReps)
+	repList() : m_allReps(true)
+	{
+	}
+
+	repList(const vectorl & reps) :
+		intList(reps), m_allReps(false)
 	{
 	}
 
@@ -663,8 +682,6 @@ public:
 private:
 	bool m_allReps;
 };
-
-const repList AllReps = repList(vectorl(), true);
 
 // ////////////////////////////////////////////////////////////
 // / Shared variables

@@ -206,7 +206,7 @@ or non-circular
 
 
 def SaveCSV(pop, filename='', fields=[], loci=[], header=True,
-    shift=1,
+    shift=1, combine=None,
         sexCode={Male: '1', Female: '2'}, affectionCode={True: '1', False: '2'},
         **kwargs):
     '''Save a simuPOP population ``pop`` in csv format.
@@ -247,18 +247,12 @@ def SaveCSV(pop, filename='', fields=[], loci=[], header=True,
         combine is used.
 
     '''
-    if output != '':
-        file = output
-    elif outputExpr != '':
-        file = eval(outputExpr, globals(), pop.vars() )
-    else:
-        raise exceptions.ValueError, "Please specify output or outputExpr"
     if loci == []:
         loci = range(0, pop.totNumLoci())
     try:
-        out = open( file, "w")
+        out = open(filename, "w")
     except exceptions.IOError:
-        raise exceptions.IOError, "Can not open file " + file +" to write."
+        raise exceptions.IOError, "Can not open file " + filename +" to write."
     # keep the content of pieces in strings first
     content = [''] * pop.numChrom()
     # write out header

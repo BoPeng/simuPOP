@@ -2649,6 +2649,77 @@ pop.addInfoFields('field')
  is also acceptable.
 \end_layout
 
+\begin_layout Subsection
+Parameters 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+reps
+\family default
+ and 
+\family typewriter
+subPops
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+reps
+\family default
+ and 
+\family typewriter
+subPops
+\family default
+ are widely used in simuPOP to specify which locus, replication or (virtual)
+ subpulation a function or operator is applied to.
+ These parameter accepts a list of values such as 
+\family typewriter
+[1, 2]
+\family default
+.
+ More interestingly, their default value means 
+\series bold
+all
+\series default
+ loci, replicate or subpopulations.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=lociList())
+\family default
+ recombine at all applicable loci,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=[])
+\family default
+ recombine at no locus, and
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=[1,2,4])
+\family default
+ recombine at loci 1, 2, and 4.
+\end_layout
+
+\begin_layout Standard
+The first form is most widely used and is the default value for such parameters
+ in a majority of the cases.
+ 
+\end_layout
+
 \begin_layout Section
 Genotypic structure
 \begin_inset CommandInset label
