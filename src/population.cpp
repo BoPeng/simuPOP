@@ -140,7 +140,6 @@ population::population(const population & rhs) :
 	// by using their copied pointer
 	// population, however, need to set this pointer correctly
 	//
-	decGenoStruRef();   // dec ref to the old
 	setGenoStruIdx(rhs.genoStruIdx());
 	incGenoStruRef();   // inc ref to the new
 
