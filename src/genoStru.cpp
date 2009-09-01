@@ -364,6 +364,8 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size(); ++it) {
 		if (s_genoStruRepository[it].m_refCount == 0) {
 			DBG_DO(DBG_POPULATION, cout << "Replacing an existing geno structure." << endl);
+			DBG_ASSERT(rhs.m_refCount == 0, SystemError,
+				"Invalid ref count for new genotypic structure.");
 			s_genoStruRepository[it] = rhs;
 			m_genoStruIdx = it;
 			incGenoStruRef();
@@ -871,20 +873,22 @@ UINT GenoStruTrait::infoIdx(const string & name) const
 }
 
 
-GenoStructure & GenoStruTrait::struAddInfoFields(const vectorstr & fields)
+GenoStructure & GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 {
 	GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
 
 	gs->m_infoFields.insert(gs->m_infoFields.end(), fields.begin(), fields.end());
+	gs->m_refCount = 0;
 	return *gs;
 }
 
 
-GenoStructure & GenoStruTrait::struSetInfoFields(const vectorstr & fields)
+GenoStructure & GenoStruTrait::gsSetInfoFields(const vectorstr & fields)
 {
 	GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
 
 	gs->m_infoFields = fields;
+	gs->m_refCount = 0;
 	return *gs;
 }
 

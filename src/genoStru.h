@@ -812,10 +812,10 @@ public:
 	   \note Should only be called by population::requestInfoField.
 	   Right now, do not allow dynamic addition of these fields.
 	 */
-	GenoStructure & struAddInfoFields(const vectorstr & fields);
+	GenoStructure & gsAddInfoFields(const vectorstr & fields);
 
 	/// CPPONLY should should only be called from population
-	GenoStructure & struSetInfoFields(const vectorstr & fields);
+	GenoStructure & gsSetInfoFields(const vectorstr & fields);
 
 	/// CPPONLY swap a geno structure with the current one
 	void swap(GenoStruTrait & rhs)
@@ -825,18 +825,22 @@ public:
 
 
 	/// CPPONLY Increase the reference count of this structure
-	void incGenoStruRef()
+	void incGenoStruRef() const
 	{
 		++s_genoStruRepository[m_genoStruIdx].m_refCount;
+		DBG_DO(DBG_POPULATION, cout << "Inc ref of " << int(m_genoStruIdx) << " to "
+			                        << s_genoStruRepository[m_genoStruIdx].m_refCount << endl);
 	}
 
 
 	/// CPPONLY Decrease the reference count of this structure
-	void decGenoStruRef()
+	void decGenoStruRef() const
 	{
 		DBG_FAILIF(s_genoStruRepository[m_genoStruIdx].m_refCount == 0,
-			SystemError, "Unknow error for reference counting of genotypic structure.");
+			SystemError, "Unknow error for reference counting of genotypic structure " + toStr(int(m_genoStruIdx)) + ".");
 		--s_genoStruRepository[m_genoStruIdx].m_refCount;
+		DBG_DO(DBG_POPULATION, cout << "Dec ref of " << int(m_genoStruIdx) << " to "
+			                        << s_genoStruRepository[m_genoStruIdx].m_refCount << endl);
 	}
 
 

@@ -307,7 +307,7 @@ unsigned pow3(unsigned n)
 namespace simuPOP {
 
 // additional types
-stringList::stringList(PyObject * str) : m_elems()
+stringList::stringList(PyObject * str) : m_elems(), m_allAvail(false)
 {
 	if (str == NULL)
 		return;
@@ -3429,7 +3429,7 @@ bool initialize()
 bool repList::match(UINT rep, const vector<bool> & activeRep)
 {
     if (m_elems.empty())
-		return m_allReps;
+		return m_allAvail;
     vectorl::iterator it = m_elems.begin();
     vectorl::iterator it_end = m_elems.end();
     for (; it != it_end; ++it) {

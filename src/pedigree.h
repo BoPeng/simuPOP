@@ -57,7 +57,7 @@ public:
 	 *  \e fatherField or \e motherField. The other field should be set to an
 	 *  empty string.
 	 */
-	pedigree(const population & pop, const vectoru & loci = vectoru(),
+	pedigree(const population & pop, const lociList & loci = lociList(),
 		const stringList & infoFields = stringList(), int ancGen = -1,
 		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
 

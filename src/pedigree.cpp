@@ -37,7 +37,7 @@
 
 namespace simuPOP {
 
-pedigree::pedigree(const population & pop, const vectoru & loci,
+pedigree::pedigree(const population & pop, const lociList & loci,
 	const stringList & infoFields, int ancGen,
 	const string & fatherField, const string & motherField)
 	: m_fatherField(fatherField), m_motherField(motherField),
@@ -50,8 +50,7 @@ pedigree::pedigree(const population & pop, const vectoru & loci,
 	if (!m_motherField.empty() && find(extractFields.begin(), extractFields.end(), motherField) == extractFields.end())
 		extractFields.push_back(motherField);
 	//
-	population & ped = pop.extract(false, string(), loci.size() != pop.totNumLoci(),
-		loci, extractFields.size() != pop.infoSize(), extractFields, ancGen, NULL);
+	population & ped = pop.extract(string(), loci, infoFields, ancGen, NULL);
 
 	swap(ped);
 

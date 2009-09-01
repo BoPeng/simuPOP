@@ -329,26 +329,26 @@ del subPopList.__init__
 subPopList.__init__ = new_subPopList
     
 
-def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None, pedFields=[]):
-    removeInd = field is not None
-    if field is None:
-        field = ''
-    removeLoci = loci is not None
-    if loci is None:
-        loci = []
-    removeInfo = infoFields is not None
-    if infoFields is None:
-        infoFields = []
-    if ped is None:
-        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-            infoFields, ancGen)
-    else:
-        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-            infoFields, ancGen, ped, pedFields)
-
-if population.extract.__doc__ is not None:
-    new_extract.__doc__ = population.extract.__doc__
-population.extract = new_extract
+#def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None, pedFields=[]):
+#    removeInd = field is not None
+#    if field is None:
+#        field = ''
+#    removeLoci = loci is not None
+#    if loci is None:
+#        loci = []
+#    removeInfo = infoFields is not None
+#    if infoFields is None:
+#        infoFields = []
+#    if ped is None:
+#        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
+#            infoFields, ancGen)
+#    else:
+#        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
+#            infoFields, ancGen, ped, pedFields)
+#
+#if population.extract.__doc__ is not None:
+#    new_extract.__doc__ = population.extract.__doc__
+#population.extract = new_extract
 
 
 def new_migrator(self, rate=[], *args, **kwargs):

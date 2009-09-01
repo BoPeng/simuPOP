@@ -96,13 +96,13 @@ population::population(const uintList & size,
 
 population::~population()
 {
+	DBG_DO(DBG_POPULATION,
+		cout << "Destructor of population is called" << endl);
+
 	if (m_vspSplitter)
 		delete m_vspSplitter;
 
 	decGenoStruRef();
-
-	DBG_DO(DBG_POPULATION,
-		cout << "Destructor of population is called" << endl);
 }
 
 
@@ -1273,27 +1273,34 @@ void population::resize(const uintList & sizeList, bool propagate)
 }
 
 
-population & population::extract(bool removeInd, const string & field,
-                                 bool removeLoci, const vectoru & loci,
-                                 bool removeInfo, const vectorstr & infoFields,
+population & population::extract(const string & field,
+                                 const lociList & extractedLoci,
+                                 const stringList & infoFieldList,
                                  int ancGen, pedigree * ped, const vectorstr & pedFields) const
 {
 	population & pop = *new population();
-	// will keep a sorted version of loci
-	vectoru new_loci = loci;
+	bool removeInd = !field.empty();
+	bool removeLoci = !extractedLoci.allAvail();
+	const vectoru & loci = extractedLoci.elems();
+	bool removeInfo = !infoFieldList.allAvail();
+	const vectorstr & infoFields = infoFieldList.elems();
 
 	DBG_DO(DBG_POPULATION, cout << "Remove ind: " << removeInd
 		                        << "\nRemove loci: " << removeLoci
 		                        << "\nRemove info: " << removeInfo << endl);
+
+	// will keep a sorted version of loci
+	vectoru new_loci = loci;
 
 	vectorstr keptInfoFields = removeLoci ? infoFields : this->infoFields();
 	vectorstr allInfoFields(keptInfoFields.begin(), keptInfoFields.end());
 	allInfoFields.insert(allInfoFields.end(), pedFields.begin(), pedFields.end());
 
 	// population strcture.
-	if (!removeLoci && !removeInfo && pedFields.empty())
+	if (!removeLoci && !removeInfo && pedFields.empty()) {
 		pop.setGenoStruIdx(genoStruIdx());
-	else if (!removeLoci) {
+		incGenoStruRef();
+	} else if (!removeLoci) {
 		// only change information fields
 		pop.setGenoStructure(ploidy(), numLoci(), chromTypes(), isHaplodiploid(),
 			lociPos(), chromNames(), allAlleleNames(), lociNames(), allInfoFields);
@@ -1732,7 +1739,7 @@ void population::addInfoFields(const stringList & fieldList, double init)
 
 	// add these fields
 	if (!newfields.empty()) {
-		setGenoStructure(struAddInfoFields(newfields));
+		setGenoStructure(gsAddInfoFields(newfields));
 
 		// adjust information size.
 		UINT is = infoSize();
@@ -1760,7 +1767,7 @@ void population::setInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
 
-	setGenoStructure(struSetInfoFields(fields));
+	setGenoStructure(gsSetInfoFields(fields));
 	// reset info vector
 	int oldAncPop = m_curAncestralGen;
 	UINT is = infoSize();
