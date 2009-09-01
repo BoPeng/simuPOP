@@ -355,16 +355,24 @@ protected:
 class lociList : public uintList
 {
 public:
-	lociList() : uintList(vectoru()), m_allLoci(true)
+	lociList() : uintList(vectoru()), m_allAvail(true)
 	{
 	}
 
-	lociList(const vectoru & values) : uintList(values), m_allLoci(false)
+
+	lociList(const vectoru & values) : uintList(values), m_allAvail(false)
 	{
 	}
+
+
+	bool allAvail() const
+	{
+		return m_allAvail;
+	}
+
 
 private:
-	bool m_allLoci;
+	bool m_allAvail;
 };
 
 class floatList
@@ -400,10 +408,15 @@ protected:
 class stringList
 {
 public:
-	stringList(PyObject * str = NULL);
+	stringList() : m_elems(), m_allAvail(true)
+	{
+	}
+
+
+	stringList(PyObject * str);
 
 	/// CPPONLY
-	stringList(const string & str) : m_elems(1, str)
+	stringList(const string & str) : m_elems(1, str), m_allAvail(false)
 	{
 	}
 
@@ -419,6 +432,13 @@ public:
 	/// CPPONLY
 	void obtainFrom(const stringList & items, const char * allowedItems[],
 		const char * defaultItems[]);
+
+	/// CPPONLY
+	bool allAvail() const
+	{
+		return m_allAvail;
+	}
+
 
 	/// CPPONLY
 	bool empty() const
@@ -453,6 +473,7 @@ private:
 
 protected:
 	vectorstr m_elems;
+	bool m_allAvail;
 };
 
 
@@ -661,17 +682,18 @@ private:
 class repList : public intList
 {
 public:
-	repList() : m_allReps(true)
+	repList() : m_allAvail(true)
 	{
 	}
+
 
 	repList(const vectorl & reps) :
-		intList(reps), m_allReps(false)
+		intList(reps), m_allAvail(false)
 	{
 	}
 
 
-	repList(int rep) : intList(rep), m_allReps(false)
+	repList(int rep) : intList(rep), m_allAvail(false)
 	{
 	}
 
@@ -680,7 +702,7 @@ public:
 	bool match(UINT rep, const vector<bool> & activeRep);
 
 private:
-	bool m_allReps;
+	bool m_allAvail;
 };
 
 // ////////////////////////////////////////////////////////////

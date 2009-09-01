@@ -66,9 +66,10 @@ public:
 
 public:
 	///
-	subPopList() : m_subPops(), m_expand(true)
+	subPopList() : m_subPops(), m_allAvail(true)
 	{
 	}
+
 
 	///
 	subPopList(const vectorvsp & subPops);
@@ -147,10 +148,10 @@ public:
 	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
 	void useSubPopsFrom(const population & pop)
 	{
-		DBG_FAILIF(m_expand && !m_subPops.empty(), SystemError,
+		DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
 			"Only when no subpopulation is specified can this function be called."
 			"This is likely caused by the use of persistent subPops for different populations.");
-		if (m_expand)
+		if (m_allAvail)
 			for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
 				m_subPops.push_back(vspID(sp));
 	}
@@ -158,7 +159,7 @@ public:
 
 private:
 	vectorvsp m_subPops;
-	bool m_expand;
+	bool m_allAvail;
 };
 
 

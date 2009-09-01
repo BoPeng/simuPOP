@@ -3217,6 +3217,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::lociList::allAvail "
+
+Usage:
+
+    x.allAvail()
+
+"; 
+
 %feature("docstring") simuPOP::maPenetrance "
 
 Function form:
@@ -5250,7 +5258,7 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+    pedigree(pop, loci=lociList, infoFields=[], ancGen=-1,
       fatherField=\"father_idx\", motherField=\"mother_idx\")
 
 Details:
@@ -6341,21 +6349,24 @@ Usage:
 Details:
 
     Extract subsets of individuals, loci and/or information fields
-    from the current population and create a new one. If information
-    field field is not None, individuals with negative values at this
-    information field will be removed, and others are put into
-    subpopulations specified by this field. The extracted population
-    will keep the original subpopulation names if two populations have
-    the same number of subpopulations. If loci is not None, only
-    genotypes at loci are extracted. If infoFields is not None, only
-    these information fields will be extracted. If ancGen is not -1
-    (default, meaing all ancestral generations), only ancGen ancestral
-    generations will be kept. As an advanced feature, field can be
-    information field of a pedigree object ped. This allows extraction
-    of individuals according to pedigrees identified in a pedigree
-    object. Additional information fields from pedFields can be copied
-    to the extracted population. This pedigree should have the same
-    number of individuals in all generations.
+    from the current population and create a new population. By
+    default, all genotypes and information fields for all individuals
+    in all ancestral generations are extracted. If an valid (non-
+    empty) information field (field) is given, individuals with
+    negative values at this field will be removed and others are put
+    into subpopulations specified by this field. The extracted
+    population will keep the original subpopulation names if two
+    populations have the same number of subpopulations. If a list of
+    loci is specified, only genotypes at specified loci are extracted.
+    If a list of infoFields is specified, only these information
+    fields are extracted. If ancGen is not -1 (default, meaing all
+    ancestral generations), only ancGen ancestral generations will be
+    extracted. As an advanced feature, field can be information field
+    of a pedigree object ped. This allows extraction of individuals
+    according to pedigrees identified in a pedigree object. Additional
+    information fields from pedFields can be copied to the extracted
+    population. This pedigree should have the same number of
+    individuals in all generations.
 
 "; 
 
@@ -10196,13 +10207,15 @@ Usage:
 
 Usage:
 
-    stringList(str=None)
+    stringList()
 
 "; 
 
 %ignore simuPOP::stringList::stringList(const string &str);
 
 %ignore simuPOP::stringList::obtainFrom(const stringList &items, const char *allowedItems[], const char *defaultItems[]);
+
+%ignore simuPOP::stringList::allAvail() const;
 
 %ignore simuPOP::stringList::empty() const;
 

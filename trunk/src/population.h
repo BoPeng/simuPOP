@@ -934,27 +934,31 @@ public:
 	void resize(const uintList & sizes, bool propagate = false);
 
 	/** Extract subsets of individuals, loci and/or information fields from the
-	 *  current population and create a new one. If information field \e field
-	 *  is not \c None, individuals with negative values at this information
-	 *  field will be removed, and others are put into subpopulations specified
-	 *  by this field. The extracted population will keep the original
+	 *  current population and create a new population. By default, all
+	 *  genotypes and information fields for all individuals in all ancestral
+	 *  generations are extracted. If an valid (non-empty) information field
+	 *  (\e field) is given, individuals with negative values at this field
+	 *  will be removed and others are put into subpopulations specified by
+	 *  this field. The extracted population will keep the original
 	 *  subpopulation names if two populations have the same number of
-	 *  subpopulations. If \e loci is not \c None, only genotypes at \e loci
-	 *  are extracted. If \e infoFields is not \c None, only these information
-	 *  fields will be extracted. If \e ancGen is not \c -1 (default, meaing
-	 *  all ancestral generations), only \e ancGen ancestral generations will
-	 *  be kept. As an advanced feature, \e field can be information field
-	 *  of a pedigree object \e ped. This allows extraction of individuals
-	 *  according to pedigrees identified in a pedigree object. Additional
-	 *  information fields from \e pedFields can be copied to the extracted
-	 *  population. This pedigree should have the same number of individuals
-	 *  in all generations.
+	 *  subpopulations. If a list of loci is specified, only genotypes at
+	 *  specified loci are extracted. If a list of \e infoFields is specified,
+	 *  only these information fields are extracted. If \e ancGen is not
+	 *  \c -1 (default, meaing all ancestral generations), only \e ancGen
+	 *  ancestral generations will be extracted. As an advanced feature,
+	 *  \e field can be information field of a pedigree object \e ped. This
+	 *  allows extraction of individuals according to pedigrees identified
+	 *  in a pedigree object. Additional information fields from \e pedFields
+	 *  can be copied to the extracted population. This pedigree should have
+	 *  the same number of individuals in all generations.
 	 *  <group>7-manipulate</group>
 	 */
-	population & extract(bool removeInd, const string & field,
-		bool removeLoci, const vectoru & loci,
-		bool removeInfo, const vectorstr & infoFields, int ancGen = -1,
-		pedigree * ped = NULL, const vectorstr & pedFields = vectorstr()) const;
+	population & extract(const string & field = string(),
+		const lociList & loci = lociList(),
+		const stringList & infoFields = stringList(),
+		int ancGen = -1,
+		pedigree * ped = NULL,
+		const vectorstr & pedFields = vectorstr()) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
