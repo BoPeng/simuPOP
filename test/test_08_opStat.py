@@ -60,7 +60,7 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setSex(Female)
         for i in range(100,800):
             pop.individual(i,1).setSex(Female)
-        Stat(pop, numOfMale=True, subPops=AllSubPops, vars=['numOfMale', 'numOfFemale'])
+        Stat(pop, numOfMale=True, vars=['numOfMale', 'numOfFemale'])
         self.assertEqual(pop.dvars().numOfMale, 200)
         self.assertEqual(pop.dvars().numOfFemale, 800)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)

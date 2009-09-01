@@ -54,7 +54,7 @@ public:
 	 */
 	pyOutput(const string & msg = string(), const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_string(msg)
@@ -118,7 +118,7 @@ public:
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
 		int width = 1, UINT max = 100, const uintList & loci = uintList(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
@@ -190,8 +190,8 @@ public:
 	 *  parameters such as \e stage and \e begin.
 	 */
 	savePopulation(const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,
-		int step = 1, const intList & at = intList(), const repList & reps = AllReps,
-		const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		int step = 1, const intList & at = intList(), const repList & reps = repList(),
+		const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_filename(output.value())
 	{

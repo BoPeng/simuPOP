@@ -79,7 +79,7 @@ public:
 	pyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
@@ -141,7 +141,7 @@ public:
 	pyExec(const string & stmts = string(), const string & exposePop = string(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: pyEval("", stmts, exposePop, "", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -217,7 +217,7 @@ public:
 	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
 		const stringFunc & output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
 	{
@@ -310,7 +310,7 @@ public:
 	 */
 	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
 		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_simpleStmt(stmts)
 	{
@@ -819,7 +819,7 @@ public:
 	 *  these common operator parameters.
 	 *
 	 *  \c stat supports parameter \e subPops. It usually calculate the same
-	 *  set of statistics for all subpopulations (<tt>subPops=AllSubPops</tt>).
+	 *  set of statistics for all subpopulations (<tt>subPops=subPopList()</tt>).
 	 *  If a list of (virtual) subpopulations are specified, statistics for
 	 *  only specified subpopulations will be calculated. However, different
 	 *  statistics treat this parameter differently and it is very important
@@ -1176,7 +1176,7 @@ public:
 		// regular parameters
 		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
 
 	~stat()

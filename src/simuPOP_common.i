@@ -305,12 +305,15 @@ from simuOpt import simuOptions
 # a list of vspID so that the real constructor can correctly
 # recognize them.
 #
-# subPops = -1 (invalid)
 # subPops = 0
 # subPops = [1, 2, 3]
 # subPops = [(0, 1), (2, 1), 3]
 #
-def new_subPopList(self, subPops=[]):
+def new_subPopList(self, subPops=None):
+    if subPops is None:
+        cppModule.subPopList_swiginit(self,
+            cppModule.new_subPopList())
+        return
     sp = []
     # in the case of subPops=0
     if type(subPops) not in [type([]), type(())]:

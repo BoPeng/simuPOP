@@ -99,7 +99,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
@@ -235,7 +235,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
 
 	/// destructor.
@@ -288,7 +288,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at,
 		          reps, subPops, infoFields), m_k(k)
 	{
@@ -370,7 +370,7 @@ public:
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
+		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
 
 	~smmMutator()
@@ -432,7 +432,7 @@ public:
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_contextObj(NULL)
 	{
@@ -488,7 +488,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_sampler(GetRNG())
 	{
@@ -562,7 +562,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_contexts(contexts)
 	{
@@ -628,7 +628,7 @@ public:
 	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = uintList(),
 		const uintList & inds = uintList(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList())
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
