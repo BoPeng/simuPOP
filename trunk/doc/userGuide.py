@@ -2298,26 +2298,21 @@ def fitness(gen):
 # simulate a trajectory backward in time, from generation 1000
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=1,
      genEnd=1000, freq=0.2)
-if traj.empty():
 
-    print 'Trajectory simulated: ', len(traj.traj)
-    print Nt(min(traj.traj.keys()))
-    pop = population(size=Nt(min(traj.traj.keys())), loci=loci)
-    mating = controlledRandomMating(loci=[0, 1], subPopSize=Nt,
-            freqFunc=traj.func())
-    simu = simulator(pop, mating)
-    simu.evolve(
-        # preOps=[initByFreq...]
-        ops = [], #traj.mutators() + [
-            #stat(alleleFreq=[0]),
-            #pyEval(r"'%.3f\t' % alleleFreq[0][0]")
-            #],
-        gen=0
-    )
-
-simulation(loci=2, genEnd = 1000, freq=[0.01, 0.02])
+pop = population(size=Nt(0), loci=2)
+mating = controlledRandomMating(loci=[0, 1], alleles=[1, 1],
+        subPopSize=Nt, freqFunc=traj.func())
+simu = simulator(pop, mating)
+simu.evolve(
+    preOps=[initSex()],
+    ops = traj.mutators() + 
+        [
+           stat(alleleFreq=[0, 1]),
+           pyEval(r"'%d: %.3f\t%.3f\n' % (gen, alleleFreq[0][1], alleleFreq[1][1])"),
+        ],
+    gen=1000
+)
 #end
-
 
 #file log/rpy.log
 from simuPOP import *

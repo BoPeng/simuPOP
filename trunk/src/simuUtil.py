@@ -1004,7 +1004,7 @@ class trajectorySimulator():
                         if not destFreq[loc][0] <= afq <= destFreq[loc][1]:
                             if logger is not None:
                                 logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
-                            raise Exception('invalid')
+                            raise exceptions.Exception('invalid')
                 break
             # first get curXt, N(t+1), then calculate nextXt.
             curXt = xt.freq(gen)
@@ -1071,7 +1071,7 @@ class trajectorySimulator():
                 logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
             gen -= 1
             if gen < 0 or gen + maxMutAge < genEnd:
-                raise Exception('tooLong')
+                raise exceptions.Exception('tooLong')
             prevNt = self._Nt(gen)
             if len(prevNt) > len(curXt) / self.nLoci:
                 # merge (forward sense)--> split from one population
@@ -1136,18 +1136,18 @@ class trajectorySimulator():
                             else:
                                 if logger is not None:
                                     logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                                raise Exception('invalid')
+                                raise exceptions.Exception('invalid')
                         else:  # it == 1
                             assert abs(it - 1.) < 1e-5
                             # success (judge when a trajectory is successfully generated)
                             doneNSP[idx] = gen
                             if genEnd - gen < minMutAge:
-                                raise Exception('tooShort')
+                                raise exceptions.Exception('tooShort')
                             break
                     elif xtPrev == 1: # fixed
                         if logger is not None:
                             logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                        raise Exception('invalid')
+                        raise exceptions.Exception('invalid')
                 if False not in doneNSP:
                     done[loc] = True
             if False not in done:
@@ -1196,7 +1196,7 @@ class trajectorySimulator():
         for failedCount in range(maxAttempts):
             try:
                 return self._simuForward(freq, destFreq, genBegin, genEnd, ploidy, maxAttempts, logger)
-            except Exception, e:
+            except exceptions.Exception, e:
                 if e.args[0] == 'invalid':
                     self.errorCount['invalid'] += 1
                 else:
@@ -1269,7 +1269,7 @@ class trajectorySimulator():
             try:
                 return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail,
                                 logger)
-            except Exception, e:
+            except exceptions.Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
                     self.errorCount['invalid'] += 1
