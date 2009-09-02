@@ -1682,10 +1682,10 @@ statAssociation::statAssociation(const vectoru & loci,
 	const char * allowedVars[] = {
 		Allele_ChiSq_String,	Allele_ChiSq_p_String,
 		Geno_ChiSq_String,		Geno_ChiSq_p_String,
-		Armitage_p_String,		Armitage_p_String,
+		Armitage_p_String,
 		Allele_ChiSq_sp_String, Allele_ChiSq_p_sp_String,
 		Geno_ChiSq_sp_String,	Geno_ChiSq_p_sp_String,
-		Armitage_p_sp_String,	Armitage_p_sp_String,
+		Armitage_p_sp_String,
 		""
 	};
 	const char * defaultVars[] = { Allele_ChiSq_p_String, "" };
@@ -1846,12 +1846,11 @@ bool statAssociation::apply(population & pop)
 	for (size_t i = 0; i < m_vars.elems().size(); ++i) {
 		if (m_vars.elems()[i].compare(0, 6, "Allele") == 0)
 			hasAlleleTest = true;
-		if (m_vars.elems()[i].compare(0, 4, "Geno") == 0 || m_vars.elems()[i].compare(0, 8, "Armitage")) {
+		if (m_vars.elems()[i].compare(0, 4, "Geno") == 0 || m_vars.elems()[i].compare(0, 8, "Armitage") == 0) {
 			DBG_FAILIF(ply != 2, ValueError, "Genotype test can only be performed for diploid populations.");
 			hasGenoTest = true;
 		}
 	}
-
 	// count for all specified subpopulations
 	UINT nLoci = m_loci.size();
 	ALLELECNTLIST allCaseAlleleCnt(nLoci);
