@@ -1385,14 +1385,26 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 
 				// LD and D' can be negative in this case
 				LD[idx] = D;
+				DBG_ASSERT(fcmp_ge(LD[idx], -0.25) && fcmp_le(LD[idx], 0.25), SystemError,
+					"Calculated LD value " + toStr(LD[idx]) + " out of range of [-1/4, 1/4]");
+
 				D_prime[idx] = Dp;
+				DBG_ASSERT(fcmp_ge(D_prime[idx], -1) && fcmp_le(D_prime[idx], 1), SystemError,
+					"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [-1, 1]");
+
 				R2[idx] = r2;
+				DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
+					"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
 			} else {
 				for (size_t i = 0; i < nAllele1; ++i) {
 					for (size_t j = 0; j < nAllele2; ++j) {
 						UINT A = alleles1[i];
 						UINT B = alleles2[j];
-						double P_AB = haplos.find(HAPLOCNT::key_type(A, B))->second / allHaplo;
+						// no particular haplotype
+						double P_AB = 0;
+						HAPLOCNT::const_iterator h = haplos.find(HAPLOCNT::key_type(A, B));
+						if (h != haplos.end())
+							P_AB = h->second / allHaplo;
 						// get allele freq from the m_alleleFreq object
 						double P_A = freq1[i];
 						double P_B = freq2[j];
@@ -1412,14 +1424,30 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 						if (nAllele1 <= 2 && nAllele2 <= 2) {
 							// for the monomorphic or diallelic case, there is no need to do an average.
 							LD[idx] = fabs(D);
+							DBG_ASSERT(fcmp_ge(LD[idx], 0) && fcmp_le(LD[idx], 0.25), SystemError,
+								"Calculated LD value " + toStr(LD[idx]) + " out of range of [0, 1/4]");
+
 							D_prime[idx] = fabs(Dp);
+							DBG_ASSERT(fcmp_ge(D_prime[idx], 0) && fcmp_le(D_prime[idx], 1), SystemError,
+								"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [0, 1]");
+
 							R2[idx] = r2;
+							DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
+								"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
 							break;
 						} else {
 							// for the monomorphic or diallelic case, there is no need to do an average.
 							LD[idx] += P_A * P_B * fabs(D);
+							DBG_ASSERT(fcmp_ge(LD[idx], 0) && fcmp_le(LD[idx], 0.25), SystemError,
+								"Calculated LD value " + toStr(LD[idx]) + " out of range of [0, 1/4]");
+
 							D_prime[idx] += P_A * P_B * fabs(Dp);
+							DBG_ASSERT(fcmp_ge(D_prime[idx], 0) && fcmp_le(D_prime[idx], 1), SystemError,
+								"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [0, 1]");
+
 							R2[idx] += P_A * P_B * r2;
+							DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
+								"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
 						}
 					}
 					if (nAllele1 <= 2 && nAllele2 <= 2)
@@ -1501,6 +1529,8 @@ bool statLD::apply(population & pop)
 	vectoru chromTypes;
 	for (size_t i = 0; i < nLD; ++i) {
 		for (size_t j = 0; j < 2; ++j) {
+			DBG_FAILIF(m_LD[i][j] < 0 || static_cast<UINT>(m_LD[i][j]) >= pop.totNumLoci(),
+				IndexError, "Locus index " + toStr(m_LD[i][j]) + " out of range.");
 			if (find(loci.begin(), loci.end(), static_cast<UINT>(m_LD[i][j])) == loci.end()) {
 				loci.push_back(m_LD[i][j]);
 				lociMap[m_LD[i][j]] = loci.size() - 1;
