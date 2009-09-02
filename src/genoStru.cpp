@@ -37,7 +37,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	: m_ploidy(ploidy), m_numLoci(loci), m_chromTypes(),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
-	m_infoFields(infoFields)
+	m_infoFields(infoFields), m_refCount(0)
 {
 	DBG_ASSERT(ploidy >= 1, ValueError,
 		"Ploidy must be >= 1. Given " + toStr(ploidy) );
