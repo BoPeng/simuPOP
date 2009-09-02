@@ -570,9 +570,9 @@ class simuProgress:
         self.progressBar.done()
 
 
-  
-class trajectory:
-    '''A trajectory object returned by trajectory simulation class trajectorySimulator(...) with several user-
+class trajectory():
+    '''
+    A trajectory object returned by class trajectorySimulator(...) with several user-
     friendly built-in functions.
     Function func() could refer to allele frequencies in any simulated generation
     in cases of single/multiple loci with single population/multiple subpopulations. 
@@ -625,13 +625,11 @@ class trajectory:
     
     def mutators(self):
         '''
+        Return a list of operators that introduce point mutations at simulated
+        generations.
         '''
         mut = []
-        gens =self.traj.keys()
-        gens.sort()
-        for gen in gens:
-            if gen == max(self.traj.keys()):
-                break
+        for gen in self.traj.keys()[:-1]:
             curNSP = len(self.traj[gen]) / self.nLoci
             nextNSP = len(self.traj[gen + 1]) / self.nLoci
             if curNSP == nextNSP:
@@ -639,11 +637,7 @@ class trajectory:
                     for sp in range(curNSP):
                         if (self.traj[gen][sp + loc * curNSP] == 0
                             and self.traj[gen + 1][sp + loc * nextNSP] > 0):
-                            ###???
-                            #mut.append({'gen': gen, 'ind':0, 'loci':loc, 'subPops':sp})
-                            print {'gen': gen, 'ind':0, 'loci':loc, 'subPops':sp}
-
-                            mut.append(pointMutator(inds=[0], loci=loc, allele=1, subPops=sp))
+                            mut.append(pointMutator(inds=0, loci=loc, allele=1, subPops=sp))
         return mut
        
     def freq(self, gen):
@@ -719,7 +713,7 @@ class trajectory:
                     col = int(idx / nSP) + 1) 
         
 
-class trajectorySimulator:
+class trajectorySimulator():
     '''
     Simulate trajectories of disease susceptibility loci using an extension of the backward
     method described in Slatkin 2001 or forward algorithms.
@@ -800,6 +794,7 @@ class trajectorySimulator:
             return self.N
 
     def _interFitness(self, fitness, freq):
+        'Get fitness for all loci when there is interaction'
         sAll = [0] * (3 * self.nLoci)
         # each locus
         for loc in range(self.nLoci):
@@ -830,6 +825,7 @@ class trajectorySimulator:
         return sAll
 
     def _fitOfGeno(self, loc, allgeno, fitness, freq):
+        'Return the fitness of genotype for func _interFitness'
         index = 0
         fq = 1.
 
@@ -847,7 +843,8 @@ class trajectorySimulator:
         return fitness[index] * fq
 
     def _getS(self, gen, freq=None):
-        '''Get fitness(gen) depending on the type of fitness.
+        '''
+        Get fitness(gen) depending on the type of fitness.
         Get s1, s2 from f1, f2, f3.
         Currently, selection pressure only varies among multiple loci and/or depends on gen,
         but does not rely on changes of allele frequency or different subpopulations.
@@ -970,30 +967,30 @@ class trajectorySimulator:
                         y2 = (-b - b2_4ac**0.5) / (2 * a)
 
                     # choose one of the solutions
-                    if y1 >= 0 and y1 <= 1:
-                         y = y1
-                    else:
+                    if y1 >= 0 or y1 <= 1:
                          y = y2
-                # y is obtained, is the expected allele frequency for the next generation t-1
-                it = GetRNG().randBinomial(ploidy * Nt[sp], y)
+                    else:
+                         y = y1
+                # y is obtained, is the expected allele frequency for the previous generation t-1
+                it = GetRNG().randBinomial(int(ploidy * Nt[sp]), y)
                 xt.append(float(it) / (ploidy * Nt[sp]))
         return xt
         
     def _simuForward(self, freq, destFreq, genBegin, genEnd, ploidy, maxAttempts,
                      logger=None):
-        '''This function simulates forward trajectory for one time.
+        '''
+        This function simulates forward trajectory for one time.
         During the simulation, variable number of subpopulations within different
-        generations will be allowed. It is introduced by merging events and splitting
+        generations will be allowed. It's introduced by merging events and splitting
         events in forward sense. Changes of subpopulation sizes need to meet specific
         requirements. If subpopulations are merged, they must combine into *one*
         population. If a splitting event has to occur, it can only originate from
-        generations where there is only one population existing. 
+        generations where no subpopulation existed. 
         '''
         # initialize a trajectory
         xt = trajectory(beginGen = genBegin, endGen = genEnd,
                         nLoci = self.nLoci)
         xt.setFreq(freq, gen = genBegin, nSubPop = len(self._Nt(genBegin)))
-        #
         # begin at genBegin, go forward.
         gen = genBegin
         while 1:
@@ -1007,7 +1004,7 @@ class trajectorySimulator:
                         if not destFreq[loc][0] <= afq <= destFreq[loc][1]:
                             if logger is not None:
                                 logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
-                            raise exceptions.Exception('invalid')
+                            raise Exception('invalid')
                 break
             # first get curXt, N(t+1), then calculate nextXt.
             curXt = xt.freq(gen)
@@ -1049,30 +1046,32 @@ class trajectorySimulator:
                 
     def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, ploidy,
                      restartIfFail, logger=None):
-        '''This function simulates backward trajectory for one time.
-        During the simulation, variable number of subpopulations within different
+        '''
+        This function simulates backward trajectory for one time.
+        During the simulation, various number of subpopulations within different
         generations will be allowed. It's introduced by merging events and splitting
         events in forward sense, correspondingly splitting and merging in backward
         simulation. Changes of subpopulation sizes need to meet specific requirements.
         If subpopulations are merged, they must combine into *one* population.
         If a splitting event has to occur, it can only originate from generations
-        where there is only one population existing. 
+        where no subpopulation existed.
         '''
         # done[i] is used to track at which generation a trajectory
         # is successfully generated at locus i.
         done = [False] * self.nLoci
-        #
         # initialize a trajectory
         xt = trajectory(endGen=genEnd, nLoci = self.nLoci)
         xt.setFreq(freq, gen=genEnd, nSubPop = len(self._Nt(genEnd)))
-    
         # start from genEnd, go backward.
         gen = genEnd
         while 1:
             # first get curXt, N(t-1), then calculate prevXt
             curXt = xt.freq(gen)
-            
+            if logger is not None:
+                logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
             gen -= 1
+            if gen < 0 or gen + maxMutAge < genEnd:
+                raise Exception('tooLong')
             prevNt = self._Nt(gen)
             if len(prevNt) > len(curXt) / self.nLoci:
                 # merge (forward sense)--> split from one population
@@ -1118,36 +1117,37 @@ class trajectorySimulator:
                 doneNSP = [False] * nSP
                 if done[loc]:
                     continue
+                # loop over subpopulation
                 for idx, (xtCur, xtPrev) in enumerate(zip(curXt[loc*nSP:(loc+1)*nSP],
                         prevXt[loc*nSP:(loc+1)*nSP])):
-                    #####??? when N * freq < 1
                     it = xtCur * self._Nt(gen + 1)[idx] * ploidy
-                    # print xtCur, it
-                    #####
-                    if xtPrev == 0 and it > 1:
-                        # When prevIt equals to 2 and curIt is 0, we consider
-                        # that case to be a successful simulation the same as that
-                        # when pervIt is 1.
-                        if it <= 2 and self._Nt(gen + 1)[idx] > 100:
-                            xt.freq(gen + 1)[loc * nSP + idx] /= it
-                            it = 1
-                        else:
-                            if logger is not None:
-                                logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                            raise exceptions.Exception('invalid')
+                    if it == 0:
+                        # already done in a previous generation
+                        doneNSP[idx] = True
+                        continue
+                    if xtPrev == 0:
+                        if it > 1:
+                            # When prevIt equals to 2 and curIt is 0, we consider
+                            # that case to be a successful simulation the same as that
+                            # when pervIt is 1.
+                            if it <= 2 and self._Nt(gen + 1)[idx] > 100:
+                                xt.freq(gen + 1)[loc * nSP + idx] /= it
+                                it = 1
+                            else:
+                                if logger is not None:
+                                    logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
+                                raise Exception('invalid')
+                        else:  # it == 1
+                            assert abs(it - 1.) < 1e-5
+                            # success (judge when a trajectory is successfully generated)
+                            doneNSP[idx] = gen
+                            if genEnd - gen < minMutAge:
+                                raise Exception('tooShort')
+                            break
                     elif xtPrev == 1: # fixed
                         if logger is not None:
                             logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                        raise exceptions.Exception('invalid')                 
-                    # success (judge when a trajectory is successfully generated)
-                    if xtPrev == 0 and it == 1:
-                        doneNSP[idx] = gen
-                        if genEnd - gen < minMutAge:
-                            raise exceptions.Exception('tooShort')
-                        elif genEnd - gen >= maxMutAge:
-                            raise exceptions.Exception('tooLong')
-                    if it == 0:
-                        doneNSP[idx] = True
+                        raise Exception('invalid')
                 if False not in doneNSP:
                     done[loc] = True
             if False not in done:
@@ -1157,10 +1157,11 @@ class trajectorySimulator:
             
     def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000,
                     logger=None):
-        '''simulate trajectories of multiple disease susceptibility loci using a forward time approach
+        '''
+        simulate trajectories of multiple disease susceptibility loci using a forward time approach
 
         Return the trajectory for each locus at each subpopulation. In the order of
-        LOC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
+            LOC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
         Each trajectory will have length genEnd - genBegin + 1
         
         parameter description:
@@ -1206,7 +1207,8 @@ class trajectorySimulator:
     def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
                      restartIfFail = False, maxAttempts = 1000,
                      logger=None):
-        '''simulate trajectories of multiple disease susceptibility loci using an extension of the
+        '''
+        simulate trajectories of multiple disease susceptibility loci using an extension of the
         backward method described in Slatkin 2001.
 
         parameter description:
@@ -1246,7 +1248,7 @@ class trajectorySimulator:
             return potential problems if not None. Default to None.
 
         Return the trajectory for each locus at each subpopulation. In the order of
-        LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
+            LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
         '''
         self.maxMutAge = maxMutAge
         self.minMutAge = minMutAge
@@ -1267,7 +1269,7 @@ class trajectorySimulator:
             try:
                 return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail,
                                 logger)
-            except exceptions.Exception, e:
+            except Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
                     self.errorCount['invalid'] += 1
@@ -1280,11 +1282,16 @@ class trajectorySimulator:
                     print 'Unknown error occurs'
                     print e
                     raise
+        # if no valid trajectory is successfully simulated when reaching maximum attempts,
+        # return an empty object to class trajectory 
         return trajectory(endGen=genEnd, nLoci = self.nLoci)
         
                     
     def message(self):
-        # report potential problems
+        '''
+        Report how many 'too long paths' errors, 'too short paths' errors
+        and 'invalid paths errors' generated during the simulation.
+        '''
         if self.errorCount['tooLong'] > 0:
             print 'Trajectories regenerated due to long', self.maxMutAge, 'path', self.errorCount['tooLong'], 'times.'
         if self.errorCount['tooShort'] > 0:
@@ -1311,6 +1318,8 @@ def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge
     '''
     return trajectorySimulator(N, fitness, nLoci).simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy,
                                                               restartIfFail, maxAttempts, logger)
+
+
 
 
 
