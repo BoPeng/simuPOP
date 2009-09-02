@@ -570,7 +570,7 @@ class simuProgress:
         self.progressBar.done()
 
 
-class trajectory():
+class trajectory:
     '''
     A trajectory object returned by class trajectorySimulator(...) with several user-
     friendly built-in functions.
@@ -713,7 +713,7 @@ class trajectory():
                     col = int(idx / nSP) + 1) 
         
 
-class trajectorySimulator():
+class trajectorySimulator:
     '''
     Simulate trajectories of disease susceptibility loci using an extension of the backward
     method described in Slatkin 2001 or forward algorithms.

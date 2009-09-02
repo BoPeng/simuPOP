@@ -1561,15 +1561,15 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::struAddInfoFields(const vectorstr &fields);
+%ignore simuPOP::GenoStruTrait::gsAddInfoFields(const vectorstr &fields);
 
-%ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
+%ignore simuPOP::GenoStruTrait::gsSetInfoFields(const vectorstr &fields);
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
 
-%ignore simuPOP::GenoStruTrait::incGenoStruRef();
+%ignore simuPOP::GenoStruTrait::incGenoStruRef() const;
 
-%ignore simuPOP::GenoStruTrait::decGenoStruRef();
+%ignore simuPOP::GenoStruTrait::decGenoStruRef() const;
 
 %feature("docstring") simuPOP::genoTransmitter "
 
