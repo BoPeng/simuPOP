@@ -360,7 +360,7 @@ Description:
 Usage:
 
     basePenetrance(ancestralGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Arguments:
@@ -603,7 +603,7 @@ Details:
 Usage:
 
     cloneGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -763,7 +763,7 @@ Usage:
 
     contextMutator(rates=[], loci=[], mutators=[], contexts=[],
       mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -907,7 +907,7 @@ Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, loci=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -1185,7 +1185,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const vectoru &loci, const matrixstr &alleleNames);
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
 
 %ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
 
@@ -1586,8 +1586,8 @@ Details:
 
 Usage:
 
-    genoTransmitter(begin=0, end=-1, step=1, at=[], reps=repList(),
-      subPops=subP[], infoFields=[])
+    genoTransmitter(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -1777,7 +1777,7 @@ Details:
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2004,7 +2004,7 @@ Details:
 Usage:
 
     ifElse(cond, ifOps=[], elseOps=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -2445,7 +2445,7 @@ Usage:
 
     infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2545,8 +2545,8 @@ Details:
 Usage:
 
     infoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2811,7 +2811,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], output=\"\", infoFields=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail,
       TAG_InheritFields[1])
 
 Arguments:
@@ -2877,8 +2877,8 @@ Usage:
 
     initByFreq(alleleFreq=[], loci=[], ploidy=[],
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], reps=repList(),
-      subPops=subP[], infoFields=[])
+      stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2962,7 +2962,7 @@ Usage:
 
     initByValue(value=[], loci=[], ploidy=[], proportions=[],
       initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
-      end=1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -3049,7 +3049,7 @@ Details:
 Usage:
 
     initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3154,7 +3154,7 @@ Usage:
 
     kamMutator(k=0, rates=[], loci=[], mapIn=[], mapOut=[],
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3213,17 +3213,15 @@ Usage:
 
 Usage:
 
-    lociList()
+    lociList(obj=None)
 
 "; 
 
-%feature("docstring") simuPOP::lociList::allAvail "
+%ignore simuPOP::lociList::lociList(const vectoru &values);
 
-Usage:
+%ignore simuPOP::lociList::allAvail() const;
 
-    x.allAvail()
-
-"; 
+%ignore simuPOP::lociList::elems() const;
 
 %feature("docstring") simuPOP::maPenetrance "
 
@@ -3258,7 +3256,7 @@ Usage:
 
     maPenetrance(loci, penetrance, wildtype=[], ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Arguments:
 
@@ -3340,7 +3338,7 @@ Usage:
 
     mapPenetrance(loci, penetrance, phase=False, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Arguments:
 
@@ -3420,8 +3418,8 @@ Description:
 Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
 
 Arguments:
 
@@ -3508,8 +3506,8 @@ Description:
 Usage:
 
     mapSelector(loci, fitness, phase=False, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=repList(), subPops=subP[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Arguments:
 
@@ -3596,8 +3594,8 @@ Description:
 Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -3692,8 +3690,8 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
-      infoFields=[])
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Details:
 
@@ -3849,8 +3847,8 @@ Details:
 Usage:
 
     matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3921,7 +3919,7 @@ Details:
 Usage:
 
     mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3996,8 +3994,8 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=subP[], name=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), infoFields=[])
+    mergeSubPops(subPops=AllAvail, name=\"\", stage=PreMating,
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -4118,8 +4116,8 @@ Details:
 Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], reps=repList(),
-      subPops=subP[], infoFields=[])
+      stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -4227,7 +4225,7 @@ Details:
 Usage:
 
     mitochondrialGenoTransmitter(chroms=[], begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4284,7 +4282,7 @@ Usage:
 
     mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
       mapOut=[], context=0, output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -4368,7 +4366,7 @@ Usage:
 
     mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Arguments:
 
@@ -4451,8 +4449,8 @@ Description:
 Usage:
 
     mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -4546,8 +4544,8 @@ Description:
 Usage:
 
     mlSelector(selectors, mode=Multiplicative, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=repList(), subPops=subP[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Details:
 
@@ -4613,7 +4611,7 @@ Usage:
 
     mutator(rates=[], loci=[], mapIn=[], mapOut=[], context=0,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4740,7 +4738,7 @@ Details:
 Usage:
 
     noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -5026,8 +5024,9 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], reps=repList(),
-      subPops=subP[], output=\"\", infoFields=[], ParentsFields[1])
+    parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, output=\"\", infoFields=AllAvail,
+      ParentsFields[1])
 
 "; 
 
@@ -5104,8 +5103,8 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], reps=repList(),
-      subPops=subP[], output=\"\", infoFields=[])
+    parentTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, output=\"\", infoFields=AllAvail)
 
 "; 
 
@@ -5173,8 +5172,8 @@ Details:
 Usage:
 
     pause(stopOnKeyStroke=False, prompt=True, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -5258,7 +5257,7 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=lociList, infoFields=[], ancGen=-1,
+    pedigree(pop, loci=AllAvail, infoFields=[], ancGen=-1,
       fatherField=\"father_idx\", motherField=\"mother_idx\")
 
 Details:
@@ -5505,8 +5504,9 @@ Details:
 
 Usage:
 
-    pedigreeTagger(begin=0, end=-1, step=1, at=[], reps=repList(),
-      subPops=subP[], stage=PostMating, output=\">\", pedigreeFields=[])
+    pedigreeTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, stage=PostMating, output=\">\",
+      pedigreeFields=AllAvail)
 
 "; 
 
@@ -5533,8 +5533,8 @@ Details:
 Usage:
 
     pointMutator(loci, allele, ploidy=[], inds=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -5692,8 +5692,8 @@ Details:
 Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
-      lociPos=[], ancGen=0, chromNames=[], alleleNames=[],
-      lociNames=[], subPopNames=[], infoFields=[])
+      lociPos=[], ancGen=0, chromNames=AllAvail, alleleNames=[],
+      lociNames=AllAvail, subPopNames=AllAvail, infoFields=[])
 
 Details:
 
@@ -6344,7 +6344,8 @@ Details:
 
 Usage:
 
-    x.extract(field=None, loci=None, infoFields=None, ancGen=-1)
+    x.extract(field=\"\", loci=AllAvail, infoFields=AllAvail,
+      ancGen=-1, ped=None, pedFields=[])
 
 Details:
 
@@ -6388,7 +6389,7 @@ Details:
 
 Usage:
 
-    x.recodeAlleles(alleles, loci=[], alleleNames=[])
+    x.recodeAlleles(alleles, loci=AllAvail, alleleNames=[])
 
 Details:
 
@@ -6418,9 +6419,9 @@ Details:
     is discarded if ancestralDepth (maximum number of ancestral
     generations to hold) is zero so no ancestral generation can be
     kept. Otherise, the current population will become the parental
-    generation of pop, advancing the greatness level of all existing
-    ancestral generations by one. If ancestralDepth is positive and
-    there are already ancestralDepth ancestral generations (see also:
+    generation of pop, a the greatness level of all existing ancestral
+    generations by one. If ancestralDepth is positive and there are
+    already ancestralDepth ancestral generations (see also:
     ancestralGens()), the greatest ancestral generation will be
     discarded. In any case, population pop becomes invalid as all its
     individuals are absorbed by the current population.
@@ -6509,7 +6510,8 @@ Details:
 
 Usage:
 
-    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
+    x.updateInfoFieldsFrom(fields, pop, fromFields=AllAvail,
+      ancGen=-1)
 
 Details:
 
@@ -6698,8 +6700,8 @@ Details:
 Usage:
 
     pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -6802,7 +6804,7 @@ Details:
 Usage:
 
     pyExec(stmts=\"\", exposePop=\"\", output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -6944,7 +6946,7 @@ Usage:
 
     pyMutator(rates=[], loci=[], func=None, context=0, mapIn=[],
       mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -7049,7 +7051,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       isTransmitter=False, offspringOnly=False, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -7129,7 +7131,7 @@ Details:
 Usage:
 
     pyOutput(msg=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -7291,7 +7293,7 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Arguments:
@@ -7422,8 +7424,8 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
-      infoFields=[])
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Details:
 
@@ -7506,7 +7508,7 @@ Description:
 Usage:
 
     pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Arguments:
 
@@ -7579,7 +7581,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], output=\"\", infoFields=[])
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Arguments:
 
@@ -7653,7 +7655,7 @@ Description:
 Usage:
 
     quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 "; 
 
@@ -7906,9 +7908,9 @@ Note:
 
 Usage:
 
-    recombinator(rates=[], intensity=-1, loci=[],
+    recombinator(rates=[], intensity=-1, loci=AllAvail,
       convMode=NoConversion, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8054,9 +8056,13 @@ Details:
 
 Usage:
 
-    repList()
+    repList(obj=None)
 
 "; 
+
+%ignore simuPOP::repList::repList(const vectori &reps);
+
+%ignore simuPOP::repList::elems() const;
 
 %ignore simuPOP::repList::match(UINT rep, const vector< bool > &activeRep);
 
@@ -8078,9 +8084,9 @@ Details:
 
 Usage:
 
-    resizeSubPops(subPops=subP[], sizes=[], proportions=[],
+    resizeSubPops(subPops=AllAvail, sizes=[], proportions=[],
       propagate=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), infoFields=[])
+      reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -8429,7 +8435,7 @@ Details:
 Usage:
 
     savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=repList(), subPops=subP[], infoFields=[])
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8547,7 +8553,7 @@ Description:
 Usage:
 
     selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 "; 
 
@@ -8619,7 +8625,7 @@ Details:
 Usage:
 
     selfingGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8745,7 +8751,7 @@ Details:
 Usage:
 
     setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -9278,7 +9284,7 @@ Usage:
 
     smmMutator(rates=[], loci=[], incProb=0.5, maxAllele=0,
       mutStep=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=repList(), subPops=subP[],
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -9359,9 +9365,9 @@ Details:
 
 Usage:
 
-    splitSubPops(subPops=subP[], sizes=[], proportions=[], names=[],
-      randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), infoFields=[])
+    splitSubPops(subPops=AllAvail, sizes=[], proportions=[],
+      names=AllAvail, randomize=True, stage=PreMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -9473,11 +9479,12 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
-      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], vars=[], suffix=\"\",
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      haploFreq=[], sumOfInfo=AllAvail, meanOfInfo=AllAvail,
+      varOfInfo=AllAvail, maxOfInfo=AllAvail, minOfInfo=AllAvail,
+      LD=[], association=[], neutrality=[], structure=[], HWE=[],
+      vars=AllAvail, suffix=\"\", output=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -10207,7 +10214,7 @@ Usage:
 
 Usage:
 
-    stringList()
+    stringList(str=None)
 
 "; 
 
@@ -10255,9 +10262,11 @@ Details:
 
 Usage:
 
-    subPopList()
+    subPopList(obj=None)
 
 "; 
+
+%ignore simuPOP::subPopList::subPopList(const vectorvsp &subPops);
 
 %ignore simuPOP::subPopList::empty() const;
 
@@ -10322,7 +10331,7 @@ Description:
 Usage:
 
     tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 "; 
 
@@ -10371,8 +10380,8 @@ Details:
 Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=repList(), subPops=subP[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10451,7 +10460,7 @@ Details:
 Usage:
 
     ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10507,7 +10516,7 @@ Details:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10568,7 +10577,7 @@ Details:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=repList(), subPops=subP[], infoFields=[])
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 

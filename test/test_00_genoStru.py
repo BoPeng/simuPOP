@@ -269,7 +269,7 @@ class TestGenoStru(unittest.TestCase):
             self.assertEqual(pop.alleleName(2), '2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2', 'B3'))
         else:
-            self.assertEqual(pop.alleleName(1), '1')
+            self.assertEqual(pop.alleleName(1), 'A2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
         self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
 

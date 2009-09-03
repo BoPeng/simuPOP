@@ -231,7 +231,7 @@ public:
 	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
@@ -302,7 +302,7 @@ public:
 	 */
 	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_name(name)
 	{
@@ -366,7 +366,7 @@ public:
 		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
 		bool propagate = true, int stage = PreMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = stringList())
+		const repList & reps = repList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{

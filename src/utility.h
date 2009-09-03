@@ -352,26 +352,33 @@ protected:
 };
 
 
-class lociList : public uintList
+class lociList
 {
 public:
-	lociList() : uintList(vectoru()), m_allAvail(true)
+	lociList(PyObject * obj = NULL);
+
+	/// CPPONLY
+	lociList(const vectoru & values) : m_elems(values), m_allAvail(false)
 	{
 	}
 
 
-	lociList(const vectoru & values) : uintList(values), m_allAvail(false)
-	{
-	}
-
-
+	/// CPPONLY
 	bool allAvail() const
 	{
 		return m_allAvail;
 	}
 
 
+	/// CPPONLY
+	const vectoru & elems() const
+	{
+		return m_elems;
+	}
+
+
 private:
+	vectoru m_elems;
 	bool m_allAvail;
 };
 
@@ -404,16 +411,16 @@ protected:
  * because string itself is a sequence, the vectorstr version accepts
  * input such as 'abs' and yield ('a', 'b', 'c'). I therefore have to
  * parse the input Python object by myself.
+ * NOTE
+ * - stringList() lead to m_allAvail = true
+ * - stringList(vectorstr()) lead to m_allAvail = false
+ * - stringList(str) lead to m_allAvail = false
+ * This is why most operators accept either vectorstr() or stringList(str).
  */
 class stringList
 {
 public:
-	stringList() : m_elems(), m_allAvail(true)
-	{
-	}
-
-
-	stringList(PyObject * str);
+	stringList(PyObject * str = NULL);
 
 	/// CPPONLY
 	stringList(const string & str) : m_elems(1, str), m_allAvail(false)
@@ -422,12 +429,16 @@ public:
 
 
 	/// CPPONLY
-	stringList(const string & str1, const string & str2) : m_elems()
+	stringList(const string & str1, const string & str2) : m_elems(), m_allAvail(false)
 	{
 		m_elems.push_back(str1);
 		m_elems.push_back(str2);
 	}
 
+	/// CPPONLY
+	stringList(const vectorstr & str) : m_elems(str), m_allAvail(false)
+	{
+	}
 
 	/// CPPONLY
 	void obtainFrom(const stringList & items, const char * allowedItems[],
@@ -679,22 +690,22 @@ private:
  *  use vectori() is that users have got used to use a single number
  *  to specify a single replicate.
  */
-class repList : public intList
+class repList
 {
 public:
-	repList() : m_allAvail(true)
+	repList(PyObject * obj = NULL);
+
+	/// CPPONLY
+	repList(const vectori & reps) :
+		m_elems(reps), m_allAvail(false)
 	{
 	}
 
 
-	repList(const vectorl & reps) :
-		intList(reps), m_allAvail(false)
+	/// CPPONLY
+	vectori elems() const
 	{
-	}
-
-
-	repList(int rep) : intList(rep), m_allAvail(false)
-	{
+		return m_elems;
 	}
 
 
@@ -702,6 +713,7 @@ public:
 	bool match(UINT rep, const vector<bool> & activeRep);
 
 private:
+	vectori m_elems;
 	bool m_allAvail;
 };
 

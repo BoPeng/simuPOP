@@ -67,8 +67,6 @@ extern "C"
 ////////////////////////// CLEAN EXTRA SYMBOLS //////////////////////////
 
 // do not load these constants in ../config.h
-%ignore HAVE_DECL_ASINH;
-%ignore HAVE_DECL_LOG1P;
 %ignore HAVE__BOOL;
 %ignore HAVE_DECL_ACOSH;
 %ignore HAVE_DECL_ATANH;
@@ -245,6 +243,7 @@ namespace std
 %implicitconv stringList;
 %implicitconv stringMatrix;
 %implicitconv stringFunc;
+%implicitconv lociList;
 %implicitconv opList;
 
 %include "utility.h"
@@ -298,58 +297,12 @@ namespace std
 
 %pythoncode %{
 import exceptions, types
-# population.__init__ needs to check simuOptions
-from simuOpt import simuOptions
 
-# This wrapper function converts all the following inputs to
-# a list of vspID so that the real constructor can correctly
-# recognize them.
+# This constant is used by parameters loci, reps and subPops to 
+# input a 'all available' case. Although both None and True represents
+# this case, a devoted constant is easier to remember.
 #
-# subPops = 0
-# subPops = [1, 2, 3]
-# subPops = [(0, 1), (2, 1), 3]
-#
-def new_subPopList(self, subPops=None):
-    if subPops is None:
-        cppModule.subPopList_swiginit(self,
-            cppModule.new_subPopList())
-        return
-    sp = []
-    # in the case of subPops=0
-    if type(subPops) not in [type([]), type(())]:
-        sp = [vspID(subPops)]
-    else:
-        for s in subPops:
-            sp.append(vspID(s))
-    cppModule.subPopList_swiginit(self,
-        cppModule.new_subPopList(sp))
-
-new_subPopList.__doc__ = subPopList.__init__.__doc__
-del subPopList.__init__
-subPopList.__init__ = new_subPopList
-    
-
-#def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None, pedFields=[]):
-#    removeInd = field is not None
-#    if field is None:
-#        field = ''
-#    removeLoci = loci is not None
-#    if loci is None:
-#        loci = []
-#    removeInfo = infoFields is not None
-#    if infoFields is None:
-#        infoFields = []
-#    if ped is None:
-#        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-#            infoFields, ancGen)
-#    else:
-#        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-#            infoFields, ancGen, ped, pedFields)
-#
-#if population.extract.__doc__ is not None:
-#    new_extract.__doc__ = population.extract.__doc__
-#population.extract = new_extract
-
+AllAvail = True
 
 def new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate

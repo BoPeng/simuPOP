@@ -485,11 +485,12 @@ class Doxy2SWIG:
                 defVal = defVal.replace('intList','[]')
                 defVal = defVal.replace('floatListFunc','[]')
                 defVal = defVal.replace('floatList','[]')
-                defVal = defVal.replace('repList','repList()')
-                defVal = defVal.replace('stringList','[]')
+                defVal = defVal.replace('repList','AllAvail')
+                defVal = defVal.replace('stringList','AllAvail')
                 defVal = defVal.replace('stringMatrix','[]')
+                defVal = defVal.replace('subPopList', 'AllAvail')
                 defVal = defVal.replace('opList','[]')
-                defVal = defVal.replace('subPopList', 'subPopList()')
+                defVal = defVal.replace('lociList', 'AllAvail')
                 defVal = defVal.replace('string','""')
                 #defVal = defVal.replace('""', "''")
                 out.append(var + '=' + defVal)
@@ -559,9 +560,6 @@ class Doxy2SWIG:
              },
         ])
         # change a few usages:
-        for entry in self.content:
-            if entry['Name'] == 'simuPOP::population::extract':
-                entry['Usage'] = 'x.extract(field=None, loci=None, infoFields=None, ancGen=-1)'
         print "Number of entries: ", len(self.content)
         def myhash(entry):
             'encode an entry to a string for easy comparison'

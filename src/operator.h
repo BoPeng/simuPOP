@@ -66,12 +66,9 @@ public:
 
 public:
 	///
-	subPopList() : m_subPops(), m_allAvail(true)
-	{
-	}
+	subPopList(PyObject * obj = NULL);
 
-
-	///
+	/// CPPONLY
 	subPopList(const vectorvsp & subPops);
 
 	/// CPPONLY
@@ -667,7 +664,7 @@ public:
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
@@ -716,7 +713,7 @@ public:
 	 */
 	noneOp(const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -778,7 +775,7 @@ public:
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
 	{
@@ -833,7 +830,7 @@ public:
 	 */
 	ticToc(const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 		time(&m_startTime);
@@ -884,7 +881,7 @@ public:
 	setAncestralDepth(int depth, const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_depth(depth)
 	{
@@ -940,7 +937,7 @@ public:
 	 */
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -991,7 +988,7 @@ public:
 	 */
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
+		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -1075,7 +1072,7 @@ public:
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList());
+		const stringList & infoFields = vectorstr());
 
 	/// HIDDEN
 	virtual baseOperator * clone() const

@@ -58,7 +58,7 @@ public:
 	 *  empty string.
 	 */
 	pedigree(const population & pop, const lociList & loci = lociList(),
-		const stringList & infoFields = stringList(), int ancGen = -1,
+		const stringList & infoFields = vectorstr(), int ancGen = -1,
 		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
 
 	/// CPPONLY copy constructor
