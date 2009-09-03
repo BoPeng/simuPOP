@@ -59,8 +59,8 @@ pedigree::pedigree(const population & pop, const lociList & loci,
 	DBG_FAILIF(!m_motherField.empty() && !pop.hasInfoField(m_motherField), ValueError,
 		"Invalid mother information field " + m_motherField);
 
-	m_fatherIdx = m_fatherField.empty() ? -1 : infoIdx(fatherField);
-	m_motherIdx = m_motherField.empty() ? -1 : infoIdx(motherField);
+	m_fatherIdx = m_fatherField.empty() ? -1 : static_cast<int>(infoIdx(fatherField));
+	m_motherIdx = m_motherField.empty() ? -1 : static_cast<int>(infoIdx(motherField));
 }
 
 
