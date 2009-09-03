@@ -49,7 +49,7 @@ public:
 	tagger(const stringFunc & output = "",  int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList());
+		const stringList & infoFields = vectorstr());
 
 	/// destructor
 	virtual ~tagger()
@@ -310,7 +310,7 @@ public:
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = intList(), const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func)
 	{

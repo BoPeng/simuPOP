@@ -307,17 +307,20 @@ unsigned pow3(unsigned n)
 namespace simuPOP {
 
 // additional types
-stringList::stringList(PyObject * str) : m_elems(), m_allAvail(false)
+stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
-	if (str == NULL)
-		return;
-	if (PyString_Check(str))
-		addString(str);
-	else if (PySequence_Check(str)) {
+	if (obj == NULL || obj == Py_None)
+		m_allAvail = true;
+	else if (PyBool_Check(obj))
+		// accept True/False
+		m_allAvail = obj == Py_True;
+	else if (PyString_Check(obj))
+		addString(obj);
+	else if (PySequence_Check(obj)) {
 		// assign values
-		UINT numStr = PySequence_Size(str);
+		UINT numStr = PySequence_Size(obj);
 		for (size_t i = 0; i < numStr; ++i) {
-			PyObject * item = PySequence_GetItem(str, i);
+			PyObject * item = PySequence_GetItem(obj, i);
 			addString(item);
 			Py_DECREF(item);
 		}
@@ -379,7 +382,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 			m_elems[0].push_back(value);
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
-			UINT numStrs = PySequence_Size(item);
+			int numStrs = PySequence_Size(item);
 			for (int j = 0; j < numStrs; ++j) {
 				PyObject * str = PySequence_GetItem(item, j);
 				DBG_ASSERT(PyString_Check(str), ValueError,
@@ -392,6 +395,60 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 			DBG_FAILIF(true, ValueError, "Can not create a string matrix from input.");
 		}
 		Py_DECREF(item);
+	}
+}
+
+
+lociList::lociList(PyObject * obj) : m_elems(), m_allAvail(false)
+{
+	if (obj == NULL || obj == Py_None)
+		// accept NULL
+		m_allAvail = true;
+	else if (PyBool_Check(obj))
+		// accept True/False
+		m_allAvail = obj == Py_True;
+	else if (PyNumber_Check(obj)) {
+		// accept a number
+		m_allAvail = false;
+		m_elems.push_back(static_cast<UINT>(PyInt_AS_LONG(obj)));
+	} else if (PySequence_Check(obj)) {
+		m_elems.resize(PySequence_Size(obj));
+		// assign values
+		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of loci.");
+			m_elems[i] = static_cast<UINT>(PyInt_AS_LONG(item));
+			Py_DECREF(item);
+		}
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid input for a list of loci.");
+	}
+}
+
+
+repList::repList(PyObject * obj) : m_elems(), m_allAvail(false)
+{
+	if (obj == NULL || obj == Py_None)
+		// accept NULL
+		m_allAvail = true;
+	else if (PyBool_Check(obj))
+		// accept True/False
+		m_allAvail = obj == Py_True;
+	else if (PyNumber_Check(obj)) {
+		// accept a number
+		m_allAvail = false;
+		m_elems.push_back(PyInt_AS_LONG(obj));
+	} else if (PySequence_Check(obj)) {
+		m_elems.resize(PySequence_Size(obj));
+		// assign values
+		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of rep.");
+			m_elems[i] = PyInt_AS_LONG(item);
+			Py_DECREF(item);
+		}
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid input for a list of rep.");
 	}
 }
 
@@ -3430,8 +3487,8 @@ bool repList::match(UINT rep, const vector<bool> & activeRep)
 {
     if (m_elems.empty())
 		return m_allAvail;
-    vectorl::iterator it = m_elems.begin();
-    vectorl::iterator it_end = m_elems.end();
+    vectori::iterator it = m_elems.begin();
+    vectori::iterator it_end = m_elems.end();
     for (; it != it_end; ++it) {
         // positive index is easy
         if (*it >= 0) {

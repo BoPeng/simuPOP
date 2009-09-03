@@ -692,7 +692,7 @@ public:
 	 *  \e param and is usually used to locate qualified spouse for each parent.
 	 *  The return value of this function is ignored.
 	 */
-	infoParentsChooser(const stringList & infoFields = stringList(),
+	infoParentsChooser(const stringList & infoFields = vectorstr(),
 		PyObject * func = NULL, PyObject * param = NULL,
 		const string & selectionField = "fitness") :
 		randomParentChooser(true, selectionField),

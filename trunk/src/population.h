@@ -178,7 +178,7 @@ public:
 		const stringMatrix & alleleNames = stringMatrix(),
 		const stringList & lociNames = stringList(),
 		const stringList & subPopNames = stringList(),
-		const stringList & infoFields = stringList());
+		const stringList & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor
 	population(const population & rhs);
@@ -956,8 +956,7 @@ public:
 	population & extract(const string & field = string(),
 		const lociList & loci = lociList(),
 		const stringList & infoFields = stringList(),
-		int ancGen = -1,
-		pedigree * ped = NULL,
+		int ancGen = -1, pedigree * ped = NULL,
 		const vectorstr & pedFields = vectorstr()) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
@@ -979,7 +978,7 @@ public:
 	 *  subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void recodeAlleles(const uintListFunc & alleles, const uintList & loci = uintList(),
+	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
 		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
@@ -987,7 +986,7 @@ public:
 	 *  discarded if \e ancestralDepth (maximum number of ancestral generations
 	 *  to hold) is zero so no ancestral generation can be kept. Otherise, the
 	 *  current population will become the parental generation of \e pop,
-	 *  advancing the greatness level of all existing ancestral generations by
+	 *  a the greatness level of all existing ancestral generations by
 	 *  one. If \e ancestralDepth is positive and there are already
 	 *  \e ancestralDepth ancestral generations (see also:
 	 *  <tt>ancestralGens()</tt>), the greatest ancestral generation will be

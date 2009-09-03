@@ -49,7 +49,7 @@ public:
 	 */
 	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		baseOperator("", DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
@@ -132,7 +132,7 @@ public:
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
 	{
 		setTransmitter(true);
@@ -178,7 +178,7 @@ public:
 	 */
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
@@ -245,7 +245,7 @@ public:
 	 */
 	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList())
+		const stringList & infoFields = vectorstr())
 		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -292,7 +292,7 @@ public:
 	 */
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList())
+		const stringList & infoFields = vectorstr())
 		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_copier()
 	{
@@ -350,7 +350,7 @@ public:
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList())
+		const stringList & infoFields = vectorstr())
 		: genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
@@ -495,10 +495,10 @@ public:
 	 *      chromosomes.
 	 */
 	recombinator(const floatList & rates = floatList(), double intensity = -1,
-		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
+		const lociList & loci = lociList(), const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList());
+		const stringList & infoFields = vectorstr());
 
 
 	/// deep copy of a recombinator
@@ -553,7 +553,7 @@ private:
 	vectorf m_rates;
 
 	/// initial parameter
-	vectoru m_loci;
+	lociList m_loci;
 
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;

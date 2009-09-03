@@ -361,12 +361,12 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 
 
 recombinator::recombinator(const floatList & rates, double intensity,
-	const uintList & loci, const floatList & convMode,
+	const lociList & loci, const floatList & convMode,
 	int begin, int end, int step, const intList & at,
 	const repList & reps, const subPopList & subPops, const stringList & infoFields)
 	:
 	genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
-	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci.elems()),
+	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
 	m_bt(GetRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 	m_algorithm(0)
@@ -440,16 +440,18 @@ void recombinator::initialize(const population & pop)
 	// prepare m_bt
 	vectorf vecP;
 	//
+    const vectoru & loci = m_loci.elems();
+
 	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
 		"You should specify m_intensity, or m_rates "
 		"(a number or a sequence of recombination m_ratess.)");
 
-	DBG_FAILIF(m_rates.size() > 1 && m_loci.empty(), ValueError,
+	DBG_FAILIF(m_rates.size() > 1 && loci.empty(), ValueError,
 		"When more than one m_ratess are given, loci should be"
 		" explicitly specified.");
 
-	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != m_loci.size(),
-		ValueError, "If both m_ratess and atLoci are specified, "
+	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(),
+		ValueError, "If both rates and loci are specified, "
 		            "they should have the same length.");
 
 	bool useLociDist = m_rates.empty();
@@ -472,7 +474,7 @@ void recombinator::initialize(const population & pop)
 			continue;
 		}
 
-		if (m_loci.empty()) {
+		if (m_loci.allAvail()) {
 			// get loci distance * m_rates and then recombinant points
 			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
 				m_recBeforeLoci.push_back(loc + 1);
@@ -485,22 +487,22 @@ void recombinator::initialize(const population & pop)
 					             "distance is too high.)");
 				vecP.push_back(min(0.5, r));
 			}
-		} else {                                                                          // m_loci not empty
-			DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != m_loci.size(), SystemError,
-				"If an array is given, m_ratess and m_loci should have the same length");
+		} else {
+			DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(), SystemError,
+				"If an array is given, rates and loci should have the same length");
 
 			// get loci distance * m_rates and then recombinant points
 			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
 				// if this locus will be recombined.
-				vectoru::iterator pos = find(m_loci.begin(), m_loci.end(), loc);
-				if (pos != m_loci.end()) {
+				vectoru::const_iterator pos = find(loci.begin(), loci.end(), loc);
+				if (pos != loci.end()) {
 					double r = 0;
 					if (useLociDist)
 						r = m_intensity > 0 ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * m_intensity) : r;
 					else if (m_rates.size() == 1 && !useLociDist)
 						r = max(m_rates[0], 0.);
 					else
-						r = m_rates[pos - m_loci.begin()];
+						r = m_rates[pos - loci.begin()];
 					m_recBeforeLoci.push_back(loc + 1);
 					vecP.push_back(r);
 

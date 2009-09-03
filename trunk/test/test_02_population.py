@@ -507,7 +507,6 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(sample.indInfo('x'), tuple([0]*80))
         self.assertEqual(sample.indInfo('y'), tuple([1]*80))
         self.assertEqual(sample.indInfo('z'), tuple([2.0]*80))
-
         # FIXME: test extraction of loci and ancestral generations
 
     def testMergeSubPops(self):

@@ -1339,15 +1339,15 @@ population & population::extract(const string & field,
 				new_alleleNames.push_back(alleleNames(*it));
 			}
 		}
+		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << new_numLoci
+			                        << "\nchromType: " << new_chromTypes
+			                        << "\nlociPos: " << new_lociPos
+			                        << "\nchromNames: " << new_chromNames
+			                        << "\nlociNames: " << new_lociNames
+			                        << "\ninfoFields: " << allInfoFields
+			                        << endl);
 		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
 			new_lociPos, new_chromNames, new_alleleNames, new_lociNames, allInfoFields);
-		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << pop.numLoci()
-			                        << "\nchromType: " << pop.chromTypes()
-			                        << "\nlociPos: " << pop.lociPos()
-			                        << "\nchromNames: " << pop.chromNames()
-			                        << "\nlociNames: " << pop.lociNames()
-			                        << "\ninfoFields: " << pop.infoFields()
-			                        << endl);
 	}
 	UINT step = pop.genoSize();
 	UINT infoStep = pop.infoSize();
@@ -1583,21 +1583,24 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 }
 
 
-void population::recodeAlleles(const uintListFunc & newAlleles, const uintList & lociList,
+void population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
 	DBG_FAILIF(newAlleles.empty() && !newAlleles.func().isValid(), ValueError,
 		"Please specify new alleles or a conversion function");
 
 	const matrixstr & alleleNames = alleleNamesMatrix.elems();
-	const vectoru & loci = lociList.elems();
 
-	DBG_FAILIF(alleleNames.size() > 1 && alleleNames.size() != loci.size(),
+	const vectoru & loci = loci_.elems();
+
+	DBG_FAILIF(alleleNames.size() > 1 &&
+		((loci_.allAvail() && alleleNames.size() != totNumLoci()) ||
+		 (!loci_.allAvail() && alleleNames.size() != loci.size())),
 		ValueError,
 		"If locus-specific allele names are specified, they should be specified for all loci.");
 
 	if (!alleleNames.empty()) {
-		setGenoStructure(gsSetAlleleNames(loci, alleleNames));
+		setGenoStructure(gsSetAlleleNames(loci_, alleleNames));
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			useAncestralGen(depth);
 			RawIndIterator it = rawIndBegin();
@@ -1614,7 +1617,7 @@ void population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 		GenoIterator ptrEnd = m_genotype.end();
 		if (!newAlleles.empty()) {
 			const vectoru & map = newAlleles.elems();
-			if (loci.empty()) {
+			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
 					DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
 						ValueError, "Allele " + toStr(int(*ptr)) + " can not be recoded");
@@ -1638,7 +1641,7 @@ void population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 			UINT numLoci = totNumLoci();
 			UINT iEnd = loci.size();
 			for (; ptr != ptrEnd; ptr += numLoci) {
-				if (loci.empty()) {
+				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
 						*(ptr + i) = ToAllele(func(PyObj_As_Int, "(ii)",
 								static_cast<int>(*(ptr + i)), i));
