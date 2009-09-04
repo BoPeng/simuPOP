@@ -275,16 +275,14 @@ class kamMutator : public mutator
 {
 public:
 	/** Create a k-allele mutator that mutates alleles to one of the other
-	 *  <tt>k-1</tt> alleles with equal probability. If parameter \e k is
-	 *  unspecified, it will be assumed to be the number of allowed allelic
-	 *  states of the current simuPOP module. This mutator by default applies
-	 *  to all loci unless parameter \e loci is specified. A single mutation
-	 *  rate will be used for all loci if a single value of parameter \e rates
-	 *  is given. Otherwise, a list of mutation rates can be specified for each
-	 *  locus in parameter \e loci. Please refer to classes \c mutator and
-	 *  \c baseOperator for descriptions of other parameters.
+	 *  <tt>k-1</tt> alleles with equal probability. This mutator by default
+     *  applies to all loci unless parameter \e loci is specified. A single
+     *  mutation rate will be used for all loci if a single value of parameter
+     *  \e rates is given. Otherwise, a list of mutation rates can be specified
+     *  for each locus in parameter \e loci. Please refer to classes \c mutator
+     *  and \c baseOperator for descriptions of other parameters.
 	 */
-	kamMutator(UINT k = 0, const floatList & rates = floatList(), const uintList & loci = uintList(),
+	kamMutator(UINT k, const floatList & rates = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
@@ -292,10 +290,8 @@ public:
 		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at,
 		          reps, subPops, infoFields), m_k(k)
 	{
-		if (m_k == 0)
-			m_k = MaxAllele() + 1;
 #ifndef BINARYALLELE
-		if (m_k > MaxAllele() )
+		if (m_k > ModuleMaxAllele + 1)
 			throw ValueError("maxAllele exceeds population max allele.");
 #endif
 	}

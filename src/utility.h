@@ -1829,23 +1829,22 @@ vectorstr AvailableRNGs();
 // /  Global debug and initialization related functions
 // ////////////////////////////////////////////////////////////
 
-/// return the revision number of this simuPOP module. Can be used to test if a feature is available.
-int simuRev();
-
-/// return the version of this simuPOP module
-string simuVer();
-
-/// return the compiler used to compile this simuPOP module
-string ModuleCompiler();
-
-/// return the date when this simuPOP module is compiled
-string ModuleDate();
-
-/// return the Python version this simuPOP module is compiled for
-string ModulePyVersion();
-
-/// return the platform on which this simuPOP module is compiled
-string ModulePlatForm();
+/** Return a dictionary with information regarding the currently loaded simuPOP
+ *  module. This dictionary has the following keys:
+ *  \li \c revision: revision number.
+ *  \li \c version: simuPOP version string.
+ *  \li \c optimized: \c True or \c False
+ *  \li \c alleleType: \c short, \c long or \c binary.
+ *  \li \c maxAllele: the maximum allowed allele state, which is \c 1 for
+ *       binary modules, \c 255 for short modules and \c 65535 for long modules.
+ *  \li \c compiler: the compiler that compiles this module.
+ *  \li \c date: date on which this module is compiled.
+ *  \li \c python: version of python.
+ *  \li \c platform: platform of the module.
+ *  \li \c maxNumSubPop: maximum number of subpopulations.
+ *  \li \c maxIndex: maximum index size (limits population size * total number of marker).
+ */
+PyObject * ModuleInfo();
 
 #ifdef BINARYALLELE
 // efficiently copy alleles (block by block, rather than 1 by 1)
@@ -1863,28 +1862,8 @@ void testCopyGenotype();
 /// CPPONLY initialize module simuPOP when using "import simuPOP"
 bool initialize();
 
-/// return \c True if this simuPOP module is optimized
-bool Optimized();
-
-/// print out system limits
-void Limits();
-
-/// return the allele type of the current module. Can be \c binary, \c short, or \c long.
-string AlleleType();
-
-/** return the maximum allowed allele state of the current simuPOP module,
- *  which is \c 1 for binary modules, \c 255 for short modules and \c 65535
- *  for long modules.
- *  <group>allele</group>
- */
-ULONG MaxAllele();
-
 /// CPPONLY get a null stream that discard everything
 ostream & cnull();
-
-/// set the standard output (default to standard Python output)
-void setLogOutput(const string filename = string());
-
 
 }
 #endif

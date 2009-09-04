@@ -284,8 +284,8 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 		ValueError, "Inc probability should be between [0,1], given " + toStr(m_incProb));
 
 	if (m_maxAllele == 0)
-		m_maxAllele = MaxAllele();
-	if (m_maxAllele > MaxAllele())
+		m_maxAllele = ModuleMaxAllele;
+	if (m_maxAllele > ModuleMaxAllele)
 		throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
 
 	DBG_FAILIF(!m_mutStep.func().isValid() && m_mutStep.empty(), ValueError,

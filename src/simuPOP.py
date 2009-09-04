@@ -82,22 +82,24 @@ _dbgCode = {
 }
 
 if not simuOptions['Quiet']:
+    info = ModuleInfo()
     print "simuPOP : Copyright (c) 2004-2009 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
-    if simuVer() == '9.9.9':
+    if info['version'].endswith('svn'):
         # this is the subversion version of simuPOP
-        print ("Developmental Version (%s) for Python %s" % (ModuleDate(), ModulePyVersion() ))
+        print ("Developmental Version %s (Revision %d, %s) for Python %s" % \
+            (info['version'], info['revision'], info['date'], info['python']))
     else:
         # this is the released version
-        print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), ModuleDate(),
-            ModulePyVersion() ))
-    print ModuleCompiler()
+        print ("Version %s (Revision %d, %s) for Python %s" % \
+            (info['version'], info['revision'], info['date'], info['python']))
+    print info['compiler']
     print "Random Number Generator is set to %s with random seed 0x%08x." % (GetRNG().name(), GetRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
-    if Optimized():
-        print "This is the optimized %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
+    if info['optimized']:
+        print "This is the optimized %s allele version with %d maximum allelic states." % (info['alleleType'], info['maxAllele']+1)
     else:
-        print "This is the standard %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
+        print "This is the standard %s allele version with %d maximum allelic states." % (info['alleleType'], info['maxAllele']+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
     # Turn on general debug information when not in 'quiet' mode

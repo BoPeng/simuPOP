@@ -256,7 +256,7 @@ string individual::__repr__()
 	ostringstream os;
 	int width = 1;
 
-	if (MaxAllele() == 1)
+	if (ModuleMaxAllele == 1)
 		width = 1;
 	else
 		width = 3;
