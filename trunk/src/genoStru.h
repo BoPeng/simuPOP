@@ -309,32 +309,32 @@ public:
 	}
 
 
-	/** Return the distance between loci \e loc1 and \e loc2 on the same
-	 *  chromosome. A negative value will be returned if \e loc1 is after
-	 *  \e loc2.
+	/** Return the distance between loci \e locus1 and \e locus2 on the
+	 *  same chromosome. A negative value will be returned if \e locus1 is
+	 *  after \e locus2.
 	 *  <group>3-locus</group>
 	 */
-	double lociDist(UINT loc1, UINT loc2) const;
+	double lociDist(UINT locus1, UINT locus2) const;
 
 	/** HIDDEN
 	 * return the number of loci left on that chromosome, including locus \c loc
 	 *  <group>3-locus</group>
 	 */
-	UINT lociLeft(UINT loc) const;
+	UINT lociLeft(UINT locus) const;
 
 	/** HIDDEN
-	 *  Distance between locus \c loc and the last locus that is on the same
-	 *  chromsome as \c loc.
+	 *  Distance between locus \c locus and the last locus that is on the same
+	 *  chromsome as \c locus.
 	 *  <group>3-locus</group>
 	 */
-	double distLeft(UINT loc) const;
+	double distLeft(UINT locus) const;
 
 	/** HIDDEN
-	 *  starting from \c loc, how many markers are covered by distance \c dist (>=0)
+	 *  starting from \c locus, how many markers are covered by distance \c dist (>=0)
 	 *  the result will be at least 1, even if dist = 0.
 	 *  <group>3-locus</group>
 	 */
-	UINT lociCovered(UINT loc, double dist) const;
+	UINT lociCovered(UINT locus, double dist) const;
 
 	/** CPPONLY
 	 *  Add chromosomes from another genotypic structure and
@@ -519,19 +519,19 @@ public:
 	}
 
 
-	/** return the position of locus \e loc specified by the \e lociPos
+	/** return the position of locus \e locus specified by the \e lociPos
 	 *  parameter of the \c population function. An \c IndexError will be
-	 *  raised if the absolute index \e loc is greater than or equal to
+	 *  raised if the absolute index \e locus is greater than or equal to
 	 *  the total number of loci.
 	 *  <group>3-locus</group>
 	 */
-	double locusPos(UINT loc) const
+	double locusPos(UINT locus) const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		CHECKRANGEABSLOCUS(loc);
-		return s_genoStruRepository[m_genoStruIdx].m_lociPos[loc];
+		CHECKRANGEABSLOCUS(locus);
+		return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
 	}
 
 
@@ -706,19 +706,19 @@ public:
 	 */
 	vectorstr alleleNames(const UINT locus = 0) const;
 
-	/** return the name of locus \e loc specified by the \e lociNames parameter of
+	/** return the name of locus \e locus specified by the \e lociNames parameter of
 	 *  the \c population function. An empty string will be returned if no name
-	 *  has been given to locus \e loc.
+	 *  has been given to locus \e locus.
 	 *  <group>3-locus</group>
 	 */
-	string locusName(const UINT loc) const
+	string locusName(const UINT locus) const
 	{
-		DBG_FAILIF(loc >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
-			"Locus index " + toStr(loc) + " out of range of 0 ~ " +
+		DBG_FAILIF(locus >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
+			"Locus index " + toStr(locus) + " out of range of 0 ~ " +
 			toStr(s_genoStruRepository[m_genoStruIdx].m_totNumLoci));
 
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
-		return names.empty() ? string() : names[loc];
+		return names.empty() ? string() : names[locus];
 	}
 
 
