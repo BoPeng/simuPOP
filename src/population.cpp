@@ -1551,9 +1551,9 @@ population & population::extract(const string & field,
 }
 
 
-void population::removeLoci(const uintList & uintList, const uintList & keepList)
+void population::removeLoci(const uintList & lociList, const uintList & keepList)
 {
-	const vectoru & loci = uintList.elems();
+	const vectoru & loci = lociList.elems();
 	const vectoru & keep = keepList.elems();
 
 	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
