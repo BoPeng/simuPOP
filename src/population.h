@@ -176,8 +176,8 @@ public:
 		int ancGen = 0,
 		const stringList & chromNames = stringList(),
 		const stringMatrix & alleleNames = stringMatrix(),
-		const stringList & lociNames = stringList(),
-		const stringList & subPopNames = stringList(),
+		const stringList & lociNames = vectorstr(),
+		const stringList & subPopNames = vectorstr(),
 		const stringList & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor

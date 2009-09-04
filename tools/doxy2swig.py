@@ -492,6 +492,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('opList','[]')
                 defVal = defVal.replace('lociList', 'AllAvail')
                 defVal = defVal.replace('string','""')
+                defVal = defVal.replace('UnnamedSubPop','""')
                 #defVal = defVal.replace('""', "''")
                 out.append(var + '=' + defVal)
             else:
@@ -546,7 +547,7 @@ class Doxy2SWIG:
              'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(vspID subPop)',
+             'cppArgs': u'(vspID subPop=[])',
              'Usage': u'x.dvars(subPop)',
              },
             {'Name': u'simuPOP::simulator::dvars',
@@ -555,7 +556,7 @@ class Doxy2SWIG:
              'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(int rep, vspID subPop)',
+             'cppArgs': u'(int rep, vspID subPop=[])',
              'Usage': u'x.dvars(rep, subPop)',
              },
         ])
