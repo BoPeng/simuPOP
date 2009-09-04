@@ -162,8 +162,8 @@ class TestGenoStru(unittest.TestCase):
     def testChromName(self):
         'Testing genoStruTrait::chromByName(name), chromName(chrom), chromNames()'
         pop = population(size=100, ploidy=2, loci=[5, 7])
-        self.assertEqual(pop.chromName(0), 'chrom1')
-        self.assertEqual(pop.chromName(1), 'chrom2')
+        self.assertEqual(pop.chromName(0), '')
+        self.assertEqual(pop.chromName(1), '')
         pop = population(size=100, ploidy=2, loci=[5, 7], chromNames=["c1", "c2"])
         self.assertEqual(pop.chromName(0), 'c1')
         self.assertEqual(pop.chromName(1), 'c2')

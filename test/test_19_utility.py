@@ -120,13 +120,6 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(sum < 5100, True)
         self.assertEqual(sum > 4900, True)
 
-    def testLogging(self):
-        'Testing logging output to a file'
-        setLogOutput("session.log")
-        # output stuff
-        setLogOutput()
-        os.remove('session.log')
-
 
     def testBernulliTrials(self):
         'Testing bernullitrials'

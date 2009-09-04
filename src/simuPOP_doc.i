@@ -5691,7 +5691,7 @@ Details:
 Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
-      lociPos=[], ancGen=0, chromNames=AllAvail, alleleNames=[],
+      lociPos=[], ancGen=0, chromNames=[], alleleNames=[],
       lociNames=[], subPopNames=[], infoFields=[])
 
 Details:
@@ -5749,8 +5749,8 @@ Arguments:
                     set to -1, all ancestral generations will be kept
                     in this population (and exhaust your computer RAM
                     quickly).
-    chromNames:     A list of chromosome names. Default to chrom1,
-                    chrom2, ... etc.
+    chromNames:     A list of chromosome names. Default to '' for all
+                    chromosomes.
     alleleNames:    A list or a nested list of allele names. If a list
                     of alleles is given, it will be used for all loci
                     in this population. For example,
@@ -6509,8 +6509,7 @@ Details:
 
 Usage:
 
-    x.updateInfoFieldsFrom(fields, pop, fromFields=AllAvail,
-      ancGen=-1)
+    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
 
 Details:
 
@@ -6555,8 +6554,6 @@ Details:
     ancestral generations.
 
 "; 
-
-%ignore simuPOP::population::equalTo(const population &rhs);
 
 %ignore simuPOP::population::sortIndividuals(bool infoOnly=false) const;
 
