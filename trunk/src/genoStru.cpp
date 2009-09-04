@@ -141,16 +141,14 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		"Chromosome names, if specified, should be given to every chromosomes");
 
 	if (m_chromNames.empty()) {
-		m_chromNames.resize(m_numLoci.size());
-		for (size_t i = 0; i < m_numLoci.size(); ++i)
-			m_chromNames[i] = "chrom" + toStr(i + 1);
+		m_chromNames.resize(m_numLoci.size(), string());
 	}
 #ifndef OPTIMIZED
 	else {
 		map<string, int> nameMap;
 		// check uniqueness of the names
 		for (size_t i = 0; i < m_numLoci.size(); ++i) {
-			if (nameMap.find(m_chromNames[i]) != nameMap.end())
+			if (!m_chromNames[i].empty() && nameMap.find(m_chromNames[i]) != nameMap.end())
 				throw ValueError("Given chromosome names should be unique");
 			else
 				nameMap[m_chromNames[i]] = 0;

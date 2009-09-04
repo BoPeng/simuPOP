@@ -323,11 +323,24 @@ int population::__cmp__(const population & rhs) const
 		return 1;
 	}
 
-	for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
-		if (m_inds[i] != rhs.m_inds[i]) {
-			DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
-			return 1;
-		}
+	if (ancestralGens() != rhs.ancestralGens()) {
+		DBG_DO(DBG_POPULATION, cout << "Number of ancestral generations differ" << endl);
+		return 1;
+	}
+
+	int curGen = m_curAncestralGen;
+	int rhsCurGen = rhs.m_curAncestralGen;
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		rhs.useAncestralGen(depth);
+		for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
+			if (m_inds[i] != rhs.m_inds[i]) {
+				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
+				useAncestralGen(curGen);
+				rhs.useAncestralGen(rhsCurGen);
+				return 1;
+			}
+	}
 
 	return 0;
 }

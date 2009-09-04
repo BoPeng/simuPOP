@@ -151,8 +151,8 @@ public:
 	 *    generation will be kept. If it is set to \c -1, all ancestral
 	 *    generations will be kept in this population (and exhaust your
 	 *    computer RAM quickly).
-	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
-	 *    \c chrom2, ... etc.
+	 *  \param chromNames A list of chromosome names. Default to '' for all
+	 *    chromosomes.
 	 *  \param alleleNames A list or a nested list of allele names. If a list
 	 *    of alleles is given, it will be used for all loci in this population.
 	 *    For example, <tt>alleleNames=('A','C','T','G')</tt> gives names \c A,
@@ -174,7 +174,7 @@ public:
 		const uintList & chromTypes = uintList(),
 		const floatList & lociPos = floatList(),
 		int ancGen = 0,
-		const stringList & chromNames = stringList(),
+		const stringList & chromNames = vectorstr(),
 		const stringMatrix & alleleNames = stringMatrix(),
 		const stringList & lociNames = vectorstr(),
 		const stringList & subPopNames = vectorstr(),
@@ -1137,7 +1137,7 @@ public:
 	 *  <group>8-info</group>
 	 */
 	void updateInfoFieldsFrom(const stringList & fields, const population & pop,
-		const stringList & fromFields = stringList(), int ancGen = -1);
+		const stringList & fromFields = vectorstr(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
@@ -1157,16 +1157,6 @@ public:
 	 *  <group>6-ancestral</group>
 	 */
 	void useAncestralGen(UINT idx);
-
-	/// CPPONLY compare two populations
-	bool equalTo(const population & rhs)
-	{
-		return
-		    genoStru() == rhs.genoStru() &&
-		    m_subPopSize == rhs.m_subPopSize &&
-		    m_inds == rhs.m_inds ;
-	}
-
 
 	//@}
 

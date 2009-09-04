@@ -291,11 +291,10 @@ class TestPopulation(unittest.TestCase):
             for loc in range(5):
                 self.assertEqual(ind.allele(loc+3), ind2.allele(loc))
         pop = population(size=100, ploidy=2, loci=[1, 2])
-        pop1 = population(size=100, ploidy =2, loci=[1, 2])
-        self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop1)
-        pop2 = population(size=200, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
+        pop1 = population(size=200, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
             lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
-        self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop2)
+        # population size is different
+        self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop1)
         # see what happens to alleleNames
         pop1 = population(size=100, ploidy=2, loci=[1, 2], chromNames=["c1", "c2"],
             lociNames = ['l1', 'l2', 'l3'], alleleNames=['A', 'B'])
