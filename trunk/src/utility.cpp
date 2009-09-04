@@ -3016,8 +3016,6 @@ protected:
     {
         return 0;
 	}
-
-
 };
 
 /// CPPONLY
@@ -3036,34 +3034,56 @@ ostream & cnull()
 }
 
 
-// set default output ("" means standard output)
-void setLogOutput(const string filename)
+
+PyObject * ModuleInfo()
 {
-    static ofstream * outputFile = NULL;
+    // output a dictionary with many keys
+    PyObject * dict = PyDict_New();
+    
+// these macros will be passed from commandline, if not, use the default
+#ifndef SIMUPOP_REV
+#  define REVISION "9999"
+#else
+// make passed macro to a real string
+#  define REVISION MacroQuote(SIMUPOP_REV)
+#endif
 
-    // close old file is necessary
-    if (outputFile != NULL) {
-        outputFile->close();
-        delete outputFile;
-        outputFile = NULL;
-	}
-    // use stanard output
-    if (filename.empty())
-		cout.rdbuf(&g_pythonCoutBuf);
-    else {
-        // use a file.
-        outputFile = new ofstream(filename.c_str());
-        if (outputFile == NULL || !*outputFile)
-			throw ValueError("Can not open file " + filename + " to store standard output");
-        cout.rdbuf(outputFile->rdbuf());
-	}
-}
+    // Revision
+    const char * rev = REVISION;
+    int num;
+    // XX:XX or XX:XXM, or XX
+    if (sscanf(rev, "%*d:%d", &num) != 1 && sscanf(rev, "%d", &num) != 1)
+        num = 9999;
+    PyDict_SetItem(dict, PyString_FromString("revision"), PyInt_FromLong(num));
 
+    // Version
+#ifndef SIMUPOP_VER
+    const char * ver = "snapshot";
+#else
+    // convert name to a string
+    const char * ver = MacroQuote(SIMUPOP_VER);
+#endif
+    PyDict_SetItem(dict, PyString_FromString("version"), PyString_FromString(ver));
 
-/* !COMPILER */
+    // optimized
+#ifdef OPTIMIZED
+    Py_INCREF(Py_True);
+    PyDict_SetItem(dict, PyString_FromString("optimized"), Py_True);
+#else
+    Py_INCREF(Py_False);
+    PyDict_SetItem(dict, PyString_FromString("optimized"), Py_False);
+#endif
 
-// record COMPILER, PY_VERSION and __DATE__ , these info will
-// be displayed when simuPOP is loaded.
+    // AlleleType
+#ifdef LONGALLELE
+    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
+#else
+#  ifdef BINARYALLELE
+    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
+#  else
+    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
+#  endif
+#endif
 
 #ifndef COMPILER
 #  ifdef __GNUC__
@@ -3083,108 +3103,27 @@ void setLogOutput(const string filename)
 #  define PLATFORM ""
 #endif
 
-// these macros will be passed from commandline, if not, use the default
-#ifndef SIMUPOP_REV
-#  define REVISION "9999"
-#else
-// make passed macro to a real string
-#  define REVISION MacroQuote(SIMUPOP_REV)
-#endif
+    // compiler
+    PyDict_SetItem(dict, PyString_FromString("compiler"), PyString_FromString(COMPILER));
 
-int simuRev()
-{
-    const char * rev = REVISION;
-    // can have form xx:xxM etc, or simply a number
-    // we certainly like a single number but it is often the case that
-    // svn local copy is not up to date.
-    int num;
+    // date
+    PyDict_SetItem(dict, PyString_FromString("date"), PyString_FromString(__DATE__));
 
-    // first try XX:XX or XX:XXM
-    if (sscanf(rev, "%*d:%d", &num) == 1)   //success
-		return num;
-    else if (sscanf(rev, "%d", &num) == 1)  // XX or XXM
-		return num;
-    else {
-        cout << "Can not extract revision information from " << REVISION << endl;
-        return 0;
-	}
-}
+    // version of python
+    PyDict_SetItem(dict, PyString_FromString("python"), PyString_FromString(PY_VERSION));
 
+    // platform
+    PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
+    
+    // maxAllele
+    PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyInt_FromLong(ModuleMaxAllele));
 
-string simuVer()
-{
-#ifndef SIMUPOP_VER
-    return "snapshot";
-#else
-    // convert name to a string
-    return MacroQuote(SIMUPOP_VER);
-#endif
-}
+    // limits
+    PyDict_SetItem(dict, PyString_FromString("maxNumSubPop"), PyInt_FromLong(MaxSubPopID));
+    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyInt_FromLong(MaxIndexSize));
 
-
-bool Optimized()
-{
-#ifdef OPTIMIZED
-    return true;
-#else
-    return false;
-#endif
-}
-
-
-void Limits()
-{
-    cout << "Maximum allele state: " << hex << ModuleMaxAllele << endl;
-    cout << "Maximum random number: " << hex << MaxRandomNumber << endl;
-    cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
-    cout << "Maximum index size (limits population size * total number of markers): "
-         << hex << MaxIndexSize << endl;
-    cout << "Maximum integer: " << hex << MaxIntNumber << endl;
-    cout << "Maximum long integer: " << hex << MaxLongNumber << endl;
-}
-
-
-string AlleleType()
-{
-#ifdef LONGALLELE
-    return "long";
-#else
-#  ifdef BINARYALLELE
-    return "binary";
-#  else
-    return "short";
-#  endif
-#endif
-}
-
-
-ULONG MaxAllele()
-{
-    return ModuleMaxAllele;
-}
-
-
-string ModuleCompiler()
-{
-    return COMPILER;
-}
-
-
-string ModuleDate()
-{
-    return __DATE__;
-}
-
-
-string ModulePyVersion()
-{
-    return PY_VERSION;
-}
-
-
-string ModulePlatForm()
-{
-    return PLATFORM;
+    //
+    return dict;
 }
 
 
@@ -3423,7 +3362,7 @@ void clearGenotype(GenoIterator to, size_t n)
 bool initialize()
 {
     // tie python stdout to cout
-    setLogOutput();
+	cout.rdbuf(&g_pythonCoutBuf);
 
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,

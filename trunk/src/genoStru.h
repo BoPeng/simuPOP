@@ -682,7 +682,7 @@ public:
 	 *  be ignored if alleles at all loci share the same names. If the name of
 	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
 	 *  returned. An \c IndexError will be raised if \e allele is larger than
-	 *  the maximum allowed allele state of this module (<tt>MaxAllele()</tt>).
+	 *  the maximum allowed allele state of this module (<tt>ModuleMaxAllele</tt>).
 	 *  <group>4-allele</group>
 	 */
 	string alleleName(const UINT allele, const UINT locus = 0) const;
