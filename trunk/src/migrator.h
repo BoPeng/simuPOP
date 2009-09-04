@@ -130,11 +130,11 @@ public:
 	 *  all parameters.
 	 */
 	migrator(const matrix & rate = matrix(), int mode = ByProbability,
-        const uintList & toSubPops = vectoru(),
+		const uintList & toSubPops = uintList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-        const intList & at = vectori(),
+		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList("migrate_to"));
+		const stringList & infoFields = vectorstr(1, "migrate_to"));
 
 	/// destructor
 	virtual ~migrator()
@@ -178,7 +178,7 @@ protected:
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	vectoru m_to;
+	uintList m_to;
 };
 
 
@@ -231,7 +231,7 @@ public:
 	 *  information field such as \c migrate_to.
 	 */
 	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
-		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
+		const vectorf & proportions = vectorf(), const stringList names = vectorstr(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
