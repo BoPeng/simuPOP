@@ -1358,60 +1358,61 @@ void CloseOutput(const string & output = string());
 // / Random number generator
 // ////////////////////////////////////////////////////////////
 
-/** \brief random number generator
-
-   This random number generator class wraps around a number of
-   random number generators from GNU Scientific Library. You can obtain
-   and change system random number generator through the \c GetRNG()
-   function. Or create a separate random number generator and use
-   it in your script.
+/** This random number generator class wraps around a number of random number
+ *  generators from GNU Scientific Library. You can obtain and change the
+ *  RNG used by the current simuPOP module through the \c GetRNG() function,
+ *  or create a separate random number generator and use it in your script.
  */
 class RNG
 {
 
 public:
-	/// Create a RNG object. You can also use \c GetRNG() function to get the
-	/// RNG used by simuPOP.
-	RNG(const char * rng = NULL, unsigned long seed = 0);
+	/** Create a RNG object using specified name and seed. If \e rng is not
+	 *  given, environmental variable \c GSL_RNG_TYPE will be used if it is
+	 *  available. Otherwise, RNG \c mt19937 will be used. If \e seed is not
+	 *  given, <tt>/dev/urandom</tt>, <tt>/dev/random</tt>, or other system
+	 *  random number source will be used to guarantee that random seeds
+	 *  are used even if more than one simuPOP sessions are started
+	 *  simultaneously.
+	 */
+	RNG(const char * name = NULL, unsigned long seed = 0);
 
 	///
 	~RNG();
 
-	/// choose an random number generator, or set seed to the current RNG
-	/**
-	   \param rng name of the RNG. If rng is not given, environmental variable
-	   GSL_RNG_TYPE will be used if it is available. Otherwise, RNG \c mt19937
-	   will be used.
-	   \param seed random seed. If not given, <tt>/dev/urandom</tt>,
-	   <tt>/dev/random</tt>, system time will be used, depending on availability,
-	   in that order. Note that windows system does not have \c /dev so system
-	   time is used.
+	/** Use another underlying RNG for the current RNG object. The handling of
+	 *  parameters \e rng and \e seed is the same as \c RNG::RNG(name, seed).
 	 */
-	void setRNG(const char * rng = NULL, unsigned long seed = 0);
+	void setRNG(const char * name = NULL, unsigned long seed = 0);
 
-	/// return RNG name
+	/** Return the name of the current random number generator.
+	 */
 	const char * name()
 	{
 		return gsl_rng_name(m_RNG);
 	}
 
 
-	/// return the seed of this RNG
+	/** Return the seed used to initialize the RNG. This can be used to
+	 *  repeat a previous session.
+	 */
 	unsigned long seed()
 	{
 		return m_seed;
 	}
 
 
-	/// return the maximum allowed seed value
+	/** Return the maximum allowed seed value
+	 */
 	unsigned long maxSeed()
 	{
 		return std::numeric_limits<unsigned long>::max();
 	}
 
 
-	/// set random seed for this random number generator
-	/// if seed is 0, method described in \c setRNG is used.
+	/** Set random seed for this random number generator. If seed is 0, method
+	 *  described in \c setRNG is used.
+	 */
 	void setSeed(unsigned long seed)
 	{
 		m_seed = seed;
@@ -1422,7 +1423,8 @@ public:
 	/// CPPONLY
 	unsigned long generateRandomSeed();
 
-	/// Maximum value of this RNG
+	/** Maximum value of this RNG
+	 */
 	unsigned long max()
 	{
 		return gsl_rng_max(m_RNG);
@@ -1435,16 +1437,20 @@ public:
 	}
 
 
-	/// return a random number in the range of [0, 2, ... max()-1]
+	/** Return a random number in the range of <tt>[0, 2, ... max()-1]</tt>
+	 */
 	unsigned long int randGet()
 	{
 		return gsl_rng_get(m_RNG);
 	}
 
 
+	/** Return a random bit.</tt>
+	 */
 	bool randBit();
 
-	/// return a random number in the range of [0, 1, 2, ... n-1]
+	/** return a random number in the range of <tt>[0, 1, 2, ... n-1]</tt>
+	 */
 	unsigned long int randInt(unsigned long int n)
 	{
 		return gsl_rng_uniform_int(m_RNG, n);
@@ -1462,27 +1468,39 @@ public:
 	}
 
 
-	/// Geometric distribution
+	/** Generate a random number following a geometric distribution with
+	 *  parameter \e p. Please check the documentation of \c gsl_ran_geometric
+	 *  for details.
+	 */
 	int randGeometric(double p)
 	{
 		return gsl_ran_geometric(m_RNG, p);
 	}
 
 
-	/// Uniform distribution  [0,1)
+	/** Generate a random number following a uniform distribution between 0 and
+	 *  1. Please check the documentation of \c gsl_ran_uniform for details.
+	 */
 	double randUniform01()
 	{
 		return gsl_rng_uniform(m_RNG);
 	}
 
 
-	/// Normal distribution
+	/** Generate a random number following a normal distribution with mean
+	 *  \e m and standard deviation \e v. Please check the documentation
+	 *  of \c gsl_ran_gaussian for details.
+	 */
 	double randNormal(double m, double v)
 	{
 		return gsl_ran_gaussian(m_RNG, v) + m;
 	}
 
 
+	/** Generate a random number following a exponential distribution with
+	 *  parameter \e v. Please check the documentation of
+	 *  \c gsl_ran_exponential for details.
+	 */
 	double randExponential(double v)
 	{
 		return gsl_ran_exponential(m_RNG, v);
@@ -1497,7 +1515,10 @@ public:
 	}
 
 
-	/// Binomial distribution B(n, p)
+	/** Generate a random number following a binomial distribution with
+	 *  parameters \e n and \e p. Please check the documentation of
+	 *  \c gsl_ran_binomial for details.
+	 */
 	UINT randBinomial(UINT n, double p)
 	{
 		DBG_FAILIF(n <= 0, ValueError, "RandBinomial: n should be positive.");
@@ -1506,7 +1527,10 @@ public:
 	}
 
 
-	/// Multinomial distribution
+	/** Generate a random number following a multinomial distribution with
+	 *  parameters \e N and \e p (a list of probabilities). Please check the
+	 *  documentation of \c gsl_ran_multinomial for details.
+	 */
 	void randMultinomial(unsigned int N, const vectorf & p, vectoru::iterator n)
 	{
 		// if sum p_i != 1, it will be normalized.
@@ -1518,6 +1542,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	vectoru randMultinomialVal(unsigned int N, const vectorf & p)
 	{
 		// if sum p_i != 1, it will be normalized.
@@ -1531,7 +1556,10 @@ public:
 	}
 
 
-	/// Poisson distribution
+	/** Generate a random number following a Poisson distribution with
+	 *  parameter \e p. Please check the documentation of \c gsl_ran_poisson
+	 *  for details.
+	 */
 	UINT randPoisson(double p)
 	{
 		return gsl_ran_poisson(m_RNG, p);

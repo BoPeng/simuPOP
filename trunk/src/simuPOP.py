@@ -184,7 +184,7 @@ def selfingOffspringGenerator(ops=[], *args, **kwargs):
 
 
 def cloneMating(numOffspring = 1, sexMode = None, ops = [], subPopSize = [],
-        subPop = (), weight = 0, selectionField = None):
+        subPop = [], weight = 0, selectionField = None):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
     a clone offspring generator. Please refer to class ``offspringGenerator``
     for parameters *ops* and *numOffspring*, and to class ``homoMating`` for
@@ -202,7 +202,7 @@ def cloneMating(numOffspring = 1, sexMode = None, ops = [], subPopSize = [],
 
 
 def randomSelection(numOffspring = 1, sexMode = None, ops = [], subPopSize = [],
-        subPop = (), weight = 0, selectionField = 'fitness'):
+        subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with replacement, and a clone offspring generator. This mating
     scheme is usually used to simulate the basic haploid Wright-Fisher model
@@ -222,7 +222,7 @@ def randomSelection(numOffspring = 1, sexMode = None, ops = [], subPopSize = [],
 
 
 def randomMating(numOffspring = 1, sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = 'fitness'):
+		subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
     widely used to simulate diploid sexual Wright-Fisher random mating.
@@ -240,7 +240,7 @@ def randomMating(numOffspring = 1, sexMode = RandomSex, ops = [], subPopSize = [
 
 
 def monogamousMating(numOffspring = 1, sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = None):
+		subPop = [], weight = 0, selectionField = None):
     '''A homogeneous mating scheme that uses a random parents chooser without
     replacement and a Mendelian offspring generator. It differs from the basic
     random mating scheme in that each parent can mate only once so there is no
@@ -260,7 +260,7 @@ def monogamousMating(numOffspring = 1, sexMode = RandomSex, ops = [], subPopSize
 
 def polygamousMating(polySex=Male, polyNum=1, numOffspring = 1,
         sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = 'fitness'):
+		subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a multi-spouse parents chooser
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that each parent of sex *polySex* will have *polyNum*
@@ -279,7 +279,7 @@ def polygamousMating(polySex=Male, polyNum=1, numOffspring = 1,
 
 def alphaMating(alphaSex=Male, alphaNum=0, alphaField='', numOffspring = 1, 
     	sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = 'fitness'):
+		subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a alpha-individual parents chooser
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that selection of parents of sex *alphaSex* is limited to
@@ -301,7 +301,7 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='', numOffspring = 1,
 
 
 def haplodiploidMating(numOffspring = 1., sexMode = RandomSex, ops = [],
-        subPopSize = [], subPop = (), weight = 0, selectionField = 'fitness'):
+        subPopSize = [], subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a haplodiploid offspring generator. It should be used
     in a haplodiploid population where male individuals only have one set
@@ -319,7 +319,7 @@ def haplodiploidMating(numOffspring = 1., sexMode = RandomSex, ops = [],
 
 
 def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
-        ops = [], subPopSize = [], subPop = (), weight = 0,
+        ops = [], subPopSize = [], subPop = [], weight = 0,
         selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with or without replacement (parameter *replacement*) and a
@@ -340,7 +340,7 @@ def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
 
 def consanguineousMating(infoFields = [], func = None, param = None,
         replacement = False, numOffspring = 1.,	 sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = 'fitness'):
+		subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses an information parents chooser and
     a Mendelian offspring generator. A function *func* should be defined to
     locate certain types of relative to each individual and save their indexes
@@ -362,7 +362,7 @@ def consanguineousMating(infoFields = [], func = None, param = None,
 
 def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
         numOffspring = 1, sexMode = RandomSex, ops = [], subPopSize = [],
-		subPop = (), weight = 0, selectionField = 'fitness'):
+		subPop = [], weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random sexual parents chooser
     with replacement and a controlled offspring generator using Mendelian
     genotype transmitter. At each generation, function *freqFunc* will be
