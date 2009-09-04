@@ -129,8 +129,10 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	migrator(const matrix & rate = matrix(), int mode = ByProbability, const uintList & toSubPops = uintList(),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+	migrator(const matrix & rate = matrix(), int mode = ByProbability,
+        const uintList & toSubPops = uintList(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+        const intList & at = intList(),
 		const repList & reps = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("migrate_to"));
 

@@ -548,7 +548,7 @@ class Doxy2SWIG:
                 'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(vspID subPop=[])',
-             'Usage': u'x.dvars(subPop)',
+             'Usage': u'x.dvars(subPop=[])',
              },
             {'Name': u'simuPOP::simulator::dvars',
              'type': u'memberofclass_simuPOP::simulator',
@@ -557,7 +557,7 @@ class Doxy2SWIG:
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(int rep, vspID subPop=[])',
-             'Usage': u'x.dvars(rep, subPop)',
+             'Usage': u'x.dvars(rep, subPop=[])',
              },
         ])
         # change a few usages:

@@ -239,18 +239,19 @@ public:
 	 *  \param at A list of applicable generations. Parameters \c begin,
 	 *    \c end, and \c step will be ignored if this parameter is specified.
 	 *    A single generation number is also acceptable.
-	 *  \param reps A list of applicable replicates. A default value \c None is
-	 *    interpreted as all replicates in a simulator. Negative indexes such
-	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
-	 *    as a shortcut for <tt>rep=[idx]</tt>.
+	 *  \param reps A list of applicable replicates. A common default value
+	 *    \c AllAvail is interpreted as all replicates in a simulator. Negative
+	 *    indexes such as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt>
+	 *    can be used as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
 	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. <tt>subPops=[sp1]</tt>
 	 *    can be simplied as <tt>subPops=sp1</tt>. Negative indexes are not
-	 *    supported. The default value (\c None) of this parameter reprents all
-	 *    subpopulations of the population being aplied. Suport for this
-	 *    parameter vary from operator to operator and some operators do not
-	 *    support virtual subpopulations at all. Please refer to the reference
-	 *    manual of individual operators for their support for this parameter.
+	 *    supported. A common default value (\c AllAvail) of this parameter
+	 *    reprents all subpopulations of the population being aplied. Suport
+	 *    for this parameter vary from operator to operator and some operators
+	 *    do not support virtual subpopulations at all. Please refer to the
+	 *    reference manual of individual operators for their support for this
+	 *    parameter.
 	 *  \param infoFields A list of information fields that will be used by an
 	 *    operator. You usually do not need to specify this parameter because
 	 *    operators that use information fields usually have default values for

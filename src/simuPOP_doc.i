@@ -196,22 +196,22 @@ Arguments:
                     begin, end, and step will be ignored if this
                     parameter is specified. A single generation number
                     is also acceptable.
-    reps:           A list of applicable replicates. A default value
-                    None is interpreted as all replicates in a
-                    simulator. Negative indexes such as -1 (last
+    reps:           A list of applicable replicates. A common default
+                    value AllAvail is interpreted as all replicates in
+                    a simulator. Negative indexes such as -1 (last
                     replicate) is acceptable. rep=idx can be used as a
                     shortcut for rep=[idx].
     subPops:        A list of applicable (virtual) subpopulations,
                     such as subPops=[sp1, sp2, (sp2, vsp1)].
                     subPops=[sp1] can be simplied as subPops=sp1.
-                    Negative indexes are not supported. The default
-                    value (None) of this parameter reprents all
-                    subpopulations of the population being aplied.
-                    Suport for this parameter vary from operator to
-                    operator and some operators do not support virtual
-                    subpopulations at all. Please refer to the
-                    reference manual of individual operators for their
-                    support for this parameter.
+                    Negative indexes are not supported. A common
+                    default value (AllAvail) of this parameter
+                    reprents all subpopulations of the population
+                    being aplied. Suport for this parameter vary from
+                    operator to operator and some operators do not
+                    support virtual subpopulations at all. Please
+                    refer to the reference manual of individual
+                    operators for their support for this parameter.
     infoFields:     A list of information fields that will be used by
                     an operator. You usually do not need to specify
                     this parameter because operators that use
@@ -8151,29 +8151,30 @@ Usage:
 
 %feature("docstring") simuPOP::RNG "
 
-Description:
-
-    random number generator
-
 Details:
 
     This random number generator class wraps around a number of random
     number generators from GNU Scientific Library. You can obtain and
-    change system random number generator through the GetRNG()
-    function. Or create a separate random number generator and use it
-    in your script.
+    change the RNG used by the current simuPOP module through the
+    GetRNG() function, or create a separate random number generator
+    and use it in your script.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::RNG "
 
-Description:
-
-    RNG used by simuPOP.
-
 Usage:
 
-    RNG(rng=None, seed=0)
+    RNG(name=None, seed=0)
+
+Details:
+
+    Create a RNG object using specified name and seed. If rng is not
+    given, environmental variable GSL_RNG_TYPE will be used if it is
+    available. Otherwise, RNGmt19937 will be used. If seed is not
+    given, /dev/urandom, /dev/random, or other system random number
+    source will be used to guarantee that random seeds are used even
+    if more than one simuPOP sessions are started simultaneously.
 
 "; 
 
@@ -8187,72 +8188,65 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::setRNG "
 
-Description:
-
-    choose an random number generator, or set seed to the current RNG
-
 Usage:
 
-    x.setRNG(rng=None, seed=0)
+    x.setRNG(name=None, seed=0)
 
-Arguments:
+Details:
 
-    rng:            name of the RNG. If rng is not given,
-                    environmental variable GSL_RNG_TYPE will be used
-                    if it is available. Otherwise, RNGmt19937 will be
-                    used.
-    seed:           random seed. If not given, /dev/urandom,
-                    /dev/random, system time will be used, depending
-                    on availability, in that order. Note that windows
-                    system does not have /dev so system time is used.
+    Use another underlying RNG for the current RNG object. The
+    handling of parameters rng and seed is the same as RNG::RNG(name,
+    seed).
 
 "; 
 
 %feature("docstring") simuPOP::RNG::name "
 
-Description:
-
-    return RNG name
-
 Usage:
 
     x.name()
+
+Details:
+
+    Return the name of the current random number generator.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::seed "
 
-Description:
-
-    return the seed of this RNG
-
 Usage:
 
     x.seed()
+
+Details:
+
+    Return the seed used to initialize the RNG. This can be used to
+    repeat a previous session.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::maxSeed "
 
-Description:
-
-    return the maximum allowed seed value
-
 Usage:
 
     x.maxSeed()
+
+Details:
+
+    Return the maximum allowed seed value
 
 "; 
 
 %feature("docstring") simuPOP::RNG::setSeed "
 
-Description:
-
-    if seed is 0, method described in setRNG is used.
-
 Usage:
 
     x.setSeed(seed)
+
+Details:
+
+    Set random seed for this random number generator. If seed is 0,
+    method described in setRNG is used.
 
 "; 
 
@@ -8260,13 +8254,13 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::max "
 
-Description:
-
-    Maximum value of this RNG.
-
 Usage:
 
     x.max()
+
+Details:
+
+    Maximum value of this RNG
 
 "; 
 
@@ -8280,13 +8274,13 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::randGet "
 
-Description:
-
-    return a random number in the range of [0, 2, ... max()-1]
-
 Usage:
 
     x.randGet()
+
+Details:
+
+    Return a random number in the range of [0, 2, ... max()-1]
 
 "; 
 
@@ -8296,17 +8290,21 @@ Usage:
 
     x.randBit()
 
+Details:
+
+    Return a random bit.
+
 "; 
 
 %feature("docstring") simuPOP::RNG::randInt "
 
-Description:
-
-    return a random number in the range of [0, 1, 2, ... n-1]
-
 Usage:
 
     x.randInt(n)
+
+Details:
+
+    return a random number in the range of [0, 1, 2, ... n-1]
 
 "; 
 
@@ -8314,37 +8312,43 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::randGeometric "
 
-Description:
-
-    Geometric distribution.
-
 Usage:
 
     x.randGeometric(p)
+
+Details:
+
+    Generate a random number following a geometric distribution with
+    parameter p. Please check the documentation of gsl_ran_geometric
+    for details.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::randUniform01 "
 
-Description:
-
-    Uniform distribution [0,1).
-
 Usage:
 
     x.randUniform01()
+
+Details:
+
+    Generate a random number following a uniform distribution between
+    0 and 1. Please check the documentation of gsl_ran_uniform for
+    details.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::randNormal "
 
-Description:
-
-    Normal distribution.
-
 Usage:
 
     x.randNormal(m, v)
+
+Details:
+
+    Generate a random number following a normal distribution with mean
+    m and standard deviation v. Please check the documentation of
+    gsl_ran_gaussian for details.
 
 "; 
 
@@ -8354,51 +8358,57 @@ Usage:
 
     x.randExponential(v)
 
+Details:
+
+    Generate a random number following a exponential distribution with
+    parameter v. Please check the documentation of gsl_ran_exponential
+    for details.
+
 "; 
 
 %ignore simuPOP::RNG::randUniform01Array(ULONG size, double *vec);
 
 %feature("docstring") simuPOP::RNG::randBinomial "
 
-Description:
-
-    Binomial distribution B(n, p).
-
 Usage:
 
     x.randBinomial(n, p)
+
+Details:
+
+    Generate a random number following a binomial distribution with
+    parameters n and p. Please check the documentation of
+    gsl_ran_binomial for details.
 
 "; 
 
 %feature("docstring") simuPOP::RNG::randMultinomial "
 
-Description:
-
-    Multinomial distribution.
-
 Usage:
 
     x.randMultinomial(N, p, n)
 
-"; 
+Details:
 
-%feature("docstring") simuPOP::RNG::randMultinomialVal "
-
-Usage:
-
-    x.randMultinomialVal(N, p)
+    Generate a random number following a multinomial distribution with
+    parameters N and p (a list of probabilities). Please check the
+    documentation of gsl_ran_multinomial for details.
 
 "; 
+
+%ignore simuPOP::RNG::randMultinomialVal(unsigned int N, const vectorf &p);
 
 %feature("docstring") simuPOP::RNG::randPoisson "
-
-Description:
-
-    Poisson distribution.
 
 Usage:
 
     x.randPoisson(p)
+
+Details:
+
+    Generate a random number following a Poisson distribution with
+    parameter p. Please check the documentation of gsl_ran_poisson for
+    details.
 
 "; 
 
@@ -11057,7 +11067,7 @@ Details:
 
 Usage:
 
-    x.dvars(subPop)
+    x.dvars(subPop=[])
 
 Details:
 
@@ -11070,7 +11080,7 @@ Details:
 
 Usage:
 
-    x.dvars(rep, subPop)
+    x.dvars(rep, subPop=[])
 
 Details:
 
