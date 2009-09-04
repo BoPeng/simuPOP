@@ -1102,7 +1102,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 
 
 	if (PyInt_Check(item) || PyLong_Check(item)) {
-		int parent;
+		long int parent;
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,

@@ -665,7 +665,7 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 }
 
 
-GenoStructure & GenoStruTrait::gsSetAlleleNames(const lociList & loci_, const matrixstr & alleleNames)
+GenoStructure & GenoStruTrait::gsSetAlleleNames(const uintList & loci_, const matrixstr & alleleNames)
 {
 	GenoStructure gs = s_genoStruRepository[m_genoStruIdx];
 

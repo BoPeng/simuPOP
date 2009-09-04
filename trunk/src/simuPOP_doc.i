@@ -1185,7 +1185,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const uintList &loci, const matrixstr &alleleNames);
 
 %ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
 
@@ -3118,8 +3118,9 @@ Usage:
 
 Details:
 
-    This class defines an interface using which both a integer number
-    and a list of numbers can be accpted.
+    A class to specify replicate list. The reason why I cannot simple
+    use vectori() is that users have got used to use a single number
+    to specify a single replicate.
 
 "; 
 
@@ -3127,11 +3128,15 @@ Details:
 
 Usage:
 
-    intList(values=[])
+    intList(obj=None)
 
 "; 
 
+%ignore simuPOP::intList::intList(const vectori &reps);
+
 %ignore simuPOP::intList::elems() const;
+
+%ignore simuPOP::intList::match(UINT rep, const vector< bool > &activeRep);
 
 %feature("docstring") simuPOP::kamMutator "
 
@@ -3204,24 +3209,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::lociList "
-
-"; 
-
-%feature("docstring") simuPOP::lociList::lociList "
-
-Usage:
-
-    lociList(obj=None)
-
-"; 
-
-%ignore simuPOP::lociList::lociList(const vectoru &values);
-
-%ignore simuPOP::lociList::allAvail() const;
-
-%ignore simuPOP::lociList::elems() const;
-
 %feature("docstring") simuPOP::maPenetrance "
 
 Function form:
@@ -3253,7 +3240,7 @@ Description:
 
 Usage:
 
-    maPenetrance(loci, penetrance, wildtype=[], ancGen=-1,
+    maPenetrance(loci, penetrance, wildtype=AllAvail, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
@@ -3688,8 +3675,8 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    maSelector(loci, fitness, wildtype=AllAvail, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=AllAvail)
 
 Details:
@@ -8038,30 +8025,6 @@ Details:
 
 %ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad, individual *mom);
 
-%feature("docstring") simuPOP::repList "
-
-Details:
-
-    A class to specify replicate list. The reason why I cannot simple
-    use vectori() is that users have got used to use a single number
-    to specify a single replicate.
-
-"; 
-
-%feature("docstring") simuPOP::repList::repList "
-
-Usage:
-
-    repList(obj=None)
-
-"; 
-
-%ignore simuPOP::repList::repList(const vectori &reps);
-
-%ignore simuPOP::repList::elems() const;
-
-%ignore simuPOP::repList::match(UINT rep, const vector< bool > &activeRep);
-
 %feature("docstring") simuPOP::resizeSubPops "
 
 Function form:
@@ -8382,11 +8345,13 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::randMultinomial "
+%ignore simuPOP::RNG::randMultinomial(unsigned int N, const vectorf &p, vectoru::iterator n);
+
+%feature("docstring") simuPOP::RNG::randMultinomialVal "
 
 Usage:
 
-    x.randMultinomial(N, p, n)
+    x.randMultinomialVal(N, p)
 
 Details:
 
@@ -8395,8 +8360,6 @@ Details:
     documentation of gsl_ran_multinomial for details.
 
 "; 
-
-%ignore simuPOP::RNG::randMultinomialVal(unsigned int N, const vectorf &p);
 
 %feature("docstring") simuPOP::RNG::randPoisson "
 
@@ -10629,9 +10592,13 @@ Usage:
 
 Usage:
 
-    uintList(values=[])
+    uintList(obj=None)
 
 "; 
+
+%ignore simuPOP::uintList::uintList(const vectoru &values);
+
+%ignore simuPOP::uintList::allAvail() const;
 
 %ignore simuPOP::uintList::elems() const;
 
@@ -10930,7 +10897,7 @@ Details:
 
 %ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
 
-%ignore simuPOP::PyObj_As_Int(PyObject *obj, int &val);
+%ignore simuPOP::PyObj_As_Int(PyObject *obj, long int &val);
 
 %ignore simuPOP::PyObj_As_Double(PyObject *obj, double &val);
 

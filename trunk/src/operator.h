@@ -258,7 +258,7 @@ public:
 	 *    this parameter.
 	 */
 	baseOperator(const stringFunc & output, int stage, int begin, int end, int step, const intList & at,
-		const repList & rep, const subPopList & subPops, const stringList & infoFields) :
+		const intList & rep, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_rep(rep), m_subPops(subPops),
 		m_ostream(output.value(), output.func()), m_infoFields(infoFields.elems()),
@@ -528,13 +528,13 @@ private:
 
 	/// a list of generations that this oeprator will be active.
 	/// typical usage is m_atGen=-1 to apply at the last generation.
-	vectorl m_atGen;
+	vectori m_atGen;
 
 	/// various m_flags of Operator for faster processing.
 	unsigned char m_flags;
 
 	/// apply to all (-1) or one of the replicates.
-	repList m_rep;
+	intList m_rep;
 
 	/// apply to some of the (virtual) subpops.
 	subPopList m_subPops;
@@ -663,8 +663,8 @@ public:
 	 */
 	pause(char stopOnKeyStroke = false, bool prompt = true,
 		const stringFunc & output = ">", int stage = PostMating,
-		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
@@ -713,8 +713,8 @@ public:
 	/** Create a \c noneOp.
 	 */
 	noneOp(const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -774,8 +774,8 @@ public:
 	 */
 	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
 		const stringFunc & output = ">", int stage = PostMating,
-		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
@@ -830,8 +830,8 @@ public:
 	 *  time it was applied, and the overall time since it was created.
 	 */
 	ticToc(const stringFunc & output = ">",
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 		time(&m_startTime);
@@ -880,8 +880,8 @@ public:
 	 *  <tt>population.setAncestralDepth</tt> member function of a population.
 	 */
 	setAncestralDepth(int depth, const stringFunc & output = ">",
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_depth(depth)
@@ -937,8 +937,8 @@ public:
 	 *  when it is applied to a population.
 	 */
 	turnOnDebug(DBG_CODE code,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -988,8 +988,8 @@ public:
 	 *  \e code when it is applied to a population.
 	 */
 	turnOffDebug(DBG_CODE code,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
@@ -1071,8 +1071,8 @@ public:
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
-		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	/// HIDDEN

@@ -139,8 +139,7 @@ namespace std
     %template()         vector<UINT>;
 //#endif
 
-    %template()         vector<int>;
-    %template()         vector<LONG>;
+    %template()         vector<long int>;
     %template()         vector<ULONG>;
     %template()         vector<InfoType>;
     %template()         vector<double>;
@@ -153,7 +152,7 @@ namespace std
     %template()         pair<ULONG, ULONG>;
     %template()         vector<pair<ULONG, ULONG> >;
 
-    %template()         vector< vector<int> >;
+    %template()         vector< vector<long int> >;
     %template()         vector< vector<double> >;
 }
 

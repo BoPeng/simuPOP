@@ -130,10 +130,10 @@ public:
 	 *  all parameters.
 	 */
 	migrator(const matrix & rate = matrix(), int mode = ByProbability,
-        const uintList & toSubPops = uintList(),
+        const uintList & toSubPops = vectoru(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-        const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+        const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("migrate_to"));
 
 	/// destructor
@@ -232,8 +232,8 @@ public:
 	 */
 	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = vectorstr())
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
@@ -303,8 +303,8 @@ public:
 	 *  all parameters.
 	 */
 	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = vectorstr())
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_name(name)
 	{
@@ -367,8 +367,8 @@ public:
 	resizeSubPops(const subPopList & subPops = subPopList(),
 		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
 		bool propagate = true, int stage = PreMating,
-		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const stringList & infoFields = vectorstr())
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{

@@ -470,7 +470,7 @@ class Doxy2SWIG:
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 # re function used to repalce the following sentances
-                vect = re.compile('vector(info|u|l|i|f|a|op|splitter|str|vsp)')
+                vect = re.compile('vector(info|u|i|f|a|op|splitter|str|vsp)')
                 defVal = vect.sub('[]', defVal)
                 defVal = defVal.replace('strDict','{}')
                 defVal = defVal.replace('intDict','{}')
@@ -481,16 +481,14 @@ class Doxy2SWIG:
                 defVal = defVal.replace('false','False')
                 defVal = defVal.replace('NULL','None')
                 defVal = defVal.replace('uintListFunc','[]')
-                defVal = defVal.replace('uintList','[]')
-                defVal = defVal.replace('intList','[]')
+                defVal = defVal.replace('uintList','AllAvail')
+                defVal = defVal.replace('intList','AllAvail')
                 defVal = defVal.replace('floatListFunc','[]')
                 defVal = defVal.replace('floatList','[]')
-                defVal = defVal.replace('repList','AllAvail')
                 defVal = defVal.replace('stringList','AllAvail')
                 defVal = defVal.replace('stringMatrix','[]')
                 defVal = defVal.replace('subPopList', 'AllAvail')
                 defVal = defVal.replace('opList','[]')
-                defVal = defVal.replace('lociList', 'AllAvail')
                 defVal = defVal.replace('string','""')
                 defVal = defVal.replace('UnnamedSubPop','""')
                 #defVal = defVal.replace('""', "''")

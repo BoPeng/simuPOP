@@ -399,7 +399,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
-lociList::lociList(PyObject * obj) : m_elems(), m_allAvail(false)
+uintList::uintList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
 	if (obj == NULL || obj == Py_None)
 		// accept NULL
@@ -426,7 +426,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_allAvail(false)
 }
 
 
-repList::repList(PyObject * obj) : m_elems(), m_allAvail(false)
+intList::intList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
 	if (obj == NULL || obj == Py_None)
 		// accept NULL
@@ -470,7 +470,7 @@ void PyObj_As_Bool(PyObject * obj, bool & val)
 }
 
 
-void PyObj_As_Int(PyObject * obj, int & val)
+void PyObj_As_Int(PyObject * obj, long int & val)
 {
 	if (obj == NULL) {
 		val = 0;
@@ -1633,13 +1633,13 @@ bool Expression::valueAsBool()
 }
 
 
-int Expression::valueAsInt()
+long int Expression::valueAsInt()
 {
 	PyObject * res = evaluate();
 
 	if (res == NULL)
 		return 0;
-	int val;
+	long int val;
 	PyObj_As_Int(res, val);
 	Py_XDECREF(res);
 	return val;
@@ -3422,7 +3422,7 @@ bool initialize()
 }
 
 
-bool repList::match(UINT rep, const vector<bool> & activeRep)
+bool intList::match(UINT rep, const vector<bool> & activeRep)
 {
     if (m_elems.empty())
 		return m_allAvail;

@@ -37,7 +37,7 @@
 
 namespace simuPOP {
 
-pedigree::pedigree(const population & pop, const lociList & loci,
+pedigree::pedigree(const population & pop, const uintList & loci,
 	const stringList & infoFields, int ancGen,
 	const string & fatherField, const string & motherField)
 	: m_fatherField(fatherField), m_motherField(motherField),

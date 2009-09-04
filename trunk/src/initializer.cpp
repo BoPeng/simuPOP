@@ -52,11 +52,11 @@ bool initSex::apply(population & pop)
 }
 
 
-initByFreq::initByFreq(const matrix & alleleFreq, const lociList & loci,
+initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 	const uintList & ploidy, bool identicalInds,
 	bool initsex, double maleFreq, const intList & sex,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & reps, const subPopList & subPops,
+	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_alleleFreq(alleleFreq), m_identicalInds(identicalInds),
@@ -136,10 +136,10 @@ bool initByFreq::apply(population & pop)
 }
 
 
-initByValue::initByValue(intMatrix value, const lociList & loci, const lociList & ploidy,
+initByValue::initByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
 	const floatList & proportions, bool initsex, double maleFreq, const intList & sex,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & reps, const subPopList & subPops,
+	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_value(value), m_proportion(proportions.elems()), m_loci(loci),

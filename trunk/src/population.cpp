@@ -1287,7 +1287,7 @@ void population::resize(const uintList & sizeList, bool propagate)
 
 
 population & population::extract(const string & field,
-                                 const lociList & extractedLoci,
+                                 const uintList & extractedLoci,
                                  const stringList & infoFieldList,
                                  int ancGen, pedigree * ped, const vectorstr & pedFields) const
 {
@@ -1551,9 +1551,9 @@ population & population::extract(const string & field,
 }
 
 
-void population::removeLoci(const uintList & lociList, const uintList & keepList)
+void population::removeLoci(const uintList & uintList, const uintList & keepList)
 {
-	const vectoru & loci = lociList.elems();
+	const vectoru & loci = uintList.elems();
 	const vectoru & keep = keepList.elems();
 
 	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
@@ -1596,7 +1596,7 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 }
 
 
-void population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
+void population::recodeAlleles(const uintListFunc & newAlleles, const uintList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
 	DBG_FAILIF(newAlleles.empty() && !newAlleles.func().isValid(), ValueError,

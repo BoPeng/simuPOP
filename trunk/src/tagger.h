@@ -47,8 +47,8 @@ class tagger : public baseOperator
 public:
 	/// create a \c tagger, default to be always active but no output
 	tagger(const stringFunc & output = "",  int stage = DuringMating,
-		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	/// destructor
@@ -93,7 +93,7 @@ public:
 	   \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList(TAG_InheritFields[0], TAG_InheritFields[1])) :
 		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
@@ -153,8 +153,8 @@ public:
 	/// create a \c parentTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+	parentTagger(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList("parent_idx")) :
 		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
@@ -222,8 +222,8 @@ public:
 	/// create a \c parentsTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentsTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+	parentsTagger(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList(ParentsFields[0], ParentsFields[1])) :
 		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
@@ -278,8 +278,8 @@ private:
 class pedigreeTagger : public tagger
 {
 public:
-	pedigreeTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+	pedigreeTagger(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		int stage = PostMating, const stringFunc & output = ">",
 		const stringList & pedigreeFields = stringList());
 
@@ -308,7 +308,7 @@ public:
 	    offspring. The return value has to be a list even if only one field is given.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
-		int step = 1, const intList & at = intList(), const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
 		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
