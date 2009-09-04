@@ -279,13 +279,12 @@ typedef long LONG;
 const unsigned long MaxIntNumber = std::numeric_limits<int>::max();
 const unsigned long MaxLongNumber = std::numeric_limits<long int>::max();
 
-typedef std::vector<int>                   vectori;
+typedef std::vector<long int>              vectori;
 typedef std::vector<double>                vectorf;
 typedef std::vector<Allele>                vectora;
-typedef std::vector<LONG>                  vectorl;
 typedef std::vector<ULONG>                 vectoru;
 typedef std::vector<std::string>           vectorstr;
-typedef std::vector<std::vector<int > >    intMatrix;
+typedef std::vector<std::vector<long int > >    intMatrix;
 typedef std::vector<std::vector<std::string > >    matrixstr;
 typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;

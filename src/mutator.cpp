@@ -199,7 +199,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & reps, const subPopList & subPops,
+	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: mutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, stage, begin, end, step,
 	          at, reps, subPops, infoFields)
@@ -273,7 +273,7 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & reps, const subPopList & subPops, const stringList & infoFields)
+	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {

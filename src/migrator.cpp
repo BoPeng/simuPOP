@@ -30,7 +30,7 @@ namespace simuPOP {
 
 migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & reps, const subPopList & subPops, const stringList & infoFields)
+	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 	m_rate(rate), m_mode(mode), m_to(toSubPops.elems())
 {

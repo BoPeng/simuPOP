@@ -78,8 +78,8 @@ public:
 	 */
 	pyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
@@ -140,8 +140,8 @@ public:
 	 */
 	pyExec(const string & stmts = string(), const string & exposePop = string(),
 		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: pyEval("", stmts, exposePop, "", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
@@ -216,8 +216,8 @@ public:
 	 */
 	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
-		const stringFunc & output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const stringFunc & output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
 	{
@@ -309,8 +309,8 @@ public:
 	 *  variables and functions in \e stmts is discouraged.
 	 */
 	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
-		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_simpleStmt(stmts)
 	{
@@ -1146,12 +1146,12 @@ public:
 		//
 		bool numOfAffected = false,
 		//
-		const uintList & alleleFreq = uintList(),
+		const uintList & alleleFreq = vectoru(),
 		//
-		const uintList & heteroFreq = uintList(),
-		const uintList & homoFreq = uintList(),
+		const uintList & heteroFreq = vectoru(),
+		const uintList & homoFreq = vectoru(),
 		//
-		const uintList & genoFreq = uintList(),
+		const uintList & genoFreq = vectoru(),
 		//
 		const intMatrix & haploFreq = intMatrix(),
 		//
@@ -1163,20 +1163,20 @@ public:
 		//
 		const intMatrix & LD = intMatrix(),
 		//
-		const uintList & association = uintList(),
+		const uintList & association = vectoru(),
 		//
-		const uintList & neutrality = uintList(),
+		const uintList & neutrality = vectoru(),
 		//
-		const uintList & structure = uintList(),
+		const uintList & structure = vectoru(),
 		//
-		const uintList & HWE = uintList(),
+		const uintList & HWE = vectoru(),
 		//
 		const stringList & vars = stringList(),
 		const string & suffix = string(),
 		// regular parameters
 		const stringFunc & output = "",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	~stat()

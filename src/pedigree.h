@@ -57,7 +57,7 @@ public:
 	 *  \e fatherField or \e motherField. The other field should be set to an
 	 *  empty string.
 	 */
-	pedigree(const population & pop, const lociList & loci = vectoru(),
+	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
 		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
 
@@ -113,7 +113,7 @@ public:
 	 *  to process.
 	 *  <group>4-locate</group>
 	 */
-	void locateRelatives(uintList relType = uintList(), const vectorstr & relFields = vectorstr(),
+	void locateRelatives(uintList relType = vectoru(), const vectorstr & relFields = vectorstr(),
 		int ancGen = -1);
 
 	/** Trace a relative path in a population and record the result in the

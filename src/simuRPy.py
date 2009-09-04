@@ -69,7 +69,7 @@ if os.name == 'nt':
     if int(rpy.r.R_Version()['svn rev']) >= 48333:
         rpy.r.windows_options(buffered=False)
 
-from simuPOP import pyOperator, PostMating, repList, subPopList
+from simuPOP import pyOperator, PostMating, subPopList, AllAvail
 
 def newDevice():
     '''Create a new graphics window and return its device number in R. This
@@ -350,7 +350,7 @@ class varPlotter(pyOperator):
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
         plotHook=None, stage=PostMating, begin=0, end=-1, step=1, at=[],
-        reps=repList(), **kwargs):
+        reps=AllAvail, **kwargs):
         '''
         expr
             expression that will be evaluated at each replicate's local
@@ -682,7 +682,7 @@ class scatterPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, stage=PostMating, begin=0, end=-1, step=1,
-        at=[], reps=repList(), subPops=subPopList(), **kwargs):
+        at=[], reps=AllAvail, subPops=subPopList(), **kwargs):
         '''
         infoFields
             Two information fields whose values will be the x- and y-axis of
@@ -843,7 +843,7 @@ class infoPlotter(pyOperator):
     '''
     def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, stage=PostMating, begin=0,
-        end=-1, step=1, at=[], reps=repList(), subPops=subPopList(), **kwargs):
+        end=-1, step=1, at=[], reps=AllAvail, subPops=subPopList(), **kwargs):
         '''
         func
             Name of the R function that will be called to draw figures from
@@ -1042,7 +1042,7 @@ class boxPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
         leaveOpen=False, preHook=None, postHook=None, plotHook = None,
-        stage=PostMating, begin=0, end=-1, step=1, at=[], reps=repList(),
+        stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
         subPops=subPopList(), **kwargs):
         '''
         infoFields

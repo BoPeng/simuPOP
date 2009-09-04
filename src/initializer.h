@@ -57,16 +57,16 @@ public:
 	 *  specified in parameter \e subPop, only individuals in these
 	 *  subpopulations will be initialized.
 	 */
-	initSex(double maleFreq = 0.5, const intList & sex = intList(),
+	initSex(double maleFreq = 0.5, const intList & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & reps = repList(),
+		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
-			for (vectorl::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
+			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
 				DBG_ASSERT(*it == int(Male) || *it == int(Female),
 					ValueError, "Parameter sex must be an array of Male or Female. ");
 			}
@@ -102,7 +102,7 @@ protected:
 	double m_maleFreq;
 
 	/// specify sex
-	vectorl m_sex;
+	vectori m_sex;
 };
 
 
@@ -129,11 +129,11 @@ public:
 	 *  initializes all chromosomes, including unused genotype locations and
 	 *  customized chromosomes.
 	 */
-	initByFreq(const matrix & alleleFreq = matrix(), const lociList & loci = lociList(),
-		const uintList & ploidy = uintList(), bool identicalInds = false,
-		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
+		const uintList & ploidy = vectoru(), bool identicalInds = false,
+		bool initSex = true, double maleFreq = 0.5, const intList & sex = vectori(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 
@@ -167,7 +167,7 @@ private:
 	bool m_identicalInds;
 
 	//
-	lociList m_loci;
+	uintList m_loci;
 
 	//
 	vectoru m_ploidy;
@@ -197,11 +197,11 @@ public:
 	 *  locations and customized chromosomes.
 	 */
 	initByValue(intMatrix value = intMatrix(),
-		const lociList & loci = lociList(), const lociList & ploidy = lociList(),
-		const floatList & proportions = floatList(),
-		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & reps = repList(), const subPopList & subPops = subPopList(),
+		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
+		const floatList & proportions = vectorf(),
+		bool initSex = true, double maleFreq = 0.5, const intList & sex = vectori(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	~initByValue()
@@ -234,10 +234,10 @@ private:
 	vectorf m_proportion;
 
 	//
-	lociList m_loci;
+	uintList m_loci;
 
 	//
-	lociList m_ploidy;
+	uintList m_ploidy;
 
 	//
 	bool m_initSex;

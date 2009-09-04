@@ -168,11 +168,11 @@ public:
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 */
-	population(const uintList & size = uintList(),
+	population(const uintList & size = vectoru(),
 		float ploidy = 2,
-		const uintList & loci = uintList(),
-		const uintList & chromTypes = uintList(),
-		const floatList & lociPos = floatList(),
+		const uintList & loci = vectoru(),
+		const uintList & chromTypes = vectoru(),
+		const floatList & lociPos = vectorf(),
 		int ancGen = 0,
 		const stringList & chromNames = vectorstr(),
 		const stringMatrix & alleleNames = stringMatrix(),
@@ -954,7 +954,7 @@ public:
 	 *  <group>7-manipulate</group>
 	 */
 	population & extract(const string & field = string(),
-		const lociList & loci = lociList(),
+		const uintList & loci = uintList(),
 		const stringList & infoFields = stringList(),
 		int ancGen = -1, pedigree * ped = NULL,
 		const vectorstr & pedFields = vectorstr()) const;
@@ -964,7 +964,7 @@ public:
 	 *  specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const uintList & loci = uintList(), const uintList & keep = uintList());
+	void removeLoci(const uintList & loci = vectoru(), const uintList & keep = vectoru());
 
 	/** Recode alleles at \e loci (default to all loci in a population) to
 	 *  other values according to parameter \e alleles. This parameter can
@@ -978,7 +978,7 @@ public:
 	 *  subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
+	void recodeAlleles(const uintListFunc & alleles, const uintList & loci = uintList(),
 		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
@@ -1730,7 +1730,7 @@ private:
 	/// names of each subpopulation
 	vectorstr m_subPopNames;
 
-	/// index to subPop \todo change to vectorl
+	/// index to subPop \todo change to vectori
 	vectoru m_subPopIndex;
 
 	///

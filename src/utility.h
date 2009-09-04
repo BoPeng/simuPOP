@@ -291,37 +291,38 @@ private:
 	pyObject m_func;
 };
 
-/** This class defines an interface using which both a integer number and
- *  a list of numbers can be accpted.
+
+/** A class to specify replicate list. The reason why I cannot simple
+ *  use vectori() is that users have got used to use a single number
+ *  to specify a single replicate.
  */
 class intList
 {
 public:
-	intList(const vectorl & values = vectorl()) : m_elems(values)
-	{
-	}
+	intList(PyObject * obj = NULL);
 
-
-	intList(long value) : m_elems(1, value)
+	/// CPPONLY
+	intList(const vectori & reps) :
+		m_elems(reps), m_allAvail(false)
 	{
 	}
 
 
 	/// CPPONLY
-	const vectorl & elems() const
+	vectori elems() const
 	{
 		return m_elems;
 	}
 
 
-protected:
-	vectorl m_elems;
+	/// CPPONLY
+	bool match(UINT rep, const vector<bool> & activeRep);
+
+private:
+	vectori m_elems;
+	bool m_allAvail;
 };
 
-
-// I cannot use template here because otherwise SWIG does not
-// handle the type correctly. I guess this can be my problem with using
-// of template in simuPOP_common.i
 
 class uintList
 {
@@ -330,35 +331,10 @@ public:
 	typedef vectoru::const_iterator const_iterator;
 
 public:
-	uintList(const vectoru & values = vectoru()) : m_elems(values)
-	{
-	}
-
-
-	uintList(ULONG value) : m_elems(1, value)
-	{
-	}
-
+	uintList(PyObject * obj = NULL);
 
 	/// CPPONLY
-	const vectoru & elems() const
-	{
-		return m_elems;
-	}
-
-
-protected:
-	vectoru m_elems;
-};
-
-
-class lociList
-{
-public:
-	lociList(PyObject * obj = NULL);
-
-	/// CPPONLY
-	lociList(const vectoru & values) : m_elems(values), m_allAvail(false)
+	uintList(const vectoru & values) : m_elems(values), m_allAvail(false)
 	{
 	}
 
@@ -377,10 +353,13 @@ public:
 	}
 
 
-private:
+protected:
 	vectoru m_elems;
+
+private:
 	bool m_allAvail;
 };
+
 
 class floatList
 {
@@ -605,7 +584,7 @@ public:
 	}
 
 
-	uintListFunc(ULONG value) : uintList(value), m_func(NULL)
+	uintListFunc(ULONG value) : uintList(vectoru(1, value)), m_func(NULL)
 	{
 	}
 
@@ -688,37 +667,6 @@ private:
 };
 
 
-/** A class to specify replicate list. The reason why I cannot simple
- *  use vectori() is that users have got used to use a single number
- *  to specify a single replicate.
- */
-class repList
-{
-public:
-	repList(PyObject * obj = NULL);
-
-	/// CPPONLY
-	repList(const vectori & reps) :
-		m_elems(reps), m_allAvail(false)
-	{
-	}
-
-
-	/// CPPONLY
-	vectori elems() const
-	{
-		return m_elems;
-	}
-
-
-	/// CPPONLY
-	bool match(UINT rep, const vector<bool> & activeRep);
-
-private:
-	vectori m_elems;
-	bool m_allAvail;
-};
-
 // ////////////////////////////////////////////////////////////
 // / Shared variables
 // ////////////////////////////////////////////////////////////
@@ -727,7 +675,7 @@ private:
 void PyObj_As_Bool(PyObject * obj, bool & val);
 
 /// CPPONLY
-void PyObj_As_Int(PyObject * obj, int & val);
+void PyObj_As_Int(PyObject * obj, long int & val);
 
 /// CPPONLY
 void PyObj_As_Double(PyObject * obj, double & val);
@@ -884,9 +832,9 @@ public:
 
 
 	/// CPPONLY
-	int getVarAsInt(const string & name, bool nameError = true)
+	long int getVarAsInt(const string & name, bool nameError = true)
 	{
-		int val;
+		long int val;
 
 		PyObj_As_Int(getVar(name, nameError), val);
 		return val;
@@ -1028,7 +976,7 @@ public:
 	bool valueAsBool();
 
 	/// CPPONLY  return dictionary value
-	int valueAsInt();
+	long int valueAsInt();
 
 	/// CPPONLY  return double value
 	double valueAsDouble();
@@ -1527,7 +1475,8 @@ public:
 	}
 
 
-	/** Generate a random number following a multinomial distribution with
+	/** CPPONLY
+	 *  Generate a random number following a multinomial distribution with
 	 *  parameters \e N and \e p (a list of probabilities). Please check the
 	 *  documentation of \c gsl_ran_multinomial for details.
 	 */
@@ -1542,7 +1491,10 @@ public:
 	}
 
 
-	/// CPPONLY
+	/** Generate a random number following a multinomial distribution with
+	 *  parameters \e N and \e p (a list of probabilities). Please check the
+	 *  documentation of \c gsl_ran_multinomial for details.
+	 */
 	vectoru randMultinomialVal(unsigned int N, const vectorf & p)
 	{
 		// if sum p_i != 1, it will be normalized.
