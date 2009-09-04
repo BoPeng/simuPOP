@@ -701,13 +701,6 @@ status open
 
 
 \backslash
-AlleleTypeRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 AvailableRNGsRef
 \end_layout
 
@@ -716,13 +709,6 @@ AvailableRNGsRef
 
 \backslash
 CloseOutputRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-LimitsRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -750,42 +736,7 @@ LoadSimulatorRef
 
 
 \backslash
-MaxAlleleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModuleCompilerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModuleDateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModulePlatFormRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModulePyVersionRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-OptimizedRef
+ModuleInfoRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -814,20 +765,6 @@ TurnOffDebugRef
 
 \backslash
 GetRNGRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuRevRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuVerRef
 \end_layout
 
 \end_inset

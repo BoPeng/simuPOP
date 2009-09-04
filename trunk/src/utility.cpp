@@ -3119,8 +3119,7 @@ PyObject * ModuleInfo()
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyInt_FromLong(ModuleMaxAllele));
 
     // limits
-    PyDict_SetItem(dict, PyString_FromString("maxNumSubPop"), PyInt_FromLong(MaxSubPopID));
-    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyInt_FromLong(MaxIndexSize));
+    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));
 
     //
     return dict;

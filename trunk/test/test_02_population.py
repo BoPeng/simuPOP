@@ -129,7 +129,7 @@ class TestPopulation(unittest.TestCase):
         'Testing population::setGenotype(geno), setGenotype(geno, subPop)'
         pop = population(loci=[1, 2], size=[1, 2])
         self.assertRaises(exceptions.IndexError, pop.setGenotype, [1], 2)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             pop.setGenotype([0, 1, 0])
             self.assertEqual(pop.individual(0).genotype(), [0, 1, 0, 0, 1, 0])
             self.assertEqual(pop.individual(1).genotype(), [0, 1, 0, 0, 1, 0])
@@ -488,7 +488,7 @@ class TestPopulation(unittest.TestCase):
             for ind in pop1.individuals(sp):
                 self.assertEqual(ind.info('x'), sp)
                 self.assertEqual(ind.info('y'), sp + 10)
-                if AlleleType() == 'binary':
+                if ModuleInfo()['alleleType'] == 'binary':
                     self.assertEqual(ind.genotype(), [1]*(pop.totNumLoci()*pop.ploidy()))
                 else:
                     self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))

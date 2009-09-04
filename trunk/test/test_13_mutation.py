@@ -79,7 +79,7 @@ class TestMutator(unittest.TestCase):
         loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
         geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             if type(genotype) == type(1):
                 self.assertEqual(geno, [genotype>0]*len(geno))
             else:
@@ -94,7 +94,7 @@ class TestMutator(unittest.TestCase):
         loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Testing if the genotype has the correct allele frequency'
         geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
                 self.assertTrue(freq0 >= freqLow[0] and freq0 <= freqHigh[0])
@@ -241,7 +241,7 @@ class TestMutator(unittest.TestCase):
 
     def testSmmMutator(self):
         'Testing generalized step-wise mutation mutator'
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             return
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)

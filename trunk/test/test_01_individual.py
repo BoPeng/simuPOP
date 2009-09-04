@@ -19,7 +19,7 @@ class TestIndividual(unittest.TestCase):
 
     # define a function to create basic populations
     def getPop(self):
-        if AlleleType() != 'binary':
+        if ModuleInfo()['alleleType'] != 'binary':
             pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
                 lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
                 alleleNames=['_', 'A', 'C', 'T', 'G'])
@@ -35,11 +35,11 @@ class TestIndividual(unittest.TestCase):
         pop = self.getPop()
         ind = pop.individual(0)
         gt = ind.genotype()
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             gt[:] = [0, 1]*12
         else:
             gt[:] = [2, 3, 4]*8
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             self.assertEqual(ind.allele(0), 0)
             self.assertEqual(ind.allele(1), 1)
@@ -67,7 +67,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.allele, 5, 0, 0)
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 2)
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 0, 2)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             # set allele
             # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             ind.setAllele(0, 1)
@@ -114,7 +114,7 @@ class TestIndividual(unittest.TestCase):
         pop = self.getPop()
         ind = pop.individual(0)
         gt = ind.genotype()
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             ind.setGenotype([0, 1])
             self.assertEqual(gt, [0, 1]*12)
         else:
@@ -122,13 +122,13 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(gt, [2, 3, 4]*8)
         # ploidy 1
         gt = ind.genotype(1)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             self.assertEqual(gt, [0, 1]*6)
         else:
             self.assertEqual(gt, [2, 3, 4]*4)
         # ploidy 1, ch 1
         gt = ind.genotype(1, 1)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             self.assertEqual(gt, [1, 0, 1, 0, 1, 0, 1])
         else:
             self.assertEqual(gt, [4, 2, 3, 4, 2, 3, 4])
@@ -141,7 +141,7 @@ class TestIndividual(unittest.TestCase):
         pop = self.getPop()
         ind = pop.individual(0)
         gt = ind.genotype()
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             ind.setGenotype([0, 1])
             self.assertEqual(gt, [0, 1]*12)
         else:
@@ -149,7 +149,7 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(gt, [2, 3, 4]*8)
         # ploidy 1
         gt = ind.genotype(1)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             ind.setGenotype([0, 1], 1)
             self.assertEqual(gt, [0, 1]*6)
         else:
@@ -157,7 +157,7 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(gt, [2, 3, 4]*4)
         # ploidy 1, ch 1
         gt = ind.genotype(1, 1)
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             ind.setGenotype([1], 1, 1)
             self.assertEqual(gt, [1, 1, 1, 1, 1, 1, 1])
         else:

@@ -120,7 +120,7 @@ class TestStat(unittest.TestCase):
         InitByFreq(pop, [0, 0.2, 0.8])
         Stat(pop, alleleFreq=range(10))
         d = pop.dvars().alleleFreq[0]
-        if AlleleType == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             self.assertEqual(d.keys(), [1])
         else:
             self.assertEqual(d.keys(), [1, 2])
@@ -171,7 +171,7 @@ class TestStat(unittest.TestCase):
         pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
@@ -293,7 +293,7 @@ class TestStat(unittest.TestCase):
         'Testing calculation of haplotype frequency'
         # test haplotype frequency
         pop = population(size=[5000,1000], ploidy=2, loci = [10])
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             InitByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
