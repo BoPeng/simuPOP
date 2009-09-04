@@ -72,6 +72,13 @@ public:
 	subPopList(const vectorvsp & subPops);
 
 	/// CPPONLY
+	bool allAvail()
+	{
+		return m_allAvail;
+	}
+
+
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_subPops.empty();

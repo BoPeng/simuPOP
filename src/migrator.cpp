@@ -32,12 +32,12 @@ migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int stage, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
-	m_rate(rate), m_mode(mode), m_to(toSubPops.elems())
+	m_rate(rate), m_mode(mode), m_to(toSubPops)
 {
 	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),
 		ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-	DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
+	DBG_FAILIF(!m_to.elems().empty() && m_to.elems().size() != rate[0].size(),
 		ValueError, "Length of param toSubPop must match columns of rate matrix.");
 }
 
@@ -124,8 +124,8 @@ bool migrator::apply(population & pop)
 	if (fromSubPops.empty())
 		fromSubPops.useSubPopsFrom(pop);
 
-	vectoru toSubPops = m_to;
-	if (m_to.empty() )
+	vectoru toSubPops = m_to.elems();
+	if (m_to.allAvail())
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			toSubPops.push_back(i);
 
@@ -242,7 +242,7 @@ bool splitSubPops::apply(population & pop)
 
 	// we have to split from top to bottom subpopulations
 	// because split will change subpopulation index
-	if (subPops.empty() )
+	if (subPops.allAvail())
 		for (int i = pop.numSubPop() - 1; i >= 0; --i)
 			subPops.push_back(vspID(i));
 	else
@@ -293,10 +293,16 @@ bool splitSubPops::apply(population & pop)
 bool mergeSubPops::apply(population & pop)
 {
 	subPopList sp = applicableSubPops();
+
 	vectoru subPops(sp.size());
 
-	for (size_t i = 0; i < sp.size(); ++i)
-		subPops[i] = sp[i].subPop();
+	if (sp.allAvail()) {
+		for (size_t i = 0; i < pop.numSubPop(); ++i)
+			subPops[i] = i;
+	} else {
+		for (size_t i = 0; i < sp.size(); ++i)
+			subPops[i] = sp[i].subPop();
+	}
 	pop.mergeSubPops(subPops, m_name);
 	return true;
 }
