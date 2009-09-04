@@ -52,7 +52,7 @@ bool initSex::apply(population & pop)
 }
 
 
-initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
+initByFreq::initByFreq(const matrix & alleleFreq, const lociList & loci,
 	const uintList & ploidy, bool identicalInds,
 	bool initsex, double maleFreq, const intList & sex,
 	int stage, int begin, int end, int step, const intList & at,
@@ -60,7 +60,7 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 	const stringList & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_alleleFreq(alleleFreq), m_identicalInds(identicalInds),
-	m_loci(loci.elems()), m_ploidy(ploidy.elems()), m_initSex(initsex)
+	m_loci(loci), m_ploidy(ploidy.elems()), m_initSex(initsex)
 {
 
 	DBG_FAILIF(m_alleleFreq.empty(),
@@ -90,8 +90,8 @@ bool initByFreq::apply(population & pop)
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != subPops.size(),
 		ValueError, "Ranges and values should have the same length");
 
-	vectoru loci = m_loci;
-	if (m_loci.empty())
+	vectoru loci = m_loci.elems();
+	if (m_loci.allAvail())
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
 
@@ -136,14 +136,14 @@ bool initByFreq::apply(population & pop)
 }
 
 
-initByValue::initByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
+initByValue::initByValue(intMatrix value, const lociList & loci, const lociList & ploidy,
 	const floatList & proportions, bool initsex, double maleFreq, const intList & sex,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
-	m_value(value), m_proportion(proportions.elems()), m_loci(loci.elems()),
-	m_ploidy(ploidy.elems()), m_initSex(initsex)
+	m_value(value), m_proportion(proportions.elems()), m_loci(loci),
+	m_ploidy(ploidy), m_initSex(initsex)
 {
 	DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
 		IndexError, "male frequency in the population should be in the range of [0,1]");
@@ -173,13 +173,13 @@ bool initByValue::apply(population & pop)
 	if (subPops.empty())
 		subPops.useSubPopsFrom(pop);
 
-	vectoru loci = m_loci;
-	if (m_loci.empty())
+	vectoru loci = m_loci.elems();
+	if (m_loci.allAvail())
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
 
-	vectoru ploidy = m_ploidy;
-	if (m_ploidy.empty())
+	vectoru ploidy = m_ploidy.elems();
+	if (m_ploidy.allAvail())
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);
 

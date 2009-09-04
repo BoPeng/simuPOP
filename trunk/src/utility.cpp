@@ -3016,6 +3016,8 @@ protected:
     {
         return 0;
 	}
+
+
 };
 
 /// CPPONLY
@@ -3034,17 +3036,16 @@ ostream & cnull()
 }
 
 
-
 PyObject * ModuleInfo()
 {
     // output a dictionary with many keys
     PyObject * dict = PyDict_New();
-    
-// these macros will be passed from commandline, if not, use the default
+
+    // these macros will be passed from commandline, if not, use the default
 #ifndef SIMUPOP_REV
 #  define REVISION "9999"
 #else
-// make passed macro to a real string
+    // make passed macro to a real string
 #  define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
@@ -3053,7 +3054,7 @@ PyObject * ModuleInfo()
     int num;
     // XX:XX or XX:XXM, or XX
     if (sscanf(rev, "%*d:%d", &num) != 1 && sscanf(rev, "%d", &num) != 1)
-        num = 9999;
+		num = 9999;
     PyDict_SetItem(dict, PyString_FromString("revision"), PyInt_FromLong(num));
 
     // Version
@@ -3114,7 +3115,7 @@ PyObject * ModuleInfo()
 
     // platform
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
-    
+
     // maxAllele
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyInt_FromLong(ModuleMaxAllele));
 
@@ -3361,7 +3362,7 @@ void clearGenotype(GenoIterator to, size_t n)
 bool initialize()
 {
     // tie python stdout to cout
-	cout.rdbuf(&g_pythonCoutBuf);
+    cout.rdbuf(&g_pythonCoutBuf);
 
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,

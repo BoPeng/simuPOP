@@ -276,11 +276,11 @@ class kamMutator : public mutator
 public:
 	/** Create a k-allele mutator that mutates alleles to one of the other
 	 *  <tt>k-1</tt> alleles with equal probability. This mutator by default
-     *  applies to all loci unless parameter \e loci is specified. A single
-     *  mutation rate will be used for all loci if a single value of parameter
-     *  \e rates is given. Otherwise, a list of mutation rates can be specified
-     *  for each locus in parameter \e loci. Please refer to classes \c mutator
-     *  and \c baseOperator for descriptions of other parameters.
+	 *  applies to all loci unless parameter \e loci is specified. A single
+	 *  mutation rate will be used for all loci if a single value of parameter
+	 *  \e rates is given. Otherwise, a list of mutation rates can be specified
+	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
+	 *  and \c baseOperator for descriptions of other parameters.
 	 */
 	kamMutator(UINT k, const floatList & rates = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),

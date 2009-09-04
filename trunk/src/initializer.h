@@ -129,7 +129,7 @@ public:
 	 *  initializes all chromosomes, including unused genotype locations and
 	 *  customized chromosomes.
 	 */
-	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
+	initByFreq(const matrix & alleleFreq = matrix(), const lociList & loci = lociList(),
 		const uintList & ploidy = uintList(), bool identicalInds = false,
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
@@ -167,7 +167,7 @@ private:
 	bool m_identicalInds;
 
 	//
-	vectoru m_loci;
+	lociList m_loci;
 
 	//
 	vectoru m_ploidy;
@@ -197,7 +197,7 @@ public:
 	 *  locations and customized chromosomes.
 	 */
 	initByValue(intMatrix value = intMatrix(),
-		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
+		const lociList & loci = lociList(), const lociList & ploidy = lociList(),
 		const floatList & proportions = floatList(),
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
@@ -234,10 +234,10 @@ private:
 	vectorf m_proportion;
 
 	//
-	vectoru m_loci;
+	lociList m_loci;
 
 	//
-	vectoru m_ploidy;
+	lociList m_ploidy;
 
 	//
 	bool m_initSex;
