@@ -1161,13 +1161,13 @@ Details:
 
 Usage:
 
-    x.lociDist(loc1, loc2)
+    x.lociDist(locus1, locus2)
 
 Details:
 
-    Return the distance between loci loc1 and loc2 on the same
-    chromosome. A negative value will be returned if loc1 is after
-    loc2.
+    Return the distance between loci locus1 and locus2 on the same
+    chromosome. A negative value will be returned if locus1 is after
+    locus2.
 
 "; 
 
@@ -1275,13 +1275,13 @@ Details:
 
 Usage:
 
-    x.locusPos(loc)
+    x.locusPos(locus)
 
 Details:
 
-    return the position of locus loc specified by the lociPos
+    return the position of locus locus specified by the lociPos
     parameter of the population function. An IndexError will be raised
-    if the absolute index loc is greater than or equal to the total
+    if the absolute index locus is greater than or equal to the total
     number of loci.
 
 "; 
@@ -1441,7 +1441,7 @@ Details:
     ignored if alleles at all loci share the same names. If the name
     of an allele is unspecified, its index ('0', '1', '2', etc) is
     returned. An IndexError will be raised if allele is larger than
-    the maximum allowed allele state of this module ( MaxAllele()).
+    the maximum allowed allele state of this module (ModuleMaxAllele).
 
 "; 
 
@@ -1468,13 +1468,13 @@ Details:
 
 Usage:
 
-    x.locusName(loc)
+    x.locusName(locus)
 
 Details:
 
-    return the name of locus loc specified by the lociNames parameter
-    of the population function. An empty string will be returned if no
-    name has been given to locus loc.
+    return the name of locus locus specified by the lociNames
+    parameter of the population function. An empty string will be
+    returned if no name has been given to locus locus.
 
 "; 
 
@@ -3152,21 +3152,20 @@ Details:
 
 Usage:
 
-    kamMutator(k=0, rates=[], loci=[], mapIn=[], mapOut=[],
+    kamMutator(k, rates=[], loci=[], mapIn=[], mapOut=[],
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
     Create a k-allele mutator that mutates alleles to one of the other
-    k-1 alleles with equal probability. If parameter k is unspecified,
-    it will be assumed to be the number of allowed allelic states of
-    the current simuPOP module. This mutator by default applies to all
-    loci unless parameter loci is specified. A single mutation rate
-    will be used for all loci if a single value of parameter rates is
-    given. Otherwise, a list of mutation rates can be specified for
-    each locus in parameter loci. Please refer to classes mutator and
-    baseOperator for descriptions of other parameters.
+    k-1 alleles with equal probability. This mutator by default
+    applies to all loci unless parameter loci is specified. A single
+    mutation rate will be used for all loci if a single value of
+    parameter rates is given. Otherwise, a list of mutation rates can
+    be specified for each locus in parameter loci. Please refer to
+    classes mutator and baseOperator for descriptions of other
+    parameters.
 
 "; 
 
@@ -5257,7 +5256,7 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=AllAvail, infoFields=[], ancGen=-1,
+    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
       fatherField=\"father_idx\", motherField=\"mother_idx\")
 
 Details:
@@ -5693,7 +5692,7 @@ Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
       lociPos=[], ancGen=0, chromNames=AllAvail, alleleNames=[],
-      lociNames=AllAvail, subPopNames=AllAvail, infoFields=[])
+      lociNames=[], subPopNames=[], infoFields=[])
 
 Details:
 
@@ -6217,7 +6216,7 @@ Details:
 
 Usage:
 
-    x.mergeSubPops(subPops=[], name=UnnamedSubPop)
+    x.mergeSubPops(subPops=[], name=\"\")
 
 Details:
 
@@ -11025,145 +11024,35 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::simuRev "
-
-Description:
-
-    return the revision number of this simuPOP module. Can be used to
-    test if a feature is available.
+%feature("docstring") simuPOP::ModuleInfo "
 
 Usage:
 
-    simuRev()
+    ModuleInfo()
 
-"; 
+Details:
 
-%feature("docstring") simuPOP::simuVer "
-
-Description:
-
-    return the version of this simuPOP module
-
-Usage:
-
-    simuVer()
-
-"; 
-
-%feature("docstring") simuPOP::ModuleCompiler "
-
-Description:
-
-    return the compiler used to compile this simuPOP module
-
-Usage:
-
-    ModuleCompiler()
-
-"; 
-
-%feature("docstring") simuPOP::ModuleDate "
-
-Description:
-
-    return the date when this simuPOP module is compiled
-
-Usage:
-
-    ModuleDate()
-
-"; 
-
-%feature("docstring") simuPOP::ModulePyVersion "
-
-Description:
-
-    return the Python version this simuPOP module is compiled for
-
-Usage:
-
-    ModulePyVersion()
-
-"; 
-
-%feature("docstring") simuPOP::ModulePlatForm "
-
-Description:
-
-    return the platform on which this simuPOP module is compiled
-
-Usage:
-
-    ModulePlatForm()
+    Return a dictionary with information regarding the currently
+    loaded simuPOP module. This dictionary has the following keys:
+    *   revision: revision number.
+    *   version: simuPOP version string.
+    *   optimized:True or False
+    *   alleleType:short, long or binary.
+    *   maxAllele: the maximum allowed allele state, which is 1 for
+    binary modules, 255 for short modules and 65535 for long modules.
+    *   compiler: the compiler that compiles this module.
+    *   date: date on which this module is compiled.
+    *   python: version of python.
+    *   platform: platform of the module.
+    *   maxNumSubPop: maximum number of subpopulations.
+    *   maxIndex: maximum index size (limits population size * total
+    number of marker).
 
 "; 
 
 %ignore simuPOP::initialize();
 
-%feature("docstring") simuPOP::Optimized "
-
-Description:
-
-    return True if this simuPOP module is optimized
-
-Usage:
-
-    Optimized()
-
-"; 
-
-%feature("docstring") simuPOP::Limits "
-
-Description:
-
-    print out system limits
-
-Usage:
-
-    Limits()
-
-"; 
-
-%feature("docstring") simuPOP::AlleleType "
-
-Description:
-
-    return the allele type of the current module. Can be binary,
-    short, or long.
-
-Usage:
-
-    AlleleType()
-
-"; 
-
-%feature("docstring") simuPOP::MaxAllele "
-
-Usage:
-
-    MaxAllele()
-
-Details:
-
-    return the maximum allowed allele state of the current simuPOP
-    module, which is 1 for binary modules, 255 for short modules and
-    65535 for long modules.
-
-"; 
-
 %ignore simuPOP::cnull();
-
-%feature("docstring") simuPOP::setLogOutput "
-
-Description:
-
-    set the standard output (default to standard Python output)
-
-Usage:
-
-    setLogOutput(filename=\"\")
-
-"; 
 
 %ignore std::pow3(unsigned n);
 

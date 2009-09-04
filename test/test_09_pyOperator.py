@@ -83,7 +83,7 @@ class TestPyOperator(unittest.TestCase):
         # unpack parameter
         (cutoff, mu1, mu2) = param;
         Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-        if AlleleType() == 'binary':
+        if ModuleInfo()['alleleType'] == 'binary':
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][0] < cutoff:

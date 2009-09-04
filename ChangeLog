@@ -16,6 +16,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug for the calculation of Armitage trend tests.
   - NEW: Use AllAvail as default parameters for parameters loci, reps and subPops
 		and use [] for its intended meaning: nothing.
+  - CHG: Merge functions AlleleType(), Optimized(), simuVer(), simuRev() to ModuleInfo().
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
