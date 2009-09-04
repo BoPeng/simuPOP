@@ -440,7 +440,7 @@ void recombinator::initialize(const population & pop)
 	// prepare m_bt
 	vectorf vecP;
 	//
-    const vectoru & loci = m_loci.elems();
+	const vectoru & loci = m_loci.elems();
 
 	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
 		"You should specify m_intensity, or m_rates "

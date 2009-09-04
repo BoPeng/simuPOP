@@ -671,13 +671,13 @@ GenoStructure & GenoStruTrait::gsSetAlleleNames(const lociList & loci_, const ma
 {
 	GenoStructure gs = s_genoStruRepository[m_genoStruIdx];
 
-    // if alleleNames is used totally redefined ...
-    if (loci_.allAvail())
-	    return *new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
-		    gs.m_lociPos, gs.m_chromNames, alleleNames, gs.m_lociNames, gs.m_infoFields);
-    
-    const vectoru & loci = loci_.elems();
-    matrixstr names = gs.m_alleleNames;
+	// if alleleNames is used totally redefined ...
+	if (loci_.allAvail())
+		return *new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
+			gs.m_lociPos, gs.m_chromNames, alleleNames, gs.m_lociNames, gs.m_infoFields);
+
+	const vectoru & loci = loci_.elems();
+	matrixstr names = gs.m_alleleNames;
 
 	// expand
 	if (names.empty()) {

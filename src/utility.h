@@ -435,10 +435,12 @@ public:
 		m_elems.push_back(str2);
 	}
 
+
 	/// CPPONLY
 	stringList(const vectorstr & str) : m_elems(str), m_allAvail(false)
 	{
 	}
+
 
 	/// CPPONLY
 	void obtainFrom(const stringList & items, const char * allowedItems[],
@@ -1833,8 +1835,8 @@ vectorstr AvailableRNGs();
  *  module. This dictionary has the following keys:
  *  \li \c revision: revision number.
  *  \li \c version: simuPOP version string.
- *  \li \c optimized: \c True or \c False
- *  \li \c alleleType: \c short, \c long or \c binary.
+ *  \li \c optimized: Is this module optimized (\c True or \c False).
+ *  \li \c alleleType: Allele type of the module (\c short, \c long or \c binary).
  *  \li \c maxAllele: the maximum allowed allele state, which is \c 1 for
  *       binary modules, \c 255 for short modules and \c 65535 for long modules.
  *  \li \c compiler: the compiler that compiles this module.

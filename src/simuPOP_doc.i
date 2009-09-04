@@ -2875,7 +2875,7 @@ Details:
 
 Usage:
 
-    initByFreq(alleleFreq=[], loci=[], ploidy=[],
+    initByFreq(alleleFreq=[], loci=AllAvail, ploidy=[],
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
       subPops=AllAvail, infoFields=[])
@@ -2960,10 +2960,10 @@ Details:
 
 Usage:
 
-    initByValue(value=[], loci=[], ploidy=[], proportions=[],
-      initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
-      end=1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    initByValue(value=[], loci=AllAvail, ploidy=AllAvail,
+      proportions=[], initSex=True, maleFreq=0.5, sex=[],
+      stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -11036,8 +11036,8 @@ Details:
     loaded simuPOP module. This dictionary has the following keys:
     *   revision: revision number.
     *   version: simuPOP version string.
-    *   optimized:True or False
-    *   alleleType:short, long or binary.
+    *   optimized: Is this module optimized (True or False).
+    *   alleleType: Allele type of the module (short, long or binary).
     *   maxAllele: the maximum allowed allele state, which is 1 for
     binary modules, 255 for short modules and 65535 for long modules.
     *   compiler: the compiler that compiles this module.
