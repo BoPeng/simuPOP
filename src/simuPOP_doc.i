@@ -761,9 +761,9 @@ Details:
 
 Usage:
 
-    contextMutator(rates=[], loci=[], mutators=[], contexts=[],
-      mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    contextMutator(rates=[], loci=AllAvail, mutators=[],
+      contexts=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -3157,7 +3157,7 @@ Details:
 
 Usage:
 
-    kamMutator(k, rates=[], loci=[], mapIn=[], mapOut=[],
+    kamMutator(k, rates=[], loci=AllAvail, mapIn=[], mapOut=[],
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
@@ -3832,9 +3832,9 @@ Details:
 
 Usage:
 
-    matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    matrixMutator(rate, loci=AllAvail, mapIn=[], mapOut=[],
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4101,9 +4101,9 @@ Details:
 
 Usage:
 
-    migrator(rate=[], mode=ByProbability, toSubPops=[],
+    migrator(rate=[], mode=ByProbability, toSubPops=AllAvail,
       stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
+      subPops=AllAvail, infoFields=[\"migrate_to\"])
 
 Details:
 
@@ -4266,9 +4266,9 @@ Details:
 
 Usage:
 
-    mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
-      mapOut=[], context=0, output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    mixedMutator(rates=[], loci=AllAvail, mutators=[], prob=[],
+      mapIn=[], mapOut=[], context=0, output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
@@ -4595,7 +4595,7 @@ Details:
 
 Usage:
 
-    mutator(rates=[], loci=[], mapIn=[], mapOut=[], context=0,
+    mutator(rates=[], loci=AllAvail, mapIn=[], mapOut=[], context=0,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
@@ -4672,7 +4672,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mutator::setRate(const vectorf &rates, const vectoru &loci=vectoru());
+%ignore simuPOP::mutator::setRate(const vectorf &rates, const uintList &loci);
 
 %ignore simuPOP::mutator::mutRate(UINT loc);
 
@@ -4706,8 +4706,6 @@ Usage:
     x.apply(pop)
 
 "; 
-
-%ignore simuPOP::mutator::initialize(population &pop);
 
 %feature("docstring") simuPOP::noneOp "
 
@@ -5518,7 +5516,7 @@ Details:
 
 Usage:
 
-    pointMutator(loci, allele, ploidy=[], inds=[], output=\">\",
+    pointMutator(loci, allele, ploidy=[0], inds=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
       subPops=AllAvail, infoFields=[])
 
@@ -6927,9 +6925,10 @@ Details:
 
 Usage:
 
-    pyMutator(rates=[], loci=[], func=None, context=0, mapIn=[],
-      mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    pyMutator(rates=[], loci=AllAvail, func=None, context=0,
+      mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -9251,7 +9250,7 @@ Details:
 
 Usage:
 
-    smmMutator(rates=[], loci=[], incProb=0.5, maxAllele=0,
+    smmMutator(rates=[], loci=AllAvail, incProb=0.5, maxAllele=0,
       mutStep=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
       begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
@@ -9335,8 +9334,8 @@ Details:
 Usage:
 
     splitSubPops(subPops=AllAvail, sizes=[], proportions=[],
-      names=AllAvail, randomize=True, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, infoFields=[])
+      names=[], randomize=True, stage=PreMating, begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -10236,6 +10235,8 @@ Usage:
 "; 
 
 %ignore simuPOP::subPopList::subPopList(const vectorvsp &subPops);
+
+%ignore simuPOP::subPopList::allAvail();
 
 %ignore simuPOP::subPopList::empty() const;
 

@@ -95,22 +95,22 @@ public:
 	 *  defined. How exactly a mutator makes use of these information is
 	 *  mutator dependent.
 	 */
-	mutator(const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	mutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
-		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_context(context * 2), m_bt(GetRNG()), m_initialized(false)
+		m_rates(rates.elems()), m_loci(loci), m_mapIn(mapIn), m_mapOut(mapOut),
+		m_context(context * 2)
 	{
 		// NOTE: empty rates is allowed because a mutator might be
 		// used in a mixed mutator.
-		if (m_rates.size() > 1 && m_loci.empty())
+		if (m_rates.size() > 1 && m_loci.elems().empty())
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
-		if (m_rates.size() > 1 && !m_loci.empty() && m_rates.size() != m_loci.size() )
+		if (m_rates.size() > 1 && !m_loci.elems().empty() && m_rates.size() != m_loci.elems().size() )
 			throw ValueError("If both rates and loci are specified, they should have the same length.");
 	}
 
@@ -129,31 +129,18 @@ public:
 
 
 	/// CPPONLY set an array of mutation rates
-	void setRate(const vectorf & rates, const vectoru & loci = vectoru())
+	void setRate(const vectorf & rates, const uintList & loci)
 	{
-		if (rates.size() != 1 && rates.size() != loci.size() )
+		if (rates.size() != 1 && rates.size() != loci.elems().size() )
 			throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
 
 		m_rates = rates;
-		if (!loci.empty())
-			m_loci = loci;
-
-		m_initialized = false;
+		m_loci = loci;
 	}
 
 
 	/// CPPONLY
-	double mutRate(UINT loc)
-	{
-		vectoru::iterator it = find(m_loci.begin(), m_loci.end(), loc);
-
-		DBG_ASSERT(it != m_loci.end(), RuntimeError,
-			"Failed to find mutation rate for locus " + toStr(loc));
-		DBG_ASSERT(m_rates.size() == m_loci.size(), SystemError,
-			"Incorrect rate and loci size");
-		return m_rates[it - m_loci.begin()];
-	}
-
+	double mutRate(UINT loc);
 
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus)
@@ -186,27 +173,18 @@ public:
 	/// Apply a mutator
 	virtual bool apply(population & pop);
 
-	/// CPPONLY initialize bernulli trial according to pop size etc
-	virtual void initialize(population & pop);
-
 protected:
 	/// mutation rates
 	vectorf m_rates;
 
 	/// applicable loci.
-	vectoru m_loci;
+	uintList m_loci;
 
 	uintListFunc m_mapIn;
 
 	uintListFunc m_mapOut;
 
 	vectori m_context;
-
-	/// bernulli trials. bitSet mutation results.
-	BernulliTrials m_bt;
-
-	/// initialized? the first apply() call will trigger an initialization process.
-	bool m_initialized;
 };
 
 /** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
@@ -231,7 +209,7 @@ public:
 	 *  classes \c mutator and \c baseOperator for detailed explanation of
 	 *  other parameters.
 	 */
-	matrixMutator(const matrix & rate, const uintList & loci = vectoru(),
+	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -282,7 +260,7 @@ public:
 	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
 	 *  and \c baseOperator for descriptions of other parameters.
 	 */
-	kamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	kamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -362,7 +340,7 @@ public:
 	 *  implement them using a \c pyMutator. If performance becomes a concern,
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
-	smmMutator(const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	smmMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -424,7 +402,7 @@ public:
 	 *  parameter \e loci. Please refer to classes \c mutator and
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
-	pyMutator(const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	pyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -479,7 +457,7 @@ public:
 	 *  Please refer to classes \c mutator and \c baseOperator for descriptions
 	 *  of other parameters.
 	 */
-	mixedMutator(const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	mixedMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
@@ -553,7 +531,7 @@ public:
 	 *  parameter \e loci is specified. Please refer to classes \c mutator and
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
-	contextMutator(const floatList & rates = vectorf(), const uintList & loci = vectoru(),
+	contextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
@@ -621,15 +599,13 @@ public:
 	 *  \e ploidy. Please refer to class \c baseOperator for detailed
 	 *  descriptions of other parameters.
 	 */
-	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(),
+	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
+		m_loci(loci), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
-		if (m_ploidy.empty())
-			m_ploidy.push_back(0);
 	}
 
 
@@ -658,7 +634,7 @@ public:
 
 private:
 	/// applicable loci.
-	vectoru m_loci;
+	uintList m_loci;
 	Allele m_allele;
 	vectoru m_ploidy;
 	vectoru m_inds;

@@ -451,8 +451,8 @@ class Doxy2SWIG:
             '["father_idx"@ "mother_idx"]')
         txt = re.sub('vectorstr(1, ([^)]+))', '[\1]', txt)
         # re function used to replace the following sentances
-        vec1 = re.compile('(.*)vectorstr\(1,\s*([\w"]+)\)(.*)')
-        txt = vec1.sub(r'\1[\2]\3', txt)
+        vec1 = re.compile('(.*)vector(str|u|i)\(1,\s*([\w"\d]+)\)(.*)')
+        txt = vec1.sub(r'\1\3\4', txt)
         #txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
         con1 = re.compile('\)\s*const\s*$')
         txt = con1.sub(')', txt)

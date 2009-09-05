@@ -27,41 +27,22 @@
 
 namespace simuPOP {
 
-void mutator::initialize(population & pop)
+double mutator::mutRate(UINT loc)
 {
-
-	DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
-
-	// deal with applicable loci
-	if (m_loci.empty() ) {
-		// all loci
-		m_loci.resize(pop.totNumLoci() );
-		for (UINT i = 0, iEnd = pop.totNumLoci(); i < iEnd;  ++i)
-			m_loci[i] = i;
+	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate.");
+	if (m_loci.allAvail()) {
+		DBG_ASSERT(m_rates.size() == 1 || m_rates.size() > loc,
+			IndexError, "Locus index out of range when retrieving mutation rate.");
+		return m_rates.size() == 1 ? m_rates[0] : m_rates[loc];
 	}
-#ifndef OPTIMIZED
-	else {
-		for (UINT i = 0; i < m_loci.size(); ++i) {
-			if (m_loci[i] >= pop.totNumLoci())
-				throw IndexError("Given loci is out of range");
-		}
-	}
-#endif
+	const vectoru & loci = m_loci.elems();
+	vectoru::const_iterator it = find(loci.begin(), loci.end(), loc);
 
-	// all use the same rate
-	if (m_rates.size() < m_loci.size() ) {
-		m_rates.resize(m_loci.size());
-		fill(m_rates.begin() + 1, m_rates.end(), m_rates[0]);
-	}
-
-	m_bt.setParameter(m_rates, pop.ploidy() * pop.popSize());
-
-#ifndef OPTIMIZED
-	for (size_t i = 0; i < m_rates.size(); ++i)
-		if (fcmp_lt(m_rates[i], 0.) || fcmp_gt(m_rates[i], 1.) )
-			throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rates[i]));
-#endif
-	m_initialized = true;
+	DBG_ASSERT(it != loci.end(), RuntimeError,
+		"Failed to find mutation rate for locus " + toStr(loc));
+	DBG_ASSERT(m_rates.size() == loci.size(), SystemError,
+		"Incorrect rate and loci size");
+	return m_rates[it - loci.begin()];
 }
 
 
@@ -104,14 +85,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 
 bool mutator::apply(population & pop)
 {
-	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
-		initialize(pop);
-		DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
-			" at rate " << m_rates << endl);
-	}
-
 	DBG_DO(DBG_MUTATOR, cout << "Mutate replicate " << pop.rep() << endl);
-
 
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
@@ -129,6 +103,15 @@ bool mutator::apply(population & pop)
 	if (subPops.empty())
 		subPops.useSubPopsFrom(pop);
 
+	BernulliTrials bt(GetRNG());
+
+	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate or rates.");
+	// all use the same rate
+	vectorf rates = m_rates;
+	if (rates.size() == 1) {
+		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.elems().size());
+		fill(rates.begin() + 1, rates.end(), rates[0]);
+	}
 	// multiple (virtual) subpopulations
 	for (UINT idx = 0; idx < subPops.size(); ++idx) {
 		UINT sp = subPops[idx].subPop();
@@ -145,13 +128,15 @@ bool mutator::apply(population & pop)
 		if (subPops[idx].isVirtual())
 			pop.activateVirtualSubPop(subPops[idx]);
 
-		m_bt.setParameter(m_rates, pop.ploidy() * popSize);
+		bt.setParameter(rates, pop.ploidy() * popSize);
 
-		m_bt.doTrial();
-		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-			UINT locus = m_loci[i];
+		bt.doTrial();
+		const vectoru & loci = m_loci.elems();
+		size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
+		for (size_t i = 0; i < iEnd; ++i) {
+			UINT locus = m_loci.allAvail() ? i : loci[i];
 			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
-			size_t pos = m_bt.trialFirstSucc(i);
+			size_t pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
 			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
 			if (pos != BernulliTrials::npos) {
@@ -184,7 +169,7 @@ bool mutator::apply(population & pop)
 						}
 					}
 					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
-				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
+				} while ( (pos = bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
 			}                                                                                           // succ.any
 		}
 
@@ -225,7 +210,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 			mu = sum;
 	}
 	DBG_DO(DBG_MUTATOR, cout << "Mu " << mu << endl);
-	setRate(vectorf(1, mu), loci.elems());
+	setRate(vectorf(1, mu), loci);
 	if (mu == 0.)
 		return;
 	// re-calculate probability
@@ -426,12 +411,14 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 bool pointMutator::apply(population & pop)
 {
 	// mutate each mutable locus
-	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
+	size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : m_loci.elems().size();
+
+	for (size_t i = 0; i < iEnd; ++i) {
 		for (vectoru::iterator ind = m_inds.begin();
 		     ind != m_inds.end(); ++ind) {
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
-				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + m_loci[i]) = m_allele;
-				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << m_loci[i] <<
+				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + (m_loci.allAvail() ? i : m_loci.elems()[i])) = m_allele;
+				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << (m_loci.allAvail() ? i : m_loci.elems()[i]) <<
 					" to allele " << toStr(m_allele) << " at generation " << pop.gen() << endl);
 			}
 		}
