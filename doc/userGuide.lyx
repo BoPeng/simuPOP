@@ -17129,33 +17129,73 @@ Evolve the population according to the simulated allele frequency trajectories
 The advantage of this approach is that we control the disease allele frequencies
  during evolution while allowing randomintroduction of disease mutants.
  
-\begin_inset Newline newline
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:backTrajectory"
+
+\end_inset
+
+ plots simulated trajectories of two unlinked loci.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:backTrajectory"
+
+\end_inset
+
+Simulated trajectories of two unlinked loci
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename backTrajectory.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\align center
-Example 4.2.1 forward-time simulation with complex diseases
+The trajectory is used in a 
+\family typewriter
+controlledRandomMating
+\family default
+ scheme in the following evolutionary scenario:
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/backTrajectory.log"
+lstparams "caption={Simulation and use of backward-time simulated trajectories.},label={backTrajectory}"
 
 \end_inset
 

@@ -259,7 +259,7 @@ class derivedArgs:
                 ret[key] = value
         # evalulate the values if needed
         for key in ret.keys():
-            if type(ret[key]) == type('') and ret[key].startswith('!'):
+            if type(ret[key]) == type('') and ret[key].startswith('!') and pop is not None:
                 ret[key] = pop.evaluate(ret[key][1:])
         return ret
 

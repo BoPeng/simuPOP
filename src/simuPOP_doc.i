@@ -4103,7 +4103,7 @@ Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=AllAvail,
       stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[\"migrate_to\"])
+      subPops=AllAvail, infoFields=\"migrate_to\")
 
 Details:
 
@@ -5516,7 +5516,7 @@ Details:
 
 Usage:
 
-    pointMutator(loci, allele, ploidy=[0], inds=[], output=\">\",
+    pointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
       subPops=AllAvail, infoFields=[])
 
