@@ -3705,7 +3705,38 @@ Access and change individual genotype
 \end_layout
 
 \begin_layout Standard
-FIXME:
+From a user's point of view, genotypes of all individuals in a population
+ are arranged sequentially.
+ Similar to functions 
+\family typewriter
+individual.genotype()
+\family default
+ and 
+\family typewriter
+individual.setGenotype()
+\family default
+, genotypes of a population can be accessed in batch using functions 
+\family typewriter
+population.genotype()
+\family default
+ and 
+\family typewriter
+population.setGenotype()
+\family default
+.
+ However, because it is error prone to locate an allele of a particular
+ individual in this long array, these functions are usually used to perform
+ population-level genotype operations such as clearing all alleles (e.g.
+ 
+\family typewriter
+pop.setGenotype([0])
+\family default
+) or counting the number of a particular allele across all individuals (e.g.
+ 
+\family typewriter
+pop.genotype().count(1)
+\family default
+).
 \end_layout
 
 \begin_layout Standard
@@ -3716,7 +3747,7 @@ Another way to change alleles across the whole population is to recode existing
  or genetic samples.
  For example, if the dataset you obtained uses 1, 2, 3, 4 for A, C, T, G
  alleles, and you would like to use alleles 0, 1, 2 and 3 for A, C, G, T
- ( a convention for simuPOP when nucleotide mutation models are involved),
+ (a convention for simuPOP when nucleotide mutation models are involved),
  you can use
 \begin_inset listings
 inline false
