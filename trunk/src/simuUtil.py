@@ -678,27 +678,50 @@ class trajectory:
         for gen in gens:
             print '%d: %s' % (gen, self.traj[gen])
 
-    def plot(self, r, **kwargs):
+    def plot(self, filename=None, **kwargs):
         '''
         Plot current trajectory.
 
-        r
-            The R object defined in a rpy module.
+        filename
+            If a valid filename is given, the plot will be drawn to the
+            specified file. Additional parameters could be given using
+            keyword arguments.
 
         kwargs
             Additional keyword arguments that will be passed to the plot function.
         '''
+        import simuRPy
+        #
+        args = simuRPy.derivedArgs(
+            defaultFuncs = ['plot', 'lines'],
+            allFuncs = ['par', 'plot', 'lines', 'dev_print'],
+            suffixes = ['loc'],
+            defaultParams = {
+                'plot_ylim': [0, 1],
+                'plot_ylab': 'Allele frequency',
+                'plot_xlab': 'Generation'
+            },
+            **kwargs
+        )
+        # device
+        simuRPy.newDevice()
+        #
         gens = self.traj.keys()
-        gens.sort()
-        r.plot(gens[0], 0, type='n', xlim=(gens[0], gens[-1]), ylim=[0, 1])
+        simuRPy.rpy.r.plot(gens[0], 0,
+            **args.getArgs('plot', None, xlim=(min(gens), max(gens)), type='n'))
         lines = []
         for gen in gens:
             if len(lines) != len(self.traj[gen]):
                 if len(lines) != 0:
                     nSP = len(lines) / self.nLoci
                     for idx, line in enumerate(lines):
-                        genBegin = gen - len(line)
-                        r.lines(x=range(genBegin, gen), y=line,
+                        # remove leading zero's
+                        for start in range(len(line)):
+                            if line[start] != 0:
+                                break
+                        if start == len(line) - 1:
+                            continue
+                        r.lines(x=range(genBegin - len(line) + start, gen), y=line[start:],
                                 col = int(idx / nSP) + 1)
                 # the first point
                 lines = [[x] for x in self.traj[gen]]
@@ -708,9 +731,17 @@ class trajectory:
         # plot the lines again
         for idx, line in enumerate(lines):
             nSP = len(lines) / self.nLoci
-            genBegin = gen - len(line)
-            r.lines(x=range(genBegin, gen), y=line,
-                    col = int(idx / nSP) + 1) 
+            # remove leading zero's
+            for start in range(len(line)):
+                if line[start] != 0:
+                    break
+            if start == len(line) - 1:
+                continue
+            genBegin = gen - len(line) + start
+            simuRPy.rpy.r.lines(x=range(genBegin, gen), y=line[start:],
+                    **args.getArgs('lines', None, col = int(idx / nSP) + 1))
+        #
+        simuRPy.saveFigure(**args.getArgs('dev_print', None, file=filename))
         
 
 class trajectorySimulator:

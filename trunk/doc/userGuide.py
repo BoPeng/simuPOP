@@ -2281,7 +2281,7 @@ simu.evolve(
 
 #end
 
-#file log/simuTrajectory.log
+#file log/backTrajectory.log
 from simuUtil import trajectory, BackwardTrajectory
 from math import exp
 
@@ -2293,24 +2293,33 @@ def Nt(gen, oldSize=[]):
 def fitness(gen):
     '''Constant positive selection pressure.
     '''
-    return [1, 1.001, 1.002]
+    return [1, 1.01, 1.02]
 
 # simulate a trajectory backward in time, from generation 1000
-traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=1,
-     genEnd=1000, freq=0.2)
+traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
+     genEnd=1000, freq=[0.1, 0.2])
 
-pop = population(size=Nt(0), loci=2)
+traj.plot('backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
+    plot_main='Simulated trajectory')
+
+print 'Trajectory simulated with length %s ' % len(traj.traj)
+
+pop = population(size=Nt(0), loci=[1]*2)
+# save trajectory function in the population's local namespace
+# so that the pyEval operator can access it.
+pop.dvars().traj = traj.func()
 mating = controlledRandomMating(loci=[0, 1], alleles=[1, 1],
         subPopSize=Nt, freqFunc=traj.func())
 simu = simulator(pop, mating)
 simu.evolve(
-    preOps=[initSex()],
-    ops = traj.mutators() + 
-        [
-           stat(alleleFreq=[0, 1]),
-           pyEval(r"'%d: %.3f\t%.3f\n' % (gen, alleleFreq[0][1], alleleFreq[1][1])"),
-        ],
-    gen=1000
+    preOps = [initSex()],
+    ops = traj.mutators() + [
+        stat(alleleFreq=[0, 1], begin=500, step=100),
+        pyEval(r"'%4d: %.3f (exp: %.3f), %.3f (exp: %.3f)\n' % (gen, alleleFreq[0][1],"
+            "traj(gen)[0], alleleFreq[1][1], traj(gen)[1])",
+            begin=500, step=100)
+    ],
+    gen=1001  # evolve 1001 generations to reach the end of generation 1000
 )
 #end
 
