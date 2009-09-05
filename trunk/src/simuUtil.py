@@ -1192,7 +1192,7 @@ class trajectorySimulator:
         simulate trajectories of multiple disease susceptibility loci using a forward time approach
 
         Return the trajectory for each locus at each subpopulation. In the order of
-            LOC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
+        OC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
         Each trajectory will have length genEnd - genBegin + 1
         
         parameter description:
