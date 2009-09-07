@@ -832,9 +832,20 @@ class TestPopulation(unittest.TestCase):
     def testSave(self):
         'Testing population::save(filename)'
         pop = self.getPop()
-        pop.save("popout");
+        pop.save("popout")
         pop1 = LoadPopulation("popout")
         self.assertEqual(pop, pop1)
+        #
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        print pop.vars()['alleleFreq']
+        a = pop.dvars().alleleFreq[0][1]
+        pop.save("popout")
+        pop1 = LoadPopulation("popout")
+        print pop1.vars()['alleleFreq']
+        self.assertEqual(a, pop1.dvars().alleleFreq[0][1])
+        self.assertEqual(pop, pop1)
+        #
+        #
         os.remove('popout')
 
     def testVars(self):
