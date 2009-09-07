@@ -826,7 +826,7 @@ private:
 /** This operator, when called, output the difference between current and the
  *  last called clock time. This can be used to estimate execution time of
  *  each generation. Similar information can also be obtained from
- *  <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
+ *  <tt>turnOnDebug("DBG_PROFILE")</tt>, but this operator has the advantage
  *  of measuring the duration between several generations by setting \c step
  *  parameter.
  */
@@ -943,7 +943,7 @@ public:
 	/** create a \c turnOnDebug operator that turns on debug information \e code
 	 *  when it is applied to a population.
 	 */
-	turnOnDebug(DBG_CODE code,
+	turnOnDebug(const string & code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
@@ -979,7 +979,7 @@ public:
 
 
 private:
-	DBG_CODE m_code;
+	string m_code;
 };
 
 
@@ -994,7 +994,7 @@ public:
 	/** create a \c turnOffDebug operator that turns off debug information
 	 *  \e code when it is applied to a population.
 	 */
-	turnOffDebug(DBG_CODE code,
+	turnOffDebug(const string & code = "DBG_ALL",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
@@ -1030,7 +1030,7 @@ public:
 
 
 private:
-	DBG_CODE m_code;
+	string m_code;
 };
 
 

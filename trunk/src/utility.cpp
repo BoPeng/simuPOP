@@ -120,27 +120,111 @@ namespace simuPOP {
 // debug codes in a bitset.
 DbgBitSet g_dbgCode;
 
+char * g_debugCodes[] = {
+	"DBG_ALL",
+	"DBG_GENERAL",
+	"DBG_UTILITY",
+	"DBG_OPERATOR",
+	"DBG_SIMULATOR",
+	"DBG_INDIVIDUAL",
+	"DBG_OUTPUTER",
+	"DBG_MUTATOR",
+	"DBG_TRANSMITTER",
+	"DBG_INITIALIZER",
+	"DBG_POPULATION",
+	"DBG_STATOR",
+	"DBG_TAGGER",
+	"DBG_SELECTOR",
+	"DBG_MATING",
+	"DBG_MIGRATOR",
+	"DBG_PROFILE",
+	"DBG_BATCHTESTING",
+	"DBG_VISUALIZER",
+	"DBG_DEVEL",
+	""
+};
+
+
+vectorstr DebugCodes()
+{
+	vectorstr ret;
+	for (size_t i = 0; g_debugCodes[i][0]; ++i)
+		ret.push_back(string(g_debugCodes[i]));
+	return ret;
+}
+
 
 // set debug area, default to turn all code on
-void TurnOnDebug(DBG_CODE code)
+void TurnOnDebug(const string & codeString)
 {
 #ifndef OPTIMIZED
-	if (code != DBG_ALL)
-		g_dbgCode[static_cast<int>(code)] = true;
-	else    // set all
+	if (codeString == "DBG_ALL")
+		// set all
 		g_dbgCode.set();
+	else {
+		vectorstr codes;
+		size_t lastPos = 0;
+		while (codeString.find(",", lastPos) != std::string::npos) {
+			size_t pos = codeString.find(",", lastPos);
+			codes.push_back(codeString.substr(lastPos, pos));
+			lastPos = pos + 1;
+		}
+		// last piece
+		codes.push_back(codeString.substr(lastPos));
+		// handle each one
+		for (size_t i = 0; i < codes.size(); ++i)
+		{
+			bool find = false;
+			for (size_t c = 0; g_debugCodes[c][0]; ++c) {
+				if (string(g_debugCodes[c]) == codes[i]) {
+					g_dbgCode[c] = true;
+					find = true;
+					break;
+				}
+			}
+			if (!find) {
+				cout << "Invalid debug code " << codes[i] << endl;
+				exit(1);
+			}
+		}
+	}
 #endif
 }
 
 
 // turn off debug, default to turn all code off
-void TurnOffDebug(DBG_CODE code)
+void TurnOffDebug(const string & codeString)
 {
 #ifndef OPTIMIZED
-	if (code != DBG_ALL)
-		g_dbgCode[static_cast<int>(code)] = false;
-	else    // reset all
+	if (codeString == "DBG_ALL")
 		g_dbgCode.reset();
+	else {
+		vectorstr codes;
+		size_t lastPos = 0;
+		while (codeString.find(",", lastPos) != std::string::npos) {
+			size_t pos = codeString.find(",", lastPos);
+			codes.push_back(codeString.substr(lastPos, pos));
+			lastPos = pos + 1;
+		}
+		// last piece
+		codes.push_back(codeString.substr(lastPos));
+		// handle each one
+		for (size_t i = 0; i < codes.size(); ++i)
+		{
+			bool find = false;
+			for (size_t c = 0; g_debugCodes[c][0]; ++c) {
+				if (string(g_debugCodes[c]) == codes[i]) {
+					g_dbgCode[c] = false;
+					find = true;
+					break;
+				}
+			}
+			if (!find) {
+				cout << "Invalid debug code " << codes[i] << endl;
+				exit(1);
+			}
+		}
+	}
 #else
 	cout << "Debug info is ignored in optimized mode." << endl;
 #endif
@@ -3121,6 +3205,15 @@ PyObject * ModuleInfo()
 
     // limits
     PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));
+
+	// debug (code)
+	PyObject * codes = PyList_New(0);
+	for (size_t i = 0; i < DBG_CODE_LENGTH; ++i) {
+		if (g_dbgCode[i]) {
+			PyList_Append(codes, PyString_FromString(g_debugCodes[i]));
+		}
+	}
+	PyDict_SetItem(dict, PyString_FromString("debug"), codes);
 
     //
     return dict;

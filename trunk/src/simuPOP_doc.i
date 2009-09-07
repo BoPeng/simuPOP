@@ -2875,7 +2875,7 @@ Details:
 
 Usage:
 
-    initByFreq(alleleFreq=[], loci=AllAvail, ploidy=[],
+    initByFreq(alleleFreq=[], loci=AllAvail, ploidy=AllAvail,
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
       subPops=AllAvail, infoFields=[])
@@ -10419,9 +10419,9 @@ Details:
     This operator, when called, output the difference between current
     and the last called clock time. This can be used to estimate
     execution time of each generation. Similar information can also be
-    obtained from turnOnDebug(DBG_PROFILE), but this operator has the
-    advantage of measuring the duration between several generations by
-    setting step parameter.
+    obtained from turnOnDebug(\"DBG_PROFILE\"), but this operator has
+    the advantage of measuring the duration between several
+    generations by setting step parameter.
 
 "; 
 
@@ -10485,8 +10485,8 @@ Details:
 
 Usage:
 
-    turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    turnOffDebug(code=\"DBG_ALL\", stage=PreMating, begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10865,15 +10865,28 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::DebugCodes "
+
+Usage:
+
+    DebugCodes()
+
+Details:
+
+    Return names of all debug codes
+
+"; 
+
 %feature("docstring") simuPOP::TurnOnDebug "
 
 Usage:
 
-    TurnOnDebug(code)
+    TurnOnDebug(code=\"\")
 
 Details:
 
-    Set debug code code. Name of available codes are available from
+    Set debug code code. More than one code could be specified using a
+    comma separated string. Name of available codes are available from
     DebugCodes.
 
 "; 
@@ -10882,11 +10895,13 @@ Details:
 
 Usage:
 
-    TurnOffDebug(code=DBG_ALL)
+    TurnOffDebug(code=\"DBG_ALL\")
 
 Details:
 
-    Turn off debug code code. Default to turn off all debug codes.
+    Turn off debug code code. More than one code could be specified
+    using a comma separated string. Default to turn off all debug
+    codes.
 
 "; 
 

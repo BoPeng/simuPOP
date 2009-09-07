@@ -313,7 +313,7 @@ class TestStat(unittest.TestCase):
 
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
-        #TurnOnDebug(DBG_STATOR)
+        #TurnOnDebug('DBG_STATOR')
         #from simuUtil import ViewVars
         #ViewVars(pop.vars(), gui=False)
         def LD_single(var, loc1, loc2, allele1, allele2):
@@ -386,7 +386,7 @@ class TestStat(unittest.TestCase):
         '''Testing LD for both dialleleic and multi-allelic cases'''
         self.TestLD([.2, .8])
         self.TestLD([.2, .3, .5])
-        #TurnOnDebug(DBG_STATO
+        #TurnOnDebug('DBG_STATOR')
         pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         #
         # FIXME:

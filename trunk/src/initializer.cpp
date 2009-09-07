@@ -60,7 +60,7 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 	const stringList & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_alleleFreq(alleleFreq), m_identicalInds(identicalInds),
-	m_loci(loci), m_ploidy(ploidy.elems()), m_initSex(initsex)
+	m_loci(loci), m_ploidy(ploidy), m_initSex(initsex)
 {
 
 	DBG_FAILIF(m_alleleFreq.empty(),
@@ -95,8 +95,8 @@ bool initByFreq::apply(population & pop)
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
 
-	vectoru ploidy = m_ploidy;
-	if (m_ploidy.empty())
+	vectoru ploidy = m_ploidy.elems();
+	if (m_ploidy.allAvail())
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);
 

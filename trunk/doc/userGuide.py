@@ -1492,10 +1492,10 @@ simu.evolve(
         stat(alleleFreq=0),
         ifElse('alleleNum[0][0] == 0',
             ifOps = [
-                turnOnDebug(DBG_MUTATOR),
+                turnOnDebug("DBG_MUTATOR"),
                 pointMutator(loci=0, allele=0, inds=0),
             ],
-            elseOps = turnOffDebug(DBG_MUTATOR)),
+            elseOps = turnOffDebug("DBG_MUTATOR")),
     ],
     gen = 100
 )

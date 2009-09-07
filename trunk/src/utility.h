@@ -85,13 +85,19 @@ namespace simuPOP {
 // / Debug and info functions
 // ////////////////////////////////////////////////////////////
 
-/** Set debug code \e code. Name of available codes are available from \c DebugCodes.
+/** Return names of all debug codes
  */
-void TurnOnDebug(DBG_CODE code);
+vectorstr DebugCodes();
 
-/** Turn off debug code \e code. Default to turn off all debug codes.
+/** Set debug code \e code. More than one code could be specified using a comma
+ *  separated string. Name of available codes are available from \c DebugCodes.
  */
-void TurnOffDebug(DBG_CODE code = DBG_ALL);
+void TurnOnDebug(const string & code = string());
+
+/** Turn off debug code \e code. More than one code could be specified using a
+ *  comma separated string. Default to turn off all debug codes.
+ */
+void TurnOffDebug(const string & code = "DBG_ALL");
 
 #ifndef OPTIMIZED
 /// test if one code is turned on, CPPONLY
@@ -1825,6 +1831,7 @@ vectorstr AvailableRNGs();
  *  \li \c platform: platform of the module.
  *  \li \c maxNumSubPop: maximum number of subpopulations.
  *  \li \c maxIndex: maximum index size (limits population size * total number of marker).
+ *  \li \c debug: A list of effective debugging codes.
  */
 PyObject * ModuleInfo();
 

@@ -130,7 +130,7 @@ public:
 	 *  customized chromosomes.
 	 */
 	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
-		const uintList & ploidy = vectoru(), bool identicalInds = false,
+		const uintList & ploidy = uintList(), bool identicalInds = false,
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -170,7 +170,7 @@ private:
 	uintList m_loci;
 
 	//
-	vectoru m_ploidy;
+	uintList m_ploidy;
 
 	//
 	bool m_initSex;
