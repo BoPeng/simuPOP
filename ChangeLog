@@ -18,6 +18,8 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		and use [] for its intended meaning: nothing.
   - CHG: Merge functions AlleleType(), Optimized(), simuVer(), simuRev() to ModuleInfo().
   - BUG: Fix the save/load of default dictionaries.
+  - CHG: TurnOnDebug/turnOnDebug and TurnOffDebug/turnOffDebug now accept string instead of
+		constants as input.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

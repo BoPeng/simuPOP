@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions
 class TestSelector(unittest.TestCase):
     def testMapSelector(self):
         'Testing map selector'
-        TurnOnDebug(DBG_MATING)
+        TurnOnDebug('DBG_MATING')
         pop = population(size=10, loci=[1], infoFields=['a', 'fitness', 'b'])
         InitByFreq(pop, [.2, .8])
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
@@ -116,7 +116,7 @@ class TestSelector(unittest.TestCase):
 
     def testSubPopDirSelection(self):
         'Testing directional selection in s subpopulation using a map selector'
-        #TurnOnDebug(DBG_DEVEL)
+        #TurnOnDebug('DBG_DEVEL')
         simu = simulator(
             population(size=[200, 1000], ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']),

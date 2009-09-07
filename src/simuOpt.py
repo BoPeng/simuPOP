@@ -1367,6 +1367,7 @@ class simuOpt:
             if len(params) == 0 and (
                 opt['processed'] or \
                 (not opt.has_key('label')) or \
+                ('DBG_BATCHTESTING' in simuOptions['Debug']) or \
                 (opt.has_key('useDefault') and opt['useDefault'])):
                 continue
             if len(params) > 0 and opt['longarg'].rstrip('=') not in params:

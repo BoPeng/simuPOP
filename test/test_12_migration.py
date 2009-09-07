@@ -298,7 +298,7 @@ class TestMigrator(unittest.TestCase):
         'Testing if info and genotype are migrated with individuals'
         if ModuleInfo()['alleleType'] == 'binary':
             return
-        #TurnOnDebug(DBG_POPULATION)
+        #TurnOnDebug('DBG_POPULATION')
         pop = population(size=[4, 6], loci=[1], infoFields=['a', 'b', 'migrate_to'])
         pop.genotype()[:] = range(20)
 ##         pop.arrIndInfo()[:] = range(20)

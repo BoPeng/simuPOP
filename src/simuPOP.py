@@ -58,29 +58,6 @@ if simuOptions['Revision'] is not None and simuRev() < simuOptions['Revision']:
         'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
         'Please consider upgrading your simuPOP installation.')
 
-_dbgCode = {
-	'DBG_ALL': DBG_ALL,
-	'DBG_GENERAL': DBG_GENERAL,
-	'DBG_UTILITY': DBG_UTILITY,
-	'DBG_OPERATOR': DBG_OPERATOR,
-	'DBG_SIMULATOR': DBG_SIMULATOR,
-	'DBG_INDIVIDUAL': DBG_INDIVIDUAL,
-	'DBG_OUTPUTER': DBG_OUTPUTER,
-	'DBG_MUTATOR': DBG_MUTATOR,
-	'DBG_TRANSMITTER': DBG_TRANSMITTER,
-	'DBG_INITIALIZER': DBG_INITIALIZER,
-	'DBG_POPULATION': DBG_POPULATION,
-	'DBG_STATOR': DBG_STATOR,
-	'DBG_TERMINATOR': DBG_TERMINATOR,
-	'DBG_TAGGER': DBG_TAGGER,
-	'DBG_VISUALIZER': DBG_VISUALIZER,
-	'DBG_SELECTOR': DBG_SELECTOR,
-	'DBG_MATING': DBG_MATING,
-	'DBG_MIGRATOR': DBG_MIGRATOR,
-	'DBG_PROFILE': DBG_PROFILE,
-	'DBG_DEVEL': DBG_DEVEL,
-}
-
 if not simuOptions['Quiet']:
     info = ModuleInfo()
     print "simuPOP : Copyright (c) 2004-2009 Bo Peng"
@@ -104,17 +81,13 @@ if not simuOptions['Quiet']:
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
-    TurnOnDebug(_dbgCode['DBG_GENERAL'])
+    TurnOnDebug('DBG_GENERAL')
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
         if g not in ['', None]:
-            try:
-                print "Turn on debug '%s'" % g
-                TurnOnDebug(_dbgCode[g])
-            except:
-                print 'Incorrect debug code. Please use one of'
-                print _dbgCode.keys()
+            print "Turn on debug '%s'" % g
+            TurnOnDebug(g)
 
 # Other definitions that does not really belong to simuUtil.py
 class dw(object):
@@ -141,12 +114,6 @@ def deepcopy(self, memo):
 population.__deepcopy__ = deepcopy
 simulator.__deepcopy__ = deepcopy
 baseOperator.__deepcopy__ = deepcopy
-
-
-def DebugCodes():
-    'Return names of all debug codes'
-    return _dbgCode.keys()
-
 
 # mating schemes
 
