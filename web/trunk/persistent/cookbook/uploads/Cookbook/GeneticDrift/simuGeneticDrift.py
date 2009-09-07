@@ -77,9 +77,9 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
         # everyone initially will have the same allele frequency
         preOps=[initByFreq([p, 1-p])],
         ops=[stat(alleleFreq=[0]),
-            pyEval(r'"Generation %d:\t" % gen', rep = 0, step = s),
+            pyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),
 	    pyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
-	    pyOutput('\n', rep=-1, step = s),
+	    pyOutput('\n', reps=-1, step = s),
 	    plotter,
             ],
         gen = generations
@@ -96,8 +96,8 @@ if __name__ == '__main__':
 
     # wait ten seconds before exit
     if useRPy:
-        print "Figure will be closed after 10 seconds."
-        time.sleep(10)
+        print "Figure will be closed after 5 seconds."
+        time.sleep(5)
         
     
 

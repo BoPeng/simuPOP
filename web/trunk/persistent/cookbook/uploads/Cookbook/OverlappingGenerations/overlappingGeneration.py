@@ -60,9 +60,9 @@ def simuOverlappingGeneration(size, maxAge, minMatingAge, maxMatingAge, gen):
             # increase age by 1
             infoExec('age += 1', stage=PreMating),
             # count the individuals in each virtual subpopulation
-            stat(popSize=True),
+            stat(popSize=True, subPops=[(0,0), (0,1), (0,2), (0,3)]),
             # print virtual subpopulation sizes (there is no individual with age > maxAge after mating)
-            pyEval(r"'Size of age groups: %s\n' % (','.join(['%d' % x for x in virtualPopSize[0]]))")
+            pyEval(r"'Size of age groups: %s\n' % (','.join(['%d' % x for x in subPopSize]))")
         ],
         gen = gen
     )

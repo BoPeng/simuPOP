@@ -75,11 +75,11 @@ simu.evolve(
         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)], initSex=False)
     ],
     ops = [
-        stat(alleleFreq=[0], genoFreq=[0] ),
+        stat(alleleFreq=[0], genoFreq=[0]),
         pyEval(r"'%.3f\t%.3f (%.3f)\t%.3f (%.3f)\t%.3f (%.3f)\n' % (alleleFreq[0][0], "\
-            "genoFreq[0][0][0], alleleFreq[0][0]*alleleFreq[0][0], "\
-            "genoFreq[0][0][1], 2*alleleFreq[0][0]*(1-alleleFreq[0][0]), "\
-            "genoFreq[0][1][1], (1-alleleFreq[0][0])*(1-alleleFreq[0][0]) )"),
+            "genoFreq[0][(0,0)], alleleFreq[0][0]*alleleFreq[0][0], "\
+            "genoFreq[0][(0,1)], 2*alleleFreq[0][0]*(1-alleleFreq[0][0]), "\
+            "genoFreq[0][(1,1)], (1-alleleFreq[0][0])*(1-alleleFreq[0][0]) )"),
     ],
     gen=endGen
 )

@@ -15,6 +15,9 @@
 #        and independent multi-locus selection model. 
 #        
 
+#This script needs further testing
+#BATCHTESTING SKIP
+
 """
 
 Introduction
@@ -473,219 +476,6 @@ def trajFunc(endingGen, traj):
     return func
 
 
-def FreqTrajectoryMultiStochWithSubPop(
-        curGen,
-        numLoci,
-        freq,
-        NtFunc,
-        minMutAge,
-        maxMutAge,
-        fitness=[],
-        mode = 'uneven',
-        ploidy=2,
-        restartIfFail=True,
-        fitnessFunc=None):
-    ''' HIDDEN
-    Simulate frequency trajectory with subpopulation structure,
-    migration is currently ignored. The essential part of this
-    script is to simulate the trajectory of each subpopulation
-    independently by calling FreqTrajectoryMultiStoch with properly
-    wrapped NtFunc function.
-
-    If mode = 'even' (default)
-        When freq is the same length
-        of the number of loci. The allele frequency at the last
-        generation will be multi-nomially distributed. If freq
-        for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
-        loc2-sp1, .... This freq will be used directly.
-
-    If mode = 'uneven'.
-        The number of disease alleles
-        will be proportional to the interval lengths of 0 x x x 1 while x are
-        uniform [0,1]. The distribution of interval lengths, are roughly
-        exponential (conditional on overall length 1). '
-
-    If mode = 'none'
-        subpop will be ignored.
-
-    This script assume a single-split model of NtFunc
-    '''
-    numSP = len(NtFunc(curGen))
-    if maxMutAge == 0:
-        maxMutAge = endGen
-    TurnOnDebug(DBG_GENERAL)
-    if numSP == 1 or mode == 'none':
-        # given in the form of [[.1,.2]]
-        if type(freq[0]) in [type((0,)), type([])]:
-            freq = freq[0]
-        traj = FreqTrajectoryMultiStoch(
-                curGen=curGen,
-                freq=freq,
-                NtFunc=NtFunc,
-                fitness=fitness,
-                fitnessFunc=fitnessFunc,
-                minMutAge=minMutAge,
-                maxMutAge=maxMutAge,
-                ploidy=ploidy,
-                restartIfFail=True)
-        #print traj
-        if True in [len(t) < max(2, minMutAge) for t in traj]:
-            print "Failed to generate trajectory. You may need to set a different set of parameters."
-            print "len: ", [len(t) for t in traj]
-            print 'curGen: ', curGen
-            print 'freq: ', freq
-            print 'begin size: ', NtFunc(0)
-            print 'ending size: ', NtFunc(curGen)
-            print 'fitness: ', fitness
-            print 'minMutAge: ', minMutAge
-            print 'maxMutAge: ', maxMutAge
-            print 'ploidy: ', ploidy
-            sys.exit(1)
-        return (traj, [curGen-len(x)+1 for x in traj], trajFunc(curGen, traj))
-    # other wise, do it in two stages
-    # get the split generation.
-    split = curGen;
-    while(True):
-        if len(NtFunc(split)) == 1:
-            break
-        split -= 1
-    split += 1
-    # set default for min/max mutage
-    if minMutAge < curGen - split:
-        minMutAge = split
-    if minMutAge > maxMutAge:
-        print "Minimal mutant age %d is larger then maximum age %d" % (minMutAge, maxMutAge)
-        sys.exit(1)
-    # now, NtFunc(split) has subpopulations
-    #
-    # for each subpopulation
-    # layout for freqALL
-    #     [  loc 0   ][loc 1 ][loc 2  ]
-    # for each locus
-    #     [ loc  0 ] = [at subpop 0, subpop 1, subpop 2...]
-    #
-    # That is to say, index is for locus i in subpop sp
-    #   freqAll[sp+i*numSP],
-    if type(freq[0]) in [type((0,)), type([])]:
-        # freq is given as [subpop 0][subpop 1] [subpop 2]
-        freqAll = [0]*(numLoci*numSP)
-        for (sp, f) in enumerate(freq):
-            for (loc, s) in enumerate(f):
-                freqAll[sp+loc*numSP] = s
-    else:
-        if len(freq) == numSP*numLoci:
-            freqAll = freq
-        elif len(freq) == numLoci:
-            freqAll = [0]*(numLoci*numSP)
-            if mode == 'even':
-                for i in range(numLoci):
-                    wt = NtFunc(curGen)
-                    ps = sum(wt)
-                    # total allele number
-                    totNum = int(freq[i]*ps)
-                    # in subpopulations, according to population size
-                    num = rng().randMultinomialVal(totNum, [x/float(ps) for x in wt])
-                    for sp in range(numSP):
-                        freqAll[sp+i*numSP] = num[sp]/float(wt[sp])
-            elif mode == 'uneven':
-                for i in range(numLoci):
-                    wt = NtFunc(curGen)
-                    # total allele number
-                    totNum = int(freq[i]*sum(wt))
-                    while(True):
-                        # get [ x x x x x ] while x is uniform [0,1]
-                        num = [0,1]+[rng().randUniform01() for x in range(numSP-1)]
-                        num.sort()
-                        for sp in range(numSP):
-                            freqAll[sp+i*numSP] = (num[sp+1]-num[sp])*totNum/wt[sp]
-                        if max(freqAll) < 1:
-                            break;
-            else:
-                print "Wrong mode parameter is used: ", mode
-            print "Using ", mode, "distribution of alleles at the last generation"
-            print "Frequencies at the last generation: sp0-loc0, loc1, ..., sp1-loc0,..."
-            for sp in range(numSP):
-                print "SP ", sp, ': ',
-                for i in range(numLoci):
-                    print "%.3f " % freqAll[sp+i*numSP],
-                print
-        else:
-            raise exceptions.ValueError("Wrong freq length")
-    spTraj = [0]*numSP*numLoci
-    for sp in range(numSP):
-        print "Generting trajectory for subpopulation %d (generation %d - %d), freq=%s" % (sp, split, curGen, [freqAll[sp+x*numSP] for x in range(numLoci)])
-        # FreqTraj... will probe Nt for the next geneartion.
-        def spPopSize(gen):
-            if gen < split:
-                return [NtFunc(split-1)[0]]
-            else:
-                return [NtFunc(gen)[sp]]
-        while True:
-            t = FreqTrajectoryMultiStoch(
-                curGen=curGen,
-                freq=[freqAll[sp+x*numSP] for x in range(numLoci)],
-                NtFunc=spPopSize,
-                fitness=fitness,
-                fitnessFunc=fitnessFunc,
-                minMutAge=curGen-split,
-                maxMutAge=curGen-split,
-                ploidy=ploidy,
-                restartIfFail=False)
-                # failed to generate one of the trajectory
-            if 0 in [len(x) for x in t]:
-                print "Failed to generate trajectory. You may need to set a different set of parameters."
-                sys.exit(1)
-            if 0 in [x[0] for x in t]:
-                print "Subpop return 0 index. restart "
-            else:
-                break;
-        # now spTraj has LOC0: sp0,1,2, LOC1, sp0,1,2,... LOC2
-        for i in range(numLoci):
-            spTraj[sp+i*numSP] = t[i]
-    # add all trajectories
-    traj = []
-    for i in range(numLoci):
-        traj.append([])
-        for g in range(split, curGen+1):
-            totAllele = sum( [
-                spTraj[sp+i*numSP][g-split] * NtFunc(g)[sp] for sp in range(numSP) ])
-            traj[i].append( totAllele / sum(NtFunc(g)) )
-    #
-    print "Starting allele frequency (at split) ", [traj[i][0] for i in range(numLoci)]
-    print "Generating combined trajsctory with range: ", minMutAge, " - ", maxMutAge
-    trajBeforeSplit = FreqTrajectoryMultiStoch(
-        curGen=split,
-        freq=[traj[i][0] for i in range(numLoci)],
-        NtFunc=NtFunc,
-        fitness=fitness,
-        fitnessFunc=fitnessFunc,
-        minMutAge=minMutAge-len(traj[0])+1,
-        maxMutAge=maxMutAge-len(traj[0])+1,
-        ploidy=ploidy,
-        restartIfFail=True)
-    if 1 in [len(x) for x in trajBeforeSplit]:
-        print "Failed to generated trajectory. (Tried more than 1000 times)"
-        sys.exit(0)
-    def trajFuncWithSubPop(gen):
-        if gen >= split:
-            return [spTraj[x][gen-split] for x in range(numLoci*numSP)]
-        else:
-            freq = []
-            for tr in trajBeforeSplit:
-                if gen < split - len(tr) + 1:
-                    freq.append( 0 )
-                else:
-                    freq.append( tr[ gen - (split - len(tr) + 1) ] )
-        return freq
-    trajAll = []
-    for i in range(numLoci):
-        trajAll.append( [] )
-        trajAll[i].extend(trajBeforeSplit[i])
-        trajAll[i].extend(traj[i][1:])
-    # how exactly should I return a trajectory?
-    return (trajAll, [curGen-len(x)+1 for x in trajAll ], trajFuncWithSubPop)
-
-    
 def outputStatistics(pop, args): 
     ''' This function will be working with a pyOperator
         to output statistics. Many parameters will be passed,
@@ -784,7 +574,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             " of the same length as DSLafter")
     # fitness
     if mlSelModelTmp == 'none':
-        fitness = []
+        fitness = [1, 1, 1]
     elif mlSelModelTmp == 'interaction':
         if numDSL == 1:
             raise exceptions.ValueError("Interaction model can only be used with more than one DSL");
@@ -833,21 +623,11 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     elif maxMutAge > endingGen:
         print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
         maxMutAge = endingGen
-    # this is defined in simuUtil, a wrapper for
-    # FreqTrajectoryMultiStoch
     if simuAge > 0:
-        mutantAges = []
         for i in range(simuAge):
-            (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
-                curGen=endingGen,
-                numLoci=len(DSLafter),
-                freq=curAlleleFreq, 
-                NtFunc=popSizeFunc,
-                fitness=fitness, 
-                minMutAge=minMutAge, 
-                maxMutAge=maxMutAge, 
-                mode=alleleDistInSubPop,
-                restartIfFail=True)
+            traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+                genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
+                maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
             mutantAges.append([len(x) for x in traj])
         print "Simulated trajectory length:"
         for i,age in enumerate(mutantAges):
@@ -855,27 +635,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         mean = [sum([x[col] for x in mutantAges])*1./simuAge for col in range(len(DSLafter))]
         print "Mean:    ", ', '.join(['%6.1f' % x for x in mean])
         sys.exit(0)
-    (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
-        curGen=endingGen,
-        numLoci=len(DSLafter),
-        freq=curAlleleFreq, 
-        NtFunc=popSizeFunc,
-        fitness=fitness, 
-        minMutAge=minMutAge, 
-        maxMutAge=maxMutAge, 
-        mode=alleleDistInSubPop,
-        restartIfFail=True)
+    traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+        genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
+        maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
     #
-    # 3. save and plot the simulation scenario
-    tfile = open(filename+'.traj', 'w')
-    tfile.write('Simulated trajectories:\n')
-    for t in traj:
-        tfile.write(', '.join([str(x) for x in t ]) + '\n')
-    tfile.write('Observed allele frequency (generation, population size, allele frequencies)\n')
-    tfile.close()
-    print '\n\nTrajectories simulated successfully. Their lengths are %s.\n Check %s.eps for details. \n\n' \
-        % ( ', '.join([ str(len(x)) for x in traj]), filename)
-    ###
     ### translate numChrom, numLoci, DSLafterLoci to
     ### loci, lociPos, DSL, nonDSL in the usual index
     ### (count DSL along with markers)
@@ -897,7 +660,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # insert DSL, given them names DSL0, DSL1, ...
     tmp.addLoci(chrom=[tmp.chromLocusPair(x)[0] for x in DSLafter],
         pos=[tmp.locusPos(DSLafter[x]) + DSLdist[x] for x in range(len(DSLafter))], 
-        names = ['DSL%d' % x for x in range(len(DSLafter))])
+        lociNames = ['DSL%d' % x for x in range(len(DSLafter))])
     # now, obtain the indices of these loci using loci names
     # I need these information because the following operators need to know which marker is DSL...
     DSL = tmp.lociByNames(['DSL%d' % x for x in range(len(DSLafter))])
@@ -966,10 +729,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ###                                 endingGen
     ###            0 1 ...... i_T
-    for i in range(numDSL):
-        operators.append( 
-            pointMutator(loci=[DSL[i]], allele=1, inds=[i],
-                at = [introGens[i]], stage=PreMating ) ) 
+    operators.extend(traj.mutators())
     ### 
     ### split to subpopulations
     ### 
@@ -1048,7 +808,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             subPopSize=popSizeFunc,            # demographic model
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
-            freqFunc=trajFunc                                     # frequency control function
+            freqFunc=traj.func()                                # frequency control function
         ),
         rep=1)
     # evolve! If --dryrun is set, only show info
@@ -1095,7 +855,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     pop.dvars().numOffspring = numOffspring
     pop.dvars().numOffMode = numOffMode
     print "Saving population to " + filename + '.' + format + '\n'
-    #TurnOnDebug(DBG_UTILITY)
     simu.population(0).save(filename)
     return True
 
@@ -1132,10 +891,6 @@ if __name__ == '__main__':
     from simuPOP import *
     from simuUtil import *
     #
-    # check minimal requirement of simuPOP version
-    if simuRev() < 383:
-        raise exceptions.SystemError('''This scripts requires simuPOP revision >=425. 
-            Please upgrade your simuPOP distribution.''' )
     #
     ################## RUN THE SIMULATION ###############
     simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 

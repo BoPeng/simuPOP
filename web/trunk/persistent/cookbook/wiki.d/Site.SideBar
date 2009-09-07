@@ -6,10 +6,13 @@ csum=
 host=127.0.0.1
 name=Site.SideBar
 passwdedit=@_site_edit
-rev=52
-targets=Main.HomePage,Main.CourtesyRules,Main.ClassroomExamples,Main.Operators,Main.MatingSchemes,Main.EvolutionaryScenarios,Main.UtilityFunctions,Main.ImportAndExport,Main.Scripts,Main.Gallery,Main.OtherRecipes,Site.AllRecentChanges,Site.SideBar
-text=* [[Main/HomePage | Home]]%0a* [[Main/Courtesy Rules]]%0a%0a%25sidehead%25 Cookbook%0a* [[Main/Classroom Examples]]%0a* [[Main/Operators]]%0a* [[Main/Mating Schemes]]%0a* [[Main/Evolutionary Scenarios]]%0a* [[Main/Utility Functions]]%0a* [[Main/Import and Export]]%0a* [[Main/Scripts | Complete Scripts]]%0a* [[Main/Gallery]]%0a* [[Main/Other Recipes]]%0a%0a%25sidehead%25 Resources%0a* [[http://simupop.sourceforge.net | simuPOP HomePage]]%0a* %25newwin%25 [[http://simupop.sourceforge.net/manual | Documents]]%0a%0a(:if auth read:)%0a%25sidehead%25 Administration%0a* [[http://simupop.sourceforge.net | simuPOP website]]%0a(:if auth admin:)%0a* [[Site/All Recent Changes]]%0a* [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Statistics]]%0a(:ifend:)%0a%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a
-time=1245944807
+rev=53
+targets=Main.HomePage,Main.CourtesyRules,Main.ClassroomExamples,Main.Operators,Main.MatingSchemes,Main.EvolutionaryScenarios,Main.UtilityFunctions,Main.ImportAndExport,Main.Scripts,Main.Tricks,Main.Gallery,Main.OtherRecipes,Site.AllRecentChanges,Site.SideBar
+text=* [[Main/HomePage | Home]]%0a* [[Main/Courtesy Rules]]%0a%0a%25sidehead%25 Cookbook%0a* [[Main/Classroom Examples]]%0a* [[Main/Operators]]%0a* [[Main/Mating Schemes]]%0a* [[Main/Evolutionary Scenarios]]%0a* [[Main/Utility Functions]]%0a* [[Main/Import and Export]]%0a* [[Main/Scripts | Complete Scripts]]%0a* [[Main/Tricks | Small tricks]]%0a* [[Main/Gallery]]%0a* [[Main/Other Recipes]]%0a%0a%25sidehead%25 Resources%0a* [[http://simupop.sourceforge.net | simuPOP HomePage]]%0a* %25newwin%25 [[http://simupop.sourceforge.net/manual | Documents]]%0a%0a(:if auth read:)%0a%25sidehead%25 Administration%0a* [[http://simupop.sourceforge.net | simuPOP website]]%0a(:if auth admin:)%0a* [[Site/All Recent Changes]]%0a* [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Statistics]]%0a(:ifend:)%0a%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a
+time=1251920101
+author:1251920101=
+diff:1251920101:1245944807:=12d11%0a%3c * [[Main/Tricks | Small tricks]]%0a
+host:1251920101=127.0.0.1
 author:1245944807=
 diff:1245944807:1245944713:=
 host:1245944807=127.0.0.1

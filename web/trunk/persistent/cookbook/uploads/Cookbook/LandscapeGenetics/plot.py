@@ -3,6 +3,8 @@
 from pylab import *
 from sys import stdin
 
+#BATCHTESTING SKIP
+
 currImg = -1
 l = stdin.readline()
 LOCIPERDIM=5

@@ -315,6 +315,8 @@ options = [
     },
 ]
 
+#BATCHTESTING --chroms=1
+
 if __name__ == '__main__':
     pars = simuOpt(options, 
         'This script downloads the 22 release of the HapMap datasets\n'

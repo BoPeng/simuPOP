@@ -120,8 +120,7 @@ def LoadFstat(file, loci=[]):
     numLoci = loci
     lociNames = []
     if loci != []: # ignore allele name lines
-        # ??? operator.add???
-        if nl != sum(loci): # reduce(operator.add, loci):
+        if nl != sum(loci):
             raise exceptions.ValueError("Given number of loci does not add up to number of loci in the file")
         for al in range(0, nl):
             lociNames.append(f.readline().strip() )
@@ -142,8 +141,7 @@ def LoadFstat(file, loci=[]):
             except exceptions.Exception:
                 pass
         # if we can not get numbers correct, put all loci in one chromosome
-        # ??? operator.add???
-        if reduce(operator.add, numLoci, 0) != nl:
+        if sum(numLoci) != nl:
             numLoci = [nl]
     #
     # now, numLoci should be valid, we need number of population
@@ -161,8 +159,7 @@ def LoadFstat(file, loci=[]):
         subPopSize[i] = subPopIndex.count(i+1)
     if len(subPopSize) != np:
         raise exceptions.ValueError("Number of subpop does not match")
-    # ??? operator.add
-    if reduce(operator.add, subPopSize) != len(gt):
+    if sum(subPopSize) != len(gt):
         raise exceptions.ValueError("Population size does not match")
     # we have all the information, create a population
     # ???pop = population( subPop=subPopSize, loci = numLoci, ploidy=2,
@@ -201,7 +198,3 @@ if __name__ == '__main__':
 
     # test func LoadFstat ???
     pop1 = LoadFstat('Fstatout.dat')
-    if pop1 == pop:
-        print 'successfully loaded'
-    else:
-        print 'unsuccessful load'

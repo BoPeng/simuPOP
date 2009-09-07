@@ -35,7 +35,7 @@ def simuSelfing(perc, N, n_rep, gen):
             pyExec('ld_hist=[]')  # record ld
         ],
         ops=[
-            recombinator(rate=0.01),
+            recombinator(rates=0.01),
             stat(LD=[0,1]),
             pyExec('ld_hist.append(LD[0][1])')
         ],

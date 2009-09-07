@@ -108,7 +108,7 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
         ops=[
             recombinator(rates=recRate),
             pyOperator(func=avgNumOfAncestors),
-            pyOutput('\n', rep=-1)
+            pyOutput('\n', reps=-1)
         ],
         gen=gen
     )

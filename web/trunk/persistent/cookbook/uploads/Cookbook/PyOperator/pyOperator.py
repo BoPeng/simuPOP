@@ -38,7 +38,7 @@ options = [
     },
     {'arg': 'r:',
      'longarg': 'rep=',
-     'default': 100,
+     'default': 10,
      'label': 'Replicates',
      'allowedTypes': [types.IntType, types.LongType],
      'validate': simuOpt.valueGT(0)

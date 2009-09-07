@@ -61,13 +61,13 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     ## visualizers
     v1,v2,v3,v4 = noneOp(),noneOp(),noneOp(),noneOp()
     ## visualize all Fst's
-    if "Fst" in visual:
-        v1 = varPlotter('Fst[:4]', main='Fst',
-                update=100, win=2000, step=10, saveAs="Fst")
+    if "f_st" in visual:
+        v1 = varPlotter('f_st[0],f_st[1],f_st[2],f_st[3]', plot_main='Fst',
+                update=100, win=2000, step=10, saveAs="Fst.png")
     ## plot average Fst (using all loci)
-    if "AvgFst" in visual:
-        v2 = varPlotter('AvgFst', byDim=1, main='Fst', 
-            update=10, win=2000, step=10, saveAs="avgFst")
+    if "F_st" in visual:
+        v2 = varPlotter('F_st', plot_main='Fst', 
+            update=10, win=2000, step=10, saveAs="avgFst.png")
     ## allele frequency
     if "alleleFreq" in visual:
         v3 = varPlotter('[alleleFreq[0][x] for x in range(10)]',
@@ -88,15 +88,15 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     ## statistics:
     ## calculate Fst and save result (all replicate in one file)
     ## calculate every 50 steps to save time
-    stats = stat(Fst=range(0,nLoci), step=50)
-    saveFst = pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,Fst[0],Fst[1],Fst[2],Fst[3],AvgFst)",
+    stats = stat(structure=range(0,nLoci), vars=['f_st', 'F_st'], step=50)
+    saveFst = pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,f_st[0],f_st[1],f_st[2],f_st[3],F_st)",
         step = 100, output=">>"+name+"_Fst.txt")
     ## output \n at the end of last replicate
-    saveFst1 = pyOutput('\n', rep=-1, step=100, output=">>"+name+"_Fst.txt")
+    saveFst1 = pyOutput('\n', reps=-1, step=100, output=">>"+name+"_Fst.txt")
 
     ## report progress (and average Fst
     report1 = pyEval(r"'%.6f\t' % AvgFst", step=100)
-    report2 = pyOutput('\n', rep=-1, step=100)
+    report2 = pyOutput('\n', reps=-1, step=100)
         
     # create population and simulator
     simu = simulator(
@@ -109,12 +109,12 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     simu.evolve(
         preOps = [ init ],
         ops = [
-            pyEval(r"'%d\n' % gen", step=100, rep=0),
+            pyEval(r"'%d\n' % gen", step=100, reps=0),
             mutate, migrate, stats,
             saveFst, saveFst1, 
             v1, v2, v3, v4,
             ## report running time
-            ticToc(step=1000, rep=0),
+            ticToc(step=1000, reps=0),
         ],
         gen = endGen,
         dryrun = False,
@@ -123,18 +123,11 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
 
 ## First run, try to get some figures
 simu = simulate(subPop=[1000]*2, migrRate=0.0001,
-        mutaRates=[.01]*nLoci, endGen=10000, nRep=4,
-        visual=["Fst","AvgFst"], savePop=0, name='pop')
-
-## verify Fst results, output to fstat format and compare
-## The results are identical (on Fst)
-pop = LoadPopulation("pop1476_2.bin")
-Stat(pop, Fst=range(0,nLoci))
-print pop.dvars().Fst
-print pop.dvars().AvgFst
+        mutaRates=[.01]*nLoci, endGen=1000, nRep=4,
+        visual=["f_st"], savePop=0, name='pop')
 
 ## run 99 replicates, without visualization
-if True:
+if False:
     subPops = [ [1000]*2, [400]*5, [100]*20]
     Nm = [0.1, 1., 10.]
     mutaRates = [0.01, 0.001, 0.0001]
@@ -180,19 +173,19 @@ if False:
     migrate = migrator(
         rates = [[migrRate/(numSP-1)]* numSP] * numSP, 
         mode=ByProbability)
-    stats = stat(Fst=range(0,nLoci), step=50)
+    stats = stat(structure=range(0,nLoci), vars=['f_st', 'F_st'], step=50)
     # really append to file
-    saveFst =  pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,Fst[0],Fst[1],Fst[2],Fst[3],AvgFst)",
+    saveFst =  pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,f_st[0],f_st[1],f_st[2],f_st[3],F_st)",
         step = 100, output=">>"+name+"_Fst.txt", name="save Fst values to file")
-    saveFst1 = pyOutput('\n', rep=-1, step=100, output=">>"+name+"_Fst.txt")
+    saveFst1 = pyOutput('\n', reps=-1, step=100, output=">>"+name+"_Fst.txt")
     # start simulation
     simu.evolve(
         ops = [
             # report progress
-            pyEval(r"'%d\n' % gen", step=100, rep=-1),
+            pyEval(r"'%d\n' % gen", step=100, reps=-1),
             mutate, migrate, stats,
             saveFst, saveFst1,
-            ticToc(step=1000,rep=0),
+            ticToc(step=1000,reps=0),
             ],
             gen = 40000
         )
@@ -219,20 +212,20 @@ if False:
     migrate = migrator(
         rates = [[migrRate/(numSP-1)]* numSP] * numSP, 
         mode=ByProbability)
-    stats = stat(Fst=range(0,nLoci), step=50)
+    stats = stat(structure=range(0,nLoci), vars=['f_st', 'F_st'], step=50)
     # really append to file
-    saveFst =  pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,Fst[0],Fst[1],Fst[2],Fst[3],AvgFst)",
+    saveFst =  pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,f_st[0],f_st[1],f_st[2],f_st[3],F_st)",
         step = 100, output=">>"+name+"_Fst.txt")
-    saveFst1 = pyOutput('\n', rep=-1, step=100, output=">>"+name+"_Fst.txt")
+    saveFst1 = pyOutput('\n', reps=-1, step=100, output=">>"+name+"_Fst.txt")
     simu.setGen(10001)
     # start simulation
     simu.evolve(
         ops = [
             # report progress
-            pyEval(r"'%d\n' % gen", step=100, rep=-1),
+            pyEval(r"'%d\n' % gen", step=100, reps=-1),
             mutate, migrate, stats,
             saveFst, saveFst1,
-            ticToc(step=1000,rep=0),
+            ticToc(step=1000,reps=0),
             ],
             gen = 20000
         )

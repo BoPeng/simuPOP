@@ -262,7 +262,7 @@ options = [
     },
     {
     'longarg': 'chroms=',
-    'default': [],
+    'default': [1],
     'useDefault': True,
     'label': 'Chromosomes to use',
     'description': 'A list of chromosomes (1-22) to use.',

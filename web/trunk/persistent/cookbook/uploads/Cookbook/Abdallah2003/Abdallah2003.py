@@ -20,11 +20,11 @@ ma = 5
 
 # parameter
 # number of valid populations to be sampled.
-samples = 10
+samples = 2 # just to make this script runs quicker for the routine syntax checkup.
 
 # 30 marker loci with the a QTL locus (location 0),
 simu = simulator(population(size=sz, ploidy=2, 
-    loci=[31], lociPos=[[x/30.*3 for x in range(0,31)]],
+    loci=[31], lociPos=[x/30.*3 for x in range(0,31)],
     infoFields=['fitness']),
     randomMating(), rep=1)
 
@@ -210,10 +210,3 @@ for s in range(0, samples):
     pfile = open('pvalues.log','a')
     pfile.write(str(pvalue[s])+'\n')
     pfile.close()
-
-# find the average of p-values and plot
-r.assign('pvalue', pvalue)
-r(""" pvalue = do.call('cbind', pvalue)
-    mp = apply(pvalue, 2, mean)
-    plot(1:30, mp)""")
-        

@@ -134,12 +134,11 @@ def simulation(nRep, scenario, endGen, visualizers=[]):
       mutate02,  # mutate loci 0 and 2
       mutate1,   # mutate locus 1
       # plot LD' between B1 and A1 loci
-      #varPlotter("LD_prime['0-2|1-1']", numRep=nRep,
-      #  step=10, update=10, saveAs="LDprime"),
+      varPlotter("LD_prime[0][1]",
+        step=10, update=10, saveAs="LDprime.png"),
       # plot allele frequencies of B1 A1 
-      #varPlotter("[alleleFreq[0][1], alleleFreq[2][1]]",
-      #  numRep=nRep, byRep=True, step=10, update=10, varDim=2,
-      #  ylim=[0,1],saveAs="alleleFreq02"),
+      varPlotter("[alleleFreq[0][1], alleleFreq[2][1]]",
+        byRep=True, step=10, update=10, ylim=[0,1], saveAs="alleleFreq02.png"),
       # plot allele frequencies at CA locus
       #varPlotter("alleleFreq[1][1:]",
       #  numRep=nRep, byVal=True, step=10, update=10, varDim=7,
@@ -149,7 +148,7 @@ def simulation(nRep, scenario, endGen, visualizers=[]):
       #collector( expr='alleleFreq[1]', name = 'CA_af', 
       #  at=[500,1000,1500,2000,2500,3000,3500,4000,4500,5000]),
       # report progress
-      pyEval(r'"%d\n" % gen',rep=-1)
+      pyEval(r'"%d\n" % gen',reps=-1)
       ] + visualizers ,   
     gen = endGen,
     dryrun=False
@@ -187,4 +186,4 @@ def analyze(simu, nrep, gen):
 #listVars(analyze(simu, 100, 2500))
 #listVars(analyze(simu, 100, 5000))
 
-simu = simulation(4, scenario_3, 1000)
+simu = simulation(4, scenario_3, 100)

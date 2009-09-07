@@ -3,6 +3,7 @@ from math import sqrt
 from random import uniform, randint, normalvariate
 from sys import argv, exit
 
+#BATCHTESTING SKIP
 
 if len(argv)<1:
     print "Syntax: epiState"
@@ -20,7 +21,7 @@ POPSIZE=1000
 maxX = 100.0
 maxY = 100.0
 LOCIPERDIM=5
-
+ 
 pop = population(POPSIZE, 2,
     loci=[1]*LOCIPERDIM*2,
     infoFields = ['x', 'y']
@@ -168,7 +169,7 @@ sim.evolve(
         initByFreq(alleleFreq=[1,0])
     ],
     ops = [
-        kamMutator(rate=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2), maxAllele=1),
+        kamMutator(k=2, rates=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2)),
         pyOperator(dmp, stage=PreMating),
         pyOperator(placeIndividual, stage=DuringMating),
         pyOperator(killUnfit, stage=PreMating)

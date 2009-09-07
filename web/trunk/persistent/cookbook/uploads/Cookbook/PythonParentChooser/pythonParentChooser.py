@@ -56,9 +56,9 @@ def simuPodMating(numPods, podSize):
             # offspring stays with their natal pod
             inheritTagger(mode=TAG_Maternal, infoFields=['pod']),
             # calculate size of pods
-            stat(popSize=True, stage=PrePostMating),
+            stat(popSize=True, subPops=[(0,x) for x in range(numPods)], stage=PrePostMating),
             # print size of each pod
-            pyEval(r"'Size of pods: %s\n' % (','.join(['%d' % x for x in virtualPopSize[0]]))")
+            pyEval(r"'Size of pods: %s\n' % (','.join(['%d' % x for x in subPopSize]))")
             ],
         gen = 10
     )

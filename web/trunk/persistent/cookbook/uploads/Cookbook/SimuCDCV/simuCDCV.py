@@ -195,7 +195,7 @@ options = [
      'validate':    simuOpt.valueBetween(0,1)
     },
      {'longarg': 'update=',
-     'default': 10,
+     'default': 100,
      'label': 'Update figure every # gen',
      'allowedTypes': [types.IntType],
      'description': '''Update figure every some generation.''',
@@ -346,21 +346,19 @@ def getStats(v, highest, numDSL, allelesBeforeExpansion):
             perc5MostCommon.append(0)
             percAncestralAllele.append(0)
             continue
-        num = list(v.alleleNum[d][1:])
         # number of alleles
-        numAllele.append(len(num) - num.count(0) )
+        numAllele.append(len(v.alleleFreq[d]))
         # effective number of alleles
-        effNumAllele.append(overallFreq[-1]*overallFreq[-1]/sum( [x*x for x in v.alleleFreq[d][1:] ]))
+        daf = [v.alleleFreq[d][x] for x in v.alleleFreq[d].keys() if x != 0]
+        effNumAllele.append(overallFreq[-1]*overallFreq[-1]/sum( [x*x for x in daf]))
         #effNumAllele.append(1./sum( [x*x for x in pop.dvars().alleleFreq[d][1:] ])-1)
         # count percentage of alleles derived from alleles before expansion
+        num = [v.alleleNum[d][x] for x in v.alleleNum[d].keys() if x != 0]
         allNum = sum(num)
         ancNum = 0
         if len(allelesBeforeExpansion) > 0:
             for al in allelesBeforeExpansion[d]:
-                try:
-                    ancNum += num[al-1]
-                except:
-                    pass
+                ancNum += v.alleleNum[d][al]
         percAncestralAllele.append(ancNum*1./allNum)
         # percentage of each one
         sumAllele = sum(num)*1.
@@ -614,17 +612,14 @@ def simuCDCV(numDSL, initSpec, selModel,
         ops=[         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
-            stat(popSize=True, alleleFreq=range(numDSL), step=update),
+            stat(popSize=True, alleleFreq=range(numDSL), vars=['alleleFreq', 'alleleFreq_sp', 'alleleNum', 'alleleNum_sp'], step=update),
             # report generation and popsize
             pyEval(r"'%d\t%d\t%f\n' % (gen, popSize, alleleFreq[0][0])", step=50),
             #
             # record alleles before expansion, used to count percentage of alleles derived
             # from before expansion.
             pyExec( '''for i in range(%d):
-                allelesBeforeExpansion.append([])
-                for a in range(1,len(alleleNum[i])):
-                    if alleleNum[i][a] != 0:
-                        allelesBeforeExpansion[i].append(a)
+                allelesBeforeExpansion.extend([alleleFreq[i].keys()])
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
                 numDSL, at=[burnin]),
             #

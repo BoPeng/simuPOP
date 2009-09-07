@@ -116,7 +116,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
             recombinator(rates = recRate),
             stat(alleleFreq=[0], LD=[0, 1]),
             pyEval(methodeval),
-            pyOutput('\n', rep=-1),
+            pyOutput('\n', reps=-1),
             plotter
         ],
         gen = gen
