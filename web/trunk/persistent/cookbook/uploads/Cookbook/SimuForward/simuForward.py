@@ -510,7 +510,9 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             elif len(fitness) != numDSL*3:
                 raise exceptions.ValueError("Please specify fitness for each DSL")
     # range
-    if len(minAlleleFreq) == 1:
+    if type(minAlleleFreq) not in [type([]), type(())]:
+        minAlleleFreq = [minAlleleFreq]*len(DSLafter)
+    elif len(minAlleleFreq) == 1:
         minAlleleFreq = minAlleleFreq * len(DSLafter)
     elif len(minAlleleFreq) != len(DSLafter):
         raise exceptions.ValueError("min allele frequency should be specified for each DSL")
@@ -544,17 +546,16 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     i = 0    # current absolute locus 
     j = 0    # current DSL
     for ch in range(0, numChrom):
-        lociPos.append([])
         for loc in range(0,numLoci):
             # DSL after original loci indices
             if j < numDSL and i == DSLafter[j]:
                 loci[ch] += 2
-                lociPos[ch].append(loc+1)
-                lociPos[ch].append(loc+1 + DSLdist[j])
+                lociPos.append(loc+1)
+                lociPos.append(loc+1 + DSLdist[j])
                 j += 1
             else:
                 loci[ch] += 1
-                lociPos[ch].append(loc+1)
+                lociPos.append(loc+1)
             i += 1
     # non-DSL loci, for convenience
     nonDSL = range(0, sum(loci))
