@@ -1,13 +1,44 @@
 #!/usr/bin/env python
 #
-# This script get sys.argv[1], open it and run as if in a 
-# interactive session. Then, the output is separated accorindg
-# to the instructions within.
+# $File: runSampleCode.py $
+# $LastChangedDate: 2009-09-05 13:56:43 -0500 (Sat, 05 Sep 2009) $
+# $Rev: 2894 $
 #
+# This file is part of simuPOP, a forward-time population genetics
+# simulation environment. Please visit http://simupop.sourceforge.net
+# for details.
+#
+# Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# This script get a filename from sys.argv[1], open and run it as if in an
+# interactive session. The output is separated according to special comments
+# in the output file. Allowed intructions are
+#
+# * logging output between these two lines to a filename
+#   #file filename
+#   #end
+#
+# * execute, but do not write the output between these two lines
+#   #beginignore
+#   #end
 # 
+
 import code, sys, os, re
-
-
 
 #  run a script interatively
 class runScriptInteractively(code.InteractiveConsole):
@@ -46,15 +77,14 @@ def runScript(inputFile, outputFile):
     
     b = runScriptInteractively(locals=locals(), filename = sys.argv[1])
     b.interact(None)
-    
+    #
     # reset io streams
     sys.stdin = oldIn
     sys.stdout = oldOut
     sys.stderr = oldErr
-    
+    #    
     outFile.close()
-    
-    print "Finished executing ", sys.argv[1]
+    print "Finished executing %s\n" % sys.argv[1]
 
 
 def splitFile(outputFile, runCommand=True):

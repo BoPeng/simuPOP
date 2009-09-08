@@ -1,16 +1,4 @@
-# This script will genreate code/result pieces
-# that will be inserted into simuPOP user's guide
-# and reference manual
-# 
-# #file_begin file
-#
-# #file_end file
-#
-# will be used in this file so the running result can be
-# separated into files specified by 'file'
-#
-# #PS after commands that will be executed.
-#
+#!/usr/bin/env python
 # create directory log if not exist
 import os, sys
 
