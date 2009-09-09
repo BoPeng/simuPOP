@@ -6279,8 +6279,8 @@ initByFreq
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/InitByFreq.log"
-lstparams "caption={The function form of operator \\texttt{initByFreq}},label={InitByFreq}"
+filename "log/funcInitByFreq.log"
+lstparams "caption={The function form of operator \\texttt{initByFreq}},label={funcInitByFreq}"
 
 \end_inset
 

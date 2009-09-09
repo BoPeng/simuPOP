@@ -34,7 +34,7 @@
 #   #end
 #
 # * execute, but do not write the output between these two lines
-#   #beginignore
+#   #begin_ignore
 #   #end
 # 
 # * expect error so do not stop when an error happens
@@ -107,11 +107,11 @@ def writeFile(content, srcFile, logFile=False):
             start = True
         if not start:
             continue
-        if line.startswith('#beginignore') or line.startswith('>>> #beginignore'):
+        if line.startswith('#begin_ignore') or line.startswith('>>> #begin_ignore'):
             ignore = True
-        elif line.startswith('#endignore') or line.startswith('>>> #endignore'):
+        elif line.startswith('#end_ignore') or line.startswith('>>> #end_ignore'):
             ignore = False
-        elif line.startswith('#expecterror') or line.startswith('>>> #expecterror'):
+        elif line.startswith('#expect_error') or line.startswith('>>> #expect_error'):
             expect_error = True
         elif not ignore:
             print >> src, line,
@@ -128,21 +128,26 @@ def writeFile(content, srcFile, logFile=False):
 
 
 def runSampleCode(srcFile):
-    begin_re = re.compile('^#file\s*(.*)')
-    end_re = re.compile('^#end\s*$')
+    begin_re = re.compile('^#begin_file\s*(.*)')
+    end_re = re.compile('^#end_file\s*$')
     #
     src = open(srcFile, 'r')
     tmpSrc = tmpSrcName = None
     filename = None
+    count = 0
     for lineno, line in enumerate(src.readlines()):
         if begin_re.match(line):
+            if tmpSrc is not None:
+                print 'ERROR (Unmatched file/end at line %s): %s' % (lineno, line)
+                sys.exit(1)
             filename = begin_re.match(line).groups()[0].strip()
             tmp, tmpSrcName = tempfile.mkstemp()
             os.close(tmp)
             tmpSrc = open(tmpSrcName, 'w')
+            count += 1
         elif end_re.match(line):
             if tmpSrc is None:
-                print 'ERROR (line %d): %s' % (lineno, line)
+                print 'ERROR (Unmatched file/end at line %d): %s' % (lineno, line)
                 sys.exit(1)
             #
             print 'Processing %s...' % filename,
@@ -166,6 +171,7 @@ def runSampleCode(srcFile):
             elif line.strip() != '' and not line.startswith('#'):
                 print 'Unprocessed:', line
     src.close()
+    print 'Finished processing %d examples.' % count
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[1] == '-h' or not os.path.isfile(sys.argv[1]):
