@@ -54,6 +54,9 @@ class runScriptInteractively(code.InteractiveConsole):
             raise EOFError
         sys.stdout.write(prompt + l)
         return l.strip("\n")
+    
+    def exit(self):
+        self.file.close()
 
 # do not stop on help() function since stdin is then no longer
 # a terminal.
@@ -81,6 +84,7 @@ def runScript(inputFile, outputFile):
     #
     b = runScriptInteractively(locals=locals(), filename = inputFile)
     b.interact(None)
+    b.exit()
     #
     # reset io streams
     sys.stdin = oldIn
@@ -134,6 +138,7 @@ def runSampleCode(srcFile):
         if begin_re.match(line):
             filename = begin_re.match(line).groups()[0].strip()
             tmp, tmpSrcName = tempfile.mkstemp()
+            os.close(tmp)
             tmpSrc = open(tmpSrcName, 'w')
         elif end_re.match(line):
             if tmpSrc is None:
@@ -145,6 +150,7 @@ def runSampleCode(srcFile):
             tmpSrc.close()
             tmpSrc = None
             tmp, tmpLogName = tempfile.mkstemp()
+            os.close(tmp)
             runScript(tmpSrcName, tmpLogName)
             #
             writeFile(open(tmpSrcName).readlines(), filename)
