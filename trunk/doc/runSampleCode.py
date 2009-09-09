@@ -109,8 +109,6 @@ def writeFile(content, srcFile, logFile=False):
             ignore = False
         elif line.startswith('#expecterror') or line.startswith('>>> #expecterror'):
             expect_error = True
-        elif line == '>>> ':
-            continue
         elif not ignore:
             print >> src, line,
     # if there is error
@@ -152,6 +150,9 @@ def runSampleCode(srcFile):
             writeFile(open(tmpSrcName).readlines(), filename)
             logFile = filename.replace('.py', '.log')
             writeFile(open(tmpLogName).readlines(), logFile, True)
+            #
+            os.remove(tmpSrcName)
+            os.remove(tmpLogName)
             print ' done.'
         else:
             if tmpSrc is not None:
