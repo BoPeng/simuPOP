@@ -11037,6 +11037,7 @@ Details:
     *   maxNumSubPop: maximum number of subpopulations.
     *   maxIndex: maximum index size (limits population size * total
     number of marker).
+    *   debug: A list of effective debugging codes.
 
 "; 
 
