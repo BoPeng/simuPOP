@@ -963,7 +963,7 @@ Turn on/off debug information
 
 \end_inset
 
->>> TurnOnDebug(DBG_POPULATION)
+>>> TurnOnDebug('DBG_POPULATION')
 \end_layout
 
 \begin_layout Plain Layout
@@ -1061,6 +1061,16 @@ and
 turnOffDebug
 \family default
 .
+\end_layout
+
+\begin_layout Note
+All debug information is written to Python 
+\family typewriter
+sys.stderr
+\family default
+.
+ It is possible to redirect it to a file so that debug information is not
+ mixed with regular output.
 \end_layout
 
 \begin_layout Subsection
