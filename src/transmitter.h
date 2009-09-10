@@ -53,7 +53,6 @@ public:
 		baseOperator("", DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
-		setTransmitter(true);
 	}
 
 
@@ -135,7 +134,6 @@ public:
 		const stringList & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
 	{
-		setTransmitter(true);
 	}
 
 
@@ -342,10 +340,6 @@ public:
 	 *  mitochondrial chromosomes. These chromosomes should have the same
 	 *  length and the same number of loci. This operator transmits these
 	 *  chromosomes randomly from the female parent to offspring of both sexes.
-	 *  \note The 'form offspring genotype' flag of this operator is set to
-	 *  \c False so this operator will not be the promary genotype transmitter.
-	 *  Please refer to the simuPOP user's guide for the implication of this
-	 *  setting.
 	 */
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -354,8 +348,6 @@ public:
 		: genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
-		// this is intended to be an auxillary genotype transmitter.
-		setTransmitter(false);
 	}
 
 

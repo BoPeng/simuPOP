@@ -628,47 +628,6 @@ simuPOPcontrolledRandomMatingRef
 
 \end_layout
 
-\begin_layout Subsection
-Pre-defined offspring generators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcloneOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmendelianOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPhaplodiploidOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPselfingOffspringGeneratorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Utility Classes
 \end_layout

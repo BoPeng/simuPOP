@@ -20,6 +20,10 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix the save/load of default dictionaries.
   - CHG: TurnOnDebug/turnOnDebug and TurnOffDebug/turnOffDebug now accept string instead of
 		constants as input.
+  - CHG: Change how during mating operators are handled. Briefly, the rules have been
+		simplifed to a): during mating operators in mating schemes are applied first.
+		b): during mating operators in simulator.evolve are applied after. There is
+		no difference between a regular operator and a genotype transmitter.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

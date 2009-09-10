@@ -168,8 +168,6 @@ protected:
 	opList m_transmitters;
 
 protected:
-	/// see who will generate offspring genotype
-	bool m_transmitGenotype;
 
 	bool m_initialized;
 };
