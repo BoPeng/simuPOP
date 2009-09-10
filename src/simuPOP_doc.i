@@ -269,10 +269,6 @@ Details:
 
 %ignore simuPOP::baseOperator::infoField(UINT idx);
 
-%ignore simuPOP::baseOperator::isTransmitter();
-
-%ignore simuPOP::baseOperator::setTransmitter(bool flag=true);
-
 %feature("docstring") simuPOP::baseOperator::apply "
 
 Usage:
@@ -4222,13 +4218,6 @@ Details:
     operator transmits these chromosomes randomly from the female
     parent to offspring of both sexes.
 
-Note:
-
-    The 'form offspring genotype' flag of this operator is set to
-    False so this operator will not be the promary genotype
-    transmitter. Please refer to the simuPOP user's guide for the
-    implication of this setting.
-
 "; 
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter::clone "
@@ -4795,30 +4784,26 @@ Details:
     offspring. It expects numParents from an upstream parents chooser
     and raises an RuntimeError if incorrect number of parents are
     passed. If both one and two parents can be handled, 0 should be
-    specified for this parameter.  A number of genotype transmitters
-    can be used to transmit genotype from parents to offspring.
-    Additional during-mating operators can be passed from the evolve()
-    function of a simulator, but the ops operators will be applied
-    before them. An exception is that if one of the passed operators
-    is set to form offspring genotype (a flag setOffGenotype),
-    operators in ops with the same flag will not be applied. For
-    example, a recombinator will override a mendelianGenoTransmitter
-    used in randomMating if it is used in the ops parameter of the
-    evolve function. This general offspring generator does not use any
-    genotype transmitter. A number of derived offspring generators are
-    available with a default transmitter. For example, a
-    mendelianOffspringGenerator uses a mendelianGenoTransmitter to
-    transmit genotypes.  Parameter numOffspring is used to control the
-    number of offspring per mating event, or in another word the
-    number of offspring in each family. It can be a number, a
-    function, or a mode parameter followed by some optional arguments.
-    If a number is given, given number of offspring will be generated
-    at each mating event. If a Python function is given, it will be
-    called each time when a mating event happens. Current generation
-    number will be passed to this function, and its return value will
-    be considered the number of offspring. In the last case, a tuple
-    (or a list) in one of the following forms: (GeometricDistribution,
-    p), (PoissonDistribution, p), (BinomialDistribution, p, N), or
+    specified for this parameter.  A number of during-mating operators
+    (parameter ops) can be used to, among other possible duties such
+    as setting information fields of offspring, transmit genotype from
+    parents to offspring. Additional during-mating operators passed
+    from the simulator.evolve() function will be applied afterwards.
+    This general offspring generator does not have any default during-
+    mating operator but all stock mating schemes use an offspring
+    generator with a default operator. For example, a
+    mendelianOffspringGenerator is used by randomMating to trasmit
+    genotypes.  Parameter numOffspring is used to control the number
+    of offspring per mating event, or in another word the number of
+    offspring in each family. It can be a number, a function, or a
+    mode parameter followed by some optional arguments. If a number is
+    given, given number of offspring will be generated at each mating
+    event. If a Python function is given, it will be called each time
+    when a mating event happens. Current generation number will be
+    passed to this function, and its return value will be considered
+    the number of offspring. In the last case, a tuple (or a list) in
+    one of the following forms: (GeometricDistribution, p),
+    (PoissonDistribution, p), (BinomialDistribution, p, N), or
     (UniformDistribution, a, b) can be given. The number of offspring
     will be determined randomly following these statistical
     distributions. Please refer to the simuPOP user's guide for a
@@ -7032,8 +7017,8 @@ Details:
 Usage:
 
     pyOperator(func, param=None, stage=PostMating,
-      isTransmitter=False, offspringOnly=False, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      offspringOnly=False, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -7054,12 +7039,11 @@ Details:
     with param. where pop is the population to which the operator is
     applied, off is the offspring of dad and mom, and param is the
     parameter param specified when the operator is created. When this
-    operator is applied during mating, it can become a genotype
-    transmitter if parameter isTransmitter is set to True. That is to
-    say, the genotype transmitter defined in a mating scheme will not
-    be applied when this operator is active. Please refer to the
-    simuPOP user's guide for a detailed explanation about genotype
-    transmitters.  This operator does not support parameters output,
+    operator is applied during mating, it can be used in the ops
+    parameter of a mating scheme, or used in the ops parameter of
+    simulator.evolve and be applied after an offspring has been
+    created. Please refer to the simuPOP user's guide for a detailed
+    explanation.  This operator does not support parameters output,
     subPops and infoFields. If certain output is needed, it should be
     handled in the user defined function func. Because the status of
     files used by other operators through parameter output is
@@ -9114,7 +9098,7 @@ Details:
 
 Usage:
 
-    x.evolve(ops, preOps=[], postOps=[], gen=-1, dryrun=False)
+    x.evolve(ops=[], preOps=[], postOps=[], gen=-1, dryrun=False)
 
 Details:
 
@@ -9133,25 +9117,29 @@ Details:
     each generation, the applicability of these operators are
     determined. Pre-mating operators are applied to a population
     first. A mating scheme is then used to populate an offspring
-    generation, using applicable during-mating operators. After an
-    offspring generation is successfully generated and becomes the
-    current generation, applicable post-mating operators are applied
-    to it. Because the order at which operators are applied can be
-    important, and the stage(s) at which operators are applied are not
-    always clear, a parameter dryRun can be used. If set to True, this
-    function will print out the order at which all operators are
-    applied, without actually evolving the populations.  Parameter gen
-    can be set to a positive number, which is the number of
-    generations to evolve. If gen is negative (default), the evolution
-    will continue indefinitely, until all replicates are stopped by a
-    special kind of operators called terminators. At the end of the
-    evolution, the generations that each replicates have evolved are
-    returned. If not all replicates are stopped at the same
-    generation, the negative replicate numbers are calculated
-    according to active replicates, meaning replicate -1 will refer to
-    the last active replicate even if the last replicate has stopped.
-    In addition, postOps are applied to all replicates, including
-    those that stopped before other replicates.
+    generation. For each offspring, his or her sex is determined
+    before during-mating operators of the mating scheme are used to
+    transmit parental genotypes. During-mating operators specified in
+    this function will be applied afterwards. An offspring will be
+    discarded if any of the during-mating operator fails (return
+    False). After an offspring generation is successfully generated
+    and becomes the current generation, applicable post-mating
+    operators are applied to it. Because the order at which operators
+    are applied can be important, and the stage(s) at which operators
+    are applied are not always clear, a parameter dryRun can be used.
+    If set to True, this function will print out the order at which
+    all operators are applied, without actually evolving the
+    populations.  Parameter gen can be set to a positive number, which
+    is the number of generations to evolve. If gen is negative
+    (default), the evolution will continue indefinitely, until all
+    replicates are stopped by a special kind of operators called
+    terminators. At the end of the evolution, the generations that
+    each replicates have evolved are returned. If not all replicates
+    are stopped at the same generation, the negative replicate numbers
+    are calculated according to active replicates, meaning replicate
+    -1 will refer to the last active replicate even if the last
+    replicate has stopped. In addition, postOps are applied to all
+    replicates, including those that stopped before other replicates.
 
 Note:
 

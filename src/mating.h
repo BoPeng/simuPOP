@@ -62,19 +62,15 @@ public:
 	 *  passed. If both one and two parents can be handled, \c 0 should be
 	 *  specified for this parameter.
 	 *
-	 *  A number of <em>genotype transmitters</em> can be used to transmit
-	 *  genotype from parents to offspring. Additional during-mating operators
-	 *  can be passed from the \c evolve() function of a \e simulator, but the
-	 *  \e ops operators will be applied before them. An exception is that if
-	 *  one of the passed operators is set to form offspring genotype (a flag
-	 *  \c setOffGenotype), operators in \e ops with the same flag will not be
-	 *  applied. For example, a \c recombinator will override a
-	 *  \c mendelianGenoTransmitter used in \c randomMating if it is used in
-	 *  the \c ops parameter of the \c evolve function. This general offspring
-	 *  generator does not use any genotype transmitter. A number of derived
-	 *  offspring generators are available with a default transmitter. For
-	 *  example, a \c mendelianOffspringGenerator uses a
-	 *  \c mendelianGenoTransmitter to transmit genotypes.
+	 *  A number of <em>during-mating operators</em> (parameter \e ops) can be
+	 *  used to, among other possible duties such as setting information fields
+	 *  of offspring, transmit genotype from parents to offspring. Additional
+	 *  during-mating operators passed from the \c simulator.evolve() function
+	 *  will be applied afterwards. This general offspring generator does not
+	 *  have any default during-mating operator but all stock mating schemes
+	 *  use an offspring generator with a default operator. For example, a
+	 *  \c mendelianOffspringGenerator is used by \c randomMating to trasmit
+	 *  genotypes.
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each
@@ -168,7 +164,6 @@ protected:
 	opList m_transmitters;
 
 protected:
-
 	bool m_initialized;
 };
 

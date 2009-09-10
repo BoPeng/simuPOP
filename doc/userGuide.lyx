@@ -504,7 +504,16 @@ reference "simple-example"
  The second line creates a diploid population with 1000 individuals, each
  having one chromosome with two loci.
  The third line creates a simulator with three replicates of this population.
- Random mating will be used to generate offspring.
+ Random mating will be used to generate offspring but a 
+\family typewriter
+recombinator
+\family default
+ is used to recombine parental chromosomes with the given recombination
+ rate 
+\family typewriter
+0.01
+\family default
+ during the generation of offspring.
  The last statement uses the 
 \family typewriter
 evolve()
@@ -525,16 +534,7 @@ initByValue
 \family default
 .
  The other operators can be applied at every generation.
- 
-\family typewriter
-recombinator
-\family default
- is a during-mating operator that recombines parental chromosomes with the
- given recombination rate 
-\family typewriter
-0.01
-\family default
- during the generation of offspring; 
+  
 \family typewriter
 stat
 \family default
@@ -5655,33 +5655,91 @@ reference "sec:Mating-Schemes"
 \series bold
 genotype transmitters
 \series default
-.
+ just to show the kind of task they perform.
 \end_layout
 
 \begin_layout Standard
-Additional during-mating operators could be applied to change or reject
- offspring.
- A good example is operator 
-\family typewriter
-parentsTagger()
-\family default
- that record the indexes of an offspring's parents in the parental generation.
- These operators usually do not transmit genotypes and are called after
- the genotype transmitter in a mating scheme set genotype for the offspring.
+During mating operators could be used in two ways:
 \end_layout
 
-\begin_layout Standard
-
-\series bold
-Only one genotype transmitter is applied if two or more transmitters are
- provided
-\series default
-.
- If a genotype transmitter is passed from a simulator (using parameter 
+\begin_layout Itemize
+In the 
 \family typewriter
 ops
 \family default
-), the genotype transmitter in the mating scheme will not be called.
+ parameter of a mating scheme (or an offspring generator if you are defining
+ your own mating scheme).
+ Operators specified in this way will replace the default operator a mating
+ scheme uses and will be applied at every generations.
+\end_layout
+
+\begin_layout Itemize
+In the 
+\family typewriter
+ops
+\family default
+ parameter of the 
+\family typewriter
+simulator.evolve
+\family default
+ function.
+ These operators will be applied after an offspring is created (using operators
+ of a mating scheme), and can be applied to selected generations.
+\end_layout
+
+\begin_layout Standard
+In another word,
+\end_layout
+
+\begin_layout Itemize
+If you would like to change how genotypes are transmitted, replace the genotype
+ transmitter of a mating scheme with your own ones.
+ For example, 
+\family typewriter
+recombinator
+\family default
+ should generally be used in a mating scheme.
+\end_layout
+
+\begin_layout Itemize
+If you would like to modify individual property after his or her genotypes
+ are transmitted, use them in the 
+\family typewriter
+simulator.evolve
+\family default
+ function.
+ A good example is operator 
+\family typewriter
+parentsTagger
+\family default
+ that record the indexes of an offspring's parents in the parental generation.
+\end_layout
+
+\begin_layout Standard
+There are some subtleties involved in the use of during-mating operators.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+During-mating operators do not support parameter 
+\family typewriter
+subPops
+\family default
+.
+ If you would like to apply different during-mating operators to different
+ (virtual) subpopulations, you can use a heterogeneous mating scheme that
+ applies different homogeneous mating schemes with different operators to
+ different (virtual) subpopulations.
+\end_layout
+
+\begin_layout Itemize
+Operators used in a mating scheme are applied at every generation.
+ If you would like to apply during-mating operators at selective generations,
+ they have to be used in 
+\family typewriter
+simulator.evolve
+\family default
+.
  For example, a 
 \family typewriter
 recombinator
@@ -5694,12 +5752,29 @@ reference "transmitter"
 \end_inset
 
  to transmit parental genotypes to offspring after generation 30.
- The default genotype transmitter 
+ Because the default genotype transmitter 
 \family typewriter
 mendelianGenoTransmitter
 \family default
- is used for the first 30 generations.
+ will always be applied, offspring genotypes are transmitted twice after
+ the 30th generation.
  
+\end_layout
+
+\begin_layout Itemize
+Operators used in 
+\family typewriter
+simulator.evolve
+\family default
+ are applied after an individual is created.
+ If something needs to be done before the default genotype transmitter is
+ used, you have to replace the default genotype transmitter with a list
+ of operators which will be called by the mating scheme in the order at
+ which operators are specified.
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/transmitter.log"
@@ -8094,17 +8169,18 @@ ops
 \family default
  parameter.
  It accepts a list of during mating operators that are used to transmit
- genotypes from parent(s) to offspring.
+ genotypes from parent(s) to offspring and/or set individual information
+ fields.
  The standard 
 \family typewriter
 offspringGenerator
 \family default
  does not have any default operator so no genotype will be transmitted by
  default.
- A number of specialized offspring generators are therefore defined.
- For example, a 
+ All stock mating schemes use a default genotype transmitter.
+ (e,g, a 
 \family typewriter
-mendelianOffspringGenerator
+mendelianGenoTransmitter
 \family default
  in Example 
 \begin_inset CommandInset ref
@@ -8113,24 +8189,21 @@ reference "randomMating"
 
 \end_inset
 
- uses a 
+ is passed to the offspring generator used in 
 \family typewriter
-mendelianGenoTransmitter 
+randomMating
 \family default
-as the default genotype transmitter.
- Additional during-mating operators can be added to the operator list, as
- shown in Example 
+.
+ If you add some operators to a mating scheme, please do not forget to specify
+ the genotype transmitter.
+ (see Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "heteroMatingWeight"
 
 \end_inset
 
-, but the 
-\family typewriter
-mendelianGenoTransmitter
-\family default
- will always be used to transmit genotypes.
+).
 \end_layout
 
 \begin_layout Standard
@@ -8204,8 +8277,8 @@ Although any during mating operators can be used in parameter
 \family typewriter
 ops 
 \family default
-of an offspring generator, only those that transmit genotype from parents
- to offspring are called 
+of an offspring generator, those that transmit genotype from parents to
+ offspring are customarily called 
 \series bold
 genotype transmitters
 \series default
@@ -8214,34 +8287,6 @@ genotype transmitters
  selfing, haplodiploid, genotype transmitter, and a recombinator.
  They are usually used implicitly in a mating scheme, but they can also
  be used explicitly.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Only one genotype transmitter will be applied to an offspring
-\series default
-.
- If another transmitter is used in the 
-\family typewriter
-evolve
-\family default
- function, it will override the transmitter defined in the mating scheme.
- For example, a 
-\family typewriter
-recombiantor
-\family default
- will override the 
-\family typewriter
-mendelianGenoTransmitter()
-\family default
- used in a 
-\family typewriter
-randomMating
-\family default
- mating scheme.
- This is usually not a concern, but will be important if you are defining
- your own during-mating operators.
 \end_layout
 
 \begin_layout Standard
@@ -8272,35 +8317,17 @@ recombinator
 mitochondrialGenoTransmitter
 \family default
  to transmit mitochondrial chromosomes.
- Note that,
-\end_layout
-
-\begin_layout Itemize
-These two operators can be used in the ops parameter of both the 
+ Note that the default 
 \family typewriter
-evolve
+mendelianGenoTransmitter
 \family default
- function and the mating scheme.
- Recombinator overrides the default Mendelian genotype transmitter defined
- in the random mating scheme.
-\end_layout
-
-\begin_layout Itemize
-Different applicability rules are applied to these operators when they are
+ is replaced by these two operators.
+ It will be (wastefully) applied if the new during-mating operators are
  used in the 
 \family typewriter
-evolve
+simulator.evolve
 \family default
- function or in a mating scheme.
- Namely, it is possible to apply recombination at certain generations if
- it is used in the evolve function, and it is possible to apply recombination
- to individuals in a virtual subpopulation if it is used in the mating scheme.
-\end_layout
-
-\begin_layout Itemize
-Because the mitochondrial genotype transmitter is only applied to customized
- chromosomes, it is not considered as a genotype transmitter so that it
- will not override any default genotype transmitter.
+ function.
 \end_layout
 
 \begin_layout Standard
@@ -8392,11 +8419,6 @@ pyOperator.__init__
 self.transmitGenotype
 \family default
 .
- It is important to set 
-\family typewriter
-transmitter=True
-\family default
- so that this operator will be treated as a genotype transmitter.
 \end_layout
 
 \begin_layout Standard
@@ -11160,8 +11182,11 @@ recombinator(rates=0.1, loci=[2, 5])
 
 \end_inset
 
-recombines a chromosome only after loci 2 (between 2 and 3) and 5 (between
- 5 and 6).
+recombines a chromosome only 
+\series bold
+after
+\series default
+ loci 2 (between 2 and 3) and 5 (between 5 and 6).
 \end_layout
 
 \begin_layout Enumerate
@@ -11525,6 +11550,10 @@ lstparams "caption={Gene conversion},label={conversion}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Tracing all recombination events **
 \end_layout
 
 \begin_layout Section

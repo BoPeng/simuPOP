@@ -224,8 +224,12 @@ public:
 	 *  evolved one by one. At each generation, the applicability of these
 	 *  operators are determined. Pre-mating operators are applied to a
 	 *  population first. A mating scheme is then used to populate an offspring
-	 *  generation, using applicable during-mating operators. After an
-	 *  offspring generation is successfully generated and becomes the current
+	 *  generation. For each offspring, his or her sex is determined before
+	 *  during-mating operators of the mating scheme are used to transmit
+	 *  parental genotypes. During-mating operators specified in this function
+	 *  will be applied afterwards. An offspring will be discarded if any of
+	 *  the during-mating operator fails (return \c False). After an offspring
+	 *  generation is successfully generated and becomes the current
 	 *  generation, applicable post-mating operators are applied to it. Because
 	 *  the order at which operators are applied can be important, and
 	 *  the stage(s) at which operators are applied are not always clear,
@@ -251,7 +255,7 @@ public:
 	 *
 	 *  <group>2-evolve</group>
 	 */
-	vectoru evolve(const opList & ops,
+	vectoru evolve(const opList & ops = opList(),
 		const opList & preOps = opList(),
 		const opList & postOps = opList(),
 		int gen = -1, bool dryrun = false);

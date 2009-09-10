@@ -331,13 +331,13 @@ int population::__cmp__(const population & rhs) const
 	int curGen = m_curAncestralGen;
 	int rhsCurGen = rhs.m_curAncestralGen;
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
-		const_cast<population*>(this)->useAncestralGen(depth);
-		const_cast<population&>(rhs).useAncestralGen(depth);
+		const_cast<population *>(this)->useAncestralGen(depth);
+		const_cast<population &>(rhs).useAncestralGen(depth);
 		for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
 			if (m_inds[i] != rhs.m_inds[i]) {
 				DBG_DO(DBG_POPULATION, cerr << "Individuals are different" << endl);
-				const_cast<population*>(this)->useAncestralGen(curGen);
-				const_cast<population&>(rhs).useAncestralGen(rhsCurGen);
+				const_cast<population *>(this)->useAncestralGen(curGen);
+				const_cast<population &>(rhs).useAncestralGen(rhsCurGen);
 				return 1;
 			}
 	}
