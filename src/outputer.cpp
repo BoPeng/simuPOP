@@ -167,7 +167,7 @@ bool savePopulation::apply(population & pop)
 		filenameParser.setLocalDict(pop.dict());
 		filename = filenameParser.valueAsString();
 	}
-	DBG_DO(DBG_OUTPUTER, cerr << "Save to file " << filename << endl);
+	DBG_DO(DBG_POPULATION, cerr << "Save to file " << filename << endl);
 	pop.save(filename);
 	return true;
 }

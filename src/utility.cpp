@@ -33,7 +33,6 @@
 #include "time.h"
 
 #include <bitset>
-typedef std::bitset<DBG_CODE_LENGTH> DbgBitSet;
 
 #include <sstream>
 using std::stringstream;
@@ -116,31 +115,30 @@ using std::greater;
 
 namespace simuPOP {
 
-// Debug functions
 // debug codes in a bitset.
-DbgBitSet g_dbgCode;
+std::bitset<DBG_CODE_LENGTH> g_dbgCode;
 
 char * g_debugCodes[] = {
-	"DBG_ALL",
-	"DBG_GENERAL",
-	"DBG_UTILITY",
-	"DBG_OPERATOR",
-	"DBG_SIMULATOR",
-	"DBG_INDIVIDUAL",
-	"DBG_OUTPUTER",
-	"DBG_MUTATOR",
-	"DBG_TRANSMITTER",
-	"DBG_INITIALIZER",
-	"DBG_POPULATION",
-	"DBG_STATOR",
-	"DBG_TAGGER",
-	"DBG_SELECTOR",
-	"DBG_MATING",
-	"DBG_MIGRATOR",
-	"DBG_PROFILE",
-	"DBG_BATCHTESTING",
-	"DBG_VISUALIZER",
-	"DBG_DEVEL",
+	"DBG_ALL",                  // all debug information
+	"DBG_GENERAL",              // general information, small warnings etc
+	"DBG_UTILITY",              // utility classes and modules
+	"DBG_POPULATION",           // debug information related to population
+	"DBG_OPERATOR",             // debug information related to operators in general
+	"DBG_SIMULATOR",            // debug information related to simulators
+	"DBG_INDIVIDUAL",           // debug information related to individuals
+	"DBG_MUTATOR",              // debug information related to mutators
+	"DBG_TRANSMITTER",          // debug information related to genotype transmitters
+	"DBG_INITIALIZER",          // debug information related to initializer
+	"DBG_STATOR",               // debug information related to statistics calculator
+	"DBG_TAGGER",               // debug information realted to tagger
+	"DBG_SELECTOR",             // debug information related to natural selection operators
+	"DBG_MATING",               // debug information related to mating schemes
+	"DBG_MIGRATOR",             // debug information related to migration
+	"DBG_PROFILE",              // debug information used for performance profiling.
+	"DBG_BATCHTESTING",         // debug information used for batch testing of scripts
+	"DBG_INTEROPERABILITY",     // debug information used when interoperate with other applications
+	"DBG_COMPATIBILITY",        // debug information (obsolete notice etc) about compatibility
+	"DBG_DEVEL",                // debug information purely for development.
 	""
 };
 
@@ -3223,7 +3221,7 @@ PyObject * ModuleInfo()
 
     // debug (code)
     PyObject * codes = PyList_New(0);
-    for (size_t i = 0; i < DBG_CODE_LENGTH; ++i) {
+    for (size_t i = 0; g_debugCodes[i][0]; ++i) {
         if (g_dbgCode[i]) {
             PyList_Append(codes, PyString_FromString(g_debugCodes[i]));
 		}
