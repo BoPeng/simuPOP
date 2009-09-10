@@ -371,11 +371,6 @@ recombinator::recombinator(const floatList & rates, double intensity,
 	m_bt(GetRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 	m_algorithm(0)
 {
-	// tells mating schemes that this operator will form
-	// the genotype of offspring so they do not have to
-	// generate default genotype for offspring
-	setTransmitter(true);
-
 	DBG_FAILIF(m_convMode.empty(), ValueError,
 		"Please specify a conversion mode");
 

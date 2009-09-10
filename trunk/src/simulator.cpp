@@ -180,15 +180,9 @@ vectoru simulator::evolve(const opList & ops,
 			preMatingOps.push_back(ops[i]);
 		if (ops[i]->canApplyPostMating())
 			postMatingOps.push_back(ops[i]);
-	}
-	// first put in DuringMating operators that can form genotype
-	for (size_t i = 0; i < ops.size(); ++i)
-		if (ops[i]->canApplyDuringMating() && ops[i]->isTransmitter())
+		if (ops[i]->canApplyDuringMating())
 			durmatingOps.push_back(ops[i]);
-
-	for (size_t i = 0; i < ops.size(); ++i)
-		if (ops[i]->canApplyDuringMating() && !ops[i]->isTransmitter())
-			durmatingOps.push_back(ops[i]);
+    }
 
 	// check compatibility of operators
 	for (size_t i = 0; i < ops.size(); ++i) {

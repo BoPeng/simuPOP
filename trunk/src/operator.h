@@ -400,26 +400,6 @@ public:
 	}
 
 
-	/// CPPONLY if the operator will form genotype of offspring
-	/**
-	   If none of the during mating operator can form offspring, default will be used.
-	 */
-	bool isTransmitter()
-	{
-		return ISSETFLAG(m_flags, m_flagTransmitter);
-	}
-
-
-	/// CPPONLY
-	void setTransmitter(bool flag = true)
-	{
-		if (flag)
-			SETFLAG(m_flags, m_flagTransmitter);
-		else
-			RESETFLAG(m_flags, m_flagTransmitter);
-	}
-
-
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
@@ -516,11 +496,10 @@ private:
 	static const size_t m_flagAtAllGen = 8;
 	static const size_t m_flagOnlyAtBegin = 16;
 	static const size_t m_flagOnlyAtEnd = 32;
-	static const size_t m_flagTransmitter = 64;
 	// limited to haploid?
-	static const size_t m_flagHaploid = 128;
+	static const size_t m_flagHaploid = 64;
 	// limited to diploid?
-	static const size_t m_flagDiploid = 256;
+	static const size_t m_flagDiploid = 128;
 
 private:
 	/// starting generation, default to 0
@@ -1063,11 +1042,10 @@ public:
 	 *  where \c pop is the population to which the operator is applied, \c off
 	 *  is the offspring of \c dad and \c mom, and \c param is the parameter
 	 *  \e param specified when the operator is created. When this operator is
-	 *  applied during mating, it can become a <em>genotype transmitter</em> if
-	 *  parameter \e isTransmitter is set to \c True. That is to say, the
-	 *  genotype transmitter defined in a mating scheme will not be applied
-	 *  when this operator is active. Please refer to the simuPOP user's guide
-	 *  for a detailed explanation about <em>genotype transmitters</em>.
+	 *  applied during mating, it can be used in the \c ops parameter of a
+     *  mating scheme, or used in the \c ops parameter of \c simulator.evolve
+     *  and be applied after an offspring has been created. Please refer to the
+     *  simuPOP user's guide for a detailed explanation.
 	 *
 	 *  This operator does not support parameters \e output, \e subPops and
 	 *  \e infoFields. If certain output is needed, it should be handled in the
@@ -1076,7 +1054,7 @@ public:
 	 *  evolution, they should not be open or closed in this Python operator.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
+		int stage = PostMating, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
