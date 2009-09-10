@@ -47,7 +47,6 @@ using std::ostream_iterator;
 using std::copy;
 
 #include <iostream>
-using std::cout;
 using std::endl;
 using std::hex;
 using std::dec;
@@ -828,7 +827,7 @@ public:
 	void incGenoStruRef() const
 	{
 		++s_genoStruRepository[m_genoStruIdx].m_refCount;
-		DBG_DO(DBG_POPULATION, cout << "Inc ref of " << int(m_genoStruIdx) << " to "
+		DBG_DO(DBG_POPULATION, cerr << "Inc ref of " << int(m_genoStruIdx) << " to "
 			                        << s_genoStruRepository[m_genoStruIdx].m_refCount << endl);
 	}
 
@@ -839,7 +838,7 @@ public:
 		DBG_FAILIF(s_genoStruRepository[m_genoStruIdx].m_refCount == 0,
 			SystemError, "Unknow error for reference counting of genotypic structure " + toStr(int(m_genoStruIdx)) + ".");
 		--s_genoStruRepository[m_genoStruIdx].m_refCount;
-		DBG_DO(DBG_POPULATION, cout << "Dec ref of " << int(m_genoStruIdx) << " to "
+		DBG_DO(DBG_POPULATION, cerr << "Dec ref of " << int(m_genoStruIdx) << " to "
 			                        << s_genoStruRepository[m_genoStruIdx].m_refCount << endl);
 	}
 

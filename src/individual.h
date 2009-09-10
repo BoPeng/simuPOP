@@ -50,7 +50,6 @@ using std::ostream_iterator;
 using std::copy;
 
 #include <iostream>
-using std::cout;
 using std::endl;
 using std::hex;
 using std::dec;

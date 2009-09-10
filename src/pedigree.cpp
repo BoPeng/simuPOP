@@ -248,7 +248,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			     field != parentFields.end(); ++field) {
 				useAncestralGen(ans - 1);
 				vectorf parent = indInfo(*field);
-				DBG_DO(DBG_POPULATION, cout << "Parents " << parent << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Parents " << parent << endl);
 				//
 				useAncestralGen(ans);
 				if (numOffspring.empty())
@@ -515,7 +515,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 		vectoru inds = vectoru(1, idx);
 		// go through the path
 		for (size_t path = 0; path < pathFields.size(); ++path) {
-			DBG_DO(DBG_POPULATION, cout << "Start of path " << path
+			DBG_DO(DBG_POPULATION, cerr << "Start of path " << path
 				                        << " : " << inds << endl);
 			UINT fromGen = pathGen[path];
 			UINT toGen = pathGen[path + 1];
@@ -549,7 +549,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 			if (inds.empty())
 				break;
 		}
-		DBG_DO(DBG_POPULATION, cout << "Ind " << idx << " has relatives " << inds << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Ind " << idx << " has relatives " << inds << endl);
 		// ind has the results
 		for (size_t i = 0; i < maxResult; ++i)
 			if (i < inds.size())

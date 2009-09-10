@@ -93,7 +93,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 			if (ordered)
 				continue;
 
-			DBG_DO(DBG_POPULATION, cout << "Loci on chromosome " << ch << " are unordered.");
+			DBG_DO(DBG_POPULATION, cerr << "Loci on chromosome " << ch << " are unordered.");
 
 			vectorf lociPos(m_lociPos.begin() + begin, m_lociPos.begin() + end);
 
@@ -361,7 +361,7 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	// if not found, replace zero-referenced structure if necessary
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size(); ++it) {
 		if (s_genoStruRepository[it].m_refCount == 0) {
-			DBG_DO(DBG_POPULATION, cout << "Replacing an existing geno structure." << endl);
+			DBG_DO(DBG_POPULATION, cerr << "Replacing an existing geno structure." << endl);
 			DBG_ASSERT(rhs.m_refCount == 0, SystemError,
 				"Invalid ref count for new genotypic structure.");
 			s_genoStruRepository[it] = rhs;
@@ -372,7 +372,7 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	}
 	// no zero-referenced structure
 	s_genoStruRepository.push_back(rhs);
-	DBG_DO(DBG_POPULATION, cout << "Adding an geno structure. (tot size: "
+	DBG_DO(DBG_POPULATION, cerr << "Adding an geno structure. (tot size: "
 		                        << s_genoStruRepository.size() << ")" << endl);
 	// the last one.
 	m_genoStruIdx = s_genoStruRepository.size() - 1;

@@ -64,7 +64,7 @@ population::population(const uintList & size,
 	m_indOrdered(true),
 	m_selectionFlags()
 {
-	DBG_DO(DBG_POPULATION, cout << "Constructor of population is called\n");
+	DBG_DO(DBG_POPULATION, cerr << "Constructor of population is called\n");
 
 	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
 		"Number of subpopulations exceed maximum allowed subpopulation numbers");
@@ -78,7 +78,7 @@ population::population(const uintList & size,
 		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
 		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
-	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
+	DBG_DO(DBG_DEVEL, cerr << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl
 		                   << ", infoPtr: " << sizeof(double *)
 		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
@@ -97,7 +97,7 @@ population::population(const uintList & size,
 population::~population()
 {
 	DBG_DO(DBG_POPULATION,
-		cout << "Destructor of population is called" << endl);
+		cerr << "Destructor of population is called" << endl);
 
 	if (m_vspSplitter)
 		delete m_vspSplitter;
@@ -125,7 +125,7 @@ population::population(const population & rhs) :
 	m_selectionFlags()
 {
 	DBG_DO(DBG_POPULATION,
-		cout << "Copy constructor of population is called" << endl);
+		cerr << "Copy constructor of population is called" << endl);
 
 	try {
 		m_inds.resize(rhs.m_popSize);
@@ -181,7 +181,7 @@ population::population(const population & rhs) :
 			}
 		}
 	} catch (...) {
-		cout << "Unable to copy ancestral populations. "
+		cerr << "Unable to copy ancestral populations. "
 		     << "The popolation size may be too big." << endl
 		     << "The population will still be usable but without any ancestral population stored." << endl;
 		m_ancestralGens = 0;
@@ -314,17 +314,17 @@ void population::deactivateVirtualSubPop(SubPopID subPop)
 int population::__cmp__(const population & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
-		DBG_DO(DBG_POPULATION, cout << "Genotype structures are different" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Genotype structures are different" << endl);
 		return 1;
 	}
 
 	if (popSize() != rhs.popSize() ) {
-		DBG_DO(DBG_POPULATION, cout << "Population sizes are different" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Population sizes are different" << endl);
 		return 1;
 	}
 
 	if (ancestralGens() != rhs.ancestralGens()) {
-		DBG_DO(DBG_POPULATION, cout << "Number of ancestral generations differ" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Number of ancestral generations differ" << endl);
 		return 1;
 	}
 
@@ -335,7 +335,7 @@ int population::__cmp__(const population & rhs) const
 		const_cast<population&>(rhs).useAncestralGen(depth);
 		for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
 			if (m_inds[i] != rhs.m_inds[i]) {
-				DBG_DO(DBG_POPULATION, cout << "Individuals are different" << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Individuals are different" << endl);
 				const_cast<population*>(this)->useAncestralGen(curGen);
 				const_cast<population&>(rhs).useAncestralGen(rhsCurGen);
 				return 1;
@@ -641,7 +641,7 @@ void population::setSubPopByIndInfo(const string & field)
 
 	UINT info = infoIdx(field);
 
-	DBG_DO(DBG_POPULATION, cout << "Sorting individuals." << endl);
+	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
 	// sort individuals first
 	std::sort(indIterator(), IndIterator(m_inds.end(), m_inds.end(), AllInds), indCompare(info));
 	setIndOrdered(false);
@@ -660,7 +660,7 @@ void population::setSubPopByIndInfo(const string & field)
 		}
 		// 'it' now point to the one with positive info(info)
 
-		DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
+		DBG_DO(DBG_POPULATION, cerr << "New pop size" << newPopSize << endl);
 
 		// allocate new genotype and inds
 		vectora newGenotype(genoSize() * newPopSize);
@@ -1192,13 +1192,13 @@ vectoru population::addLoci(const uintList & chromList, const floatList & posLis
 	vectoru loci(totNumLoci());
 	// obtain new genotype structure and set it
 	setGenoStructure(gsAddLoci(chrom, pos, lociNames, alleleNames, newIndex));
-	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex << endl);
+	DBG_DO(DBG_POPULATION, cerr << "Indexes of inserted loci " << newIndex << endl);
 	// loci at newIndex should have zero alleles...
 	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
 		if (find(newIndex.begin(), newIndex.end(), j) == newIndex.end())
 			loci[i++] = j;
 	}
-	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex
+	DBG_DO(DBG_POPULATION, cerr << "Indexes of inserted loci " << newIndex
 		                        << "\nIndexes of old loci in new structure " << loci << endl);
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
@@ -1298,7 +1298,7 @@ population & population::extract(const string & field,
 	bool removeInfo = !infoFieldList.allAvail();
 	const vectorstr & infoFields = infoFieldList.elems();
 
-	DBG_DO(DBG_POPULATION, cout << "Remove ind: " << removeInd
+	DBG_DO(DBG_POPULATION, cerr << "Remove ind: " << removeInd
 		                        << "\nRemove loci: " << removeLoci
 		                        << "\nRemove info: " << removeInfo << endl);
 
@@ -1352,7 +1352,7 @@ population & population::extract(const string & field,
 				new_alleleNames.push_back(alleleNames(*it));
 			}
 		}
-		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << new_numLoci
+		DBG_DO(DBG_POPULATION, cerr << "Extract population with \nnumLoci:" << new_numLoci
 			                        << "\nchromType: " << new_chromTypes
 			                        << "\nlociPos: " << new_lociPos
 			                        << "\nchromNames: " << new_chromNames
@@ -1421,7 +1421,7 @@ population & population::extract(const string & field,
 				indIdx[sp].push_back(i);
 			}
 			size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
-			DBG_DO(DBG_POPULATION, cout << "New subpopulation size " << spSizes << endl);
+			DBG_DO(DBG_POPULATION, cerr << "New subpopulation size " << spSizes << endl);
 		}
 
 		vector<individual> new_inds;
@@ -1871,7 +1871,7 @@ void population::useAncestralGen(UINT idx)
 	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 		return;
 
-	DBG_DO(DBG_POPULATION, cout << "Use ancestral generation: " << idx <<
+	DBG_DO(DBG_POPULATION, cerr << "Use ancestral generation: " << idx <<
 		" Current ancestral index: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
@@ -1997,7 +1997,7 @@ void population::sortIndividuals(bool infoOnly) const
 		return;
 
 	if (infoOnly) {
-		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Adjust info position " << endl);
 		UINT is = infoSize();
 		if (is == 0) {
 			setIndOrdered(true);
@@ -2014,7 +2014,7 @@ void population::sortIndividuals(bool infoOnly) const
 		}
 		const_cast<population *>(this)->m_info.swap(tmpInfo);
 	} else {
-		DBG_DO(DBG_POPULATION, cout << "Adjust geno and info position " << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Adjust geno and info position " << endl);
 
 		size_t sz = genoSize();
 		UINT is = infoSize();
