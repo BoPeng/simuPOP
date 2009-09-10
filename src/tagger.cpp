@@ -26,58 +26,46 @@
 #include "tagger.h"
 
 namespace simuPOP {
-// create a \c tagger, default to be always active but no output
-tagger::tagger(const stringFunc & output, int stage,
-	int begin, int end, int step, const intList & at, const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
-	// stage is automatically determined.
-	baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields)
-{
-	if (!noOutput())
-		setApplicableStage(DuringPostMating);
-};
-
-
-bool tagger::apply(population & pop)
-{
-	ostream & out = this->getOstream(pop.dict());
-
-	out << '\n';
-	closeOstream();
-	return true;
-}
-
 
 bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
-	UINT id1 = 0, id2 = 0;
+	UINT sz = infoSize();
 
-	if (m_mode == TAG_Paternal || m_mode == TAG_Maternal)
-		id1 = pop.infoIdx(infoField(0));
-	else {
-		id1 = pop.infoIdx(infoField(0));
-		id2 = pop.infoIdx(infoField(1));
-	}
-
-	if (m_mode == TAG_Paternal)
-		offspring->setInfo(dad == NULL ? 0 : dad->info(id1), id1);
-	else if (m_mode == TAG_Maternal)
-		offspring->setInfo(mom == NULL ? 0 : mom->info(id1), id1);
-	else {
-		offspring->setInfo(dad == NULL ? 0 : dad->info(id1), id1);
-		offspring->setInfo(mom == NULL ? 0 : mom->info(id2), id2);
-	}
-	// output to a file?
-	if (noOutput())
+	if (sz == 0)
 		return true;
-	ostream & out = getOstream(pop.dict());
-	if (m_mode == TAG_Paternal || m_mode == TAG_Maternal)
-		out << offspring->info(id1) << '\t';
-	else
-		out << offspring->info(id1) << '\t' << offspring->info(id2) << '\t';
 
-	closeOstream();
+	for (size_t i = 0; i < sz; ++i) {
+		UINT idx = pop.infoIdx(infoField(i));
+
+		if (m_mode == Paternal) {
+			DBG_FAILIF(dad == NULL, RuntimeError,
+				"Invalid father for paternal inheritance");
+			offspring->setInfo(dad->info(idx), idx);
+		} else if (m_mode == Maternal) {
+			DBG_FAILIF(mom == NULL, RuntimeError,
+				"Invalid mother for maternal inheritance");
+			offspring->setInfo(mom->info(idx), idx);
+		} else if (m_mode == Average) {
+			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
+				"Invalid father or mother for average inheritance");
+			offspring->setInfo((mom->info(idx) + dad->info(idx)) / 2, idx);
+		}  else if (m_mode == Maximum) {
+			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
+				"Invalid father or mother for maximum inheritance");
+			offspring->setInfo(std::max(mom->info(idx), dad->info(idx)), idx);
+		}  else if (m_mode == Minimum) {
+			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
+				"Invalid father or mother for minimum inheritance");
+			offspring->setInfo(std::min(mom->info(idx), dad->info(idx)), idx);
+		}  else if (m_mode == Summation) {
+			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
+				"Invalid father or mother for summation inheritance");
+			offspring->setInfo(mom->info(idx) + dad->info(idx), idx);
+		} else {
+			DBG_FAILIF(true, ValueError, "Invalid inheritance mode");
+		}
+	}
 	return true;
 }
 
@@ -188,7 +176,7 @@ pedigreeTagger::pedigreeTagger(int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	int stage, const stringFunc & output,
 	const stringList & pedigreeFields) :
-	tagger(output, DuringMating, begin, end, step, at, reps, subPops, pedigreeFields)
+	baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, pedigreeFields)
 {
 	setApplicableStage(stage);
 }
