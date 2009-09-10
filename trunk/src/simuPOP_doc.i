@@ -2781,39 +2781,40 @@ Details:
 
 %feature("docstring") simuPOP::inheritTagger "
 
-Description:
-
-    inherite tag from parents
-
 Details:
 
-    This during-mating operator will copy the tag (information field)
-    from his/her parents. Depending on mode parameter, this tagger
-    will obtain tag, value of the first specified information fields,
-    from his/her father or mother (two tag fields), or both (first tag
-    field from father, and second tag field from mother).
-    An example may be tagging one or a few parents and examining, at
-    the last generation, how many offspring they have.
+    An inheritance tagger passes values of parental information
+    field(s) to the corresponding fields of offspring. If there are
+    two parental values from parents of a sexual mating event, a
+    parameter mode is used to specify how to assign offspring
+    information fields.
 
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::inheritTagger "
 
-Description:
-
-    create an inheritTagger that inherits a tag from one or both
-    parents
-
 Usage:
 
-    inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail,
-      TAG_InheritFields[1])
+    inheritTagger(mode=Maternal, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail)
 
-Arguments:
+Details:
 
-    mode:           can be one of TAG_Paternal, TAG_Maternal, and
-                    TAG_Both
+    Creates an inheritance tagger that passes values of parental
+    information fields (parameter infoFields) to the corresponding
+    fields of offspring. If there is only one parent, values at the
+    specified information fields are copied directly. If there are two
+    parents, parameter mode specifies how to pass them to an
+    offspring. More specifically,
+    *   mode=Maternal Passing the value from mother.
+    *   mode=Paternal Passing the value from father.
+    *   mode=Average Passing the average of two values.
+    *   mode=Maximum Passing the maximum value of two values.
+    *   mode=Minumum Passing the minimum value of two values.
+    *   mode=Summation Passing the summation of two values. An
+    RuntimeError will be raised if any of the parents does not exist.
+    This operator does not support parameter subPops and does not
+    output any information.
 
 "; 
 
@@ -5479,7 +5480,18 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pedigreeTagger::apply(population &pop);
+%feature("docstring") simuPOP::pedigreeTagger::apply "
+
+Usage:
+
+    x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
+
+"; 
 
 %feature("docstring") simuPOP::pointMutator "
 
@@ -10263,61 +10275,6 @@ Usage:
     SystemError(msg)
 
 "; 
-
-%feature("docstring") simuPOP::tagger "
-
-Description:
-
-    base class of tagging individuals
-
-Details:
-
-    This is a during-mating operator that tags individuals with
-    various information. Potential usages are:
-    *   recording the parental information to track pedigree;
-    *   tagging an individual/allele and monitoring its spread in the
-    population etc.
-
-"; 
-
-%feature("docstring") simuPOP::tagger::tagger "
-
-Description:
-
-    create a tagger, default to be always active but no output
-
-Usage:
-
-    tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::tagger::~tagger "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~tagger()
-
-"; 
-
-%feature("docstring") simuPOP::tagger::clone "
-
-Description:
-
-    deep copy of a \\ tagger
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::tagger::apply(population &pop);
 
 %feature("docstring") simuPOP::terminateIf "
 

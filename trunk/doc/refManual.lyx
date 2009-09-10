@@ -1276,13 +1276,6 @@ status open
 
 
 \backslash
-taggerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 inheritTaggerRef
 \end_layout
 
@@ -1298,13 +1291,6 @@ parentTaggerRef
 
 \backslash
 parentsTaggerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pedigreeTaggerRef
 \end_layout
 
 \begin_layout Plain Layout

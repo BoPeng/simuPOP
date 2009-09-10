@@ -15321,6 +15321,123 @@ If performance becomes a problem, you might want to have a look at the source
 \end_layout
 
 \begin_layout Section
+Tagging operators
+\end_layout
+
+\begin_layout Standard
+In simuPOP, tagging refers to the action of setting various information
+ fields of offspring, usually using various parental information during
+ the production of offspring.
+ simuPOP provides a number of tagging operators (called taggers) for various
+ purposes.
+ Because tagging operators are during-mating operators, they do not support
+ parameter 
+\family typewriter
+subPops
+\family default
+.
+ If you would like to apply different inheritance taggers to different (virtual)
+ subpopulations, you can use them in the homogeneous mating schemes of a
+ heterogeneous mating scheme.
+ 
+\end_layout
+
+\begin_layout Subsection
+Inheritance tagger (operator 
+\family typewriter
+inheritTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+An inheritance tagger passes values of parental information field(s) to
+ the corresponding offspring information field(s).
+ Depending on the parameters, an inheritTagger can 
+\end_layout
+
+\begin_layout Itemize
+For asexual mating schemes, pass one or more information fields from parent
+ to offspring.
+\end_layout
+
+\begin_layout Itemize
+Pass one or more information fields from father to offspring (
+\family typewriter
+mode=Paternal
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Pass one or more information fields from mother to offspring (
+\family typewriter
+mode=Maternal
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Pass the maximal, minimal or average of values of one or more information
+ fields of both parents (
+\family typewriter
+mode=Maximum
+\family default
+, 
+\family typewriter
+Minimum
+\family default
+, 
+\family typewriter
+Summation
+\family default
+ or 
+\family typewriter
+Average
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+This can be used to track the spread of certain information during evolution.
+ For example, Example
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "inheritTagger"
+
+\end_inset
+
+ tags the first individuals of ten subpopulations of size 1000.
+ Individuals in the offspring generation inherits the maximum value of field
+ 
+\family typewriter
+x
+\family default
+ from his/her parents so 
+\family typewriter
+x
+\family default
+ is inherited regardless of the sex of parents.
+ A stat operator is used to calculate the number of offspring having this
+ tag in each subpopulation.
+ The results show that some tagged ancestors have many offspring, and some
+ have none.
+ If you run this simulation long enough, you can see that all ancestors
+ become the ancestor of either none or all indiviudals in a population.
+ Note that this simulation only considers genealogical inheritance and ancestors
+ do not have to pass any genotype to the last generation.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/inheritTagger.log"
+lstparams "caption={Use an inherit tagger to track offspring of individuals},label={inheritTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Miscellaneous operators
 \end_layout
 

@@ -31,77 +31,39 @@
  */
 #include "operator.h"
 
-const string TAG_InheritFields[2] = { "paternal_tag", "maternal_tag" };
-
 namespace simuPOP {
-/// base class of tagging individuals
-/**
-   This is a during-mating operator that tags individuals with various information.
-   Potential usages are:
-   \li recording the parental information to track pedigree;
-   \li tagging an individual/allele and monitoring its spread in the population etc.
+
+/** An inheritance tagger passes values of parental information field(s) to the
+ *  corresponding fields of offspring. If there are two parental values from
+ *  parents of a sexual mating event, a parameter \e mode is used to specify
+ *  how to assign offspring information fields.
  */
-class tagger : public baseOperator
-{
-
-public:
-	/// create a \c tagger, default to be always active but no output
-	tagger(const stringFunc & output = "",  int stage = DuringMating,
-		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr());
-
-	/// destructor
-	virtual ~tagger()
-	{
-	};
-
-	/// deep copy of a \ tagger
-	virtual baseOperator * clone() const
-	{
-		return new tagger(*this);
-	}
-
-
-	/** CPPONLY
-	 * add a newline
-	 */
-	bool apply(population & pop);
-
-};
-
-/// inherite tag from parents
-/**
-   This during-mating operator will copy the tag (information field) from his/her parents.
-   Depending on \c mode parameter, this tagger will obtain tag, value of the first
-   specified information fields, from his/her father or mother (two tag fields),
-   or both (first tag field from father, and second tag field from mother). \n
-
-   An example may be tagging one or a few parents and examining, at the last generation,
-   how many offspring they have.
- */
-class inheritTagger : public tagger
+class inheritTagger : public baseOperator
 {
 public:
-#define TAG_Paternal   0
-#define TAG_Maternal   1
-#define TAG_Both       2
-
-public:
-	/// create an \c inheritTagger that inherits a tag from one or both parents
-	/**
-	   \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
+	/** Creates an inheritance tagger that passes values of parental
+	 *  information fields (parameter \e infoFields) to the corresponding
+	 *  fields of offspring. If there is only one parent, values at the
+	 *  specified information fields are copied directly. If there are two
+	 *  parents, parameter \e mode specifies how to pass them to an offspring.
+	 *  More specifically,
+	 *  \li \c mode=Maternal Passing the value from mother.
+	 *  \li \c mode=Paternal Passing the value from father.
+	 *  \li \c mode=Average Passing the average of two values.
+	 *  \li \c mode=Maximum Passing the maximum value of two values.
+	 *  \li \c mode=Minumum Passing the minimum value of two values.
+	 *  \li \c mode=Summation Passing the summation of two values.
+	 *
+	 *  An \c RuntimeError will be raised if any of the parents does not exist.
+	 *  This operator does not support parameter \e subPops and does not output
+	 *  any information.
 	 */
-	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringFunc & output = "",
-		const stringList & infoFields = stringList(TAG_InheritFields[0], TAG_InheritFields[1])) :
-		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+	inheritTagger(InheritanceType mode = Maternal, int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringFunc & output = "",
+		const stringList & infoFields = stringList()) :
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
-		DBG_ASSERT(infoSize() > 0, ValueError,
-			"At least one information field is needed.");
-		DBG_FAILIF(infoSize() == 1 && mode == TAG_Both, ValueError,
-			"Two information fields are needed in mode TAG_Both");
 	};
 
 	virtual ~inheritTagger()
@@ -112,7 +74,7 @@ public:
 	/// used by Python print function to print out the general information of the \c inheritTagger
 	virtual string __repr__()
 	{
-		return "<simuPOP::inherittagger>" ;
+		return "<simuPOP::inherit tagger>" ;
 	}
 
 
@@ -130,10 +92,6 @@ public:
 
 
 private:
-	/// mode can be
-	/// TAG_Paternal: get dad's info
-	/// TAG_Maternal: get mon's info
-	/// TAG_BOTH:     get parents' first field
 	int m_mode;
 };
 
@@ -147,7 +105,7 @@ private:
    This tagger record indexes to information field parent_idx, and/or a given file. The usage
    is similar to parentsTagger.
  */
-class parentTagger : public tagger
+class parentTagger : public baseOperator
 {
 public:
 	/// create a \c parentTagger
@@ -157,7 +115,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList("parent_idx")) :
-		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -216,7 +174,7 @@ private:
    \li a file. Indexes will be written to this file. This tagger will also
    act as a post-mating operator to add a new-line to this file.
  */
-class parentsTagger : public tagger
+class parentsTagger : public baseOperator
 {
 public:
 	/// create a \c parentsTagger
@@ -226,7 +184,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList(ParentsFields[0], ParentsFields[1])) :
-		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -275,7 +233,7 @@ private:
    This is a simple post-mating tagger that write given
    information fields to a file (or standard output).
  */
-class pedigreeTagger : public tagger
+class pedigreeTagger : public baseOperator
 {
 public:
 	pedigreeTagger(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -294,7 +252,7 @@ public:
    function and set the individual field with the return value. This operator can
    be used to trace the inheritance of trait values.
  */
-class pyTagger : public tagger
+class pyTagger : public baseOperator
 {
 public:
 	/// creates a \c pyTagger that works on specified information fields
@@ -311,7 +269,7 @@ public:
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
-		tagger(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,

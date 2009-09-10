@@ -24,6 +24,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		simplifed to a): during mating operators in mating schemes are applied first.
 		b): during mating operators in simulator.evolve are applied after. There is
 		no difference between a regular operator and a genotype transmitter.
+  - CHG: Remove tagger. Expand and document inheritTagger.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

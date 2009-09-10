@@ -2785,15 +2785,11 @@ pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
-def passInfo(fields):
-    'Parental fields will be passed as anc1, anc2'
-    return (fields[0] + fields[1]) / 2.
-
 simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = initSex(),
     ops = [
-        pyTagger(passInfo, infoFields='anc'),
+        inheritTagger(mode=Average, infoFields='anc'),
         stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
             subPops=[(0,x) for x in range(5)]),
         pyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \
@@ -2891,6 +2887,30 @@ simu.evolve(
             stage=PrePostMating),
     ],
     gen = 1
+)
+#end_file
+
+#begin_file log/inheritTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+pop = population(size=[1000]*10, loci=1, infoFields='x')
+# tag the first individual of each subpopulation.
+for sp in range(pop.numSubPop()):
+    pop.individual(0, sp).setInfo(1, 'x')
+
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = initSex(),
+    ops = [
+        inheritTagger(mode=Maximum, infoFields='x'),
+        stat(sumOfInfo='x', vars=['sumOfInfo_sp']),
+        pyEval(r'", ".join(["%3d" % subPop[i]["sumOfInfo"]["x"] for i in range(10)])+"\n"'),
+    ],
+    gen = 5
 )
 #end_file
 
