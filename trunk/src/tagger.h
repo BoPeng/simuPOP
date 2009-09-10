@@ -41,14 +41,14 @@ class idTagger : public baseOperator
 {
 public:
 	/** Create an \c idTagger that assign a unique ID for each individual it is
-	 *  applied to. The ID is stored in an information field specified in
-	 *  parameter \e infoFields (default to \c ind_id). A \e startID can be
-	 *  specified.
+	 *  applied to. The IDs are created sequentially and are stored in an
+	 *  information field specified in parameter \e infoFields (default to
+	 *  \c ind_id). A \e startID can be specified.
 	 */
 	idTagger(ULONG startID = 1, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
-		const stringList & infoFields = stringList("ind_id")) :
+		const stringList & infoFields = vectorstr(1, "ind_id")) :
 		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_id(startID)
 	{
@@ -79,7 +79,7 @@ public:
 	}
 
 
-	/// deep copy of a \c inheritTagger
+	/// deep copy of an \c idTagger
 	virtual baseOperator * clone() const
 	{
 		return new idTagger(*this);
@@ -119,7 +119,7 @@ public:
 	inheritTagger(InheritanceType mode = Maternal, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
-		const stringList & infoFields = stringList()) :
+		const stringList & infoFields = vectorstr()) :
 		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
 	};

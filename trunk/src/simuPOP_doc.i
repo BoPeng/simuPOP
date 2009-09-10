@@ -2000,14 +2000,14 @@ Details:
 Usage:
 
     idTagger(startID=1, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail)
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=\"ind_id\")
 
 Details:
 
     Create an idTagger that assign a unique ID for each individual it
-    is applied to. The ID is stored in an information field specified
-    in parameter infoFields (default to ind_id). A startID can be
-    specified.
+    is applied to. The IDs are created sequentially and are stored in
+    an information field specified in parameter infoFields (default to
+    ind_id). A startID can be specified.
 
 "; 
 
@@ -2038,7 +2038,7 @@ Usage:
 
 Description:
 
-    deep copy of a inheritTagger
+    deep copy of an idTagger
 
 Usage:
 
@@ -2858,7 +2858,7 @@ Details:
 Usage:
 
     inheritTagger(mode=Maternal, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail)
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
 
