@@ -1984,6 +1984,68 @@ Usage:
 
 %ignore simuPOP::homoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
+%feature("docstring") simuPOP::idTagger "
+
+Details:
+
+    An idTagger gives a unique ID for each individual it is applies
+    to. These ID can be used to uniquely identify an individual in a
+    multi-generational population and be used to reliably reconstruct
+    a pedigree.
+
+"; 
+
+%feature("docstring") simuPOP::idTagger::idTagger "
+
+Usage:
+
+    idTagger(startID=1, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=AllAvail)
+
+Details:
+
+    Create an idTagger that assign a unique ID for each individual it
+    is applied to. The ID is stored in an information field specified
+    in parameter infoFields (default to ind_id). A startID can be
+    specified.
+
+"; 
+
+%feature("docstring") simuPOP::idTagger::~idTagger "
+
+Usage:
+
+    x.~idTagger()
+
+"; 
+
+%feature("docstring") simuPOP::idTagger::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the inheritTagger
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::idTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::idTagger::clone "
+
+Description:
+
+    deep copy of a inheritTagger
+
+Usage:
+
+    x.clone()
+
+"; 
+
 %feature("docstring") simuPOP::ifElse "
 
 Details:

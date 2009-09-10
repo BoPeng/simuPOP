@@ -33,6 +33,64 @@
 
 namespace simuPOP {
 
+/** An idTagger gives a unique ID for each individual it is applies to. These
+ *  ID can be used to uniquely identify an individual in a multi-generational
+ *  population and be used to reliably reconstruct a pedigree.
+ */
+class idTagger : public baseOperator
+{
+public:
+	/** Create an \c idTagger that assign a unique ID for each individual it is
+	 *  applied to. The ID is stored in an information field specified in
+	 *  parameter \e infoFields (default to \c ind_id). A \e startID can be
+	 *  specified.
+	 */
+	idTagger(ULONG startID = 1, int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringFunc & output = "",
+		const stringList & infoFields = stringList("ind_id")) :
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		m_id(startID)
+	{
+		DBG_FAILIF(infoFields.elems().size() != 1, ValueError,
+			"One and only one information field is needed for idTagger.");
+	};
+
+	virtual ~idTagger()
+	{
+	}
+
+
+	/// used by Python print function to print out the general information of the \c inheritTagger
+	virtual string __repr__()
+	{
+		return "<simuPOP::id tagger>" ;
+	}
+
+
+	/** CPPONLY
+	 *  apply the \c idTagger
+	 */
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	                       individual * dad = NULL, individual * mom = NULL)
+	{
+		offspring->setInfo(m_id++, infoField(0));
+		return true;
+	}
+
+
+	/// deep copy of a \c inheritTagger
+	virtual baseOperator * clone() const
+	{
+		return new idTagger(*this);
+	}
+
+
+private:
+	int m_id;
+};
+
+
 /** An inheritance tagger passes values of parental information field(s) to the
  *  corresponding fields of offspring. If there are two parental values from
  *  parents of a sexual mating event, a parameter \e mode is used to specify
@@ -81,7 +139,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c inheritTagger
 	 */
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c inheritTagger
