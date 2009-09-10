@@ -311,7 +311,7 @@ void mitochondrialGenoTransmitter::initialize(const population & pop)
 #endif
 		m_mitoChroms = m_chroms;
 	}
-	DBG_DO(DBG_TRANSMITTER, cout << "Mitochondrial chromosomes " << m_mitoChroms << endl);
+	DBG_DO(DBG_TRANSMITTER, cerr << "Mitochondrial chromosomes " << m_mitoChroms << endl);
 	if (m_mitoChroms.empty())
 		return;
 
@@ -516,7 +516,7 @@ void recombinator::initialize(const population & pop)
 		m_recBeforeLoci.push_back(chEnd);
 		vecP.push_back(0.5);
 	}
-	DBG_DO(DBG_TRANSMITTER, cout << "Specify after Loci. With m_ratess "
+	DBG_DO(DBG_TRANSMITTER, cerr << "Specify after Loci. With m_ratess "
 		                         << vecP << " before " << m_recBeforeLoci << endl);
 
 	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
@@ -545,7 +545,7 @@ void recombinator::initialize(const population & pop)
 		m_algorithm = 0;
 	else
 		m_algorithm = 1;
-	DBG_DO(DBG_TRANSMITTER, cout << "Algorithm " << m_algorithm << " is being used " << endl);
+	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
 }
 
 
@@ -627,7 +627,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				convCount = -1;
 			}
 			if (gt + 1 == m_recBeforeLoci[bl]) {
-				DBG_DO(DBG_TRANSMITTER, cout << gt << " " << m_recBeforeLoci[bl] << ", ");
+				DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
 				if (forceFirstBegin >= 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
 				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
 					curCp = 0;

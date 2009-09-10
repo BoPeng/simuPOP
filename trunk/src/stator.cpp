@@ -541,7 +541,7 @@ bool statAlleleFreq::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	DBG_DO(DBG_STATOR, cout << "Calculated allele frequency for loci " << m_loci << endl);
+	DBG_DO(DBG_STATOR, cerr << "Calculated allele frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
 	ALLELECNTLIST alleleCnt(m_loci.size());
@@ -688,7 +688,7 @@ bool statHeteroFreq::apply(population & pop)
 	DBG_FAILIF(pop.ploidy() != 2, ValueError,
 		"Heterozygote frequency can only be calculated for diploid populations.");
 
-	DBG_DO(DBG_STATOR, cout << "Calculated heterozygote frequency for loci " << m_loci << endl);
+	DBG_DO(DBG_STATOR, cerr << "Calculated heterozygote frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
 	intDict allHeteroCnt;
@@ -808,7 +808,7 @@ bool statGenoFreq::apply(population & pop)
 	for (size_t i = 0; i < m_loci.size(); ++i)
 		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
 
-	DBG_DO(DBG_STATOR, cout << "Calculated genotype frequency for loci " << m_loci << endl);
+	DBG_DO(DBG_STATOR, cerr << "Calculated genotype frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
 	vector<tupleDict> genotypeCnt(m_loci.size());
@@ -947,7 +947,7 @@ bool statHaploFreq::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	DBG_DO(DBG_STATOR, cout << "Calculated haplotype frequency for loci " << m_loci << endl);
+	DBG_DO(DBG_STATOR, cerr << "Calculated haplotype frequency for loci " << m_loci << endl);
 
 	// count for all specified subpopulations
 	vector<tupleDict> haplotypeCnt(m_loci.size());
@@ -1332,7 +1332,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 		}
 		for (size_t i = 0; i < freq2.size(); ++i)
 			freq2[i] /= allAlleles;
-		DBG_DO(DBG_STATOR, cout << "Loc " << loc1 << " freq " << freq1 << endl
+		DBG_DO(DBG_STATOR, cerr << "Loc " << loc1 << " freq " << freq1 << endl
 			                    << "Loc " << loc2 << " freq " << freq2 << endl);
 		UINT nAllele1 = alleles1.size();
 		UINT nAllele2 = alleles2.size();
@@ -1344,7 +1344,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 		HAPLOCNT::const_iterator hCntEnd = haplos.end();
 		for (; hCnt != hCntEnd; ++hCnt) {
 			allHaplo += hCnt->second;
-			DBG_DO(DBG_STATOR, cout << "Haplotype " << hCnt->first.first << ", " << hCnt->first.second
+			DBG_DO(DBG_STATOR, cerr << "Haplotype " << hCnt->first.first << ", " << hCnt->first.second
 				                    << " Cnt " << hCnt->second << endl);
 		}
 		if (allHaplo == 0)
@@ -1379,7 +1379,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				double Dp = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
 				double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
 				// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
-				DBG_DO(DBG_STATOR, cout << "P_AB: " << P_AB
+				DBG_DO(DBG_STATOR, cerr << "P_AB: " << P_AB
 					                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 					" LD: " << D << " LD': " << Dp << " r2: " << r2 << endl);
 
@@ -1417,7 +1417,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 						double Dp = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
 						double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
 						// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
-						DBG_DO(DBG_STATOR, cout << "P_AB: " << P_AB
+						DBG_DO(DBG_STATOR, cerr << "P_AB: " << P_AB
 							                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 							" LD: " << D << " LD': " << Dp << " r2: " << r2 << endl);
 
@@ -2225,12 +2225,12 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 			b += n_bar / (n_bar - 1) * (p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1) / (4. * n_bar) * h_bar);
 			c += h_bar / 2.;
 
-			DBG_DO(DBG_STATOR, cout << "allele " << allele << "\tn_c: " << n_c
+			DBG_DO(DBG_STATOR, cerr << "allele " << allele << "\tn_c: " << n_c
 				                    << "\tp_i: " << p_i << "\tp_bar: " << p_bar << "\ts^2: " << s_2 << "\th_bar:"
 				                    << h_bar << "\ta: " << a << "\tb: " << b << "\tc: " << c << endl);
 		}                                                                                 // each allele
 
-		DBG_DO(DBG_STATOR, cout << "Fst= " << a / (a + b + c) << endl);
+		DBG_DO(DBG_STATOR, cerr << "Fst= " << a / (a + b + c) << endl);
 
 		fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / (a + b + c));
 		fit[loc] = fcmp_eq(a + b + c, 0.) ? 1. : (1 - c / (a + b + c));

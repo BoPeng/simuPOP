@@ -85,7 +85,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 
 bool mutator::apply(population & pop)
 {
-	DBG_DO(DBG_MUTATOR, cout << "Mutate replicate " << pop.rep() << endl);
+	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
@@ -121,7 +121,7 @@ bool mutator::apply(population & pop)
 			"Subpopulation index " + toStr(sp) + " out of range");
 
 		ULONG popSize = pop.subPopSize(subPops[idx]);
-		DBG_DO(DBG_MUTATOR, cout << "SP " << subPops[idx] << " size: " << popSize << endl);
+		DBG_DO(DBG_MUTATOR, cerr << "SP " << subPops[idx] << " size: " << popSize << endl);
 		if (popSize == 0)
 			continue;
 
@@ -135,7 +135,7 @@ bool mutator::apply(population & pop)
 		size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
 		for (size_t i = 0; i < iEnd; ++i) {
 			UINT locus = m_loci.allAvail() ? i : loci[i];
-			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
+			DBG_DO(DBG_MUTATOR, cerr << "Mutate at locus " << locus << endl);
 			size_t pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
 			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
@@ -145,7 +145,7 @@ bool mutator::apply(population & pop)
 					lastPos = pos;
 					if (!ptr.valid())
 						continue;
-					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
+					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(*ptr) << " at locus " << locus);
 					if (mapIn) {
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapInAllele)
@@ -168,7 +168,7 @@ bool mutator::apply(population & pop)
 									static_cast<int>(*ptr)));
 						}
 					}
-					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
+					DBG_DO(DBG_MUTATOR, cerr << " is mutated to " << int(*ptr) << endl);
 				} while ( (pos = bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
 			}                                                                                           // succ.any
 		}
@@ -209,7 +209,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 		if (mu < sum)
 			mu = sum;
 	}
-	DBG_DO(DBG_MUTATOR, cout << "Mu " << mu << endl);
+	DBG_DO(DBG_MUTATOR, cerr << "Mu " << mu << endl);
 	setRate(vectorf(1, mu), loci);
 	if (mu == 0.)
 		return;
@@ -224,7 +224,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 			rateMatrix[i][j] /= mu;
 		}
 		rateMatrix[i][i] = 1 - sum / mu;
-		DBG_DO(DBG_MUTATOR, cout << "Setting weight for allele " << i << " to " << rateMatrix[i] << endl);
+		DBG_DO(DBG_MUTATOR, cerr << "Setting weight for allele " << i << " to " << rateMatrix[i] << endl);
 		m_sampler.push_back(weightedSampler(GetRNG(), rateMatrix[i]));
 	}
 }
@@ -389,7 +389,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 			}
 		}
 		if (match) {
-			DBG_DO(DBG_MUTATOR, cout << "Context " << alleles << " mutator " << i << endl);
+			DBG_DO(DBG_MUTATOR, cerr << "Context " << alleles << " mutator " << i << endl);
 			mutator * mut = reinterpret_cast<mutator *>(m_mutators[i]);
 			if (GetRNG().randUniform01() < mut->mutRate(locus))
 				mut->mutate(allele, locus);
@@ -397,12 +397,12 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 		}
 	}
 	if (m_contexts.size() + 1 == m_mutators.size()) {
-		DBG_DO(DBG_MUTATOR, cout << "No context found. Use last mutator." << endl);
+		DBG_DO(DBG_MUTATOR, cerr << "No context found. Use last mutator." << endl);
 		mutator * mut = reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]);
 		if (GetRNG().randUniform01() < mut->mutRate(locus))
 			mut->mutate(allele, locus);
 	} else {
-		cout << "Failed to find context " << alleles << endl;
+		cerr << "Failed to find context " << alleles << endl;
 		throw RuntimeError("No match context is found and there is no default mutator");
 	}
 }
@@ -418,7 +418,7 @@ bool pointMutator::apply(population & pop)
 		     ind != m_inds.end(); ++ind) {
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
 				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + (m_loci.allAvail() ? i : m_loci.elems()[i])) = m_allele;
-				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << (m_loci.allAvail() ? i : m_loci.elems()[i]) <<
+				DBG_DO(DBG_MUTATOR, cerr << "Mutate locus " << (m_loci.allAvail() ? i : m_loci.elems()[i]) <<
 					" to allele " << toStr(m_allele) << " at generation " << pop.gen() << endl);
 			}
 		}

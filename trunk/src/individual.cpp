@@ -56,13 +56,13 @@ individual & individual::copyFrom(const individual & rhs)
 bool individual::operator==(const individual & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
-		DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Geno stru different" << endl);
 		return false;
 	}
 
 	if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 	    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
-		DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
+		DBG_DO(DBG_POPULATION, cerr << "Flags different: sex "
 			                        << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
 			                        << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
 			                        << endl);
@@ -75,7 +75,7 @@ bool individual::operator==(const individual & rhs) const
 
 	for (UINT i = 0, iEnd = infoSize(); i < iEnd;  ++i)
 		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i) ) {
-			DBG_DO(DBG_POPULATION, cout << "Information field " << infoField(i) << " differ" << endl);
+			DBG_DO(DBG_POPULATION, cerr << "Information field " << infoField(i) << " differ" << endl);
 			return false;
 		}
 	return true;

@@ -173,7 +173,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cout << "One of the transmitters " << (*iop)->__repr__()
+				cerr << "One of the transmitters " << (*iop)->__repr__()
 				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
@@ -193,7 +193,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cout << "DuringMating operator " << (*iop)->__repr__()
+				cerr << "DuringMating operator " << (*iop)->__repr__()
 				     << " throws an exception.\n"
 				     << e.message() << "\n" << endl;
 				throw e;
@@ -268,7 +268,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				curFreq[sp] = double(n) / (pop.subPopSize(sp) * pop.ploidy());
 			}
 
-			DBG_DO(DBG_MATING, cout << "Current frequency at locus " << locus
+			DBG_DO(DBG_MATING, cerr << "Current frequency at locus " << locus
 				                    << " is " << curFreq << endl);
 
 			// if there is no alleles
@@ -321,13 +321,13 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 	// expected frequency at each locus
 	if (subPop == 0) {
 		vectorf expFreq = m_freqFunc(PyObj_As_Array, "(i)", pop.gen());
-		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
+		DBG_DO(DBG_MATING, cerr << "expected freq " << expFreq << endl);
 
 		//
 		// determine expected number of alleles of each allele
 		// at each subpopulation.
 		getExpectedAlleles(pop, expFreq);
-		DBG_DO(DBG_MATING, cout << "expected alleles " << m_expAlleles << endl);
+		DBG_DO(DBG_MATING, cerr << "expected alleles " << m_expAlleles << endl);
 	}
 
 	// now, for **this** subpopulation...
@@ -347,7 +347,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 		UINT maxCount = pop.subPopSize(subPop) * pop.ploidy();
 		m_totAllele[i] = m_expAlleles[subPop + pop.numSubPop() * i];
 		if (m_totAllele[i] > maxCount) {
-			cout << "Warning: number of planned affected alleles exceed population size.";
+			cerr << "Warning: number of planned affected alleles exceed population size.";
 			m_totAllele[i] = maxCount;
 		}
 		if (2 * m_totAllele[i] > maxCount) {
@@ -445,7 +445,7 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 	// reject this family
 	if (!accept) {
 		// it relocate to its begin point
-		// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
+		// DBG_DO(DBG_MATING, cerr << "Reject " << na << endl);
 		offBegin = itBegin;
 		return 0;
 	}
@@ -643,8 +643,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	if (m_selection) {
 		m_malesampler.set(m_maleFitness);
 		m_femalesampler.set(m_femaleFitness);
-		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
 	}
 
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
@@ -741,8 +741,8 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 	if (m_selection) {
 		m_malesampler.set(m_maleFitness);
 		m_femalesampler.set(m_femaleFitness);
-		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
 	}
 
 	m_initialized = true;
@@ -862,8 +862,8 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 	if (m_selection) {
 		m_malesampler.set(m_maleFitness);
 		m_femalesampler.set(m_femaleFitness);
-		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
-		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
 	}
 
 	if (!hasAlphaMale || useInfo || m_alphaNum >=
@@ -1035,7 +1035,7 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 	}
 	DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
 	individual * par2 = validInds[GetRNG().randInt(validInds.size())];
-	DBG_DO(DBG_DEVEL, cout << "infoParentsChooser: par1: " << par1 - & * basePtr
+	DBG_DO(DBG_DEVEL, cerr << "infoParentsChooser: par1: " << par1 - & * basePtr
 		                   << " par2: " << par2 - & * basePtr << endl);
 	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 }
@@ -1187,7 +1187,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 	// this is not absolutely necessary but will reduce confusions
 	scratch.setVirtualSplitter(pop.virtualSplitter());
 
-	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
+	DBG_DO(DBG_SIMULATOR, cerr << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
 		ValueError, "number of subPopulaitons must agree.\n Pre: "
@@ -1477,7 +1477,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(vspID(sp, m[i]->virtualSubPop()));
 		}
-		DBG_DO(DBG_DEVEL, cout << "Positive mating scheme weights: " << w_pos << '\n'
+		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
 			                   << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
@@ -1524,7 +1524,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
+		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
 			                   << vspSize << endl);
 
 		// it points to the first mating scheme.
@@ -1547,7 +1547,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (!(*it)->mateSubPop(pop, sp, ind, ind + *itSize, ops))
 					return false;
 			} catch (...) {
-				cout << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
+				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
 				throw;
 			}
 			ind += *itSize;
@@ -1558,7 +1558,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
-			DBG_DO(DBG_MATING, cout << "Random shuffle individuals in the offspring generation." << endl);
+			DBG_DO(DBG_MATING, cerr << "Random shuffle individuals in the offspring generation." << endl);
 			std::random_shuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
 			scratch.setIndOrdered(false);
 		}

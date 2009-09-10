@@ -336,7 +336,7 @@ bool resizeSubPops::apply(population & pop)
 				newSizes[subPops[i].subPop()] = m_sizes[i];
 		}
 	}
-	DBG_DO(DBG_MIGRATOR, cout << "Resize subpopulations to size " << newSizes << endl);
+	DBG_DO(DBG_MIGRATOR, cerr << "Resize subpopulations to size " << newSizes << endl);
 	pop.resize(newSizes, m_propagate);
 	return true;
 }

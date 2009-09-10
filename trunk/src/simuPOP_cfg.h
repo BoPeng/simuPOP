@@ -416,7 +416,7 @@ public:
 #  define DBG_WARNING(cond, message) \
     if (cond) \
 	{ \
-		cout << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+		cerr << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
 	}
 
 #  define DBG_DO(dbgCode, expr) \

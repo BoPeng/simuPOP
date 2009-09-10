@@ -1361,13 +1361,13 @@ private:
 
 		ar & ModuleMaxAllele;
 
-		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
 		// GenoStructure genoStru = this->genoStru();
 		ar & genoStru();
 
 		ar & m_subPopSize;
 		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
 #ifdef BINARYALLELE
 		size_t size = m_genotype.size();
 		ar & size;
@@ -1405,11 +1405,11 @@ private:
 #else
 		ar & m_genotype;
 #endif
-		DBG_DO(DBG_POPULATION, cout << "Handling information" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
 		ar & m_info;
-		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling individuals" << endl);
 		ar & m_inds;
-		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
 		ar & m_ancestralGens;
 		size_t sz = m_ancestralPops.size();
 		ar & sz;
@@ -1465,13 +1465,9 @@ private:
 
 		// save shared variables as string.
 		// note that many format are not supported.
-		try {
-			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
-			string vars = varsAsString();
-			ar & vars;
-		} catch (...) {
-			cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
-		}
+		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
+		string vars = varsAsString();
+		ar & vars;
 	}
 
 
@@ -1482,16 +1478,16 @@ private:
 		ar & ma;
 
 		if (ma > ModuleMaxAllele)
-			cout << "Warning: The population is saved in library with more allele states. \n"
+			cerr << "Warning: The population is saved in library with more allele states. \n"
 			     << "Unless all alleles are less than " << ModuleMaxAllele
 			     << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 		GenoStructure stru;
-		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
 		ar & stru;
 		ar & m_subPopSize;
 		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
 
 #ifdef BINARYALLELE
 		// binary from binary
@@ -1524,7 +1520,7 @@ private:
 		}
 		// binary from others (long types)
 		else {
-			DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
 			vector<unsigned char> tmpgeno;
 			ar & tmpgeno;
 			m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
@@ -1538,7 +1534,7 @@ private:
 			m_genotype.resize(size);
 			size_t blks = size / 32;
 			size_t rest = size - blks * 32;
-			DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
+			DBG_DO(DBG_POPULATION, cerr << "Load long from bin. " << size << " rest " << rest << endl);
 			DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
 
 			GenoIterator ptr = m_genotype.begin();
@@ -1560,16 +1556,16 @@ private:
 			}
 		}                                                                               // if ma == 1
 		else {                                                                          // for non-binary types, ...
-			DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 			// long from long
 			ar & m_genotype;
 		}
 #endif
 
-		DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
 		ar & m_info;
 
-		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling individuals" << endl);
 		ar & m_inds;
 
 		// set genostructure, check duplication
@@ -1581,13 +1577,11 @@ private:
 		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
 
 		if (m_popSize != m_inds.size() ) {
-			cout << "Number of individuals loaded" << m_inds.size() << endl;
-			cout << "population size" << m_popSize << endl;
 			throw ValueError("Number of individuals does not match population size.\n"
 				             "Please use the same (binary, short or long) module to save and load files.");
 		}
 
-		DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Reconstruct individual genotype" << endl);
 		m_subPopIndex.resize(m_subPopSize.size() + 1);
 		UINT i = 1;
 		for (m_subPopIndex[0] = 0; i <= m_subPopSize.size(); ++i)
@@ -1607,7 +1601,7 @@ private:
 		m_ancestralPops.clear();
 
 		// ancestry populations
-		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
 		ar & m_ancestralGens;
 		size_t na;
 		ar & na;
@@ -1618,7 +1612,7 @@ private:
 #ifdef BINARYALLELE
 			// binary from binary
 			if (ma == 1) {
-				DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
 				size_t size;
 				ar & size;
 				size_t blks = size / WORDBIT;
@@ -1645,7 +1639,7 @@ private:
 					*ptr = tmp;
 				}
 			} else {
-				DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
 				// binary from long types
 				vector<unsigned char> tmpgeno;
 				ar & tmpgeno;
@@ -1659,7 +1653,7 @@ private:
 				pd.m_genotype.resize(size);
 				size_t blks = size / 32;
 				size_t rest = size - blks * 32;
-				DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Load long from bin. " << size << " rest " << rest << endl);
 
 				ptr = pd.m_genotype.begin();
 				WORDTYPE tmp;
@@ -1679,7 +1673,7 @@ private:
 					}
 				}
 			} else {
-				DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 				// long type from long type.
 				ar & pd.m_genotype;
 			}
@@ -1705,14 +1699,10 @@ private:
 		}
 
 		// load vars from string
-		try {
-			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
-			string vars;
-			ar & vars;
-			varsFromString(vars);
-		} catch (...) {
-			cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
-		}
+		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
+		string vars;
+		ar & vars;
+		varsFromString(vars);
 
 		setIndOrdered(true);
 	}

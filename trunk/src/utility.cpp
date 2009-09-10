@@ -183,7 +183,7 @@ void TurnOnDebug(const string & codeString)
 				}
 			}
 			if (!find) {
-				cout << "Invalid debug code " << codes[i] << endl;
+				cerr << "Invalid debug code " << codes[i] << endl;
 				exit(1);
 			}
 		}
@@ -220,13 +220,13 @@ void TurnOffDebug(const string & codeString)
 				}
 			}
 			if (!find) {
-				cout << "Invalid debug code " << codes[i] << endl;
+				cerr << "Invalid debug code " << codes[i] << endl;
 				exit(1);
 			}
 		}
 	}
 #else
-	cout << "Debug info is ignored in optimized mode." << endl;
+	cerr << "Debug info is ignored in optimized mode." << endl;
 #endif
 }
 
@@ -259,7 +259,7 @@ void saveRefCount()
 void checkRefCount()
 {
 	if (_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
-		cout << "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
+		cerr << "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
 		     << "\nThis may be a sign of memory leak, especially when refCount increase"
 		     << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
 		     << "\nthe problem.\n" << endl;
@@ -999,7 +999,7 @@ void SharedVariables::removeVar(const string & name)
 	DBG_ASSERT(m_dict != NULL, ValueError,
 		"Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
 
-	DBG_DO(DBG_UTILITY, cout << "Removing variable " << name << endl);
+	DBG_DO(DBG_UTILITY, cerr << "Removing variable " << name << endl);
 
 	// go deep in to the string
 	size_t i, s;
@@ -1495,7 +1495,7 @@ void saveObj(string & str, PyObject * args)
 		save_defdict(str, args);
 	else {
 		// some other unknown type
-		DBG_DO(DBG_UTILITY, cout << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
+		DBG_DO(DBG_UTILITY, cerr << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
 		save_none(str);
 	}
 }
@@ -1524,7 +1524,7 @@ PyObject * loadObj(const string & vars, size_t & offset)
 		return load_none(vars, offset);
 	default:
 	{
-		DBG_DO(DBG_UTILITY, cout << endl);
+		DBG_DO(DBG_UTILITY, cerr << endl);
 		throw ValueError("Unknown type code at offset " + toStr(offset));
 	}
 	}
@@ -1784,7 +1784,7 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 
 	cmatch matches;
 
-	DBG_DO(DBG_DEVEL, cout << "Decipher statement " << stmt << endl);
+	DBG_DO(DBG_DEVEL, cerr << "Decipher statement " << stmt << endl);
 	if (regex_match(stmt.c_str(), matches, assign))
 		m_operation = Assignment;
 	else if (regex_match(stmt.c_str(), matches, increment1) ||
@@ -1808,7 +1808,7 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 		m_operation = NoOperation;
 		return;
 	}
-	DBG_DO(DBG_DEVEL, cout << "Match statement with name " << m_var
+	DBG_DO(DBG_DEVEL, cerr << "Match statement with name " << m_var
 		                   << " and value " << m_value << " with operation " << m_operation << endl);
 }
 
@@ -1819,7 +1819,7 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 	: m_filename(name)
 {
 
-	DBG_DO(DBG_UTILITY, cout << "creating " << name << " with parameter " <<
+	DBG_DO(DBG_UTILITY, cerr << "creating " << name << " with parameter " <<
 		readable << " " << realAppend << " " << useString << " " << endl);
 
 	if (useString) {
@@ -1849,7 +1849,7 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 	if (m_stream == NULL || !*m_stream)
 		throw ValueError("Can not open specified file:" + name);
 
-	DBG_DO(DBG_UTILITY, cout << "New file info: " << info() << endl);
+	DBG_DO(DBG_UTILITY, cerr << "New file info: " << info() << endl);
 
 }
 
@@ -1872,7 +1872,7 @@ StreamElem::~StreamElem()
 	// close file.
 	if (m_stream != NULL) {
 
-		DBG_DO(DBG_UTILITY, cout << "Closing file " << m_filename << endl);
+		DBG_DO(DBG_UTILITY, cerr << "Closing file " << m_filename << endl);
 
 		if (m_type == OFSTREAM)
 			static_cast<ofstream *>(m_stream)->close();
@@ -1890,7 +1890,7 @@ StreamElem::~StreamElem()
 void StreamElem::makeReadable()
 {
 
-	DBG_DO(DBG_UTILITY, cout << "File was opened write-only. Re-open it.  " << info() << endl);
+	DBG_DO(DBG_UTILITY, cerr << "File was opened write-only. Re-open it.  " << info() << endl);
 
 	static_cast<ofstream *>(m_stream)->close();
 
@@ -1911,7 +1911,7 @@ void StreamElem::makeReadable()
 void StreamElem::makeAppend(bool append)
 {
 
-	DBG_DO(DBG_UTILITY, cout << "File append status changes to " << append << endl);
+	DBG_DO(DBG_UTILITY, cerr << "File append status changes to " << append << endl);
 
 	DBG_FAILIF(m_type == SSTREAM, ValueError, "String stream can not be maded appendable. ");
 
@@ -1921,7 +1921,7 @@ void StreamElem::makeAppend(bool append)
 	// reopen file. Otherwise,
 	if (!append) {
 
-		DBG_DO(DBG_UTILITY, cout << "Re-open the file " << endl);
+		DBG_DO(DBG_UTILITY, cerr << "Re-open the file " << endl);
 
 		// re-open the file.
 
@@ -1986,13 +1986,13 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 
 	if (it == m_ostreams.end() ) {                            // not found.
 
-		DBG_DO(DBG_UTILITY, cout << "Create new file " << name << endl);
+		DBG_DO(DBG_UTILITY, cerr << "Create new file " << name << endl);
 
 		return m_ostreams.insert(ostreamMapValue(name,
 				StreamElem(name, readable, realAppend, useString))).first->second.stream();
 	} else {                                                                          // already exist
 
-		DBG_DO(DBG_UTILITY, cout << "Find existing ostream " << name << " of info " << it->second.info() << endl);
+		DBG_DO(DBG_UTILITY, cerr << "Find existing ostream " << name << " of info " << it->second.info() << endl);
 
 		// try to see if existing stream type matches what is requrested.
 		if (useString && it->second.type() != StreamElem::SSTREAM)
@@ -2023,7 +2023,7 @@ bool OstreamManager::hasOstream(const string & filename)
 void OstreamManager::listAll()
 {
 	for (ostreamMapIterator it = m_ostreams.begin(), itEnd = m_ostreams.end(); it != itEnd;  ++it)
-		cout << it->first << " : " << it->second.info() << endl;
+		cerr << it->first << " : " << it->second.info() << endl;
 }
 
 
@@ -2072,14 +2072,14 @@ StreamProvider::StreamProvider(const string & output, const pyFunc & func)
 ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 {
 	DBG_FAILIF(readable && (ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
-		SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
+		SystemError, "A readable file is requested but this Opertor uses cerr or cnull.");
 
 	if (ISSETFLAG(m_flags, m_flagNoOutput))
 		return cnull();
 
-	// if using cout, return it.
+	// if using cerr, return it.
 	if (ISSETFLAG(m_flags, m_flagUseDefault))
-		return cout;
+		return cerr;
 
 	if (ISSETFLAG(m_flags, m_flagUseFunc)) {
 		m_filePtr = new ostringstream();
@@ -2094,28 +2094,28 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 		m_filenameExpr.setLocalDict(dict);
 		m_filename = m_filenameExpr.valueAsString();
 
-		DBG_DO(DBG_UTILITY, cout << "Filename " << m_filename << endl);
+		DBG_DO(DBG_UTILITY, cerr << "Filename " << m_filename << endl);
 
 		analyzeOutputString(m_filename);
 		if (ISSETFLAG(m_flags, m_flagNoOutput) )
 			return cnull();
 
-		// if using cout, return it.
+		// if using cerr, return it.
 		if (ISSETFLAG(m_flags, m_flagUseDefault) )
-			return cout;
+			return cerr;
 	}
 	filename = m_filename;
 
 	if (ISSETFLAG(m_flags, m_flagAppend) ) {
 
-		DBG_DO(DBG_UTILITY, cout << "Get a persistent file: "
+		DBG_DO(DBG_UTILITY, cerr << "Get a persistent file: "
 			                     << filename << endl);
 
 		return *ostreamManager().getOstream(filename, readable,
 			ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
 	} else {                                                                          // not in append mode, but check if this file is alreay there
 
-		DBG_DO(DBG_UTILITY, cout << "File is not persistent : "
+		DBG_DO(DBG_UTILITY, cerr << "File is not persistent : "
 			                     << filename << endl);
 
 		if (!ostreamManager().hasOstream(filename) ) {
@@ -2135,7 +2135,7 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 			return *m_filePtr;
 		} else {
 
-			DBG_DO(DBG_UTILITY, cout << "file " + filename +
+			DBG_DO(DBG_UTILITY, cerr << "file " + filename +
 				" is already opened as appendable. Use that file instead." << endl);
 
 			RESETFLAG(m_flags, m_flagCloseAfterUse);
@@ -2220,7 +2220,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 	} else
 		RESETFLAG(m_flags, m_flagUseDefault);
 
-	DBG_DO(DBG_UTILITY, cout << "Analyzed string is " << output << endl
+	DBG_DO(DBG_UTILITY, cerr << "Analyzed string is " << output << endl
 		                     << "Filename is " << format << endl);
 
 	m_filename = format;
@@ -2307,7 +2307,7 @@ unsigned long RNG::generateRandomSeed()
 		return static_cast<unsigned long>(time(NULL));
 	}
 
-	DBG_DO(DBG_UTILITY, cout << "Get random seed " << hex << seed << endl);
+	DBG_DO(DBG_UTILITY, cerr << "Get random seed " << hex << seed << endl);
 	return seed;
 }
 
@@ -2427,7 +2427,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 	vectoru colSum(n, 0);
 	double N = 0;
 
-	DBG_DO(DBG_STATOR, cout << "ChiSq test with table\n" <<
+	DBG_DO(DBG_STATOR, cerr << "ChiSq test with table\n" <<
 		table[0] << endl << table[1] << endl <<
 		(table.size() <= 2 ? vectoru() : table[2]) << endl);
 	//
@@ -2458,7 +2458,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 	DBG_FAILIF(s.size() != n, ValueError,
 		"Weight for Cochran-Armitage test should have length 3");
 	//
-	DBG_DO(DBG_STATOR, cout << "Armitage trend test with table\n" <<
+	DBG_DO(DBG_STATOR, cerr << "Armitage trend test with table\n" <<
 		table[0] << endl << table[1] << endl);
 	// formula is copied from HelixTree
 	// www.goldenhelix.com/SNP_Variation/Manual/svs7/general_statistics.html
@@ -2749,7 +2749,7 @@ void BernulliTrials::doTrial()
 {
     DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
-    DBG_DO(DBG_UTILITY, cout << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
+    DBG_DO(DBG_UTILITY, cerr << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
 
     // for each column
     for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl) {
@@ -3041,7 +3041,7 @@ void gsl_error_handler(const char * reason, const char *,
 
 
 // create a stream buf that print to python sys.stdout
-// cout will be redirected to this buf to really output
+// cerr will be redirected to this buf to really output
 // to python console.
 class PythonStdBuf : public streambuf
 {
@@ -3431,9 +3431,9 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 #  ifndef OPTIMIZED
     if (debug(DBG_UTILITY)) {
         if (vectora(fr, fr + n) != vectora(to, to + n)) {
-            cout << "Copy from " << vectora(fr, fr + n)
+            cerr << "Copy from " << vectora(fr, fr + n)
                  << " to " << vectora(to, to + n) << " failed " << endl;
-            cout << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
+            cerr << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 		}
 	}
 #  endif
@@ -3468,9 +3468,9 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-    // tie python stdout to cout
-    cout.rdbuf(&g_pythonStdoutBuf);
-    cerr.rdbuf(&g_pythonStderrBuf);
+    // tie python stdout to cerr
+    std::cout.rdbuf(&g_pythonStdoutBuf);
+    std::cerr.rdbuf(&g_pythonStderrBuf);
 
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,
@@ -3591,7 +3591,7 @@ void testCopyGenotype()
 			to.begin() + to_idx, length);
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
             vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
-            cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
+            cerr << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
                  << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
                  << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
             // the error message can not be shown

@@ -277,7 +277,7 @@ bool pause::apply(population & pop)
 
 	string popName = "pop_" + toStr(pop.gen()) + "_" + toStr(pop.rep());
 	if (m_prompt) {
-		cout << "Simulation paused for population " << pop.rep() << "\n"
+		cerr << "Simulation paused for population " << pop.rep() << "\n"
 		     << "Press\n"
 		     << "   's' to (s)top the evolution of this population,\n"
 		     << "   'q' to quit (stop the evolution of all populations),\n"
@@ -288,10 +288,10 @@ bool pause::apply(population & pop)
 	a = simuPOP_getch();
 
 	if (a == 's' || a == 'S') {
-		cout << "Evolution of population " << pop.rep() << " is stopped." << endl;
+		cerr << "Evolution of population " << pop.rep() << " is stopped." << endl;
 		return false;
 	} else if (a == 'q' || a == 'Q') {
-		cout << "Evolution of all populations are terminated." << endl;
+		cerr << "Evolution of all populations are terminated." << endl;
 		throw StopEvolution(string());
 	}
 	if (a == 'p' || a == 'P') {
@@ -308,7 +308,7 @@ bool pause::apply(population & pop)
 		if (mainVars().hasVar(popName))
 			mainVars().removeVar(popName);
 	}
-	cout << "Resume evolution of population " << pop.rep() << "..." << endl;
+	cerr << "Resume evolution of population " << pop.rep() << "..." << endl;
 
 	return true;
 }

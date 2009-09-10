@@ -60,7 +60,7 @@ using std::swap;
 #  define ElapsedTime(name); \
     if (debug(DBG_PROFILE)) \
 	{ \
-		cout << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
+		cerr << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
 		m_clock = clock(); \
 	}
 #else
@@ -308,7 +308,7 @@ private:
 		ar & l_gen;
 		ar & m_numRep;
 
-		DBG_DO(DBG_SIMULATOR, cout << "Saving a simulator with "
+		DBG_DO(DBG_SIMULATOR, cerr << "Saving a simulator with "
 			                       << m_numRep << " populations." << endl);
 
 		// ignore scratch population
@@ -325,7 +325,7 @@ private:
 
 		ar & m_numRep;
 
-		DBG_DO(DBG_SIMULATOR, cout << "Loading a simulator with "
+		DBG_DO(DBG_SIMULATOR, cerr << "Loading a simulator with "
 			                       << m_numRep << " populations." << endl);
 
 		m_ptrRep = vector<population *>(m_numRep);
