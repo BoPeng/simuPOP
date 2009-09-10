@@ -107,8 +107,26 @@ extern "C"
 %ignore PACKAGE_BUGREPORT;
 %ignore STDC_HEADERS;
 %ignore GSL_RANGE_CHECK;
-
-
+%ignore DBG_ALL;
+%ignore DBG_GENERAL;
+%ignore DBG_UTILITY;
+%ignore DBG_POPULATION;
+%ignore DBG_OPERATOR;
+%ignore DBG_SIMULATOR;
+%ignore DBG_INDIVIDUAL;
+%ignore DBG_MUTATOR;
+%ignore DBG_TRANSMITTER;
+%ignore DBG_INITIALIZER;
+%ignore DBG_STATOR;
+%ignore DBG_TAGGER;
+%ignore DBG_SELECTOR;
+%ignore DBG_MATING;
+%ignore DBG_MIGRATOR;
+%ignore DBG_PROFILE;
+%ignore DBG_BATCHTESTING;
+%ignore DBG_INTEROPERABILITY;
+%ignore DBG_COMPATIBILITY;
+%ignore DBG_DEVEL;
 %ignore DBG_CODE_LENGTH;
 %ignore SIMUPOP_VAR_NAME;
 %ignore SIMUPOP_VER;
