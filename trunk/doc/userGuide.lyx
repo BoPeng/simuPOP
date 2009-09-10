@@ -15343,6 +15343,18 @@ subPops
 \end_layout
 
 \begin_layout Subsection
+Setting an unique individual ID operator 
+\family typewriter
+idTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
 Inheritance tagger (operator 
 \family typewriter
 inheritTagger
