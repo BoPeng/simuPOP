@@ -87,7 +87,7 @@ public:
 
 
 private:
-	int m_id;
+	ULONG m_id;
 };
 
 
