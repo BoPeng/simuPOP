@@ -28,11 +28,10 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 pop = population(size=1000, loci=2)
-simu = simulator(pop, randomMating(), rep=3)
+simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
 simu.evolve(
     preOps = initByValue([1, 2, 2, 1]),  
     ops = [
-        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=10),
         pyOutput('\n', reps=-1, step=10)
@@ -186,13 +185,10 @@ GetRNG().setSeed(12345)
 #end_ignore
 pop = population(10, loci=[20], ancGen=1,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating())
+simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)))
 simu.evolve(
     preOps = initByValue([0]*20+[1]*20),
-    ops = [
-        parentsTagger(),
-        recombinator(rates=0.01)
-    ],
+    ops = parentsTagger(),
     gen = 1
 )
 pop = simu.extract(0)
@@ -648,11 +644,11 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=1000, loci=2), randomMating(), rep=3)
+simu = simulator(population(size=1000, loci=2),
+    randomMating(ops=recombinator(rates=0.01)), rep=3)
 simu.evolve(
     preOps = initByValue([1, 2, 2, 1]),  
     ops = [
-        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
         pyOutput('\n', reps=-1, step=20, output='>>LD.txt'),
@@ -693,11 +689,11 @@ console.setFormatter(formatter)
 logger = logging.getLogger('')
 logger.addHandler(console)
 #
-simu = simulator(population(size=1000, loci=2), randomMating())
+simu = simulator(population(size=1000, loci=2),
+    randomMating(ops=recombinator(rates=0.01)))
 simu.evolve(
     preOps = initByValue([1, 2, 2, 1]),  
     ops = [
-        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'LD: %d, %.2f' % (gen, LD[0][1])", step=20,
             output=logger.info),   # send LD to console and a logfile
@@ -725,8 +721,8 @@ simu.evolve(
     preOps = initByValue([1, 2, 2, 1]),
     ops = [
         # Recombination only happens after generation 30. A
-        # mendelianGenoTransmitter defined in randomMating is responsible
-        # for genotype transmission before that.
+        # mendelianGenoTransmitter defined in randomMating will be used
+        # at all generations so there are duplicated efforts here.
         recombinator(rates=0.01, begin=30),
         stat(LD=[0, 1]),
         pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
@@ -1150,9 +1146,9 @@ for idx, ind in enumerate(pop.individuals()):
     ind.setGenotype([idx*2], 0)
     ind.setGenotype([idx*2+1], 1)
 
-simu = simulator(pop, selfMating())
+simu = simulator(pop, selfMating(ops=recombinator(rates=0.01)))
 simu.evolve(
-    ops = [recombinator(rates=0.1)],
+    ops = [],
     gen = 1
 )
 Dump(simu.population(0), width=3, structure=False, max=10)
@@ -1230,9 +1226,9 @@ def markOff(param):
 
 simu = simulator(pop, heteroMating(
     matingSchemes = [
-        randomMating(subPop=0, weight=-0.5, ops=[markOff(0)]),
-        randomMating(subPop=(0, 0), weight=2, ops=[markOff(1)]),
-        randomMating(subPop=(0, 1), weight=3, ops=[markOff(2)])
+        randomMating(subPop=0, weight=-0.5, ops=[markOff(0), mendelianGenoTransmitter()]),
+        randomMating(subPop=(0, 0), weight=2, ops=[markOff(1), mendelianGenoTransmitter()]),
+        randomMating(subPop=(0, 1), weight=3, ops=[markOff(2), mendelianGenoTransmitter()])
     ])
 )
 simu.evolve(
@@ -1253,16 +1249,13 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-def mendelianOffspringGenerator(ops=[], *args, **kwargs):
-    'An offspring generator that uses mendelianGenoTransmitter()'
-    return  offspringGenerator([mendelianGenoTransmitter()] + ops, *args, **kwargs)
-
-def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
+def randomMating(numOffspring = 1., sexMode = RandomSex,
+        ops = mendelianGenoTransmitter(), subPopSize = [],
         subPop = (), weight = 0, selectionField = 'fitness'):
     'A basic diploid sexual random mating scheme.'
     return homoMating(
         chooser = randomParentsChooser(True, selectionField),
-        generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
+        generator = offspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,
         weight = weight)
@@ -1276,7 +1269,8 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 simu = simulator(population(100, loci=5*3, infoFields='parent_idx'),
-    homoMating(sequentialParentChooser(), selfingOffspringGenerator()))
+    homoMating(sequentialParentChooser(),
+    offspringGenerator(ops=selfingGenoTransmitter())))
 simu.evolve(
     preOps = [initByFreq([0.2]*5)],
     ops = [
@@ -1300,7 +1294,7 @@ simu = simulator(population(1000, loci=[10]*2),
     homoMating(randomParentChooser(),
         controlledOffspringGenerator(loci=5,
             alleles=[0], freqFunc=traj,
-            ops = [selfingGenoTransmitter()]))
+            ops = selfingGenoTransmitter()))
 )
 # evolve the population while keeping allele frequency 0.5
 simu.evolve(
@@ -1322,11 +1316,12 @@ pop = population(10, loci=[5]*5,
     # one autosome, two sex chromosomes, and two mitochondrial chromosomes
     chromTypes=[Autosome, ChromosomeX, ChromosomeY] + [Customized]*2,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(ops=[mitochondrialGenoTransmitter()]))
+simu = simulator(pop, randomMating(ops= [
+    recombinator(rates=0.1),
+    mitochondrialGenoTransmitter()]))
 simu.evolve(
     preOps=[initByFreq([0.4] + [0.2]*3)],
     ops=[
-        recombinator(rates=0.1),
         parentsTagger(),
         dumper(structure=False),
     ],
@@ -1352,9 +1347,9 @@ class sexSpecificRecombinator(pyOperator):
             maleLoci, maleConvMode)
         #
         self.initialized = False
-        # Note the use of parameter isTransmitter
+        #
         pyOperator.__init__(self, func=self.transmitGenotype,
-            stage=DuringMating, isTransmitter=True, *args, **kwargs)
+            stage=DuringMating, *args, **kwargs)
     #
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinators need to be initialized. Basically, they cache some
@@ -1369,12 +1364,12 @@ class sexSpecificRecombinator(pyOperator):
         return True
 
 pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating())
+simu = simulator(pop, randomMating(
+    ops = sexSpecificRecombinator(rates=0.1, maleRates=0)))
 simu.evolve(
     preOps=[initByFreq([0.4] + [0.2]*3)],
     ops=[
         parentsTagger(),
-        sexSpecificRecombinator(rates=0.1, maleRates=0),
         dumper(structure=False),
     ],
     gen = 2
@@ -1461,7 +1456,7 @@ pop = population(size=[1000, 2000], loci=1, infoFields='rank')
 pop.setIndInfo([randint(0, 2) for x in range(pop.popSize())], 'rank')
 simu = simulator(pop, homoMating(
     pyParentsChooser(randomChooser),
-    mendelianOffspringGenerator()))
+    offspringGenerator(ops=mendelianGenoTransmitter())))
 simu.evolve(
     preOps = initSex(),
     ops = [],
@@ -1567,7 +1562,8 @@ def parentsChooser(pop, sp):
 
 pop = population(100, loci=1)
 simu = simulator(pop,
-    homoMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
+    homoMating(pyParentsChooser(parentsChooser),
+    offspringGenerator(ops=mendelianGenoTransmitter()))
 )
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
@@ -2222,12 +2218,13 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 simu = simulator(population(size=[1000], loci=[100]),
-    randomMating(), rep=2)
+    randomMating(ops = [
+        recombinator(rates=0.01, reps=0),
+        recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
+    ]), rep=2)
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rates=0.01, reps=0),
-        recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
         stat(LD=[[40, 55], [60, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
         pyOutput('\n', reps=-1)
@@ -2244,11 +2241,10 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 simu = simulator(population(size=[1000], loci=3, lociPos=[0, 1, 1.1]),
-    randomMating())
+    randomMating(ops=recombinator(intensity=0.01)))
 simu.evolve(
     preOps = [initByValue([0]*3 + [1]*3)],
     ops = [
-        recombinator(intensity=0.01),
         stat(LD=[[0, 1], [1, 2]]),
         pyEval(r'"%.3f\t%.3f\n" % (LD_prime[0][1], LD_prime[1][2])', step=10)
     ],
@@ -2264,13 +2260,13 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 simu = simulator(population(size=[1000], loci=[100]),
-    randomMating(), rep=2)
+    randomMating(ops=[
+        recombinator(rates=0.01, loci=50, reps=0),
+        recombinator(rates=0.01, loci=50, reps=1, convMode=(NumMarkers, 1, 10)),
+    ]), rep=2)
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rates=0.01, loci=50, reps=0),
-        recombinator(rates=0.01, loci=50, reps=1,
-            convMode=(NumMarkers, 1, 10)),
         stat(LD=[[40, 55], [40, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
         pyOutput('\n', reps=-1)
@@ -2844,11 +2840,10 @@ def assoTest(pop):
     return True
 
 simu = simulator(population(size=100000, loci=3),
-    randomMating())
+    randomMating(ops=recombinator(loci=[0, 1], rates=[0.01, 0.005])))
 simu.evolve(
     preOps = initByValue([[0]*3, [1]*3], proportions=[0.5, 0.5]),
     ops = [
-        recombinator(loci=[0, 1], rates=[0.01, 0.005]),
         maPenetrance(loci=1, penetrance=[0.1, 0.2, 0.4]),
         pyOperator(func=assoTest, step=20),
     ],
@@ -2953,11 +2948,10 @@ GetRNG().setSeed(12345)
 from simuPOP import *
 from simuRPy import varPlotter
 pop = population(size=1000, loci=2)
-simu = simulator(pop, randomMating(), rep=3)
+simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
 simu.evolve(
     preOps = initByValue([1, 2, 2, 1]),
     ops = [
-        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         varPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
             legend=['Replicate %d' % x for x in range(3)],

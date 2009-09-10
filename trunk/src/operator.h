@@ -1043,9 +1043,9 @@ public:
 	 *  is the offspring of \c dad and \c mom, and \c param is the parameter
 	 *  \e param specified when the operator is created. When this operator is
 	 *  applied during mating, it can be used in the \c ops parameter of a
-     *  mating scheme, or used in the \c ops parameter of \c simulator.evolve
-     *  and be applied after an offspring has been created. Please refer to the
-     *  simuPOP user's guide for a detailed explanation.
+	 *  mating scheme, or used in the \c ops parameter of \c simulator.evolve
+	 *  and be applied after an offspring has been created. Please refer to the
+	 *  simuPOP user's guide for a detailed explanation.
 	 *
 	 *  This operator does not support parameters \e output, \e subPops and
 	 *  \e infoFields. If certain output is needed, it should be handled in the

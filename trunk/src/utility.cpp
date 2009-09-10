@@ -148,6 +148,7 @@ char * g_debugCodes[] = {
 vectorstr DebugCodes()
 {
 	vectorstr ret;
+
 	for (size_t i = 0; g_debugCodes[i][0]; ++i)
 		ret.push_back(string(g_debugCodes[i]));
 	return ret;
@@ -172,8 +173,7 @@ void TurnOnDebug(const string & codeString)
 		// last piece
 		codes.push_back(codeString.substr(lastPos));
 		// handle each one
-		for (size_t i = 0; i < codes.size(); ++i)
-		{
+		for (size_t i = 0; i < codes.size(); ++i) {
 			bool find = false;
 			for (size_t c = 0; g_debugCodes[c][0]; ++c) {
 				if (string(g_debugCodes[c]) == codes[i]) {
@@ -209,8 +209,7 @@ void TurnOffDebug(const string & codeString)
 		// last piece
 		codes.push_back(codeString.substr(lastPos));
 		// handle each one
-		for (size_t i = 0; i < codes.size(); ++i)
-		{
+		for (size_t i = 0; i < codes.size(); ++i) {
 			bool find = false;
 			for (size_t c = 0; g_debugCodes[c][0]; ++c) {
 				if (string(g_debugCodes[c]) == codes[i]) {
@@ -3046,10 +3045,11 @@ void gsl_error_handler(const char * reason, const char *,
 class PythonStdBuf : public streambuf
 {
 public:
-	enum PythonBufType {
-		StdOut = 1,
-		StdErr = 2
+    enum PythonBufType {
+        StdOut = 1,
+        StdErr = 2
 	};
+
 public:
     PythonStdBuf(PythonBufType type) : m_type(type)
     {
@@ -3069,9 +3069,9 @@ protected:
             //          char * str = new char[len+1];
             //          strncpy(str, pbase(), len);
             //          str[len] = '\0';
-			if (m_type == StdOut)
-	            PySys_WriteStdout("%s", pbase());
-			else
+            if (m_type == StdOut)
+				PySys_WriteStdout("%s", pbase());
+            else
 				PySys_WriteStderr("%s", pbase());
             // put original end character back, whatever it is.
             *endPtr = endChar;
@@ -3082,9 +3082,9 @@ protected:
         if (c != EOF) {
             // unbuffered, write out this character, do not put into buffer
             if (pbase() == epptr() ) {
-				if (m_type == StdOut)
+                if (m_type == StdOut)
 					PySys_WriteStdout("%c", c);
-				else
+                else
 					PySys_WriteStderr("%c", c);
 			} else
 				sputc(c);
@@ -3092,8 +3092,9 @@ protected:
         return 0;
 	}
 
+
 protected:
-	PythonBufType m_type;
+    PythonBufType m_type;
 };
 
 // create a null stream buf that discard everything
@@ -3220,14 +3221,14 @@ PyObject * ModuleInfo()
     // limits
     PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));
 
-	// debug (code)
-	PyObject * codes = PyList_New(0);
-	for (size_t i = 0; i < DBG_CODE_LENGTH; ++i) {
-		if (g_dbgCode[i]) {
-			PyList_Append(codes, PyString_FromString(g_debugCodes[i]));
+    // debug (code)
+    PyObject * codes = PyList_New(0);
+    for (size_t i = 0; i < DBG_CODE_LENGTH; ++i) {
+        if (g_dbgCode[i]) {
+            PyList_Append(codes, PyString_FromString(g_debugCodes[i]));
 		}
 	}
-	PyDict_SetItem(dict, PyString_FromString("debug"), codes);
+    PyDict_SetItem(dict, PyString_FromString("debug"), codes);
 
     //
     return dict;

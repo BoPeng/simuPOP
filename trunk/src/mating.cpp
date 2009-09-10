@@ -145,9 +145,6 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	while (count < numOff && attempt < numOff && it != itEnd) {
 		++attempt;
 
-		DBG_FAILIF(m_transmitters.empty() && ops.empty(), ValueError,
-			"No valid genotype transmitter is defined.");
-
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));

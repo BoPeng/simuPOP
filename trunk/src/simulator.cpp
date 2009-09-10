@@ -182,7 +182,7 @@ vectoru simulator::evolve(const opList & ops,
 			postMatingOps.push_back(ops[i]);
 		if (ops[i]->canApplyDuringMating())
 			durmatingOps.push_back(ops[i]);
-    }
+	}
 
 	// check compatibility of operators
 	for (size_t i = 0; i < ops.size(); ++i) {
