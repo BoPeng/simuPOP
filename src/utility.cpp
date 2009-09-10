@@ -3043,10 +3043,15 @@ void gsl_error_handler(const char * reason, const char *,
 // create a stream buf that print to python sys.stdout
 // cout will be redirected to this buf to really output
 // to python console.
-class PythonCoutBuf : public streambuf
+class PythonStdBuf : public streambuf
 {
 public:
-    PythonCoutBuf()
+	enum PythonBufType {
+		StdOut = 1,
+		StdErr = 2
+	};
+public:
+    PythonStdBuf(PythonBufType type) : m_type(type)
     {
 	}
 
@@ -3064,25 +3069,31 @@ protected:
             //          char * str = new char[len+1];
             //          strncpy(str, pbase(), len);
             //          str[len] = '\0';
-            PySys_WriteStdout("%s", pbase());
+			if (m_type == StdOut)
+	            PySys_WriteStdout("%s", pbase());
+			else
+				PySys_WriteStderr("%s", pbase());
             // put original end character back, whatever it is.
             *endPtr = endChar;
             //          delete[] str;
             setp(pbase(), epptr());
-
 		}
         // push character c in
         if (c != EOF) {
             // unbuffered, write out this character, do not put into buffer
-            if (pbase() == epptr() )
-				PySys_WriteStdout("%c", c);
-            else
+            if (pbase() == epptr() ) {
+				if (m_type == StdOut)
+					PySys_WriteStdout("%c", c);
+				else
+					PySys_WriteStderr("%c", c);
+			} else
 				sputc(c);
 		}
         return 0;
 	}
 
-
+protected:
+	PythonBufType m_type;
 };
 
 // create a null stream buf that discard everything
@@ -3105,7 +3116,10 @@ protected:
 };
 
 /// CPPONLY
-PythonCoutBuf g_pythonCoutBuf;
+PythonStdBuf g_pythonStdoutBuf(PythonStdBuf::StdOut);
+
+/// CPPONLY
+PythonStdBuf g_pythonStderrBuf(PythonStdBuf::StdErr);
 
 /// CPPONLY
 NullStreamBuf g_nullStreamBuf;
@@ -3455,7 +3469,8 @@ void clearGenotype(GenoIterator to, size_t n)
 bool initialize()
 {
     // tie python stdout to cout
-    cout.rdbuf(&g_pythonCoutBuf);
+    cout.rdbuf(&g_pythonStdoutBuf);
+    cerr.rdbuf(&g_pythonStderrBuf);
 
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,

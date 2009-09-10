@@ -56,6 +56,7 @@ extern "C" {
 using std::ostream;
 using std::iostream;
 using std::cout;
+using std::cerr;
 using std::endl;
 
 #include <utility>
