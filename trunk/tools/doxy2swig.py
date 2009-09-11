@@ -441,21 +441,11 @@ class Doxy2SWIG:
              # remove =0 from function definition (WHY?)
              txt = '='.join(txt.split('=')[:-1])
         self.content[-1]['cppArgs'] = txt
-        # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
-        txt = txt.replace('vectorstr(TAG_InheritFields, TAG_InheritFields+2)',
-            '["paternal_tag"@ "maternal_tag"]')
-        txt = txt.replace('vectorstr(ParentsFields, ParentsFields+2)',
-            '["father_idx"@ "mother_idx"]')
-        txt = txt.replace('vectorstr(POP_ParentsFields, POP_ParentsFields+2)',
-            '["father_idx"@ "mother_idx"]')
-        txt = re.sub('vectorstr(1, ([^)]+))', '[\1]', txt)
-        # re function used to replace the following sentances
-        vec1 = re.compile('(.*)vector(str|u|i)\(1,\s*([\w"\d]+)\)(.*)')
-        txt = vec1.sub(r'\1\3\4', txt)
-        #txt = txt.replace('vectorstr(1, "qtrait")', '["qtrait"]')
-        con1 = re.compile('\)\s*const\s*$')
-        txt = con1.sub(')', txt)
+        txt = re.sub(r'stringList\((["\w_]+),\s*(["\w_]+)\)', r'[\1@ \2]', txt)
+        txt = re.sub(r'vectorstr\(1, ([^)]+)\)', r'[\1]', txt)
+        txt = re.sub(r'(.*)vector(str|u|i)\(1,\s*([\w"\d]+)\)(.*)', r'\1\3\4', txt)
+        txt = re.sub(r'\)\s*const\s*$', ')', txt)
         #txt = txt.replace(')    const',')')
         args = txt.split(',')
         out=[]

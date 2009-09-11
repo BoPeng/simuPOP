@@ -25,6 +25,8 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		b): during mating operators in simulator.evolve are applied after. There is
 		no difference between a regular operator and a genotype transmitter.
   - CHG: Remove tagger. Expand and document inheritTagger.
+  - CHG: Remove parentTagger and tidy up parentsTagger.
+  - NEW: Add pedigreeTagger.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
