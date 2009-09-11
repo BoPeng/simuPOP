@@ -1453,12 +1453,14 @@ def setRank(pop, dad, mom, off):
     off.setInfo((dad.info('rank') + randint(-1, 1)) % 3, 'rank')
 
 pop = population(size=[1000, 2000], loci=1, infoFields='rank')
-pop.setIndInfo([randint(0, 2) for x in range(pop.popSize())], 'rank')
 simu = simulator(pop, homoMating(
     pyParentsChooser(randomChooser),
     offspringGenerator(ops=mendelianGenoTransmitter())))
 simu.evolve(
-    preOps = initSex(),
+    preOps = [
+        initSex(),
+        initInfo(lambda : randint(0, 2), infoFields='rank')
+    ],
     ops = [],
     gen = 5
 )    
@@ -2780,14 +2782,16 @@ GetRNG().setSeed(12345)
 #end_ignore
 import random
 pop = population([500], infoFields='anc')
-# anc is 0 or 1
-pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
 simu = simulator(pop, randomMating())
 simu.evolve(
-    preOps = initSex(),
+    preOps = [
+        initSex(),
+        # anc is 0 or 1
+        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+    ],
     ops = [
         inheritTagger(mode=Average, infoFields='anc'),
         stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
@@ -3066,13 +3070,6 @@ from simuPOP import *
 from simuRPy import scatterPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
-# random sex
-InitSex(pop)
-# random geographic location
-pop.setIndInfo([random.random() for i in range(500)], 'x')
-pop.setIndInfo([random.random() for i in range(500)], 'y')
-# anc is 0 or 1
-pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
@@ -3086,6 +3083,13 @@ def passInfo(fields):
 
 simu = simulator(pop, randomMating())
 simu.evolve(
+    preOps = [
+        initSex(),
+        # random geographic location
+        initInfo(random.random, infoFields=['x', 'y']),
+        # anc is 0 or 1
+        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+    ],
     ops = [
         pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
         scatterPlotter(['x', 'y'], stage=PreMating,            
@@ -3114,13 +3118,6 @@ from simuPOP import *
 from simuRPy import histPlotter, qqPlotter, boxPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
-# random sex
-InitSex(pop)
-# random geographic location
-pop.setIndInfo([random.random() for i in range(500)], 'x')
-pop.setIndInfo([random.random() for i in range(500)], 'y')
-# anc is 0 or 1
-pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(sexSplitter())
 def passInfo(fields):
@@ -3133,6 +3130,13 @@ def passInfo(fields):
 
 simu = simulator(pop, randomMating())
 simu.evolve(
+    preOps = [
+        initSex(),
+        # random geographic location
+        initInfo(random.random, infoFields=['x', 'y']),
+        # anc is 0 or 1
+        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+    ],
     ops = [
         pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
         histPlotter(infoFields='anc', stage=PreMating,            
