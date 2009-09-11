@@ -2936,9 +2936,8 @@ Details:
 Usage:
 
     initByFreq(alleleFreq=[], loci=AllAvail, ploidy=AllAvail,
-      identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      identicalInds=False, stage=PreMating, begin=0, end=1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2952,10 +2951,9 @@ Details:
     first individual in each (virtual) subpopulation will be
     initialized randomly, and be copied to all other individuals in
     this (virtual) subpopulation. If a list of frequencies are given,
-    they will be used for each (virtual) subpopulation. If initSex is
-    True (default), initSex(maleFreq, sex) will be applied. This
-    operator initializes all chromosomes, including unused genotype
-    locations and customized chromosomes.
+    they will be used for each (virtual) subpopulation. This operator
+    initializes all chromosomes, including unused genotype locations
+    and customized chromosomes.
 
 "; 
 
@@ -3021,9 +3019,8 @@ Details:
 Usage:
 
     initByValue(value=[], loci=AllAvail, ploidy=AllAvail,
-      proportions=[], initSex=True, maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      proportions=[], stage=PreMating, begin=0, end=1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3036,10 +3033,9 @@ Details:
     up to 1) is given, value should be a list of values that will be
     assigned randomly according to their respective proportion. If a
     list of values are given without proportions, they will be used
-    for each (virtual) subpopulations. If initSex is True (default),
-    initSex(maleFreq, sex) will be applied. This operator initializes
-    all chromosomes, including unused genotype locations and
-    customized chromosomes.
+    for each (virtual) subpopulations. This operator initializes all
+    chromosomes, including unused genotype locations and customized
+    chromosomes.
 
 "; 
 

@@ -20,7 +20,7 @@ class TestSimulator(unittest.TestCase):
         pop = population(size=[100, 40], loci=[2, 5])
         simu = simulator(pop, randomMating(), rep = 3)
         simu.evolve(
-            preOps = [initByFreq([0.3, .7])],
+            preOps = [initSex(), initByFreq([0.3, .7])],
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
         )
@@ -42,7 +42,7 @@ class TestSimulator(unittest.TestCase):
         pop = population(size=[100, 40], loci=[2, 5])
         simu = simulator(pop, randomMating(), rep = 3)
         simu.evolve(
-            preOps = [initByFreq([0.3, .7])],
+            preOps = [initSex(), initByFreq([0.3, .7])],
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
         )
@@ -72,7 +72,7 @@ class TestSimulator(unittest.TestCase):
         simu = simulator(
             population(size=[20, 80], loci=[3]), randomMating())
         simu.evolve(
-            preOps = [initByFreq([0.2, 0.8])],
+            preOps = [initSex(), initByFreq([0.2, 0.8])],
             ops = [
                 recombinator(rates=0.001),
                 stat(alleleFreq=[1]),

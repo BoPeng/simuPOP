@@ -868,6 +868,7 @@ class TestPopulation(unittest.TestCase):
     def testSexSplitter(self):
         'Testing sexSplitter::sexSplitter()'
         pop = population(size=[20, 80])
+        InitSex(pop)
         InitByFreq(pop, [0.4, 0.6])
         Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
         pop.setVirtualSplitter(sexSplitter())

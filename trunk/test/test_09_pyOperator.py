@@ -19,6 +19,7 @@ class TestPyOperator(unittest.TestCase):
     def setUp(self):
         self.pop = population(size=10000, ploidy=2,
             loci=[2, 3])
+        InitSex(self.pop)
 
     # define a function
     def myFunc(self, pop):
