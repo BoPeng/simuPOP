@@ -578,10 +578,10 @@ simuPOP offers a long list of features, many of which are unique among all
 \end_layout
 
 \begin_layout Enumerate
-simuPOP provides three types of modules that use 1, 8 or 16 bits to store
+simuPOP provides three types of modules that use 1, 8 or 32 bits to store
  an allele.
  The binary module (1 bit) is suitable for simulating a large number of
- SNP markers and the long module (16 bits) is suitable for simulating some
+ SNP markers and the long module (32 bits) is suitable for simulating some
  population genetics models such as the infinite allele mutation model.
  simuPOP supports different types of chromosomes such as autosome, sex chromosom
 es and mitochondrial, with arbitrary number of markers.
@@ -1453,8 +1453,8 @@ There are six flavors of the core simuPOP module: short, long and binary
  This is enough most of the times but not so if you need to simulate models
  such as the infinite allele model.
  In those cases, you should use the long allele version of the modules,
- which use 16 bits for each allele and can have 
-\begin_inset Formula $2^{16}$
+ which use 32 bits for each allele and can have 
+\begin_inset Formula $2^{32}$
 \end_inset
 
  possible allele states.
@@ -2998,6 +2998,29 @@ If you consider deletion as a special allelic state, you can simulate gene
  deletions without shrinking a chromosome.
  For example, a deletion mutation event can set the allelic state of one
  or more loci to 0, which can no longer be mutated.
+\end_layout
+
+\begin_layout Itemize
+In an implementation of an infinite-sites model, 
+\series bold
+individual loci are used to store mutation events
+\series default
+.
+ In this example (Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infiniteSites"
+
+\end_inset
+
+), 100 loci are allocated for each individual and they are used to store
+ mutation events (location of a mutation) that happens in a 10Mb region.
+ Whenever a mutation event happens, its location is stored as an allele
+ of an individual.
+ At the end of the evolution, each individual has a list of mutation events
+ which can be readily translated to real alleles.
+ Similar ideas could be used to simulate the accumulation of recombination
+ events.
 \end_layout
 
 \begin_layout Standard
@@ -13278,58 +13301,6 @@ ing mapped-in or out allele for a given allele.
 \end_layout
 
 \begin_layout Subsection
-Infinite-sites model and mutation-introduced loci **
-\end_layout
-
-\begin_layout Standard
-All mutation models in simuPOP apply to existing alleles at pre-specified
- loci.
- However, if the location of loci cannot be determined beforehand, it is
- sometimes desired to create new loci as a result of mutation.
- A customized operator can be used for this purpose (see Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "newOperator"
-
-\end_inset
-
-), but extra attention is needed to make sure that other operators are applied
- to the correct loci because loci indexes will be changed with the insertion
- of new loci.
-\end_layout
-
-\begin_layout Standard
-Infinite-sites and infinite-alleles models have some similarities.
- In some cases, you can treat a long chromosomal region as a locus and use
- the infinite-alleles model, actually a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model with large 
-\begin_inset Formula $k$
-\end_inset
-
-, to mimic the infinite-site model.
- Because there is supposed to be only one mutant at each site, you can assign
- a unique 
-\emph on
-location
-\emph default
- for each allele of an infinite-allele model and convert multi-allelic datasets
- simulated by an infinite-allele model to sequences of diallelic markers.
- It worth noting that mutation rates are interpreted differently for these
- two models.
-\end_layout
-
-\begin_layout Standard
-If you really would like to simulate mutations over long sequences (e.g.,
- mutate each basepair at a multi-centiMorgan region), simulating millions
- of markers might not be realistic.
- Allowing mutations to insert new loci can be more efficient, although this
- method has its own limitations.
-\end_layout
-
-\begin_layout Subsection
 Mutation rate and transition matrix of a 
 \family typewriter
 matrixMutator 
@@ -13571,6 +13542,84 @@ That is to say, we would mutate at a mutation rate
 \end_inset
 
  with probability 0.5.
+\end_layout
+
+\begin_layout Subsection
+Infinite-sites model and other simulation techiniques **
+\end_layout
+
+\begin_layout Standard
+Infinite-sites and infinite-alleles models have some similarities.
+ In some cases, you can treat a long chromosomal region as a locus and use
+ the infinite-alleles model, actually a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with large 
+\begin_inset Formula $k$
+\end_inset
+
+, to mimic the infinite-site model.
+ Because there is supposed to be only one mutant at each site, you can assign
+ a unique 
+\emph on
+location
+\emph default
+ for each allele of an infinite-allele model and convert multi-allelic datasets
+ simulated by an infinite-allele model to sequences of diallelic markers.
+ It worth noting that mutation rates are interpreted differently for these
+ two models, and there is no way to recombine in such a region because it
+ is reprsented as a single allele.
+\end_layout
+
+\begin_layout Standard
+If specific location of such a mutation is needed, it is possible to record
+ the location of mutations during an evolution and minic an infinite-sites
+ model.
+ For example, alleles in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infiniteSites"
+
+\end_inset
+
+ are used to store location of a mutation event.
+ When a mutation event happens, the location of the new allele (rather the
+ allele itself) is recorded on the chromosome (actually list of mutation
+ events) of an individual.
+ The transmission of chromosomes proceed normally and effectively transmit
+ mutants from parents to offspring.
+ At the end of the simulation, each individual accumulates a number of mutation
+ events and they are essentially alleles at their respective locations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infiniteSites.log"
+lstparams "caption={Mimicking an infinite-sites model using mutation events as alleles},label={infiniteSites}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All mutation models in simuPOP apply to existing alleles at pre-specified
+ loci.
+ However, if the location of loci cannot be determined beforehand, it is
+ sometimes desired to create new loci as a result of mutation.
+ A customized operator can be used for this purpose (see Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+), but extra attention is needed to make sure that other operators are applied
+ to the correct loci because loci indexes will be changed with the insertion
+ of new loci.
+ This technique could also be used to simulate mutations over long sequences.
 \end_layout
 
 \begin_layout Section

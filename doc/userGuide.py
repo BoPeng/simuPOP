@@ -2771,6 +2771,70 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/infiniteSites.py
+import simuOpt
+simuOpt.setOptions(alleleType='long')
+#begin_ignore
+GetRNG().setSeed(12345)
+simuOpt.setOptions(quiet=True)
+#end_ignore
+from simuPOP import *
+
+def infSitesMutate(pop, param):
+    '''Apply an infinite mutation model'''
+    (startPos, endPos, rate) = param
+    # for each individual
+    for ind in pop.individuals():
+        # for each homologous copy of chromosomes
+        for p in range(2):
+            # using a geometric distribution to determine
+            # the first mutation location
+            loc = GetRNG().randGeometric(rate)
+            # if a mutation happens, record the mutated location
+            if startPos + loc < endPos:
+                try:
+                    # find the first non-zero location
+                    idx = ind.genotype(p).index(0)
+                    # record mutation here
+                    ind.setAllele(startPos + loc, idx, ploidy=p)
+                except:
+                    print 'Warning: more than %d mutations have accumulated' % pop.totNumLoci()
+                    pass
+    return True
+
+pop = population(size=[2000], loci=[100])
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [
+        initSex(),
+    ],
+    ops = [
+        # recombine in a 10Mb region at rate 1e-8
+        pyOperator(func=infSitesMutate, param=(1, 10000000, 1e-8)),
+    ],
+    gen = 100
+)
+# now, we get a population. Let us have a look at the 'alleles'.
+pop = simu.extract(0)
+# print the first five mutation locations
+print pop.individual(0).genotype()[:5]
+# how many alleles are there (does not count 0)?
+print len(set(pop.genotype())) - 1
+# Allele count a simple count of alleles.
+cnt = {}
+for allele in pop.genotype():
+    if allele == 0:
+        continue
+    if cnt.has_key(allele):
+        cnt[allele] += 1
+    else:
+        cnt[allele] = 1
+
+# highest allele frequency?
+print max(cnt.values()) *0.5 / pop.popSize()
+#end_file
+
+
 #begin_file log/statSuffix.py
 #begin_ignore
 import simuOpt
