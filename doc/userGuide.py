@@ -1832,6 +1832,23 @@ InitByValue(pop, loci=range(5, 12), ploidy=1, value=[[3]*7, [4]*7],
 Dump(pop, structure=False)
 #end_file
 
+#begin_file log/initInfo.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+import random
+pop = population(size=[5], loci=[2], infoFields=['sex', 'age'])
+pop.setVirtualSplitter(sexSplitter())
+InitSex(pop)
+InitInfo(pop, 0, subPops=[(0,0)], infoFields='sex')
+InitInfo(pop, 1, subPops=[(0,1)], infoFields='sex')
+InitInfo(pop, lambda: random.randint(20, 70), infoFields='age')
+Dump(pop, structure=False)
+#end_file
+
 #begin_file log/dumper.py
 #begin_ignore
 import simuOpt

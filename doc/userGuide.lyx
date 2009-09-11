@@ -9614,6 +9614,134 @@ initInfo
 )
 \end_layout
 
+\begin_layout Standard
+Operator 
+\family typewriter
+initInfo
+\family default
+ and its function form 
+\family typewriter
+InitInfo
+\family default
+ initialize one or more information fields of all individuals or individuals
+ in selected (virtual) subpopulations using either a list of values or a
+ Python function.
+ If a value or a list of value is given, it will be used repeatedly to assign
+ values of specified information fields of all applicable individuals.
+ For example, 
+\family typewriter
+InitInfo(pop, values=1, infoFields='x')
+\family default
+ will assign value 
+\family typewriter
+1
+\family default
+ to information field 
+\family typewriter
+x
+\family default
+ of all individuals, and 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+InitInfo(pop, values=[1, 2, 3], infoFields='x', subPops=[(0,1)])
+\end_layout
+
+\end_inset
+
+will assign values 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+, 
+\family typewriter
+3
+\family default
+, 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+, 
+\family typewriter
+3
+\family default
+...
+ to information field 
+\family typewriter
+x
+\family default
+ of individuals in the second virtual subpopulation of subpopulation 0.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+values
+\family default
+ parameter also accepts a Python function.
+ This feature is usually used to assign random values to an information
+ field.
+ For example, 
+\family typewriter
+values=random.random
+\family default
+ would assign a random value between 0 and 1.
+ If a function takes parameters, a lambda function can be used.
+ For example, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+InitInfo(pop, lambda : random.randint(2, 5), infoFields=['x', 'y'])
+\end_layout
+
+\end_inset
+
+ assigns random integers between 2 and 5 to information fields 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+y
+\family default
+ of all individuals in 
+\emph on
+pop
+\emph default
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "initInfo"
+
+\end_inset
+
+ demonstrates these usages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initInfo.log"
+lstparams "caption={initialize information fields},label={initInfo}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Expressions and statements
 \end_layout
