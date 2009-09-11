@@ -55,13 +55,13 @@ public:
 	 *  be assigned \c Male and \c Female successively. Parameter \e maleFreq
 	 *  is ignored if \e sex is given. If a list of (virtual) subpopulation is
 	 *  specified in parameter \e subPop, only individuals in these
-	 *  subpopulations will be initialized.
+	 *  subpopulations will be initialized. Note that the \e sex sequence, if
+	 *  used, is assigned repeatedly regardless of subpopulation boundaries.
 	 */
 	initSex(double maleFreq = 0.5, const intList & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
-		const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr())
+		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex.elems())
 	{
@@ -103,6 +103,63 @@ protected:
 
 	/// specify sex
 	vectori m_sex;
+};
+
+
+/** This operator initializes given information fields with a sequence of
+ *  values, or a user-provided function such as \c random.random.
+ *  <funcForm>InitInfo</funcForm>
+ */
+class initInfo : public baseOperator
+{
+public:
+	/** Create an operator that initialize individual information fields
+	 *  \e infoFields using a sequence of values or a user-defined function.
+	 *  If a list of values are given, it will be used sequentially for all
+	 *  individuals. The values will be reused if its length is less than the
+	 *  number of individuals. The values will be assigned repeatedly
+	 *  regardless of subpopulation boundaries. If a Python function is given,
+	 *  it will be called, without any argument, whenever a value is needed. If
+	 *  a list of (virtual) subpopulation is specified in parameter \e subPop,
+	 *  only individuals in these subpopulations will be initialized.
+	 */
+	initInfo(const floatListFunc & values,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		m_values(values)
+	{
+		DBG_FAILIF(m_values.empty() && !m_values.func().isValid(), ValueError, "Please specify a list of values or a Python function.");
+	}
+
+
+	/// destructor
+	virtual ~initInfo()
+	{
+	}
+
+
+	/// deep copy of an \c initInfo operator.
+	virtual baseOperator * clone() const
+	{
+		return new initInfo(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the initInfo
+	virtual string __repr__()
+	{
+		return "<simuPOP::initInfo>";
+	}
+
+
+	/// apply this operator to population \e pop
+	bool apply(population & pop);
+
+protected:
+	/// specify sex
+	floatListFunc m_values;
 };
 
 

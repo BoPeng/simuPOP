@@ -973,6 +973,10 @@ def InitSex(pop, *args, **kwargs):
     'Apply operator ``initSex`` to population *pop*.'
     initSex(*args, **kwargs).apply(pop)
 
+def InitInfo(pop, *args, **kwargs):
+    'Apply operator ``initInfo`` to population *pop*.'
+    initInfo(*args, **kwargs).apply(pop)
+
 def InitByFreq(pop, *args, **kwargs):
     'Apply operator ``initByFreq`` to population *pop*.'
     initByFreq(*args, **kwargs).apply(pop)

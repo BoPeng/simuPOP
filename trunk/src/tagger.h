@@ -45,7 +45,7 @@ public:
 	 *  information field specified in parameter \e infoFields (default to
 	 *  \c ind_id). A \e startID can be specified.
 	 */
-	idTagger(ULONG startID = 1, int begin = 0, int end = -1, int step = 1,
+	idTagger(ULONG startID = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
