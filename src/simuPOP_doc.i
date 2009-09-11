@@ -2857,8 +2857,9 @@ Details:
 
 Usage:
 
-    inheritTagger(mode=Maternal, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
+    inheritTagger(mode=Maternal, stage=DuringMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      output=\"\", infoFields=[])
 
 Details:
 
@@ -5024,41 +5025,38 @@ Usage:
 
 %feature("docstring") simuPOP::parentsTagger "
 
-Description:
-
-    tagging according to parents' indexes
-
 Details:
 
-    This during-mating operator set tag(), currently a pair of
-    numbers, of each individual with indexes of his/her parents in the
-    parental population. This information will be used by pedigree-
-    related operators like affectedSibpairSample to track the pedigree
-    information. Because parental population will be discarded or
-    stored after mating, these index will not be affected by post-
-    mating operators.  This tagger record parental index to one or
-    both
-    *   one or two information fields. Default to father_idx and
-    mother_idx. If only one parent is passed in a mating scheme (such
-    as selfing), only the first information field is used. If two
-    parents are passed, the first information field records paternal
-    index, and the second records maternal index.
-    *   a file. Indexes will be written to this file. This tagger will
-    also act as a post-mating operator to add a new-line to this file.
+    This tagging operator records the indexes of parents (relative to
+    the parental generation) of each offspring in specified
+    information fields ( default to father_idx and mother_idx). Only
+    one information field should be specified if an asexsual mating
+    scheme is used so there is one parent for each offspring.
+    Information recorded by this operator is intended to be used to
+    look up parents of each individual in multi-generational
+    population.
 
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::parentsTagger "
 
-Description:
-
-    create a parentsTagger
-
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, output=\"\", infoFields=AllAvail,
-      ParentsFields[1])
+    parentsTagger(stage=DuringMating, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
+      infoFields=[\"father_idx\", \"mother_idx\"])
+
+Details:
+
+    Create a parents tagger that records the indexes of parents of
+    each offspring when it is applied to an offspring during-mating.
+    If two information fields are specified (parameter infoFields,
+    with default value ['father_idx', 'mother_idx']), they are used to
+    record the indexes of each individual's father and mother. Value
+    -1 will be assigned if any of the parent is missing. If only one
+    information field is given, it will be used to record the index of
+    the first valid parent (father if both parents are valid). This
+    operator ignores parameters stage, output, and subPops.
 
 "; 
 
@@ -5096,97 +5094,6 @@ Usage:
 "; 
 
 %ignore simuPOP::parentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::parentsTagger::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    at the end of a generation, write population structure information
-    to a file with a newline.
-
-"; 
-
-%feature("docstring") simuPOP::parentTagger "
-
-Description:
-
-    tagging according to parental indexes
-
-Details:
-
-    This during-mating operator set tag() each individual with indexes
-    of his/her parent in the parental population. Because only one
-    parent is recorded, this is recommended to be used for mating
-    schemes that requires only one parent (such as selfMating).  This
-    tagger record indexes to information field parent_idx, and/or a
-    given file. The usage is similar to parentsTagger.
-
-"; 
-
-%feature("docstring") simuPOP::parentTagger::parentTagger "
-
-Description:
-
-    create a parentTagger
-
-Usage:
-
-    parentTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, output=\"\", infoFields=AllAvail)
-
-"; 
-
-%feature("docstring") simuPOP::parentTagger::~parentTagger "
-
-Usage:
-
-    x.~parentTagger()
-
-"; 
-
-%feature("docstring") simuPOP::parentTagger::clone "
-
-Description:
-
-    deep copy of a parentTagger
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::parentTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the parentTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::parentTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::parentTagger::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    at the end of a generation, write population structure information
-    to a file with a newline.
-
-"; 
 
 %feature("docstring") simuPOP::pause "
 
@@ -5524,11 +5431,13 @@ Usage:
 
 Details:
 
-    Pedigree tagger is used to save a complete pedigree to a pedigree
-    file during an evolution process. Because is destroyedof record
-    individuals involved in an evolutioary process. This is a simple
-    post-mating tagger that write given information fields to a file
-    (or standard output).
+    This tagging operator records the ID of parents of each offspring
+    in specified information fields (default to father_id and
+    mother_id). Only one information field should be specified if an
+    asexsual mating scheme is used so there is one parent for each
+    offspring. Information recorded by this operator is intended to be
+    used to record full pedigree information of an evolutionary
+    process.
 
 "; 
 
@@ -5536,24 +5445,59 @@ Details:
 
 Usage:
 
-    pedigreeTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, stage=PostMating, output=\">\",
-      pedigreeFields=AllAvail)
-
-"; 
-
-%feature("docstring") simuPOP::pedigreeTagger::apply "
-
-Usage:
-
-    x.apply(pop)
+    pedigreeTagger(idField=\"ind_id\", stage=DuringMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      output=\"\", infoFields=[\"father_id\", \"mother_id\"])
 
 Details:
 
-    Apply an operator to population pop directly, without checking its
-    applicability.
+    Create a pedigree tagger that records the ID of parents of each
+    offspring when it is applied to an offspring during-mating. If two
+    information fields are specified (parameter infoFields, with
+    default value ['father_id', 'mother_id']), they are used to record
+    the ID of each individual's father and mother stored in the
+    idField (default to ind_id) field of the parents. Value -1 will be
+    assigned if any of the parent is missing. If only one information
+    field is given, it will be used to record the ID of the first
+    valid parent (father if both pedigree are valid). This operator
+    ignores parameters stage, output, and subPops.
 
 "; 
+
+%feature("docstring") simuPOP::pedigreeTagger::~pedigreeTagger "
+
+Usage:
+
+    x.~pedigreeTagger()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeTagger::clone "
+
+Description:
+
+    deep copy of a pedigreeTagger
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeTagger::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the pedigreeTagger
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::pedigreeTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::pointMutator "
 
@@ -7599,42 +7543,35 @@ Usage:
 
 %feature("docstring") simuPOP::pyTagger "
 
-Description:
-
-    Python tagger.
-
 Details:
 
-    This tagger takes some information fields from both parents, pass
-    to a Python function and set the individual field with the return
-    value. This operator can be used to trace the inheritance of trait
-    values.
+    A Python tagger takes some information fields from both parents,
+    pass them to a user provided Python function and set the offspring
+    individual fields with the return values.
 
 "; 
 
 %feature("docstring") simuPOP::pyTagger::pyTagger "
 
-Description:
-
-    creates a pyTagger that works on specified information fields
-
 Usage:
 
-    pyTagger(func=None, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
+    pyTagger(func=None, stage=DuringMating, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
+      infoFields=[])
 
-Arguments:
+Details:
 
-    infoFields:     information fields. The user should gurantee the
-                    existence of these fields.
-    func:           a Pyton function that returns a list to assign the
-                    information fields. e.g., if fields=['A', 'B'],
-                    the function will pass values of fields 'A' and
-                    'B' of father, followed by mother if there is one,
-                    to this function. The return value is assigned to
-                    fields 'A' and 'B' of the offspring. The return
-                    value has to be a list even if only one field is
-                    given.
+    Create a hybrid tagger that passes parental information fields
+    (parameter infoFields) to an user provided function func and use
+    its return values to assign corresponding information fields of
+    offspring. If more than one parent are available, maternal values
+    are passed after paternal values. For example, if infoFields=['A',
+    'B'], the user-defined function should expect an array of size 4,
+    with paternal values at fields 'A', 'B', followed by maternal
+    values at these fields. The return value of this function should
+    be a list, although a single value will be accepted if only one
+    information field is specified. This operator ignores parameters
+    stage, output and subPops.
 
 "; 
 

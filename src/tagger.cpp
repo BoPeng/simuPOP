@@ -70,56 +70,6 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-bool parentTagger::applyDuringMating(population & pop, RawIndIterator offspring,
-                                     individual * dad, individual * mom)
-{
-	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
-		"Both parents are invalid");
-
-	// record to one or two information fields
-	size_t is = infoSize();
-	if (is >= 1) {
-		if (dad != NULL)
-			offspring->setInfo(dad - & * pop.indIterator(), infoField(0));
-		else if (mom != NULL)
-			offspring->setInfo(mom - & * pop.indIterator(), infoField(0));
-	}
-	// output to a file?
-	if (noOutput())
-		return true;
-
-	// output one number
-	ostream & out = getOstream(pop.dict());
-	ULONG dadIdx = dad == NULL ? 0 : dad - & * pop.indIterator();
-	ULONG momIdx = mom == NULL ? 0 : mom - & * pop.indIterator();
-	UINT spID = pop.subPopIndPair(std::max(dadIdx, momIdx)).first;
-	// record subpopulation count
-	if (m_subPopSize.size() < spID + 1)
-		m_subPopSize.resize(spID + 1, 0);
-	m_subPopSize[spID]++;
-	if (dad == NULL)
-		out << momIdx << '\t';
-	else
-		out << dadIdx << '\t';
-	closeOstream();
-	return true;
-}
-
-
-bool parentTagger::apply(population & pop)
-{
-	ostream & out = this->getOstream(pop.dict());
-
-	out << "#\t";
-	for (size_t i = 0; i < m_subPopSize.size(); ++i)
-		out << m_subPopSize[i] << '\t';
-	out << '\n';
-	closeOstream();
-	m_subPopSize.clear();
-	return true;
-}
-
-
 bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
@@ -137,69 +87,27 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 		offspring->setInfo(dad == NULL ? -1 : dad - & * pop.indIterator(), infoField(0));
 		offspring->setInfo(mom == NULL ? -1 : mom - & * pop.indIterator(), infoField(1));
 	}
-	// output to a file?
-	if (noOutput())
-		return true;
-
-	// always output two numbers. Because it is possible to have heteroMating
-	// with selfing + random mating.
-	ostream & out = getOstream(pop.dict());
-	ULONG dadIdx = dad == NULL ? -1 : dad - & * pop.indIterator();
-	ULONG momIdx = mom == NULL ? -1 : mom - & * pop.indIterator();
-	UINT spID = pop.subPopIndPair(std::max(dadIdx, momIdx)).first;
-	// record subpopulation count
-	if (m_subPopSize.size() < spID + 1)
-		m_subPopSize.resize(spID + 1, 0);
-	m_subPopSize[spID]++;
-	out << dadIdx << '\t';
-	out << momIdx << '\t';
-	closeOstream();
 	return true;
 }
 
 
-bool parentsTagger::apply(population & pop)
+bool pedigreeTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+                                       individual * dad, individual * mom)
 {
-	ostream & out = this->getOstream(pop.dict());
+	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
+		"Both parents are invalid");
 
-	out << "#\t";
-	for (size_t i = 0; i < m_subPopSize.size(); ++i)
-		out << m_subPopSize[i] << '\t';
-	out << '\n';
-	closeOstream();
-	m_subPopSize.clear();
-	return true;
-}
-
-
-pedigreeTagger::pedigreeTagger(int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops,
-	int stage, const stringFunc & output,
-	const stringList & pedigreeFields) :
-	baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, pedigreeFields)
-{
-	setApplicableStage(stage);
-}
-
-
-bool pedigreeTagger::apply(population & pop)
-{
-	if (infoSize() == 0)
-		return true;
-
-	ostream & out = this->getOstream(pop.dict());
-
-	vectoru idx;
-	UINT is = infoSize();
-	for (size_t i = 0; i < is; ++i)
-		idx.push_back(pop.infoIdx(infoField(0)));
-
-	IndIterator it = pop.indIterator();
-	for (; it.valid(); ++it)
-		for (size_t i = 0; i < is; ++i)
-			out << it->info(idx[i]) << '\t';
-	out << '\n';
-	closeOstream();
+	// record to one or two information fields
+	size_t is = infoSize();
+	if (is == 1) {
+		if (dad != NULL)
+			offspring->setInfo(dad->info(m_idField), infoField(0));
+		else if (mom != NULL)
+			offspring->setInfo(mom->info(m_idField), infoField(0));
+	} else if (is == 2) {
+		offspring->setInfo(dad == NULL ? -1 : dad->info(m_idField), infoField(0));
+		offspring->setInfo(mom == NULL ? -1 : mom->info(m_idField), infoField(1));
+	}
 	return true;
 }
 
@@ -231,14 +139,6 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 	// assign return values to offspring
 	for (size_t i = 0; i < numFields; ++i)
 		offspring->setInfo(res[i], idx[i]);
-
-	// output to a file?
-	if (noOutput())
-		return true;
-	ostream & out = getOstream(pop.dict());
-	for (size_t i = 0; i < numFields; ++i)
-		out << res[i] << '\t';
-	closeOstream();
 
 	return true;
 }
