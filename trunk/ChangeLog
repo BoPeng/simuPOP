@@ -30,6 +30,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add operator initInfo and its function form InitInfo.
   - CHG: move initSex() out of initByFreq and initByValue so initByFreq and initByValue
 		no longer initialize sex by default.
+  - CHG: Change long allele module to 32 bits to simulate infinite-sites models.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
