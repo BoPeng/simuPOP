@@ -2775,10 +2775,12 @@ simu.evolve(
 import simuOpt
 simuOpt.setOptions(alleleType='long')
 #begin_ignore
-GetRNG().setSeed(12345)
 simuOpt.setOptions(quiet=True)
 #end_ignore
 from simuPOP import *
+#begin_ignore
+GetRNG().setSeed(12345)
+#end_ignore
 
 def infSitesMutate(pop, param):
     '''Apply an infinite mutation model'''
