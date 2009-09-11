@@ -801,6 +801,1043 @@ wxPython
 \end_layout
 
 \begin_layout Section
+Pythonic issues
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+from simuPOP import
+\family default
+ * v.s.
+ 
+\family typewriter
+import simuPOP
+\end_layout
+
+\begin_layout Standard
+Generally speaking, it is recommended to use 
+\family typewriter
+import simuPOP
+\family default
+ rather than 
+\family typewriter
+from simuPOP import *
+\family default
+ to import a simuPOP module.
+ That is to say, instead of using
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from simuPOP import *
+\end_layout
+
+\begin_layout Plain Layout
+
+pop = population(size=100, loci=[5])
+\end_layout
+
+\begin_layout Plain Layout
+
+simu = simulator(pop, randomMating())
+\end_layout
+
+\end_inset
+
+it is recommended that you use simuPOP like
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import simuPOP
+\end_layout
+
+\begin_layout Plain Layout
+
+pop = simuPOP.population(size=100, loci=[5])
+\end_layout
+
+\begin_layout Plain Layout
+
+simu = simuPOP.simulator(pop, simuPOP.randomMating())
+\end_layout
+
+\end_inset
+
+The major problem with from 
+\family typewriter
+simuPOP import *
+\family default
+ is that it imports all simuPOP symbols to the global namespace and increases
+ the chance of name clashes.
+ For example, if you import a module 
+\family typewriter
+myModule
+\family default
+ after simuPOP, which happens to have a variable named 
+\family typewriter
+Male
+\family default
+, the following code might lead to a 
+\family typewriter
+TypeError
+\family default
+ indicating your input for parameter sex is wrong.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from simuPOP import *
+\end_layout
+
+\begin_layout Plain Layout
+
+from myModule import *
+\end_layout
+
+\begin_layout Plain Layout
+
+pop = population(size=100, loci=[5])
+\end_layout
+
+\begin_layout Plain Layout
+
+InitSex(pop, sex=[Male, Female])
+\end_layout
+
+\end_inset
+
+It can be even worse if the definition of 
+\family typewriter
+Male
+\family default
+ is changed to a different value of the same type (e.g.
+ to 
+\family typewriter
+Female
+\family default
+) and your simulation might produce erroranous result without a hint.
+\end_layout
+
+\begin_layout Standard
+Although the 
+\family typewriter
+import simuPOP
+\family default
+ style is recommended, especially for large scripts that import a number
+ of modules, all examples demonstrated in this user's guide use the 
+\family typewriter
+import *
+\family default
+ style for the sake of brevity.
+ If you really dislike the omnipresence of 
+\family typewriter
+simuPOP
+\family default
+ prefix, you could
+\end_layout
+
+\begin_layout Itemize
+Use the 
+\family typewriter
+from simuPOP import *
+\family default
+ style but import and refer all other modules by name.
+\end_layout
+
+\begin_layout Itemize
+Use 
+\family typewriter
+import simuPOP as sim
+\family default
+, and use simuPOP like 
+\family typewriter
+sim.population()
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+References and the 
+\family typewriter
+clone() 
+\family default
+member function
+\end_layout
+
+\begin_layout Standard
+Assignment in Python only creates a new reference to an existing object.
+ For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop = population()
+\end_layout
+
+\begin_layout Plain Layout
+
+pop1 = pop
+\end_layout
+
+\end_inset
+
+will create a reference 
+\family typewriter
+pop1
+\family default
+ to population 
+\family typewriter
+pop
+\family default
+.
+ Modifying 
+\family typewriter
+pop1
+\family default
+ will modify 
+\family typewriter
+pop
+\family default
+ as well and the removal of 
+\family typewriter
+pop
+\family default
+ will invalidate 
+\family typewriter
+pop1
+\family default
+.
+ For example, a reference to the first population in a simulator is returned
+ from function 
+\family typewriter
+func()
+\family default
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Reference-to-population"
+
+\end_inset
+
+.
+ The subsequent use of this 
+\family typewriter
+pop
+\family default
+ object may crash simuPOP because the simulator 
+\family typewriter
+simu
+\family default
+ is destroyed, along with all its internal populations, after 
+\family typewriter
+func()
+\family default
+ is finished, leaving 
+\family typewriter
+pop
+\family default
+ referring to an invalid object.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "lst:Reference-to-population"
+
+\end_inset
+
+Reference to a population in a simulator
+\end_layout
+
+\end_inset
+
+def func():
+\end_layout
+
+\begin_layout Plain Layout
+
+    simu = simulator(population(10), randomMating(), rep=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+    # return a reference to the first population in the simulator
+\end_layout
+
+\begin_layout Plain Layout
+
+    return simu.population(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pop = func()
+\end_layout
+
+\begin_layout Plain Layout
+
+# simuPOP will crash because pop refers to an invalid population.
+\end_layout
+
+\begin_layout Plain Layout
+
+pop.popSize()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you would like to have an independent copy of a population, you can use
+ the 
+\family typewriter
+clone()
+\family default
+ member function.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Reference-to-population"
+
+\end_inset
+
+ would behave properly if the 
+\family typewriter
+return
+\family default
+ statement is replaced by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+return simu.population(0).clone()
+\end_layout
+
+\end_inset
+
+although in this specific case, extracting the first population from the
+ simulator using the 
+\family typewriter
+extract
+\family default
+ function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+return simu.extract(0)
+\end_layout
+
+\end_inset
+
+would be more efficient because we do not need to copy the first population
+ from 
+\family typewriter
+simu
+\family default
+ if it will be destroyed soon.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+clone()
+\family default
+ function exists for all simuPOP classes (objects) such as 
+\emph on
+simulator
+\emph default
+, 
+\emph on
+mating schemes
+\emph default
+ and 
+\emph on
+operators
+\emph default
+.
+ simuPOP also supports the standard Python shallow and deep copy operations
+ so you can also make a cloned copy of 
+\family typewriter
+pop
+\family default
+ using the 
+\family typewriter
+deepcopy
+\family default
+ function defined in the Python 
+\family typewriter
+copy
+\family default
+ module
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import copy
+\end_layout
+
+\begin_layout Plain Layout
+
+pop1 = copy.deepcopy(pop)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Zero-based indexes, absolute and relative indexes
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+All arrays in simuPOP start at index 0
+\series default
+.
+ This conforms to Python and C++ indexes.
+ To avoid confusion, I will refer the first locus as locus zero, the second
+ locus as locus one; the first individual in a population as individual
+ zero, and so on.
+\end_layout
+
+\begin_layout Standard
+Another two important concepts are the 
+\emph on
+absolute index
+\emph default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!absolute
+\end_layout
+
+\end_inset
+
+ and the 
+\emph on
+relative index
+\emph default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!relative
+\end_layout
+
+\end_inset
+
+ of a locus.
+ The former index ignores chromosome structure.
+ For example, if there are 5 and 7 loci on the first two chromosomes, the
+ absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
+ 8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
+ 4, 5, 6).
+ Absolute indexes are more frequently used because they avoid the trouble
+ of having to use two numbers (chrom, index) to refer to a locus.
+ Two functions 
+\family typewriter
+chromLocusPair(idx)
+\family default
+ and 
+\family typewriter
+absLocusIndex(chrom,index)
+\family default
+ are provided to convert between these two kinds of indexes.
+ An individual can also be referred by its 
+\emph on
+absolute index
+\emph default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!absolute
+\end_layout
+
+\end_inset
+
+ and 
+\emph on
+relative index
+\emph default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!relative
+\end_layout
+
+\end_inset
+
+ where 
+\emph on
+relative index
+\emph default
+ is the index in its subpopulation.
+ Related member functions are 
+\family typewriter
+subPopIndPair(idx)
+\family default
+ and 
+\family typewriter
+absIndIndex(idx, subPop)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/absIndex.log"
+lstparams "caption={Conversion between absolute and relative indexes},label={absIndex}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Ranges and iterators
+\end_layout
+
+\begin_layout Standard
+Ranges in simuPOP also conform to Python ranges.
+ That is to say, a range has the form of 
+\family typewriter
+[a,b) 
+\family default
+where 
+\family typewriter
+a 
+\family default
+belongs to the range, and 
+\family typewriter
+b 
+\family default
+does not.
+ For example, 
+\family typewriter
+pop.chromBegin(1) 
+\family default
+refers to the index of the first locus on chromosome 1 (actually exists),
+ and 
+\family typewriter
+pop.chromEnd(1) 
+\family default
+refers to the index of the last locus on chromosome 1 
+\series bold
+plus 1
+\series default
+, which might or might not be a valid index.
+\end_layout
+
+\begin_layout Standard
+A number of simuPOP functions return Python iterators that can be used to
+ iterate through an internal array of objects.
+ For example, 
+\family typewriter
+population::individuals([subPop])
+\family default
+ returns an iterator that can be used to iterate through all individuals,
+ or all individuals in a (virtual) subpoulation.
+ 
+\family typewriter
+simulator::populations()
+\family default
+ can be used to iterate through all populations in a simulator.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subPopName"
+
+\end_inset
+
+ demonstrates the use of ranges and iterators in simuPOP.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/iterator.log"
+lstparams "caption={Ranges and iterators},label={iterator.log}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+carray
+\family default
+ datatype
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:carray-datatype"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+simuPOP uses mostly standard Python types such as tuples, lists and dictionaries.
+ However, for efficiency considerations, simuPOP defines and uses a new
+ 
+\family typewriter
+carray 
+\family default
+datatype to refer to an internal array of genotypes.
+ Such an object can only be returned from 
+\family typewriter
+individual::genotype
+\family default
+ and 
+\family typewriter
+population::genotype
+\family default
+ functions.
+ Instead of copying all genotypes to a Python tuple or list, these functions
+ return a 
+\family typewriter
+carray 
+\family default
+object that directly reflect the underlying genotype.
+ This object behaves like a regular Python list except that the underlying
+ genotype will be changed if elements of this object are changed.
+ In addition, elements in this array will be changed if the underlying genotype
+ is changed using another method.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subPopName"
+
+\end_inset
+
+ demonstrates the use of this datatype.
+ It also shows how to get an independent list of alleles using the 
+\family typewriter
+list()
+\family default
+ built-in function.
+ Compare to 
+\family typewriter
+allele()
+\family default
+, 
+\family typewriter
+setAllele()
+\family default
+ and 
+\family typewriter
+setGenotype()
+\family default
+ functions, it is usually more efficient and more convenient to read and
+ write genotypes using carray objects, although this usage is usually less
+ readable.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/carray.log"
+lstparams "caption={The carray datatype},label={carraydatatype}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+defdict
+\family default
+ datatype
+\end_layout
+
+\begin_layout Standard
+simuPOP uses dictionaries to save statistics such as allele frequencies.
+ For example, 
+\family typewriter
+alleleFreq[5]
+\family default
+ can be 
+\family typewriter
+{0:0.2, 3:0.8}
+\family default
+ meaning there are 20% allele 0 and 80% allele 3 at locus 5 in a population.
+ However, because it is sometimes unclear whether or not a particular allele
+ exists in a population, 
+\family typewriter
+alleleFreq[5][allele]
+\family default
+ can fail with a 
+\family typewriter
+KeyError
+\family default
+ exception if 
+\family typewriter
+alleleFreq[5]
+\family default
+ does not have key 
+\family typewriter
+allele
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+To address this problem, a special default dictionary type 
+\family typewriter
+defdict
+\family default
+ is used for dictionaries with keys determined from a population.
+ This derived dictionary type works just like a regular dictionay, but it
+ returns 0, instead of raising a 
+\family typewriter
+KeyError
+\family default
+ exception, when an invalid key is used.
+ For example, subpopulations in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "defdictType"
+
+\end_inset
+
+ have different alleles.
+ Although 
+\family typewriter
+pop.dvars(sp).alleleFreq[0]
+\family default
+ have only two keys for 
+\family typewriter
+sp=0
+\family default
+ or 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+pop.dvars(sp).alleleFreq[0][x]
+\family default
+ are used to print frequencies of alleles 
+\family typewriter
+0
+\family default
+, 
+\family typewriter
+1
+\family default
+ and 
+\family typewriter
+2
+\family default
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/defdict.log"
+lstparams "caption={The defdict datatype},label={defdictType}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Note
+The standard 
+\family typewriter
+collections
+\family default
+ module of Python has a 
+\family typewriter
+defaultdict
+\family default
+ type that accepts a default factory function that will be used when an
+ invalid key is encountered.
+ The 
+\family typewriter
+defdict
+\family default
+ type is similar to 
+\family typewriter
+defaultdict(int)
+\family default
+ but with an important difference: when an invalid key is encountered, 
+\family typewriter
+d[key]
+\family default
+ with a default value will be inserted to a 
+\family typewriter
+defaultdict(int)
+\family default
+, but will not be inserted to a 
+\family typewriter
+defdict
+\family default
+.
+ That is to say, it is safe to use 
+\family typewriter
+alleleFreq[loc].keys()
+\family default
+ to get available alleles after non-assignment 
+\family typewriter
+alleleFreq[loc][allele]
+\family default
+ operations.
+\end_layout
+
+\begin_layout Subsection
+Parameter names and single and list input of parameters
+\end_layout
+
+\begin_layout Standard
+simuPOP follows (at least tries to follow) the following naming convention:
+\end_layout
+
+\begin_layout Itemize
+If a parameter only accept a single input, singular names such as 
+\family typewriter
+field
+\family default
+, 
+\family typewriter
+locus
+\family default
+, 
+\family typewriter
+value
+\family default
+, and 
+\family typewriter
+name
+\family default
+ are used.
+\end_layout
+
+\begin_layout Itemize
+If a parameter accepts a list of values, plural names such as 
+\family typewriter
+fields
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+values
+\family default
+ and 
+\family typewriter
+names
+\family default
+ are used.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Plural form parameters usually accept single inputs.
+
+\series default
+ For example, 
+\family typewriter
+loci=1
+\family default
+ can be used as a shortcut for 
+\family typewriter
+loci=[1]
+\family default
+ and 
+\family typewriter
+infoFields='x'
+\family default
+ can be used as a shortcut for 
+\family typewriter
+infoFields=['x']
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The same rules also hold for function names.
+ For example, 
+\family typewriter
+population::addInfoFields()
+\family default
+ accept a list of information fields but 
+\family typewriter
+pop.addInfoFields('field')
+\family default
+ is also acceptable.
+\end_layout
+
+\begin_layout Subsection
+Value 
+\family typewriter
+AllAvail
+\family default
+ for parameters 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+reps
+\family default
+ and 
+\family typewriter
+subPops
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+reps
+\family default
+ and 
+\family typewriter
+subPops
+\family default
+ are widely used in simuPOP to specify which loci, replicates or (virtual)
+ subpulations a function or operator is applied to.
+ These parameter accepts a list of values such as 
+\family typewriter
+[1, 2]
+\family default
+ and take single form inputs (e.g.
+ 
+\family typewriter
+loci=1
+\family default
+ is equivalent to 
+\family typewriter
+loci=[1]
+\family default
+).
+ For example,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=[])
+\family default
+ recombine at no locus, and
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=1)
+\family default
+ recombine at locus 1
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+recombinator(loci=[1,2,4])
+\family default
+ recombine at loci 1, 2, and 4
+\end_layout
+
+\begin_layout Standard
+However, in the majority of the cases, these parameters take a default value
+ 
+\family typewriter
+AllAvail
+\family default
+ which applies the function or operator to all available loci, replicates
+ or subpopulations.
+ That is to say, 
+\family typewriter
+recombinator()
+\family default
+ or 
+\family typewriter
+recombinator(loci=AllAvail)
+\family default
+ will recombine at all applicable loci, which will vary from population
+ to population.
+\end_layout
+
+\begin_layout Section
 Getting help
 \end_layout
 
@@ -1883,874 +2920,6 @@ gui
 \family default
  is usually provided.
  The same set of options apply.
-\end_layout
-
-\begin_layout Section
-Pythonic issues
-\end_layout
-
-\begin_layout Subsection
-References and the 
-\family typewriter
-clone() 
-\family default
-member function
-\end_layout
-
-\begin_layout Standard
-Assignment in Python only creates a new reference to an existing object.
- For example,
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop = population()
-\end_layout
-
-\begin_layout Plain Layout
-
-pop1 = pop
-\end_layout
-
-\end_inset
-
-will create a reference 
-\family typewriter
-pop1
-\family default
- to population 
-\family typewriter
-pop
-\family default
-.
- Modifying 
-\family typewriter
-pop1
-\family default
- will modify 
-\family typewriter
-pop
-\family default
- as well and the removal of 
-\family typewriter
-pop
-\family default
- will invalidate 
-\family typewriter
-pop1
-\family default
-.
- For example, a reference to the first population in a simulator is returned
- from function 
-\family typewriter
-func()
-\family default
- in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Reference-to-population"
-
-\end_inset
-
-.
- The subsequent use of this 
-\family typewriter
-pop
-\family default
- object may crash simuPOP because the simulator 
-\family typewriter
-simu
-\family default
- is destroyed, along with all its internal populations, after 
-\family typewriter
-func()
-\family default
- is finished, leaving 
-\family typewriter
-pop
-\family default
- referring to an invalid object.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "lst:Reference-to-population"
-
-\end_inset
-
-Reference to a population in a simulator
-\end_layout
-
-\end_inset
-
-def func():
-\end_layout
-
-\begin_layout Plain Layout
-
-    simu = simulator(population(10), randomMating(), rep=5)
-\end_layout
-
-\begin_layout Plain Layout
-
-    # return a reference to the first population in the simulator
-\end_layout
-
-\begin_layout Plain Layout
-
-    return simu.population(0)
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-pop = func()
-\end_layout
-
-\begin_layout Plain Layout
-
-# simuPOP will crash because pop refers to an invalid population.
-\end_layout
-
-\begin_layout Plain Layout
-
-pop.popSize()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you would like to have an independent copy of a population, you can use
- the 
-\family typewriter
-clone()
-\family default
- member function.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Reference-to-population"
-
-\end_inset
-
- would behave properly if the 
-\family typewriter
-return
-\family default
- statement is replaced by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-return simu.population(0).clone()
-\end_layout
-
-\end_inset
-
-although in this specific case, extracting the first population from the
- simulator using the 
-\family typewriter
-extract
-\family default
- function
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-return simu.extract(0)
-\end_layout
-
-\end_inset
-
-would be more efficient because we do not need to copy the first population
- from 
-\family typewriter
-simu
-\family default
- if it will be destroyed soon.
- 
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-clone()
-\family default
- function exists for all simuPOP classes (objects) such as 
-\emph on
-simulator
-\emph default
-, 
-\emph on
-mating schemes
-\emph default
- and 
-\emph on
-operators
-\emph default
-.
- simuPOP also supports the standard Python shallow and deep copy operations
- so you can also make a cloned copy of 
-\family typewriter
-pop
-\family default
- using the 
-\family typewriter
-deepcopy
-\family default
- function defined in the Python 
-\family typewriter
-copy
-\family default
- module
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-import copy
-\end_layout
-
-\begin_layout Plain Layout
-
-pop1 = copy.deepcopy(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Zero-based indexes, absolute and relative indexes
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-All arrays in simuPOP start at index 0
-\series default
-.
- This conforms to Python and C++ indexes.
- To avoid confusion, I will refer the first locus as locus zero, the second
- locus as locus one; the first individual in a population as individual
- zero, and so on.
-\end_layout
-
-\begin_layout Standard
-Another two important concepts are the 
-\emph on
-absolute index
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!absolute
-\end_layout
-
-\end_inset
-
- and the 
-\emph on
-relative index
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!relative
-\end_layout
-
-\end_inset
-
- of a locus.
- The former index ignores chromosome structure.
- For example, if there are 5 and 7 loci on the first two chromosomes, the
- absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
- 8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
- 4, 5, 6).
- Absolute indexes are more frequently used because they avoid the trouble
- of having to use two numbers (chrom, index) to refer to a locus.
- Two functions 
-\family typewriter
-chromLocusPair(idx)
-\family default
- and 
-\family typewriter
-absLocusIndex(chrom,index)
-\family default
- are provided to convert between these two kinds of indexes.
- An individual can also be referred by its 
-\emph on
-absolute index
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!absolute
-\end_layout
-
-\end_inset
-
- and 
-\emph on
-relative index
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!relative
-\end_layout
-
-\end_inset
-
- where 
-\emph on
-relative index
-\emph default
- is the index in its subpopulation.
- Related member functions are 
-\family typewriter
-subPopIndPair(idx)
-\family default
- and 
-\family typewriter
-absIndIndex(idx, subPop)
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/absIndex.log"
-lstparams "caption={Conversion between absolute and relative indexes},label={absIndex}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Ranges and iterators
-\end_layout
-
-\begin_layout Standard
-Ranges in simuPOP also conform to Python ranges.
- That is to say, a range has the form of 
-\family typewriter
-[a,b) 
-\family default
-where 
-\family typewriter
-a 
-\family default
-belongs to the range, and 
-\family typewriter
-b 
-\family default
-does not.
- For example, 
-\family typewriter
-pop.chromBegin(1) 
-\family default
-refers to the index of the first locus on chromosome 1 (actually exists),
- and 
-\family typewriter
-pop.chromEnd(1) 
-\family default
-refers to the index of the last locus on chromosome 1 
-\series bold
-plus 1
-\series default
-, which might or might not be a valid index.
-\end_layout
-
-\begin_layout Standard
-A number of simuPOP functions return Python iterators that can be used to
- iterate through an internal array of objects.
- For example, 
-\family typewriter
-population::individuals([subPop])
-\family default
- returns an iterator that can be used to iterate through all individuals,
- or all individuals in a (virtual) subpoulation.
- 
-\family typewriter
-simulator::populations()
-\family default
- can be used to iterate through all populations in a simulator.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "subPopName"
-
-\end_inset
-
- demonstrates the use of ranges and iterators in simuPOP.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/iterator.log"
-lstparams "caption={Ranges and iterators},label={iterator.log}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-carray
-\family default
- datatype
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:carray-datatype"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-simuPOP uses mostly standard Python types such as tuples, lists and dictionaries.
- However, for efficiency considerations, simuPOP defines and uses a new
- 
-\family typewriter
-carray 
-\family default
-datatype to refer to an internal array of genotypes.
- Such an object can only be returned from 
-\family typewriter
-individual::genotype
-\family default
- and 
-\family typewriter
-population::genotype
-\family default
- functions.
- Instead of copying all genotypes to a Python tuple or list, these functions
- return a 
-\family typewriter
-carray 
-\family default
-object that directly reflect the underlying genotype.
- This object behaves like a regular Python list except that the underlying
- genotype will be changed if elements of this object are changed.
- In addition, elements in this array will be changed if the underlying genotype
- is changed using another method.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "subPopName"
-
-\end_inset
-
- demonstrates the use of this datatype.
- It also shows how to get an independent list of alleles using the 
-\family typewriter
-list()
-\family default
- built-in function.
- Compare to 
-\family typewriter
-allele()
-\family default
-, 
-\family typewriter
-setAllele()
-\family default
- and 
-\family typewriter
-setGenotype()
-\family default
- functions, it is usually more efficient and more convenient to read and
- write genotypes using carray objects, although this usage is usually less
- readable.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/carray.log"
-lstparams "caption={The carray datatype},label={carraydatatype}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-defdict
-\family default
- datatype
-\end_layout
-
-\begin_layout Standard
-simuPOP uses dictionaries to save statistics such as allele frequencies.
- For example, 
-\family typewriter
-alleleFreq[5]
-\family default
- can be 
-\family typewriter
-{0:0.2, 3:0.8}
-\family default
- meaning there are 20% allele 0 and 80% allele 3 at locus 5 in a population.
- However, because it is sometimes unclear whether or not a particular allele
- exists in a population, 
-\family typewriter
-alleleFreq[5][allele]
-\family default
- can fail with a 
-\family typewriter
-KeyError
-\family default
- exception if 
-\family typewriter
-alleleFreq[5]
-\family default
- does not have key 
-\family typewriter
-allele
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-To address this problem, a special default dictionary type 
-\family typewriter
-defdict
-\family default
- is used for dictionaries with keys determined from a population.
- This derived dictionary type works just like a regular dictionay, but it
- returns 0, instead of raising a 
-\family typewriter
-KeyError
-\family default
- exception, when an invalid key is used.
- For example, subpopulations in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "defdictType"
-
-\end_inset
-
- have different alleles.
- Although 
-\family typewriter
-pop.dvars(sp).alleleFreq[0]
-\family default
- have only two keys for 
-\family typewriter
-sp=0
-\family default
- or 
-\family typewriter
-1
-\family default
-, 
-\family typewriter
-pop.dvars(sp).alleleFreq[0][x]
-\family default
- are used to print frequencies of alleles 
-\family typewriter
-0
-\family default
-, 
-\family typewriter
-1
-\family default
- and 
-\family typewriter
-2
-\family default
-.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/defdict.log"
-lstparams "caption={The defdict datatype},label={defdictType}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Note
-The standard 
-\family typewriter
-collections
-\family default
- module of Python has a 
-\family typewriter
-defaultdict
-\family default
- type that accepts a default factory function that will be used when an
- invalid key is encountered.
- The 
-\family typewriter
-defdict
-\family default
- type is similar to 
-\family typewriter
-defaultdict(int)
-\family default
- but with an important difference: when an invalid key is encountered, 
-\family typewriter
-d[key]
-\family default
- with a default value will be inserted to a 
-\family typewriter
-defaultdict(int)
-\family default
-, but will not be inserted to a 
-\family typewriter
-defdict
-\family default
-.
- That is to say, it is safe to use 
-\family typewriter
-alleleFreq[loc].keys()
-\family default
- to get available alleles after non-assignment 
-\family typewriter
-alleleFreq[loc][allele]
-\family default
- operations.
-\end_layout
-
-\begin_layout Subsection
-Parameter names and single and list input of parameters
-\end_layout
-
-\begin_layout Standard
-simuPOP follows (at least tries to follow) the following naming convention:
-\end_layout
-
-\begin_layout Itemize
-If a parameter only accept a single input, singular names such as 
-\family typewriter
-field
-\family default
-, 
-\family typewriter
-locus
-\family default
-, 
-\family typewriter
-value
-\family default
-, and 
-\family typewriter
-name
-\family default
- are used.
-\end_layout
-
-\begin_layout Itemize
-If a parameter accepts a list of values, plural names such as 
-\family typewriter
-fields
-\family default
-, 
-\family typewriter
-loci
-\family default
-, 
-\family typewriter
-values
-\family default
- and 
-\family typewriter
-names
-\family default
- are used.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Plural form parameters usually accept single inputs.
-
-\series default
- For example, 
-\family typewriter
-loci=1
-\family default
- can be used as a shortcut for 
-\family typewriter
-loci=[1]
-\family default
- and 
-\family typewriter
-infoFields='x'
-\family default
- can be used as a shortcut for 
-\family typewriter
-infoFields=['x']
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The same rules also hold for function names.
- For example, 
-\family typewriter
-population::addInfoFields()
-\family default
- accept a list of information fields but 
-\family typewriter
-pop.addInfoFields('field')
-\family default
- is also acceptable.
-\end_layout
-
-\begin_layout Subsection
-Value 
-\family typewriter
-AllAvail
-\family default
- for parameters 
-\family typewriter
-loci
-\family default
-, 
-\family typewriter
-reps
-\family default
- and 
-\family typewriter
-subPops
-\end_layout
-
-\begin_layout Standard
-Parameters 
-\family typewriter
-loci
-\family default
-, 
-\family typewriter
-reps
-\family default
- and 
-\family typewriter
-subPops
-\family default
- are widely used in simuPOP to specify which loci, replicates or (virtual)
- subpulations a function or operator is applied to.
- These parameter accepts a list of values such as 
-\family typewriter
-[1, 2]
-\family default
- and take single form inputs (e.g.
- 
-\family typewriter
-loci=1
-\family default
- is equivalent to 
-\family typewriter
-loci=[1]
-\family default
-).
- For example,
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-recombinator(loci=[])
-\family default
- recombine at no locus, and
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-recombinator(loci=1)
-\family default
- recombine at locus 1
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-recombinator(loci=[1,2,4])
-\family default
- recombine at loci 1, 2, and 4
-\end_layout
-
-\begin_layout Standard
-However, in the majority of the cases, these parameters take a default value
- 
-\family typewriter
-AllAvail
-\family default
- which applies the function or operator to all available loci, replicates
- or subpopulations.
- That is to say, 
-\family typewriter
-recombinator()
-\family default
- or 
-\family typewriter
-recombinator(loci=AllAvail)
-\family default
- will recombine at all applicable loci, which will vary from population
- to population.
 \end_layout
 
 \begin_layout Section
