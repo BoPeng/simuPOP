@@ -99,7 +99,7 @@ class TestSelector(unittest.TestCase):
             pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
             simu = simulator(pop, randomMating())
             simu.evolve(
-                preOps = [initByFreq([1-p]+[p/10.]*10)],
+                preOps = [initSex(), initByFreq([1-p]+[p/10.]*10)],
                 ops = [
                     sel,
                     stat(alleleFreq=[0]),
@@ -132,7 +132,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5, .5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5, .5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -159,7 +159,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -184,7 +184,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -215,7 +215,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -247,7 +247,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -271,7 +271,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
                     begin=50),
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -299,7 +299,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.3 and    alleleFreq[0][0]    < 0.7',
                     begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -316,7 +316,7 @@ class TestSelector(unittest.TestCase):
                 maSelector(loci=[3,6], wildtype=0,
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]),
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
 
@@ -395,7 +395,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -445,7 +445,7 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initByFreq(alleleFreq=[.5,.5])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -463,7 +463,7 @@ class TestSelector(unittest.TestCase):
                 ], mode=Additive),
         simu.evolve(
             ops = sel,
-            preOps=[ initByFreq(alleleFreq=[.2,.8])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
         #
@@ -474,7 +474,7 @@ class TestSelector(unittest.TestCase):
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=Multiplicative),
             ],
-            preOps=[ initByFreq(alleleFreq=[.2,.8])],
+            preOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
 
@@ -503,7 +503,7 @@ class TestSelector(unittest.TestCase):
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
         simu.evolve(
-            preOps = [initByFreq([.4, .6])],
+            preOps = [initSex(), initByFreq([.4, .6])],
             ops = [
                 mapSelector(loci = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
                 pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
@@ -516,7 +516,7 @@ class TestSelector(unittest.TestCase):
                 infoFields=['fitness']),
             randomMating())
         simu.evolve(
-            preOps = [initByFreq([.4, .6])],
+            preOps = [initSex(), initByFreq([.4, .6])],
             ops = [
                 maSelector(loci=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
                     subPops=1),

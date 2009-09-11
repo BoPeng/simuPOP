@@ -89,12 +89,11 @@ class TestInitialization(unittest.TestCase):
         'Testing operator initSex'
         pop = population(size=[500, 1000], loci=[1])
         InitSex(pop, sex=[Male, Female, Female])
-        for sp in range(2):
-            for idx, ind in enumerate(pop.individuals(sp)):
-                if idx % 3 == 0:
-                    self.assertEqual(ind.sex(), Male)
-                else:
-                    self.assertEqual(ind.sex(), Female)
+        for idx, ind in enumerate(pop.individuals()):
+            if idx % 3 == 0:
+                self.assertEqual(ind.sex(), Male)
+            else:
+                self.assertEqual(ind.sex(), Female)
         # maleFreq
         InitSex(pop, maleFreq=0.3)
         count = 0
@@ -108,12 +107,14 @@ class TestInitialization(unittest.TestCase):
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
         InitSex(pop, sex=[Male, Female, Female], subPops=[[0,0],[1,0]])
+        idx = 0
         for sp in range(2):
-            for idx, ind in enumerate(pop.individuals([sp,0])):
+            for ind in pop.individuals([sp,0]):
                 if idx % 3 == 0:
                     self.assertEqual(ind.sex(), Male)
                 else:
                     self.assertEqual(ind.sex(), Female)
+                idx += 1
 
     def testInitByFreq(self):
         'Testing operator initByFreq '
@@ -130,14 +131,14 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, loci=[0,1,3,5,7])
         # use maleFreq=1 to avoid problem when comparing individuals
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .3, .4, .1], identicalInds=True,
-            maleFreq=1)
+        InitSex(pop, maleFreq=1)
+        InitByFreq(pop, [.2, .3, .4, .1], identicalInds=True)
         self.assertEqual(pop.individual(0), pop.individual(1))
         self.assertEqual(pop.individual(10), pop.individual(20))       
         # subPop
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0, 1],
-            maleFreq=1)
+        InitSex(pop, maleFreq=1)
+        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0, 1])
         self.assertEqual(pop.individual(0), pop.individual(1))
         self.assertNotEqual(pop.individual(2), pop.individual(500))
         self.clearGenotype(pop)
@@ -147,8 +148,8 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPop=[2])
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0],
-            maleFreq=1)
+        InitSex(pop, maleFreq=1)
+        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0])
         self.assertEqual(pop.individual(6), pop.individual(7))
         self.assertNotEqual(pop.individual(0), pop.individual(500))
         self.assertGenotype(pop, 0, subPop=[1,2] )

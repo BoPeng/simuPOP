@@ -9521,29 +9521,6 @@ lstparams "caption={Initialize by allele frequency with identical individuals in
 
 \end_layout
 
-\begin_layout Standard
-For convenience and for backward-compatibility, this operator by default
- also initialize individual sex (parameters 
-\emph on
-maleFreq
-\emph default
- and 
-\emph on
-sex
-\emph default
- are accepted).
- If this is not needed (e.g.
- indiviudal sex has already been initialized), you can set paramter 
-\emph on
-initSex
-\emph default
- to 
-\family typewriter
-False
-\family default
-.
-\end_layout
-
 \begin_layout Subsection
 Initialize by haplotype (operator 
 \family typewriter
@@ -9616,21 +9593,6 @@ reference "initByValueProp"
 \end_inset
 
  demonstrates the use of these parameters.
- Note that operator 
-\family typewriter
-initByValue
-\family default
- also initializes individual sex so 
-\family typewriter
-\emph on
-initSex
-\family default
-\emph default
- should be set to 
-\family typewriter
-False
-\family default
- when multiple initializers are applied.
 \end_layout
 
 \begin_layout Standard
@@ -9642,6 +9604,14 @@ lstparams "caption={initialize by haplotypes with given proportion},label={initB
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Initialize information fields (operator 
+\family typewriter
+initInfo
+\family default
+)
 \end_layout
 
 \begin_layout Section
@@ -15447,6 +15417,30 @@ lstparams "caption={Use an inherit tagger to track offspring of individuals},lab
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Tracking parents (operator 
+\family typewriter
+parentsTagger
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Tracking pedigrees (operator 
+\family typewriter
+pedigreeTagger
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+A hybrid tagger (operator 
+\family typewriter
+pyTagger
+\family default
+)
 \end_layout
 
 \begin_layout Section

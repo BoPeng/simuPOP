@@ -286,7 +286,7 @@ class TestUtility(unittest.TestCase):
         #print len(traj.traj)
         #print [traj.traj[min(traj.traj.keys()) + i] for i in range(3)]
         #####
-        self.assertEqual(traj.traj[min(traj.traj.keys())+1][0], 1. / (2 * 1000))
+        self.assertAlmostEqual(traj.traj[min(traj.traj.keys())+1][0], 1. / (2 * 1000))
         if traj.traj[min(traj.traj.keys())+2][0] < 1. / (2 * 1000):
             raise ValueError('fail in test number 4 of testSimuBackward.')
         

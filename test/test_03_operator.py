@@ -33,7 +33,7 @@ class TestOperator(unittest.TestCase):
             population(size=[20, 80], loci=[3]),
                 randomMating())
         simu.evolve(
-            preOps = [initByFreq([0.2, 0.8])],
+            preOps = [initSex(), initByFreq([0.2, 0.8])],
             ops = [
                 recombinator(rates=0.001),
                 stat(stage=PrePostMating),

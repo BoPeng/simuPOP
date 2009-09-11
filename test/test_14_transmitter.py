@@ -18,6 +18,7 @@ class TestTransmitters(unittest.TestCase):
     def getPop(self, *args, **kwargs):
         'Create a population for testing.'
         pop = population(*args, **kwargs)
+        InitSex(pop)
         InitByFreq(pop, [0.4] + [0.1]*6)
         return pop
 
@@ -452,6 +453,7 @@ class TestTransmitters(unittest.TestCase):
         a1, a2 = 0, 1
 
         pop = population(10000, loci=[2,3,2])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -466,6 +468,7 @@ class TestTransmitters(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) < 0.01
         # compare to the next test
         pop = population(10000, loci=[3,4])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -496,6 +499,7 @@ class TestTransmitters(unittest.TestCase):
         # alrorithm 0?
         #
         pop = population(10000, loci=[3,10])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -527,6 +531,7 @@ class TestTransmitters(unittest.TestCase):
         'Testing to see if we actually convert at this rate '
         a1, a2 = 0, 1
         pop = population(10000, loci=[3,4])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         rec = recombinator(rates = 0.4, convMode = (NumMarkers, 1, 1), loci=[1,3])
@@ -564,6 +569,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # length 2
         pop = population(10000, loci=[3,4])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -598,6 +604,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # algorithm 0??
         pop = population(10000, loci=[3,10])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -638,6 +645,7 @@ class TestTransmitters(unittest.TestCase):
         else:
             a1, a2 = 1, 2
         pop = population(10000, loci=[2,3,2])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -661,6 +669,7 @@ class TestTransmitters(unittest.TestCase):
         else:
             a1, a2 = 1, 2
         pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -682,6 +691,7 @@ class TestTransmitters(unittest.TestCase):
         else:
             a1, a2 = 1, 2
         pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         simu.evolve( [
@@ -703,6 +713,7 @@ class TestTransmitters(unittest.TestCase):
         else:
             geno = [1,2,3,4,5,6,7]
         pop = population(1000, loci=[2,3,2])
+        InitSex(pop)
         InitByValue(pop, value=geno)
         simu = simulator(pop, randomMating())
         simu.evolve( [ recombinator(rates = 0.4) ], gen=100)
@@ -718,6 +729,7 @@ class TestTransmitters(unittest.TestCase):
         else:
             a1, a2 = 1, 2
         pop = population(100000, loci=[2,3,2])
+        InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         #TurnOnDebug(DBG_RECOMBINATOR)
@@ -747,6 +759,7 @@ class TestTransmitters(unittest.TestCase):
             [0, .5, 0, .5], [0, 0, 1, 0], [0, 0, .5, .5], [0, 0, 0, 1] ]
         for i in range(0, len(genoDad)):
             pop = population(size=N, loci=[2])
+            InitSex(pop)
             InitByValue(pop, value=genoDad[i]+genoMom[i])
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -772,6 +785,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
+        InitSex(pop)
         InitByValue(pop, value=[a1,a1,a2,a2])
         simu = simulator(pop, randomMating())
         simu.evolve(
@@ -826,7 +840,7 @@ class TestTransmitters(unittest.TestCase):
         simu = simulator(pop, haplodiploidMating())
         simu.evolve(
             preOps = [
-                initByValue([0]*8 + [1]*8)
+                initSex(), initByValue([0]*8 + [1]*8)
                 ],
             ops = [],
             gen = 1)

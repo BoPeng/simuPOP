@@ -168,7 +168,7 @@ protected:
  *  to all individuals in the same (virtual) subpopulations.
  *  <funcForm>InitByFreq</funcForm>
  */
-class initByFreq : public initSex
+class initByFreq : public baseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -180,15 +180,13 @@ public:
 	 *  (virtual) subpopulations will be initialized. If \e identicalInds is
 	 *  \c True, the first individual in each (virtual) subpopulation will be
 	 *  initialized randomly, and be copied to all other individuals in this
-	 *  (virtual) subpopulation. If a list of frequencies are given, they will be
-	 *  used for each (virtual) subpopulation. If \e initSex is \c True
-	 *  (default), <tt>initSex(maleFreq, sex)</tt> will be applied. This operator
-	 *  initializes all chromosomes, including unused genotype locations and
-	 *  customized chromosomes.
+	 *  (virtual) subpopulation. If a list of frequencies are given, they will
+	 *  be used for each (virtual) subpopulation. This operator initializes all
+	 *  chromosomes, including unused genotype locations and customized
+	 *  chromosomes.
 	 */
 	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(), bool identicalInds = false,
-		bool initSex = true, double maleFreq = 0.5, const intList & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
@@ -228,15 +226,12 @@ private:
 
 	//
 	uintList m_ploidy;
-
-	//
-	bool m_initSex;
 };
 
 /** This operator initialize individuals by given values.
  *  <funcForm>InitByValue</funcForm>
  */
-class initByValue : public initSex
+class initByValue : public baseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -248,15 +243,13 @@ public:
 	 *  numbers that add up to \c 1) is given, \e value should be a list of
 	 *  values that will be assigned randomly according to their respective
 	 *  proportion. If a list of values are given without \e proportions,
-	 *  they will be used for each (virtual) subpopulations. If \e initSex is
-	 *  \c True (default), <tt>initSex(maleFreq, sex)</tt> will be applied.
-	 *  This operator initializes all chromosomes, including unused genotype
-	 *  locations and customized chromosomes.
+	 *  they will be used for each (virtual) subpopulations. This operator
+	 *  initializes all chromosomes, including unused genotype locations and
+	 *  customized chromosomes.
 	 */
 	initByValue(intMatrix value = intMatrix(),
 		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
 		const floatList & proportions = vectorf(),
-		bool initSex = true, double maleFreq = 0.5, const intList & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
@@ -295,9 +288,6 @@ private:
 
 	//
 	uintList m_ploidy;
-
-	//
-	bool m_initSex;
 };
 
 }

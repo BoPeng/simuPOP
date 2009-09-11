@@ -164,7 +164,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve(
-                preOps = [ initByFreq([.5, .5], loci=[0, 4])],
+                preOps = [ initSex(), initByFreq([.5, .5], loci=[0, 4])],
                 ops = [snpMutator(u=0.1, loci=[0, 4]),
                     #stat(alleleFreq=[0, 4]),
                     #pyEval(r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[4][0])')
@@ -181,7 +181,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator(population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve(
-                preOps = [initByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
+                preOps = [initSex(), initByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
                 ops = [snpMutator(u=0.1, loci=[0, 4],
                     mapIn=[0, 0, 0, 0, 0, 0, 1],
                     mapOut=[5, 6]),
@@ -202,7 +202,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator(population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve(
-                preOps = [initByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
+                preOps = [initSex(), initByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
                 ops = [snpMutator(u=0.1, loci=[0, 4],
                     mapIn=mapIn, mapOut=mapOut),
                     #stat(alleleFreq=[0, 4]),
@@ -221,9 +221,9 @@ class TestMutator(unittest.TestCase):
         'Testing k-allele mutator'
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        # simu.apply( [ initByFreq([.2,.8])])
+        # simu.apply( [ initSex(), initByFreq([.2,.8])])
         simu.evolve(
-                preOps = [ initByFreq([.2,.8])],
+                preOps = [ initSex(), initByFreq([.2,.8])],
                 ops = [ kamMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
@@ -245,8 +245,8 @@ class TestMutator(unittest.TestCase):
             return
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        # simu.apply( [ initByFreq([.2,.8])])
-        simu.evolve(preOps=[initByFreq([.2,.8])],
+        # simu.apply( [ initSex(), initByFreq([.2,.8])])
+        simu.evolve(preOps=[initSex(), initByFreq([.2,.8])],
              ops = [ smmMutator(rates=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
@@ -287,7 +287,7 @@ class TestMutator(unittest.TestCase):
             randomMating())
         simu.evolve(
             # initialize locus by 0, 0, 0, 1, 0, 1
-            preOps = initByValue([1, 1], loci=[3, 5]),
+            preOps = [initSex(), initByValue([1, 1], loci=[3, 5])],
             ops = [
                 contextMutator(mutators=[
                     snpMutator(u=0.1),

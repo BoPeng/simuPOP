@@ -150,7 +150,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(10000)
         simu = simulator(pop, randomMating(sexMode=(ProbOfMale, 0.3)))
         simu.evolve(
-            preOps = [initByFreq([0.5, 0.5])],
+            preOps = [initSex(), initByFreq([0.5, 0.5])],
             ops = [
                 stat(numOfMale=True),
                 # number of male should be variable, but not too much
@@ -176,7 +176,7 @@ class TestMatingSchemes(unittest.TestCase):
                
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
-        pop = population(size=[1000, 1000], loci=[2], infoFields=['father_idx', 'mother_idx'])
+        pop = population(size=[10000, 10000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop,
             heteroMating(
                 [randomMating(numOffspring=2, subPop=0),
@@ -197,10 +197,10 @@ class TestMatingSchemes(unittest.TestCase):
             else:
                 lastParent = parent
                 famSize.append(1)
-        self.assertEqual(famSize, [2]*500+[4]*250)
+        self.assertEqual(famSize, [2]*5000+[4]*2500)
 
         # virtual subpopulation
-        pop = population(size =[2000, 2000], loci=[2], infoFields=['father_idx', 'mother_idx'])
+        pop = population(size =[20000, 20000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
         simu = simulator(pop, heteroMating(
             matingSchemes = [
@@ -224,7 +224,7 @@ class TestMatingSchemes(unittest.TestCase):
             else:
                 lastParent = parent
                 famSize.append(1)
-        self.assertEqual(famSize, [1]*2000+[2]*1000)
+        self.assertEqual(famSize, [1]*20000+[2]*10000)
          
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'
@@ -356,7 +356,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps = [initSex(),
                 # female has [1]
-                initByValue([1]*25, subPops=[(0, 1), (1, 1)], initSex=False),
+                initByValue([1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
             ops = [ ],
             gen = 1

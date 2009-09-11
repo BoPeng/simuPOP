@@ -93,13 +93,12 @@ bool initInfo::apply(population & pop)
 
 initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 	const uintList & ploidy, bool identicalInds,
-	bool initsex, double maleFreq, const intList & sex,
 	int stage, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
-	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
+	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 	m_alleleFreq(alleleFreq), m_identicalInds(identicalInds),
-	m_loci(loci), m_ploidy(ploidy), m_initSex(initsex)
+	m_loci(loci), m_ploidy(ploidy)
 {
 
 	DBG_FAILIF(m_alleleFreq.empty(),
@@ -117,12 +116,8 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 
 bool initByFreq::apply(population & pop)
 {
-	// initSex because initByValue may depend on the sex information
-	// determined here.
-	if (m_initSex)
-		initSex::apply(pop);
-
 	subPopList subPops = applicableSubPops();
+
 	if (subPops.empty())
 		subPops.useSubPopsFrom(pop);
 
@@ -176,17 +171,14 @@ bool initByFreq::apply(population & pop)
 
 
 initByValue::initByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
-	const floatList & proportions, bool initsex, double maleFreq, const intList & sex,
+	const floatList & proportions,
 	int stage, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
-	: initSex(maleFreq, sex, stage, begin, end, step, at, reps, subPops, infoFields),
+	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 	m_value(value), m_proportion(proportions.elems()), m_loci(loci),
-	m_ploidy(ploidy), m_initSex(initsex)
+	m_ploidy(ploidy)
 {
-	DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-		IndexError, "male frequency in the population should be in the range of [0,1]");
-
 	DBG_FAILIF(m_value.empty(), ValueError,
 		"Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
 
@@ -197,10 +189,6 @@ initByValue::initByValue(intMatrix value, const uintList & loci, const uintList 
 
 bool initByValue::apply(population & pop)
 {
-	// initSex because initByValue may depend on the sex information
-	// determined here.
-	if (m_initSex)
-		initSex::apply(pop);
 #ifndef OPTIMIZED
 	UINT gSz = m_value[0].size();
 	for (size_t v = 1; v < m_value.size(); ++v)
