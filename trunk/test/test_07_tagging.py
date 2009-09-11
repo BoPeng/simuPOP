@@ -47,10 +47,10 @@ class TestTagger(unittest.TestCase):
         pop.individual(0).setInfo(1, 'paternal_tag')
         pop.individual(50).setInfo(2, 'paternal_tag')
         simu = simulator(pop, randomMating())
-        # other mode include TAG_Maternal, TAG_Both
+        # other mode include mode=Maternal, TAG_Both
         simu.evolve(
             preOps = [initSex()],
-            ops = [inheritTagger(mode=TAG_Paternal)],
+            ops = [inheritTagger(mode=Paternal)],
             gen = 1)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
@@ -70,10 +70,10 @@ class TestTagger(unittest.TestCase):
         for ind in pop.individuals(1):
             ind.setInfo(2, 'paternal_tag')
         simu = simulator( pop, randomMating())
-        # other mode include TAG_Maternal, TAG_Both
+        # other mode include mode=Maternal, TAG_Both
         simu.evolve(
             preOps = [initSex()],
-            ops = [inheritTagger(mode=TAG_Paternal, output='>>inherit.tag')],
+            ops = [inheritTagger(mode=Paternal)],
             gen = 1
         )
         # we only know subpopulation 0 can not have tag 2
@@ -82,29 +82,8 @@ class TestTagger(unittest.TestCase):
             self.assertNotEqual( pop.individual(i,0).info('paternal_tag'), 2 )
         for i in range(pop.subPopSize(1)):
             self.assertNotEqual( pop.individual(i,1).info('paternal_tag'), 1 )
-        # the line has to be five 1 and 15 2's
-        self.assertEqual(open('inherit.tag').read(), '1\t'*50+'2\t'*150+'\n')
-        os.remove('inherit.tag')
 
-    def TestParentsTaggerToFile(self):
-        'Testing parents tagger saved to a file (FIXME)'
-        simu = simulator(population(size=[5,15], loci=[2,4]),
-            randomMating(numOffspring=2))
-        file = '>>parents.tag'
-        simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], gen = 10)
-        pop = simu.population(0)
-        ped = pedigree(pedfile = 'parents.tag')
-        return
-        ped.write('par_orig.tag')
-        ped.selectIndividuals([0, 1, 4, 5, 10, 12, 15, 18])
-        ped.write('par_sel.tag')
-        ped.markUnrelated()
-        ped.write('par_unrel.tag')
-        ped.removeUnrelated()
-        ped.write('par_removed.tag')
-        #os.remove('parents.tag')
-
-
+ 
     def testPyTagger(self):
         'Testing python tagger (pass trait from parents to offspring)'
         pop = population(size=[50,150], ploidy=2, loci=[2,4],
@@ -144,6 +123,7 @@ class TestTagger(unittest.TestCase):
                 ],
             end=10
         )
+        return
         ped = pedigree(pedfile='pedigree.dat')
         ped.loadInfo('affection.dat', 'affection')
         ped.saveInfo('aff1.dat', 'affection')

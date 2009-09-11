@@ -260,7 +260,7 @@ class TestMatingSchemes(unittest.TestCase):
         )
         ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, pedigreeMating(ped,
-            mendelianOffspringGenerator()))
+            offspringGenerator(mendelianGenoTransmitter())))
         simu.evolve(
             ops = [parentsTagger()],
             gen = 100
@@ -282,9 +282,9 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [.3, .7])
         simu = simulator(pop, homoMating(
             sequentialParentsChooser(),
-            selfingOffspringGenerator()))
+            offspringGenerator(selfingGenoTransmitter())))
         simu.evolve(
-            ops=[parentTagger()], 
+            ops=[parentsTagger(infoFields='parent_idx')], 
             gen=1)
 
     def testRandomParentsChooser(self):
@@ -295,9 +295,9 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [.2, .8])
         simu = simulator(pop, homoMating(
             randomParentChooser(),
-            selfingOffspringGenerator()))
+            offspringGenerator(selfingGenoTransmitter())))
         simu.evolve(
-            ops=[parentTagger()], 
+            ops=[parentsTagger(infoFields='parent_idx')], 
             gen=1)
 
     def testPyParentsChooserRetValue(self):
@@ -330,7 +330,7 @@ class TestMatingSchemes(unittest.TestCase):
             simu = simulator(pop,
                 homoMating(
                     pyParentsChooser(func),
-                    cloneOffspringGenerator()
+                    offspringGenerator(cloneGenoTransmitter())
                 )
             )
             simu.evolve(

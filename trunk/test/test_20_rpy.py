@@ -330,8 +330,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(Paternal, infoFields='x'),
+                inheritTagger(Maternal, infoFields='y'),
                 scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
                 #pause(),
             ],
@@ -352,8 +352,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields='x'),
+                inheritTagger(mode=Maternal, infoFields='y'),
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
                     main='Color, 300 points, left right does not mix'),
@@ -375,8 +375,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields='x'),
+                inheritTagger(mode=Maternal, infoFields='y'),
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     xlim = [0, 1],
@@ -398,7 +398,7 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
                 histPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2,
                 ),
@@ -421,8 +421,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 histPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_fld=['red', 'green'],
@@ -451,8 +451,8 @@ class TestRPy(unittest.TestCase):
             r.qqline(data)
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 qqPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_fld=['red', 'green'],
@@ -483,8 +483,8 @@ class TestRPy(unittest.TestCase):
             r.qqline(data)
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 infoPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     plotHook=qqplot, step=2
@@ -506,7 +506,7 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
                 boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
                 #pause(),
@@ -528,8 +528,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], step=2
                 ),
                 #pause(),
@@ -552,8 +552,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], 
                     subPops=[(0, 0), (0, 1)], style='quantile',
                     step=2, main='Boxplot with 2 fields x 2 subpops',
@@ -579,8 +579,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
                     step=2, col_fld=['yellow', 'green'],
@@ -604,8 +604,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
                     step=2, horizontal_sp=[True, False],
@@ -629,8 +629,8 @@ class TestRPy(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
-                inheritTagger(TAG_Paternal, infoFields=['x']),
-                inheritTagger(TAG_Maternal, infoFields=['y']),
+                inheritTagger(mode=Paternal, infoFields=['x']),
+                inheritTagger(mode=Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,
                     step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],
