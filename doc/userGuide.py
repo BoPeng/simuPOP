@@ -1078,7 +1078,7 @@ simu = simulator(population(100, ploidy=1, loci=[5, 5], ancGen=1,
     randomSelection())
 simu.evolve(
     preOps = [initByFreq([0.3, 0.7])],
-    ops = [parentTagger()],
+    ops = [parentsTagger(infoFields='parent_idx')],
     gen = 5
 )
 pop = simu.extract(0)
@@ -1274,7 +1274,7 @@ simu = simulator(population(100, loci=5*3, infoFields='parent_idx'),
 simu.evolve(
     preOps = [initByFreq([0.2]*5)],
     ops = [
-        parentTagger(),
+        parentsTagger(infoFields='parent_idx'),
         dumper(structure=False, stage=PrePostMating, max=5)],
     gen = 1
 )
