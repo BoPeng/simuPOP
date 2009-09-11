@@ -1999,7 +1999,7 @@ Details:
 
 Usage:
 
-    idTagger(startID=1, begin=0, end=-1, step=1, at=[],
+    idTagger(startID=0, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=\"ind_id\")
 
 Details:
@@ -3088,6 +3088,90 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::initInfo "
+
+Function form:
+
+    InitInfo
+
+Details:
+
+    This operator initializes given information fields with a sequence
+    of values, or a user-provided function such as random.random.
+
+"; 
+
+%feature("docstring") simuPOP::initInfo::initInfo "
+
+Usage:
+
+    initInfo(values, stage=PreMating, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+
+Details:
+
+    Create an operator that initialize individual information fields
+    infoFields using a sequence of values or a user-defined function.
+    If a list of values are given, it will be used sequentially for
+    all individuals. The values will be reused if its length is less
+    than the number of individuals. The values will be assigned
+    repeatedly regardless of subpopulation boundaries. If a Python
+    function is given, it will be called, without any argument,
+    whenever a value is needed. If a list of (virtual) subpopulation
+    is specified in parameter subPop, only individuals in these
+    subpopulations will be initialized.
+
+"; 
+
+%feature("docstring") simuPOP::initInfo::~initInfo "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~initInfo()
+
+"; 
+
+%feature("docstring") simuPOP::initInfo::clone "
+
+Description:
+
+    deep copy of an initInfo operator.
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::initInfo::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the initInfo
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::initInfo::apply "
+
+Description:
+
+    apply this operator to population pop
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
 %feature("docstring") simuPOP::initSex "
 
 Function form:
@@ -3121,7 +3205,9 @@ Details:
     Female], individuals will be assigned Male and Female
     successively. Parameter maleFreq is ignored if sex is given. If a
     list of (virtual) subpopulation is specified in parameter subPop,
-    only individuals in these subpopulations will be initialized.
+    only individuals in these subpopulations will be initialized. Note
+    that the sex sequence, if used, is assigned repeatedly regardless
+    of subpopulation boundaries.
 
 "; 
 

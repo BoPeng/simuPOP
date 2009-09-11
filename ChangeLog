@@ -27,6 +27,7 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Remove tagger. Expand and document inheritTagger.
   - CHG: Remove parentTagger and tidy up parentsTagger.
   - NEW: Add pedigreeTagger.
+  - NEW: Add operator initInfo and its function form InitInfo.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

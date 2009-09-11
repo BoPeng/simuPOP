@@ -784,6 +784,13 @@ initSexRef
 
 
 \backslash
+initInfoRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 initByFreqRef
 \end_layout
 
@@ -1507,6 +1514,13 @@ simuPOPDumpRef
 
 \backslash
 simuPOPInitSexRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitInfoRef
 \end_layout
 
 \begin_layout Plain Layout

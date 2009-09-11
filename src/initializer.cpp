@@ -31,11 +31,12 @@ bool initSex::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
-	if (subPops.empty())
+	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
+	size_t idx = 0;
 	for (; sp != sp_end; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
@@ -45,8 +46,46 @@ bool initSex::apply(population & pop)
 			for (; ind.valid(); ++ind)
 				ind->setSex(GetRNG().randUniform01() < m_maleFreq ? Male : Female);
 		else
-			for (size_t idx = 0; ind.valid(); ++ind, ++idx)
+			for (; ind.valid(); ++ind, ++idx)
 				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
+	}
+	return true;
+}
+
+
+bool initInfo::apply(population & pop)
+{
+	vectoru infoIdx(infoSize());
+
+	if (infoIdx.empty())
+		return true;
+
+	for (size_t i = 0; i < infoIdx.size(); ++i)
+		infoIdx[i] = pop.infoIdx(infoField(i));
+
+	subPopList subPops = applicableSubPops();
+
+	if (subPops.allAvail())
+		subPops.useSubPopsFrom(pop);
+
+	subPopList::iterator sp = subPops.begin();
+	subPopList::iterator sp_end = subPops.end();
+	size_t idx = 0;
+	const vectorf & values = m_values.elems();
+
+	for (; sp != sp_end; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp, IteratableInds);
+		IndIterator ind = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		size_t numValues = m_values.size();
+		for (; ind.valid(); ++ind, ++idx) {
+			for (size_t i = 0; i < infoIdx.size(); ++i) {
+				if (values.empty())
+					ind->setInfo(m_values.func() (PyObj_As_Double, "()"), infoIdx[i]);
+				else
+					ind->setInfo(values[idx % numValues], infoIdx[i]);
+			}
+		}
 	}
 	return true;
 }
