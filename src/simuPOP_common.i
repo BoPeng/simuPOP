@@ -147,29 +147,19 @@ extern "C"
 
 namespace std
 {
-    // used in invidiaul.h
-    %template()            pair<UINT, UINT>;
-    // used in populaiton.h
-    %template()            pair<UINT, ULONG>;
-    %template()            vector<Allele>;
-
-//#ifndef LONGALLELE
-    %template()         vector<UINT>;
-//#endif
-
+    %template()         pair<UINT, UINT>;
+    %template()         pair<UINT, ULONG>;
+    %template()         vector<Allele>;
     %template()         vector<long int>;
     %template()         vector<ULONG>;
     %template()         vector<InfoType>;
     %template()         vector<double>;
     %template()         vector<string>;
-
     %template()         pair<string, double>;
     %template()         map<string, double>;
     %template()         map<int, int>;
-
     %template()         pair<ULONG, ULONG>;
     %template()         vector<pair<ULONG, ULONG> >;
-
     %template()         vector< vector<long int> >;
     %template()         vector< vector<double> >;
 }

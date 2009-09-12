@@ -3214,7 +3214,7 @@ PyObject * ModuleInfo()
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
     // maxAllele
-    PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyInt_FromLong(ModuleMaxAllele));
+    PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
     // limits
     PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));

@@ -269,7 +269,7 @@ public:
 		          reps, subPops, infoFields), m_k(k)
 	{
 #ifndef BINARYALLELE
-		if (m_k > ModuleMaxAllele + 1)
+		if (m_k > 1 && static_cast<ULONG>(m_k - 1) > ModuleMaxAllele)
 			throw ValueError("maxAllele exceeds population max allele.");
 #endif
 	}
