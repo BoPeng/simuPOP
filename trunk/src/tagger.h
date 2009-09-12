@@ -43,9 +43,14 @@ public:
 	/** Create an \c idTagger that assign a unique ID for each individual it is
 	 *  applied to. The IDs are created sequentially and are stored in an
 	 *  information field specified in parameter \e infoFields (default to
-	 *  \c ind_id). A \e startID can be specified.
+	 *  \c ind_id). A \e startID needs to be specified, which should be larger
+     *  than the largest ID in the parental generation. Because the information
+     *  field is supposed to record a unique ID for the whole population, and
+     *  because the IDs are increasingly assigned, this operator will raise
+     *  a \c RuntimeError if parental IDs are the same, or are larger than
+     *  the ID to be assigned to an offspring.
 	 */
-	idTagger(ULONG startID = 0, int begin = 0, int end = -1, int step = 1,
+	idTagger(ULONG startID, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
@@ -72,12 +77,7 @@ public:
 	 *  apply the \c idTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                       individual * dad = NULL, individual * mom = NULL)
-	{
-		offspring->setInfo(m_id++, infoField(0));
-		return true;
-	}
-
+	                       individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of an \c idTagger
 	virtual baseOperator * clone() const

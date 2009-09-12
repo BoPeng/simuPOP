@@ -27,6 +27,23 @@
 
 namespace simuPOP {
 
+bool idTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+                     individual * dad, individual * mom)
+{
+    UINT idx = pop.infoIdx(infoField(0));
+
+    DBG_FAILIF(dad != NULL && dad->info(idx) >= m_id, RuntimeError,
+        "Paternal ID is larger than or equal to offspring ID (wrong startID?).");
+    DBG_FAILIF(mom != NULL && mom->info(idx) >= m_id, RuntimeError,
+        "Matental ID is larger than or equal to offspring ID (wrong startID?).");
+    DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
+        "Parental IDs are not unique (forgot initInfo?)");
+
+	offspring->setInfo(m_id++, idx);
+	return true;
+}
+
+
 bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {

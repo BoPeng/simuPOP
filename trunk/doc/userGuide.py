@@ -2391,10 +2391,10 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-pop = population(5, loci=[200, 400], infoFields='ind_id')
+pop = population(1000, loci=[1000, 2000], infoFields='ind_id')
 simu = simulator(pop, randomMating(ops = [
     idTagger(1000),
-    recombinator(rates=0.001, output='>', infoFields='ind_id')])
+    recombinator(rates=0.001, output='>>rec.log', infoFields='ind_id')])
 )
 simu.evolve(
     preOps = [
@@ -2402,8 +2402,16 @@ simu.evolve(
         initInfo(range(1000), infoFields='ind_id'),
     ],
     ops = [],
-    gen = 2
+    gen = 5
 )
+rec = open('rec.log')
+# print the first three lines of the log file
+print ''.join(rec.readlines()[:4])
+#begin_ignore
+rec.close()
+import os
+os.remove('rec.log')
+#end_ignore
 #end_file
 
 #begin_file log/matrixMutator.py
