@@ -598,7 +598,7 @@ Details:
 
 Usage:
 
-    cloneGenoTransmitter(begin=0, end=-1, step=1, at=[],
+    cloneGenoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
@@ -1582,8 +1582,8 @@ Details:
 
 Usage:
 
-    genoTransmitter(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    genoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -1772,8 +1772,8 @@ Details:
 
 Usage:
 
-    haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    haplodiploidGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4046,8 +4046,8 @@ Details:
 
 Usage:
 
-    mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    mendelianGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4352,8 +4352,9 @@ Details:
 
 Usage:
 
-    mitochondrialGenoTransmitter(chroms=[], begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    mitochondrialGenoTransmitter(output=\"\", chroms=[], begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -7968,8 +7969,8 @@ Note:
 Usage:
 
     recombinator(rates=[], intensity=-1, loci=AllAvail,
-      convMode=NoConversion, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      convMode=NoConversion, output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8669,8 +8670,8 @@ Details:
 
 Usage:
 
-    selfingGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    selfingGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 

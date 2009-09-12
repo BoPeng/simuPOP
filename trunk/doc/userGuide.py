@@ -2384,6 +2384,28 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/trackRec.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+pop = population(5, loci=[200, 400], infoFields='ind_id')
+simu = simulator(pop, randomMating(ops = [
+    idTagger(1000),
+    recombinator(rates=0.001, output='>', infoFields='ind_id')])
+)
+simu.evolve(
+    preOps = [
+        initSex(),
+        initInfo(range(1000), infoFields='ind_id'),
+    ],
+    ops = [],
+    gen = 2
+)
+#end_file
+
 #begin_file log/matrixMutator.py
 #begin_ignore
 import simuOpt

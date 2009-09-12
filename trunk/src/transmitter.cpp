@@ -362,14 +362,14 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 
 recombinator::recombinator(const floatList & rates, double intensity,
 	const uintList & loci, const floatList & convMode,
-	int begin, int end, int step, const intList & at,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	:
-	genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
+	genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
 	m_bt(GetRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-	m_algorithm(0)
+	m_algorithm(0), m_debugOutput(NULL)
 {
 	DBG_FAILIF(m_convMode.empty(), ValueError,
 		"Please specify a conversion mode");
@@ -584,6 +584,10 @@ void recombinator::transmitGenotype(const individual & parent,
 	m_bt.trial();
 	int curCp = m_bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
 	curCp = forceFirstBegin == 0 ? 0 : (forceSecondBegin == 0 ? 1 : curCp);
+
+	if (m_debugOutput)
+		*m_debugOutput << offspring.intInfo(infoField(0)) << ' ' << parent.intInfo(infoField(0)) << ' ' << curCp;
+
 	// the last one does not count, because it determines
 	// the initial copy of paternal chromosome
 	m_bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
@@ -610,13 +614,20 @@ void recombinator::transmitGenotype(const individual & parent,
 			// look ahead
 			if (convCount == 0) {             // conversion ...
 				if (forceFirstBegin > 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
-				    && gt + 1 < static_cast<size_t>(forceFirstEnd))
+				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
+					if (curCp != 0 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
 					curCp = 0;
-				else if (forceSecondBegin > 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
-				         && gt + 1 < static_cast<size_t>(forceSecondEnd))
+				} else if (forceSecondBegin > 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
+				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
+					if (curCp != 1 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
 					curCp = 1;
-				else
+				} else {
 					curCp = (curCp + 1) % 2;
+					if (m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+				}
 				//
 				// no pending conversion
 				convCount = -1;
@@ -625,15 +636,21 @@ void recombinator::transmitGenotype(const individual & parent,
 				DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
 				if (forceFirstBegin >= 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
 				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
+					if (curCp != 0 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
 					curCp = 0;
 					convCount = -1;
 				} else if (forceSecondBegin >= 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
 				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
+					if (curCp != 1 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
 					curCp = 1;
 					convCount = -1;
 				} else if (convCount < 0 && m_bt.trialSucc(bl)) {
 					// recombination (if convCount == 0, a conversion event is ending)
 					curCp = (curCp + 1) % 2;
+					if (m_debugOutput)
+						*m_debugOutput << ' ' << gt;
 					// if conversion happens
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
@@ -660,6 +677,8 @@ void recombinator::transmitGenotype(const individual & parent,
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
 			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
 			//
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
@@ -677,6 +696,8 @@ void recombinator::transmitGenotype(const individual & parent,
 						for (; gt < convEnd; ++gt)
 							off[gt] = cp[curCp][gt];
 						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
 					}
 					// no pending conversion
 					convCount = -1;
@@ -685,6 +706,8 @@ void recombinator::transmitGenotype(const individual & parent,
 				for (; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
 				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
 				//
 				// conversion event for this recombination event
 				if (withConversion &&
@@ -704,6 +727,8 @@ void recombinator::transmitGenotype(const individual & parent,
 				for (; gt < convEnd; ++gt)
 					off[gt] = cp[curCp][gt];
 				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
 			}
 		}
 		for (; gt < gtEnd; ++gt)
@@ -720,6 +745,8 @@ void recombinator::transmitGenotype(const individual & parent,
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 			gt = gtEnd;
 			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
 			    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
@@ -734,6 +761,8 @@ void recombinator::transmitGenotype(const individual & parent,
 						copyGenotype(cp[curCp] + gt, off + gt, convCount);
 						gt = convEnd;
 						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
 					}
 					// no pending conversion
 					convCount = -1;
@@ -742,6 +771,8 @@ void recombinator::transmitGenotype(const individual & parent,
 				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 				gt = gtEnd;
 				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
 				// conversion event for this recombination event
 				if (withConversion &&
 				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
@@ -760,11 +791,15 @@ void recombinator::transmitGenotype(const individual & parent,
 				copyGenotype(cp[curCp] + gt, off + gt, convCount);
 				gt = convEnd;
 				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
 			}
 		}
 		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
 #endif
 	}
+	if (m_debugOutput)
+		*m_debugOutput << '\n';
 	// handle special chromosomes
 	if (m_chromX > 0) {
 		if (offspring.sex() == Female) {
@@ -792,8 +827,15 @@ bool recombinator::applyDuringMating(population & pop,
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
 		"Uninitialized recombinator");
 
+	if (infoSize() == 1 && !noOutput() )
+		m_debugOutput = &getOstream(pop.dict());
+	else
+		m_debugOutput = NULL;
 	transmitGenotype(*(mom ? mom : dad), *offspring, 0);
 	transmitGenotype(*(dad ? dad : mom), *offspring, 1);
+
+	if (m_debugOutput)
+		closeOstream();
 	return true;
 }
 
