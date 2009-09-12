@@ -168,7 +168,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 #endif
 	// shrink allele names
 	for (size_t i = 0; i < m_alleleNames.size(); ++i)
-		if (m_alleleNames[i].size() > ModuleMaxAllele + 1)
+		if (!m_alleleNames[i].empty() && static_cast<UINT>(m_alleleNames[i].size() - 1) > ModuleMaxAllele)
 			m_alleleNames[i].resize(ModuleMaxAllele + 1);
 	//
 	bool allEmpty = true;
