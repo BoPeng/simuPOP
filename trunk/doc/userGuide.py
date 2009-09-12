@@ -3163,6 +3163,43 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/parentsTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+#end_file
+
+#begin_file log/idTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+#end_file
+
+#begin_file log/pedigreeTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+#end_file
+
+#begin_file log/pyTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+#end_file
+
+
 #begin_file log/backTrajectory.py
 #begin_ignore
 import simuOpt
@@ -3861,36 +3898,6 @@ hlp = open('log/simuCDCV.hlp', 'w')
 print >> hlp, out.read()
 hlp.close()
 #end_ignore
-#end_file
-
-#begin_file log/recombinator.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
-#end_ignore
-simu = simulator(population(4, loci=[4, 5, 6], 
-    infoFields=['father_idx', 'mother_idx']),
-    randomMating())
-simu.evolve(
-    preOps = [
-        initSex(),
-        initByFreq([.2, .2, .4, .2]),
-        dumper(structure=False)
-    ],
-    ops = [parentsTagger()],
-    postOps = [ dumper(structure=False)],
-    gen=1
-)
-simu.evolve(
-    ops = [
-        parentsTagger(),
-        recombinator(rates=[1, 1, 1], loci=[2, 6, 10])
-    ],
-    postOps = [dumper(structure=False)],
-    gen=1
-)
 #end_file
 
 #begin_file log/mapSelector.py
