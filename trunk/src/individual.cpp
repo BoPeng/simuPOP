@@ -203,7 +203,7 @@ void individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 }
 
 
-void individual::setGenotype(vectora geno, int p, int chrom)
+void individual::setGenotype(const vectora & geno, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");

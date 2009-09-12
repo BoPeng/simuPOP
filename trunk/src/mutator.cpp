@@ -270,7 +270,7 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 
 	if (m_maxAllele == 0)
 		m_maxAllele = ModuleMaxAllele;
-	if (m_maxAllele > ModuleMaxAllele)
+	if (static_cast<ULONG>(m_maxAllele) > ModuleMaxAllele)
 		throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
 
 	DBG_FAILIF(!m_mutStep.func().isValid() && m_mutStep.empty(), ValueError,

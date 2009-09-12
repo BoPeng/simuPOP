@@ -474,7 +474,7 @@ PyObject * population::genotype(vspID vsp)
 }
 
 
-void population::setGenotype(vectora geno, vspID subPop)
+void population::setGenotype(const vectora & geno, vspID subPop)
 {
 	sortIndividuals();
 	if (!subPop.valid()) {

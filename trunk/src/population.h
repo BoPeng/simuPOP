@@ -813,7 +813,7 @@ public:
 	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-	void setGenotype(vectora geno, vspID subPop = vspID());
+	void setGenotype(const vectora & geno, vspID subPop = vspID());
 
 	//@}
 

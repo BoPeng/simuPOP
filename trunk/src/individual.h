@@ -219,7 +219,7 @@ public:
 	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno, int ploidy = -1, int chrom = -1);
+	void setGenotype(const vectora & geno, int ploidy = -1, int chrom = -1);
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>
