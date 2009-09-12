@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -11953,6 +11953,7 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 offspringID parentID startingPloidy rec1 rec2 ....
 \end_layout
 
@@ -11964,10 +11965,12 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 1000 641 1 300 496 1200
 \end_layout
 
 \begin_layout Plain Layout
+
 1000 256 0 199
 \end_layout
 
@@ -15796,22 +15799,6 @@ subPops
 \end_layout
 
 \begin_layout Subsection
-Setting an unique individual ID operator 
-\family typewriter
-idTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Subsection
 Inheritance tagger (operator 
 \family typewriter
 inheritTagger
@@ -15914,12 +15901,77 @@ parentsTagger
 )
 \end_layout
 
+\begin_layout Standard
+A parents tagger is used to record the indexes of parents (in the parental
+ population) in the information fields (default to 
+\family typewriter
+father_idx
+\family default
+, 
+\family typewriter
+mother_idx
+\family default
+) of their offspring.
+ These indexes provide a way to track down an individuals parents, offspring
+ and consequently all relatives in a multi-generation population.
+ 
+\end_layout
+
 \begin_layout Subsection
 Tracking pedigrees (operator 
+\family typewriter
+idTagger
+\family default
+ and 
 \family typewriter
 pedigreeTagger
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pedigreeTagger
+\family default
+ is similar to a 
+\family typewriter
+parentsTagger
+\family default
+ in that it records parental information in offspring's information fields.
+ However, instead of indexes of parents, this operator records an unique
+ ID of each parent to make it easier to study and reconstruct a complete
+ pedigree of a whole evolutionary process.
+ 
+\end_layout
+
+\begin_layout Standard
+The IDs of individuals are usually stored in an information field named
+ ind_id.
+ An operator 
+\family typewriter
+idTagger
+\family default
+ is usually used to assign ID to each offspring.
+ This operator takes a starting ID number and assign IDs to new individuals
+ consecutively.
+ In order to use this operator, it is important to initialize the 
+\family typewriter
+ind_id
+\family default
+ field of the initial parental population properly so that no duplicate
+ ID exists in a population and offspring ID is always larger than their
+ parents.
+ As a matter of fact, 
+\family typewriter
+idTagger
+\family default
+ will check for such cases and raise an error if the uniqueness of IDs is
+ violated.
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsection
