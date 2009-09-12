@@ -47,10 +47,10 @@ class genoTransmitter : public baseOperator
 public:
 	/** Create a base genotype transmitter.
 	 */
-	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	genoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator("", DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
 	}
@@ -129,10 +129,10 @@ public:
 	 *  specified, genotypes are copied maternally. Parameters \e subPops,
 	 *  and \e infoFields are ignored.
 	 */
-	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	cloneGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
+		genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -174,10 +174,10 @@ public:
 	 *  Autosomes and sex chromosomes are handled but customized chromosomes
 	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
 	 */
-	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	mendelianGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
+		genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
 		m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
@@ -241,10 +241,10 @@ public:
 	 *  Cutsomized chromosomes are not handled. Parameters \e subPops and
 	 *  \e infoFields are ignored.
 	 */
-	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	selfingGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields)
+		: mendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -288,10 +288,10 @@ public:
 	 *  haplodiploid population. Parameters \e subPops and \e infoFields
 	 *  are ignored.
 	 */
-	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	haplodiploidGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields),
+		: mendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
 		m_copier()
 	{
 	}
@@ -341,11 +341,11 @@ public:
 	 *  length and the same number of loci. This operator transmits these
 	 *  chromosomes randomly from the female parent to offspring of both sexes.
 	 */
-	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
+	mitochondrialGenoTransmitter(const stringFunc & output = "", const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
+		: genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
 	}
@@ -488,7 +488,7 @@ public:
 	 */
 	recombinator(const floatList & rates = vectorf(), double intensity = -1,
 		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
-		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
@@ -564,6 +564,8 @@ private:
 
 	/// algorithm to use (frequent or seldom recombinations)
 	int m_algorithm;
+
+	ostream * m_debugOutput;
 };
 
 }

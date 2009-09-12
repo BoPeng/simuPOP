@@ -9838,6 +9838,7 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 InitInfo(pop, values=[1, 2, 3], infoFields='x', subPops=[(0,1)])
 \end_layout
 
@@ -9895,6 +9896,7 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 InitInfo(pop, lambda : random.randint(2, 5), infoFields=['x', 'y'])
 \end_layout
 
@@ -11843,7 +11845,18 @@ lstparams "caption={Gene conversion},label={conversion}"
 \end_layout
 
 \begin_layout Subsection
-Tracing all recombination events **
+Tracking all recombination events **
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/trackRec.log"
+lstparams "caption={Tracking all recombination events},label={trackRec}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

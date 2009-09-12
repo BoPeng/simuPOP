@@ -2076,7 +2076,7 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 
 	// if using cerr, return it.
 	if (ISSETFLAG(m_flags, m_flagUseDefault))
-		return cout;
+		return std::cout;
 
 	if (ISSETFLAG(m_flags, m_flagUseFunc)) {
 		m_filePtr = new ostringstream();
