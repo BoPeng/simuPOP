@@ -475,6 +475,20 @@ public:
 	 *  Review Genetics, 2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of
 	 *  the gene conversion probability.
 	 *
+     *  A \c recombinator usually does not send any output. However, if an
+     *  information field is given (parameter \e infoFields), this operator
+     *  will treat this information field as an unique ID of parents and
+     *  offspring and output all recombination events in the format of
+     *  <tt>offspring_id parent_id starting_ploidy loc1 loc2 ... </tt> where
+     *  \c starting_ploidy indicates which homologous copy genotype replication
+	 *  starts from (\c 0 or \c 1), \c loc1, \c loc2 etc are loci after which
+	 *  recombination events happens. If there are multiple chromosomes on the
+	 *  genome, you will see a lot of (fake) recombination events because of
+	 *  independent segregation of chromosomes. Such a record will be generated
+	 *  for each set of homologous chromosomes so an diploid offspring will
+	 *  have two lines of output. Note that individual IDs need to be set
+	 *  (using a \c idTagger operator) before this recombinator is applied.
+	 *
 	 *  \note conversion tract length is usually short, and is estimated to be
 	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
 	 *      bp. This is usually not enough to convert, for example, two adjacent
@@ -488,7 +502,8 @@ public:
 	 */
 	recombinator(const floatList & rates = vectorf(), double intensity = -1,
 		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
-		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
