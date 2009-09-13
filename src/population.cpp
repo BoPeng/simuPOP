@@ -346,6 +346,41 @@ int population::__cmp__(const population & rhs) const
 }
 
 
+individual & population::indByID(ULONG id, int ancGen, const string & idField)
+{
+	UINT idx = infoIdx(idField);
+	DBG_FAILIF(ancGen != -1 && static_cast<UINT>(ancGen) > m_ancestralPops.size(), IndexError,
+		"Ancestray generation " + toStr(ancGen) + " does not exist");
+	
+	for (UINT gen = 0; gen <= ancestralGens(); ++gen) {
+		// only search specific generation
+		if (ancGen != -1 && static_cast<UINT>(ancGen) != gen)
+			continue;
+		vector<individual> * inds = NULL;
+		// search in current, not necessarily the present generation
+		if (gen == m_curAncestralGen)
+			inds = &m_inds;
+		else
+			inds = &m_ancestralPops[gen == 0 ? m_curAncestralGen -1 : gen - 1].m_inds;
+		// first try our luck
+		ULONG startID = (*inds)[0].intInfo(idx);
+		if (idx >= startID && startID + (*inds).size() > id) {
+			individual & ind = (*inds)[id - startID];
+			if (static_cast<ULONG>(ind.intInfo(idx)) == id)
+				return ind;
+		}
+		// now we have to search all individuals
+		for (size_t i = 0; i < (*inds).size(); ++i) {
+			if (static_cast<ULONG>((*inds)[i].intInfo(idx)) == id)
+				return (*inds)[i];
+		}
+	}
+	throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+	// this is just to suppress a warning.
+	return m_inds[0];
+}
+
+
 individual & population::ancestor(ULONG idx, UINT gen, vspID vsp)
 {
 	DBG_FAILIF(vsp.isVirtual(), ValueError,

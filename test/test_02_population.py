@@ -1050,6 +1050,18 @@ class TestPopulation(unittest.TestCase):
         Stat(pop, numOfMale=True, vars='numOfFemale_sp')
         self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemale)
 
+    def testIndByID(self):
+        'Testing population::indByID()'
+        pop = self.getPop(size=[200]*4, ancGen=3, infoFields=['ind_id'])
+        TagID(pop)
+        for i in range(400):
+            id = random.randint(0, 800*4-1)
+            ind = pop.indByID(id)
+            self.assertEqual(ind.info('ind_id'), id)
+        self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
+        self.assertRaises(exceptions.IndexError, pop.indByID, 5, ancGen=0)
+        self.assertRaises(exceptions.IndexError, pop.indByID, 3000, ancGen=3)
+ 
 
 if __name__ == '__main__':
     unittest.main()

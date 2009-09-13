@@ -452,7 +452,7 @@ public:
 	 */
 	//@{
 
-	/** Return a refernce to individual \e ind in the population
+	/** Return a refernce to individual \e idx in the population
 	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
 	 * <tt>subPop=sp</tt>). Virtual subpopulation is not supported.
 	 * <group>4-ind</group>
@@ -472,6 +472,16 @@ public:
 		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
+
+	/** Return a reference to individual with \e id stored in information
+	 *  field \e idField (default to \c ind_id). This function by default
+	 *  search the present and all ancestral generations (\c ancGen=-1),
+	 *  but you can specify a specific generation if you know which
+	 *  generation to search (\c ancGen=0 for present generation, and so on
+	 *  ). If no individual with \e id is found,an \c IndexError will be
+	 *  raised.
+	 */
+	individual & indByID(ULONG id, int ancGen=-1, const string & idField="ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
