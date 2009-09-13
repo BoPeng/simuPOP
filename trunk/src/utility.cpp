@@ -118,7 +118,7 @@ namespace simuPOP {
 // debug codes in a bitset.
 std::bitset<DBG_CODE_LENGTH> g_dbgCode;
 
-char * g_debugCodes[] = {
+const char * g_debugCodes[] = {
 	"DBG_ALL",                  // all debug information
 	"DBG_GENERAL",              // general information, small warnings etc
 	"DBG_UTILITY",              // utility classes and modules
