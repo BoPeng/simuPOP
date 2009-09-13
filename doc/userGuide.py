@@ -3221,6 +3221,7 @@ simu.evolve(
 ped = open('pedigree.txt')
 print ''.join(ped.readlines()[100:105])
 #begin_ignore
+ped.close()
 import os
 os.remove('pedigree.txt')
 #end_ignore
