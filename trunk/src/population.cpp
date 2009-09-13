@@ -349,9 +349,10 @@ int population::__cmp__(const population & rhs) const
 individual & population::indByID(ULONG id, int ancGen, const string & idField)
 {
 	UINT idx = infoIdx(idField);
+
 	DBG_FAILIF(ancGen != -1 && static_cast<UINT>(ancGen) > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(ancGen) + " does not exist");
-	
+
 	for (UINT gen = 0; gen <= ancestralGens(); ++gen) {
 		// only search specific generation
 		if (ancGen != -1 && static_cast<UINT>(ancGen) != gen)
@@ -361,7 +362,7 @@ individual & population::indByID(ULONG id, int ancGen, const string & idField)
 		if (gen == m_curAncestralGen)
 			inds = &m_inds;
 		else
-			inds = &m_ancestralPops[gen == 0 ? m_curAncestralGen -1 : gen - 1].m_inds;
+			inds = &m_ancestralPops[gen == 0 ? m_curAncestralGen - 1 : gen - 1].m_inds;
 		// first try our luck
 		ULONG startID = (*inds)[0].intInfo(idx);
 		if (idx >= startID && startID + (*inds).size() > id) {

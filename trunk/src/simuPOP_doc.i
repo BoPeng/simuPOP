@@ -6165,9 +6165,27 @@ Usage:
 
 Details:
 
-    Return a refernce to individual ind in the population (if
+    Return a refernce to individual idx in the population (if
     subPop=[], default) or a subpopulation (if subPop=sp). Virtual
     subpopulation is not supported.
+
+"; 
+
+%feature("docstring") simuPOP::population::indByID "
+
+Usage:
+
+    x.indByID(id, ancGen=-1, idField=\"ind_id\")
+
+Details:
+
+    Return a reference to individual with id stored in information
+    field idField (default to ind_id). This function by default search
+    the present and all ancestral generations (ancGen=-1), but you can
+    specify a specific generation if you know which generation to
+    search (ancGen=0 for present generation, ancGen=1 for parental
+    generation, and so on). If no individual with id is found,an
+    IndexError will be raised.
 
 "; 
 

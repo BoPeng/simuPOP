@@ -384,6 +384,12 @@ pop.individual(5).info('x')         # absolute index
 pop.individual(0, 1).info('x')      # relative index
 # 'ancestor' can still access the 'present' (generation 0) generation
 pop.ancestor(5, 0).info('x')
+# access individual by ID
+pop.addInfoFields('ind_id')
+TagID(pop)
+[ind.intInfo('ind_id') for ind in pop.individuals()]
+# access individual by ID. Note that individual 12 is in the parental generation
+pop.indByID(12).info('x')
 #end_file
 
 #begin_file log/batchAccess.py
