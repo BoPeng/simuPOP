@@ -1074,11 +1074,15 @@ def PointMutate(pop, *args, **kwargs):
     pointMutator(*args, **kwargs).apply(pop)
 
 def Stat(pop, *args, **kwargs):
-    '''Apply operator ``stat`` with specified parameters to population ``pop`` and
-    return the local namespace of ``pop`` (``pop.vars()``).'''
+    '''Apply operator ``stat`` with specified parameters to population ``pop``.
+    Resulting statistics could be accessed from the local namespace of ``pop``
+    using functions ``pop.vars()`` or ``pop.dvars()``'''
     stat(*args, **kwargs).apply(pop)
-    return pop.vars()
 
+def TagID(pop, *args, **kwargs):
+    '''Apply operator ``idTagger`` to population ``pop`` to assign a unique ID
+    to all individuals in the population.'''
+    idTagger(*args, **kwargs).apply(pop)
 
 def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
     mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)

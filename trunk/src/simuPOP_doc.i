@@ -1986,12 +1986,25 @@ Usage:
 
 %feature("docstring") simuPOP::idTagger "
 
+Function form:
+
+    TagID
+
 Details:
 
     An idTagger gives a unique ID for each individual it is applies
     to. These ID can be used to uniquely identify an individual in a
     multi-generational population and be used to reliably reconstruct
-    a pedigree.
+    a pedigree.  To ensure uniqueness across populations, a single
+    source of ID is used for this operator. Individual IDs are
+    assigned consecutively starting from 0. If you would like to reset
+    the sequence or start from a different number, you can call the
+    reset(startID) function of any idTagger.  An idTagger is usually
+    used during-mating to assign ID to each offspring. However, if it
+    is applied directly to a population, it will assign unique IDs to
+    all individuals in this population. This property is usually used
+    in the preOps parameter of function simulator.evolve to assign
+    initial ID to a population.
 
 "; 
 
@@ -1999,15 +2012,21 @@ Details:
 
 Usage:
 
-    idTagger(startID=0, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=\"ind_id\")
+    idTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, output=\"\", infoFields=\"ind_id\")
 
 Details:
 
-    Create an idTagger that assign a unique ID for each individual it
+    Create an idTagger that assign an unique ID for each individual it
     is applied to. The IDs are created sequentially and are stored in
     an information field specified in parameter infoFields (default to
-    ind_id). A startID can be specified.
+    ind_id). This operator is considered a during-mating operator but
+    it can be used to set ID for all individuals of a population when
+    it is directly applied to the population. Because the information
+    field is supposed to record a unique ID for the whole population,
+    and because the IDs are increasingly assigned, this operator will
+    raise a RuntimeError if parental IDs are the same, or are larger
+    than the ID to be assigned to an offspring.
 
 "; 
 
@@ -2029,6 +2048,31 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::idTagger::reset "
+
+Usage:
+
+    x.reset(startID=0)
+
+Details:
+
+    Reset the global individual ID number so that idTaggers will start
+    from id (default to 0) again.
+
+"; 
+
+%feature("docstring") simuPOP::idTagger::apply "
+
+Usage:
+
+    x.apply(pop)
+
+Details:
+
+    Set an unique ID to all individuals with zero ID.
 
 "; 
 
@@ -5528,9 +5572,9 @@ Details:
 
 Usage:
 
-    pedigreeTagger(idField=\"ind_id\", stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      output=\"\", infoFields=[\"father_id\", \"mother_id\"])
+    pedigreeTagger(idField=\"ind_id\", output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[\"father_id\", \"mother_id\"])
 
 Details:
 
@@ -5542,8 +5586,13 @@ Details:
     idField (default to ind_id) field of the parents. Value -1 will be
     assigned if any of the parent is missing. If only one information
     field is given, it will be used to record the ID of the first
-    valid parent (father if both pedigree are valid). This operator
-    ignores parameters stage, output, and subPops.
+    valid parent (father if both pedigree are valid).  This operator
+    by default does not send any output but will output the ID of
+    offspring, father, and mother if a valid output stream is
+    specified. The output will be in the format of off_id father_id
+    mother_id. father_id or mother_id will be ignored if only one
+    parent is involved. This operator ignores parameter stage, and
+    subPops.
 
 "; 
 
@@ -8023,7 +8072,21 @@ Details:
     conversion to recombination events in the literature. This ratio
     varies greatly from study to study, ranging from 0.1 to 15 (Chen
     et al, Nature Review Genetics, 2007). This translate to
-    0.1/0.9~0.1 to 15/16~0.94 of the gene conversion probability.
+    0.1/0.9~0.1 to 15/16~0.94 of the gene conversion probability.  A
+    recombinator usually does not send any output. However, if an
+    information field is given (parameter infoFields), this operator
+    will treat this information field as an unique ID of parents and
+    offspring and output all recombination events in the format of
+    offspring_id parent_id starting_ploidy loc1 loc2 ... where
+    starting_ploidy indicates which homologous copy genotype
+    replication starts from (0 or 1), loc1, loc2 etc are loci after
+    which recombination events happens. If there are multiple
+    chromosomes on the genome, you will see a lot of (fake)
+    recombination events because of independent segregation of
+    chromosomes. Such a record will be generated for each set of
+    homologous chromosomes so an diploid offspring will have two lines
+    of output. Note that individual IDs need to be set (using a
+    idTagger operator) before this recombinator is applied.
 
 Note:
 

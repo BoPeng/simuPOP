@@ -2393,13 +2393,13 @@ GetRNG().setSeed(12345)
 #end_ignore
 pop = population(1000, loci=[1000, 2000], infoFields='ind_id')
 simu = simulator(pop, randomMating(ops = [
-    idTagger(1000),
+    idTagger(),
     recombinator(rates=0.001, output='>>rec.log', infoFields='ind_id')])
 )
 simu.evolve(
     preOps = [
         initSex(),
-        initInfo(range(1000), infoFields='ind_id'),
+        idTagger(),
     ],
     ops = [],
     gen = 5
@@ -3178,7 +3178,22 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
+idTagger().reset(0)
 #end_ignore
+simu = simulator(
+    population(10, infoFields='ind_id', ancGen=1),
+    randomSelection())
+simu.evolve(
+    preOps = idTagger(),
+    ops = idTagger(),
+    gen = 1
+)
+pop = simu.extract(0)
+print [ind.intInfo('ind_id') for ind in pop.individuals()]
+pop.useAncestralGen(1)
+print [ind.intInfo('ind_id') for ind in pop.individuals()]
+TagID(pop) # re-assign ID
+print [ind.intInfo('ind_id') for ind in pop.individuals()]
 #end_file
 
 #begin_file log/pedigreeTagger.py
@@ -3187,6 +3202,27 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
+idTagger().reset(0)
+#end_ignore
+simu = simulator(
+    population(100, infoFields=['ind_id', 'father_id', 'mother_id']),
+    randomMating())
+simu.evolve(
+    preOps = [
+        initSex(),
+        idTagger()
+    ],
+    ops = [
+        idTagger(),
+        pedigreeTagger(output=">>pedigree.txt")
+    ],
+    gen = 100
+)
+ped = open('pedigree.txt')
+print ''.join(ped.readlines()[100:105])
+#begin_ignore
+import os
+os.remove('pedigree.txt')
 #end_ignore
 #end_file
 
