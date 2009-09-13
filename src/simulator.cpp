@@ -409,8 +409,6 @@ vectoru simulator::evolve(const opList & ops,
 bool simulator::apply(const opList & ops, bool dryrun)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
-		if (ops[i]->canApplyDuringMating())
-			throw ValueError("During-mating operator has to be called by a simulator.");
 		// check compatibility of operators
 		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
