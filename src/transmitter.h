@@ -475,12 +475,12 @@ public:
 	 *  Review Genetics, 2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of
 	 *  the gene conversion probability.
 	 *
-     *  A \c recombinator usually does not send any output. However, if an
-     *  information field is given (parameter \e infoFields), this operator
-     *  will treat this information field as an unique ID of parents and
-     *  offspring and output all recombination events in the format of
-     *  <tt>offspring_id parent_id starting_ploidy loc1 loc2 ... </tt> where
-     *  \c starting_ploidy indicates which homologous copy genotype replication
+	 *  A \c recombinator usually does not send any output. However, if an
+	 *  information field is given (parameter \e infoFields), this operator
+	 *  will treat this information field as an unique ID of parents and
+	 *  offspring and output all recombination events in the format of
+	 *  <tt>offspring_id parent_id starting_ploidy loc1 loc2 ... </tt> where
+	 *  \c starting_ploidy indicates which homologous copy genotype replication
 	 *  starts from (\c 0 or \c 1), \c loc1, \c loc2 etc are loci after which
 	 *  recombination events happens. If there are multiple chromosomes on the
 	 *  genome, you will see a lot of (fake) recombination events because of

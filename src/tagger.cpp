@@ -27,19 +27,46 @@
 
 namespace simuPOP {
 
-bool idTagger::applyDuringMating(population & pop, RawIndIterator offspring,
-                     individual * dad, individual * mom)
+
+ULONG g_indID = 0;
+
+
+void idTagger::reset(ULONG startID)
 {
-    UINT idx = pop.infoIdx(infoField(0));
+	g_indID = startID;
+}
 
-    DBG_FAILIF(dad != NULL && dad->info(idx) >= m_id, RuntimeError,
-        "Paternal ID is larger than or equal to offspring ID (wrong startID?).");
-    DBG_FAILIF(mom != NULL && mom->info(idx) >= m_id, RuntimeError,
-        "Matental ID is larger than or equal to offspring ID (wrong startID?).");
-    DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
-        "Parental IDs are not unique (forgot initInfo?)");
 
-	offspring->setInfo(m_id++, idx);
+bool idTagger::apply(population & pop)
+{
+	DBG_DO(DBG_TAGGER, cerr << "Applying idTagger with current ID " << g_indID << endl);
+
+	UINT idx = pop.infoIdx(infoField(0));
+
+	int curGen = pop.curAncestralGen();
+	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
+		pop.useAncestralGen(depth);
+		for (ULONG i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
+			pop.ind(i).setInfo(g_indID++, idx);
+	}
+	pop.useAncestralGen(curGen);
+	return true;
+}
+
+
+bool idTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+                                 individual * dad, individual * mom)
+{
+	UINT idx = pop.infoIdx(infoField(0));
+
+	DBG_FAILIF(dad != NULL && dad->info(idx) >= g_indID, RuntimeError,
+		"Paternal ID is larger than or equal to offspring ID (wrong startID?).");
+	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,
+		"Matental ID is larger than or equal to offspring ID (wrong startID?).");
+	DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
+		"Parental IDs are not unique (forgot initInfo?)");
+
+	offspring->setInfo(g_indID++, idx);
 	return true;
 }
 
@@ -125,6 +152,17 @@ bool pedigreeTagger::applyDuringMating(population & pop, RawIndIterator offsprin
 		offspring->setInfo(dad == NULL ? -1 : dad->info(m_idField), infoField(0));
 		offspring->setInfo(mom == NULL ? -1 : mom->info(m_idField), infoField(1));
 	}
+
+	if (noOutput())
+		return true;
+
+	ostream & out = getOstream(pop.dict());
+	out << offspring->info(m_idField);
+	if (dad != NULL)
+		out << ' ' << dad->info(m_idField);
+	if (mom != NULL)
+		out << ' ' << mom->info(m_idField);
+	out << '\n';
 	return true;
 }
 

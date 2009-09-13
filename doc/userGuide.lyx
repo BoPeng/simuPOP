@@ -15915,14 +15915,104 @@ mother_idx
  These indexes provide a way to track down an individuals parents, offspring
  and consequently all relatives in a multi-generation population.
  
+\series bold
+This operator may become obsolete with the introduction of ID based pedigree-tra
+cking techniques
+\series default
+.
+\end_layout
+
+\begin_layout Subsection
+Assign unique IDs to individuals (operator 
+\family typewriter
+idTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Although it is possible to use generation number and individual indexes
+ to locate individuals in an evolving population, an unique I D makes it
+ much easier to identify individuals when migration is involved, and to
+ analyze an evolutionary process outside of simuPOP.
+ An operator 
+\family typewriter
+idTagger
+\family default
+ (and its function form 
+\family typewriter
+TagID
+\family default
+) is provided by simuPOP to assign an unique ID to all individuals during
+ evolution.
+\end_layout
+
+\begin_layout Standard
+The IDs of individuals are usually stored in an information field named
+ 
+\family typewriter
+ind_id
+\family default
+.
+ To ensure uniqueness across populations, a single source of ID is used
+ for this operator.
+ Individual IDs are assigned consecutively starting from 0.
+ If you would like to reset the sequence or start from a different number,
+ you can call the 
+\family typewriter
+reset(startID)
+\family default
+ function of any 
+\family typewriter
+idTagger
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+idTagger
+\family default
+ is usually used during-mating to assign ID to each offspring.
+ However, if it is applied directly to a population, it will assign unique
+ IDs to all individuals in this population.
+ This property is usually used in the 
+\family typewriter
+preOps
+\family default
+ parameter of function 
+\family typewriter
+simulator.evolve
+\family default
+ to assign initial ID to a population.
+ For example, three 
+\family typewriter
+idTagger
+\family default
+ operators are used in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "idTagger"
+
+\end_inset
+
+ to assign IDs to individuals before, during and after evolution.
+ Although different operators are used, different IDs are assigned to individual
+s.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/idTagger.log"
+lstparams "caption={Assign unique IDs to individuals},label={idTagger}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Tracking pedigrees (operator 
-\family typewriter
-idTagger
-\family default
- and 
 \family typewriter
 pedigreeTagger
 \family default
@@ -15942,32 +16032,56 @@ parentsTagger
  However, instead of indexes of parents, this operator records an unique
  ID of each parent to make it easier to study and reconstruct a complete
  pedigree of a whole evolutionary process.
- 
+ The default information fields are 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+.
 \end_layout
 
 \begin_layout Standard
-The IDs of individuals are usually stored in an information field named
- ind_id.
- An operator 
+By default, the 
+\family typewriter
+pedigreeTagger
+\family default
+ does not produce any output.
+ However, if a valid output string (or function) is specified, it will output
+ the ID of offspring and all available parents.
+ Such information is enough to reconstruct the complete pedigree of an evolution
+ary process.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pedigreeTagger"
+
+\end_inset
+
+ demonstrates how to output the complete pedigree of an evolutionary process.
+ Note that 
 \family typewriter
 idTagger
 \family default
- is usually used to assign ID to each offspring.
- This operator takes a starting ID number and assign IDs to new individuals
- consecutively.
- In order to use this operator, it is important to initialize the 
+ has to be applied before 
 \family typewriter
-ind_id
+pedigreeTagger
 \family default
- field of the initial parental population properly so that no duplicate
- ID exists in a population and offspring ID is always larger than their
- parents.
- As a matter of fact, 
-\family typewriter
-idTagger
-\family default
- will check for such cases and raise an error if the uniqueness of IDs is
- violated.
+ so that IDs of offspring could be assigned before they are outputted.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pedigreeTagger.log"
+lstparams "caption={Output a complete pedigree of an evolutionary process},label={pedigreeTagger}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

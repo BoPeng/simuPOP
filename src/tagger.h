@@ -33,29 +33,42 @@
 
 namespace simuPOP {
 
+
 /** An idTagger gives a unique ID for each individual it is applies to. These
  *  ID can be used to uniquely identify an individual in a multi-generational
  *  population and be used to reliably reconstruct a pedigree.
+ *
+ *  To ensure uniqueness across populations, a single source of ID is used for
+ *  this operator. Individual IDs are assigned consecutively starting from 0.
+ *  If you would like to reset the sequence or start from a different number,
+ *  you can call the \c reset(startID) function of any \c idTagger.
+ *
+ *  An \c idTagger is usually used during-mating to assign ID to each offspring.
+ *  However, if it is applied directly to a population, it will assign unique
+ *  IDs to all individuals in this population. This property is usually used
+ *  in the \c preOps parameter of function \c simulator.evolve to assign
+ *  initial ID to a population.
+ *  <funcForm>TagID</funcForm>
  */
 class idTagger : public baseOperator
 {
 public:
-	/** Create an \c idTagger that assign a unique ID for each individual it is
-	 *  applied to. The IDs are created sequentially and are stored in an
+	/** Create an \c idTagger that assign an unique ID for each individual it
+	 *  is applied to. The IDs are created sequentially and are stored in an
 	 *  information field specified in parameter \e infoFields (default to
-	 *  \c ind_id). A \e startID needs to be specified, which should be larger
-     *  than the largest ID in the parental generation. Because the information
-     *  field is supposed to record a unique ID for the whole population, and
-     *  because the IDs are increasingly assigned, this operator will raise
-     *  a \c RuntimeError if parental IDs are the same, or are larger than
-     *  the ID to be assigned to an offspring.
+	 *  \c ind_id). This operator is considered a during-mating operator but it
+	 *  can be used to set ID for all individuals of a population when it is
+	 *  directly applied to the population. Because the information field is
+	 *  supposed to record a unique ID for the whole population, and because
+	 *  the IDs are increasingly assigned, this operator will raise a
+	 *  \c RuntimeError if parental IDs are the same, or are larger than the ID
+	 *  to be assigned to an offspring.
 	 */
-	idTagger(ULONG startID, int begin = 0, int end = -1, int step = 1,
+	idTagger(int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
-		m_id(startID)
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields)
 	{
 		DBG_FAILIF(infoFields.elems().size() != 1, ValueError,
 			"One and only one information field is needed for idTagger.");
@@ -73,11 +86,19 @@ public:
 	}
 
 
+	/** Reset the global individual ID number so that idTaggers will start
+	 *  from id (default to 0) again.
+	 */
+	void reset(ULONG startID = 0);
+
+	/** Set an unique ID to all individuals with zero ID. */
+	virtual bool apply(population & pop);
+
 	/** CPPONLY
 	 *  apply the \c idTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                       individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of an \c idTagger
 	virtual baseOperator * clone() const
@@ -86,8 +107,6 @@ public:
 	}
 
 
-private:
-	ULONG m_id;
 };
 
 
@@ -231,13 +250,18 @@ public:
 	 *  (default to \c ind_id) field of the parents. Value \c -1 will be
 	 *  assigned if any of the parent is missing. If only one information field
 	 *  is given, it will be used to record the ID of the first valid parent
-	 *  (father if both pedigree are valid). This operator ignores parameters
-	 *  \e stage, \e output, and \e subPops.
+	 *  (father if both pedigree are valid).
+	 *
+	 *  This operator by default does not send any output but will output the
+	 *  ID of offspring, father, and mother if a valid output stream is
+	 *  specified. The output will be in the format of
+	 *  <tt>off_id father_id mother_id</tt>. \c father_id or \c mother_id will
+	 *  be ignored if only one parent is involved. This operator ignores
+	 *  parameter \e stage, and \e subPops.
 	 */
-	pedigreeTagger(const string & idField = "ind_id", int stage = DuringMating,
+	pedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringFunc & output = "",
 		const stringList & infoFields = stringList("father_id", "mother_id")) :
 		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_idField(idField)
