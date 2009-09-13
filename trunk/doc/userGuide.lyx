@@ -11851,103 +11851,55 @@ Tracking all recombination events **
 \begin_layout Standard
 To understand the evolutionary history of a simulated population, it is
  sometimes needed to track down all ancestral recombination events.
- Example 
+ In order to do that, you will first need to give an unique ID to each individua
+l so that you could make sense of the dumped recombination events.
+ Although this is routinely done using operator 
+\family typewriter
+idTagger
+\family default
+ (see example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "trackRec"
+reference "idTagger"
 
 \end_inset
 
- demonstrates how this feature works, but some explanations are needed.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/trackRec.log"
-lstparams "caption={Tracking all recombination events},label={trackRec}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In order to identify a recombination event, it is necessary to uniquely
- identify all ancestors in a population.
- An information field 
-\family typewriter
-ind_id
-\family default
- is used for this purpose.
-\end_layout
-
-\begin_layout Itemize
-A population is created with information field 
-\family typewriter
-ind_id
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-Before evolution, an 
-\family typewriter
-initInfo
-\family default
- operator is used to assign an unique ID (0 ~ 999) to each individual.
-\end_layout
-
-\begin_layout Itemize
-For each mating event, an 
+ for details), it is a little tricky here because you need to place the
+ during-mating 
 \family typewriter
 idTagger
 \family default
- is used to assign an ID to each offspring.
- Because individuals start from ID 1000, the 
-\family typewriter
-idTagger
-\family default
- operator is created with this starting ID.
- Note that operator 
-\family typewriter
-idTagger
-\family default
- uses information field 
-\family typewriter
-ind_id
-\family default
- by default.
-\end_layout
-
-\begin_layout Standard
-A 
+ before a 
 \family typewriter
 recombinator
 \family default
- is used in 
+ in the 
 \family typewriter
-randomMating
+ops
 \family default
- to replace the default Mendelian genotype transmitter.
- Because this opertor needs to know an offspring's ID before it could output
- a recombination event, it is placed after the 
+ parameter of a mating scheme so that offspring ID could be set and outputted
+ correctly.
+\end_layout
+
+\begin_layout Standard
+After setting the name of the ID field (usually 
 \family typewriter
-idTagger
+ind_id
 \family default
- operator.
- Recombination events are outputted to an output stream specified by parameter
- 
+) to the 
 \family typewriter
-output
+infoField
 \family default
- if an ID field is given in parameter 
+ parameter of a 
 \family typewriter
-infoFields
+recombinator
 \family default
-.
- Two lines will be outputted for each diploid individual (for each homologous
- copy of chromosomes) in the format of 
+, it can dump a list of recombinatin events (loci after which recombinatin
+ events happened) for each set of homologous chromosomes of an offspring.
+ Each line is in the format of
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -11959,31 +11911,25 @@ offspringID parentID startingPloidy rec1 rec2 ....
 
 \end_inset
 
-For example, in the following two lines, 
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-1000 641 1 300 496 1200
-\end_layout
-
-\begin_layout Plain Layout
-
-1000 256 0 199
-\end_layout
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "trackRec"
 
 \end_inset
 
-individual 1000 gets its paternal chromosomes from individual 641.
- The offspring genotype is copied first from the second paternal chromosome
- and then first, second, and first, after loci 300, 496 and 1200 respectively.
- Its maternal chromosomes are copied from individual 256 with only one recombina
-tion event.
- Note that simuPOP treats free segregation of chromosomes as recombination
- between chromosomes with rate 0.5 so you are likely to see a large number
- of such events when there are multiple chromosomes.
+ gives an example how the output looks like.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/trackRec.log"
+lstparams "caption={Tracking all recombination events},label={trackRec}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -13854,7 +13800,7 @@ That is to say, we would mutate at a mutation rate
 \end_layout
 
 \begin_layout Subsection
-Infinite-sites model and other simulation techiniques **
+Infinite-sites model and other simulation techniques **
 \end_layout
 
 \begin_layout Standard
