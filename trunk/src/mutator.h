@@ -233,7 +233,7 @@ public:
 
 
 	///
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::matrix mutator";
 	}
@@ -291,7 +291,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c kamMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::k-allele model mutator K=" +
 		       toStr(m_k) + ">" ;
@@ -364,7 +364,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c smmMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::step-wise mutation model mutator>" ;
 	}
@@ -426,7 +426,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c pyMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::python mutator>" ;
 	}
@@ -491,7 +491,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c mixedMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::mixed mutator>" ;
 	}
@@ -570,7 +570,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c context-dependentMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::context-dependent mutator>" ;
 	}
@@ -626,7 +626,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c pointMutator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::point mutator>" ;
 	}

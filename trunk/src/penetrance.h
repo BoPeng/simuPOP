@@ -121,7 +121,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the penetrance operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::penetrance>" ;
 	}
@@ -177,7 +177,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the map penetrance operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::penetrance::map penetrance>" ;
 	}
@@ -249,7 +249,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the multi-allele penetrance operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::penetrance::multiple-alleles penetrance>" ;
 	}
@@ -318,7 +318,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the multiple-loci penetrance operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::penetrance::multiple-loci penetrance>" ;
 	}
@@ -412,7 +412,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the Python penetrance operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::penetrance::python penetrance>" ;
 	}

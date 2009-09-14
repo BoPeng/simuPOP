@@ -80,7 +80,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c inheritTagger
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::id tagger>" ;
 	}
@@ -150,7 +150,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c inheritTagger
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::inherit tagger>" ;
 	}
@@ -217,7 +217,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c parentsTagger
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::parents tagger>" ;
 	}
@@ -281,7 +281,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c pedigreeTagger
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pedigree tagger>" ;
 	}
@@ -339,7 +339,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c pyTagger
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pyTagger>" ;
 	}

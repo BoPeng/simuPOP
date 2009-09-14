@@ -73,7 +73,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c terminateIf terminator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::terminateIf>";
 	}

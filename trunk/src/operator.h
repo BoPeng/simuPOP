@@ -674,7 +674,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c pause operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pause simulation>" ;
 	}
@@ -734,7 +734,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c noneOp operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::None>" ;
 	}
@@ -788,7 +788,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c ifElse operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::if else operator >";
 	}
@@ -839,7 +839,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c ticToc operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::tic toc performance monitor>" ;
 	}
@@ -894,7 +894,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c setAncestralDepth operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::setAncestralDepth>";
 	}
@@ -950,7 +950,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c turnOnDebug operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::turnOnDebug>";
 	}
@@ -1001,7 +1001,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c turnOffDebug operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::turnOffDebug>";
 	}
@@ -1077,7 +1077,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c pyOperator operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pyOperator>";
 	}

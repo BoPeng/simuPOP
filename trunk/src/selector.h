@@ -109,7 +109,7 @@ public:
 	bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the selector
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selector>" ;
 	}
@@ -167,7 +167,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// used by Python print function to print out the general information of the map selector
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selector::map selector>" ;
 	}
@@ -246,7 +246,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// used by Python print function to print out the general information of the \c maSelector
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selector::multiple-alleles selector>" ;
 	}
@@ -315,7 +315,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// used by Python print function to print out the general information of the \c mlSelector
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selector::multiple-loci selector>" ;
 	}
@@ -403,7 +403,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// used by Python print function to print out the general information of the \c pySelector
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selector::python selector>" ;
 	}
