@@ -571,73 +571,70 @@ class simuProgress:
 
 
 class trajectory:
-    '''
-    A trajectory object returned by class trajectorySimulator(...) with several user-
-    friendly built-in functions.
-    Function func() could refer to allele frequencies in any simulated generation
-    in cases of single/multiple loci with single population/multiple subpopulations. 
-    Function printTraj() shows allele frequencies of all generations from the
-    simulation.
-    Function plot() illustrates allele frequencies of all generations based on numbers
-    of loci and variable number of subpopulations. For example, at generation i, if
-    there are x loci and y subpopulations, x * y dots showing corresponded allele
-    frequencies at any different locus or subpopulation will appear in the plot for i.
-    '''
-    def __init__(self, endGen, nLoci, beginGen=None):
-        '''
-        beginGen and endGen  are inclusive. (frequency for endGen exists)
-        parameters description:
-        
-        traj
-            built-in dictionary which records allele frequencies at multiple
-            loci within all subpopulations and has generation numbers as keys.
-            
-        beginGen
-            passed in value which represents the beginning generation
-            number in the forward trajectory. Default None in backward
-            trajectory.
+    '''A ``trajectory`` object contains frequencies of one or more loci in one
+    or more subpopulations over several generations. It is usually returned by
+    member functions of class ``trajectorySimulator`` or equivalent global
+    functions ``ForwardTrajectory`` and ``BackwardTrajectory``.
 
-        endGen
-            passed in value which is the ending generation number in
-            forward trajectory and namely the current generation number
-            in backward trajectory where simulations begin.
+    The ``trajectory`` object provides several member functions to facilitate
+    the use of trajectory-simulation techiniques. For example,
+    ``trajectory.func()`` returns a trajectory function that can be provided
+    directly to a ``controlledOffspringGenerator``; ``trajectory.mutators()``
+    provides a list of ``pointMutator`` that insert mutants at the right
+    generations to initialize a trajectory.
 
-        nLoci
-            passed in value of number of loci
+    For more information about trajectory simulation techniques and related
+    controlled random mating scheme, please refer to the simuPOP user's guide,
+    and Peng et al (PLoS Genetics 3(3), 2007).
+    '''
+    def __init__(self, endGen, nLoci):
+        '''Create a ``trajectory`` object of alleles at *nLoci* loci with
+        ending generation *endGen*. *endGen* is the generation when expected
+        allele frequencies are reached after mating. Therefore, a trajectory
+        for 1000 generations should have ``endGen=999``.
         '''
         self.traj = {}
-        self.beginGen = beginGen
         self.endGen = endGen
         self.nLoci = nLoci
 
     def func(self):
-        '''
-        Return a Python function that returns allele frequencies for each locus.
-        If there are multiple subpopulations, allele frequencies are arranged 
-        in the order of loc0_sp0, loc0_sp1, ..., loc1_sp0, loc1_sp1, ... and so
-        on. 
+        '''Return a Python function that returns allele frequencies for each
+        locus at specified loci. If there are multiple subpopulations, allele
+        frequencies are arranged in the order of ``loc0_sp0``, ``loc0_sp1``,
+        ..., ``loc1_sp0``, ``loc1_sp1``, ... and so on. The returned function
+        can be supplied directly to the ``freqFunc`` parameter of a controlled
+        random mating scheme (``controlledRandomMating``) or a homogeneous
+        mating scheme that uses a controlled offspring generator
+        (``controlledOffspringGenerator``).
         '''
         def trajFunc(gen):
-            if not self.traj.has_key(gen):
-                return [0.] * self.nLoci
-            return self.traj[gen]
+            return self.freq(gen)
         return trajFunc
     
-    def mutators(self):
+    def mutators(self, inds=0, allele=1):
+        '''Return a list of ``pointMutator`` operators that introduce mutants
+        at the beginning of simulated trajectories. These mutators should be
+        added to the ``ops`` parameter of ``simulator.evolve`` function to
+        introduce a mutant at the beginning of a generation with zero allele
+        frequency before mating, and a positive allele frequency after mating.
         '''
-        Return a list of operators that introduce point mutations at simulated
-        generations.
-        '''
+        gens = self.traj.keys()
+        gens.sort()
+        if len(gens) == 0:
+            return []
         mut = []
-        for gen in self.traj.keys()[:-1]:
-            curNSP = len(self.traj[gen]) / self.nLoci
-            nextNSP = len(self.traj[gen + 1]) / self.nLoci
-            if curNSP == nextNSP:
-                for loc in range(self.nLoci):
-                    for sp in range(curNSP):
-                        if (self.traj[gen][sp + loc * curNSP] == 0
-                            and self.traj[gen + 1][sp + loc * nextNSP] > 0):
-                            mut.append(pointMutator(inds=0, loci=loc, allele=1, subPops=sp))
+        for gen in gens[:-1]:
+            # we may need to introduce mutant at each subpopulation.
+            nSP = len(self.traj[gen]) / self.nLoci
+            # no introduction of mutants with population merge or split.
+            if nSP != len(self.traj[gen + 1]) / self.nLoci:
+                continue
+            for loc in range(self.nLoci):
+                for sp in range(nSP):
+                    if (self.traj[gen][sp + loc * nSP] == 0
+                        and self.traj[gen + 1][sp + loc * nSP] > 0):
+                        mut.append(pointMutator(inds=inds, loci=loc, allele=allele,
+                            subPops=sp, stage=PreMating, at=gen + 1))
         return mut
        
     def freq(self, gen):
@@ -645,7 +642,7 @@ class trajectory:
         Return frequencies at generation gen. If the trajectory is empty, it
         returns a list of 0s for n Loci.
         '''
-        if len(self.traj) == 0:
+        if not self.traj.has_key(gen):
             return [0.] * self.nLoci
         return self.traj[gen]
 
