@@ -3240,6 +3240,31 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
+import random
+def passXY(values):
+    '''Pass parental information fields to offspring'''
+    x1, y1, x2, y2 = values
+    x = (x1 + x2) / 2. + random.normalvariate(0.1, 0.1)
+    y = (y1 + y2) / 2. + random.normalvariate(0.1, 0.1)
+    return x,y
+
+simu = simulator(
+    population(1000, loci=[10], infoFields=['x', 'y']),
+    randomMating())
+simu.evolve(
+    preOps = [
+        initSex(),
+        initInfo(random.random, infoFields=['x', 'y'])
+    ],
+    ops = [
+        pyTagger(func=passXY, infoFields=['x', 'y']),
+        stat(meanOfInfo=['x', 'y'], varOfInfo=['x', 'y']),
+        pyEval(r"'x: %.2f (%.2f), y: %.2f (%.2f)\n' % (meanOfInfo['x'],"
+            "varOfInfo['x'], meanOfInfo['y'], varOfInfo['y'])")
+    ],
+    gen = 5
+)
+    
 #end_file
 
 
