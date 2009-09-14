@@ -232,8 +232,9 @@ class TestUtility(unittest.TestCase):
             del pop
         os.remove('test.bin')
 
-    # Test Backward and Forward Trajectories
     def testSimuCase1(self):
+        'Testing trajectory simulation with no selection'
+        # Test Backward and Forward Trajectories
         # 1: independent case when freq = 0 in backward simulation
         # and [0, 1, 0] in forward simulation. nLoci = 3, constant nSubPop = 3:
         def Nt(gen):
@@ -241,13 +242,15 @@ class TestUtility(unittest.TestCase):
         def fitness(gen):
             return [1] * 3
         trajSimulator = trajectorySimulator(N=Nt, fitness=fitness, nLoci = 3)
-        traj = trajSimulator.simuBackward(genEnd=3000, freq=0, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
-                     restartIfFail = False, maxAttempts=1000, logger=None)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=0, minMutAge = 0,
+                maxMutAge = 100000, ploidy = 2,
+                restartIfFail = False, maxAttempts=1000, logger=None)
         self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 9)
         traj1 = trajSimulator.simuForward(freq = [0, 1, 0], destFreq = [[0,1]]*3, genEnd = 100)
         self.assertEqual(traj1.freq(random.randint(0, 100)), [0,0,0,1,1,1,0,0,0])        
 
     def testSimuCase2(self):
+        'Testing trajectory simulation with interaction'
         # 2: dependent case when freq = 0 in backward simulation
         # and [0, 1] in forward simulation. nLoci = 2, constant nSubPop = 3:
         def Nt(gen):
@@ -261,6 +264,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(traj1.freq(random.randint(0, 200)), [0,0,0,1,1,1])
         
     def testSimuCase3(self):
+        'Testing trajectory simulation wtih natural selection'
         # 3: nLoci = 2, fitness = [1, 0.0001, 0.0001, 1, 0.0002, 0.0002], freq = [0.5, 0.3],
         # no subpopulation. If fitness for disease alleles are close to 0, backward simulation 
         # should reach maxAttempts and freq should hit 0 before genEnd in forward simulation.
@@ -274,6 +278,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(traj1.freq(200), [0, 0])
         
     def testSimuCase4(self):
+        'Testing trajectory simulation without selection'
         # 4: In backward simulation, given a normal set of parameters, if current freq of
         # allele a is very small, the first element of traj[] should be 1/(ploidy * N) and
         # the second element of traj[] should be larger than 1/(ploidy * N):
@@ -291,6 +296,7 @@ class TestUtility(unittest.TestCase):
             raise ValueError('fail in test number 4 of testSimuBackward.')
         
     def testSimuCase5(self):
+        'Testing backward trajectory simulator'
         # 5: test given variable number of subpopulations, if allele frequencies would be
         # recorded in the correct form. nLoci = 3.
         # In a backward simulation, 3 subPops merge when gen = genEnd - 5 in backward sense.
@@ -330,6 +336,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj1.freq(296)), 3)
 
     def testSimuCase6(self):
+        'Testing backward trajectory simulator'
         # 6: given a normal set of parameters, plot a backward trajectory and
         # another forward trajectory for the case of single locus without
         # subpopulations.
@@ -340,6 +347,7 @@ class TestUtility(unittest.TestCase):
         #traj1.plot()
         
     def testSimuCase7(self):
+        'Testing backward trajectory simulator'
         # 7: given a normal set of parameters, considering changable subpopulation
         # sizes with mulitiple loci, plot a backward trajectory and another
         # forward trajectory. nSubPops = 3, nLoci = 2.
