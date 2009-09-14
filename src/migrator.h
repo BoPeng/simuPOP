@@ -163,7 +163,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c migrator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::migrator>" ;
 	}
@@ -264,7 +264,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c splitSubPops operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::split subpopulation>" ;
 	}
@@ -332,7 +332,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c mergeSubPops operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::merge subpopulations>" ;
 	}
@@ -405,7 +405,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c resizeSubPops operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::resize subpopulations>" ;
 	}

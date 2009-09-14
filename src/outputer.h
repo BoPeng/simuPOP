@@ -78,7 +78,7 @@ public:
 	}
 
 
-	virtual string __repr__()
+	string __repr__()
 	{
 		string reprStr;
 
@@ -143,7 +143,7 @@ public:
 	};
 
 	///
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::dumper>" ;
 	}
@@ -217,7 +217,7 @@ public:
 	virtual bool apply(population & pop);
 
 	///
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::save population>" ;
 	}

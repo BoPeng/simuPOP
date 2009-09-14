@@ -88,7 +88,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the initSex
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::initSex>";
 	}
@@ -148,7 +148,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the initInfo
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::initInfo>";
 	}
@@ -205,7 +205,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the operator \c initByFreq
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::initByFreq>";
 	}
@@ -267,7 +267,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the operator \c initByValue
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::initByValue>";
 	}

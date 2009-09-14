@@ -107,7 +107,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c pyEval operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pyEval>";
 	}
@@ -160,7 +160,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the \c pyExec operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pyExec>";
 	}
@@ -246,7 +246,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c infoEval operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::infoEval>";
 	}
@@ -337,7 +337,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c infoExec operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::infoExec>";
 	}
@@ -1198,7 +1198,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c stat operator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::statistics>";
 	}

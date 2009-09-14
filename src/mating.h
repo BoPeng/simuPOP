@@ -841,7 +841,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the mating scheme
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::generic mating scheme>";
 	}
@@ -931,7 +931,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the Python mating scheme
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::pedigreeMating>";
 	}
@@ -1018,7 +1018,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the Python mating scheme
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::homoMating>";
 	}
@@ -1128,7 +1128,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the Python mating scheme
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::heteroMating>";
 	}

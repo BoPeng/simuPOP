@@ -85,7 +85,7 @@ public:
 	void copyChromosomes(const individual & parent, int parPloidy,
 		individual & offspring, int ploidy);
 
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::genoTransmitter>" ;
 	}
@@ -145,7 +145,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::cloneGenoTransmitter>" ;
 	}
@@ -191,7 +191,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::mendelianGenoTransmitter>" ;
 	}
@@ -257,7 +257,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::selfingGenoTransmitter>" ;
 	}
@@ -305,7 +305,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::haplodiploidGenoTransmitter>" ;
 	}
@@ -359,7 +359,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::mitochondrialGenoTransmitter>" ;
 	}
@@ -521,7 +521,7 @@ public:
 
 
 	/// used by Python print function to print out the general information of the recombinator
-	virtual string __repr__()
+	string __repr__()
 	{
 		return "<simuPOP::recombination>" ;
 	}
