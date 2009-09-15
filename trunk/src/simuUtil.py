@@ -611,12 +611,14 @@ class trajectory:
             return self.freq(gen)
         return trajFunc
     
-    def mutators(self, inds=0, allele=1):
+    def mutators(self, inds=0, allele=1, *args, **kwargs):
         '''Return a list of ``pointMutator`` operators that introduce mutants
         at the beginning of simulated trajectories. These mutators should be
         added to the ``ops`` parameter of ``simulator.evolve`` function to
         introduce a mutant at the beginning of a generation with zero allele
         frequency before mating, and a positive allele frequency after mating.
+        Other than default parameters ``inds=0`` and ``allele=1``, additional
+        parameters could be passed to point mutators.
         '''
         gens = self.traj.keys()
         gens.sort()
@@ -634,13 +636,13 @@ class trajectory:
                     if (self.traj[gen][sp + loc * nSP] == 0
                         and self.traj[gen + 1][sp + loc * nSP] > 0):
                         mut.append(pointMutator(inds=inds, loci=loc, allele=allele,
-                            subPops=sp, stage=PreMating, at=gen + 1))
+                            subPops=sp, at=gen + 1, *args, **kwargs))
         return mut
        
     def freq(self, gen):
-        '''
-        Return frequencies at generation gen. If the trajectory is empty, it
-        returns a list of 0s for n Loci.
+        '''Return frequencies of all loci at generation *gen* of the simulated
+        trajectory. Allele frequencies are assumed to be zero if *gen* is out
+        of range of the simulated trajectory.
         '''
         if not self.traj.has_key(gen):
             return [0.] * self.nLoci
@@ -665,15 +667,6 @@ class trajectory:
             self.traj[gen] = freq
         else:
             raise ValueError('please define freq as a single number or a list with specified number of elements.')
-
-    def printTraj(self):
-        '''
-        Print allele frequencies for all generations.
-        '''
-        gens = self.traj.keys()
-        gens.sort()
-        for gen in gens:
-            print '%d: %s' % (gen, self.traj[gen])
 
     def plot(self, filename=None, **kwargs):
         '''
@@ -1016,8 +1009,7 @@ class trajectorySimulator:
         generations where no subpopulation existed. 
         '''
         # initialize a trajectory
-        xt = trajectory(beginGen = genBegin, endGen = genEnd,
-                        nLoci = self.nLoci)
+        xt = trajectory(endGen = genEnd, nLoci = self.nLoci)
         xt.setFreq(freq, gen = genBegin, nSubPop = len(self._Nt(genBegin)))
         # begin at genBegin, go forward.
         gen = genBegin
