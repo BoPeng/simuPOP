@@ -636,7 +636,7 @@ class trajectory:
                     if (self.traj[gen][sp + loc * nSP] == 0
                         and self.traj[gen + 1][sp + loc * nSP] > 0):
                         mut.append(pointMutator(inds=inds, loci=loc, allele=allele,
-                            subPops=sp, at=gen + 1, *args, **kwargs))
+                            subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
         return mut
        
     def freq(self, gen):
