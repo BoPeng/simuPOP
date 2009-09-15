@@ -3241,30 +3241,34 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 import random
-def passXY(values):
+def randomMove(values):
     '''Pass parental information fields to offspring'''
-    x1, y1, x2, y2 = values
-    x = (x1 + x2) / 2. + random.normalvariate(0.1, 0.1)
-    y = (y1 + y2) / 2. + random.normalvariate(0.1, 0.1)
-    return x,y
+    x1, g1, x2, g2 = values
+    # shift right with high concentration of alleles... 
+    return x1 + random.normalvariate(g1 + g2, 0.1), 0
 
-simu = simulator(
-    population(1000, loci=[10], infoFields=['x', 'y']),
-    randomMating())
+pop = population(1000, loci=[1], infoFields=['x', 'g'])
+pop.setVirtualSplitter(genotypeSplitter(loci=0, alleles=[[0, 0], [0,1], [1, 1]]))
+simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [
         initSex(),
-        initInfo(random.random, infoFields=['x', 'y'])
+        initByFreq([0.5, 0.5]),
+        initInfo(random.random, infoFields='x')
     ],
     ops = [
-        pyTagger(func=passXY, infoFields=['x', 'y']),
-        stat(meanOfInfo=['x', 'y'], varOfInfo=['x', 'y']),
-        pyEval(r"'x: %.2f (%.2f), y: %.2f (%.2f)\n' % (meanOfInfo['x'],"
-            "varOfInfo['x'], meanOfInfo['y'], varOfInfo['y'])")
+        infoExec('g = ind.allele(0,0) + ind.allele(0,1)', exposeInd='ind',
+            stage=PreMating),
+        pyTagger(func=randomMove, infoFields=['x', 'g']),
+        stat(meanOfInfo='x', subPops=[(0,0), (0,1), (0,2)],
+            vars=['meanOfInfo_sp']),
+        pyEval(r"'x: %.2f (0, 0), %.2f (0, 1), %.2f (1, 1)\n' % "
+            "(subPop[(0,0)]['meanOfInfo']['x'], subPop[(0,1)]['meanOfInfo']['x'],"
+            "subPop[(0,2)]['meanOfInfo']['x'])")
     ],
     gen = 5
 )
-    
+
 #end_file
 
 
