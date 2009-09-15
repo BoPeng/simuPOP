@@ -432,7 +432,7 @@ public:
 
 
 	/// CPPONLY say something about active states
-	virtual string atRepr()
+	string atRepr()
 	{
 		if (ISSETFLAG(m_flags, m_flagAtAllGen))
 			return " at all generations";
@@ -462,9 +462,9 @@ public:
 
 
 	/// used by Python print function to print out the general information of the operator
-	virtual string __repr__()
+	string __repr__()
 	{
-		return "<simuPOP::operator> " ;
+		return "<simuPOP::operator>" ;
 	}
 
 
