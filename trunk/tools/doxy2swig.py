@@ -757,6 +757,7 @@ class Doxy2SWIG:
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Usage'] = self.content[-1]['Usage'].replace('self, ', '').replace('self)', ')')
+                self.content[-1]['Usage'] = re.sub(r'(<simuPOP::(\w+)>)', r'\2()', self.content[-1]['Usage'])
                 members = []
                 for key1, value1 in inspect.getmembers(value, inspect.isroutine):
                     if not visiblename(key1) or key1.startswith('_'):
@@ -769,6 +770,7 @@ class Doxy2SWIG:
                     member['Usage'] = key1 + inspect.formatargspec(
                         args, varargs, varkw, defaults)
                     member['Usage'] = member['Usage'].replace('self, ', '').replace('self)', ')')
+                    member['Usage'] = re.sub(r'(<simuPOP::(\w+)>)', r'\2()', member['Usage'])
                     member['Doc'] = getdoc(value1)
                     members.append(member)
                 self.content[-1]['Members'] = members
@@ -781,6 +783,7 @@ class Doxy2SWIG:
                 args, varargs, varkw, defaults = inspect.getargspec(value)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
+                self.content[-1]['Usage'] = re.sub(r'(<simuPOP::(\w+)>)', r'\2()', self.content[-1]['Usage'])
                 self.content[-1]['Description'] = getdoc(value)
                 # latex can not yet handle numbers in function name
                 self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] or \
