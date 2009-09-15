@@ -260,7 +260,10 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			// if there is no alleles
 			if (!hasAllele && expFreq[i] > 0.)
 				throw RuntimeError("No disease allele exists at generation "
-					+ toStr(pop.gen()) + ", but exp allele frequency is greater than 0.");
+					+ toStr(pop.gen()) + ", but expected allele frequency is greater than 0.");
+
+            DBG_WARNING(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
+                    + toStr(pop.gen()) + ", but expected allele frequency is zero.");
 
 			// calculate exp number of affected offspring in the next generation.
 			//
