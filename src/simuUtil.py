@@ -596,6 +596,15 @@ class trajectory:
         self.traj = {}
         self.endGen = endGen
         self.nLoci = nLoci
+       
+    def freq(self, gen):
+        '''Return frequencies of all loci at generation *gen* of the simulated
+        trajectory. Allele frequencies are assumed to be zero if *gen* is out
+        of range of the simulated trajectory.
+        '''
+        if not self.traj.has_key(gen):
+            return [0.] * self.nLoci
+        return self.traj[gen]
 
     def func(self):
         '''Return a Python function that returns allele frequencies for each
@@ -618,7 +627,7 @@ class trajectory:
         introduce a mutant at the beginning of a generation with zero allele
         frequency before mating, and a positive allele frequency after mating.
         Other than default parameters ``inds=0`` and ``allele=1``, additional
-        parameters could be passed to point mutators.
+        parameters could be passed to point mutator as keyward parameters.
         '''
         gens = self.traj.keys()
         gens.sort()
@@ -626,11 +635,11 @@ class trajectory:
             return []
         mut = []
         for gen in gens[:-1]:
+            # no introduction of mutants with population merge or split.
+            if len(self.traj[gen]) != len(self.traj[gen + 1]):
+                continue
             # we may need to introduce mutant at each subpopulation.
             nSP = len(self.traj[gen]) / self.nLoci
-            # no introduction of mutants with population merge or split.
-            if nSP != len(self.traj[gen + 1]) / self.nLoci:
-                continue
             for loc in range(self.nLoci):
                 for sp in range(nSP):
                     if (self.traj[gen][sp + loc * nSP] == 0
@@ -638,22 +647,12 @@ class trajectory:
                         mut.append(pointMutator(inds=inds, loci=loc, allele=allele,
                             subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
         return mut
-       
-    def freq(self, gen):
-        '''Return frequencies of all loci at generation *gen* of the simulated
-        trajectory. Allele frequencies are assumed to be zero if *gen* is out
-        of range of the simulated trajectory.
-        '''
-        if not self.traj.has_key(gen):
-            return [0.] * self.nLoci
-        return self.traj[gen]
 
-    def setFreq(self, freq, gen, nSubPop):
+    def _setFreq(self, freq, gen, nSubPop):
+        '''This function sets frequency *freq* at specified generation *gen*.
+        *nSubPop* is used if frequency for multiple subpopulations are given.
         '''
-        This function sets passed in frequencies for generation gen to the global
-        dictionary object traj.
-        '''
-        if type(freq) in [type(1), type(0.1)]:
+        if type(freq) in [type(0), type(0.)]:
             self.traj[gen] = [freq] * self.nLoci * nSubPop
         elif len(freq) == 1:
             self.traj[gen] = freq * self.nLoci * nSubPop
@@ -669,18 +668,29 @@ class trajectory:
             raise ValueError('please define freq as a single number or a list with specified number of elements.')
 
     def plot(self, filename=None, **kwargs):
-        '''
-        Plot current trajectory.
+        '''Plot simulated trajectory using ``R`` through a Pythonmodule ``rpy``.
+        The function will return silently if module ``simuRPy`` cannot be
+        imported.
 
-        filename
-            If a valid filename is given, the plot will be drawn to the
-            specified file. Additional parameters could be given using
-            keyword arguments.
+        This function will use different colors to plot trajectories at
+        different loci. The trajectories are plotted from generation 0 to
+        *endGen* even if the trajectories are short. The y-axis ranges from 0
+        to 1 and is labeled ``Allele frequency``. If a valid *filename* is
+        given, the figure will be saved to *filename* in a format specified by
+        file extension. Currently supported formats/extensions are eps, jpg,
+        bmp, tif, png and pdf. The availability of formats may be limited by
+        your version of R.
 
-        kwargs
-            Additional keyword arguments that will be passed to the plot function.
+        This function makes use of the derived keyword parameter feature of
+        module ``simuRPy``. Allowed prefixes are ``par``, ``plot``, ``lines``
+        and ``dev_print``. Allowed repeating suffix is ``loc``. For example,
+        you could use parameter ``plot_ylim`` to reset the default value of
+        ``ylim`` in R function ``plot``.
         '''
-        import simuRPy
+        try:
+            import simuRPy
+        except ImportError:
+            return
         #
         args = simuRPy.derivedArgs(
             defaultFuncs = ['plot', 'lines'],
@@ -697,6 +707,7 @@ class trajectory:
         simuRPy.newDevice()
         #
         gens = self.traj.keys()
+        simuRPy.rpy.r.par(**args.getArgs('par', None))
         simuRPy.rpy.r.plot(gens[0], 0,
             **args.getArgs('plot', None, xlim=(min(gens), max(gens)), type='n'))
         lines = []
@@ -1010,7 +1021,7 @@ class trajectorySimulator:
         '''
         # initialize a trajectory
         xt = trajectory(endGen = genEnd, nLoci = self.nLoci)
-        xt.setFreq(freq, gen = genBegin, nSubPop = len(self._Nt(genBegin)))
+        xt._setFreq(freq, gen = genBegin, nSubPop = len(self._Nt(genBegin)))
         # begin at genBegin, go forward.
         gen = genBegin
         while 1:
@@ -1040,7 +1051,7 @@ class trajectorySimulator:
                 for idx, ind in enumerate(nextXt):
                     for sp in range(len(nextNt)):
                         NEWnextXt.append(ind) 
-                xt.setFreq(NEWnextXt, gen=gen, nSubPop = len(nextNt))
+                xt._setFreq(NEWnextXt, gen=gen, nSubPop = len(nextNt))
             elif len(nextNt) < len(curXt) / self.nLoci:
                 # check length of next Nt.
                 if len(nextNt) != 1:
@@ -1056,11 +1067,11 @@ class trajectorySimulator:
                     sum([x*y for x,y in zip(nextXt[i*len(Nt):(i+1)*len(Nt)], Nt)]) / sum(Nt)
                         # for all loci
                         for i in range(self.nLoci)]
-                xt.setFreq(NEWnextXt, gen=gen, nSubPop = len(nextNt))
+                xt._setFreq(NEWnextXt, gen=gen, nSubPop = len(nextNt))
             else:
                 Nt = nextNt
                 nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)), ploidy)
-                xt.setFreq(nextXt, gen=gen, nSubPop = len(nextNt))
+                xt._setFreq(nextXt, gen=gen, nSubPop = len(nextNt))
 
         return xt
                 
@@ -1081,7 +1092,7 @@ class trajectorySimulator:
         done = [False] * self.nLoci
         # initialize a trajectory
         xt = trajectory(endGen=genEnd, nLoci = self.nLoci)
-        xt.setFreq(freq, gen=genEnd, nSubPop = len(self._Nt(genEnd)))
+        xt._setFreq(freq, gen=genEnd, nSubPop = len(self._Nt(genEnd)))
         # start from genEnd, go backward.
         gen = genEnd
         while 1:
@@ -1108,7 +1119,7 @@ class trajectorySimulator:
                 for loc in range(self.nLoci):
                     NewIt = GetRNG().randMultinomialVal(int(prevXt[loc]*Nt[0]), p)
                     NEWprevXt.extend([float(x)/y for x,y in zip(NewIt, prevNt)])
-                xt.setFreq(NEWprevXt, gen=gen, nSubPop = len(prevNt))
+                xt._setFreq(NEWprevXt, gen=gen, nSubPop = len(prevNt))
             elif len(prevNt) < len(curXt) / self.nLoci:
                 # check length of previous Nt.
                 if len(prevNt) != 1:
@@ -1125,11 +1136,11 @@ class trajectorySimulator:
                     sum([x*y for x,y in zip(prevXt[i*len(Nt):(i+1)*len(Nt)], Nt)]) / sum(Nt)
                     # for all loci
                     for i in range(self.nLoci)]
-                xt.setFreq(NEWprevXt, gen=gen, nSubPop = len(prevNt))
+                xt._setFreq(NEWprevXt, gen=gen, nSubPop = len(prevNt))
             else:
                 Nt = prevNt
                 prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)), ploidy)
-                xt.setFreq(prevXt, gen=gen, nSubPop = len(prevNt))
+                xt._setFreq(prevXt, gen=gen, nSubPop = len(prevNt))
             # set freq for previous generation
             # at all loci, check when prevIt is 0, if curIt is 1
             nSP = len(Nt)

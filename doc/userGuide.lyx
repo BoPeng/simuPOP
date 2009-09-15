@@ -16071,6 +16071,62 @@ pyTagger
 )
 \end_layout
 
+\begin_layout Standard
+A 
+\family typewriter
+pyTagger
+\family default
+ uses a user-defined function to pass parental information fields to offspring.
+ When a mating event happens, this operator collect values of specified
+ information fields of parents, pass them to a user-provided function, and
+ use the return values to set corresponding offspring information fields.
+ A typical usage of this operator is to set random environmental factors
+ that are affected by parental values.
+\end_layout
+
+\begin_layout Standard
+If the way how parental information fields pass to their offspring is affected
+ by parental genotype, you could use a during-mating Python operator to
+ explicitly obtain parental genotype and information fields, and set offspring
+ information fields.
+ Alternatively, you can add another information field, translate genotype
+ information to this information field and pass the genotype information
+ in the form of information field.
+ Operator 
+\family typewriter
+infoExec
+\family default
+ could be helpful in this case.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyTagger"
+
+\end_inset
+
+ demonstrates such an example where parental genotypes at a locus somehow
+ influence the information field 
+\family typewriter
+x
+\family default
+ of offspring.
+ Because high concentration of allele 1 of parental will tend to produce
+ offspring with more 1 alleles at locus 0, the average values of 
+\family typewriter
+x
+\family default
+ differ in three virtual subpopulations defined by individual genotype.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyTagger.log"
+lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Miscellaneous operators
 \end_layout
