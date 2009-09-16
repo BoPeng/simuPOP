@@ -830,8 +830,9 @@ class trajectorySimulator:
         sAll = [0] * (3 * self.nLoci)
         # each locus
         for loc in range(self.nLoci):
-            # each genotype AA, Aa and aa
-            # geno is actually the number of disease allele
+            # each genotype AA, Aa and aa (geno is the number of disease allele)
+            # calculate
+            #     f(X=Aa) = Sum_g P(Y=g) * f(X=Aa, Y=g)
             for geno in range(3):
                 # iterate through OTHER DSL
                 allgeno = [0] * self.nLoci
@@ -860,7 +861,6 @@ class trajectorySimulator:
         'Return the fitness of genotype for func _interFitness'
         index = 0
         fq = 1.
-
         for i in range(len(allgeno)):
             if i != loc:
                 if allgeno[i] == 0:
@@ -1008,8 +1008,7 @@ class trajectorySimulator:
                 xt.append(float(it) / (ploidy * Nt[sp]))
         return xt
         
-    def _simuForward(self, freq, destFreq, genBegin, genEnd, ploidy, maxAttempts,
-                     logger=None):
+    def _simuForward(self, freq, destFreq, genBegin, genEnd, ploidy, maxAttempts):
         '''
         This function simulates forward trajectory for one time.
         During the simulation, variable number of subpopulations within different
@@ -1033,8 +1032,8 @@ class trajectorySimulator:
                     for sp in range(nSP):
                         afq = nextXt[loc*nSP + sp]
                         if not destFreq[loc][0] <= afq <= destFreq[loc][1]:
-                            if logger is not None:
-                                logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
+                            if self.logger is not None:
+                                self.logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
                             raise exceptions.Exception('invalid')
                 break
             # first get curXt, N(t+1), then calculate nextXt.
@@ -1076,7 +1075,7 @@ class trajectorySimulator:
         return xt
                 
     def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, ploidy,
-                     restartIfFail, logger=None):
+                     restartIfFail):
         '''
         This function simulates backward trajectory for one time.
         During the simulation, various number of subpopulations within different
@@ -1098,8 +1097,8 @@ class trajectorySimulator:
         while 1:
             # first get curXt, N(t-1), then calculate prevXt
             curXt = xt.freq(gen)
-            if logger is not None:
-                logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
+            if self.logger is not None:
+                self.logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
             gen -= 1
             if gen < 0 or gen + maxMutAge < genEnd:
                 raise exceptions.Exception('tooLong')
@@ -1165,8 +1164,8 @@ class trajectorySimulator:
                                 xt.freq(gen + 1)[loc * nSP + idx] /= it
                                 it = 1
                             else:
-                                if logger is not None:
-                                    logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
+                                if self.logger is not None:
+                                    self.logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
                                 raise exceptions.Exception('invalid')
                         else:  # it == 1
                             assert abs(it - 1.) < 1e-5
@@ -1176,8 +1175,8 @@ class trajectorySimulator:
                                 raise exceptions.Exception('tooShort')
                             break
                     elif xtPrev == 1: # fixed
-                        if logger is not None:
-                            logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
+                        if self.logger is not None:
+                            self.logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
                         raise exceptions.Exception('invalid')
                 if False not in doneNSP:
                     done[loc] = True
@@ -1186,8 +1185,7 @@ class trajectorySimulator:
 
         return xt
             
-    def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000,
-                    logger=None):
+    def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000):
         '''
         simulate trajectories of multiple disease susceptibility loci using a forward time approach
 
@@ -1226,7 +1224,7 @@ class trajectorySimulator:
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuForward(freq, destFreq, genBegin, genEnd, ploidy, maxAttempts, logger)
+                return self._simuForward(freq, destFreq, genBegin, genEnd, ploidy, maxAttempts)
             except exceptions.Exception, e:
                 if e.args[0] == 'invalid':
                     self.errorCount['invalid'] += 1
@@ -1236,8 +1234,7 @@ class trajectorySimulator:
                     raise          
     
     def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
-                     restartIfFail = False, maxAttempts = 1000,
-                     logger=None):
+                     restartIfFail = False, maxAttempts = 1000):
         '''
         simulate trajectories of multiple disease susceptibility loci using an extension of the
         backward method described in Slatkin 2001.
@@ -1275,9 +1272,6 @@ class trajectorySimulator:
         maxAttempts
             How many times to try to get a valid path? Default to 1000.
         
-        logger
-            return potential problems if not None. Default to None.
-
         Return the trajectory for each locus at each subpopulation. In the order of
             LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
         '''
@@ -1298,8 +1292,7 @@ class trajectorySimulator:
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail,
-                                logger)
+                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail)
             except exceptions.Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
@@ -1339,19 +1332,16 @@ def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin = 0, genEnd = 
     '''
     Return an object to class trajectory in forward simulation.
     '''
-    return trajectorySimulator(N, fitness, nLoci).simuForward(freq, destFreq, genBegin, genEnd,
-                                                              ploidy, maxAttempts, logger)
+    return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, destFreq, genBegin, genEnd,
+                                                              ploidy, maxAttempts)
     
 def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
                      restartIfFail = False, maxAttempts = 1000, logger=None):
     '''
     Return an object to class trajectory in backward simulation.
     '''
-    return trajectorySimulator(N, fitness, nLoci).simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy,
-                                                              restartIfFail, maxAttempts, logger)
-
-
-
+    return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy,
+                                                              restartIfFail, maxAttempts)
 
 
 if __name__ == "__main__":
