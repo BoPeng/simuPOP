@@ -218,14 +218,6 @@ public:
 	/// destroy a population
 	~population();
 
-
-	/// used by Python print function to print out the general information of the population
-	string __repr__()
-	{
-		return "<simuPOP::population of size " + toStr(popSize()) + ">";
-	}
-
-
 	/** CPPONLY
 	 * Validate if a population is in good shape. This is mostly used
 	 * to detect if scratch population is prepared properly during

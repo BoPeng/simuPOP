@@ -108,10 +108,10 @@ public:
 	/// set fitness to all individuals. No selection will happen!
 	bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the selector
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::selector>" ;
+		return "<simuPOP.selector>" ;
 	}
 
 
@@ -166,10 +166,10 @@ public:
 	 */
 	virtual double indFitness(individual * ind, ULONG gen);
 
-	/// used by Python print function to print out the general information of the map selector
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::selector::map selector>" ;
+		return "<simuPOP.selector::map selector>" ;
 	}
 
 
@@ -247,10 +247,10 @@ public:
 	/// calculate/return the fitness value, currently assuming diploid
 	virtual double indFitness(individual * ind, ULONG gen);
 
-	/// used by Python print function to print out the general information of the \c maSelector
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::selector::multiple-alleles selector>" ;
+		return "<simuPOP.selector::multiple-alleles selector>" ;
 	}
 
 
@@ -316,10 +316,10 @@ public:
 	 */
 	virtual double indFitness(individual * ind, ULONG gen);
 
-	/// used by Python print function to print out the general information of the \c mlSelector
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::selector::multiple-loci selector>" ;
+		return "<simuPOP.selector::multiple-loci selector>" ;
 	}
 
 
@@ -404,10 +404,10 @@ public:
 	 */
 	virtual double indFitness(individual * ind, ULONG gen);
 
-	/// used by Python print function to print out the general information of the \c pySelector
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::selector::python selector>" ;
+		return "<simuPOP.selector::python selector>" ;
 	}
 
 

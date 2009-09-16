@@ -78,7 +78,8 @@ public:
 	}
 
 
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
 		string reprStr;
 
@@ -87,7 +88,7 @@ public:
 				reprStr += m_string[i];
 		if (m_string.size() > 10)
 			reprStr += "... ";
-		return "<simuPOP::output " + reprStr + "> " ;
+		return "<simuPOP.output " + reprStr + "> " ;
 	}
 
 
@@ -142,10 +143,10 @@ public:
 	{
 	};
 
-	///
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::dumper>" ;
+		return "<simuPOP.dumper>" ;
 	}
 
 
@@ -216,10 +217,10 @@ public:
 	/// Apply operator to population \e pop.
 	virtual bool apply(population & pop);
 
-	///
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::save population>" ;
+		return "<simuPOP.save population>" ;
 	}
 
 

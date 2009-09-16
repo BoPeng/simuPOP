@@ -93,10 +93,10 @@ public:
 	/// set \c qtrait to all individual
 	bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the quantitative trait operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::qtrait::quantitative trait>" ;
+		return "<simuPOP.qtrait::quantitative trait>" ;
 	}
 
 
@@ -157,10 +157,10 @@ public:
 	 */
 	virtual double qtrait(individual * ind);
 
-	/// used by Python print function to print out the general information of the map quantitative trait operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::qtrait::map quantitative trait>" ;
+		return "<simuPOP.qtrait::map quantitative trait>" ;
 	}
 
 
@@ -226,10 +226,10 @@ public:
 	 */
 	virtual double qtrait(individual * ind);
 
-	/// used by Python print function to print out the general information of the multiple allele quantitative trait operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::qtrait::multiple-alleles qtrait>" ;
+		return "<simuPOP.qtrait::multiple-alleles qtrait>" ;
 	}
 
 
@@ -302,10 +302,10 @@ public:
 	/// currently assuming diploid
 	virtual double qtrait(individual * ind);
 
-	/// used by Python print function to print out the general information of the multiple loci quantitative trait operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::qtrait::multiple-loci qtrait>" ;
+		return "<simuPOP.qtrait::multiple-loci qtrait>" ;
 	}
 
 
@@ -378,10 +378,10 @@ public:
 	 */
 	virtual double qtrait(individual * ind);
 
-	/// used by Python print function to print out the general information of the Python quantitative trait operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::qtrait::python qtrait>" ;
+		return "<simuPOP.qtrait::python qtrait>" ;
 	}
 
 

@@ -840,13 +840,6 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the mating scheme
-	string __repr__()
-	{
-		return "<simuPOP::generic mating scheme>";
-	}
-
-
 	/** CPPONLY
 	 */
 	virtual void submitScratch(population & pop, population & scratch);
@@ -930,13 +923,6 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the Python mating scheme
-	string __repr__()
-	{
-		return "<simuPOP::pedigreeMating>";
-	}
-
-
 	/// CPPONLY
 	bool prepareScratchPop(population & pop, population & scratch);
 
@@ -1014,13 +1000,6 @@ public:
 	virtual mating * clone() const
 	{
 		return new homoMating(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the Python mating scheme
-	string __repr__()
-	{
-		return "<simuPOP::homoMating>";
 	}
 
 
@@ -1124,13 +1103,6 @@ public:
 	virtual mating * clone() const
 	{
 		return new heteroMating(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the Python mating scheme
-	string __repr__()
-	{
-		return "<simuPOP::heteroMating>";
 	}
 
 

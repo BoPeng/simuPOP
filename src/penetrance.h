@@ -120,10 +120,10 @@ public:
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// used by Python print function to print out the general information of the penetrance operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::penetrance>" ;
+		return "<simuPOP.penetrance>" ;
 	}
 
 
@@ -176,10 +176,10 @@ public:
 	/// CPPONLY
 	virtual double penet(individual * ind);
 
-	/// used by Python print function to print out the general information of the map penetrance operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::penetrance::map penetrance>" ;
+		return "<simuPOP.penetrance::map penetrance>" ;
 	}
 
 
@@ -248,10 +248,10 @@ public:
 	 */
 	virtual double penet(individual * ind);
 
-	/// used by Python print function to print out the general information of the multi-allele penetrance operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::penetrance::multiple-alleles penetrance>" ;
+		return "<simuPOP.penetrance::multiple-alleles penetrance>" ;
 	}
 
 
@@ -317,10 +317,10 @@ public:
 	 */
 	virtual double penet(individual * ind);
 
-	/// used by Python print function to print out the general information of the multiple-loci penetrance operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::penetrance::multiple-loci penetrance>" ;
+		return "<simuPOP.penetrance::multiple-loci penetrance>" ;
 	}
 
 
@@ -411,10 +411,10 @@ public:
 	 */
 	virtual double penet(individual * ind);
 
-	/// used by Python print function to print out the general information of the Python penetrance operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::penetrance::python penetrance>" ;
+		return "<simuPOP.penetrance::python penetrance>" ;
 	}
 
 

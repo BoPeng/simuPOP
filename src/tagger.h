@@ -79,10 +79,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c inheritTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::id tagger>" ;
+		return "<simuPOP.id tagger>" ;
 	}
 
 
@@ -150,10 +150,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c inheritTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::inheritTagger>" ;
+		return "<simuPOP.inheritTagger>" ;
 	}
 
 
@@ -191,7 +191,6 @@ public:
 	 *  \li \c mode=Summation Passing the sum of values.
 	 *  \li \c mode=Multiplication Passing the multiplication of values.
 	 *
-	 *  An \c RuntimeError will be raised if any of the parents does not exist.
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
@@ -211,10 +210,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c summaryTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::summaryTagger>" ;
+		return "<simuPOP.summaryTagger>" ;
 	}
 
 
@@ -278,10 +277,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c parentsTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::parents tagger>" ;
+		return "<simuPOP.parents tagger>" ;
 	}
 
 
@@ -342,10 +341,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c pedigreeTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pedigree tagger>" ;
+		return "<simuPOP.pedigree tagger>" ;
 	}
 
 
@@ -400,10 +399,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c pyTagger
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pyTagger>" ;
+		return "<simuPOP.pyTagger>" ;
 	}
 
 

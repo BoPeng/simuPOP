@@ -461,10 +461,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the operator
-	string __repr__()
+	/// HIDDEN
+	virtual string opName()
 	{
-		return "<simuPOP::operator>" ;
+		return "<simuPOP.operator>" ;
 	}
 
 
@@ -673,10 +673,10 @@ public:
 	/// apply the \c pause operator to one population
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c pause operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pause simulation>" ;
+		return "<simuPOP.pause>" ;
 	}
 
 
@@ -733,10 +733,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c noneOp operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::None>" ;
+		return "<simuPOP.None>" ;
 	}
 
 
@@ -787,10 +787,10 @@ public:
 	/// apply the \c ifElse operator to population \e pop.
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c ifElse operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::if else operator >";
+		return "<simuPOP.if else operator >";
 	}
 
 
@@ -838,10 +838,10 @@ public:
 	/// HIDDEN
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c ticToc operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::tic toc performance monitor>" ;
+		return "<simuPOP.tic toc performance monitor>" ;
 	}
 
 
@@ -893,10 +893,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c setAncestralDepth operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::setAncestralDepth>";
+		return "<simuPOP.setAncestralDepth>";
 	}
 
 
@@ -949,10 +949,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c turnOnDebug operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::turnOnDebug>";
+		return "<simuPOP.turnOnDebug>";
 	}
 
 
@@ -1000,10 +1000,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c turnOffDebug operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::turnOffDebug>";
+		return "<simuPOP.turnOffDebug>";
 	}
 
 
@@ -1076,10 +1076,10 @@ public:
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// used by Python print function to print out the general information of the \c pyOperator operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pyOperator>";
+		return "<simuPOP.pyOperator>";
 	}
 
 

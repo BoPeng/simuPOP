@@ -72,10 +72,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c terminateIf terminator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::terminateIf>";
+		return "<simuPOP.terminateIf>";
 	}
 
 
