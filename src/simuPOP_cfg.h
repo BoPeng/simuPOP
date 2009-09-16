@@ -240,10 +240,11 @@ enum IterationType {
 enum InheritanceType {
 	Paternal = 101,
 	Maternal = 102,
-	Average = 103,
+	Mean = 103,
 	Maximum = 104,
 	Minimum = 105,
 	Summation = 106,
+	Multiplication = 107,
 };
 
 

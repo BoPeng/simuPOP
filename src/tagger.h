@@ -126,10 +126,11 @@ public:
 	 *  More specifically,
 	 *  \li \c mode=Maternal Passing the value from mother.
 	 *  \li \c mode=Paternal Passing the value from father.
-	 *  \li \c mode=Average Passing the average of two values.
+	 *  \li \c mode=Mean Passing the average of two values.
 	 *  \li \c mode=Maximum Passing the maximum value of two values.
 	 *  \li \c mode=Minumum Passing the minimum value of two values.
 	 *  \li \c mode=Summation Passing the summation of two values.
+	 *  \li \c mode=Multiplication Passing the multiplication of two values.
 	 *
 	 *  An \c RuntimeError will be raised if any of the parents does not exist.
 	 *  This operator does not support parameter \e subPops and does not output
@@ -152,7 +153,7 @@ public:
 	/// used by Python print function to print out the general information of the \c inheritTagger
 	string __repr__()
 	{
-		return "<simuPOP::inherit tagger>" ;
+		return "<simuPOP::inheritTagger>" ;
 	}
 
 
@@ -166,6 +167,67 @@ public:
 	virtual baseOperator * clone() const
 	{
 		return new inheritTagger(*this);
+	}
+
+
+private:
+	int m_mode;
+};
+
+/** A summary tagger summarize values of one or more parental information field
+ *  to another information field of an offspring. If mating is sexual, two sets
+ *  of parental values will be involved.
+ */
+class summaryTagger : public baseOperator
+{
+public:
+	/** Creates a summary tagger that summarize values of one or more parental
+	 *  information field (\e infoFields[:-1]) to an offspring information
+	 *  field (\e infoFields[-1]). A parameter \e mode specifies how to pass
+	 *  summarize parental values. More specifically,
+	 *  \li \c mode=Mean Passing the average of values.
+	 *  \li \c mode=Maximum Passing the maximum value of values.
+	 *  \li \c mode=Minumum Passing the minimum value of values.
+	 *  \li \c mode=Summation Passing the sum of values.
+	 *  \li \c mode=Multiplication Passing the multiplication of values.
+	 *
+	 *  An \c RuntimeError will be raised if any of the parents does not exist.
+	 *  This operator does not support parameter \e subPops and does not output
+	 *  any information.
+	 */
+	summaryTagger(InheritanceType mode = Mean, int stage = DuringMating,
+		int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringFunc & output = "",
+		const stringList & infoFields = vectorstr()) :
+		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+	{
+		DBG_FAILIF(infoFields.elems().size() < 2, ValueError,
+			"Please specify at least one parental field and one offspring field.");
+	};
+
+	virtual ~summaryTagger()
+	{
+	}
+
+
+	/// used by Python print function to print out the general information of the \c summaryTagger
+	string __repr__()
+	{
+		return "<simuPOP::summaryTagger>" ;
+	}
+
+
+	/** CPPONLY
+	 *  apply the \c summaryTagger
+	 */
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
+		individual * dad = NULL, individual * mom = NULL);
+
+	/// deep copy of a \c summaryTagger
+	virtual baseOperator * clone() const
+	{
+		return new summaryTagger(*this);
 	}
 
 
