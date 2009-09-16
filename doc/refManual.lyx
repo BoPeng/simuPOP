@@ -1297,6 +1297,13 @@ inheritTaggerRef
 
 
 \backslash
+summaryTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 parentsTaggerRef
 \end_layout
 
