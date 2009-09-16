@@ -3287,7 +3287,7 @@ simu.evolve(
 
 #end_file
 
-#begin_file log/otherTagger.py
+#begin_file log/otherTagging.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
