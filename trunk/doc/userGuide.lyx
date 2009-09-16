@@ -15767,10 +15767,9 @@ In simuPOP, tagging refers to the action of setting various information
 subPops
 \family default
 .
- If you would like to apply different inheritance taggers to different (virtual)
- subpopulations, you can use them in the homogeneous mating schemes of a
- heterogeneous mating scheme.
- 
+ If you would like to apply different  taggers to different (virtual) subpopulat
+ions, you can use them in the homogeneous mating schemes of a heterogeneous
+ mating scheme.
 \end_layout
 
 \begin_layout Subsection
@@ -15809,8 +15808,8 @@ mode=Maternal
 \end_layout
 
 \begin_layout Itemize
-Pass the maximal, minimal or average of values of one or more information
- fields of both parents (
+Pass the maximal, minimal, sum, multiplcation or average of values of one
+ or more information fields of both parents (
 \family typewriter
 mode=Maximum
 \family default
@@ -15820,7 +15819,7 @@ Minimum
 \family default
 , 
 \family typewriter
-Summation
+Addition, Multiplication
 \family default
  or 
 \family typewriter
@@ -15862,6 +15861,75 @@ x
 LatexCommand lstinputlisting
 filename "log/inheritTagger.log"
 lstparams "caption={Use an inherit tagger to track offspring of individuals},label={inheritTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tagging with summary of two parental values (operator 
+\family typewriter
+summaryTagger)
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+summaryTagger
+\family default
+ summarize values of one or more parental information fields and place the
+ result in an offspring information field.
+ If mating is sexual, two sets of values will be involved.
+ Summarization methods include 
+\family typewriter
+Mean
+\family default
+, 
+\family typewriter
+Minimum
+\family default
+, 
+\family typewriter
+Miximum
+\family default
+,
+\family typewriter
+ Summation
+\family default
+ and 
+\family typewriter
+Multiplication
+\family default
+.
+ The operator is usually used to summarize certain characteristic of parents
+ of each offspring.
+ For example, a 
+\family typewriter
+summaryTagger
+\family default
+ is used in  Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "summaryTagger"
+
+\end_inset
+
+ to calculate the mean fitness of parents during each  mating event.
+ The results are saved in the 
+\family typewriter
+avgFitness
+\family default
+ field of offspring.
+ Because allele 1 at locus 0 is under purifying selection, the allele frequency
+ of this allele decreases.
+ In the mean time, fitness of parents increases because less and less parents
+ have this allele.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/summaryTagger.log"
+lstparams "caption={Using a summary tagger to calculate mean fitness of parents.},label={summaryTagger}"
 
 \end_inset
 
@@ -16097,16 +16165,45 @@ pyTagger
  use the return values to set corresponding offspring information fields.
  A typical usage of this operator is to set random environmental factors
  that are affected by parental values.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyTagger"
+
+\end_inset
+
+ demonstrates such an example where the location of each offspring (x, y)
+ is randomly assigned around the middle position of his or her parents.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyTagger.log"
+lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tagging that involves other parental information
 \end_layout
 
 \begin_layout Standard
 If the way how parental information fields pass to their offspring is affected
- by parental genotype, you could use a during-mating Python operator to
- explicitly obtain parental genotype and information fields, and set offspring
- information fields.
- Alternatively, you can add another information field, translate genotype
- information to this information field and pass the genotype information
- in the form of information field.
+ by parental genotype, sex, or affection status, you could use a during-mating
+ Python operator (
+\family typewriter
+pyOperator(stage=DurimgMating)
+\family default
+) to explicitly obtain parental information and set offspring information
+ fields.
+\end_layout
+
+\begin_layout Standard
+Alternatively, you can add another information field, translate needed informati
+on to this field and pass the genotype information in the form of information
+ field.
  Operator 
 \family typewriter
 infoExec
@@ -16115,27 +16212,35 @@ infoExec
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyTagger"
+reference "otherTagging"
 
 \end_inset
 
- demonstrates such an example where parental genotypes at a locus somehow
- influence the information field 
+ demonstrates such an example where the number of affected parents are recorded
+ in an information field.
+ Before mating happens, a penetrance operator is used to assign affection
+ status to parents.
+ The affection status is then copied to an information field affected so
+ that operator inheritTagger could be used to count the number of affected
+ parents.
+ A rare feature 
 \family typewriter
-x
+stage=PrePostMating
 \family default
- of offspring.
- Because high concentration of allele 1 of parental will tend to produce
- offspring with more 1 alleles at locus 0, the average values of 
+ is used in 
 \family typewriter
-x
+maPenetrance
 \family default
- differ in three virtual subpopulations defined by individual genotype.
+ to assign affection status to both parental and offspring generations.
+ This helps dividing the offspring generation into affected and unaffected
+ virtual subpopulations.
+ Not surprisingly, the average number of affected parents is larger for
+ affected individuals than unaffected individuals.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyTagger.log"
-lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
+filename "log/otherTagging.log"
+lstparams "caption={Tagging that involves other parental information},label={otherTagging}"
 
 \end_inset
 

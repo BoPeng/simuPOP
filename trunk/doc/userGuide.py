@@ -3169,6 +3169,34 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/summaryTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+idTagger().reset(0)
+#end_ignore
+simu = simulator(
+    population(1000, loci=1, infoFields=['fitness', 'avgFitness']),
+    randomMating())
+simu.evolve(
+    preOps = [
+        initSex(),
+        initByFreq([0.5, 0.5]),
+    ],
+    ops = [
+        maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
+        summaryTagger(mode=Mean, infoFields=['fitness', 'avgFitness']),
+        stat(alleleFreq=0, meanOfInfo='avgFitness', step=10),
+        pyEval(r"'gen %d: allele freq: %.3f, average fitness of parents: %.3f\n' % "
+            "(gen, alleleFreq[0][1], meanOfInfo['avgFitness'])", step=10)
+    ],
+    gen = 50,
+)
+#end_file
+
+
 #begin_file log/idTagger.py
 #begin_ignore
 import simuOpt
@@ -3234,28 +3262,59 @@ GetRNG().setSeed(12345)
 import random
 def randomMove(values):
     '''Pass parental information fields to offspring'''
-    x1, g1, x2, g2 = values
+    x1, y1, x2, y2 = values
     # shift right with high concentration of alleles... 
-    return x1 + random.normalvariate(g1 + g2, 0.1), 0
+    x = random.normalvariate((x1+x2)/2., 0.1)
+    y = random.normalvariate((y1+y2)/2., 0.1)
+    return (x, y)
 
-pop = population(1000, loci=[1], infoFields=['x', 'g'])
+pop = population(1000, loci=[1], infoFields=['x', 'y'])
 pop.setVirtualSplitter(genotypeSplitter(loci=0, alleles=[[0, 0], [0,1], [1, 1]]))
 simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [
         initSex(),
         initByFreq([0.5, 0.5]),
-        initInfo(random.random, infoFields='x')
+        initInfo(random.random, infoFields=['x', 'y'])
     ],
     ops = [
-        infoExec('g = ind.allele(0,0) + ind.allele(0,1)', exposeInd='ind',
-            stage=PreMating),
-        pyTagger(func=randomMove, infoFields=['x', 'g']),
-        stat(meanOfInfo='x', subPops=[(0,0), (0,1), (0,2)],
-            vars=['meanOfInfo_sp']),
-        pyEval(r"'x: %.2f (0, 0), %.2f (0, 1), %.2f (1, 1)\n' % "
-            "(subPop[(0,0)]['meanOfInfo']['x'], subPop[(0,1)]['meanOfInfo']['x'],"
-            "subPop[(0,2)]['meanOfInfo']['x'])")
+        pyTagger(func=randomMove, infoFields=['x', 'y']),
+        stat(minOfInfo='x', maxOfInfo='x'),
+        pyEval(r"'Range of x: %.2f, %.2f\n' % (minOfInfo['x'], maxOfInfo['x'])")
+    ],
+    gen = 5
+)
+
+#end_file
+
+#begin_file log/otherTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+pop = population(1000, loci=[1], infoFields=['aff', 'numAff'])
+# define virtual subpopulations by affection status
+pop.setVirtualSplitter(affectionSplitter())
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [
+        initSex(),
+        initByFreq([0.5, 0.5]),
+    ],
+    ops = [
+        # get affection status for both parents and offspring
+        maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4], stage=PrePostMating),
+        # set 'aff' of parents
+        infoExec('aff = ind.affected()', exposeInd='ind', stage=PreMating),
+        # get number of affected parents for each offspring and store in numAff
+        summaryTagger(mode=Summation, infoFields=['aff', 'numAff']),
+        # calculate mean 'numAff' of offspring, for unaffected and affected subpopulations.
+        stat(meanOfInfo='numAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
+        # print mean number of affected parents for unaffected and affected offspring.
+        pyEval(r"'Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
+            "(subPop[(0,0)]['meanOfInfo']['numAff'], subPop[(0,1)]['meanOfInfo']['numAff'])")
     ],
     gen = 5
 )
