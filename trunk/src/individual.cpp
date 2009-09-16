@@ -251,7 +251,7 @@ void individual::swap(individual & ind, bool swapContent)
 }
 
 
-string individual::__repr__()
+string individual::opName()
 {
 	ostringstream os;
 	int width = 1;

@@ -3035,7 +3035,7 @@ simu.evolve(
         initInfo(lambda : random.randint(0, 1), infoFields='anc')
     ],
     ops = [
-        inheritTagger(mode=Average, infoFields='anc'),
+        inheritTagger(mode=Mean, infoFields='anc'),
         stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
             subPops=[(0,x) for x in range(5)]),
         pyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \

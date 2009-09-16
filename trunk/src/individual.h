@@ -443,8 +443,8 @@ public:
 
 
 	// allow str(population) to get something better looking
-	/// used by Python print function to print out the general information of the individual
-	string __repr__();
+	/// HIDDEN
+	string opName();
 
 	/// CPPONLY swap individuals
 	/**

@@ -1385,12 +1385,6 @@ public:
 	}
 
 
-	string __repr__()
-	{
-		return toStr("<simuPOP::RNG ") + gsl_rng_name(m_RNG) + ">";
-	}
-
-
 	/** Return a random number in the range of <tt>[0, 2, ... max()-1]</tt>
 	 */
 	unsigned long int randGet()

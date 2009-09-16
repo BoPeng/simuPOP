@@ -290,18 +290,7 @@ Details:
 
 %ignore simuPOP::baseOperator::atRepr();
 
-%feature("docstring") simuPOP::baseOperator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::baseOperator::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::baseOperator::noOutput();
 
@@ -413,18 +402,7 @@ Usage:
 
 %ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::basePenetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::basePenetrance::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BernulliTrials "
 
@@ -622,7 +600,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "Obsolete or undocumented function."
+%feature("docstring") simuPOP::cloneGenoTransmitter::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -802,18 +780,7 @@ Usage:
 
 %ignore simuPOP::contextMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::contextMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the context-dependentMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::contextMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::controlledOffspringGenerator "
 
@@ -956,18 +923,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::dumper::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Exception "
 
@@ -1648,18 +1604,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::genoTransmitter::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::genoTransmitter::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::genoTransmitter::initialize "
 
@@ -1796,7 +1741,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::haplodiploidGenoTransmitter::__repr__ "Obsolete or undocumented function."
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter::initialize "Obsolete or undocumented function."
 
@@ -1880,19 +1825,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::heteroMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::homoMating "
@@ -1963,19 +1895,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::homoMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %ignore simuPOP::homoMating::subPop() const;
 
 %ignore simuPOP::homoMating::virtualSubPop() const;
@@ -2038,18 +1957,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::idTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the inheritTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::idTagger::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::idTagger::reset "
 
@@ -2147,18 +2055,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the ifElse operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::ifElse::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::indCompare;
 
@@ -2460,18 +2357,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::individual::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the individual
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::individual::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
@@ -2612,18 +2498,7 @@ Usage:
 
 %ignore simuPOP::infoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoEval::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the infoEval operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::infoEval::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::infoExec "
 
@@ -2717,18 +2592,7 @@ Usage:
 
 %ignore simuPOP::infoExec::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoExec::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the infoExec operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::infoExec::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::infoParentsChooser "
 
@@ -2915,13 +2779,14 @@ Details:
     offspring. More specifically,
     *   mode=Maternal Passing the value from mother.
     *   mode=Paternal Passing the value from father.
-    *   mode=Average Passing the average of two values.
+    *   mode=Mean Passing the average of two values.
     *   mode=Maximum Passing the maximum value of two values.
     *   mode=Minumum Passing the minimum value of two values.
-    *   mode=Summation Passing the summation of two values. An
-    RuntimeError will be raised if any of the parents does not exist.
-    This operator does not support parameter subPops and does not
-    output any information.
+    *   mode=Summation Passing the summation of two values.
+    *   mode=Multiplication Passing the multiplication of two values.
+    An RuntimeError will be raised if any of the parents does not
+    exist. This operator does not support parameter subPops and does
+    not output any information.
 
 "; 
 
@@ -2933,18 +2798,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::inheritTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the inheritTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::inheritTagger::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::inheritTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -3021,18 +2875,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator initByFreq
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::initByFreq::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initByFreq::apply "
 
@@ -3103,18 +2946,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator initByValue
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::initByValue::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initByValue::apply "
 
@@ -3187,18 +3019,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the initInfo
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::initInfo::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initInfo::apply "
 
@@ -3275,18 +3096,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initSex::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the initSex
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::initSex::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initSex::apply "
 
@@ -3382,18 +3192,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::kamMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the kamMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::kamMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maPenetrance "
 
@@ -3470,18 +3269,7 @@ Usage:
 
 %ignore simuPOP::maPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::maPenetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the multi-allele penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::maPenetrance::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapPenetrance "
 
@@ -3548,18 +3336,7 @@ Usage:
 
 %ignore simuPOP::mapPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::mapPenetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the map penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mapPenetrance::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapQuanTrait "
 
@@ -3635,18 +3412,7 @@ Usage:
 
 %ignore simuPOP::mapQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::mapQuanTrait::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the map quantitative trait operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mapQuanTrait::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapSelector "
 
@@ -3721,18 +3487,7 @@ Usage:
 
 %ignore simuPOP::mapSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mapSelector::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the map selector
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mapSelector::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maQuanTrait "
 
@@ -3813,18 +3568,7 @@ Usage:
 
 %ignore simuPOP::maQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::maQuanTrait::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the multiple allele quantitative trait operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::maQuanTrait::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maSelector "
 
@@ -3861,8 +3605,8 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype=AllAvail, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    maSelector(loci, fitness, wildtype=0, stage=PreMating, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=AllAvail)
 
 Details:
@@ -3921,18 +3665,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the maSelector
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::maSelector::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mating "Obsolete or undocumented function."
 
@@ -3972,19 +3705,6 @@ Description:
 Usage:
 
     x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::mating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the mating scheme
-
-Usage:
-
-    x.__repr__()
 
 "; 
 
@@ -4061,18 +3781,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::matrixMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::matrixMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter "
 
@@ -4115,7 +3824,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mendelianGenoTransmitter::__repr__ "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mendelianGenoTransmitter::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::mendelianGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -4217,18 +3926,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the mergeSubPops operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mergeSubPops::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::migrator "
 
@@ -4365,18 +4063,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the migrator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::migrator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter "
 
@@ -4423,7 +4110,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mitochondrialGenoTransmitter::__repr__ "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mitochondrialGenoTransmitter::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter::initialize "Obsolete or undocumented function."
 
@@ -4482,18 +4169,7 @@ Usage:
 
 %ignore simuPOP::mixedMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::mixedMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the mixedMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mixedMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlPenetrance "
 
@@ -4564,18 +4240,7 @@ Usage:
 
 %ignore simuPOP::mlPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::mlPenetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the multiple-loci penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mlPenetrance::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlQuanTrait "
 
@@ -4661,18 +4326,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mlQuanTrait::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the multiple loci quantitative trait operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mlQuanTrait::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlSelector "
 
@@ -4745,18 +4399,7 @@ Usage:
 
 %ignore simuPOP::mlSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mlSelector::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the mlSelector
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mlSelector::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mutator "
 
@@ -4938,18 +4581,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noneOp::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the noneOp operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::noneOp::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::offspringGenerator "
 
@@ -5207,18 +4839,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::parentsTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the parentsTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::parentsTagger::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::parentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -5292,18 +4913,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pause::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pause operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pause::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pedigree "
 
@@ -5537,19 +5147,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pedigreeMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %ignore simuPOP::pedigreeMating::prepareScratchPop(population &pop, population &scratch);
 
 %ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
@@ -5616,18 +5213,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pedigreeTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pedigreeTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pedigreeTagger::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::pedigreeTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -5702,18 +5288,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pointMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pointMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pointMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::polyParentsChooser "
 
@@ -5917,19 +5492,6 @@ Description:
 Usage:
 
     x.~population()
-
-"; 
-
-%feature("docstring") simuPOP::population::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the population
-
-Usage:
-
-    x.__repr__()
 
 "; 
 
@@ -6907,18 +6469,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyEval operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyEval::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyExec "
 
@@ -6974,18 +6525,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyExec operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyExec::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::pyFunc;
 
@@ -7118,18 +6658,7 @@ Usage:
 
 %ignore simuPOP::pyMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::pyMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyMutator::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::pyObject;
 
@@ -7238,18 +6767,7 @@ Details:
 
 %ignore simuPOP::pyOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::pyOperator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyOperator operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyOperator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyOutput "
 
@@ -7313,18 +6831,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyOutput::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyParentsChooser "
 
@@ -7478,18 +6985,7 @@ Usage:
 
 %ignore simuPOP::pyPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::pyPenetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyPenetrance::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyPopIterator "
 
@@ -7593,18 +7089,7 @@ Usage:
 
 %ignore simuPOP::pyQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::pyQuanTrait::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python quantitative trait operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyQuanTrait::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pySelector "
 
@@ -7678,18 +7163,7 @@ Usage:
 
 %ignore simuPOP::pySelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::pySelector::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pySelector
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pySelector::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyTagger "
 
@@ -7737,18 +7211,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyTagger::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyTagger
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::pyTagger::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::pyTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -7824,18 +7287,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::quanTrait::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the quantitative trait operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::quanTrait::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::randomParentChooser "
 
@@ -8139,18 +7591,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the recombinator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::recombinator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::recombinator::initialize "
 
@@ -8257,18 +7698,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the resizeSubPops operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::resizeSubPops::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RNG "
 
@@ -8382,14 +7812,6 @@ Usage:
 Details:
 
     Maximum value of this RNG
-
-"; 
-
-%feature("docstring") simuPOP::RNG::__repr__ "
-
-Usage:
-
-    x.__repr__()
 
 "; 
 
@@ -8613,18 +8035,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::savePopulation::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selector "
 
@@ -8722,18 +8133,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selector::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the selector
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::selector::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selfingGenoTransmitter "
 
@@ -8775,7 +8175,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selfingGenoTransmitter::__repr__ "Obsolete or undocumented function."
+%feature("docstring") simuPOP::selfingGenoTransmitter::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::selfingGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -8915,18 +8315,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setAncestralDepth::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the setAncestralDepth operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::setAncestralDepth::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::sexSplitter "
 
@@ -9378,18 +8767,6 @@ Details:
 
 %ignore simuPOP::simulator::load(string filename);
 
-%feature("docstring") simuPOP::simulator::__repr__ "
-
-Description:
-
-    of the simulator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::smmMutator "
 
 Function form:
@@ -9464,18 +8841,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::smmMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the smmMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::smmMutator::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::splitSubPops "
 
@@ -9576,18 +8942,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the splitSubPops operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::splitSubPops::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::stat "
 
@@ -9963,18 +9318,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::stat::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the stat operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::stat::opName "Obsolete or undocumented function."
 
 %ignore simuPOP::statAlleleFreq;
 
@@ -10423,6 +9767,64 @@ Usage:
 
 %ignore simuPOP::subPopList::useSubPopsFrom(const population &pop);
 
+%feature("docstring") simuPOP::summaryTagger "
+
+Details:
+
+    A summary tagger summarize values of one or more parental
+    information field to another information field of an offspring. If
+    mating is sexual, two sets of parental values will be involved.
+
+"; 
+
+%feature("docstring") simuPOP::summaryTagger::summaryTagger "
+
+Usage:
+
+    summaryTagger(mode=Mean, stage=DuringMating, begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
+      infoFields=[])
+
+Details:
+
+    Creates a summary tagger that summarize values of one or more
+    parental information field (infoFields[:-1]) to an offspring
+    information field (infoFields[-1]). A parameter mode specifies how
+    to pass summarize parental values. More specifically,
+    *   mode=Mean Passing the average of values.
+    *   mode=Maximum Passing the maximum value of values.
+    *   mode=Minumum Passing the minimum value of values.
+    *   mode=Summation Passing the sum of values.
+    *   mode=Multiplication Passing the multiplication of values. This
+    operator does not support parameter subPops and does not output
+    any information.
+
+"; 
+
+%feature("docstring") simuPOP::summaryTagger::~summaryTagger "
+
+Usage:
+
+    x.~summaryTagger()
+
+"; 
+
+%feature("docstring") simuPOP::summaryTagger::opName "Obsolete or undocumented function."
+
+%ignore simuPOP::summaryTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::summaryTagger::clone "
+
+Description:
+
+    deep copy of a summaryTagger
+
+Usage:
+
+    x.clone()
+
+"; 
+
 %feature("docstring") simuPOP::SystemError "
 
 Description:
@@ -10486,18 +9888,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::terminateIf::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the terminateIf terminator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::terminateIf::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::terminateIf::apply "
 
@@ -10563,18 +9954,7 @@ Usage:
 
 %feature("docstring") simuPOP::ticToc::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::ticToc::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the ticToc operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::ticToc::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOffDebug "
 
@@ -10619,18 +9999,7 @@ Usage:
 
 %feature("docstring") simuPOP::turnOffDebug::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::turnOffDebug::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the turnOffDebug operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::turnOffDebug::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOnDebug "
 
@@ -10680,18 +10049,7 @@ Usage:
 
 %feature("docstring") simuPOP::turnOnDebug::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::turnOnDebug::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the turnOnDebug operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::turnOnDebug::opName "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::uintList "
 

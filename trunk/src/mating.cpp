@@ -159,7 +159,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "One of the transmitters " << (*iop)->__repr__()
+				cerr << "One of the transmitters " << (*iop)->opName()
 				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
@@ -179,7 +179,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "DuringMating operator " << (*iop)->__repr__()
+				cerr << "DuringMating operator " << (*iop)->opName()
 				     << " throws an exception.\n"
 				     << e.message() << "\n" << endl;
 				throw e;
@@ -262,8 +262,8 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				throw RuntimeError("No disease allele exists at generation "
 					+ toStr(pop.gen()) + ", but expected allele frequency is greater than 0.");
 
-            DBG_WARNING(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
-                    + toStr(pop.gen()) + ", but expected allele frequency is zero.");
+			DBG_WARNING(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
+				+ toStr(pop.gen()) + ", but expected allele frequency is zero.");
 
 			// calculate exp number of affected offspring in the next generation.
 			//

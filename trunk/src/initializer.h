@@ -87,10 +87,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the initSex
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::initSex>";
+		return "<simuPOP.initSex>";
 	}
 
 
@@ -147,10 +147,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the initInfo
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::initInfo>";
+		return "<simuPOP.initInfo>";
 	}
 
 
@@ -204,10 +204,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the operator \c initByFreq
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::initByFreq>";
+		return "<simuPOP.initByFreq>";
 	}
 
 
@@ -266,10 +266,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the operator \c initByValue
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::initByValue>";
+		return "<simuPOP.initByValue>";
 	}
 
 

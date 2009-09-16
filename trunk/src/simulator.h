@@ -294,14 +294,6 @@ public:
 	/// CPPONLY load simulator from a file
 	void load(string filename);
 
-	/// used by Python print function to print out the general information
-	/// of the simulator
-	string __repr__()
-	{
-		return "<simulator with " + toStr(numRep()) + " replicates>";
-	}
-
-
 private:
 	friend class boost::serialization::access;
 

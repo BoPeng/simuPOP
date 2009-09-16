@@ -106,10 +106,10 @@ public:
 	/// Apply the \c pyEval operator to population \e pop.
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c pyEval operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pyEval>";
+		return "<simuPOP.pyEval>";
 	}
 
 
@@ -159,10 +159,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c pyExec operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::pyExec>";
+		return "<simuPOP.pyExec>";
 	}
 
 
@@ -245,10 +245,10 @@ public:
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// used by Python print function to print out the general information of the \c infoEval operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::infoEval>";
+		return "<simuPOP.infoEval>";
 	}
 
 
@@ -336,10 +336,10 @@ public:
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// used by Python print function to print out the general information of the \c infoExec operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::infoExec>";
+		return "<simuPOP.infoExec>";
 	}
 
 
@@ -1197,10 +1197,10 @@ public:
 	/// apply the \c stat operator
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c stat operator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::statistics>";
+		return "<simuPOP.statistics>";
 	}
 
 

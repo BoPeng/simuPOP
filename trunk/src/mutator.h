@@ -232,10 +232,10 @@ public:
 	}
 
 
-	///
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::matrix mutator";
+		return "<simuPOP.matrix mutator";
 	}
 
 
@@ -290,10 +290,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c kamMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::k-allele model mutator K=" +
+		return "<simuPOP.k-allele model mutator K=" +
 		       toStr(m_k) + ">" ;
 	}
 
@@ -363,10 +363,10 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c smmMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::step-wise mutation model mutator>" ;
+		return "<simuPOP.step-wise mutation model mutator>" ;
 	}
 
 
@@ -425,10 +425,10 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// used by Python print function to print out the general information of the \c pyMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::python mutator>" ;
+		return "<simuPOP.python mutator>" ;
 	}
 
 
@@ -490,10 +490,10 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// used by Python print function to print out the general information of the \c mixedMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::mixed mutator>" ;
+		return "<simuPOP.mixed mutator>" ;
 	}
 
 
@@ -569,10 +569,10 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// used by Python print function to print out the general information of the \c context-dependentMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::context-dependent mutator>" ;
+		return "<simuPOP.context-dependent mutator>" ;
 	}
 
 
@@ -625,10 +625,10 @@ public:
 	/// apply a \c pointMutator
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c pointMutator
-	string __repr__()
+	/// HIDDEN
+	string opName()
 	{
-		return "<simuPOP::point mutator>" ;
+		return "<simuPOP.point mutator>" ;
 	}
 
 
