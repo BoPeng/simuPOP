@@ -16221,8 +16221,11 @@ reference "otherTagging"
  Before mating happens, a penetrance operator is used to assign affection
  status to parents.
  The affection status is then copied to an information field affected so
- that operator inheritTagger could be used to count the number of affected
- parents.
+ that operator 
+\family typewriter
+summaryTagger
+\family default
+ could be used to count the number of affected parents.
  A rare feature 
 \family typewriter
 stage=PrePostMating
