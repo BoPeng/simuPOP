@@ -3582,7 +3582,7 @@ lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPopName"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -15889,12 +15889,27 @@ mother_idx
 ) of their offspring.
  These indexes provide a way to track down an individuals parents, offspring
  and consequently all relatives in a multi-generation population.
- 
-\series bold
-This operator may become obsolete with the introduction of ID based pedigree-tra
-cking techniques
-\series default
-.
+ Because this operator has been extensively used in this guide, please refer
+ to other sections for an Example (e.g.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "basicInfoFields"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+As long as parental generations do not change after the offspring generation
+ is created, recorded parental indexes can be used to locate parents of
+ an individual.
+ However, in certain applications when parental generations change (e.g.
+ to draw a pedigree from a large population), or when individuals can not
+ be looked up easily using indexes (e.g.
+ after individuals are saved to a file), giving every individual an unique
+ ID and refer to them using ID will be a better choice.
 \end_layout
 
 \begin_layout Subsection

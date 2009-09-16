@@ -3169,15 +3169,6 @@ simu.evolve(
 )
 #end_file
 
-#begin_file log/parentsTagger.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
-#end_ignore
-#end_file
-
 #begin_file log/idTagger.py
 #begin_ignore
 import simuOpt
