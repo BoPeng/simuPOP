@@ -90,7 +90,7 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 			DBG_FAILIF(mom == NULL, RuntimeError,
 				"Invalid mother for maternal inheritance");
 			offspring->setInfo(mom->info(idx), idx);
-		} else if (m_mode == Average) {
+		} else if (m_mode == Mean) {
 			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
 				"Invalid father or mother for average inheritance");
 			offspring->setInfo((mom->info(idx) + dad->info(idx)) / 2, idx);
@@ -106,10 +106,92 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
 				"Invalid father or mother for summation inheritance");
 			offspring->setInfo(mom->info(idx) + dad->info(idx), idx);
+		}  else if (m_mode == Multiplication) {
+			DBG_FAILIF(mom == NULL || dad == NULL, RuntimeError,
+				"Invalid father or mother for summation inheritance");
+			offspring->setInfo(mom->info(idx) * dad->info(idx), idx);
 		} else {
 			DBG_FAILIF(true, ValueError, "Invalid inheritance mode");
 		}
 	}
+	return true;
+}
+
+
+bool summaryTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+                                      individual * dad, individual * mom)
+{
+	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
+		"Invalid father and mother for summaryTagger.");
+
+	UINT sz = infoSize();
+
+	if (m_mode == Mean) {
+		double all = 0;
+		UINT cnt = 0;
+		for (size_t i = 0; i < sz - 1; ++i) {
+			if (dad != 0) {
+				all += dad->info(infoField(i));
+				cnt += 1;
+			}
+			if (mom != 0) {
+				all += mom->info(infoField(i));
+				cnt += 1;
+			}
+		}
+		offspring->setInfo(all / cnt, infoField(sz - 1));
+	}  else if (m_mode == Maximum) {
+		double dadMax = 0;
+		double momMax = 0;
+		if (dad != NULL) {
+			double dadMax = dad->info(infoField(0));
+			for (size_t i = 1; i < sz - 1; ++i)
+				dadMax = std::max(dadMax, dad->info(infoField(i)));
+		}
+		if (mom != NULL) {
+			double momMax = mom->info(infoField(0));
+			for (size_t i = 1; i < sz - 1; ++i)
+				momMax = std::max(momMax, mom->info(infoField(i)));
+		}
+		double allMax = dad == NULL ? momMax : (mom == NULL ? dadMax : std::max(dadMax, momMax));
+		offspring->setInfo(allMax, infoField(sz - 1));
+	}  else if (m_mode == Minimum) {
+		double dadMin = 0;
+		double momMin = 0;
+		if (dad != NULL) {
+			double dadMin = dad->info(infoField(0));
+			for (size_t i = 1; i < sz - 1; ++i)
+				dadMin = std::min(dadMin, dad->info(infoField(i)));
+		}
+		if (mom != NULL) {
+			double momMin = mom->info(infoField(0));
+			for (size_t i = 1; i < sz - 1; ++i)
+				momMin = std::min(momMin, mom->info(infoField(i)));
+		}
+		double allMin = dad == NULL ? momMin : (mom == NULL ? dadMin : std::min(dadMin, momMin));
+		offspring->setInfo(allMin, infoField(sz - 1));
+	}  else if (m_mode == Summation) {
+		double all = 0;
+		for (size_t i = 0; i < sz - 1; ++i) {
+			if (dad != 0)
+				all += dad->info(infoField(i));
+			if (mom != 0)
+				all += mom->info(infoField(i));
+		}
+		offspring->setInfo(all, infoField(sz - 1));
+	}  else if (m_mode == Multiplication) {
+		double all = 1.;
+		for (size_t i = 0; i < sz - 1; ++i) {
+			if (dad != 0)
+				all *= dad->info(infoField(i));
+			if (mom != 0)
+				all *= mom->info(infoField(i));
+		}
+		offspring->setInfo(all, infoField(sz - 1));
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid inheritance mode");
+	}
+
 	return true;
 }
 
@@ -200,3 +282,5 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 
 
 }
+
+
