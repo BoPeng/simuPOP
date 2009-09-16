@@ -217,7 +217,7 @@ public:
 	   \li \c wildtype alleles at all loci are the same.
 
 	 */
-	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = uintList(0),
+	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
@@ -227,6 +227,8 @@ public:
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
 															 static_cast<double>(m_loci.size()))),
 			ValueError, "Please specify fitness for each combination of genotype.");
+
+		DBG_WARNING(m_wildtype.empty(), "No wild type allele is defined.");
 	};
 
 	virtual ~maSelector()
