@@ -15868,7 +15868,7 @@ lstparams "caption={Use an inherit tagger to track offspring of individuals},lab
 \end_layout
 
 \begin_layout Subsection
-Tagging with summary of two parental values (operator 
+Summarize parental informatin fields (operator 
 \family typewriter
 summaryTagger)
 \end_layout
