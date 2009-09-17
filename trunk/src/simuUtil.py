@@ -826,7 +826,7 @@ class trajectorySimulator:
             return self.N
 
     def _interFitness(self, fitness, freq):
-        'Get fitness for all loci when there is interaction'
+        'Get marginal fitness for all loci when there is interaction'
         sAll = [0] * (3 * self.nLoci)
         # each locus
         for loc in range(self.nLoci):
@@ -838,7 +838,7 @@ class trajectorySimulator:
                 allgeno = [0] * self.nLoci
                 # set myself
                 allgeno[loc] = geno
-                # iterate through others
+                # iterate through genotype at other loci
                 f = 0.
                 for it in range(3**(self.nLoci - 1)):
                     # assign allgeno
@@ -859,6 +859,9 @@ class trajectorySimulator:
 
     def _fitOfGeno(self, loc, allgeno, fitness, freq):
         'Return the fitness of genotype for func _interFitness'
+        # This function calculates one item in
+        #     f(X=Aa) = Sum_g P(Y=g) * f(X=Aa, Y=g)
+        # g means genotype at loci other than loc
         index = 0
         fq = 1.
         for i in range(len(allgeno)):
@@ -869,6 +872,7 @@ class trajectorySimulator:
                     fq *= 2 * (1 - freq[i]) * freq[i]
                 else:
                     fq *= freq[i] * freq[i]
+            # index is determined by genotype.
             index = index * 3 + allgeno[i]
             if fq == 0:
                 return 0.
