@@ -168,7 +168,6 @@ class TestUtility(unittest.TestCase):
                 for j in range(pos+1, N):
                     assert not bt.trialSucc(i, j)
 
-
     def testSeed(self):
         'Testing RNG::seed() and RNG::setSeed()'
         import random
@@ -183,7 +182,21 @@ class TestUtility(unittest.TestCase):
         sd = random.randint(100, 10000)
         SetRNG(name, sd)
         self.assertEqual(GetRNG().seed(), sd)
-
+        # test if sequences are the same once the seed is set
+        sd = random.randint(100, 10000)
+        SetRNG(name, sd)
+        seq = [GetRNG().randInt(10000) for x in range(100)]
+        SetRNG(name, sd)
+        seq1 = [GetRNG().randInt(10000) for x in range(100)]
+        self.assertEqual(seq, seq1)
+        # randBit need to be treated separately because it uses
+        # global variable of RNG().
+        sd = random.randint(100, 10000)
+        SetRNG(name, sd)
+        seq = [GetRNG().randBit() for x in range(100)]
+        SetRNG(name, sd)
+        seq1 = [GetRNG().randBit() for x in range(100)]
+        self.assertEqual(seq, seq1)
 
     def testWeightedSampler(self):
         'Testing weighted sampler'

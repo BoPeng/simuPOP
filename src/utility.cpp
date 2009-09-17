@@ -2392,21 +2392,20 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 
 	// set seed
 	gsl_rng_set(m_RNG, m_seed);
+	m_bitByte = 0;
+	m_bitIndex = 0;
 }
 
 
 bool RNG::randBit()
 {
-	static WORDTYPE randbyte = 0;
-	static UINT index = 0;
+	if (m_bitIndex == 16)
+		m_bitIndex = 0;
 
-	if (index == 16)
-		index = 0;
+	if (m_bitIndex == 0)
+		m_bitByte = randInt(0xFFFF);
 
-	if (index == 0)
-		randbyte = randInt(0xFFFF);
-
-	return (randbyte & (1UL << index++)) != 0;
+	return (m_bitByte & (1UL << m_bitIndex++)) != 0;
 }
 
 
