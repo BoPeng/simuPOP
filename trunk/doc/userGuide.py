@@ -1959,6 +1959,29 @@ for pop in simu.populations():
         (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
 #end_file
 
+#begin_file log/terminateIf.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+simu = simulator(
+    population(size=100, loci=1),
+    randomMating(), rep=10)
+simu.evolve(
+    preOps = [
+        initSex(),
+        initByFreq([0.5, 0.5]),
+    ],
+    ops = [
+        stat(alleleFreq=0),
+        terminateIf('len(alleleFreq[0]) == 1', stopAll=True)
+    ]
+)
+
+#end_file
+
 #begin_file log/debug.py
 #begin_ignore
 import simuOpt
@@ -1983,6 +2006,9 @@ simu.evolve(
     ],
     gen = 100
 )
+#begin_ignore
+TurnOffDebug("DBG_MUTATOR")
+#end_ignore
 #end_file
 
 #begin_file log/pause.py

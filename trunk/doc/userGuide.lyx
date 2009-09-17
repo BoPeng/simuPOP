@@ -16603,6 +16603,100 @@ pyOperator
 \end_layout
 
 \begin_layout Subsection
+Conditionally terminate an evolutionary process (operator 
+\family typewriter
+terminateIf
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator terminateIf has been described and used in several examples such
+ as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simuGen"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "expression"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ifElse"
+
+\end_inset
+
+.
+ This operator accept an Python expression and terminate the evolution of
+ the population being applied if the expression is evaluated to be 
+\family typewriter
+True
+\family default
+.
+ This operator is well suited for situations where the number of generations
+ to evolve cannot be determined in advance.
+\end_layout
+
+\begin_layout Standard
+If a 
+\family typewriter
+terminateIf
+\family default
+ operator is applied to the offspring generation (post-mating, default),
+ the evolutionary cycle is considered to be completed.
+ If the evolution is terminated before mating, the evolutionary cycle is
+ condered to be imcomplete.
+ Such a difference can be important if the number of generations that have
+ been involved is important for your analysis.
+\end_layout
+
+\begin_layout Standard
+A less-known feature of operator 
+\family typewriter
+terminateIf
+\family default
+ is its ability to terminate the evolution of all replicates, using parameter
+ 
+\family typewriter
+stopAll=True
+\family default
+.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "terminateIf"
+
+\end_inset
+
+ terminates the evolution of all populations when one of the populations
+ gets fixed.
+ The return value of 
+\family typewriter
+simu.evolve
+\family default
+ shows that some populations have evolved one generation less than the populatio
+n being fixed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/terminateIf.log"
+lstparams "caption={Terminate the evolution of all populations in a simulator},label={terminateIf}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Turn on and off debugging mode (operator 
 \family typewriter
 turnOnDebug

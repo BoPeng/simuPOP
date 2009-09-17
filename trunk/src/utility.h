@@ -1367,10 +1367,9 @@ public:
 	/** Set random seed for this random number generator. If seed is 0, method
 	 *  described in \c setRNG is used.
 	 */
-	void setSeed(unsigned long seed)
+	void setSeed(unsigned long seed = 0)
 	{
-		m_seed = seed;
-		setRNG(name(), m_seed);
+		setRNG(name(), seed);
 	}
 
 
@@ -1524,6 +1523,11 @@ private:
 
 	/// seed used
 	unsigned long m_seed;
+
+	/// used by RNG::randBit(). I was using static but this make it difficult
+	/// to reset a RNG when a new seed is set.
+	WORDTYPE m_bitByte;
+	UINT m_bitIndex;
 };
 
 /// CPPONLY

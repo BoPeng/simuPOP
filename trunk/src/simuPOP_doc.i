@@ -7792,7 +7792,7 @@ Details:
 
 Usage:
 
-    x.setSeed(seed)
+    x.setSeed(seed=0)
 
 Details:
 
