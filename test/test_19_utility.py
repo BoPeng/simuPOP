@@ -256,8 +256,7 @@ class TestUtility(unittest.TestCase):
             return [1] * 3
         trajSimulator = trajectorySimulator(N=Nt, fitness=fitness, nLoci = 3)
         traj = trajSimulator.simuBackward(genEnd=3000, freq=0, minMutAge = 0,
-                maxMutAge = 100000, ploidy = 2,
-                restartIfFail = False, maxAttempts=1000, logger=None)
+                maxMutAge = 100000, restartIfFail = False, maxAttempts=1000)
         self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 9)
         traj1 = trajSimulator.simuForward(freq = [0, 1, 0], destFreq = [[0,1]]*3, genEnd = 100)
         self.assertEqual(traj1.freq(random.randint(0, 100)), [0,0,0,1,1,1,0,0,0])        

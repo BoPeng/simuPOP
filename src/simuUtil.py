@@ -772,6 +772,13 @@ class trajectorySimulator:
         Logged messages have levels of importance associated with them. The default levels
         provided are DEBUG, INFO, WARNING, ERROR and CRITICAL. User should indicate the importance
         of a logged message. Default value for logger is None.
+
+    NOTE:
+
+    1. This function works only for diploid population because the formulation uses genotype
+        fitness.
+    2.
+
     '''
 
     def __init__(self, N, fitness, nLoci, logger=None):
@@ -825,14 +832,17 @@ class trajectorySimulator:
         else:
             return self.N
 
-    def _interFitness(self, fitness, freq):
-        'Get marginal fitness for all loci when there is interaction'
+    def _marginalFitness(self, fitness, freq):
+        '''Convert interaction fitness (3**n elements) to marginal fitness
+        (3*n elements) using given allele frequency. The marginal fitnesses
+        are calculated using formula:
+                f(X=Aa) = Sum_g P(Y=g) * f(X=Aa, Y=g)
+        where g is genotype at all other loci.
+        '''
         sAll = [0] * (3 * self.nLoci)
         # each locus
         for loc in range(self.nLoci):
             # each genotype AA, Aa and aa (geno is the number of disease allele)
-            # calculate
-            #     f(X=Aa) = Sum_g P(Y=g) * f(X=Aa, Y=g)
             for geno in range(3):
                 # iterate through OTHER DSL
                 allgeno = [0] * self.nLoci
@@ -841,49 +851,41 @@ class trajectorySimulator:
                 # iterate through genotype at other loci
                 f = 0.
                 for it in range(3**(self.nLoci - 1)):
-                    # assign allgeno
+                    # assign allgeno, using it as a 3-based integer.
                     num = it
                     for l in range(self.nLoci):
                         if l == loc:
                             continue
                         allgeno[l] = num % 3
                         num /= 3
-                    f += self._fitOfGeno(loc, allgeno, fitness, freq)
+                    # calculate P(Y=g) and f(X=Aa, Y=g)
+                    index = 0
+                    fq = 1.
+                    for i in range(len(allgeno)):
+                        if i != loc:
+                            if allgeno[i] == 0:
+                                fq *= (1 - freq[i]) * (1 - freq[i])
+                            elif allgeno[i] == 1:
+                                fq *= 2 * (1 - freq[i]) * freq[i]
+                            else:
+                                fq *= freq[i] * freq[i]
+                        # index is determined by genotype.
+                        index = index * 3 + allgeno[i]
+                    f += fitness[index] * fq
                 # sum over other genotype
                 sAll[loc * 3 + geno] = f
-            # convert to form 1, s1, s2
+            # convert to form 0, s1, s2
             sAll[3 * loc + 1] = float(sAll[3 * loc + 1]) / sAll[3 * loc] - 1.
             sAll[3 * loc + 2] = float(sAll[3 * loc + 2]) / sAll[3 * loc] - 1.
             sAll[3 * loc] = 0.
         return sAll
 
-    def _fitOfGeno(self, loc, allgeno, fitness, freq):
-        'Return the fitness of genotype for func _interFitness'
-        # This function calculates one item in
-        #     f(X=Aa) = Sum_g P(Y=g) * f(X=Aa, Y=g)
-        # g means genotype at loci other than loc
-        index = 0
-        fq = 1.
-        for i in range(len(allgeno)):
-            if i != loc:
-                if allgeno[i] == 0:
-                    fq *= (1 - freq[i]) * (1 - freq[i])
-                elif allgeno[i] == 1:
-                    fq *= 2 * (1 - freq[i]) * freq[i]
-                else:
-                    fq *= freq[i] * freq[i]
-            # index is determined by genotype.
-            index = index * 3 + allgeno[i]
-            if fq == 0:
-                return 0.
-        return fitness[index] * fq
-
     def _getS(self, gen, freq=None):
-        '''
-        Get fitness(gen) depending on the type of fitness.
-        Get s1, s2 from f1, f2, f3.
-        Currently, selection pressure only varies among multiple loci and/or depends on gen,
-        but does not rely on changes of allele frequency or different subpopulations.
+        '''Get fitness(gen) depending on the type of fitness. If self.fitness
+        is a function, it is called to get a generation dependent fitness. The
+        fitness value is then translated to 0, s1, s2. Marginal fitness is
+        calculated using optional allele frequency (``freq``) if interaction is
+        involved.
         '''
         # _fitness() expects parameters gen 
         if callable(self.fitness):
@@ -908,22 +910,20 @@ class trajectorySimulator:
             s.append(float(fit[1]) / float(fit[0]) - 1.)
             s.append(float(fit[2]) / float(fit[0]) - 1.)
             s = s * self.nLoci
-        # case 3: 3^^self.nLoci, interaction
+        # case 3: 3**self.nLoci, interaction
         elif len(fit) == 3**self.nLoci:
             # from fitness list, get s using allele frequency
             # Allele frequency for each subpopulation is passed and there will be
             # different s for each subpopulation because different allele frequencies.
             nSP = len(freq) / self.nLoci
             for sp in range(nSP):
-                s.extend(self._interFitness(fit, [freq[sp + nSP * i] for i in range(self.nLoci)]))
+                s.extend(self._marginalFitness(fit, [freq[sp + nSP * i] for i in range(self.nLoci)]))
         else:
             raise ValueError('Wrong length of list of fitness: ' + str(len(fit)))
         return s
 
-    def _getNextXt(self, curXt, Nt, s, ploidy):
-        '''
-        Solve y from the formula and simulate forward trajectory.
-        '''
+    def _getNextXt(self, curXt, Nt, s):
+        '''Solve y from the formula and simulate forward trajectory.'''
         it = []
         xt = []
         nSP = len(Nt)
@@ -946,19 +946,18 @@ class trajectorySimulator:
                 # with s1 and s2 on hand, calculate freq at the next generation
                 y = x * (1 + s2 * x + s1 * (1 - x)) / (1 + s2 * x * x + 2 * s1 * x * (1 - x))
                 # y is obtained, is the expected allele frequency for the next generation t+1
-                it = GetRNG().randBinomial(ploidy * Nt[sp], y)
-                xt.append(float(it) / (ploidy * Nt[sp]))
+                it = GetRNG().randBinomial(2 * Nt[sp], y)
+                xt.append(float(it) / (2 * Nt[sp]))
         return xt
         
 
-    def _getPrevXt(self, curXt, Nt, s, ploidy):
-        '''
-        Solve y from the backward formula and simulate backward trajectories in time
-        It takes parameter curXt in the form of a list.
-        Nt is passed in as a list for current population size/subpopulation sizes.
-        The function returns a list, which contains allele frequencies of one
-        previous generation at all loci through every subpopulation, it is arranged
-        in the order of loc0_sp0, loc0_sp1, ..., loc1_sp0, loc1_sp1, ... and so on. 
+    def _getPrevXt(self, curXt, Nt, s):
+        '''Solve y from the backward formula and simulate backward trajectories
+        in time. It takes parameter *curXt* in the form of a list. Nt is passed
+        as a list for current population size/subpopulation sizes. The function
+        returns a list, which contains allele frequencies of the previous
+        generation at all loci through every subpopulation, arranged in the
+        order of loc0_sp0, loc0_sp1, ..., loc1_sp0, loc1_sp1, ... and so on.
         '''
         #
         # given x(t)
@@ -1001,20 +1000,19 @@ class trajectorySimulator:
                     else:
                         y1 = (-b + b2_4ac**0.5) / (2 * a)
                         y2 = (-b - b2_4ac**0.5) / (2 * a)
-
+                    #
                     # choose one of the solutions
                     if y1 >= 0 or y1 <= 1:
                          y = y2
                     else:
                          y = y1
                 # y is obtained, is the expected allele frequency for the previous generation t-1
-                it = GetRNG().randBinomial(int(ploidy * Nt[sp]), y)
-                xt.append(float(it) / (ploidy * Nt[sp]))
+                it = GetRNG().randBinomial(int(2 * Nt[sp]), y)
+                xt.append(float(it) / (2 * Nt[sp]))
         return xt
-        
-    def _simuForward(self, freq, destFreq, genBegin, genEnd, ploidy, maxAttempts):
-        '''
-        This function simulates forward trajectory for one time.
+
+    def _simuForward(self, freq, destFreq, genBegin, genEnd):
+        '''This function simulates forward trajectory once.
         During the simulation, variable number of subpopulations within different
         generations will be allowed. It's introduced by merging events and splitting
         events in forward sense. Changes of subpopulation sizes need to meet specific
@@ -1048,7 +1046,7 @@ class trajectorySimulator:
                 # split(forward sense) from one population to nSP subpopulations
                 # get xt at next generation: t+1
                 Nt = [sum(nextNt)]
-                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)), ploidy)
+                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)))
                 # it nextXt to multiple subpopulations and assign... nextXt.
                 NEWnextXt = []
                 for idx, ind in enumerate(nextXt):
@@ -1063,7 +1061,7 @@ class trajectorySimulator:
                 # merge (forward sense) from multiple subpopulations to one pop.
                 Ntp = self._Nt(gen - 1)
                 Nt = [int(x * 1.0 / sum(Ntp) * nextNt[0]) for x in Ntp]
-                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)), ploidy)
+                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)))
                 # Merge nextXt and set to trajectory
                 NEWnextXt = [
                     # sum over all subpopulations and calculate overall allele frequency
@@ -1073,15 +1071,13 @@ class trajectorySimulator:
                 xt._setFreq(NEWnextXt, gen=gen, nSubPop = len(nextNt))
             else:
                 Nt = nextNt
-                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)), ploidy)
+                nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)))
                 xt._setFreq(nextXt, gen=gen, nSubPop = len(nextNt))
 
         return xt
                 
-    def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, ploidy,
-                     restartIfFail):
-        '''
-        This function simulates backward trajectory for one time.
+    def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, restartIfFail):
+        '''This function simulates backward trajectory for one time.
         During the simulation, various number of subpopulations within different
         generations will be allowed. It's introduced by merging events and splitting
         events in forward sense, correspondingly splitting and merging in backward
@@ -1112,7 +1108,7 @@ class trajectorySimulator:
                 # to nSP subpopulations (backward sense)
                 # get xt at previous generation: t-1
                 Nt = [sum(prevNt)]
-                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)), ploidy)
+                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)))
                 # SPLIT prevXt to multiple subpopulations and assign an expanded
                 # prevXt.
                 assert len(prevXt) == self.nLoci
@@ -1132,7 +1128,7 @@ class trajectorySimulator:
                 # to one population (backward sense)
                 Ntp = self._Nt(gen + 1)
                 Nt = [int(x * 1.0 / sum(Ntp) * prevNt[0]) for x in Ntp]
-                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)), ploidy)
+                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)))
                 # MERGE prevXt and set to trajectory
                 NEWprevXt = [
                     # sum over all subpopulations and calculate overall allele frequency
@@ -1142,7 +1138,7 @@ class trajectorySimulator:
                 xt._setFreq(NEWprevXt, gen=gen, nSubPop = len(prevNt))
             else:
                 Nt = prevNt
-                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)), ploidy)
+                prevXt = self._getPrevXt(curXt, Nt, self._getS(gen, xt.freq(gen+1)))
                 xt._setFreq(prevXt, gen=gen, nSubPop = len(prevNt))
             # set freq for previous generation
             # at all loci, check when prevIt is 0, if curIt is 1
@@ -1154,7 +1150,7 @@ class trajectorySimulator:
                 # loop over subpopulation
                 for idx, (xtCur, xtPrev) in enumerate(zip(curXt[loc*nSP:(loc+1)*nSP],
                         prevXt[loc*nSP:(loc+1)*nSP])):
-                    it = xtCur * self._Nt(gen + 1)[idx] * ploidy
+                    it = xtCur * self._Nt(gen + 1)[idx] * 2
                     if it == 0:
                         # already done in a previous generation
                         doneNSP[idx] = True
@@ -1189,36 +1185,23 @@ class trajectorySimulator:
 
         return xt
             
-    def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000):
-        '''
-        simulate trajectories of multiple disease susceptibility loci using a forward time approach
+    def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000):
+        '''Simulate trajectories of multiple disease susceptibility loci using a
+        forward time approach. A ``trajectory`` object is returned if the
+        simulation succeeds. Otherwise, an RuntimeError will be raised.
 
-        Return the trajectory for each locus at each subpopulation. In the order of
-        OC0: sp0, sp1, sp2, ..., LOC1: sp0, sp1, sp2,...
-        Each trajectory will have length genEnd - genBegin + 1
-        
-        parameter description:
-
-        genBegin
-            starting generation number
-        
-        genEnd
-            ending generation number
-        
-        freq
-            allele frequencies of alleles of multiple unlinked loci at the beginning
-            generation.
-        
-        destFreq
-            expected *range* of allele frequencies of alleles of multiple unlinked loci,
-            at generation genEnd , with all subpopulation combined. If there are two loci,
-            it can be [[0.08, 0.12], [0.19, 0.21]]
-        
-        ploidy
-            number of chromosomes will be N*ploidy
-
-        maxAttempts
-            How many times to try to get a valid path? Default 10,000
+        This function accepts allele frequencies of alleles of multiple unlinked
+        loci at the beginning generation (parameter ``freq``) at generation
+        ``genBegin``, and expected *range* of allele frequencies of these
+        alleles (parameter ``destFreq``) at the end of generation ``genEnd``.
+        Depending on the number of loci and subpopulations, ``freq`` can be
+        a number or a list of frequencies for each locus at each subpopulation,
+        and ``destFreq`` can be a list, or a list for ranges of frequencies for
+        each locus at each subpopulation. This simulator will simulate a
+        trajectory generation by generation and restart if the resulting
+        frequencies do not fall into specified range of frequencies. This
+        simulator will raise an ``RuntimeError`` if no valid trajectory is
+        found after ``maxAttempts`` attemps.
         '''
         for i in range(self.nLoci):
             if len(destFreq[i]) != 2:
@@ -1228,7 +1211,7 @@ class trajectorySimulator:
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuForward(freq, destFreq, genBegin, genEnd, ploidy, maxAttempts)
+                return self._simuForward(freq, destFreq, genBegin, genEnd)
             except exceptions.Exception, e:
                 if e.args[0] == 'invalid':
                     self.errorCount['invalid'] += 1
@@ -1237,9 +1220,24 @@ class trajectorySimulator:
                     print e
                     raise          
     
-    def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
-                     restartIfFail = False, maxAttempts = 1000):
-        '''
+    def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, restartIfFail = False, maxAttempts = 1000):
+        '''Simulate trajectories of multiple disease susceptibility loci using a
+        forward time approach. A ``trajectory`` object is returned if the
+        simulation succeeds. Otherwise, an RuntimeError will be raised.
+
+        This function accepts allele frequencies of alleles of multiple unlinked
+        loci at the beginning generation (parameter ``freq``) at generation
+        ``genBegin``, and expected *range* of allele frequencies of these
+        alleles (parameter ``destFreq``) at the end of generation ``genEnd``.
+        Depending on the number of loci and subpopulations, ``freq`` can be
+        a number or a list of frequencies for each locus at each subpopulation,
+        and ``destFreq`` can be a list, or a list for ranges of frequencies for
+        each locus at each subpopulation. This simulator will simulate a
+        trajectory generation by generation and restart if the resulting
+        frequencies do not fall into specified range of frequencies. This
+        simulator will raise an ``RuntimeError`` if no valid trajectory is
+        found after ``maxAttempts`` attemps.
+
         simulate trajectories of multiple disease susceptibility loci using an extension of the
         backward method described in Slatkin 2001.
 
@@ -1265,9 +1263,6 @@ class trajectorySimulator:
             maximum generation number. The process will terminate or restart if it can
             not reach allele zero after T generations. Default to 100,000, roughly
             2,000,000 years which is longer than human history.
-        
-        ploidy
-            number of chromosomes will be N * ploidy
         
         restartIfFail
             If the process can not finish after T generations, restart if
@@ -1296,7 +1291,7 @@ class trajectorySimulator:
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail)
+                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, restartIfFail)
             except exceptions.Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
@@ -1331,20 +1326,20 @@ class trajectorySimulator:
         return 
 
 
-def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin = 0, genEnd = 0, ploidy=2, maxAttempts = 10000,
+def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000,
                     logger=None):
     '''
     Return an object to class trajectory in forward simulation.
     '''
     return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, destFreq, genBegin, genEnd,
-                                                              ploidy, maxAttempts)
+                                                              maxAttempts)
     
-def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
+def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge = 100000, 
                      restartIfFail = False, maxAttempts = 1000, logger=None):
     '''
     Return an object to class trajectory in backward simulation.
     '''
-    return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy,
+    return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, 
                                                               restartIfFail, maxAttempts)
 
 
