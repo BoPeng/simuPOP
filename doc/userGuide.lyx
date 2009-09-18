@@ -18595,7 +18595,7 @@ rpy_80.png
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/rpy.log"
+filename "log/varPlotter.log"
 lstparams "caption={Use rpy to plot an expression},label={rpy}"
 
 \end_inset
