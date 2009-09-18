@@ -746,67 +746,45 @@ class trajectory:
         
 
 class trajectorySimulator:
-    '''
-    Simulate trajectories of disease susceptibility loci using an extension of the backward
-    method described in Slatkin 2001 or forward algorithms.
+    '''A trajectory simulator takes basic demographic and genetic (natural
+    selection) information of an evolutionary process of a diploid population
+    and allow the simulation of trajectory of allele frequencies of one or
+    more loci. Trajectories could be simulated in two ways: forward-time and
+    backward-time. In a forward-time simulation, the simulation starts from
+    certain allele frequency and simulate the frequency at the next generation
+    using given demographic and genetic information. The simulation continues
+    until an ending generation is reached. A trajectory is successfully
+    simulated if the allele frequency at the ending generation falls into a
+    specified range. In a backward-time simulation, the simulation starts from
+    the ending generation with a desired allele frequency and simulate the
+    allele frequency at previous generations one by one until the allele gets
+    lost (allele frequency equals zero).
 
-    Tracking allele frequencies of alleles on all loci.
-
-    Class trajectory(...) takes four arguments, at least three (N, fitness, nLoci) need to be
-    specified by the user:
-
-    N
-        population size, which may be passed in as a constant number or an array of subpop sizes
-        or a user defined function, NtFunc(gen), which returns population size at each generation.
-        
-    fitness
-        selection pressure for all loci, which can be passed in as a constant array showing
-        fitness for [AA, Aa, aa, BB, Bb, bb,...] or a user defined function, fitnessFunc(gen),
-        which returns selection pressure at each generation.
-    
-    nLoci
-        number of Loci, which should be passed in as a constant integer number with its value
-        equal to or larger than 1.
-
-    logger
-        Logged messages have levels of importance associated with them. The default levels
-        provided are DEBUG, INFO, WARNING, ERROR and CRITICAL. User should indicate the importance
-        of a logged message. Default value for logger is None.
-
-    NOTE:
-
-    1. This function works only for diploid population because the formulation uses genotype
-        fitness.
-    2.
-
+    The result of a trajectory simulation is a trajectory object which can be
+    used to direct the simulation of a special random mating process that
+    controls the evolution of one or more disease alleles so that allele 
+    frequencies are consistent across replicate simulations. For more
+    information about trajectory simulation techniques and related controlled
+    random mating scheme, please refer to the simuPOP user's guide, and Peng et
+    al (PLoS Genetics 3(3), 2007).
     '''
 
     def __init__(self, N, fitness, nLoci, logger=None):
-        '''
-        Initialization of global parameters.
-        
-        Parameter description:
-
-        N
-            pass in population size ''N'' to global variable self.N, which may be a number, a list
-            of subpop sizes or a user-defined function.
-
-        fitness
-            pass in selection pressure ''fitness'' to global variable self.fitness, which may take
-            forms such as, a list of three values in the case of single locus or same fitness for any
-            locus within multiple loci, a list of 3 * nLoci values in the case of multi-loci without
-            interaction, a list of 3**nLoci values when multi-loci and interaction situation are both considered.
-
-        nLoci
-            pass in number of loci ''nLoci'' to global variable self.nLoci.
-
-        logger
-            pass in level of importance ''logger'' to global variable self.logger, which is a logging
-            object that can be used to record warnings and error messages. 
-
-        errorCount
-            define global dictionary object self.errorCount as the variable to
-            record counts of distinct forms of errors that occur during the simulation.        
+        '''Create a trajectory simulator using provided demographic and genetic
+        (natural selection) parameters. Member functions *simuForward* and
+        *simuBackward* can then be used to simulate trajectories within certain
+        range of generations. Parameter *N* can be a constant or a demographic
+        function that returns the population size (or a list of subpopulation
+        sizes) at each generation. Parameter *fitness* can be a list of fitness
+        values for genotype *AA*, *Aa*, and *aa, respectively; or a function
+        that returns fitness values at each generation. When multiple loci are
+        involved (parameter *nLoci*), *fitness* can be a list of 3 (the same
+        fitness values for all loci), a list of 3*nLoci (different fitness
+        values for each locus) or a list of 3**nLoci (fitness value for each
+        combination of genotype). This simulator by default does not produce
+        any output. However, if a valid logger (see Python module ``logging``)
+        is given, detailed information about how trajectories are simulated
+        will be written to this logger object.
         '''
         # a vector of subpopulation sizes is needed
         if type(N) in [type(1), type(1L)]:
@@ -1012,13 +990,13 @@ class trajectorySimulator:
         return xt
 
     def _simuForward(self, freq, destFreq, genBegin, genEnd):
-        '''This function simulates forward trajectory once.
-        During the simulation, variable number of subpopulations within different
-        generations will be allowed. It's introduced by merging events and splitting
-        events in forward sense. Changes of subpopulation sizes need to meet specific
-        requirements. If subpopulations are merged, they must combine into *one*
-        population. If a splitting event has to occur, it can only originate from
-        generations where no subpopulation existed. 
+        '''Simulates a trajectory froward in time, starting from frequency
+        ``freq`` at generation ``genBegin`` to frequency ranges specified in
+        ``destFreq`` at generation ``genEnd``. During the evolution, multiple
+        subpopulations can be merged into one, and one population can be split
+        into several subpopulations. The number of subpopulation is determined
+        by the demographic function. The function raises an exception if the 
+        simulated trajectory does not fall into ``destFeq``.
         '''
         # initialize a trajectory
         xt = trajectory(endGen = genEnd, nLoci = self.nLoci)
@@ -1073,18 +1051,16 @@ class trajectorySimulator:
                 Nt = nextNt
                 nextXt = self._getNextXt(curXt, Nt, self._getS(gen, xt.freq(gen-1)))
                 xt._setFreq(nextXt, gen=gen, nSubPop = len(nextNt))
-
         return xt
                 
-    def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge, restartIfFail):
-        '''This function simulates backward trajectory for one time.
-        During the simulation, various number of subpopulations within different
-        generations will be allowed. It's introduced by merging events and splitting
-        events in forward sense, correspondingly splitting and merging in backward
-        simulation. Changes of subpopulation sizes need to meet specific requirements.
-        If subpopulations are merged, they must combine into *one* population.
-        If a splitting event has to occur, it can only originate from generations
-        where no subpopulation existed.
+    def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge):
+        '''Simulates a trajectory backward from allele frequency ``freq`` at
+        generation ``genEnd``. During the evolution, multiple subpopulations can
+        be merged into one, and one population can be split into several
+        subpopulations. The number of subpopulation is determined by the
+        demographic function. If a simulated trajectory is shorter than
+        ``minMutAge`` or is longer than ``maxMutAge``, the function will raise
+        an exception.
         '''
         # done[i] is used to track at which generation a trajectory
         # is successfully generated at locus i.
@@ -1182,7 +1158,6 @@ class trajectorySimulator:
                     done[loc] = True
             if False not in done:
                 break
-
         return xt
             
     def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000):
@@ -1218,9 +1193,12 @@ class trajectorySimulator:
                 else:
                     print 'Unknown error occurs'
                     print e
-                    raise          
+                    raise
+        raise RuntimeError("Failed to simulate any trajectory after %d invalid trajectories" % 
+            self.errorCount['invalid'])
+
     
-    def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 100000, restartIfFail = False, maxAttempts = 1000):
+    def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 0, maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. A ``trajectory`` object is returned if the
         simulation succeeds. Otherwise, an RuntimeError will be raised.
@@ -1234,45 +1212,12 @@ class trajectorySimulator:
         and ``destFreq`` can be a list, or a list for ranges of frequencies for
         each locus at each subpopulation. This simulator will simulate a
         trajectory generation by generation and restart if the resulting
-        frequencies do not fall into specified range of frequencies. This
+        frequencies do not fall into specified range of frequencies. During the
+        evolution, multiple subpopulations can be merged into one, and one
+        population can be split into several subpopulations. The number of
+        subpopulation is determined by the demographic function. This
         simulator will raise an ``RuntimeError`` if no valid trajectory is
         found after ``maxAttempts`` attemps.
-
-        simulate trajectories of multiple disease susceptibility loci using an extension of the
-        backward method described in Slatkin 2001.
-
-        parameter description:
-        
-        genEnd
-            genenration number in the end, namely the current generation number in the
-            backward trajectory.
-        
-        freq
-            expected allele frequencies of alleles of multiple unlinked loci.
-            It may take forms of a single value or a list of values with number of elememts
-            equal to nLoci. In the case of single value, such freq will be shared by all loci. 
-            FIXME: There are multiple subpopultions and only one frequency is given,
-            the same frequency will be used for all subpopulations. Users can specify
-            different allele frequencies for each subpopulation using the long form...
-            
-        minMutAge
-            minimum generation number. The process will restart if the trajectory is
-            less than it. Default to 0.
-        
-        maxMutAge
-            maximum generation number. The process will terminate or restart if it can
-            not reach allele zero after T generations. Default to 100,000, roughly
-            2,000,000 years which is longer than human history.
-        
-        restartIfFail
-            If the process can not finish after T generations, restart if
-            restartIfFail = True, otherwise return. Default to False.
-        
-        maxAttempts
-            How many times to try to get a valid path? Default to 1000.
-        
-        Return the trajectory for each locus at each subpopulation. In the order of
-            LOC0: sp0, sp1, sp2,..., LOC1: sp0, sp1, sp2,...
         '''
         self.maxMutAge = maxMutAge
         self.minMutAge = minMutAge
@@ -1282,65 +1227,70 @@ class trajectorySimulator:
         if genEnd > 0 and maxMutAge > genEnd:
             maxMutAge = genEnd
 
-        if not(maxMutAge >= minMutAge):
+        if not maxMutAge >= minMutAge:
             raise ValueError('maxMutAge should >= minMutAge')
-        if (genEnd == 0 and (callable(self.N) or callable(self.fitness))):
+        if genEnd == 0 and (callable(self.N) or callable(self.fitness)):
             raise ValueError('genEnd should be > 0 if N or fitness is defined in the form of function')
         if genEnd > 0 and genEnd < maxMutAge:
             raise ValueError('genEnd should be >= maxMutAge')
         self.errorCount['invalid'] = 0
+        self.errorCount['tooLong'] = 0
+        self.errorCount['tooShort'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, restartIfFail)
+                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge)
             except exceptions.Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
-                    self.errorCount['invalid'] += 1
                 elif e.args[0] == 'tooShort':
                     self.errorCount['tooShort'] += 1
-                    self.errorCount['invalid'] += 1
                 elif e.args[0] == 'invalid' :
                     self.errorCount['invalid'] += 1
                 else:
-                    print 'Unknown error occurs'
                     print e
                     raise
         # if no valid trajectory is successfully simulated when reaching maximum attempts,
-        # return an empty object to class trajectory 
-        return trajectory(endGen=genEnd, nLoci = self.nLoci)
-        
-                    
-    def message(self):
-        '''
-        Report how many 'too long paths' errors, 'too short paths' errors
-        and 'invalid paths errors' generated during the simulation.
-        '''
-        if self.errorCount['tooLong'] > 0:
-            print 'Trajectories regenerated due to long', self.maxMutAge, 'path', self.errorCount['tooLong'], 'times.'
-        if self.errorCount['tooShort'] > 0:
-            print 'Trajectories regenerated due to short', self.minMutAge, 'path', self.errorCount['tooShort'], 'times.'
-        if self.errorCount['invalid'] > 0:
-            print 'Trajectories regenerated due to invalid path:', self.errorCount['invalid'], 'times.'
-        else:
-            print 'No invalid trajectory generated.'
-        return 
+        # raise a RuntimeError
+        raise RuntimeError("Failed to simulate any trajectory after %d long, %d short and %d invalid trajectories" % 
+            (self.errorCount['tooLong'], self.errorCount['tooShort'], self.errorCount['invalid']))
 
 
-def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000,
-                    logger=None):
-    '''
-    Return an object to class trajectory in forward simulation.
+def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin,
+        genEnd, maxAttempts = 10000, logger=None):
+    '''Given a demographic model (parameter *N*, which can be a constant or a
+    function that returns subpopulation sizes at each generation) and the
+    fitness of genotype at one or more loci (parameter *fitness*, which can be
+    a list of 3 (for genotype *AA*, *Aa*, and *aa*), 3*nLoci (for multiple
+    loci), or 3**nLoci (for each combination of genotype)), this function
+    simulates a trajectory of one or more unlinked loci (parameter *nLoci*)
+    from allele frequency *freq* at generation *genBegin* forward in time,
+    until it reaches generation *genEnd*. A ``trajectory`` object will be
+    returned if the allele frequency falls into specified ranges (``destFreq``).
+    An ``RuntimeError`` will be raised if no valid trajectory is simulated
+    after ``maxAttempts`` attempts. Please refer to class ``trajectory``,
+    ``trajectorySimulator`` and their member functions for more details.
     '''
     return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, destFreq, genBegin, genEnd,
                                                               maxAttempts)
     
-def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge = 100000, 
-                     restartIfFail = False, maxAttempts = 1000, logger=None):
-    '''
-    Return an object to class trajectory in backward simulation.
+def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0,
+        maxMutAge = 0, maxAttempts = 1000, logger=None):
+    '''Given a demographic model (parameter *N*, which can be a constant or a
+    function that returns subpopulation sizes at each generation) and the
+    fitness of genotype at one or more loci (parameter *fitness*, which can be
+    a list of 3 (for genotype *AA*, *Aa*, and *aa*), 3*nLoci (for multiple
+    loci), or 3**nLoci (for each combination of genotype)), this function
+    simulates a trajectory of one or more unlinked loci (parameter *nLoci*)
+    from allele frequency *freq* at generation *genEnd* backward in time,
+    until all alleles get lost. A ``trajectory`` object will be returned if the
+    length of simulated trajectory is longer than ``minMutAge`` and shorter
+    than ``maxMutAge`` (if specified). An ``RuntimeError`` will be raised if no
+    valid trajectory is simulated after ``maxAttempts`` attempts. Please refer
+    to class ``trajectory``, ``trajectorySimulator`` and their member functions
+    for more details.
     '''
     return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, 
-                                                              restartIfFail, maxAttempts)
+                                                              maxAttempts)
 
 
 if __name__ == "__main__":
