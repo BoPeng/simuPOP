@@ -4041,10 +4041,11 @@ if __name__ == '__main__':
     simuCDCV(*par.asList())
 
 #begin_ignore
-out = os.popen('python log/simuCDCV.py -h')
-hlp = open('log/simuCDCV.hlp', 'w')
-print >> hlp, out.read()
-hlp.close()
+if os.path.file('log/simuCDCV.py'):
+    out = os.popen('python log/simuCDCV.py -h')
+    hlp = open('log/simuCDCV.hlp', 'w')
+    print >> hlp, out.read()
+    hlp.close()
 #end_ignore
 #end_file
 
