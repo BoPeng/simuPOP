@@ -769,7 +769,7 @@ class trajectorySimulator:
     al (PLoS Genetics 3(3), 2007).
     '''
 
-    def __init__(self, N, fitness, nLoci, logger=None):
+    def __init__(self, N, nLoci=1, fitness=None, logger=None):
         '''Create a trajectory simulator using provided demographic and genetic
         (natural selection) parameters. Member functions *simuForward* and
         *simuBackward* can then be used to simulate trajectories within certain
@@ -791,7 +791,10 @@ class trajectorySimulator:
             self.N = [N]
         else: # N is a list or a function
             self.N = N
-        self.fitness = fitness
+        if fitness is None:
+            self.fitness = [1, 1, 1]
+        else:
+            self.fitness = fitness
         self.logger = logger
         self.nLoci = nLoci
         self.errorCount = {'tooLong' : 0, 'tooShort': 0, 'invalid': 0}
@@ -989,10 +992,10 @@ class trajectorySimulator:
                 xt.append(float(it) / (2 * Nt[sp]))
         return xt
 
-    def _simuForward(self, freq, destFreq, genBegin, genEnd):
+    def _simuForward(self, freq, freqEnd, genBegin, genEnd):
         '''Simulates a trajectory froward in time, starting from frequency
         ``freq`` at generation ``genBegin`` to frequency ranges specified in
-        ``destFreq`` at generation ``genEnd``. During the evolution, multiple
+        ``freqEnd`` at generation ``genEnd``. During the evolution, multiple
         subpopulations can be merged into one, and one population can be split
         into several subpopulations. The number of subpopulation is determined
         by the demographic function. The function raises an exception if the 
@@ -1011,7 +1014,7 @@ class trajectorySimulator:
                 for loc in range(self.nLoci):
                     for sp in range(nSP):
                         afq = nextXt[loc*nSP + sp]
-                        if not destFreq[loc][0] <= afq <= destFreq[loc][1]:
+                        if not freqEnd[loc][0] <= afq <= freqEnd[loc][1]:
                             if self.logger is not None:
                                 self.logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
                             raise exceptions.Exception('invalid')
@@ -1062,6 +1065,8 @@ class trajectorySimulator:
         ``minMutAge`` or is longer than ``maxMutAge``, the function will raise
         an exception.
         '''
+        if genEnd <= 0:
+            raise exceptions.ValueError("A positive ending generation is needed.")
         # done[i] is used to track at which generation a trajectory
         # is successfully generated at locus i.
         done = [False] * self.nLoci
@@ -1077,7 +1082,6 @@ class trajectorySimulator:
                 self.logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
             gen -= 1
             if gen < 0 or gen + maxMutAge < genEnd:
-                print gen, genEnd, maxMutAge
                 raise exceptions.Exception('tooLong')
             prevNt = self._Nt(gen)
             if len(prevNt) > len(curXt) / self.nLoci:
@@ -1133,24 +1137,13 @@ class trajectorySimulator:
                         doneNSP[idx] = True
                         continue
                     if xtPrev == 0:
-                        if it > 1:
-                            # When prevIt equals to 2 and curIt is 0, we consider
-                            # that case to be a successful simulation the same as that
-                            # when pervIt is 1.
-                            if it <= 2 and self._Nt(gen + 1)[idx] > 100:
-                                xt.freq(gen + 1)[loc * nSP + idx] /= it
-                                it = 1
-                            else:
-                                if self.logger is not None:
-                                    self.logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                                raise exceptions.Exception('invalid')
-                        else:  # it == 1
-                            assert abs(it - 1.) < 1e-5
-                            # success (judge when a trajectory is successfully generated)
-                            doneNSP[idx] = gen
-                            if genEnd - gen < minMutAge:
-                                raise exceptions.Exception('tooShort')
-                            break
+                        # success (judge when a trajectory is successfully generated)
+                        doneNSP[idx] = gen
+                        if self.logger is not None:
+                            self.logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
+                        if genEnd - gen < minMutAge:
+                            raise exceptions.Exception('tooShort')
+                        break
                     elif xtPrev == 1: # fixed
                         if self.logger is not None:
                             self.logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
@@ -1161,33 +1154,41 @@ class trajectorySimulator:
                 break
         return xt
             
-    def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000):
+    def simuForward(self, freq, freqEnd, genBegin = 0, genEnd = 0, maxAttempts = 10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. A ``trajectory`` object is returned if the
-        simulation succeeds. Otherwise, an exceptions.RuntimeError will be raised.
+        simulation succeeds. Otherwise, value ``None`` will be returned.
 
         This function accepts allele frequencies of alleles of multiple unlinked
         loci at the beginning generation (parameter ``freq``) at generation
         ``genBegin``, and expected *range* of allele frequencies of these
-        alleles (parameter ``destFreq``) at the end of generation ``genEnd``.
+        alleles (parameter ``freqEnd``) at the end of generation ``genEnd``.
         Depending on the number of loci and subpopulations, ``freq`` can be
         a number or a list of frequencies for each locus at each subpopulation,
-        and ``destFreq`` can be a list, or a list for ranges of frequencies for
+        and ``freqEnd`` can be a list, or a list for ranges of frequencies for
         each locus at each subpopulation. This simulator will simulate a
         trajectory generation by generation and restart if the resulting
         frequencies do not fall into specified range of frequencies. This
-        simulator will raise an ``RuntimeError`` if no valid trajectory is
-        found after ``maxAttempts`` attemps.
+        simulator will return ``None`` if no valid trajectory is found after
+        ``maxAttempts`` attemps.
         '''
+        # freqEnd
+        if type(freqEnd) not in [type(()), type([])] or len(freqEnd) == 0:
+            raise exceptions.ValueError('A list of frequency range is expected')
+        elif type(freqEnd[0]) not in [type(()), type([])]:
+            if len(freqEnd) == 2:
+                freqEnd = [freqEnd]
+            else:
+                raise exceptions.ValueError('A list of frequency range is expected.')
         for i in range(self.nLoci):
-            if len(destFreq[i]) != 2:
+            if len(freqEnd[i]) != 2:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
         if not(genBegin <= genEnd):
             raise exceptions.ValueError('Beginning generation should be less than ending generation')
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
-                return self._simuForward(freq, destFreq, genBegin, genEnd)
+                return self._simuForward(freq, freqEnd, genBegin, genEnd)
             except exceptions.Exception, e:
                 if e.args[0] == 'invalid':
                     self.errorCount['invalid'] += 1
@@ -1195,30 +1196,28 @@ class trajectorySimulator:
                     print 'Unknown error occurs'
                     print e
                     raise
-        raise exceptions.RuntimeError("Failed to simulate any trajectory after %d invalid trajectories" % 
-            self.errorCount['invalid'])
-
+        return None
     
     def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 0, maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. A ``trajectory`` object is returned if the
-        simulation succeeds. Otherwise, an exceptions.RuntimeError will be raised.
+        simulation succeeds. Otherwise, value ``None`` will be returned.
 
         This function accepts allele frequencies of alleles of multiple unlinked
         loci at the beginning generation (parameter ``freq``) at generation
         ``genBegin``, and expected *range* of allele frequencies of these
-        alleles (parameter ``destFreq``) at the end of generation ``genEnd``.
+        alleles (parameter ``freqEnd``) at the end of generation ``genEnd``.
         Depending on the number of loci and subpopulations, ``freq`` can be
         a number or a list of frequencies for each locus at each subpopulation,
-        and ``destFreq`` can be a list, or a list for ranges of frequencies for
+        and ``freqEnd`` can be a list, or a list for ranges of frequencies for
         each locus at each subpopulation. This simulator will simulate a
         trajectory generation by generation and restart if the resulting
         frequencies do not fall into specified range of frequencies. During the
         evolution, multiple subpopulations can be merged into one, and one
         population can be split into several subpopulations. The number of
         subpopulation is determined by the demographic function. This
-        simulator will raise an ``RuntimeError`` if no valid trajectory is
-        found after ``maxAttempts`` attemps.
+        simulator will return ``None`` if no valid trajectory is found after
+        ``maxAttempts`` attemps.
         '''
         self.maxMutAge = maxMutAge
         self.minMutAge = minMutAge
@@ -1250,45 +1249,43 @@ class trajectorySimulator:
                 else:
                     print e
                     raise
-        # if no valid trajectory is successfully simulated when reaching maximum attempts,
-        # raise a exceptions.RuntimeError
-        raise exceptions.RuntimeError("Failed to simulate any trajectory after %d long, %d short and %d invalid trajectories" % 
-            (self.errorCount['tooLong'], self.errorCount['tooShort'], self.errorCount['invalid']))
+        return None
 
 
-def ForwardTrajectory(N, fitness, nLoci, freq, destFreq, genBegin,
-        genEnd, maxAttempts = 10000, logger=None):
+def ForwardTrajectory(N, freq, freqEnd, genBegin, genEnd, nLoci = 1,
+        fitness = None, maxAttempts = 10000, logger=None):
     '''Given a demographic model (parameter *N*, which can be a constant or a
     function that returns subpopulation sizes at each generation) and the
     fitness of genotype at one or more loci (parameter *fitness*, which can be
-    a list of 3 (for genotype *AA*, *Aa*, and *aa*), 3*nLoci (for multiple
-    loci), or 3**nLoci (for each combination of genotype)), this function
-    simulates a trajectory of one or more unlinked loci (parameter *nLoci*)
-    from allele frequency *freq* at generation *genBegin* forward in time,
-    until it reaches generation *genEnd*. A ``trajectory`` object will be
-    returned if the allele frequency falls into specified ranges (``destFreq``).
-    An ``RuntimeError`` will be raised if no valid trajectory is simulated
-    after ``maxAttempts`` attempts. Please refer to class ``trajectory``,
-    ``trajectorySimulator`` and their member functions for more details.
+    ``None`` (no selection), a list of 3 items (for genotype *AA*, *Aa*, and
+    *aa*), 3*nLoci (for multiple loci), or 3**nLoci (for each combination of
+    genotype)), this function simulates a trajectory of one or more unlinked
+    loci (parameter *nLoci*) from allele frequency *freq* at generation
+    *genBegin* forward in time, until it reaches generation *genEnd*. A
+    ``trajectory`` object will be returned if the allele frequency falls
+    into specified ranges (``freqEnd``). ``None`` will be returned if no valid
+    trajectory is simulated after ``maxAttempts`` attempts. Please refer to
+    class ``trajectory``, ``trajectorySimulator`` and their member functions
+    for more details.
     '''
-    return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, destFreq, genBegin, genEnd,
+    return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, freqEnd, genBegin, genEnd,
                                                               maxAttempts)
     
-def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0,
-        maxMutAge = 0, maxAttempts = 1000, logger=None):
+def BackwardTrajectory(N, genEnd, freq, nLoci=1, fitness=None,
+        minMutAge = 0, maxMutAge = 0, maxAttempts = 1000, logger=None):
     '''Given a demographic model (parameter *N*, which can be a constant or a
     function that returns subpopulation sizes at each generation) and the
     fitness of genotype at one or more loci (parameter *fitness*, which can be
-    a list of 3 (for genotype *AA*, *Aa*, and *aa*), 3*nLoci (for multiple
-    loci), or 3**nLoci (for each combination of genotype)), this function
-    simulates a trajectory of one or more unlinked loci (parameter *nLoci*)
-    from allele frequency *freq* at generation *genEnd* backward in time,
-    until all alleles get lost. A ``trajectory`` object will be returned if the
-    length of simulated trajectory is longer than ``minMutAge`` and shorter
-    than ``maxMutAge`` (if specified). An ``RuntimeError`` will be raised if no
-    valid trajectory is simulated after ``maxAttempts`` attempts. Please refer
-    to class ``trajectory``, ``trajectorySimulator`` and their member functions
-    for more details.
+    ``None`` (no selection), a list of 3 (for genotype *AA*, *Aa*, and *aa*),
+    3*nLoci (for multiple loci), or 3**nLoci (for each combination of genotype)
+    items), this function simulates a trajectory of one or more unlinked loci
+    (parameter *nLoci*) from allele frequency *freq* at generation *genEnd*
+    backward in time, until all alleles get lost. A ``trajectory`` object will
+    be returned if the length of simulated trajectory is longer than
+    ``minMutAge`` and shorter than ``maxMutAge`` (if specified). ``None`` will
+    be returned if no valid trajectory is simulated after ``maxAttempts``
+    attempts. Please refer to class ``trajectory``, ``trajectorySimulator`` and
+    their member functions for more details.
     '''
     return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, 
                                                               maxAttempts)
@@ -1296,6 +1293,4 @@ def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0,
 
 if __name__ == "__main__":
     pass
-
-
 
