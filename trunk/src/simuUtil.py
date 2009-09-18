@@ -134,17 +134,17 @@ def MigrHierarchicalIslandRates(r1, r2, n):
     the size of group.
     '''
     if type(n) not in [type(()), type([])]:
-        raise ValueError('A list of size of island groups is expected for parameter n')
+        raise exceptions.ValueError('A list of size of island groups is expected for parameter n')
     nIslands = sum(n)
     if type(r1) in [type(0), type(1.)]:
         r1 = [r1] * len(n)
     elif len(r1) != len(n):
-        raise ValueError('If multiple r1 is given, it should be given to all island groups.')
+        raise exceptions.ValueError('If multiple r1 is given, it should be given to all island groups.')
     #
     if type(r2) in [type(0), type(1.)]:
         r2 = [r2] * len(n)
     elif len(r2) != len(n):
-        raise ValueError('If multiple r2 is given, it should be given to all island groups.')
+        raise exceptions.ValueError('If multiple r2 is given, it should be given to all island groups.')
     #
     m = []
     for groupIdx, groupSize in enumerate(n):
@@ -665,7 +665,7 @@ class trajectory:
         elif len(freq) == self.nLoci * nSubPop:
             self.traj[gen] = freq
         else:
-            raise ValueError('please define freq as a single number or a list with specified number of elements.')
+            raise exceptions.ValueError('please define freq as a single number or a list with specified number of elements.')
 
     def plot(self, filename=None, **kwargs):
         '''Plot simulated trajectory using ``R`` through a Pythonmodule ``rpy``.
@@ -876,14 +876,14 @@ class trajectorySimulator:
         if len(fit) == 3 * self.nLoci:
             for i in range(self.nLoci):
                 if fit[3 * i] == 0:
-                    raise ValueError('fitness['+ str(3 * i) + '] should be a non zero value.')
+                    raise exceptions.ValueError('fitness['+ str(3 * i) + '] should be a non zero value.')
                 s.append(0.)
                 s.append(float(fit[3 * i + 1]) / float(fit[3 * i]) - 1.)
                 s.append(float(fit[3 * i + 2]) / float(fit[3 * i]) - 1.)
         # case 2: same fitness for multiple loci
         elif len(fit) == 3 and self.nLoci > 1:
             if fit[0] == 0:
-                raise ValueError('fitness[0] should be a non zero value.')
+                raise exceptions.ValueError('fitness[0] should be a non zero value.')
             s.append(0.)
             s.append(float(fit[1]) / float(fit[0]) - 1.)
             s.append(float(fit[2]) / float(fit[0]) - 1.)
@@ -897,7 +897,7 @@ class trajectorySimulator:
             for sp in range(nSP):
                 s.extend(self._marginalFitness(fit, [freq[sp + nSP * i] for i in range(self.nLoci)]))
         else:
-            raise ValueError('Wrong length of list of fitness: ' + str(len(fit)))
+            raise exceptions.ValueError('Wrong length of list of fitness: ' + str(len(fit)))
         return s
 
     def _getNextXt(self, curXt, Nt, s):
@@ -1034,7 +1034,7 @@ class trajectorySimulator:
             elif len(nextNt) < len(curXt) / self.nLoci:
                 # check length of next Nt.
                 if len(nextNt) != 1:
-                    raise ValueError('When merging event occurs between two adjacent generations in the forward sense, '
+                    raise exceptions.ValueError('When merging event occurs between two adjacent generations in the forward sense, '
                                      + 'all subpops are required to merge into one population.')
                 # merge (forward sense) from multiple subpopulations to one pop.
                 Ntp = self._Nt(gen - 1)
@@ -1077,6 +1077,7 @@ class trajectorySimulator:
                 self.logger.debug('Gen=%d, xt=%s'  % (gen, xt.freq(gen)))           
             gen -= 1
             if gen < 0 or gen + maxMutAge < genEnd:
+                print gen, genEnd, maxMutAge
                 raise exceptions.Exception('tooLong')
             prevNt = self._Nt(gen)
             if len(prevNt) > len(curXt) / self.nLoci:
@@ -1098,7 +1099,7 @@ class trajectorySimulator:
             elif len(prevNt) < len(curXt) / self.nLoci:
                 # check length of previous Nt.
                 if len(prevNt) != 1:
-                    raise ValueError('When merging event occurs between two adjacent generations in the backward sense, '
+                    raise exceptions.ValueError('When merging event occurs between two adjacent generations in the backward sense, '
                                      + 'all subpops are required to merge into one population.') 
                 # split (forward sense)--> merge from multiple subpopulations
                 # to one population (backward sense)
@@ -1163,7 +1164,7 @@ class trajectorySimulator:
     def simuForward(self, freq, destFreq, genBegin = 0, genEnd = 0, maxAttempts = 10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. A ``trajectory`` object is returned if the
-        simulation succeeds. Otherwise, an RuntimeError will be raised.
+        simulation succeeds. Otherwise, an exceptions.RuntimeError will be raised.
 
         This function accepts allele frequencies of alleles of multiple unlinked
         loci at the beginning generation (parameter ``freq``) at generation
@@ -1180,9 +1181,9 @@ class trajectorySimulator:
         '''
         for i in range(self.nLoci):
             if len(destFreq[i]) != 2:
-                raise ValueError('Please specify frequency range of each marker')
+                raise exceptions.ValueError('Please specify frequency range of each marker')
         if not(genBegin <= genEnd):
-            raise ValueError('Beginning generation should be less than ending generation')
+            raise exceptions.ValueError('Beginning generation should be less than ending generation')
         self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
             try:
@@ -1194,14 +1195,14 @@ class trajectorySimulator:
                     print 'Unknown error occurs'
                     print e
                     raise
-        raise RuntimeError("Failed to simulate any trajectory after %d invalid trajectories" % 
+        raise exceptions.RuntimeError("Failed to simulate any trajectory after %d invalid trajectories" % 
             self.errorCount['invalid'])
 
     
     def simuBackward(self, genEnd, freq, minMutAge = 0, maxMutAge = 0, maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. A ``trajectory`` object is returned if the
-        simulation succeeds. Otherwise, an RuntimeError will be raised.
+        simulation succeeds. Otherwise, an exceptions.RuntimeError will be raised.
 
         This function accepts allele frequencies of alleles of multiple unlinked
         loci at the beginning generation (parameter ``freq``) at generation
@@ -1224,15 +1225,15 @@ class trajectorySimulator:
         
         if genEnd > 0 and minMutAge > genEnd:
             minMutAge = genEnd
-        if genEnd > 0 and maxMutAge > genEnd:
+        if genEnd > 0 and maxMutAge == 0:
             maxMutAge = genEnd
 
         if not maxMutAge >= minMutAge:
-            raise ValueError('maxMutAge should >= minMutAge')
+            raise exceptions.ValueError('maxMutAge should >= minMutAge')
         if genEnd == 0 and (callable(self.N) or callable(self.fitness)):
-            raise ValueError('genEnd should be > 0 if N or fitness is defined in the form of function')
+            raise exceptions.ValueError('genEnd should be > 0 if N or fitness is defined in the form of function')
         if genEnd > 0 and genEnd < maxMutAge:
-            raise ValueError('genEnd should be >= maxMutAge')
+            raise exceptions.ValueError('genEnd should be >= maxMutAge')
         self.errorCount['invalid'] = 0
         self.errorCount['tooLong'] = 0
         self.errorCount['tooShort'] = 0
@@ -1250,8 +1251,8 @@ class trajectorySimulator:
                     print e
                     raise
         # if no valid trajectory is successfully simulated when reaching maximum attempts,
-        # raise a RuntimeError
-        raise RuntimeError("Failed to simulate any trajectory after %d long, %d short and %d invalid trajectories" % 
+        # raise a exceptions.RuntimeError
+        raise exceptions.RuntimeError("Failed to simulate any trajectory after %d long, %d short and %d invalid trajectories" % 
             (self.errorCount['tooLong'], self.errorCount['tooShort'], self.errorCount['invalid']))
 
 
