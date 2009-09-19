@@ -3358,13 +3358,11 @@ GetRNG().setSeed(12345)
 from simuUtil import trajectory, BackwardTrajectory
 from math import exp
 def Nt(gen, oldSize=[]):
-    '''An exponential population growth demographic model.
-    '''
+    'An exponential population growth demographic model.'
     return int((10**4) * exp(.00115 * gen))
 
 def fitness(gen):
-    '''Constant positive selection pressure.
-    '''
+    'Constant positive selection pressure.'
     return [1, 1.01, 1.02]
 
 # simulate a trajectory backward in time, from generation 1000
@@ -3377,9 +3375,8 @@ pop = population(size=Nt(0), loci=[1]*2)
 # save trajectory function in the population's local namespace
 # so that the pyEval operator can access it.
 pop.dvars().traj = traj.func()
-mating = controlledRandomMating(loci=[0, 1], alleles=[1, 1],
-        subPopSize=Nt, freqFunc=traj.func())
-simu = simulator(pop, mating)
+simu = simulator(pop, controlledRandomMating(loci=[0, 1], alleles=[1, 1],
+        subPopSize=Nt, freqFunc=traj.func()))
 simu.evolve(
     preOps = [initSex()],
     ops = traj.mutators() + [

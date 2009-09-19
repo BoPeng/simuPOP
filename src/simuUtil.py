@@ -794,6 +794,8 @@ class trajectorySimulator:
         if fitness is None:
             self.fitness = [1, 1, 1]
         else:
+            if type(fitness) in [type(()), type([])] and len(fitness) not in [3, 3*nLoci, 3**nLoci]:
+                raise exceptions.ValueError('Invalid list of fitness.')
             self.fitness = fitness
         self.logger = logger
         self.nLoci = nLoci
@@ -1180,9 +1182,13 @@ class trajectorySimulator:
                 freqEnd = [freqEnd]
             else:
                 raise exceptions.ValueError('A list of frequency range is expected.')
+        if len(freqEnd) != self.nLoci:
+            raise exceptions.ValueError('Please specify a frequency range for each locus')
         for i in range(self.nLoci):
             if len(freqEnd[i]) != 2:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
+            if freqEnd[i][0] >= freqEnd[i][1]:
+                raise exceptions.ValueError('Invalid frequency range %s' % freq[i])
         if not(genBegin <= genEnd):
             raise exceptions.ValueError('Beginning generation should be less than ending generation')
         self.errorCount['invalid'] = 0
@@ -1268,7 +1274,7 @@ def ForwardTrajectory(N, freq, freqEnd, genBegin, genEnd, nLoci = 1,
     class ``trajectory``, ``trajectorySimulator`` and their member functions
     for more details.
     '''
-    return trajectorySimulator(N, fitness, nLoci, logger).simuForward(freq, freqEnd, genBegin, genEnd,
+    return trajectorySimulator(N, nLoci, fitness, logger).simuForward(freq, freqEnd, genBegin, genEnd,
                                                               maxAttempts)
     
 def BackwardTrajectory(N, genEnd, freq, nLoci=1, fitness=None,
@@ -1287,7 +1293,7 @@ def BackwardTrajectory(N, genEnd, freq, nLoci=1, fitness=None,
     attempts. Please refer to class ``trajectory``, ``trajectorySimulator`` and
     their member functions for more details.
     '''
-    return trajectorySimulator(N, fitness, nLoci, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, 
+    return trajectorySimulator(N, nLoci, fitness, logger).simuBackward(genEnd, freq, minMutAge, maxMutAge, 
                                                               maxAttempts)
 
 
