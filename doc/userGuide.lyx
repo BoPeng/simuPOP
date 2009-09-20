@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -18052,7 +18052,7 @@ simuOpt
 \end_layout
 
 \begin_layout Section
-simuUtil (under revision)
+simuUtil
 \end_layout
 
 \begin_layout Standard
@@ -18064,7 +18064,7 @@ The simuUtil module provides a few utility functions and classes.
 \family typewriter
 http://simupop.sourceforge.net/cookbook
 \family default
-) for more utility functions.
+) for more utility modules and functions.
  
 \end_layout
 
@@ -18136,7 +18136,7 @@ nt
 \series default
 .
  If such a condition is met, the controlled evolutionary process can be
- considered as a random processes condition on allele frequencies at the
+ considered as a random process conditioning on allele frequencies at the
  present generation.
  Please refer to 
 \begin_inset CommandInset citation
@@ -18156,6 +18156,105 @@ simuUtil
 \family default
  module provides functions and classes that implement two trajectory simulation
  methods that can be used in different situations.
+ The first class is 
+\family typewriter
+trajectorySimulator
+\family default
+ which takes a demographic model and a selection model as its input and
+ simulates allele frequency trajectories using a forward or backward algorithm.
+ The demographic model is given by parameter 
+\family typewriter
+N
+\family default
+, which can be a constant (e.g.
+ 
+\family typewriter
+N=1000
+\family default
+) for constant population size, a list of subpopulation sizes (e.g.
+ 
+\family typewriter
+N=[1000, 2000]
+\family default
+) for a structured population with constant size, or a demographic function
+ that returns population or subpopulation sizes at each generation.
+ In the last case, subpopulations can be split or merged with the constrait
+ that subpopulations can be merged into one, from split from one population.
+\end_layout
+
+\begin_layout Standard
+A fitness model specifies the fitness of genotypes at one or more loci using
+ parameter 
+\family typewriter
+fitness
+\family default
+.
+ It can be a list of three numbers (e.g.
+ 
+\family typewriter
+fitness=[1, 1.001, 1.003]
+\family default
+), repsenting the fitness of genotype 
+\family typewriter
+AA
+\family default
+, 
+\family typewriter
+Aa
+\family default
+ and 
+\family typewriter
+aa
+\family default
+ at one or more loci; or different fitness for genotypes at each locus (e.g.
+ 
+\family typewriter
+fitness=[1, 1.001, 1.003, 1, 1, 1.002]
+\family default
+), or for each combination or genotype (interaction).
+ In the last case, 
+\begin_inset Formula $3^{n}$
+\end_inset
+
+ values are needed for each genotype if there are 
+\begin_inset Formula $n$
+\end_inset
+
+ loci.
+ This trajectory simulator also accepts generation-specific fitness values
+ by accepting a function that returns fitness values at each generation.
+\end_layout
+
+\begin_layout Standard
+The simulator then simulates trajectories of allele frequencies and return
+ them as objects of class 
+\family typewriter
+trajectory
+\family default
+.
+ This object can be used provide a trajectory function that can be used
+ directly in a 
+\family typewriter
+controlledRandomMating
+\family default
+ mating scheme (function 
+\family typewriter
+trajectory.func()
+\family default
+) or provide a list of 
+\family typewriter
+pointMutator
+\family default
+ to introduce mutants at appropriate generations (function 
+\family typewriter
+trajectory.mutators()
+\family default
+).
+ If a simulation failed after specified number of attempts, a 
+\family typewriter
+None
+\family default
+ object will be returned.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18163,13 +18262,29 @@ Forward-time trajectory simulations.
 \end_layout
 
 \begin_layout Standard
-A forward simulation starts at a specified generation with specified allele
- frequencies and simulates allele frequencies generation by generation until
- it reaches the present generation.
- The simulation will restart if the present allele frequencies do not fall
- into a specified range.
- The length of the trajectory (in generations) is fixed.
- This method can be used to simulate trajectories of existing alleles.
+A forward simulation starts from a specified generation with specified allele
+ frequencies at one or more loci.
+ The simulator simulates allele frequencies forward-in-time, until it reaches
+ a specified ending generation.
+ A trajectory object will be returned if the simulated allele frequencies
+ fall into specified ranges.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "forwardTrajectory"
+
+\end_inset
+
+ demonstrates how to use this simulation method to obtain and use a simulated
+ trajectory, for two unlinked loci under different selection pressure.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/forwardTrajectory.log"
+lstparams "caption={Simulation and use of forward-time simulated trajectories.},label={forwardTrajectory}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -18187,41 +18302,31 @@ n.
 \end_layout
 
 \begin_layout Standard
-se of how to generate a forward-time evolutionary process with complex diseases,
- which are introduced by point mutations.
- 
+This trajectory simulation technique is usually used as follows:
 \end_layout
 
 \begin_layout Enumerate
-Given current disease allele frequencies and selection and demographic models,
- simulate trajectories of allele frequencies at each DSL using a backward
- approach (BackwardTrajectory.traj) [Peng2008, Slatkin2001].
+Determine a demographic and a natural selection model using which a forward-time
+ simulation will be performed.
 \end_layout
 
 \begin_layout Enumerate
-Create an initial population and initialize individuals randomly with several
- initial haplotypes.
- Burn-in the population subject to mutation (non-DSL markers only) and recombina
-tion, which will be present during the whole evolutionary process.
+Given current disease allele frequencies, simulate trajectories of allele
+ frequencies at each DSL using a backward approach.
 \end_layout
 
 \begin_layout Enumerate
-Introduce the disease alleles to the population by point-mutating disease
- loci of different individuals (BackwardTrajectory.mutators()).
- The generations when mutants are introduced are determined by allele frequency
- trajectories.
-\end_layout
-
-\begin_layout Enumerate
-Evolve the population according to the simulated allele frequency trajectories
- and predetermined demographic features (controlledRandomMating(...)).
- 
-\end_layout
-
-\begin_layout Standard
-\align left
-The advantage of this approach is that we control the disease allele frequencies
- during evolution while allowing randomintroduction of disease mutants.
+Evolve a population forward-in-time, using designed demographic and selection
+ models.
+ A 
+\family typewriter
+controlledRandomMating
+\family default
+ scheme instead of the usual 
+\family typewriter
+randomMating
+\family default
+ scheme should be used.
  
 \end_layout
 
