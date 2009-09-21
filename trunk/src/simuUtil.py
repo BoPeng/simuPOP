@@ -1182,13 +1182,13 @@ class trajectorySimulator:
                 freqEnd = [freqEnd]
             else:
                 raise exceptions.ValueError('A list of frequency range is expected.')
-        if len(freqEnd) != self.nLoci:
+        if len(freqEnd) not in [self.nLoci, self.nLoci * len(self._Nt(genEnd)):
             raise exceptions.ValueError('Please specify a frequency range for each locus')
-        for i in range(self.nLoci):
-            if len(freqEnd[i]) != 2:
+        for rng in freqEnd:
+            if len(rng) != 2:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
-            if freqEnd[i][0] >= freqEnd[i][1]:
-                raise exceptions.ValueError('Invalid frequency range %s' % freq[i])
+            if rng[0] >= rng[1]:
+                raise exceptions.ValueError('Invalid frequency range %s' % rng)
         if not(genBegin <= genEnd):
             raise exceptions.ValueError('Beginning generation should be less than ending generation')
         self.errorCount['invalid'] = 0
