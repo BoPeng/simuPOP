@@ -3348,6 +3348,40 @@ simu.evolve(
 #end_file
 
 
+#begin_file log/forwardTrajectory.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+from simuUtil import trajectory, BackwardTrajectory
+
+traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.999, 0.998],
+    genBegin=0, genEnd=100, freq=[0.2, 0.3],
+    freqEnd=[[0.1, 0.11], [0.2, 0.21]])
+simu = simulator(
+    population(size=[2000, 4000], loci=10, infoField='fitness'),
+    controlledRandomMating(
+        ops=[recombinator(rates=0.01)],
+        loci=5, allele=1, func=traj.func())
+)
+simu.evolve(
+    preOps = [
+        initSex(),
+        initByFreq([0.8, 0.2], subPops=0),
+        initByFreq([0.7, 0.3], subPops=1),
+        pyEval('Sp0: loc2\tloc5\tSp1: loc2\tloc5\n'),
+    ],
+    ops = [
+        stat(alleleFreq=[2, 5], vars=['alleleFreq_sp'], step=20).
+        pyEval(r"'%.2f\t%.2f\t%.2f\t%.2f\n' % (subPop[0]['alleleFreq'][2][1],
+            subPop[0]['alleleFreq'][5][1], subPops[1]['alleleFreq'][2][1],
+            subPops[1]['alleleFreq'][5][1])", step=20)
+    gen = 101
+)
+#end_file
+
 #begin_file log/backTrajectory.py
 #begin_ignore
 import simuOpt
