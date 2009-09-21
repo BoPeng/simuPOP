@@ -1858,47 +1858,18 @@ status open
 simuUtilRef
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
 
-\backslash
-simuUtilViewVarsRef
 \end_layout
 
-\begin_layout Plain Layout
-
-
-\backslash
-simuUtilMigrIslandRatesRef
+\begin_layout Subsection
+Allele frequency trajectory simulation
 \end_layout
 
-\begin_layout Plain Layout
-
-
-\backslash
-simuUtilMigrHierarchicalIslandRatesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuUtilMigrSteppingStoneRatesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuUtilSaveCSVRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuUtilsimuProgressRef
-\end_layout
+\begin_layout Standard
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
@@ -1928,8 +1899,97 @@ simuUtilForwardTrajectoryRef
 simuUtilBackwardTrajectoryRef
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Migration models
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
 \begin_layout Plain Layout
 
+
+\backslash
+simuUtilMigrIslandRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilMigrHierarchicalIslandRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilMigrSteppingStoneRatesRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A text or GUI-based progress bar
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilsimuProgressRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+View population variables
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+simuUtilViewVarsRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Export simuPOP population
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilSaveCSVRef
 \end_layout
 
 \end_inset

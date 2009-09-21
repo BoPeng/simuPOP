@@ -3355,29 +3355,32 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuUtil import trajectory, BackwardTrajectory
+from simuUtil import trajectory, ForwardTrajectory
 
-traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.999, 0.998],
-    genBegin=0, genEnd=100, freq=[0.2, 0.3],
+traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
+    genBegin=0, genEnd=100, freqBegin=[0.2, 0.3],
     freqEnd=[[0.1, 0.11], [0.2, 0.21]])
+traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5],
+    plot_main='Simulated trajectory (forward-time)')
 simu = simulator(
-    population(size=[2000, 4000], loci=10, infoField='fitness'),
+    population(size=[2000, 4000], loci=10, infoFields='fitness'),
     controlledRandomMating(
         ops=[recombinator(rates=0.01)],
-        loci=5, allele=1, func=traj.func())
+        loci=5, alleles=1, freqFunc=traj.func())
 )
 simu.evolve(
     preOps = [
         initSex(),
         initByFreq([0.8, 0.2], subPops=0),
         initByFreq([0.7, 0.3], subPops=1),
-        pyEval('Sp0: loc2\tloc5\tSp1: loc2\tloc5\n'),
+        pyOutput('Sp0: loc2\tloc5\tSp1: loc2\tloc5\n'),
     ],
     ops = [
-        stat(alleleFreq=[2, 5], vars=['alleleFreq_sp'], step=20).
-        pyEval(r"'%.2f\t%.2f\t%.2f\t%.2f\n' % (subPop[0]['alleleFreq'][2][1],
-            subPop[0]['alleleFreq'][5][1], subPops[1]['alleleFreq'][2][1],
-            subPops[1]['alleleFreq'][5][1])", step=20)
+        stat(alleleFreq=[2, 5], vars=['alleleFreq_sp'], step=20),
+        pyEval(r"'%.2f\t%.2f\t%.2f\t%.2f\n' % (subPop[0]['alleleFreq'][2][1],"
+            "subPop[0]['alleleFreq'][5][1], subPop[1]['alleleFreq'][2][1],"
+            "subPop[1]['alleleFreq'][5][1])", step=20)
+    ],
     gen = 101
 )
 #end_file
@@ -3401,9 +3404,9 @@ def fitness(gen):
 
 # simulate a trajectory backward in time, from generation 1000
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
-     genEnd=1000, freq=[0.1, 0.2])
+     genEnd=1000, freqEnd=[0.1, 0.2])
 traj.plot('backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
-    plot_main='Simulated trajectory')
+    plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
 pop = population(size=Nt(0), loci=[1]*2)
 # save trajectory function in the population's local namespace
