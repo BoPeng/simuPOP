@@ -3358,7 +3358,7 @@ GetRNG().setSeed(12345)
 from simuUtil import trajectory, ForwardTrajectory
 
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
-    beginGen=0, endGen=100, beginGreq=[0.2, 0.3],
+    beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
 traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
     plot_main='Simulated trajectory (forward-time)')
