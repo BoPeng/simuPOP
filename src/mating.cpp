@@ -290,12 +290,12 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				}
 
 				// if there is no alleles
-				if (n == 0 && expFreq[numSP * i + sp] > 0.)
+				if (n == 0 && expFreq[sp * nLoci + i] > 0.)
 					throw RuntimeError("No disease allele exists at generation " +
 						toStr(pop.gen()) + " but exp allele frequency is greater than 0.");
 #endif
-				m_expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pop.ploidy() * expFreq[numSP * i + sp]);
-				if (expFreq[numSP * i + sp] > 0. && m_expAlleles[numSP * i + sp] == 0)
+				m_expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pop.ploidy() * expFreq[sp * nLoci + i]);
+				if (expFreq[sp * nLoci + i] > 0. && m_expAlleles[numSP * i + sp] == 0)
 					m_expAlleles[numSP * i + sp] = 1;
 			}
 		}

@@ -3360,7 +3360,7 @@ from simuUtil import trajectory, ForwardTrajectory
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     genBegin=0, genEnd=100, freqBegin=[0.2, 0.3],
     freqEnd=[[0.1, 0.11], [0.2, 0.21]])
-traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5],
+traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
     plot_main='Simulated trajectory (forward-time)')
 simu = simulator(
     population(size=[2000, 4000], loci=10, infoFields='fitness'),
@@ -3398,7 +3398,7 @@ def Nt(gen, oldSize=[]):
     'An exponential population growth demographic model.'
     return int((10**4) * exp(.00115 * gen))
 
-def fitness(gen):
+def fitness(gen, sp):
     'Constant positive selection pressure.'
     return [1, 1.01, 1.02]
 
@@ -3406,7 +3406,7 @@ def fitness(gen):
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      genEnd=1000, freqEnd=[0.1, 0.2])
 traj.plot('backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
-    plot_main='Simulated trajectory (backward-time)')
+    col_loc=['red', 'blue'], plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
 pop = population(size=Nt(0), loci=[1]*2)
 # save trajectory function in the population's local namespace
