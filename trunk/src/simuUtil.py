@@ -742,7 +742,7 @@ class trajectory:
                                     break
                             if start == len(line) - 1:
                                 continue
-                            r.lines(x=range(genBegin - len(line) + start, gen), y=line[start:],
+                            r.lines(x=range(beginGen - len(line) + start, gen), y=line[start:],
                                     **args.getArgs('lines', None, sp=sp, loc=loc))
                     # the first point
                     allLines[sp] = [[x] for x in self.traj[gen][sp]]
@@ -758,8 +758,8 @@ class trajectory:
                         break
                 if start == len(line) - 1:
                     continue
-                genBegin = gen - len(line) + start
-                simuRPy.rpy.r.lines(x=range(genBegin, gen), y=line[start:],
+                beginGen = gen - len(line) + start
+                simuRPy.rpy.r.lines(x=range(beginGen, gen), y=line[start:],
                         **args.getArgs('lines', None, sp=sp, loc=loc))
         #
         simuRPy.saveFigure(**args.getArgs('dev_print', None, file=filename))
@@ -1027,23 +1027,23 @@ class trajectorySimulator:
             xt.append(float(it) / (2 * Nt))
         return xt
 
-    def _simuForward(self, freq, freqEnd, genBegin, genEnd):
+    def _simuForward(self, freq, endFreq, beginGen, endGen):
         '''Simulates a trajectory froward in time, starting from frequency
-        ``freq`` at generation ``genBegin`` to frequency ranges specified in
-        ``freqEnd`` at generation ``genEnd``. During the evolution, multiple
+        ``freq`` at generation ``beginGen`` to frequency ranges specified in
+        ``endFreq`` at generation ``endGen``. During the evolution, multiple
         subpopulations can be merged into one, and one population can be split
         into several subpopulations. The number of subpopulation is determined
         by the demographic function. The function raises an exception if the 
         simulated trajectory does not fall into ``destFeq``.
         '''
         # initialize a trajectory
-        # freq is assumed to be at the beginning of the genBegin.
+        # freq is assumed to be at the beginning of the beginGen.
         # so we do not it does not count into the trajectory.
-        xt = trajectory(endGen = genEnd, nLoci = self.nLoci)
+        xt = trajectory(endGen = endGen, nLoci = self.nLoci)
         # go through each generation
-        for gen in range(genBegin, genEnd + 1):
+        for gen in range(beginGen, endGen + 1):
             # first get beginXt, N(t+1), then calculate nextXt.
-            if gen == genBegin:
+            if gen == beginGen:
                 beginXt = freq
             else:
                 # current Xt is the frequency at the previous generation.
@@ -1094,14 +1094,14 @@ class trajectorySimulator:
             xt._setFreq(endingXt, gen)
             # and now we go to the next generation...
         # not we have a trajectory... is it valid?
-        freq = xt._freq(genEnd)
-        Nt = self._Nt(genEnd)
+        freq = xt._freq(endGen)
+        Nt = self._Nt(endGen)
         for loc in range(self.nLoci):
             # case 1: allele frequency at each subpopulation
-            if len(freqEnd) == self.nLoci * len(Nt):
+            if len(endFreq) == self.nLoci * len(Nt):
                 for sp in range(len(Nt)):
-                    if freq[sp][loc] < freqEnd[sp * self.nLoci + loc][0] or \
-                        freq[sp][loc] > freqEnd[sp * self.nLoci + loc][1]:
+                    if freq[sp][loc] < endFreq[sp * self.nLoci + loc][0] or \
+                        freq[sp][loc] > endFreq[sp * self.nLoci + loc][1]:
                         if self.logger is not None:
                             self.logger.info('Forward trajectory restarted, hitting allele requency %s' % freq)
                         return None
@@ -1111,7 +1111,7 @@ class trajectorySimulator:
                 for sp in range(len(Nt)):
                     allFreq += freq[sp][loc] * Nt[sp]
                 allFreq /= sum(Nt)
-                if allFreq < freqEnd[loc][0] or allFreq > freqEnd[loc][1]:
+                if allFreq < endFreq[loc][0] or allFreq > endFreq[loc][1]:
                     if self.logger is not None:
                         self.logger.info('Forward trajectory restarted, hitting allele frequency %s (combined %.3f)' \
                             % (freq, allFreq))
@@ -1120,27 +1120,27 @@ class trajectorySimulator:
             self.logger.info('Forward trajectory succeed, hitting allele frequency %s' % freq)
         return xt
 
-    def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge):
+    def _simuBackward(self, endGen, freq, minMutAge, maxMutAge):
         '''Simulates a trajectory backward from allele frequency ``freq`` at
-        generation ``genEnd``. During the evolution, multiple subpopulations can
+        generation ``endGen``. During the evolution, multiple subpopulations can
         be merged into one, and one population can be split into several
         subpopulations. The number of subpopulation is determined by the
         demographic function. If a simulated trajectory is shorter than
         ``minMutAge`` or is longer than ``maxMutAge``, the function will raise
         an exception.
         '''
-        if genEnd <= 0:
+        if endGen <= 0:
             raise exceptions.ValueError("A positive ending generation is needed.")
         # done[i] is used to track at which generation a trajectory
         # is successfully generated at locus i.
         done = [False] * self.nLoci
         # initialize a trajectory
-        xt = trajectory(endGen=genEnd, nLoci = self.nLoci)
+        xt = trajectory(endGen=endGen, nLoci = self.nLoci)
         # because freq is the allele frequency at the end of the last generation,
         # it is part of the trajectory.
-        xt._setFreq(freq, gen=genEnd)
-        # start from genEnd, go backward.
-        for gen in range(genEnd, -1, -1):
+        xt._setFreq(freq, gen=endGen)
+        # start from endGen, go backward.
+        for gen in range(endGen, -1, -1):
             # first get curXt, N(t-1), then calculate prevXt
             endingXt = xt._freq(gen)
             # Nt is the size at the beginning of the current generation.
@@ -1194,7 +1194,7 @@ class trajectorySimulator:
                     if beginXt[sp][loc] == 0.:
                         # success
                         doneSP[sp] = True
-                        if genEnd - gen < minMutAge:
+                        if endGen - gen < minMutAge:
                             if self.logger is not None:
                                 self.logger.info('Backward failed - trajectory too short. gen = %d subPop=%d locus = %d' \
                                     % (gen, sp, loc))
@@ -1215,29 +1215,29 @@ class trajectorySimulator:
                     self.logger.info('Backward trajectory succeded at gen = %d' % gen)
                 return xt
             # go back gen == 0 and not successful, or if the trajectory is too long
-            if gen == 0 or gen + self.maxMutAge < genEnd:
+            if gen == 0 or gen + self.maxMutAge < endGen:
                 if self.logger is not None:
                     self.logger.info('Backward failed - trajectory too long. gen = %d' % gen)
                 return None
             
-    def simuForward(self, genBegin, genEnd, freqBegin, freqEnd, maxAttempts = 10000):
+    def simuForward(self, beginGen, endGen, beginFreq, endFreq, maxAttempts = 10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. This function accepts allele frequencies of
         alleles of multiple unlinked loci at the beginning generation (``freq``)
-        at generation ``genBegin``, and expected *range* of allele frequencies
-        of these alleles (``freqEnd``) at the end of generation ``genEnd``.
+        at generation ``beginGen``, and expected *range* of allele frequencies
+        of these alleles (``endFreq``) at the end of generation ``endGen``.
         Depending on the number of loci and subpopulations, these parameters
         accept the following inputs:
         
-        genBegin
+        beginGen
             Starting generation. The initial frequecies are considered as
             frequencies at the *beginning* of this generation.
 
-        genEnd
+        endGen
             Ending generation. The ending frequencies are considerd as
             frequencies at the *end* of this generation.
             
-        freqBegin
+        beginFreq
             The initial allele frequency of involved loci in all subpopulations.
             It can be a number (same frequency for all loci in all
             subpopulations), or a list of frequencies for each locus (same
@@ -1245,7 +1245,7 @@ class trajectorySimulator:
             locus in each subpopulation in the order of ``loc0_sp0``,
             ``loc1_sp0``, ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on.
 
-        freqEnd
+        endFreq
             The range of acceptable allele frequencies at the ending generation.
             The ranges can be specified for all loci in all subpopulations,
             for all loci (allele frequency in the whole population is
@@ -1261,54 +1261,54 @@ class trajectorySimulator:
         # This functin wraps around _simuForward. It handles parameter
         # validation and maxAttempts.
         #
-        # genEnd
-        if not genBegin <= genEnd or genEnd <= 0:
+        # endGen
+        if not beginGen <= endGen or endGen <= 0:
             raise exceptions.ValueError('Beginning generation should be less than ending generation')
-        # freqBegin
-        if type(freqBegin) in [type(0), type(0.)]:
-            freq = [[freqBegin] * self.nLoci for sp in self._Nt(genBegin)]
-        elif type(freqBegin) in [type(()), type([])]:
-            if len(freqBegin) == self.nLoci:
-                freq = [freqBegin for sp in self._Nt(genBegin)]
-            elif len(freqBegin) == self.nLoci * len(self._Nt(genBegin)):
+        # beginFreq
+        if type(beginFreq) in [type(0), type(0.)]:
+            freq = [[beginFreq] * self.nLoci for sp in self._Nt(beginGen)]
+        elif type(beginFreq) in [type(()), type([])]:
+            if len(beginFreq) == self.nLoci:
+                freq = [beginFreq for sp in self._Nt(beginGen)]
+            elif len(beginFreq) == self.nLoci * len(self._Nt(beginGen)):
                 freq = []
-                for sp in range(len(self._Nt(genEnd))):
-                    freq.append(freqBegin[self.nLoci*sp : self.nLoci * (sp+1)])
+                for sp in range(len(self._Nt(endGen))):
+                    freq.append(beginFreq[self.nLoci*sp : self.nLoci * (sp+1)])
             else:
                 raise exceptions.ValueError("Invalid initial frequency list")
         else:
             raise exceptions.ValueError("Invalid initial frequency list")
         #
-        # freqEnd
-        if type(freqEnd) not in [type(()), type([])] or len(freqEnd) == 0:
+        # endFreq
+        if type(endFreq) not in [type(()), type([])] or len(endFreq) == 0:
             raise exceptions.ValueError('A list of frequency range is expected')
-        elif type(freqEnd[0]) not in [type(()), type([])]:
-            if len(freqEnd) == 2:
-                freqEnd = [freqEnd]
+        elif type(endFreq[0]) not in [type(()), type([])]:
+            if len(endFreq) == 2:
+                endFreq = [endFreq]
             else:
                 raise exceptions.ValueError('A list of frequency range is expected.')
-        if len(freqEnd) not in [self.nLoci, self.nLoci * len(self._Nt(genEnd))]:
+        if len(endFreq) not in [self.nLoci, self.nLoci * len(self._Nt(endGen))]:
             raise exceptions.ValueError('Please specify a frequency range for each locus')
-        for rng in freqEnd:
+        for rng in endFreq:
             if len(rng) != 2:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
             if rng[0] >= rng[1]:
                 raise exceptions.ValueError('Invalid frequency range %s' % rng)
         for failedCount in range(maxAttempts):
-            xt = self._simuForward(freq, freqEnd, genBegin, genEnd)
+            xt = self._simuForward(freq, endFreq, beginGen, endGen)
             if xt is not None:
                 return xt
         if self.logger is not None:
             self.logger.info('Simulation failed after %d attempts' % failedCount)
         return None
     
-    def simuBackward(self, genEnd, freqEnd, minMutAge = None, maxMutAge = None,
+    def simuBackward(self, endGen, endFreq, minMutAge = None, maxMutAge = None,
         maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using
         a forward time approach. This function accepts allele frequencies of
-        alleles of multiple unlinked loci (*freqEnd*) at the end of generation
-        *genEnd*. Depending on the number of loci and subpopulations, parameter
-        *freqBegin* can be a number (same frequency for all loci in all
+        alleles of multiple unlinked loci (*endFreq*) at the end of generation
+        *endGen*. Depending on the number of loci and subpopulations, parameter
+        *beginFreq* can be a number (same frequency for all loci in all
         subpopulations), or a list of frequencies for each locus (same
         frequency in all subpopulations), or a list of frequencies for each
         locus in each subpopulation in the order of ``loc0_sp0``, ``loc1_sp0``,
@@ -1324,10 +1324,10 @@ class trajectorySimulator:
         # This functin wraps around _simuBackward. It handles parameter
         # validation and maxAttempts.
         #
-        if genEnd <= 0:
+        if endGen <= 0:
             raise exceptions.ValueError('A positive ending generation number is expected.')
 
-        if minMutAge is not None and minMutAge > genEnd:
+        if minMutAge is not None and minMutAge > endGen:
             raise exceptions.ValueError('Minimal mutation age is larger than ending generation.')
         #
         if minMutAge is None:
@@ -1336,34 +1336,34 @@ class trajectorySimulator:
             self.minMutAge = minMutAge
         #
         if maxMutAge is None:
-            self.maxMutAge = genEnd
+            self.maxMutAge = endGen
         else:
             self.maxMutAge = maxMutAge
         
         if not self.maxMutAge >= self.minMutAge:
             raise exceptions.ValueError('maxMutAge should >= minMutAge')
-        if genEnd == 0 and (callable(self.N) or callable(self.fitness)):
-            raise exceptions.ValueError('genEnd should be > 0 if N or fitness is defined in the form of function')
-        if genEnd > 0 and genEnd < self.maxMutAge:
-            raise exceptions.ValueError('genEnd should be >= maxMutAge')
+        if endGen == 0 and (callable(self.N) or callable(self.fitness)):
+            raise exceptions.ValueError('endGen should be > 0 if N or fitness is defined in the form of function')
+        if endGen > 0 and endGen < self.maxMutAge:
+            raise exceptions.ValueError('endGen should be >= maxMutAge')
         #
-        # freqEnd
-        if type(freqEnd) in [type(0), type(0.)]:
-            freq = [[freqEnd] * self.nLoci for sp in self._Nt(genEnd)]
-        elif type(freqEnd) in [type(()), type([])]:
-            if len(freqEnd) == self.nLoci:
-                freq = [freqEnd for sp in self._Nt(genEnd)]
-            elif len(freqEnd) == self.nLoci * len(self._Nt(genEnd)):
+        # endFreq
+        if type(endFreq) in [type(0), type(0.)]:
+            freq = [[endFreq] * self.nLoci for sp in self._Nt(endGen)]
+        elif type(endFreq) in [type(()), type([])]:
+            if len(endFreq) == self.nLoci:
+                freq = [endFreq for sp in self._Nt(endGen)]
+            elif len(endFreq) == self.nLoci * len(self._Nt(endGen)):
                 freq = []
-                for sp in range(len(self._Nt(genEnd))):
-                    freq.append(freqEnd[self.nLoci*sp : self.nLoci * (sp+1)])
+                for sp in range(len(self._Nt(endGen))):
+                    freq.append(endFreq[self.nLoci*sp : self.nLoci * (sp+1)])
             else:
                 raise exceptions.ValueError("Invalid ending frequency list")
         else:
             raise exceptions.ValueError("Invalid ending frequency list")
         #
         for failedCount in range(maxAttempts):
-            xt = self._simuBackward(genEnd, freq, minMutAge, maxMutAge)
+            xt = self._simuBackward(endGen, freq, minMutAge, maxMutAge)
             if xt is not None:
                 return xt
         if self.logger is not None:
@@ -1371,26 +1371,26 @@ class trajectorySimulator:
         return None
 
 
-def ForwardTrajectory(N, genBegin, genEnd, freqBegin, freqEnd, nLoci = 1,
+def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci = 1,
         fitness = None, maxAttempts = 10000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more
     unlinked loci (*nLoci*) from allele frequency *freq* at generation
-    *genBegin* forward in time, until it reaches generation *genEnd*. A
+    *beginGen* forward in time, until it reaches generation *endGen*. A
     ``trajectory`` object will be returned if the allele frequency falls
-    into specified ranges (*freqEnd*). ``None`` will be returned if no valid
+    into specified ranges (*endFreq*). ``None`` will be returned if no valid
     trajectory is simulated after ``maxAttempts`` attempts. Please refer to
     class ``trajectory``, ``trajectorySimulator`` and their member functions
     for more details about allowed input for these parameters.
     '''
     return trajectorySimulator(N, nLoci, fitness, logger).simuForward(
-        genBegin, genEnd, freqBegin, freqEnd, maxAttempts)
+        beginGen, endGen, beginFreq, endFreq, maxAttempts)
     
-def BackwardTrajectory(N, genEnd, freqEnd, nLoci=1, fitness=None,
+def BackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
         minMutAge = None, maxMutAge = None, maxAttempts = 1000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more
-    unlinked loci (*nLoci*) from allele frequency *freq* at generation *genEnd*
+    unlinked loci (*nLoci*) from allele frequency *freq* at generation *endGen*
     backward in time, until all alleles get lost. A ``trajectory`` object will
     be returned if the length of simulated trajectory with ``minMutAge`` and
     ``maxMutAge`` (if specified). ``None`` will be returned if no valid
@@ -1399,7 +1399,7 @@ def BackwardTrajectory(N, genEnd, freqEnd, nLoci=1, fitness=None,
     for more details about allowed input for these parameters.
     '''
     return trajectorySimulator(N, nLoci, fitness, logger).simuBackward(
-        genEnd, freqEnd, minMutAge, maxMutAge, maxAttempts)
+        endGen, endFreq, minMutAge, maxMutAge, maxAttempts)
 
 
 if __name__ == "__main__":
