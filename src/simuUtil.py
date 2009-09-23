@@ -615,9 +615,10 @@ class trajectory:
         return self.traj[gen]
     
     def freq(self, gen, subPop):
-        '''Return frequencies of all loci at generation *gen* of the simulated
-        trajectory. Allele frequencies are assumed to be zero if *gen* is out
-        of range of the simulated trajectory.
+        '''Return frequencies of all loci in subpopulation *subPop* at
+        generation *gen* of the simulated trajectory. Allele frequencies are
+        assumed to be zero if *gen* is out of range of the simulated
+        trajectory.
         '''
         if not self.traj.has_key(gen):
             # assuming no subpopulations
@@ -628,8 +629,8 @@ class trajectory:
     def func(self):
         '''Return a Python function that returns allele frequencies for each
         locus at specified loci. If there are multiple subpopulations, allele
-        frequencies are arranged in the order of ``loc0_sp0``, ``loc0_sp1``,
-        ..., ``loc1_sp0``, ``loc1_sp1``, ... and so on. The returned function
+        frequencies are arranged in the order of ``loc0_sp0``, ``loc1_sp0``,
+        ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on. The returned function
         can be supplied directly to the ``freqFunc`` parameter of a controlled
         random mating scheme (``controlledRandomMating``) or a homogeneous
         mating scheme that uses a controlled offspring generator
@@ -795,13 +796,15 @@ class trajectorySimulator:
         range of generations. This class accepts the following parameters
         
         N
-            Parameter N accepts either a constant number for population size
+            Parameter *N* accepts either a constant number for population size
             (e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
             or a demographic function that returns population or subpopulation
             sizes at each generation. During the evolution, multiple
             subpopulations can be merged into one, and one population can be
             split into several subpopulations. The number of subpopulation is
-            determined by the return value of the demographic function.
+            determined by the return value of the demographic function. Note
+            that *N* should be considered as the population size at the end of
+            specified generation.
 
         nLoci
             Number of unlinked loci for which trajectories of allele
@@ -816,9 +819,9 @@ class trajectorySimulator:
             (*nLoci*), *fitness* can be a list of 3 (the same fitness values
             for all loci), a list of 3*nLoci (different fitness values for each
             locus) or a list of 3**nLoci (fitness value for each combination of
-            genotype). The fitness function should accept a subpopulation index
-            as its only input. This feature allows, and is the only way to
-            specify different fitness for each subpopulation.
+            genotype). The fitness function should accept generation number and
+            a subpopulation index. The latter parameter allows, and is the only
+            way to specify different fitness in each subpopulation.
         
         logger
             A logging object (see Python module ``logging``) that can be used
@@ -832,12 +835,12 @@ class trajectorySimulator:
         if fitness is None:
             self.fitness = [1, 1, 1]
         else:
+            # fitness is a list or a function
             if type(fitness) in [type(()), type([])] and len(fitness) not in [3, 3*nLoci, 3**nLoci]:
                 raise exceptions.ValueError('Invalid list of fitness.')
             self.fitness = fitness
         self.logger = logger
         self.nLoci = nLoci
-        self.errorCount = {'tooLong' : 0, 'tooShort': 0, 'invalid': 0}
         self.maxMutAge = 0
         self.minMutAge = 0
     
@@ -851,6 +854,7 @@ class trajectorySimulator:
             else:
                 return nt
         else:
+            # a constant list
             return self.N
 
     def _marginalFitness(self, fitness, freq):
@@ -862,7 +866,7 @@ class trajectorySimulator:
         '''
         assert len(freq) == 2
         assert len(fitness) == 3 ** self.nLoci
-        sAll = [0] * (3 * self.nLoci)
+        s = [0] * (3 * self.nLoci)
         # each locus
         for loc in range(self.nLoci):
             # each genotype AA, Aa and aa (geno is the number of disease allele)
@@ -877,10 +881,9 @@ class trajectorySimulator:
                     # assign allgeno, using it as a 3-based integer.
                     num = it
                     for l in range(self.nLoci):
-                        if l == loc:
-                            continue
-                        allgeno[l] = num % 3
-                        num /= 3
+                        if l != loc:
+                            allgeno[l] = num % 3
+                            num /= 3
                     # calculate P(Y=g) and f(X=Aa, Y=g)
                     index = 0
                     fq = 1.
@@ -896,22 +899,23 @@ class trajectorySimulator:
                         index = index * 3 + allgeno[i]
                     f += fitness[index] * fq
                 # sum over other genotype
-                sAll[loc * 3 + geno] = f
+                s[loc * 3 + geno] = f
             # convert to form 0, s1, s2
-            sAll[3 * loc + 1] = float(sAll[3 * loc + 1]) / sAll[3 * loc] - 1.
-            sAll[3 * loc + 2] = float(sAll[3 * loc + 2]) / sAll[3 * loc] - 1.
-            sAll[3 * loc] = 0.
-        return sAll
+            s[3 * loc + 1] = float(s[3 * loc + 1]) / s[3 * loc] - 1.
+            s[3 * loc + 2] = float(s[3 * loc + 2]) / s[3 * loc] - 1.
+            s[3 * loc] = 0.
+        return s
 
     def _getS(self, gen, subPop, freq):
-        '''Get fitness(gen) depending on the type of fitness. If self.fitness
-        is a function, it is called to get a generation dependent fitness. The
-        fitness value is then translated to 0, s1, s2. Marginal fitness is
-        calculated using optional allele frequency (``freq``) if interaction is
-        involved. freq should be frequency in specified subpopulation.
+        '''Get s1, s2 for subpopulation *subPop* at generation *gen*. If
+        self.fitness is a function, it is called with *gen* and *subPop* to get
+        a generation and subpopulation specific fitness value. The fitness
+        value is then translated to 0, s1, s2. If interactions are involved,
+        marginal fitness is calculated using allele frequency (``freq``) in
+        subpopulation *subPop*. 
         '''
         assert len(freq) == self.nLoci
-        # _fitness() expects parameters gen 
+        # _fitness() expects parameters gen and a subpopulation index
         if callable(self.fitness):
             fit = self.fitness(gen, subPop)
         else:
@@ -945,8 +949,10 @@ class trajectorySimulator:
         return s
 
     def _getNextXt(self, curXt, Nt, s):
-        '''Solve y from the formula and simulate forward trajectory. For a particular
-        subpopulation.'''
+        '''Solve y from the formula and simulate allele frequencies in the next
+        generation. All parameters are assumed to be for one subpopulation. Nt
+        is the population size of at the end of the current generation (or the
+        next generation)'''
         assert len(curXt) == self.nLoci
         assert type(Nt) not in [type(()), type([])]
         it = []
@@ -966,14 +972,15 @@ class trajectorySimulator:
             it = GetRNG().randBinomial(2 * Nt, y)
             xt.append(float(it) / (2 * Nt))
         return xt
-        
 
     def _getPrevXt(self, curXt, Nt, s):
-        '''Solve y from the backward formula and simulate backward trajectories
-        for a particular subpopulation with size Nt and allele frequency curXt
-        and selection pressure s.
+        '''Solve y from the backward formula and simulate allele frequencies in
+        the previous generation. All parameters are assumed to be for one
+        subpopulation. Nt is the population size at the begining of the current
+        generation, e.g. the population size at the previous generation.
         '''
         assert type(Nt) not in [type(()), type([])]
+        assert len(curXt) == self.nLoci
         #
         # given x(t)
         # calculate y=x(t-1)' by solving an equation
@@ -1030,76 +1037,87 @@ class trajectorySimulator:
         simulated trajectory does not fall into ``destFeq``.
         '''
         # initialize a trajectory
+        # freq is assumed to be at the beginning of the genBegin.
+        # so we do not it does not count into the trajectory.
         xt = trajectory(endGen = genEnd, nLoci = self.nLoci)
-        xt._setFreq(freq, gen = genBegin)
-        # begin at genBegin, go forward.
-        gen = genBegin
-        while 1:
-            # when generation reaches the end, break.
-            if gen == genEnd:
-                # at all loci in all subpopulations, check if any allele frequency is outbound.
-                nSP = len(self._Nt(gen))
-                for loc in range(self.nLoci):
-                    # case 1: allele frequency at each subpopulation
-                    if len(freqEnd) == self.nLoci * nSP:
-                        for sp in range(nSP):
-                            afq = nextXt[sp][loc]
-                            if not freqEnd[sp * self.nLoci + loc][0] <= afq <= freqEnd[sp * self.nLoci + loc][1]:
-                                if self.logger is not None:
-                                    self.logger.debug('Exception-F, restart due to:  Nsubpop= %d locus= %d alleleFreq= %.2f'
-                                        % (sp, loc, afq))
-                                raise exceptions.Exception('invalid')
-                    # case 2: combined allele frequency
-                    else:
-                        fq = 0
-                        for sp in range(nSP):
-                            fq += nextXt[sp][loc] * self._Nt(gen)[sp]
-                        fq /= sum(self._Nt(gen))
-                        if not freqEnd[loc][0] <= fq <= freqEnd[loc][1]:
-                            if self.logger is not None:
-                                self.logger.debug('Exception-F, restart due to:  Nsubpop= %d locus= %d alleleFreq= %.2f'
-                                    % (sp, loc, fq))
-                            raise exceptions.Exception('invalid')
-                if self.logger is not None:
-                        self.logger.debug('Succeed:  Nsubpop= %d alleleFreq= %s' % (sp, nextXt))
-                break
-            # first get curXt, N(t+1), then calculate nextXt.
-            curXt = xt._freq(gen)
-            gen += 1
-            nextNt = self._Nt(gen)
-            if len(nextNt) > len(curXt):
-                # split(forward sense) from one population to nSP subpopulations
-                # get xt at next generation: t+1
-                Nt = [sum(nextNt)]
-                # get NextXt using one subpopulation, then split...
-                nextXt = [self._getNextXt(curXt[0], Nt[0], self._getS(gen, 0, xt.freq(gen-1, 0)))]
-                # it nextXt to multiple subpopulations and assign... nextXt.
-                NEWnextXt = []
-                for sp in range(len(nextNt)):
-                    NEWnextXt.append([x for x in nextXt[0]])
-                xt._setFreq(NEWnextXt, gen=gen)
-            elif len(nextNt) < len(curXt) / self.nLoci:
-                # check length of next Nt.
-                if len(nextNt) != 1:
-                    raise exceptions.ValueError('When merging event occurs between two adjacent generations in the forward sense, '
-                                     + 'all subpops are required to merge into one population.')
-                # merge (forward sense) from multiple subpopulations to one pop.
-                Ntp = self._Nt(gen - 1)
-                Nt = [int(x * 1.0 / sum(Ntp) * nextNt[0]) for x in Ntp]
-                nextXt = [self._getNextXt(curXt[sp], Nt[sp], self._getS(gen, sp, xt.freq(gen-1, sp)))
-                    for sp in range(len(Nt))]
-                # Merge nextXt and set to trajectory
-                NEWnextXt = [
-                    # sum over all subpopulations and calculate overall allele frequency
-                    sum([x*y for x,y in zip(nextXt[i*len(Nt):(i+1)*len(Nt)], Nt)]) / sum(Nt)
-                        # for all loci
-                        for i in range(self.nLoci)]
-                xt._setFreq([NEWnextXt], gen=gen)
+        # go through each generation
+        for gen in range(genBegin, genEnd + 1):
+            # first get beginXt, N(t+1), then calculate nextXt.
+            if gen == genBegin:
+                beginXt = freq
             else:
-                Nt = nextNt
-                nextXt = [self._getNextXt(curXt[sp], Nt[sp], self._getS(gen, sp, xt.freq(gen-1, sp)))
+                # current Xt is the frequency at the previous generation.
+                beginXt = xt._freq(gen - 1)
+            # _Ne(gen) is the population size at the end of this generation.
+            Nt = self._Nt(gen)
+            #
+            if len(Nt) > len(beginXt):
+                # split (forward sense) from one population to nSP subpopulations
+                if len(beginXt) != 1:
+                    raise exceptions.RuntimeError('Can only split from one subpopulation.')
+                #
+                # get NextXt using one subpopulation, then split...
+                tmpXt = self._getNextXt(beginXt[0], sum(Nt), self._getS(gen, 0, beginXt[0]))
+                # split tmpXt to multiple subpopulations and assign endingXt.
+                # here we assume a multi-nomial distribution of disease alleels.
+                endingXt = [[0]*self.nLoci for x in Nt]
+                p = [float(x) / sum(Nt) for x in Nt]
+                for loc in range(self.nLoci):
+                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    for sp in range(len(Nt)):
+                        endingXt[sp][loc] = float(it[sp]) / Nt[sp]
+            elif len(Nt) < len(beginXt):
+                # check length of next Nt.
+                if len(Nt) != 1:
+                    raise exceptions.RuntimeError('Can only merge into one subpopulation')
+                # merge (forward sense) from multiple subpopulations to one pop.
+                Nt_prev = self._Nt(gen - 1)
+                if len(beginXt) != len(Nt_prev):
+                    raise exceptions.RuntimeError('Subpopulation size and allele frequency mismatch.')
+                Nt_tmp = [int(x * 1.0 / sum(Nt_prev) * Nt[0]) for x in Nt_prev]
+                #
+                endingXt = [[0] * self.nLoci]
+                for sp in range(len(Nt_prev)):
+                    # simulate frequency in each subpopulation
+                    tmpXt = self._getNextXt(beginXt[sp], Nt_tmp[sp], self._getS(gen, sp, beginXt[sp]))
+                    # and accumulate alleles in the final merged frequency
+                    for loc in range(self.nLoci):
+                        endingXt[0][loc] += tmpXt[loc] * Nt_tmp[sp] / Nt[0]
+            else:
+                endingXt = [self._getNextXt(beginXt[sp], Nt[sp], self._getS(gen, sp, beginXt[sp]))
                     for sp in range(len(Nt))]
-                xt._setFreq(nextXt, gen=gen)
+            #
+            assert len(endingXt) == len(Nt)
+            # set frequency at the end of this generation
+            if self.logger is not None:
+                self.logger.debug('Gen=%d, xt=%s'  % (gen, endingXt))           
+            xt._setFreq(endingXt, gen)
+            # and now we go to the next generation...
+        # not we have a trajectory... is it valid?
+        freq = xt._freq(genEnd)
+        Nt = self._Nt(genEnd)
+        for loc in range(self.nLoci):
+            # case 1: allele frequency at each subpopulation
+            if len(freqEnd) == self.nLoci * len(Nt):
+                for sp in range(len(Nt)):
+                    if freq[sp][loc] < freqEnd[sp * self.nLoci + loc][0] or \
+                        freq[sp][loc] > freqEnd[sp * self.nLoci + loc][1]:
+                        if self.logger is not None:
+                            self.logger.info('Forward trajectory restarted, hitting allele requency %s' % freq)
+                        return None
+            # case 2: combined allele frequency
+            else:
+                allFreq = 0
+                for sp in range(len(Nt)):
+                    allFreq += freq[sp][loc] * Nt[sp]
+                allFreq /= sum(Nt)
+                if allFreq < freqEnd[loc][0] or allFreq > freqEnd[loc][1]:
+                    if self.logger is not None:
+                        self.logger.info('Forward trajectory restarted, hitting allele frequency %s (combined %.3f)' \
+                            % (freq, allFreq))
+                    return None
+        if self.logger is not None:
+            self.logger.info('Forward trajectory succeed, hitting allele frequency %s' % freq)
         return xt
 
     def _simuBackward(self, genEnd, freq, minMutAge, maxMutAge):
@@ -1118,96 +1136,89 @@ class trajectorySimulator:
         done = [False] * self.nLoci
         # initialize a trajectory
         xt = trajectory(endGen=genEnd, nLoci = self.nLoci)
+        # because freq is the allele frequency at the end of the last generation,
+        # it is part of the trajectory.
         xt._setFreq(freq, gen=genEnd)
         # start from genEnd, go backward.
-        gen = genEnd
-        while 1:
+        for gen in range(genEnd, -1, -1):
             # first get curXt, N(t-1), then calculate prevXt
-            curXt = xt._freq(gen)
-            if self.logger is not None:
-                self.logger.debug('Gen=%d, xt=%s'  % (gen, xt._freq(gen)))           
-            gen -= 1
-            if gen < 0 or gen + self.maxMutAge < genEnd:
-                raise exceptions.Exception('tooLong')
-            prevNt = self._Nt(gen)
-            if len(prevNt) > len(curXt):
-                # merge (forward sense)--> split from one population
-                # to nSP subpopulations (backward sense)
-                # get xt at previous generation: t-1
-                Nt = [sum(prevNt)]
-                prevXt = [self._getPrevXt(curXt[0],
-                    Nt[0], self._getS(gen, 0, xt.freq(gen+1, 0)))]
-                # SPLIT prevXt to multiple subpopulations and assign an expanded
-                # prevXt.
-                assert len(prevXt[0]) == self.nLoci
-                assert len(Nt) == 1
-                p = [float(x)/Nt[0] for x in prevNt]
-                NEWprevXt = []
+            endingXt = xt._freq(gen)
+            # Nt is the size at the beginning of the current generation.
+            Nt = self._Nt(gen - 1)
+            Nt_end = self._Nt(gen)
+            if len(Nt) > len(endingXt):
+                if len(endingXt) != 1:
+                    raise exceptions.RuntimeError('Can only merge to one subpopulation')
+                # merge (forward sense)
+                tmpXt = self._getPrevXt(endingXt[0], sum(Nt), self._getS(gen, 0, endingXt[0]))
+                assert len(tmpXt) == self.nLoci
+                # SPLIT tmpXt to multiple subpopulations and assign an expanded beginXt.
+                beginXt = [[0]*self.nLoci for x in Nt]
+                p = [float(x)/sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    NewIt = GetRNG().randMultinomialVal(int(prevXt[0][loc]*Nt[0]), p)
-                    NEWprevXt.extend([float(x)/y for x,y in zip(NewIt, prevNt)])
-                new1prevXt = []
-                for sp in range(len(prevNt)):
-                    new1prevXt.append([NEWprevXt[loc * len(prevNt) + sp] for loc in range(self.nLoci)])
-                xt._setFreq(new1prevXt, gen=gen)
-            elif len(prevNt) < len(curXt):
+                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    beginXt[sp][loc] = float(it[sp]) / Nt[sp]
+            elif len(Nt) < len(endingXt):
                 # check length of previous Nt.
-                if len(prevNt) != 1:
-                    raise exceptions.ValueError('When merging event occurs between two adjacent generations in the backward sense, '
-                                     + 'all subpops are required to merge into one population.') 
-                # split (forward sense)--> merge from multiple subpopulations
-                # to one population (backward sense)
-                Ntp = self._Nt(gen + 1)
-                Nt = [int(x * 1.0 / sum(Ntp) * prevNt[0]) for x in Ntp]
-                prevXt = [self._getPrevXt(curXt[sp],
-                    Nt[sp], self._getS(gen, sp, xt.freq(gen+1, sp)))
-                    for sp in range(len(Nt))]
-                # MERGE prevXt and set to trajectory
-                NEWprevXt = [[
-                    # sum over all subpopulations and calculate overall allele frequency
-                    sum([x*y for x,y in zip([prevXt[sp][i] for sp in range(len(Nt))], Nt)]) / sum(Nt)
-                    # for all loci
-                    for i in range(self.nLoci)]]
-                xt._setFreq(NEWprevXt, gen=gen)
+                if len(Nt) != 1:
+                    raise exceptions.ValueError('Can only split from one subpoplation.')
+                # split (forward sense)
+                Nt_tmp = [int(float(x) / sum(Nt_end) * Nt[0]) for x in Nt_end]
+                beginXt = [[0] * self.nLoci]
+                for sp in range(len(Nt)):
+                    tmpXt = self._getPrevXt(endingXt[sp], Nt_tmp[sp], self._getS(gen, sp, endingXt[sp]))
+                    for loc in range(self.nLoci):
+                        beginXt[0][loc] += tmpXt[loc] * Nt_tmp[sp] / Nt[0]
             else:
-                Nt = prevNt
-                prevXt = [self._getPrevXt(curXt[sp],
-                    Nt[sp], self._getS(gen, sp, xt.freq(gen+1, sp)))
+                beginXt = [self._getPrevXt(endingXt[sp], Nt[sp], self._getS(gen, sp, endingXt[sp]))
                     for sp in range(len(Nt))]
-                xt._setFreq(prevXt, gen=gen)
-            # set freq for previous generation
-            # at all loci, check when prevIt is 0, if curIt is 1
-            nSP = len(Nt)
+            #
+            assert len(beginXt) == len(Nt)
+            # set frequency at the end of this generation
+            if self.logger is not None:
+                self.logger.debug('Gen=%d, xt=%s'  % (gen - 1, beginXt)) 
+            #
+            xt._setFreq(beginXt, gen - 1)
+            # check all loci and see if beginXt is 0
             for loc in range(self.nLoci):
-                doneNSP = [False] * nSP
+                doneSP = [False] * len(Nt)
                 if done[loc]:
                     continue
                 # loop over subpopulation
-                for idx, (xtCur, xtPrev) in enumerate(zip(
-                        [curXt[sp][loc] for sp in range(nSP)],
-                        [prevXt[sp][loc] for sp in range(nSP)])):
-                    it = xtCur * self._Nt(gen + 1)[idx] * 2
-                    if it == 0:
+                for sp in range(len(Nt)):
+                    if (len(Nt_end) == 1 and endingXt[0][loc] == 0.) or \
+                        (len(Nt_end) > 1 and endingXt[sp][loc] == 0.):
                         # already done in a previous generation
-                        doneNSP[idx] = True
+                        doneSP[sp] = True
                         continue
-                    if xtPrev == 0:
-                        # success (judge when a trajectory is successfully generated)
-                        doneNSP[idx] = gen
-                        if self.logger is not None:
-                            self.logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
+                    if beginXt[sp][loc] == 0.:
+                        # success
+                        doneSP[sp] = True
                         if genEnd - gen < minMutAge:
-                            raise exceptions.Exception('tooShort')
-                        break
-                    elif xtPrev == 1: # fixed
+                            if self.logger is not None:
+                                self.logger.info('Backward failed - trajectory too short. gen = %d subPop=%d locus = %d' \
+                                    % (gen, sp, loc))
+                            return None
                         if self.logger is not None:
-                            self.logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                        raise exceptions.Exception('invalid')
-                if False not in doneNSP:
+                            self.logger.info('Backward success: gen = %d subPop=%d locus = %d' % (gen, sp, loc))
+                        break
+                    elif beginXt[sp][loc] == 1: # fixed
+                        if self.logger is not None:
+                            self.logger.info('Backward failed - allele gets fixed. gen = %d subPop=%d locus = %d' \
+                                    % (gen, sp, loc))
+                        return None
+                if False not in doneSP:
                     done[loc] = True
             if False not in done:
-                break
-        return xt
+                # success
+                if self.logger is not None:
+                    self.logger.info('Backward trajectory succeded at gen = %d' % gen)
+                return xt
+            # go back gen == 0 and not successful, or if the trajectory is too long
+            if gen == 0 or gen + self.maxMutAge < genEnd:
+                if self.logger is not None:
+                    self.logger.info('Backward failed - trajectory too long. gen = %d' % gen)
+                return None
             
     def simuForward(self, genBegin, genEnd, freqBegin, freqEnd, maxAttempts = 10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
@@ -1246,6 +1257,10 @@ class trajectorySimulator:
         of frequencies. This simulator will return ``None`` if no valid
         trajectory is found after ``maxAttempts`` attemps.
         '''
+        #
+        # This functin wraps around _simuForward. It handles parameter
+        # validation and maxAttempts.
+        #
         # genEnd
         if not genBegin <= genEnd or genEnd <= 0:
             raise exceptions.ValueError('Beginning generation should be less than ending generation')
@@ -1279,19 +1294,12 @@ class trajectorySimulator:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
             if rng[0] >= rng[1]:
                 raise exceptions.ValueError('Invalid frequency range %s' % rng)
-        self.errorCount['invalid'] = 0
         for failedCount in range(maxAttempts):
-            try:
-                return self._simuForward(freq, freqEnd, genBegin, genEnd)
-            except exceptions.Exception, e:
-                if len(e.args) == 0:
-                    raise
-                if e.args[0] == 'invalid':
-                    self.errorCount['invalid'] += 1
-                else:
-                    print 'Unknown error occurs'
-                    print e
-                    raise
+            xt = self._simuForward(freq, freqEnd, genBegin, genEnd)
+            if xt is not None:
+                return xt
+        if self.logger is not None:
+            self.logger.info('Simulation failed after %d attempts' % failedCount)
         return None
     
     def simuBackward(self, genEnd, freqEnd, minMutAge = None, maxMutAge = None,
@@ -1312,6 +1320,10 @@ class trajectorySimulator:
         *maxMutAge* (ignored if ``None`` is given). This simulator will return
         ``None`` if no valid trajectory is found after ``maxAttempts`` attemps.
         '''
+        #
+        # This functin wraps around _simuBackward. It handles parameter
+        # validation and maxAttempts.
+        #
         if genEnd <= 0:
             raise exceptions.ValueError('A positive ending generation number is expected.')
 
@@ -1350,24 +1362,12 @@ class trajectorySimulator:
         else:
             raise exceptions.ValueError("Invalid ending frequency list")
         #
-        self.errorCount['invalid'] = 0
-        self.errorCount['tooLong'] = 0
-        self.errorCount['tooShort'] = 0
         for failedCount in range(maxAttempts):
-            try:
-                return self._simuBackward(genEnd, freq, minMutAge, maxMutAge)
-            except exceptions.Exception, e:
-                if len(e.args) == 0:
-                    raise
-                if e.args[0] == 'tooLong':
-                    self.errorCount['tooLong'] += 1
-                elif e.args[0] == 'tooShort':
-                    self.errorCount['tooShort'] += 1
-                elif e.args[0] == 'invalid' :
-                    self.errorCount['invalid'] += 1
-                else:
-                    print e
-                    raise
+            xt = self._simuBackward(genEnd, freq, minMutAge, maxMutAge)
+            if xt is not None:
+                return xt
+        if self.logger is not None:
+            self.logger.info('Simulation failed after %d attempts' % failedCount)
         return None
 
 

@@ -283,7 +283,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=0.1, freqEnd=[0.09, 0.11])
-        self.assertAlmostEqual(traj.freq(100, 0)[0], 0.1)
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
         # no mutation
         self.assertEqual(len(traj.mutators()), 0)
@@ -323,7 +322,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=0.1, freqEnd=[0.09, 0.11])
-        self.assertAlmostEqual(traj.freq(100, 0)[0], 0.1)
         fq = (traj.freq(200, 0)[0] + traj.freq(200, 1)[0]*2)/3.
         self.assertTrue(fq >= 0.09 and fq <= 0.11)
         # no mutation
@@ -375,8 +373,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=[0.1, 0.13], freqEnd=[[0.09, 0.11], [0.11, 0.12]])
-        self.assertAlmostEqual(traj.freq(100, 0)[0], 0.1)
-        self.assertAlmostEqual(traj.freq(100, 0)[1], 0.13)
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
         self.assertTrue(traj.freq(200, 0)[1] >= 0.11 and traj.freq(200, 0)[0] <= 0.12)
         # no mutation
@@ -425,8 +421,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=[0.1, 0.13], freqEnd=[[0.09, 0.13], [0.10, 0.14]])
-        self.assertAlmostEqual((traj.freq(100, 0)[0] + traj.freq(100, 1)[0]*3)/4., 0.1)
-        self.assertAlmostEqual((traj.freq(100, 0)[1] + traj.freq(100, 1)[1]*3)/4., 0.13)
         f1 = (traj.freq(200, 0)[0] + traj.freq(200, 1)[0]*3)/4.
         f2 = (traj.freq(200, 0)[1] + traj.freq(200, 1)[1]*3)/4.
         self.assertTrue(f1 >= 0.09 and f1 <= 0.13)
@@ -476,7 +470,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=0.1, freqEnd=[0.14, 0.15])
-        self.assertAlmostEqual(traj.freq(100, 0)[0], 0.1)
         self.assertTrue(traj.freq(200, 0)[0] >= 0.14 and traj.freq(200, 0)[0] <= 0.15)
         # no mutation
         self.assertEqual(len(traj.mutators()), 0)
@@ -529,8 +522,6 @@ class TestUtility(unittest.TestCase):
         # test trajectory
         traj = trajSimulator.simuForward(genBegin=100, genEnd=200,
             freqBegin=[0.1, 0.13], freqEnd=[[0.09, 0.11], [0.11, 0.12]])
-        self.assertAlmostEqual(traj.freq(100, 0)[0], 0.1)
-        self.assertAlmostEqual(traj.freq(100, 0)[1], 0.13)
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
         self.assertTrue(traj.freq(200, 0)[1] >= 0.11 and traj.freq(200, 0)[0] <= 0.12)
         # no mutation
@@ -597,7 +588,6 @@ class TestUtility(unittest.TestCase):
         traj1 = trajSimulator.simuForward(genBegin=0, genEnd=300, freqBegin=0.5, freqEnd=[[0,1]]*3)
         self.assertEqual(len(traj1.freq(295, 0)), 3)
         self.assertEqual(len(traj1.freq(296, 0)), 3)
-        
         # nLoci = 2.
         # In a backward simulation, number of populations splits from one to 4 when
         # gen = genEnd - 5 in backward sense.
