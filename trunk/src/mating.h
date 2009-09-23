@@ -191,8 +191,8 @@ public:
 	 *  each locus. If there are multiple subpopulations, \e freqFunc can
 	 *  return a list of allele frequencies for all subpopulations or
 	 *  combined frequencies that ignore population structure. In the former
-	 *  case, allele frequencies should be arranged by loc0_sp0, loc0_sp1, ...
-	 *  loc1_sp0, loc1_sp1, ..., and so on. In the latter case, overall expected
+	 *  case, allele frequencies should be arranged by loc0_sp0, loc1_sp0, ...
+	 *  loc0_sp1, loc1_sp1, ..., and so on. In the latter case, overall expected
 	 *  number of alleles are scattered to each subpopulation in proportion to
 	 *  existing number of alleles in each subpopulation, using a multinomial
 	 *  distribution.

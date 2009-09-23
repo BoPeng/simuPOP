@@ -32,6 +32,8 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		no longer initialize sex by default.
   - CHG: Change long allele module to 32 bits to simulate infinite-sites models.
   - NEW: Add function population.indByID to identify individuals, even ancestors, by individual ID.
+  - CHG: Revise trajectory simulation classes and functions. Adjust how
+		controlledOffspringGenerator takes input.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
