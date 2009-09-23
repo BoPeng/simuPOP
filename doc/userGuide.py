@@ -3358,8 +3358,8 @@ GetRNG().setSeed(12345)
 from simuUtil import trajectory, ForwardTrajectory
 
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
-    genBegin=0, genEnd=100, freqBegin=[0.2, 0.3],
-    freqEnd=[[0.1, 0.11], [0.2, 0.21]])
+    beginGen=0, endGen=100, beginGreq=[0.2, 0.3],
+    endFreq=[[0.1, 0.11], [0.2, 0.21]])
 traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
     plot_main='Simulated trajectory (forward-time)')
 simu = simulator(
@@ -3404,7 +3404,7 @@ def fitness(gen, sp):
 
 # simulate a trajectory backward in time, from generation 1000
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
-     genEnd=1000, freqEnd=[0.1, 0.2])
+     endGen=1000, endFreq=[0.1, 0.2])
 traj.plot('backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
     col_loc=['red', 'blue'], plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
