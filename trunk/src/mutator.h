@@ -596,13 +596,17 @@ public:
 	 *  a given \e allele of individuals \e inds. If there are multiple alleles
 	 *  at a locus (e.g. individuals in a diploid population), only the first
 	 *  allele is mutated unless indexes of alleles are listed in parameter
-	 *  \e ploidy. Please refer to class \c baseOperator for detailed
+	 *  \e ploidy. This operator is by default applied to individuals in the
+	 *  first subpopulation but you can apply it to a different or more than
+	 *  one (virtual) subpopulations using parameter *subPops* (``AllAvail`` is
+	 *  also accepted). Please refer to class \c baseOperator for detailed
 	 *  descriptions of other parameters.
 	 */
 	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const intList & reps = intList(), const subPopList & subPops = 0,
+		const stringList & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{

@@ -118,7 +118,7 @@ bool initByFreq::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
-	if (subPops.empty())
+	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != subPops.size(),
@@ -197,7 +197,7 @@ bool initByValue::apply(population & pop)
 #endif
 
 	subPopList subPops = applicableSubPops();
-	if (subPops.empty())
+	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
 	vectoru loci = m_loci.elems();

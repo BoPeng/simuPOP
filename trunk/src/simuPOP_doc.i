@@ -5239,7 +5239,7 @@ Usage:
 
     pointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      subPops=0, infoFields=[])
 
 Details:
 
@@ -5247,8 +5247,12 @@ Details:
     given allele of individuals inds. If there are multiple alleles at
     a locus (e.g. individuals in a diploid population), only the first
     allele is mutated unless indexes of alleles are listed in
-    parameter ploidy. Please refer to class baseOperator for detailed
-    descriptions of other parameters.
+    parameter ploidy. This operator is by default applied to
+    individuals in the first subpopulation but you can apply it to a
+    different or more than one (virtual) subpopulations using
+    parameter *subPops* (``AllAvail`` is also accepted). Please refer
+    to class baseOperator for detailed descriptions of other
+    parameters.
 
 "; 
 

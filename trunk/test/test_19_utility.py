@@ -296,7 +296,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=1000)
         self.assertTrue(traj._beginGen() >= 2000 and traj._beginGen() <= 2600)
         # one mutation
-        self.assertEqual(len(traj.mutators()), 1)
+        self.assertEqual(len(traj.mutators(loci=[0])), 1)
 
     def testBackTrajectorySubpop(self):
         'Testing backward trajectory simulation with subpopulations and no selection'
@@ -326,7 +326,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=1000)
         self.assertTrue(traj._beginGen() >= 2000 and traj._beginGen() <= 2600)
         # one mutation in each subpopulation
-        self.assertEqual(len(traj.mutators()), 2) 
+        self.assertEqual(len(traj.mutators(loci=[0])), 2) 
     
     def testForwardTrajectorySimple(self):
         'Testing forward trajectory simulation with constant population size and no selection'
@@ -335,7 +335,7 @@ class TestUtility(unittest.TestCase):
             beginFreq=0.1, endFreq=[0.09, 0.11])
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0])), 0)
         #
 
     def testForwardTrajectorySubPop(self):
@@ -348,7 +348,7 @@ class TestUtility(unittest.TestCase):
         fq = (traj.freq(200, 0)[0] + traj.freq(200, 1)[0]*2)/3.
         self.assertTrue(fq >= 0.09 and fq <= 0.11)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0])), 0)
 
     def testForwardSelBySubPop(self):
         'Testing forward trajectory simulation with subpop specific selection'
@@ -384,7 +384,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=1000)
         self.assertTrue(traj._beginGen() >= 2000 and traj._beginGen() <= 2600)
         # one mutation
-        self.assertEqual(len(traj.mutators()), 2)
+        self.assertEqual(len(traj.mutators(loci=[0, 1])), 2)
 
     def testForwardSimpleMultiLoci(self):
         'Testing forward trajectory simulation of multiple loci with constant population size and no selection'
@@ -395,7 +395,7 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
         self.assertTrue(traj.freq(200, 0)[1] >= 0.11 and traj.freq(200, 0)[0] <= 0.12)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0, 1])), 0)
         # the function form
         traj = ForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 
@@ -418,7 +418,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=1500)
         self.assertTrue(traj._beginGen() >= 1500 and traj._beginGen() <= 2600 )
         # one mutation
-        self.assertEqual(len(traj.mutators()), 4)
+        self.assertEqual(len(traj.mutators(loci=[0,1])), 4)
 
     def testForwardSimpleMultiLociSubPop(self):
         'Testing forward trajectory simulation of multiple loci with multiple populations and no selection'
@@ -431,7 +431,7 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(f1 >= 0.08 and f1 <= 0.13)
         self.assertTrue(f2 >= 0.10 and f2 <= 0.15)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0])), 0)
         # the function form
         traj = ForwardTrajectory(N=[1000, 3000], nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 
@@ -456,7 +456,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=500)
         self.assertTrue(traj._beginGen() >= 2500 and traj._beginGen() <= 2600)
         # one mutation
-        self.assertEqual(len(traj.mutators()), 1)
+        self.assertEqual(len(traj.mutators(loci=[0])), 1)
         # the function form
         traj = BackwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], endGen=3000, endFreq=0.1) 
         #
@@ -466,7 +466,7 @@ class TestUtility(unittest.TestCase):
             beginFreq=0.1, endFreq=[0.14, 0.15])
         self.assertTrue(traj.freq(200, 0)[0] >= 0.14 and traj.freq(200, 0)[0] <= 0.15)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0])), 0)
         # the function form
         traj = ForwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], beginGen=100,
             endGen=200, beginFreq=0.1, endFreq=[0.14, 0.15]) 
@@ -494,7 +494,7 @@ class TestUtility(unittest.TestCase):
             maxMutAge=1000)
         self.assertTrue(traj._beginGen() >= 2000 and traj._beginGen() <= 2600)
         # one mutation
-        self.assertEqual(len(traj.mutators()), 2)
+        self.assertEqual(len(traj.mutators(loci=[0,1])), 2)
         # the function form
         traj = BackwardTrajectory(N=1000, nLoci=2, endGen=3000, endFreq=0.1) 
         #
@@ -504,7 +504,7 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(traj.freq(200, 0)[0] >= 0.12 and traj.freq(200, 0)[0] <= 0.14)
         self.assertTrue(traj.freq(200, 0)[1] >= 0.15 and traj.freq(200, 0)[0] <= 0.19)
         # no mutation
-        self.assertEqual(len(traj.mutators()), 0)
+        self.assertEqual(len(traj.mutators(loci=[0,1])), 0)
         # the function form
         traj = ForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 

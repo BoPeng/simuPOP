@@ -669,8 +669,16 @@ class trajectory:
             for sp in range(len(self.traj[gen])):
                 for loc in range(self.nLoci):
                     if self.traj[gen][sp][loc] == 0 and self.traj[gen + 1][sp][loc] > 0:
-                        mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
-                            subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                        if type(loci) in [type(()), type([])]:
+                            if len(loci) != self.nLoci:
+                                raise exceptions.ValueError('%d loci is expected' % self.nLoci)
+                            mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
+                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                        elif self.nLoci == 1 and type(loci) == type(0):
+                            mut.append(pointMutator(inds=inds, loci=loci, allele=allele,
+                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                        else:
+                            raise exceptions.ValueError('Invalid parameter loci')
         return mut
 
     def _setFreq(self, freq, gen):
