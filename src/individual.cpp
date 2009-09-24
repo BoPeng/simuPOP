@@ -251,24 +251,6 @@ void individual::swap(individual & ind, bool swapContent)
 }
 
 
-string individual::opName()
-{
-	ostringstream os;
-	int width = 1;
-
-	if (ModuleMaxAllele == 1)
-		width = 1;
-	else
-		width = 3;
-	display(os, width, vectoru());
-	const string & str = os.str();
-	if (str.size() < 100)
-		return str;
-	else
-		return str.substr(0, 100) + "...";
-}
-
-
 void individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << sexChar() << affectedChar() << " ";

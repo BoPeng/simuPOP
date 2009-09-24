@@ -94,7 +94,7 @@ public:
 	bool apply(population & pop);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.qtrait::quantitative trait>" ;
 	}
@@ -158,7 +158,7 @@ public:
 	virtual double qtrait(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.qtrait::map quantitative trait>" ;
 	}
@@ -227,7 +227,7 @@ public:
 	virtual double qtrait(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.qtrait::multiple-alleles qtrait>" ;
 	}
@@ -303,7 +303,7 @@ public:
 	virtual double qtrait(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.qtrait::multiple-loci qtrait>" ;
 	}
@@ -379,7 +379,7 @@ public:
 	virtual double qtrait(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.qtrait::python qtrait>" ;
 	}

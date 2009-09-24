@@ -80,7 +80,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.id tagger>" ;
 	}
@@ -151,7 +151,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.inheritTagger>" ;
 	}
@@ -211,7 +211,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.summaryTagger>" ;
 	}
@@ -278,7 +278,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.parents tagger>" ;
 	}
@@ -342,7 +342,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.pedigree tagger>" ;
 	}
@@ -400,7 +400,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.pyTagger>" ;
 	}

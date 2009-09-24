@@ -159,7 +159,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "One of the transmitters " << (*iop)->opName()
+				cerr << "One of the transmitters " << (*iop)->description()
 				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
@@ -179,7 +179,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "DuringMating operator " << (*iop)->opName()
+				cerr << "DuringMating operator " << (*iop)->description()
 				     << " throws an exception.\n"
 				     << e.message() << "\n" << endl;
 				throw e;

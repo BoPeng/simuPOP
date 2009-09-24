@@ -86,7 +86,7 @@ public:
 		individual & offspring, int ploidy);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.genoTransmitter>" ;
 	}
@@ -146,7 +146,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.cloneGenoTransmitter>" ;
 	}
@@ -192,7 +192,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.mendelianGenoTransmitter>" ;
 	}
@@ -258,7 +258,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selfingGenoTransmitter>" ;
 	}
@@ -306,7 +306,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.haplodiploidGenoTransmitter>" ;
 	}
@@ -360,7 +360,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.mitochondrialGenoTransmitter>" ;
 	}
@@ -522,7 +522,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.recombination>" ;
 	}
