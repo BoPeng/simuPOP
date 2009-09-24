@@ -41,6 +41,7 @@ while True:
             # init SNP
             #initByFreq([.5,.5], atLoci=range(1,31)),
             # init MST
+            initSex(),
             initByValue(value=[[0]*30,[1]*30,[2]*30,[3]*30,[4]*30],
                 loci=range(1, 31), proportions=[.2]*5),
             # init QTL
