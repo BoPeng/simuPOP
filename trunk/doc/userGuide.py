@@ -3416,7 +3416,7 @@ simu = simulator(pop, controlledRandomMating(loci=[0, 1], alleles=[1, 1],
         subPopSize=Nt, freqFunc=traj.func()))
 simu.evolve(
     preOps = [initSex()],
-    ops = traj.mutators() + [
+    ops = traj.mutators(loci=[0, 1]) + [
         stat(alleleFreq=[0, 1], begin=500, step=100),
         pyEval(r"'%4d: %.3f (exp: %.3f), %.3f (exp: %.3f)\n' % (gen, alleleFreq[0][1],"
             "traj(gen)[0], alleleFreq[1][1], traj(gen)[1])",

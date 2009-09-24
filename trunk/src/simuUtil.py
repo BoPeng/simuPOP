@@ -645,14 +645,16 @@ class trajectory:
             return freq
         return trajFunc
     
-    def mutators(self, inds=0, allele=1, *args, **kwargs):
+    def mutators(self, loci, inds=0, allele=1, *args, **kwargs):
         '''Return a list of ``pointMutator`` operators that introduce mutants
         at the beginning of simulated trajectories. These mutators should be
         added to the ``ops`` parameter of ``simulator.evolve`` function to
         introduce a mutant at the beginning of a generation with zero allele
         frequency before mating, and a positive allele frequency after mating.
-        Other than default parameters ``inds=0`` and ``allele=1``, additional
-        parameters could be passed to point mutator as keyward parameters.
+        A parameter ``loci`` is needed to specify actual loci indexes in the
+        real forward simulation. Other than default parameters ``inds=0`` and
+        ``allele=1``, additional parameters could be passed to point mutator
+        as keyward parameters.
         '''
         gens = self.traj.keys()
         gens.sort()
@@ -667,7 +669,7 @@ class trajectory:
             for sp in range(len(self.traj[gen])):
                 for loc in range(self.nLoci):
                     if self.traj[gen][sp][loc] == 0 and self.traj[gen + 1][sp][loc] > 0:
-                        mut.append(pointMutator(inds=inds, loci=loc, allele=allele,
+                        mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
                             subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
         return mut
 

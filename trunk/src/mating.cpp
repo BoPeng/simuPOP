@@ -260,7 +260,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			// if there is no alleles
 			if (!hasAllele && expFreq[i] > 0.)
 				throw RuntimeError("No disease allele exists at generation "
-					+ toStr(pop.gen()) + ", but expected allele frequency is greater than 0.");
+					+ toStr(pop.gen()) + ", but expected allele frequency at locus " + toStr(locus) + " is greater than 0.");
 
 			DBG_WARNING(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
 				+ toStr(pop.gen()) + ", but expected allele frequency is zero.");
@@ -292,7 +292,8 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				// if there is no alleles
 				if (n == 0 && expFreq[sp * nLoci + i] > 0.)
 					throw RuntimeError("No disease allele exists at generation " +
-						toStr(pop.gen()) + " but exp allele frequency is greater than 0.");
+						toStr(pop.gen()) + " but exp allele frequency at locus " + toStr(locus) +
+                        " in subpopulation " + toStr(sp) + " is greater than 0.");
 #endif
 				m_expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pop.ploidy() * expFreq[sp * nLoci + i]);
 				if (expFreq[sp * nLoci + i] > 0. && m_expAlleles[numSP * i + sp] == 0)
