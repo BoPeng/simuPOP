@@ -233,7 +233,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.matrix mutator";
 	}
@@ -291,7 +291,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.k-allele model mutator K=" +
 		       toStr(m_k) + ">" ;
@@ -364,7 +364,7 @@ public:
 
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.step-wise mutation model mutator>" ;
 	}
@@ -426,7 +426,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.python mutator>" ;
 	}
@@ -491,7 +491,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.mixed mutator>" ;
 	}
@@ -570,7 +570,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.context-dependent mutator>" ;
 	}
@@ -630,7 +630,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.point mutator>" ;
 	}

@@ -187,7 +187,7 @@ vectoru simulator::evolve(const opList & ops,
 	// check compatibility of operators
 	for (size_t i = 0; i < ops.size(); ++i) {
 		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + ops[i]->opName() + " is not compatible.");
+			"Operator " + ops[i]->description() + " is not compatible.");
 	}
 
 	vector<bool> activeReps(m_numRep);
@@ -209,18 +209,18 @@ vectoru simulator::evolve(const opList & ops,
 				cerr << "    Pre-mating operators" << endl;
 				for (size_t it = 0; it < preMatingOps.size(); ++it)
 					if (preMatingOps[it]->isActive(curRep, 0, 0, activeReps, true))
-						cerr << "      - " << preMatingOps[it]->opName() << preMatingOps[it]->atRepr() << endl;
+						cerr << "      - " << preMatingOps[it]->description() << preMatingOps[it]->atRepr() << endl;
 			}
 			cerr << "    Start mating" << endl;
 			for (vectorop::iterator op = durmatingOps.begin(), opEnd = durmatingOps.end();
 			     op != opEnd; ++op)
-				cerr << "      - " << (*op)->opName() << (*op)->atRepr() << endl;
+				cerr << "      - " << (*op)->description() << (*op)->atRepr() << endl;
 			// apply post-mating ops to next gen()
 			if (!postMatingOps.empty()) {
 				cerr << "    Apply post-mating operators" << endl;
 				for (size_t it = 0; it < postMatingOps.size(); ++it)
 					if (postMatingOps[it]->isActive(curRep, 0, 0, activeReps, true))
-						cerr << "      - " << postMatingOps[it]->opName() << postMatingOps[it]->atRepr() << endl;
+						cerr << "      - " << postMatingOps[it]->description() << postMatingOps[it]->atRepr() << endl;
 			}
 		}
 		if (!postOps.empty() ) {
@@ -289,7 +289,7 @@ vectoru simulator::evolve(const opList & ops,
 
 					try {
 						if (!preMatingOps[it]->apply(curPop)) {
-							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " + preMatingOps[it]->opName() +
+							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " + preMatingOps[it]->description() +
 								" stops at replicate " + toStr(curRep) << endl);
 
 							if (activeReps[curRep]) {
@@ -300,7 +300,7 @@ vectoru simulator::evolve(const opList & ops,
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Pre-mating Operator " + preMatingOps[it]->opName() +
+							                       << "Pre-mating Operator " + preMatingOps[it]->description() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
@@ -308,7 +308,7 @@ vectoru simulator::evolve(const opList & ops,
 						numStopped = activeReps.size();
 						break;
 					}
-					ElapsedTime("PreMatingOp: " + preMatingOps[it]->opName());
+					ElapsedTime("PreMatingOp: " + preMatingOps[it]->description());
 				}
 			}
 
@@ -354,7 +354,7 @@ vectoru simulator::evolve(const opList & ops,
 
 					try {
 						if (!postMatingOps[it]->apply(curPop)) {
-							DBG_DO(DBG_SIMULATOR, cerr << "Post-mating Operator " + postMatingOps[it]->opName() +
+							DBG_DO(DBG_SIMULATOR, cerr << "Post-mating Operator " + postMatingOps[it]->description() +
 								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
 							activeReps[curRep] = false;
@@ -363,7 +363,7 @@ vectoru simulator::evolve(const opList & ops,
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Post-mating Operator " + postMatingOps[it]->opName() +
+							                       << "Post-mating Operator " + postMatingOps[it]->description() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
@@ -372,7 +372,7 @@ vectoru simulator::evolve(const opList & ops,
 						// does not run the rest of the post-mating operators.
 						break;
 					}
-					ElapsedTime("PostMatingOp: " + postMatingOps[it]->opName());
+					ElapsedTime("PostMatingOp: " + postMatingOps[it]->description());
 				}
 			}                                                                                   // post mating ops
 			// if a replicate stops at a post mating operator, consider one evolved generation.
@@ -411,7 +411,7 @@ bool simulator::apply(const opList & ops, bool dryrun)
 	for (size_t i = 0; i < ops.size(); ++i) {
 		// check compatibility of operators
 		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + ops[i]->opName() + " is not compatible.");
+			"Operator " + ops[i]->description() + " is not compatible.");
 	}
 
 	// really apply
@@ -426,7 +426,7 @@ bool simulator::apply(const opList & ops, bool dryrun)
 		for (it = 0; it < ops.size(); ++it) {
 
 			if (dryrun) {
-				cerr << "      - " << ops[it]->opName() << ops[it]->atRepr() << endl;
+				cerr << "      - " << ops[it]->description() << ops[it]->atRepr() << endl;
 				continue;
 			}
 

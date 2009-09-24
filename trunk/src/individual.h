@@ -442,10 +442,6 @@ public:
 	int __cmp__(const individual & rhs) const;
 
 
-	// allow str(population) to get something better looking
-	/// HIDDEN
-	string opName();
-
 	/// CPPONLY swap individuals
 	/**
 	   The default behavior is swapping all info, but not the

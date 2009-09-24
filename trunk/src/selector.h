@@ -109,7 +109,7 @@ public:
 	bool apply(population & pop);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selector>" ;
 	}
@@ -167,7 +167,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selector::map selector>" ;
 	}
@@ -248,7 +248,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selector::multiple-alleles selector>" ;
 	}
@@ -317,7 +317,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selector::multiple-loci selector>" ;
 	}
@@ -405,7 +405,7 @@ public:
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.selector::python selector>" ;
 	}

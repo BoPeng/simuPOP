@@ -121,7 +121,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.penetrance>" ;
 	}
@@ -177,7 +177,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.penetrance::map penetrance>" ;
 	}
@@ -249,7 +249,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.penetrance::multiple-alleles penetrance>" ;
 	}
@@ -318,7 +318,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.penetrance::multiple-loci penetrance>" ;
 	}
@@ -412,7 +412,7 @@ public:
 	virtual double penet(individual * ind);
 
 	/// HIDDEN
-	string opName()
+	string description()
 	{
 		return "<simuPOP.penetrance::python penetrance>" ;
 	}
