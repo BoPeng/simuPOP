@@ -124,7 +124,7 @@ bool dumper::apply(population & pop)
 
 	if (m_showGenotype) {
 		subPopList subPops = applicableSubPops();
-		if (subPops.empty())
+		if (subPops.allAvail())
 			subPops.useSubPopsFrom(pop);
 
 		UINT cnt = displayGenotype(pop, subPops, out);
@@ -138,7 +138,7 @@ bool dumper::apply(population & pop)
 		for (int gen = 1; gen <= ancGen; ++gen) {
 			pop.useAncestralGen(gen);
 			subPopList subPops = applicableSubPops();
-			if (subPops.empty())
+			if (subPops.allAvail())
 				subPops.useSubPopsFrom(pop);
 
 			out << endl << "Ancestry population " << gen << endl;

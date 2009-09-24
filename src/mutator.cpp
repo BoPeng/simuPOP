@@ -100,7 +100,7 @@ bool mutator::apply(population & pop)
 
 	subPopList subPops = applicableSubPops();
 	// the usual whole population, easy case.
-	if (subPops.empty())
+	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
 	BernulliTrials bt(GetRNG());
@@ -410,19 +410,48 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 
 bool pointMutator::apply(population & pop)
 {
-	// mutate each mutable locus
-	size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : m_loci.elems().size();
+	subPopList subPops = applicableSubPops();
 
-	for (size_t i = 0; i < iEnd; ++i) {
-		for (vectoru::iterator ind = m_inds.begin();
-		     ind != m_inds.end(); ++ind) {
+	// the usual whole population, easy case.
+	if (subPops.allAvail())
+		subPops.useSubPopsFrom(pop);
+
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp);
+
+		vectoru::iterator it = m_inds.begin();
+		vectoru::iterator itEnd = m_inds.end();
+		for (; it != itEnd; ++it) {
+			IndIterator ind = pop.indIterator(sp->subPop(), VisibleInds) + *it;
+			if (!ind.valid())
+				continue;
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
-				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + (m_loci.allAvail() ? i : m_loci.elems()[i])) = m_allele;
-				DBG_DO(DBG_MUTATOR, cerr << "Mutate locus " << (m_loci.allAvail() ? i : m_loci.elems()[i]) <<
-					" to allele " << toStr(m_allele) << " at generation " << pop.gen() << endl);
-			}
-		}
-	}                                                                                 // each applicable loci
+				if (m_loci.allAvail()) {
+					for (size_t i = 0; i < pop.totNumLoci(); ++i) {
+						ind->setAllele(m_allele, i, m_ploidy[p]);
+						DBG_DO(DBG_MUTATOR,
+							cerr << "Mutate locus " << i << " at ploidy " << m_ploidy[p]
+							     << " to allele " << int(m_allele) << " at generation "
+							     << pop.gen() << endl);
+					}
+				} else {
+					const vectoru & loci = m_loci.elems();
+					for (size_t i = 0; i < loci.size(); ++i) {
+						ind->setAllele(m_allele, loci[i], m_ploidy[p]);
+						DBG_DO(DBG_MUTATOR,
+							cerr << "Mutate locus " << loci[i] << " at ploidy " << m_ploidy[p]
+							     << " to allele " << int(m_allele) << " at generation "
+							     << pop.gen() << endl);
+					}
+				}
+			}   // ploidy
+		}       // individual
+		if (sp->isVirtual())
+			pop.deactivateVirtualSubPop(sp->subPop());
+	}       // subpopulation
 
 	return true;
 }

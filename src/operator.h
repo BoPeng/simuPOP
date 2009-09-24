@@ -154,9 +154,9 @@ public:
 		DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
 			"Only when no subpopulation is specified can this function be called."
 			"This is likely caused by the use of persistent subPops for different populations.");
-		if (m_allAvail)
-			for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-				m_subPops.push_back(vspID(sp));
+		DBG_ASSERT(m_allAvail, SystemError, "Cannot use all subpopulations in non-allAvail mode");
+		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+			m_subPops.push_back(vspID(sp));
 	}
 
 

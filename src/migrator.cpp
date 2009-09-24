@@ -121,7 +121,7 @@ bool migrator::apply(population & pop)
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), RuntimeError,
 		"Migration can not be applied to activated virtual subpopulations");
 
-	if (fromSubPops.empty())
+	if (fromSubPops.allAvail())
 		fromSubPops.useSubPopsFrom(pop);
 
 	vectoru toSubPops = m_to.elems();
