@@ -453,8 +453,8 @@ class TestUtility(unittest.TestCase):
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1, maxMutAge=500)
         self.assertTrue(traj._beginGen() >= 2500)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1, minMutAge=400,
-            maxMutAge=500)
-        self.assertTrue(traj._beginGen() >= 2500 and traj._beginGen() <= 2600)
+            maxMutAge=1000)
+        self.assertTrue(traj._beginGen() >= 2000 and traj._beginGen() <= 2600)
         # one mutation
         self.assertEqual(len(traj.mutators(loci=[0])), 1)
         # the function form
