@@ -583,6 +583,7 @@ pop1 = LoadPopulation('sample.pop')
 pop1.chromName(0)
 pop1.dvars().name
 #begin_ignore
+import os
 os.remove('sample.pop')
 #end_ignore
 #end_file
@@ -611,6 +612,7 @@ simu.evolve(
     gen=100
 )
 #begin_ignore
+import os
 os.remove('sample.pop')
 #end_ignore
 #end_file
@@ -688,6 +690,7 @@ print open('LD.txt').read()
 print open('R2.txt').read()    # Only the last write operation succeed.
 print open('LD_2.txt').read()  # Each replicate writes to a different file.
 #begin_ignore
+import os
 for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt']:
     os.remove(file)
 #end_ignore
@@ -735,6 +738,7 @@ simu.evolve(
 print open('simulation.log').read()
 #begin_ignore
 logging.shutdown()
+import os
 os.remove('simulation.log')
 #end_ignore
 #end_file
@@ -1762,6 +1766,7 @@ for pop1,pop2 in zip(cloned.populations(), loaded.populations()):
 simu.evolve(ops=[], gen=10)
 simu.gen()
 #begin_ignore
+import os
 os.remove('sample.sim')
 #end_ignore
 #end_file
@@ -1896,6 +1901,7 @@ simu.evolve(
     gen = 50
 )
 #begin_ignore
+import os
 for rep in range(5):
     for gen in range(0, 50, 10):
         os.remove('snapshot_%d_%d.pop' % (rep, gen))
@@ -3037,8 +3043,7 @@ InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
 InitByFreq(pop, [0.2, 0.8], loci=2)
 Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
     vars=['genoNum', 'haploFreq'])
-from simuUtil import ViewVars
-ViewVars(pop.vars(), gui=False)
+simuUtil.ViewVars(pop.vars(), gui=False)
 #end_file
 
 #begin_file log/statInfo.py
@@ -3096,7 +3101,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuUtil import *
+from simuPOP.simuUtil import *
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
     sample = CaseControlSample(pop, cases=500, controls=500)[0]
@@ -3129,7 +3134,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuUtil import MigrIslandRates
+from simuPOP.simuUtil import MigrIslandRates
 simu = simulator(population([5000]*3, loci=10, infoFields='migrate_to'),
     randomMating(), rep=2)
 simu.evolve(
@@ -3355,7 +3360,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuUtil import trajectory, ForwardTrajectory
+from simuPOP.simuUtil import trajectory, ForwardTrajectory
 
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
@@ -3392,7 +3397,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuUtil import trajectory, BackwardTrajectory
+from simuPOP.simuUtil import trajectory, BackwardTrajectory
 from math import exp
 def Nt(gen, oldSize=[]):
     'An exponential population growth demographic model.'
@@ -3434,7 +3439,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuRPy import varPlotter
+from simuPOP.simuRPy import varPlotter
 pop = population(size=1000, loci=2)
 simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
 simu.evolve(
@@ -3462,7 +3467,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuRPy import varPlotter
+from simuPOP.simuRPy import varPlotter
 pop = population(size=1000, loci=1*4)
 simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
@@ -3490,7 +3495,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuRPy import varPlotter
+from simuPOP.simuRPy import varPlotter
 pop = population(size=1000, loci=1*4)
 simu = simulator(pop, randomMating(), rep=3)
 def drawFrame(r, dim=None, **kwargs):
@@ -3536,7 +3541,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuRPy import scatterPlotter
+from simuPOP.simuRPy import scatterPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
@@ -3584,7 +3589,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuRPy import histPlotter, qqPlotter, boxPlotter
+from simuPOP.simuRPy import histPlotter, qqPlotter, boxPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
@@ -3675,8 +3680,10 @@ print pars.usage()
 pars.processArgs(['--rep=10'])
 pars.rep
 #begin_ignore
+import sys
 oldArg = sys.argv[-1]
 sys.argv.pop()
+import os
 if not os.path.isfile('getParam.png'):
     print 'Run a GUI if getParam has not been runned'
 else:
@@ -4075,6 +4082,7 @@ if __name__ == '__main__':
     simuCDCV(*par.asList())
 
 #begin_ignore
+import os
 if os.path.file('log/simuCDCV.py'):
     out = os.popen('python log/simuCDCV.py -h')
     hlp = open('log/simuCDCV.hlp', 'w')

@@ -18,7 +18,7 @@ from time import sleep
 
 hasRPy = True
 try:
-    from simuRPy import *
+    from simuPOP.simuRPy import *
     from rpy import r
 except exceptions.ImportError:
     print "simuRPy can not be imported. Either rpy or r is not installed properly."

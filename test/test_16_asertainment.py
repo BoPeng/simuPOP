@@ -14,7 +14,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-from simuUtil import *
+from simuPOP.simuUtil import *
 import unittest, os, sys, exceptions
 
 class TestAscertainment(unittest.TestCase):

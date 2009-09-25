@@ -36,8 +36,26 @@ and format conversion utilities.
 
 import exceptions, operator, types, os, sys, re
 
-from simuPOP import *
 from simuOpt import simuOptions
+
+if simuOptions['Optimized']:
+    if simuOptions['AlleleType'] == 'short':
+        import simuPOP_op as simuPOP
+    elif simuOptions['AlleleType'] == 'long':
+        import simuPOP_laop as simuPOP
+    elif simuOptions['AlleleType'] == 'binary':
+        import simuPOP_baop as simuPOP
+    else:
+        import simuPOP_op as simuPOP
+else:
+    if simuOptions['AlleleType'] == 'short':
+        import simuPOP_std as simuPOP
+    elif simuOptions['AlleleType'] == 'long':
+        import simuPOP_la as simuPOP
+    elif simuOptions['AlleleType'] == 'binary':
+        import simuPOP_ba as simuPOP
+    else:
+        import simuPOP_std as simuPOP
 
 def ViewVars(var, gui=None):
     '''
@@ -207,7 +225,7 @@ or non-circular
 
 def SaveCSV(pop, filename='', fields=[], loci=[], header=True,
     shift=1, combine=None,
-        sexCode={Male: '1', Female: '2'}, affectionCode={True: '1', False: '2'},
+        sexCode={simuPOP.Male: '1', simuPOP.Female: '2'}, affectionCode={True: '1', False: '2'},
         **kwargs):
     '''Save a simuPOP population ``pop`` in csv format.
 
@@ -672,11 +690,11 @@ class trajectory:
                         if type(loci) in [type(()), type([])]:
                             if len(loci) != self.nLoci:
                                 raise exceptions.ValueError('%d loci is expected' % self.nLoci)
-                            mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
-                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                            mut.append(simuPOP.pointMutator(inds=inds, loci=loci[loc], allele=allele,
+                                subPops=sp, at=gen + 1, stage=simuPOP.PreMating, *args, **kwargs))
                         elif self.nLoci == 1 and type(loci) == type(0):
-                            mut.append(pointMutator(inds=inds, loci=loci, allele=allele,
-                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                            mut.append(simuPOP.pointMutator(inds=inds, loci=loci, allele=allele,
+                                subPops=sp, at=gen + 1, stage=simuPOP.PreMating, *args, **kwargs))
                         else:
                             raise exceptions.ValueError('Invalid parameter loci')
         return mut
@@ -979,7 +997,7 @@ class trajectorySimulator:
             # with s1 and s2 on hand, calculate freq at the next generation
             y = x * (1 + s2 * x + s1 * (1 - x)) / (1 + s2 * x * x + 2 * s1 * x * (1 - x))
             # y is obtained, is the expected allele frequency for the next generation t+1
-            it = GetRNG().randBinomial(2 * Nt, y)
+            it = simuPOP.GetRNG().randBinomial(2 * Nt, y)
             xt.append(float(it) / (2 * Nt))
         return xt
 
@@ -1033,7 +1051,7 @@ class trajectorySimulator:
                 else:
                      y = y1
             # y is obtained, is the expected allele frequency for the previous generation t-1
-            it = GetRNG().randBinomial(int(2 * Nt), y)
+            it = simuPOP.GetRNG().randBinomial(int(2 * Nt), y)
             xt.append(float(it) / (2 * Nt))
         return xt
 
@@ -1073,7 +1091,7 @@ class trajectorySimulator:
                 endingXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x) / sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    it = simuPOP.GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
                     for sp in range(len(Nt)):
                         endingXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(beginXt):
@@ -1166,7 +1184,7 @@ class trajectorySimulator:
                 beginXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x)/sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    it = simuPOP.GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
                     beginXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(endingXt):
                 # check length of previous Nt.
