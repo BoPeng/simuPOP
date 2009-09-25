@@ -82,8 +82,8 @@ include src/simuPOP_ba.i
 include src/simuPOP_baop.i
 
 # source python files (modules)
-include src/simuPOP.py
-include src/simuOpt.py
+include simuOpt.py
+include src/__init__.py
 include src/simuUtil.py
 include src/simuRPy.py
 
