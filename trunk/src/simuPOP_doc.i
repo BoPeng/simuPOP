@@ -290,7 +290,7 @@ Details:
 
 %ignore simuPOP::baseOperator::atRepr();
 
-%feature("docstring") simuPOP::baseOperator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::baseOperator::description "Obsolete or undocumented function."
 
 %ignore simuPOP::baseOperator::noOutput();
 
@@ -402,7 +402,7 @@ Usage:
 
 %ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::basePenetrance::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::basePenetrance::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BernulliTrials "
 
@@ -600,7 +600,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::cloneGenoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::cloneGenoTransmitter::description "Obsolete or undocumented function."
 
 %ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -780,7 +780,7 @@ Usage:
 
 %ignore simuPOP::contextMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::contextMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::contextMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::controlledOffspringGenerator "
 
@@ -923,7 +923,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::dumper::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Exception "
 
@@ -1604,7 +1604,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::genoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::genoTransmitter::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::genoTransmitter::initialize "
 
@@ -1741,7 +1741,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::haplodiploidGenoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter::initialize "Obsolete or undocumented function."
 
@@ -1957,7 +1957,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::idTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::idTagger::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::idTagger::reset "
 
@@ -2055,7 +2055,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::ifElse::description "Obsolete or undocumented function."
 
 %ignore simuPOP::indCompare;
 
@@ -2357,8 +2357,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::individual::opName "Obsolete or undocumented function."
-
 %ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
 %ignore simuPOP::individual::display(ostream &out, int width=1, const vectoru &loci=vectoru());
@@ -2498,7 +2496,7 @@ Usage:
 
 %ignore simuPOP::infoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoEval::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::infoEval::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::infoExec "
 
@@ -2592,7 +2590,7 @@ Usage:
 
 %ignore simuPOP::infoExec::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoExec::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::infoExec::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::infoParentsChooser "
 
@@ -2798,7 +2796,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::inheritTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::inheritTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::inheritTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -2875,7 +2873,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::initByFreq::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initByFreq::apply "
 
@@ -2946,7 +2944,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::initByValue::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initByValue::apply "
 
@@ -3019,7 +3017,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::initInfo::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initInfo::apply "
 
@@ -3096,7 +3094,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initSex::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::initSex::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::initSex::apply "
 
@@ -3192,7 +3190,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::kamMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::kamMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maPenetrance "
 
@@ -3269,7 +3267,7 @@ Usage:
 
 %ignore simuPOP::maPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::maPenetrance::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::maPenetrance::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapPenetrance "
 
@@ -3336,7 +3334,7 @@ Usage:
 
 %ignore simuPOP::mapPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::mapPenetrance::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mapPenetrance::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapQuanTrait "
 
@@ -3412,7 +3410,7 @@ Usage:
 
 %ignore simuPOP::mapQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::mapQuanTrait::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mapQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapSelector "
 
@@ -3487,7 +3485,7 @@ Usage:
 
 %ignore simuPOP::mapSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mapSelector::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mapSelector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maQuanTrait "
 
@@ -3568,7 +3566,7 @@ Usage:
 
 %ignore simuPOP::maQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::maQuanTrait::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::maQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maSelector "
 
@@ -3665,7 +3663,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::maSelector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mating "Obsolete or undocumented function."
 
@@ -3781,7 +3779,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::matrixMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::matrixMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter "
 
@@ -3824,7 +3822,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mendelianGenoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mendelianGenoTransmitter::description "Obsolete or undocumented function."
 
 %ignore simuPOP::mendelianGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -3926,7 +3924,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mergeSubPops::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::migrator "
 
@@ -4063,7 +4061,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::migrator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter "
 
@@ -4110,7 +4108,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mitochondrialGenoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mitochondrialGenoTransmitter::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter::initialize "Obsolete or undocumented function."
 
@@ -4169,7 +4167,7 @@ Usage:
 
 %ignore simuPOP::mixedMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::mixedMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mixedMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlPenetrance "
 
@@ -4240,7 +4238,7 @@ Usage:
 
 %ignore simuPOP::mlPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::mlPenetrance::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mlPenetrance::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlQuanTrait "
 
@@ -4326,7 +4324,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mlQuanTrait::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mlQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlSelector "
 
@@ -4399,7 +4397,7 @@ Usage:
 
 %ignore simuPOP::mlSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mlSelector::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::mlSelector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mutator "
 
@@ -4581,7 +4579,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noneOp::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::noneOp::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::offspringGenerator "
 
@@ -4839,7 +4837,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::parentsTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::parentsTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::parentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -4913,7 +4911,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pause::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pause::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pedigree "
 
@@ -5213,7 +5211,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pedigreeTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pedigreeTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::pedigreeTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -5292,7 +5290,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pointMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pointMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::polyParentsChooser "
 
@@ -6473,7 +6471,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyEval::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyExec "
 
@@ -6529,7 +6527,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyExec::description "Obsolete or undocumented function."
 
 %ignore simuPOP::pyFunc;
 
@@ -6662,7 +6660,7 @@ Usage:
 
 %ignore simuPOP::pyMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::pyMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyMutator::description "Obsolete or undocumented function."
 
 %ignore simuPOP::pyObject;
 
@@ -6771,7 +6769,7 @@ Details:
 
 %ignore simuPOP::pyOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::pyOperator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyOperator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyOutput "
 
@@ -6835,7 +6833,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyOutput::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyParentsChooser "
 
@@ -6989,7 +6987,7 @@ Usage:
 
 %ignore simuPOP::pyPenetrance::penet(individual *ind);
 
-%feature("docstring") simuPOP::pyPenetrance::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyPenetrance::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyPopIterator "
 
@@ -7093,7 +7091,7 @@ Usage:
 
 %ignore simuPOP::pyQuanTrait::qtrait(individual *ind);
 
-%feature("docstring") simuPOP::pyQuanTrait::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pySelector "
 
@@ -7167,7 +7165,7 @@ Usage:
 
 %ignore simuPOP::pySelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::pySelector::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pySelector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyTagger "
 
@@ -7215,7 +7213,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::pyTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::pyTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -7291,7 +7289,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::quanTrait::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::quanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::randomParentChooser "
 
@@ -7595,7 +7593,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::recombinator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::recombinator::initialize "
 
@@ -7702,7 +7700,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::resizeSubPops::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RNG "
 
@@ -8039,7 +8037,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::savePopulation::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selector "
 
@@ -8137,7 +8135,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selector::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::selector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selfingGenoTransmitter "
 
@@ -8179,7 +8177,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selfingGenoTransmitter::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::selfingGenoTransmitter::description "Obsolete or undocumented function."
 
 %ignore simuPOP::selfingGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -8319,7 +8317,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setAncestralDepth::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::setAncestralDepth::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::sexSplitter "
 
@@ -8845,7 +8843,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::smmMutator::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::smmMutator::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::splitSubPops "
 
@@ -8946,7 +8944,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::splitSubPops::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::stat "
 
@@ -9322,7 +9320,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::stat::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::stat::description "Obsolete or undocumented function."
 
 %ignore simuPOP::statAlleleFreq;
 
@@ -9813,7 +9811,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::summaryTagger::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::summaryTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::summaryTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -9892,7 +9890,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::terminateIf::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::terminateIf::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::terminateIf::apply "
 
@@ -9958,7 +9956,7 @@ Usage:
 
 %feature("docstring") simuPOP::ticToc::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::ticToc::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::ticToc::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOffDebug "
 
@@ -10003,7 +10001,7 @@ Usage:
 
 %feature("docstring") simuPOP::turnOffDebug::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::turnOffDebug::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::turnOffDebug::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOnDebug "
 
@@ -10053,7 +10051,7 @@ Usage:
 
 %feature("docstring") simuPOP::turnOnDebug::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::turnOnDebug::opName "Obsolete or undocumented function."
+%feature("docstring") simuPOP::turnOnDebug::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::uintList "
 
