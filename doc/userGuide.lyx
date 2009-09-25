@@ -6419,7 +6419,7 @@ varPlotter
 \family default
  operator defined in 
 \family typewriter
-simuRPy.py
+plotter.py
 \family default
  is derived from 
 \family typewriter
@@ -17323,7 +17323,15 @@ name "cha:Utility-Modules"
 \end_layout
 
 \begin_layout Section
+Module 
+\family typewriter
 simuOpt
+\family default
+ (function 
+\family typewriter
+simuOpt.setOptions
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -17408,14 +17416,20 @@ most options can be set by environmental variables and command line options
  which are sometimes more versatile to use.
 \end_layout
 
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.params
+\end_layout
+
 \begin_layout Standard
 The 
 \family typewriter
-simuOpt
+simuPOP.params
 \family default
  module also provides a class 
 \family typewriter
-simuOpt
+simuParam
 \family default
  to help users handle and manage script parameters.
  There are many other standard or third-party parameter handling modules
@@ -17424,7 +17438,7 @@ simuOpt
  methods.
  More specifically, if a script uses the 
 \family typewriter
-simuOpt.simuOpt
+params.simuParam
 \family default
  class to handle parameters,
 \end_layout
@@ -17622,19 +17636,23 @@ lstparams "caption={A sample parameter specification list},label={paramSpec},las
 \end_layout
 
 \begin_layout Subsection
-Get parameters
+Get parameters (class 
+\family typewriter
+params.simuParam
+\family default
+)
 \end_layout
 
 \begin_layout Standard
 A 
 \family typewriter
-simuOpt
+simuParam
 \family default
  object can be created from a parameter specification list.
  A few member functions are immediately usable.
  For example, 
 \family typewriter
-simuOpt.usage()
+simuParam.usage()
 \family default
  returns a detailed usage message about the script and all its parameters
  (although the usage message will be displayed automatically if command
@@ -17664,7 +17682,7 @@ par.rate
 \begin_layout Standard
 Function 
 \family typewriter
-simuOpt.saveConfig(filename)
+simuParam.saveConfig(filename)
 \family default
  saves current values of parameters to a configuraiton file 
 \family typewriter
@@ -17695,32 +17713,32 @@ filename
 \begin_layout Standard
 The 
 \family typewriter
-simuOpt.simuOpt
+params.simuParam
 \family default
  class provides a number of member functions that allow you to acquire user
  input in a number of ways.
  For example 
 \family typewriter
-simuOpt.loadConfig
+simuParam.loadConfig
 \family default
  reads a configuration file, 
 \family typewriter
-simuOpt.processArgs
+simuParam.processArgs
 \family default
  checks commandline options, 
 \family typewriter
-simuOpt.termGetParam
+simuParam.termGetParam
 \family default
  asks user input interactively, and 
 \family typewriter
-simuOpt.guiGetParam
+simuParam.guiGetParam
 \family default
  generates and uses a parameter input dialog.
  These functions can be used several times, on different sets of parameters.
  In addition, new options could be added programmatically using function
  
 \family typewriter
-simuOpt.addOption
+simuParam.addOption
 \family default
  and allows further flexibility on how parameters are generated.
  Please refer to 
@@ -17752,7 +17770,7 @@ reference "getParam"
  lists some methods to determine parameter values but the last function,
  
 \family typewriter
-simuOpt.getParam()
+simuParam.getParam()
 \family default
 , will be used most of the time.
  This function processes each parameter in the following order:
@@ -17809,7 +17827,7 @@ wxPython
 \begin_layout Standard
 
 \family typewriter
-simuOpt.getParam
+simuParam.getParam
 \family default
  returns 
 \family typewriter
@@ -17837,11 +17855,11 @@ reference "fig:parameter-input-dialog"
 \begin_layout Note
 If 
 \family typewriter
-simuOpt.valueValidFile()
+simuParam.valueValidFile()
 \family default
  or 
 \family typewriter
-simuOpt.valueValidDir()
+simuParam.valueValidDir()
 \family default
  is used to validate a parameter, 
 \series bold
@@ -18052,11 +18070,17 @@ simuOpt
 \end_layout
 
 \begin_layout Section
-simuUtil
+Module 
+\family typewriter
+simuPOP.utils
 \end_layout
 
 \begin_layout Standard
-The simuUtil module provides a few utility functions and classes.
+The 
+\family typewriter
+simuPOP.utils
+\family default
+ module provides a few utility functions and classes.
  They do not belong to the simuPOP core but are distributed with simuPOP
  because they are frequently used and play an important role in some specialized
  simulation techniques.
@@ -18069,7 +18093,15 @@ http://simupop.sourceforge.net/cookbook
 \end_layout
 
 \begin_layout Subsection
-Trajectory simulation
+Trajectory simulation (classes 
+\family typewriter
+trajectory
+\family default
+ and 
+\family typewriter
+trajectorySimulator
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -18258,7 +18290,11 @@ None
 \end_layout
 
 \begin_layout Subsubsection
-Forward-time trajectory simulations.
+Forward-time trajectory simulations (function 
+\family typewriter
+ForwardTrajectory
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -18337,7 +18373,11 @@ Simulated trajectories of one locus in two subpopulations
 \end_layout
 
 \begin_layout Subsubsection
-Backward-time trajectory simulations.
+Backward-time trajectory simulations (function 
+\family typewriter
+BackwardTrajectory
+\family default
+).
 \end_layout
 
 \begin_layout Standard
@@ -18455,13 +18495,15 @@ Progress bar
 \end_layout
 
 \begin_layout Section
-simuRPy
+Module 
+\family typewriter
+simuPOP.plotter
 \end_layout
 
 \begin_layout Standard
 The 
 \family typewriter
-simuRPy
+simuPOP.plotter
 \family default
  module defines a few utility functions and Python operators that help you
  plot variables and information fields during evolution.
@@ -18471,7 +18513,7 @@ simuRPy
 \begin_layout Itemize
 Operator 
 \family typewriter
-simuRPy.varPlotter
+plotter.varPlotter
 \family default
 : Plot a dynamically evaluated expression with its history.
  Each expression and its history form a line in the plot.
@@ -18483,7 +18525,7 @@ simuRPy.varPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-simuRPy.scatterPlotter
+plotter.scatterPlotter
 \family default
 : Plot individuals in specified (virtual) subpopulations using values at
  two information fields as x and y axes.
@@ -18494,7 +18536,7 @@ simuRPy.scatterPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-simuRPy.infoPlotter
+plotter.infoPlotter
 \family default
 : Using a R function such as 
 \family typewriter
@@ -18508,11 +18550,11 @@ qqnorm
  subpopulations.
  Two specialized operators 
 \family typewriter
-simuRPy.histPlotter
+plotter.histPlotter
 \family default
  and 
 \family typewriter
-simuRPy.qqPlotter
+plotter.qqPlotter
 \family default
  are provided to plot the histograms and qq plots.
  Other functions could also be used, and it is even possible to draw a figure
@@ -18522,7 +18564,7 @@ simuRPy.qqPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-simuRPy.boxPlotter
+plotter.boxPlotter
 \family default
 : This operator uses R function 
 \family typewriter
@@ -18541,7 +18583,7 @@ pyOperator
  and call R plot functions when they are applied to a population.
  For example, operator 
 \family typewriter
-simuRPy.varPlotter
+plotter.varPlotter
 \family default
  collects expression values and use functions 
 \family typewriter
@@ -18661,13 +18703,17 @@ main='Allele frequency at generation 10'
 \end_layout
 
 \begin_layout Subsection
-Plot of expressions and their histories
+Plot of expressions and their histories (operator 
+\family typewriter
+plotter.varPlotter
+\family default
+)
 \end_layout
 
 \begin_layout Standard
 Class 
 \family typewriter
-simuRPy.varPlotter
+plotter.varPlotter
 \family default
  plots the current and historical values of a Python expression (
 \family typewriter
@@ -19192,13 +19238,17 @@ Allele frequency trajectories separated by loci
 \end_layout
 
 \begin_layout Subsection
-Scatter plots
+Scatter plots (operator 
+\family typewriter
+plotter.scatterPlotter
+\family default
+)
 \end_layout
 
 \begin_layout Standard
 Operator 
 \family typewriter
-simuRPy.scatterPlotter
+plotter.scatterPlotter
 \family default
  plots individuals in all or selected (virtual) subpopulations in a 2-D
  plot, using values at two information fields as their x- and y-axis.
@@ -19455,23 +19505,35 @@ Plot of individuals with ancestry marked by different colors
 \end_layout
 
 \begin_layout Subsection
-Histograms, QQ plots and boxplots.
+Histograms, QQ plots and boxplots (operator 
+\family typewriter
+plotter.infoPlotter
+\family default
+, 
+\family typewriter
+plotter.histPlotter
+\family default
+, 
+\family typewriter
+plotter.qqPlotter
+\family default
+).
 \end_layout
 
 \begin_layout Standard
 Class 
 \family typewriter
-simuRPy.infoPlotter
+plotter.infoPlotter
 \family default
  can be used to draw figures for information fields of individuals in one
  or more subpopulations.
  
 \family typewriter
-simuRPy.histPlotter
+plotter.histPlotter
 \family default
  and 
 \family typewriter
-simuRPy.qqPlotter
+plotter.qqPlotter
 \family default
  are two special cases of this class that uses functions 
 \family typewriter
@@ -19492,7 +19554,7 @@ boxplot
 \family default
  function could be used, a specialized 
 \family typewriter
-simuRPy.boxPlotter
+plotter.boxPlotter
 \family default
  is defined so that mutliple boxplot whiskers could be drawn in the same
  plot.
