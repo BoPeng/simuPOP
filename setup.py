@@ -529,8 +529,9 @@ if __name__ == '__main__':
         py_modules = [
             'simuOpt', 
             'simuPOP.__init__',
-            'simuPOP.simuUtil', 
-            'simuPOP.simuRPy', 
+            'simuPOP.utils', 
+            'simuPOP.plotter', 
+            'simuPOP.params', 
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,

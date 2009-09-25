@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, random, math, sets
+import unittest, os, sys, random, math, sets, exceptions
 
 class TestMatingSchemes(unittest.TestCase):
 

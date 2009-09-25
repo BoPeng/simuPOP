@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# $File: simuOpt.py $
+# $File: params.py $
 # $LastChangedDate: 2009-09-25 11:42:58 -0500 (Fri, 25 Sep 2009) $
 # $Rev: 2981 $
 #
@@ -26,37 +26,14 @@
 #
 
 '''
-Module ``simuOpt`` provides a function ``simuOpt.setOptions`` to control which
-simuPOP module to load, and how it is loaded, and a class ``simuOpt.simuOpt``
-that helps users manage script options.
-
-When simuPOP is loaded, it checkes a few environmental variables
-(``SIMUOPTIMIZED``, ``SIMUALLELETYPE``, and ``SIMUDEBUG``) to determine which
-simuPOP module to load, and how to load it. More options can be set using the
-``simuOpt.setOptions`` function. For example, you can suppress the banner
-message when simuPOP is loaded and require a minimal revision of simuPOP for
-your script. simuPOP recognize the following commandline arguments
-
-``--optimized``
-    Load the optimized version of a simuPOP module.
-
-``--gui=True|False|wxPython|Tkinter``
-    Whether or not use a graphical toolkit and which one to use.
-    ``--gui=False`` is usually used to run a script in batch mode (do not start
-    a parameter input dialog and use interactive user input if a parameter can
-    not be determined from command line or a configuraiton file, and it does not
-    use its default value (``useDefault`` not set). Please refer to parameter
-    ``gui`` for ``simuOpt.setOptions`` for details.
-
-
-class ``simuOpt.simuOpt`` provides a powerful way to handle commandline
-arguments. Briefly speaking, a ``simuOpt`` object can be created from a list
+class ``params.simuParam`` provides a powerful way to handle commandline
+arguments. Briefly speaking, a ``simuParam`` object can be created from a list
 of parameter specification dictionaries. The parameters are then become
 attributes of this object. A number of functions are provided to determine
 values of these parameters using commandline arguments, a configuration
 file, or a parameter input dialog (using ``Tkinter`` or ``wxPython``).
 Values of these parameters can be accessed as attributes, or extracted
-as a list or a dictionary. Note that the ``simuOpt.getParam`` function
+as a list or a dictionary. Note that the ``simuParam.getParam`` function
 automatically handles the following commandline arguments.
 
 ``-h`` or ``--help``
@@ -71,6 +48,7 @@ automatically handles the following commandline arguments.
 
 import os, sys, exceptions, types, re, time, textwrap
 
+from simuOpt import simuOptions
 
 #
 # define some validataion functions
@@ -201,7 +179,7 @@ def valueValidDir():
     '''Return a function that returns true if passed option val if a valid
     directory'''
     def func(val):
-        '''simuOpt.valueValidDir''' 
+        '''simuParam.valueValidDir''' 
         return os.path.isdir(val)
     return func
 
@@ -210,7 +188,7 @@ def valueValidFile():
     '''Return a function that returns true if passed option val if a valid
     file'''
     def func(val):
-        '''simuOpt.valueValidFile''' 
+        '''simuParam.valueValidFile''' 
         return os.path.isfile(val)
     return func
 
@@ -918,15 +896,15 @@ class _wxParamDialog(_paramDialog):
         del self.app
 
 
-class simuOpt:
+class simuParam:
     '''
-    class simuOpt provides a uniform interface for simuPOP scripts to handle
+    class simuParam provides a uniform interface for simuPOP scripts to handle
     parameters. It allows users to get parameters from command line options,
     a configuration file, a parameter input dialog (*tkInter* or *wxPython*) or
     from interative input. This class provides parameter validation, conversion
     and and some utility functions to print, save and restore parameters.
 
-    A simuOpt object accepts a parameter specification list that consists of
+    A simuParam object accepts a parameter specification list that consists of
     dictionaries with pre-defined keys. Each item defines an option in terms of
     command line option, entry name in a configuration file, label in a
     parameter input dialog, acceptable types, validation rules and a default
@@ -976,7 +954,7 @@ class simuOpt:
         will be outputed as is without the leading '|' symbol**.
 
     allowedTypes
-        A list of acceptable types of this option. class ``simuOpt`` will try
+        A list of acceptable types of this option. class ``simuParam`` will try
         to convert user input to these types. For example, if ``allowedTypes``
         is ``types.ListType`` or  ``types.TupleType`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
@@ -1008,22 +986,22 @@ class simuOpt:
     effectively *hide* a parameter although users who know this parameter
     can set it using command line options.
 
-    The ``simuOpt.simuOpt`` class defines a number of functions to collect,
+    The ``simuParam.simuParam`` class defines a number of functions to collect,
     validate, and manipulate parameters using this parameter specification
     list.
 
-    As a shortcut to create a simuOpt object with a number of attributes,
-    a simuOpt object can be created with additional ``key=value`` pairs that
-    could be assessed as attributes. This is used to create a ``simuOpt``
+    As a shortcut to create a simuParam object with a number of attributes,
+    a simuParam object can be created with additional ``key=value`` pairs that
+    could be assessed as attributes. This is used to create a ``simuParam``
     object in which *parameters* are assigned directly.
     '''
     def __init__(self, options=[], doc='', details='', **kwargs):
-        '''Create a ``simuOpt`` oject using a list of parameter specification
+        '''Create a ``simuParam`` oject using a list of parameter specification
         dictionaries *options*. Additional *doc* and *details* can be
         specified which will be displayed as script summary (on the top of
         a parameter input dialog) and script introduction (the first part of
         a help message), respectively. Additional attributes could be assigned
-        to a ``simuOpt`` object as keyword arguments. Note that it is customary
+        to a ``simuParam`` object as keyword arguments. Note that it is customary
         to use module document (the first string object in a Python script) as
         *details*, using parameter ``details=__doc__``.
         '''
@@ -1123,10 +1101,10 @@ class simuOpt:
             opt.has_key('chooseFrom')):
             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
         if opt['longarg'].rstrip('=') in methods:
-            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the simuOpt class." % \
+            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the simuParam class." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         if opt['longarg'].rstrip('=') in self.__dict__.keys():
-            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuOpt object." % \
+            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuParam object." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
             raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s." % opt['longarg'])
@@ -1405,7 +1383,7 @@ class simuOpt:
 
         .. note::
         
-           If ``simuOpt.valueValidFile`` or ``simuOpt.valueValidDir`` is used
+           If ``simuParam.valueValidFile`` or ``simuParam.valueValidDir`` is used
            to validate a parameter, double click the text input box of this
            parameter will open a file or directory browse dialog.
         '''
@@ -1524,146 +1502,3 @@ class simuOpt:
                 continue
             res.append(opt['value'])
         return res
-
-#
-# simuOptions that will be checked by simuPOP.py when simuPOP is loaded.
-# This structure can be changed by function setOptions
-#
-
-simuOptions = {
-    'Optimized': False,
-    'AlleleType': 'short',
-    'Debug': [],
-    'Quiet': False,
-    'Revision': None,
-    'GUI': True,
-}
-
-# Optimized: command line option --optimized or environmental variable SIMUOPTIMIZED
-if '--optimized' in sys.argv or os.getenv('SIMUOPTIMIZED') is not None:
-    simuOptions['Optimized'] = True
-
-# AlleleType: from environmental variable SIMUALLELETYPE
-if os.getenv('SIMUALLELETYPE') in ['short', 'long', 'binary']:
-   simuOptions['AlleleType'] = os.getenv('SIMUALLELETYPE')
-elif os.getenv('SIMUALLELETYPE') is not None:
-    print 'Environmental variable SIMUALLELETYPE can only be short, long, or binary'
-
-# Debug: from environmental variable SIMUDEBUG
-if os.getenv('SIMUDEBUG') is not None:
-    simuOptions['Debug'].extend(os.getenv('SIMUDEBUG').split(','))
-
-# GUI: from environmental variable SIMUGUI
-if os.getenv('SIMUGUI') is not None:
-    _gui = os.getenv('SIMUGUI')
-elif '--gui' in sys.argv:
-    if sys.argv[-1] == '-gui':
-        raise exceptions.ValueError('An value is expected for command line option --gui')
-    _gui = sys.argv[sys.argv.index('--gui') + 1]
-elif True in [x.startswith('--gui=') for x in sys.argv]:
-    _gui = sys.argv[[x.startswith('--gui=') for x in sys.argv].index(True)][len('--gui='):]
-else:
-    _gui = None
-
-if _gui in ['True', 'true', '1']:
-    simuOptions['GUI'] = True
-elif _gui in ['False', 'false', '0']:
-    simuOptions['GUI'] = False
-elif _gui == 'wxPython':
-    simuOptions['GUI'] = 'wxPython'
-elif _gui == 'Tkinter':
-    simuOptions['GUI'] = 'Tkinter'
-elif _gui is not None:
-    print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
-
-def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None, revision=None):
-    '''Set options before simuPOP is loaded to control which simuPOP module to
-    load, and how the module should be loaded.
-
-    alleleType
-        Use the standard, binary or long allele version of the simuPOP module
-        if ``alleleType`` is set to 'short', 'binary', or 'long' respectively.
-        If this parameter is not set, this function will try to get its value
-        from environmental variable ``SIMUALLELETYPE``. The standard (short)
-        module will be used if the environmental variable is not defined.
-
-    optimized
-        Load the optimized version of a module if this parameter is set to
-        ``True`` and the standard version if it is set to ``False``. If this
-        parameter is not set (``None``), the optimized version will be used
-        if environmental variable ``SIMUOPTIMIZED`` is defined. The standard
-        version will be used otherwise.
-    
-    gui
-        Whether or not use graphical user interfaces, and which graphical
-        toolkit to use. If this parameter is ``None`` (default), this function
-        will check environmental variable ``SIMUGUI`` for a value, and assume
-        ``True`` if such an option is unavailable.
-        
-        gui=True
-            allows simuPOP to use ``wxPython``-based dialogs if ``wxPython``
-            is available, and use ``Tkinter``-based dialogs if ``Tkinter``
-            is available.
-        
-        gui='Tkinter'
-            Use ``Tkinter`` based dialogs even if ``wxPython`` is available.
-
-        gui='wxPython'
-            Use ``wxPython``  based dialogs. Usually not needed.
-        
-        gui=False
-            Do not use any graphical toolkit. Run the script in batch mode.
-
-        This option is usually left to ``None`` so that the same script can
-        be ran in both GUI and batch mode using commandline option ``--gui``.
-
-    quiet
-        If set to ``True``, suppress the banner message when a simuPOP module
-        is loaded.
-
-    debug
-        A list of debug code (as string) that will be turned on when simuPOP
-        is loaded. If this parameter is not set, a list of comma separated
-        debug code specified in environmental variable ``SIMUDEBUG``, if
-        available, will be used. Note that setting ``debug=[]`` will remove
-        any debug code that might have been by variable ``SIMUDEBUG``.
-
-    revision
-        A number indicating the required revision number for the simuPOP module
-        to be loaded. simuPOP will fail to load if the installed simuPOP is
-        older than the required revision. Please check simuPOP ChangeLog for
-        the revision number of distributed versions.
-    '''
-    # Optimized
-    if optimized in [True, False]:
-        simuOptions['Optimized'] = optimized
-    elif optimized is not None:
-        raise exceptions.TypeError('Parameter optimized can be either True or False.')
-    # Allele type
-    if alleleType in ['long', 'binary', 'short']:
-        simuOptions['AlleleType'] = alleleType
-    elif alleleType is not None:
-        raise exceptions.TypeError('Parameter alleleType can be either short, long, or binary.')
-    # Graphical toolkit
-    if gui in [True, False, 'wxPython', 'Tkinter']:
-        simuOptions['GUI'] = gui
-    elif gui is not None:
-        raise exceptions.TypeError('Parameter gui can be True/False, wxPython or Tkinter.')
-    # Quiet
-    if quiet in [True, False]:
-        simuOptions['Quiet'] = quiet
-    elif quiet is not None:
-        raise exceptions.TypeError('Parameter quiet can be either True or False.')
-    # Debug
-    if debug is not None:
-        if type(debug) == type(''):
-            simuOptions['Debug'] = [debug]
-        else:
-            simuOptions['Debug'] = debug
-    # Revision
-    if type(revision) == type(1):
-        simuOptions['Revision'] = revision
-    elif revision is not None:
-        raise exceptions.TypeError('A revision number is expected for parameter revision.')
-
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# $File: simuUtil.py $
+# $File: utils.py $
 # $LastChangedDate$
 # $Rev$
 #
@@ -33,6 +33,19 @@ This module provides some commonly used operators
 and format conversion utilities.
 
 """
+
+__all__ = [
+    'ViewVars',
+    'MigrIslandRates',
+    'MigrHierarchicalIslandRates',
+    'MigrSteppingStoneRates',
+    'SaveCSV',
+    'simuProgress',
+    'trajectory',
+    'trajectorySimulator',
+    'BackwardTrajectory',
+    'ForwardTrajectory',
+]
 
 import exceptions, operator, types, os, sys, re
 
@@ -713,7 +726,7 @@ class trajectory:
 
     def plot(self, filename=None, **kwargs):
         '''Plot simulated trajectory using ``R`` through a Pythonmodule ``rpy``.
-        The function will return silently if module ``simuRPy`` cannot be
+        The function will return silently if module ``simuPOP.rpy`` cannot be
         imported.
 
         This function will use different colors to plot trajectories at
@@ -726,17 +739,17 @@ class trajectory:
         your version of R.
 
         This function makes use of the derived keyword parameter feature of
-        module ``simuRPy``. Allowed prefixes are ``par``, ``plot``, ``lines``
+        module ``plotter``. Allowed prefixes are ``par``, ``plot``, ``lines``
         and ``dev_print``. Allowed repeating suffix are ``loc`` and ``sp``.
         For example, you could use parameter ``plot_ylim`` to reset the default
         value of ``ylim`` in R function ``plot``.
         '''
         try:
-            import simuRPy
+            import plotter
         except ImportError:
             return
         #
-        args = simuRPy.derivedArgs(
+        args = plotter.derivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['par', 'plot', 'lines', 'dev_print'],
             suffixes = ['loc', 'sp'],
@@ -748,12 +761,12 @@ class trajectory:
             **kwargs
         )
         # device
-        simuRPy.newDevice()
+        plotter.newDevice()
         #
         gens = self.traj.keys()
         gens.sort()
-        simuRPy.rpy.r.par(**args.getArgs('par', None))
-        simuRPy.rpy.r.plot(gens[0], 0,
+        plotter.r.par(**args.getArgs('par', None))
+        plotter.r.plot(gens[0], 0,
             **args.getArgs('plot', None, xlim=(min(gens), max(gens)), type='n'))
         allLines = []
         for gen in gens:
@@ -787,10 +800,10 @@ class trajectory:
                 if start == len(line) - 1:
                     continue
                 beginGen = gen - len(line) + start
-                simuRPy.rpy.r.lines(x=range(beginGen, gen), y=line[start:],
+                plotter.r.lines(x=range(beginGen, gen), y=line[start:],
                         **args.getArgs('lines', None, sp=sp, loc=loc))
         #
-        simuRPy.saveFigure(**args.getArgs('dev_print', None, file=filename))
+        plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
         
 
 class trajectorySimulator:

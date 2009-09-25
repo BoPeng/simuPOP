@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys
+import unittest, os, sys, exceptions
 
 # record active generations in pop.dvars().hist
 def genRecorder(pop):

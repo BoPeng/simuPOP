@@ -11,7 +11,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys
+import unittest, os, sys, exceptions
 
 class TestSimulator(unittest.TestCase):
 

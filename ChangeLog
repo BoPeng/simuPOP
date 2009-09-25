@@ -35,6 +35,8 @@ version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Revise trajectory simulation classes and functions. Adjust how
 		controlledOffspringGenerator takes input.
   - NEW: Add support for VSP to pointMutator.
+  - CHG: Rename module simuUtil to simuPOP.utils, simuRPy to simuPOP.plotter, and separate
+		simuOpt.simuOpt to class simuPOP.params.simuParam.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 

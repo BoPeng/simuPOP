@@ -288,8 +288,9 @@ __all__ = [
     'vspSplitter',
     'weightedSampler',
     # modules
-    'simuUtil',
-    'simuRPy',
+    'utils',
+    'plotter',
+    'params',
 ]
 
 # get options
