@@ -127,7 +127,7 @@ def writeFile(content, srcFile, logFile=False):
     src.close()
 
 
-def runSampleCode(srcFile):
+def runSampleCode(srcFile, names):
     begin_re = re.compile('^#begin_file\s*(.*)')
     end_re = re.compile('^#end_file\s*$')
     #
@@ -135,17 +135,25 @@ def runSampleCode(srcFile):
     tmpSrc = tmpSrcName = None
     filename = None
     count = 0
+    skip = False
     for lineno, line in enumerate(src.readlines()):
         if begin_re.match(line):
             if tmpSrc is not None:
                 print 'ERROR (Unmatched file/end at line %s): %s' % (lineno, line)
                 sys.exit(1)
             filename = begin_re.match(line).groups()[0].strip()
+            if len(names) > 0 and not (True in [name in filename for name in names]):
+                skip = True
+                continue
+            else:
+                skip = False
             tmp, tmpSrcName = tempfile.mkstemp()
             os.close(tmp)
             tmpSrc = open(tmpSrcName, 'w')
             count += 1
-        elif end_re.match(line):
+        if skip:
+            continue
+        if end_re.match(line):
             if tmpSrc is None:
                 print 'ERROR (Unmatched file/end at line %d): %s' % (lineno, line)
                 sys.exit(1)
@@ -175,9 +183,11 @@ def runSampleCode(srcFile):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[1] == '-h' or not os.path.isfile(sys.argv[1]):
-        print 'Usage: runSampleCode scriptToRun'
+        print 'Usage: runSampleCode scriptToRun [name1 name2]'
+        print '    execute script. If a list of names is given, only examples containing'
+        print '    one of the names will be executed'
         print '    -h: view this help information'
         sys.exit(0)
     #
-    runSampleCode(sys.argv[1])
+    runSampleCode(sys.argv[1], sys.argv[2:])
 

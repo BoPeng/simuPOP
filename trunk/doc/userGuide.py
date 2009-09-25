@@ -3043,7 +3043,7 @@ InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
 InitByFreq(pop, [0.2, 0.8], loci=2)
 Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
     vars=['genoNum', 'haploFreq'])
-simuUtil.ViewVars(pop.vars(), gui=False)
+utils.ViewVars(pop.vars(), gui=False)
 #end_file
 
 #begin_file log/statInfo.py
@@ -3101,7 +3101,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP.simuUtil import *
+from simuPOP.utils import *
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
     sample = CaseControlSample(pop, cases=500, controls=500)[0]
@@ -3134,7 +3134,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP.simuUtil import MigrIslandRates
+from simuPOP.utils import MigrIslandRates
 simu = simulator(population([5000]*3, loci=10, infoFields='migrate_to'),
     randomMating(), rep=2)
 simu.evolve(
@@ -3360,7 +3360,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP.simuUtil import trajectory, ForwardTrajectory
+from simuPOP.utils import trajectory, ForwardTrajectory
 
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
@@ -3397,7 +3397,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP.simuUtil import trajectory, BackwardTrajectory
+from simuPOP.utils import trajectory, BackwardTrajectory
 from math import exp
 def Nt(gen, oldSize=[]):
     'An exponential population growth demographic model.'
@@ -3439,7 +3439,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuPOP.simuRPy import varPlotter
+from simuPOP.plotter import varPlotter
 pop = population(size=1000, loci=2)
 simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
 simu.evolve(
@@ -3467,7 +3467,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuPOP.simuRPy import varPlotter
+from simuPOP.plotter import varPlotter
 pop = population(size=1000, loci=1*4)
 simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
@@ -3495,7 +3495,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuPOP.simuRPy import varPlotter
+from simuPOP.plotter import varPlotter
 pop = population(size=1000, loci=1*4)
 simu = simulator(pop, randomMating(), rep=3)
 def drawFrame(r, dim=None, **kwargs):
@@ -3541,7 +3541,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuPOP.simuRPy import scatterPlotter
+from simuPOP.plotter import scatterPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
@@ -3589,7 +3589,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP import *
-from simuPOP.simuRPy import histPlotter, qqPlotter, boxPlotter
+from simuPOP.plotter import histPlotter, qqPlotter, boxPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
@@ -3642,6 +3642,7 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 import types, simuOpt
+from simuPOP import params
 options = [
     {'arg': 'r:',
      'longarg': 'rate=',
@@ -3651,14 +3652,14 @@ options = [
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
+     'validate': params.valueListOf(params.valueBetween(0, 1))
     },
     {'longarg': 'rep=',
      'default': 5,
      'label': 'Number of replicates',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Number of replicates to simulate.',
-     'validate': simuOpt.valueGT(0)
+     'validate': params.valueGT(0)
     }, 
     {'longarg': 'pop=',
      'default': 'CEU',
@@ -3671,23 +3672,23 @@ options = [
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''',
      'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
-     'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
+     'validate': params.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
     }
 ]
-pars = simuOpt.simuOpt(options, 'A demo simulation')
+pars = params.simuParam(options, 'A demo simulation')
 print pars.usage()
 # You can manually feed parameters...
 pars.processArgs(['--rep=10'])
 pars.rep
 #begin_ignore
 import sys
-oldArg = sys.argv[-1]
+oldArg = [x for x in sys.argv]
 sys.argv.pop()
 import os
 if not os.path.isfile('getParam.png'):
     print 'Run a GUI if getParam has not been runned'
 else:
-    sys.argv.extend(['--rate=[0.25]', '--rep=5', '--pop="CEU"'])
+    sys.argv = ['getParam.py', '--rate=[0.25]', '--rep=5', '--pop="CEU"']
     simuOpt.setOptions(gui=False)
 
 from simuPOP import *
@@ -3697,7 +3698,7 @@ if not pars.getParam():
     sys.exit(1)
 
 #begin_ignore
-sys.argv[1] = oldArg
+sys.argv = oldArg
 #end_ignore
 pars.saveConfig('sample.cfg')
 # post-process parameters
@@ -3709,14 +3710,14 @@ pars.asDict()
 pars.asList()
 # Default value of parameter rep is changed
 # additional attribute is added.
-par1 = simuOpt.simuOpt(options, # all parameters with default values
+par1 = params.simuParam(options, # all parameters with default values
     rep=50,                     # default value of rep is changed
     additional=10               # derived parameters are added
 )
 # print all parameters except for derived ones.
 print par1.asDict()
 # All parameters are derived ...
-par2 = simuOpt.simuOpt(rep=50, pop='CEU', rate=[0.5])
+par2 = params.simuParam(rep=50, pop='CEU', rate=[0.5])
 print par2.asDict()
 print par2.rep, par2.pop
 #end_file
@@ -3915,8 +3916,8 @@ mutation, and natural selection.
 import simuOpt
 simuOpt.setOptions(quiet=True, alleleType='long')
 from simuPOP import *
-from simuPOP import *
 import sys, types, os, math
+from simuPOP import params
 options = [
     {'longarg': 'demo=',
      'default': 'instant',
@@ -3930,28 +3931,28 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate': simuOpt.valueGT(0)
+     'validate': params.valueGT(0)
     },
     {'longarg': 'N1=',
      'default': 100000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending population size (after population expansion)',
-     'validate': simuOpt.valueGT(0)
+     'validate': params.valueGT(0)
     }, 
     {'longarg': 'G0=',
      'default': 500,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate': simuOpt.valueGT(0)
+     'validate': params.valueGT(0)
     },
     {'longarg': 'G1=',
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of geneartions of the population expansion stage',
-     'validate': simuOpt.valueGT(0)
+     'validate': params.valueGT(0)
     },
     {'longarg': 'spec=',
      'default': [0.9] + [0.02]*5,
@@ -3959,7 +3960,7 @@ options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'description': '''Initial allelic spectrum, should be a list of allele
             frequencies, for allele 0, 1, 2, ... respectively.''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
+     'validate': params.valueListOf(params.valueBetween(0, 1)),
     },
     {'longarg': 's=',
      'default': 0.01,
@@ -3968,23 +3969,24 @@ options = [
      'description': '''Selection coefficient for homozygtes (aa) genotype.
             A recessive selection model is used so the fitness values of
             genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
-     'validate': simuOpt.valueGT(-1),
+     'validate': params.valueGT(-1),
     },
     {'longarg': 'mu=',
      'default': 1e-4,
      'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': 'Mutation rate of a k-allele mutation model',
-     'validate': simuOpt.valueBetween(0, 1),
+     'validate': params.valueBetween(0, 1),
     },
     {'longarg': 'k=',
      'default': 200,
      'label': 'Maximum allelic state',
      'allowedTypes': [types.IntType],
      'description': 'Maximum allelic state for a k-allele mutation model',
-     'validate': simuOpt.valueGT(1),
+     'validate': params.valueGT(1),
     },
 ]
+
 def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     '''Return a demographic function 
     type: linear or exponential
@@ -4069,7 +4071,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.simuOpt(options, __doc__)
+    par = simuOpt(options, __doc__)
     if not par.getParam():
         sys.exit(1)
     
