@@ -211,7 +211,7 @@ __all__ = [
     'mapPenetrance',
     'mapQuanTrait',
     'mapSelector',
-    'mating',
+    #'mating',
     'matrixMutator',
     'mendelianGenoTransmitter',
     'mergeSubPops',
