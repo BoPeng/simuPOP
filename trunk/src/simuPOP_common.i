@@ -77,6 +77,8 @@ def _swig_repr(self):
 // do not load these constants in ../config.h
 %ignore HAVE__BOOL;
 %ignore HAVE_DECL_ACOSH;
+%ignore HAVE_DECL_ASINH;
+%ignore HAVE_DECL_LOG1P;
 %ignore HAVE_DECL_ATANH;
 %ignore HAVE_DECL_EXPM1;
 %ignore HAVE_DECL_FINITE;
@@ -319,7 +321,7 @@ import exceptions, types
 #
 AllAvail = True
 
-def new_migrator(self, rate=[], *args, **kwargs):
+def _new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
@@ -331,12 +333,12 @@ def new_migrator(self, rate=[], *args, **kwargs):
     cppModule.migrator_swiginit(self,
         cppModule.new_migrator(r, *args, **kwargs))
 
-new_migrator.__doc__ = migrator.__init__.__doc__
+_new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
-migrator.__init__ = new_migrator
+migrator.__init__ = _new_migrator
 
 
-def new_initByFreq(self, alleleFreq=[], *args, **kwargs):
+def _new_initByFreq(self, alleleFreq=[], *args, **kwargs):
     # parameter alleleFreq
     if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
         af = [alleleFreq]
@@ -345,12 +347,12 @@ def new_initByFreq(self, alleleFreq=[], *args, **kwargs):
     cppModule.initByFreq_swiginit(self,
         cppModule.new_initByFreq(af, *args, **kwargs))
 
-new_initByFreq.__doc__ = initByFreq.__init__.__doc__
+_new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
-initByFreq.__init__ = new_initByFreq
+initByFreq.__init__ = _new_initByFreq
 
 
-def new_initByValue(self, value=[], *args, **kwargs):
+def _new_initByValue(self, value=[], *args, **kwargs):
     # parameter value
     if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
         val = [value]
@@ -359,11 +361,11 @@ def new_initByValue(self, value=[], *args, **kwargs):
     cppModule.initByValue_swiginit(self,
         cppModule.new_initByValue(val, *args, **kwargs))
 
-new_initByValue.__doc__ = initByValue.__init__.__doc__
+_new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
-initByValue.__init__ = new_initByValue
+initByValue.__init__ = _new_initByValue
 
-def new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
+def _new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
@@ -377,11 +379,11 @@ def new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
     cppModule.stat_swiginit(self,
         cppModule.new_stat(haploFreq=hf, LD=ld, *args, **kwargs))
 
-new_stat.__doc__ = stat.__init__.__doc__
+_new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__
-stat.__init__ = new_stat
+stat.__init__ = _new_stat
 
-def new_genotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
+def _new_genotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     if len(alleles) == 0:
         raise exceptions.ValueError("Please specify alleles at each locus")
     if type(alleles[0]) in [type(0), type(0L)]:
@@ -391,18 +393,8 @@ def new_genotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     cppModule.genotypeSplitter_swiginit(self,
         cppModule.new_genotypeSplitter(loci, als, *args, **kwargs))
 
-new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
+_new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
 del genotypeSplitter.__init__
-genotypeSplitter.__init__ = new_genotypeSplitter
+genotypeSplitter.__init__ = _new_genotypeSplitter
 
-
-# def new_pedigreeMating(self, pedigree=None, generator=None, *args, **kwargs):
-#     if generator is None:
-#         generator = mendelianOffspringGenerator()
-#     cppModule.pedigreeMating_swiginit(self,
-#         cppModule.new_pedigreeMating(ped=pedigree, generator=generator, *args, **kwargs))
-# 
-# new_pedigreeMating.__doc__ = pedigreeMating.__init__.__doc__
-# del pedigreeMating.__init__
-# pedigreeMating.__init__ = new_pedigreeMating
 %}

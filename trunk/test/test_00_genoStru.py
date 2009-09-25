@@ -257,7 +257,8 @@ class TestGenoStru(unittest.TestCase):
             self.assertEqual(pop.alleleNames(), ('_', 'A', 'C', 'T', 'G'))
         else:
             self.assertEqual(pop.alleleNames(), ('_', 'A'))
-        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, ModuleMaxAllele+1)
+        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
+            ModuleInfo['maxAllele']+1)
         # test locus-specific allele names
         pop = population(size=[20, 80], ploidy=2, loci=[1, 2],
             alleleNames = [['A1', 'A2'], ['B1', 'B2', 'B3'], ['C1', 'C2', 'C3', 'C4']])
@@ -271,7 +272,8 @@ class TestGenoStru(unittest.TestCase):
         else:
             self.assertEqual(pop.alleleName(1), 'A2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
-        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, ModuleMaxAllele+1)
+        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
+            ModuleInfo['maxAllele']+1)
 
 
     def testInfoField(self):
