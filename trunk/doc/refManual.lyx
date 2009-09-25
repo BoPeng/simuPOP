@@ -1682,19 +1682,6 @@ status open
 simuOptRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Loadding a simuPOP module
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Plain Layout
 
 
@@ -1705,6 +1692,12 @@ simuOptsetOptionsRef
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.params
 \end_layout
 
 \begin_layout Subsection
@@ -1719,119 +1712,119 @@ status open
 
 
 \backslash
-simuOptvalueNotRef
+simuPOPparamsvalueNotRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueOrRef
+simuPOPparamsvalueOrRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueAndRef
+simuPOPparamsvalueAndRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueOneOfRef
+simuPOPparamsvalueOneOfRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueTrueFalseRef
+simuPOPparamsvalueTrueFalseRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueBetweenRef
+simuPOPparamsvalueBetweenRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueGTRef
+simuPOPparamsvalueGTRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueGERef
+simuPOPparamsvalueGERef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueLTRef
+simuPOPparamsvalueLTRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueLERef
+simuPOPparamsvalueLERef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueEqualRef
+simuPOPparamsvalueEqualRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueNotEqualRef
+simuPOPparamsvalueNotEqualRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueIsNumRef
+simuPOPparamsvalueIsNumRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueIsListRef
+simuPOPparamsvalueIsListRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueValidDirRef
+simuPOPparamsvalueValidDirRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptvalueValidFileRef
+simuPOPparamsvalueValidFileRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuOptsimuOptRef
+simuPOPparamssimuParamRef
 \end_layout
 
 \end_inset
@@ -1842,9 +1835,7 @@ simuOptsimuOptRef
 \begin_layout Section
 Module 
 \family typewriter
-simuUtil
-\family default
- (under revision)
+simuPOP.utils
 \end_layout
 
 \begin_layout Standard
@@ -1855,7 +1846,7 @@ status open
 
 
 \backslash
-simuUtilRef
+simuPOPutilsRef
 \end_layout
 
 \end_inset
@@ -1875,28 +1866,28 @@ status open
 
 
 \backslash
-simuUtiltrajectoryRef
+simuPOPutilstrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtiltrajectorySimulatorRef
+simuPOPutilstrajectorySimulatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilForwardTrajectoryRef
+simuPOPutilsForwardTrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilBackwardTrajectoryRef
+simuPOPutilsBackwardTrajectoryRef
 \end_layout
 
 \end_inset
@@ -1916,21 +1907,21 @@ status open
 
 
 \backslash
-simuUtilMigrIslandRatesRef
+simuPOPutilsMigrIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilMigrHierarchicalIslandRatesRef
+simuPOPutilsMigrHierarchicalIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilMigrSteppingStoneRatesRef
+simuPOPutilsMigrSteppingStoneRatesRef
 \end_layout
 
 \end_inset
@@ -1950,7 +1941,7 @@ status open
 
 
 \backslash
-simuUtilsimuProgressRef
+simuPOPutilssimuProgressRef
 \end_layout
 
 \end_inset
@@ -1968,8 +1959,9 @@ status open
 
 \begin_layout Plain Layout
 
+
 \backslash
-simuUtilViewVarsRef
+simuPOPutilsViewVarsRef
 \end_layout
 
 \end_inset
@@ -1989,7 +1981,7 @@ status open
 
 
 \backslash
-simuUtilSaveCSVRef
+simuPOPutilsSaveCSVRef
 \end_layout
 
 \end_inset
@@ -2000,7 +1992,7 @@ simuUtilSaveCSVRef
 \begin_layout Section
 Module 
 \family typewriter
-simuRPy
+simuPOP.plotter
 \end_layout
 
 \begin_layout Standard
@@ -2011,70 +2003,70 @@ status open
 
 
 \backslash
-simuRPyRef
+simuPOPplotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPynewDeviceRef
+simuPOPplotternewDeviceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPysaveFigureRef
+simuPOPplottersaveFigureRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyderivedArgsRef
+simuPOPplotterderivedArgsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyvarPlotterRef
+simuPOPplottervarPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyscatterPlotterRef
+simuPOPplotterscatterPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyinfoPlotterRef
+simuPOPplotterinfoPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyhistPlotterRef
+simuPOPplotterhistPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyqqPlotterRef
+simuPOPplotterqqPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyboxPlotterRef
+simuPOPplotterboxPlotterRef
 \end_layout
 
 \end_inset

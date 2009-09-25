@@ -930,7 +930,7 @@ class Doxy2SWIG:
             # module functions
             #mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
 
-            print >> out, '\\newcommand{\\%sRef}{\\index{%s}' % (module, module)
+            print >> out, '\\newcommand{\\%sRef}{\\index{%s}' % (module.replace('.', ''), module)
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
             print >> out, self.latex_text(doc)
             print >> out, '}\n'
@@ -942,7 +942,7 @@ class Doxy2SWIG:
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
-                print >> out, '\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module, mem['Name'], module, mem['Name'])
+                print >> out, '\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module.replace('.',''), mem['Name'], module, mem['Name'])
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     func_name = mem['Usage'].split('(')[0]
                     func_body = mem['Usage'][len(func_name):].lstrip('(').rstrip(')')
@@ -960,7 +960,7 @@ class Doxy2SWIG:
             classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
             for cls in classes:
-                print >> out, '\\newcommand{\\%s%sRef}{' % (module, cls['Name'])
+                print >> out, '\\newcommand{\\%s%sRef}{' % (module.replace('.', ''), cls['Name'])
                 print >> out, '\n\\subsection{Class \\texttt{%s}\index{module!%s}' % (cls['Name'], cls['Name'])
                 if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
                     print >> out, '  (Function %s\index{function!%s})' % (
@@ -995,7 +995,7 @@ class Doxy2SWIG:
                 print >> out, '\\end{classdesc}\n}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
-            print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+            print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.', ''))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}' % (classname, classname)
             if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
@@ -1143,7 +1143,7 @@ class Doxy2SWIG:
         # first handle glocal functions
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
-            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1)
+            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
             out = open(os.path.join(dir, refName), 'w')
             print >> out, '\n.. function::',
             if entry.has_key('Usage') and entry['Usage'] != '':
@@ -1165,7 +1165,7 @@ class Doxy2SWIG:
         for module in modules:
             # module functions
             # MODULE DOC
-            refName = '%sRef.ref' % module
+            refName = '%sRef.ref' % module.replace('.', '')
             out = open(os.path.join(dir, refName), 'w')
             #print >> out, ':mod:`%s`' % module
             #print >> out, '='*(len(module)+7)
@@ -1186,7 +1186,7 @@ class Doxy2SWIG:
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
-                refName = '%s%sRef.ref' % (module, mem['Name'])
+                refName = '%s%sRef.ref' % (module.replace('.', ''), mem['Name'])
                 print 'Writing functions ', refName
                 out = open(os.path.join(dir, refName), 'w')
                 print >> out, '\n.. function::',
@@ -1206,7 +1206,7 @@ class Doxy2SWIG:
             classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
             for cls in classes:
-                refName = '%s%sRef.ref' % (module, cls['Name'])
+                refName = '%s%sRef.ref' % (module.replace('.', ''), cls['Name'])
                 out = open(os.path.join(dir, refName), 'w')
                 print >> out, '.. class:: %s\n' % cls['Name']
                 print >> out, self.shiftText(cls['Doc'])
@@ -1232,7 +1232,7 @@ class Doxy2SWIG:
                 out.close()
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
-            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1)
+            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
             out = open(os.path.join(dir, refName), 'w')
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\nclass %s' % classname
@@ -1354,15 +1354,15 @@ xleftmargin=15pt}
             funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
             for mem in funcs:
-                print >> out, r'\%s%sRef' % (module, mem['Name'])
+                print >> out, r'\%s%sRef' % (module.replace('.',''), mem['Name'])
                 print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # print all functions
             for cls in classes:
-                print >> out, r'\%s%sRef' % (module, cls['Name'])
+                print >> out, r'\%s%sRef' % (module.replace('.', ''), cls['Name'])
                 print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore'] and not x['hidden']]:
-             print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+             print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.',''))
              print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'
         print >> out, r'\end{document}'
 
@@ -1426,8 +1426,9 @@ if __name__ == '__main__':
     sys.path = [os.path.join(src_path, 'src')] + sys.path
     p.scan_module('simuPOP')
     p.scan_module('simuOpt')
-    p.scan_module('simuUtil')
-    p.scan_module('simuRPy')
+    p.scan_module('simuPOP.params')
+    p.scan_module('simuPOP.utils')
+    p.scan_module('simuPOP.plotter')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []
