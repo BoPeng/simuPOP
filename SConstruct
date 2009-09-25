@@ -122,11 +122,13 @@ if os.path.isfile('scons_cfg.py'):
         pass
 
 if env.has_key('prefix') and env['prefix'] is not None:
-    dest_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
+    pylib_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
+    dest_dir = os.path.join(pylib_dir, 'simuPOP')
     prefix = env['prefix']
     print "Installing to", dest_dir
 else:
-    dest_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=None)
+    pylib_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=None)
+    dest_dir = os.path.join(pylib_dir, 'simuPOP')
     prefix = sys.prefix
 
 if env.has_key('include-dirs') and env['include-dirs'] is not None:
@@ -213,8 +215,11 @@ for mod in targets:
     Alias('install', dp1)
 
 
-for pyfile in SIMUPOP_FILES:
-    env.Install(dest_dir, 'src/%s.py' % pyfile)
+env.Install(pylib_dir, 'simuOpt.py')
+Alias('install', pylib_dir)
+
+for pyfile in ['__init__.py', 'simuUtil.py', 'simuRPy.py']:
+    env.Install(dest_dir, 'src/%s' % pyfile)
     Alias('install', dest_dir)
 
 for data in DATA_FILES:
