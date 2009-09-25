@@ -321,12 +321,6 @@ if os.name == 'nt':
         ]
     ])
 
-SIMUPOP_FILES = [
-    'simuPOP', 
-    'simuOpt', 
-    'simuUtil', 
-    'simuRPy', 
-]
 
 
 SWIG_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
@@ -452,7 +446,6 @@ if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-    SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
     #
     # Generate Wrapping files
     #
@@ -495,7 +488,7 @@ if __name__ == '__main__':
     for modu in MODULES:
         info = ModuInfo(modu, SIMUPOP_VER=SIMUPOP_VER, SIMUPOP_REV=SIMUPOP_REV)
         EXT_MODULES.append(
-            Extension('_simuPOP_%s' % modu,
+            Extension('simuPOP._simuPOP_%s' % modu,
                 sources = info['src'],
                 extra_compile_args = info['extra_compile_args'],
                 include_dirs = info['include_dirs'],
@@ -531,8 +524,14 @@ if __name__ == '__main__':
         ],
         platforms = ['all'],
         #
-        package_dir = {'': 'src'}, 
-        py_modules = SIMUPOP_FILES,
+        packages = ['simuPOP'],
+        package_dir = {'simuPOP': 'src'}, 
+        py_modules = [
+            'simuOpt', 
+            'simuPOP.__init__',
+            'simuPOP.simuUtil', 
+            'simuPOP.simuRPy', 
+        ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,
     )
