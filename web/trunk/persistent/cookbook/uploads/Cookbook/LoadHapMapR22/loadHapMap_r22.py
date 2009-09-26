@@ -301,7 +301,7 @@ options = [
      'useDefault': True,
      'label': 'Destination directory',
      'allowedTypes': [type('')],
-     'validate': valueValidDir(),
+     'validate': params.valueValidDir(),
      'description': 'A directory to save HapMap data in simuPOP format.',
     },
     {'longarg': 'chroms=',
@@ -310,7 +310,7 @@ options = [
      'label': 'Chromosomes to download',
      'allowedTypes': [type([]), type(())],
      'chooseFrom': range(1, 23),
-     'validate': valueListOf(valueBetween(1, 22)),
+     'validate': params.valueListOf(params.valueBetween(1, 22)),
      'description': 'Which chromosomes to download and process',
     },
 ]
@@ -318,7 +318,7 @@ options = [
 #BATCHTESTING --chroms=1
 
 if __name__ == '__main__':
-    pars = simuOpt(options, 
+    pars = params.simuParam(options, 
         'This script downloads the 22 release of the HapMap datasets\n'
         'and saves them in simuPOP format. It also downloads the fine-scale\n'
         'recombination map and saves the genetic distance of each marker in\n'
