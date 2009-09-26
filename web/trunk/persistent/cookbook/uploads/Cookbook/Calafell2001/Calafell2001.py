@@ -5,8 +5,7 @@
 # study
 
 from simuPOP  import *
-from simuUtil import *
-from simuRPy  import *
+from simuPOP.plotter import varPlotter
 import math, random
 
 # loci:
@@ -58,10 +57,13 @@ mutate1 =  smmMutator(loci=[1], rates=1e-4, mutStep=stepFunc)
 #   b1-ca13-a1   40%
 #   b2-ca14-a2   60%
 #
-init = initByValue(
-  value = [ [ 0, 2, 0], [1, 3, 1] ],  # two genotypes
-  proportions = [.4, .6 ]              # by proportion
-)
+init = [
+    initSex(), 
+    initByValue(
+      value = [ [ 0, 2, 0], [1, 3, 1] ],  # two genotypes
+      proportions = [.4, .6 ]              # by proportion
+    )
+]
 
 #
 # measurements:
@@ -127,7 +129,7 @@ def simulation(nRep, scenario, endGen, visualizers=[]):
     rep=nRep)
   # evolve
   simu.evolve(
-    preOps = [ init ],
+    preOps = init,
     ops = [
       LD_Freq,   # check LD' value and allele frequency
       recombine,

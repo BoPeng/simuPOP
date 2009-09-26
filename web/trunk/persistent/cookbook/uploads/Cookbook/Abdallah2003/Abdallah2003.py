@@ -6,9 +6,8 @@
 import simuOpt
 simuOpt.setOptions(optimized=True)
 
+import math
 from simuPOP import *
-from simuUtil import *
-from simuRPy import *
 
 # if validPops.bin already exists, load
 # it directly. Otherwise, re-simulate
@@ -112,7 +111,7 @@ for i in range(0,samples):
     count[idx] += 1
     for j in range(1,31):
         LDprime[idx][j-1] += validPops[i].dvars().LD_prime[0][j]
-        R2[idx][j-1] += sqrt(validPops[i].dvars().R2[0][j])
+        R2[idx][j-1] += math.sqrt(validPops[i].dvars().R2[0][j])
         var_LD[idx][j-1] += validPops[i].dvars().LD_prime[0][j]**2
         var_R2[idx][j-1] += validPops[i].dvars().R2[0][j]
     

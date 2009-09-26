@@ -424,6 +424,16 @@ options = [
     #
     # 
     {'separator': 'Miscellaneous:'},
+    {'longarg': 'simuAge=',
+     'default': 0,
+     'useDefault': True,
+     'allowedTypes': [types.IntType],
+     'validate': simuOpt.valueGE(0),
+     'description': '''Simulate the age of disease mutant given times, and print out the ages,
+                The simulation is not run if a positive number is given. This option is useful
+                when one want to determine minMutAge and maxMutAge for a specific demographic 
+                and fitness model.'''
+    },
     {'longarg': 'dryrun',
      'useDefault': True,
      'default': False,
@@ -479,7 +489,7 @@ def outputStatistics(pop, args):
     # unwrap parameter
     (burnin, split, mixing, endGen, outfile) = args
     # 
-    gen = pop.dvars().gen
+    gen = pop.gen()
     # see how long the simulation has been running
     if gen == burnin:
         print "Start population growth\t\t"
@@ -503,10 +513,9 @@ def outputStatistics(pop, args):
     # append to output file.
     output = open(outfile, 'a')
     # first, calculate LD and other statistics
-    Stat(pop, alleleFreq=DSL, structure = nonDSL, heteroFreq = range(pop.totNumLoci()),
-        vars=['alleleFreq_sp', 'alleleFreq'])
+    Stat(pop, alleleFreq=DSL, Fst = nonDSL, heteroFreq = range(pop.totNumLoci()))
     # output D', allele frequency at split, mixing and endGen
-    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().F_st)
+    print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
     print >> output, "\n\nAllele frequencies\nall\t",
     for d in DSL:
         print >> output, '%.4f ' % (1. - pop.dvars().alleleFreq[d][0]),
@@ -518,7 +527,7 @@ def outputStatistics(pop, args):
     # hetero frequency
     AvgHetero = 0
     for d in range(pop.totNumLoci()):
-        AvgHetero += pop.dvars().heteroFreq[d]
+        AvgHetero += pop.dvars().heteroFreq[d][0]
     AvgHetero /= pop.totNumLoci()
     # save to pop
     pop.dvars().AvgHetero = AvgHetero
@@ -534,7 +543,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, filename):
     ''' run a simulation of complex disease with given parameters. 
     '''    
@@ -614,9 +623,21 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     elif maxMutAge > endingGen:
         print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
         maxMutAge = endingGen
-    traj = BackwardTrajectory(N=popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
-        endGen=endingGen, endFreq=curAlleleFreq, minMutAge=minMutAge,
-        maxMutAge=maxMutAge)
+    if simuAge > 0:
+        for i in range(simuAge):
+            traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+                genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
+                maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
+            mutantAges.append([len(x) for x in traj])
+        print "Simulated trajectory length:"
+        for i,age in enumerate(mutantAges):
+            print 'simu %3d:' % i, ', '.join(['%6d' % x for x in age])
+        mean = [sum([x[col] for x in mutantAges])*1./simuAge for col in range(len(DSLafter))]
+        print "Mean:    ", ', '.join(['%6.1f' % x for x in mean])
+        sys.exit(0)
+    traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+        genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
+        maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
     #
     ### translate numChrom, numLoci, DSLafterLoci to
     ### loci, lociPos, DSL, nonDSL in the usual index
@@ -651,7 +672,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     if maxAle > 1:    # Not SNP
         preOperators = [
-            initSex(),
             # initialize all loci with 5 haplotypes
             initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
                 proportions=[.2]*5), 
@@ -660,7 +680,6 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         ]
     else: # SNP
         preOperators = [
-            initSex(),
             # initialize all loci with two haplotypes (0001,111)
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2), 
@@ -710,7 +729,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ###                                 endingGen
     ###            0 1 ...... i_T
-    operators.extend(traj.mutators(loci=DSL))
+    operators.extend(traj.mutators())
     ### 
     ### split to subpopulations
     ### 
@@ -858,7 +877,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, name) = par.asList()
     #
     if markerType == 'SNP':
@@ -879,7 +898,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
         dryrun, savePop, os.path.join(name, name + '.pop'))
     
     print "Done!"

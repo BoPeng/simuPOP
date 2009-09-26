@@ -90,7 +90,10 @@ def simuConsanguineousMating(w, size, gen, numFields=4):
     )
     #
     simu.evolve(
-        preOps = [ initByFreq([0.5, 0.5]) ],
+        preOps = [
+            initSex(),
+            initByFreq([0.5, 0.5])
+        ],
         ops = [
             parentsTagger(),
             pyEval(r'"%d\n" % gen'),
