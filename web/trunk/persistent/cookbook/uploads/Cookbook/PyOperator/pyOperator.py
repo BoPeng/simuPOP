@@ -26,6 +26,7 @@ chromosomes disappeared because of genetic drift.
     
 """
 
+import simuOpt
 from simuPOP import *
 import types
 
@@ -35,14 +36,14 @@ options = [
      'default': 10000,
      'label': 'Population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     },
     {'arg': 'r:',
      'longarg': 'rep=',
      'default': 10,
      'label': 'Replicates',
      'allowedTypes': [types.IntType, types.LongType],
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     }
 ]
 
@@ -100,7 +101,7 @@ def simu(N):
     return (simu.dvars(0).succ, simu.gen())
 
 if __name__ == '__main__':
-    pars = params.simuParam(options,
+    pars = simuOpt.simuParam(options,
         '''This program mimic the evolution of the infection process
     where X- chromosome will be turn to XX. We are concerned    about 
     the speed at which all population becomes XX. ''', __doc__)

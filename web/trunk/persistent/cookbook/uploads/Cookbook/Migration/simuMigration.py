@@ -26,21 +26,21 @@ options = [
      'default':5000,
      'label':'Subpopulation Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
      },
     {
      'longarg':'numOfSubPops=',
      'default':5,
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Number of Subpopulations',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
      },
     {
      'longarg':'m=',
      'default':0.05,
      'label':'Migration Rate',
      'allowedTypes':[types.FloatType],
-     'validate':params.valueBetween(0., 1.),
+     'validate':simuOpt.valueBetween(0., 1.),
      },
     {
      'longarg':'generations=',
@@ -48,7 +48,7 @@ options = [
      'label':'Generations to evolve',
      'description':'Length of evolution',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
      },
 ]
 
@@ -106,7 +106,7 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = params.simuParam(options, __doc__)
+    pars = simuOpt.simuParam(options, __doc__)
     if not pars.getParam():
         sys.exit(0)
 

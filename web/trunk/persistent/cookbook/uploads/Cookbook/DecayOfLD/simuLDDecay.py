@@ -28,7 +28,7 @@ options = [
      'default':1000,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
     },
     {'arg':'e:',
      'longarg':'gen=',
@@ -36,14 +36,14 @@ options = [
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Generations to evolve',
      'description':'Length of evolution',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
     },
     {'arg':'r:',
      'longarg':'recRate=',
      'default':0.01,
      'label':'Recombination Rate',
      'allowedTypes':[types.FloatType],
-     'validate':params.valueBetween(0.,1.),
+     'validate':simuOpt.valueBetween(0.,1.),
     },
     {'arg':'n:',
      'longarg':'numRep=',
@@ -51,14 +51,14 @@ options = [
      'label':'Number of Replicate',
      'allowedTypes':[types.IntType, types.LongType],
      'description':'Number of replicates',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
     },
     {'longarg':'measure=',
      'default':'D',
      'label':'LD measure',
      'description':'Choose linkage disequilibrium measure to be outputted.',
      'chooseOneOf':['D', "D'", 'R2'],
-     'validate': params.valueOneOf(['D', "D'", 'R2']),
+     'validate': simuOpt.valueOneOf(['D', "D'", 'R2']),
     },
     {'longarg':'saveFigure=',
      'label':'Save figure to filename',
@@ -128,7 +128,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = params.simuParam(options, __doc__)
+    pars = simuOpt.simuParam(options, __doc__)
     # cancelled or -h, --help
     if not pars.getParam():
         sys.exit(0)

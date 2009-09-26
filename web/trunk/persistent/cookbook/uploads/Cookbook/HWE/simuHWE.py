@@ -14,6 +14,7 @@ allele frequencies in females and males are different.
 
 import os, sys, types, time
 
+import simuOpt
 from simuPOP import *
 
 options = [
@@ -22,7 +23,7 @@ options = [
      'default':100000,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
      'description':'''Population size. HWE assumes infinite population size
          so large population size improves approximity to theoretical estimates.'''
     },
@@ -32,7 +33,7 @@ options = [
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Ending Generation',
      'description':'Length of evolution',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
     },
     {'arg':'m:',
      'longarg':'malleleFreq=',
@@ -40,7 +41,7 @@ options = [
      'allowedTypes':[types.FloatType, types.LongType],
      'label':'Male Allele Frequency',
      'description':'Initial allele frequency in males,',
-     'validate':params.valueBetween(0, 1)
+     'validate':simuOpt.valueBetween(0, 1)
     },
     {'arg':'f:',
      'longarg':'falleleFreq=',
@@ -48,14 +49,14 @@ options = [
      'allowedTypes':[types.FloatType, types.LongType],
      'label':'Female Allele Frequency',
      'description':'Initial allele frequency in females.',
-     'validate':params.valueBetween(0, 1)
+     'validate':simuOpt.valueBetween(0, 1)
     },
 ]
 
 
 
 # get all parameters
-par = params.simuParam(options, __doc__)
+par = simuOpt.simuParam(options, __doc__)
 if not par.getParam():
     sys.exit(1)
 

@@ -134,6 +134,7 @@ You can add more stat() operator if you need to preserve more information.
 """
 
 import os, sys, exceptions, types, math
+import simuOpt
 from simuPOP import *
 
 #
@@ -147,7 +148,7 @@ options = [
      'label': 'Number of chromosomes',
      'description': 'Number of chromosomes.',
      'allowedTypes': [types.IntType],
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'numLoci=',
      'default': 20,
@@ -155,7 +156,7 @@ options = [
      'description': '''Number of loci on each chromosome, current there 
              only equal number of markers on each chromosome is supported.''',
      'allowedTypes': [types.IntType],
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'markerType=',
      'default': 'microsatellite',
@@ -166,7 +167,7 @@ options = [
                 2-state model. Mutation rate should be much smaller for
                 SNP markers than that of microsatellite markers.''',
      'allowedTypes': [types.StringType],
-     'validate':    params.valueOneOf(['microsatellite', 'SNP']),
+     'validate':    simuOpt.valueOneOf(['microsatellite', 'SNP']),
      'chooseOneOf': ['microsatellite', 'SNP']
     },
     {'longarg': 'DSL=',
@@ -179,7 +180,7 @@ options = [
                 A single number is allowed and implies a simple disease with
                 one disease locus.''',
      'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    params.valueListOf( params.valueGT(0) )
+     'validate':    simuOpt.valueListOf( simuOpt.valueGT(0) )
     },
     {'longarg': 'DSLLoc=',
      'default': [.5, .5, .5],
@@ -189,7 +190,7 @@ options = [
                 the location should be between 0 and 1. A single value is acceptable
                 as the location of all DSL.''',
      'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    params.valueListOf( params.valueBetween(0,1))
+     'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
     #
     #
@@ -200,14 +201,14 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'endingSize=',
      'default': 200000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Final population size after population expansion.',
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     }, 
     {'longarg': 'growthModel=',
      'default': 'exponential',
@@ -221,7 +222,7 @@ options = [
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'splitGen=',
      'default': 5000,
@@ -232,7 +233,7 @@ options = [
                 not split till this generation. Note that if the disease is 
                 introduced after this stage, it will be in one of subpopulations.
      ''',
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'mixingGen=',
      'default': 8000,
@@ -240,7 +241,7 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to start mixing (allow migration.
                 This number should be greater than or equal to split gen.''',
-     'validate':    params.valueGE(0)
+     'validate':    simuOpt.valueGE(0)
     },
     {'longarg': 'endingGen=',
      'default': 10000,
@@ -248,7 +249,7 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to stop the simulation.
                 This is the total generation number.''',
-     'validate':    params.valueGE(0)
+     'validate':    simuOpt.valueGE(0)
     },
     #
     #
@@ -258,7 +259,7 @@ options = [
      'label': 'Number of subpopulations to split',
      'allowedTypes': [types.IntType],
      'description': 'Number of subpopulations to be split into after burnin stage.',
-     'validate':    params.valueGT(0)
+     'validate':    simuOpt.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'stepping stone',
@@ -267,7 +268,7 @@ options = [
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone (circular),
                 island and none. ''',
-     'validate':    params.valueOneOf(['island', 'stepping stone', 'none']),
+     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
      'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
     {'longarg': 'migrRate=',
@@ -276,7 +277,7 @@ options = [
      'description': '''Migration rate during mixing stage. 
                 A circular stepping stone migration model will be used. ''',
      'allowedTypes': [types.IntType, types.FloatType],
-     'validate':    params.valueBetween(0,1)
+     'validate':    simuOpt.valueBetween(0,1)
     },
     {'longarg': 'alleleDistInSubPop=',
      'useDefault': True,
@@ -291,7 +292,7 @@ options = [
                 [0,1]. The distribution of interval lengths, are roughly exponential 
                 (conditional on overall length 1). ''',
      'allowedTypes': [types.StringType],
-     'validate':    params.valueOneOf(['even', 'uneven']),
+     'validate':    simuOpt.valueOneOf(['even', 'uneven']),
      'chooseOneOf': ['even', 'uneven']
     },
     #
@@ -304,7 +305,7 @@ options = [
      'description': '''Current allele frequencies for each DSL.
                 If a number is given, it is assumed to be the frequency
                 for all DSL.''',
-     'validate': params.valueListOf( params.valueBetween(0,1))
+     'validate': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
     {'longarg': 'minMutAge=',
      'default': 0,
@@ -344,7 +345,7 @@ options = [
                     aa  c1 c2 c3
                 3^n numbers are needed for n DSL.
         ''',
-     'validate':    params.valueListOf(params.valueGE(0.)),
+     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
     },
     {'longarg': 'selMultiLocusModel=',
     'default': 'none',
@@ -369,7 +370,7 @@ options = [
                 symmetric stepwise mutation wile SNP markers are mutaed
                 using a 2-allele model (kam) DSL are not mutated unless in disease
                 introduction stage.''',
-     'validate':    params.valueBetween(0,1)
+     'validate':    simuOpt.valueBetween(0,1)
     },
     {'longarg': 'recRate=',
      'default': [0.0005],
@@ -385,7 +386,7 @@ options = [
                  Note that the distance between 3-x, x-5 is smaller than distance
                  between markers.
      ''',
-     'validate': params.valueListOf(params.valueBetween(0,1))
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
     },
     #
     {'separator': 'Final population preparation:'},
@@ -394,7 +395,7 @@ options = [
      'useDefault': True,
      'label': 'Generations to save',
      'allowedTypes': [types.IntType, types.LongType],
-     'validate': params.valueBetween(1, 3),
+     'validate': simuOpt.valueBetween(1, 3),
      'description': '''How many generations to save in the final population. 1 means no parental 
                 generations, and 3 means grandparent, parent and current generations. Default
                 is two, which is good for sampling schemes like affected sibpair sampling.''',
@@ -408,7 +409,7 @@ options = [
                 is needed for the sampling of large pedigrees. The value can be the number of offspring
                 per mating when numOffMode=constant, but can also be parameters for a distribution. Details
                 see description of numOffMode.''',
-     'validate': params.valueGT(0),
+     'validate': simuOpt.valueGT(0),
     },
     {'longarg': 'numOffMode=',
      'default': 'constant',
@@ -435,7 +436,7 @@ options = [
      'useDefault': True,
      'label': 'Save population at generations',
      'allowedTypes': [types.ListType, types.TupleType],
-     'validate': params.valueListOf(params.valueGE(0)),
+     'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
      'description': '''A list of generations at which populations are saved, 
                 default to []. It can be used for intermediate analysis, but simulations can
                 not be resumed from this population due to the re-generation of allele 
@@ -838,7 +839,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
 
 if __name__ == '__main__':
     # get parameters
-    par = params.simuParam(options, 
+    par = simuOpt.simuParam(options, 
       '''This program simulates the evolution of a complex common disease, subject 
          to the impact of mutation, migration, recombination and population size change. 
          Click 'help' for more information about the evolutionary scenario.''',

@@ -24,28 +24,28 @@ options = [
      'default':100,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
      },
     {'arg': 'P:',
      'longarg':'p=',
      'default':0.2,
      'allowedTypes': [types.FloatType],
      'label':'Initial Allele Frequency',
-     'validate':params.valueBetween(0., 1.),
+     'validate':simuOpt.valueBetween(0., 1.),
      },
     {'arg':'g:',
      'longarg':'generations=',
      'default':100,
      'label':'Number of Generations',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
      },
     {'arg':'r:',
      'longarg':'replications=',
      'default':5,
      'label':'Number of Replicates',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
      },
 ]
 
@@ -90,7 +90,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = params.simuParam(options, __doc__)
+    pars = simuOpt.simuParam(options, __doc__)
     # cancelled
     if not pars.getParam():
         sys.exit(0)

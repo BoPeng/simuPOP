@@ -54,8 +54,8 @@ http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LoadHapMap22 for
 for details about this script.
 '''
 
-from simuOpt import *
-setOptions(optimized=True, alleleType='binary')
+import simuOpt
+simuOpt.setOptions(optimized=True, alleleType='binary')
 from simuPOP import *
 
 import os, sys, urllib, gzip, exceptions, tempfile, shutil
@@ -301,7 +301,7 @@ options = [
      'useDefault': True,
      'label': 'Destination directory',
      'allowedTypes': [type('')],
-     'validate': params.valueValidDir(),
+     'validate': simuOpt.valueValidDir(),
      'description': 'A directory to save HapMap data in simuPOP format.',
     },
     {'longarg': 'chroms=',
@@ -310,7 +310,7 @@ options = [
      'label': 'Chromosomes to download',
      'allowedTypes': [type([]), type(())],
      'chooseFrom': range(1, 23),
-     'validate': params.valueListOf(params.valueBetween(1, 22)),
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(1, 22)),
      'description': 'Which chromosomes to download and process',
     },
 ]
@@ -318,7 +318,7 @@ options = [
 #BATCHTESTING --chroms=1
 
 if __name__ == '__main__':
-    pars = params.simuParam(options, 
+    pars = simuOpt.simuParam(options, 
         'This script downloads the 22 release of the HapMap datasets\n'
         'and saves them in simuPOP format. It also downloads the fine-scale\n'
         'recombination map and saves the genetic distance of each marker in\n'

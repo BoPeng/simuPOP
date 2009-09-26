@@ -44,7 +44,7 @@ options = [
      'default':1000,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
      'description':'Population size'
     },
      {'arg':'l:',
@@ -52,7 +52,7 @@ options = [
      'default':100,
      'label':'Number of Loci',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':params.valueGT(0),
+     'validate':simuOpt.valueGT(0),
      'description':'Number of loci'
     },
     {'arg':'e:',
@@ -61,7 +61,7 @@ options = [
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Generations to evolve',
      'description':'Length of evolution',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
     },
     {'arg':'r:',
      'longarg':'recRate=',
@@ -69,7 +69,7 @@ options = [
      'label':'Recombination Rate',
      'allowedTypes':[types.FloatType],
      'description':'Recombination rate',
-     'validate':params.valueBetween(0., 1.),
+     'validate':simuOpt.valueBetween(0., 1.),
     },
     {'arg':'n:',
      'longarg':'rep=',
@@ -77,7 +77,7 @@ options = [
      'label':'Number of Replicate',
      'allowedTypes':[types.IntType, types.LongType],
      'description':'Number of replicates',
-     'validate':params.valueGT(0)
+     'validate':simuOpt.valueGT(0)
     }
 ]
 
@@ -114,7 +114,7 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
     )
 
 if __name__ == '__main__':
-    pars = params.simuParam(options, doc =
+    pars = simuOpt.simuParam(options, doc =
         'This script counts the average number of ancestors who contribute\n' +
         'their genotype to an offspring after a few generations.',
         details = __doc__)
