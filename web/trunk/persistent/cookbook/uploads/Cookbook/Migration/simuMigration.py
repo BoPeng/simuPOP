@@ -12,7 +12,7 @@ import simuOpt, os, sys, types, time
 from simuPOP import *
 
 try:
-    from simuRPy import *
+    from simuPOP.plotter import varPlotter
 except:
     print "simuRPy import failed. Please check your rpy installation."
     print "allele frquencies in subpopulations will not be plotted"
@@ -26,21 +26,21 @@ options = [
      'default':5000,
      'label':'Subpopulation Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'validate':params.valueGT(0),
      },
     {
      'longarg':'numOfSubPops=',
      'default':5,
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Number of Subpopulations',
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
     {
      'longarg':'m=',
      'default':0.05,
      'label':'Migration Rate',
      'allowedTypes':[types.FloatType],
-     'validate':simuOpt.valueBetween(0., 1.),
+     'validate':params.valueBetween(0., 1.),
      },
     {
      'longarg':'generations=',
@@ -48,7 +48,7 @@ options = [
      'label':'Generations to evolve',
      'description':'Length of evolution',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
 ]
 
@@ -93,7 +93,7 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
     else:
         s = 20
     simu.evolve(
-        gen = generations,
+        preOps = initSex(),
         ops = [
             stat(alleleFreq=[0], vars=['alleleFreq_sp'], stage=PreMating), 
             migrator(rate = a),
@@ -101,11 +101,12 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
                 stmts = 'freq = [subPop[x]["alleleFreq"][0][0] for x in range(%i)]' % numOfSubPops, step = s, stage=PreMating),
             plotter,
             ],
+        gen = generations,
         )
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuOpt(options, __doc__)
+    pars = params.simuParam(options, __doc__)
     if not pars.getParam():
         sys.exit(0)
 

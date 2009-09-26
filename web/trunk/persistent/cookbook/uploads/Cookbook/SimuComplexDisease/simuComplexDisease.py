@@ -133,8 +133,8 @@ You can add more stat() operator if you need to preserve more information.
 
 """
 
-import simuOpt
 import os, sys, exceptions, types, math
+from simuPOP import *
 
 #
 # declare all options. getParam will use these information to get parameters
@@ -147,7 +147,7 @@ options = [
      'label': 'Number of chromosomes',
      'description': 'Number of chromosomes.',
      'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'numLoci=',
      'default': 20,
@@ -155,7 +155,7 @@ options = [
      'description': '''Number of loci on each chromosome, current there 
              only equal number of markers on each chromosome is supported.''',
      'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'markerType=',
      'default': 'microsatellite',
@@ -166,7 +166,7 @@ options = [
                 2-state model. Mutation rate should be much smaller for
                 SNP markers than that of microsatellite markers.''',
      'allowedTypes': [types.StringType],
-     'validate':    simuOpt.valueOneOf(['microsatellite', 'SNP']),
+     'validate':    params.valueOneOf(['microsatellite', 'SNP']),
      'chooseOneOf': ['microsatellite', 'SNP']
     },
     {'longarg': 'DSL=',
@@ -179,7 +179,7 @@ options = [
                 A single number is allowed and implies a simple disease with
                 one disease locus.''',
      'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueGT(0) )
+     'validate':    params.valueListOf( params.valueGT(0) )
     },
     {'longarg': 'DSLLoc=',
      'default': [.5, .5, .5],
@@ -189,7 +189,7 @@ options = [
                 the location should be between 0 and 1. A single value is acceptable
                 as the location of all DSL.''',
      'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'validate':    params.valueListOf( params.valueBetween(0,1))
     },
     #
     #
@@ -200,14 +200,14 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'endingSize=',
      'default': 200000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Final population size after population expansion.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     }, 
     {'longarg': 'growthModel=',
      'default': 'exponential',
@@ -221,7 +221,7 @@ options = [
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'splitGen=',
      'default': 5000,
@@ -232,7 +232,7 @@ options = [
                 not split till this generation. Note that if the disease is 
                 introduced after this stage, it will be in one of subpopulations.
      ''',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'mixingGen=',
      'default': 8000,
@@ -240,7 +240,7 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to start mixing (allow migration.
                 This number should be greater than or equal to split gen.''',
-     'validate':    simuOpt.valueGE(0)
+     'validate':    params.valueGE(0)
     },
     {'longarg': 'endingGen=',
      'default': 10000,
@@ -248,7 +248,7 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to stop the simulation.
                 This is the total generation number.''',
-     'validate':    simuOpt.valueGE(0)
+     'validate':    params.valueGE(0)
     },
     #
     #
@@ -258,7 +258,7 @@ options = [
      'label': 'Number of subpopulations to split',
      'allowedTypes': [types.IntType],
      'description': 'Number of subpopulations to be split into after burnin stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'stepping stone',
@@ -267,7 +267,7 @@ options = [
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone (circular),
                 island and none. ''',
-     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+     'validate':    params.valueOneOf(['island', 'stepping stone', 'none']),
      'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
     {'longarg': 'migrRate=',
@@ -276,7 +276,7 @@ options = [
      'description': '''Migration rate during mixing stage. 
                 A circular stepping stone migration model will be used. ''',
      'allowedTypes': [types.IntType, types.FloatType],
-     'validate':    simuOpt.valueBetween(0,1)
+     'validate':    params.valueBetween(0,1)
     },
     {'longarg': 'alleleDistInSubPop=',
      'useDefault': True,
@@ -291,7 +291,7 @@ options = [
                 [0,1]. The distribution of interval lengths, are roughly exponential 
                 (conditional on overall length 1). ''',
      'allowedTypes': [types.StringType],
-     'validate':    simuOpt.valueOneOf(['even', 'uneven']),
+     'validate':    params.valueOneOf(['even', 'uneven']),
      'chooseOneOf': ['even', 'uneven']
     },
     #
@@ -304,7 +304,7 @@ options = [
      'description': '''Current allele frequencies for each DSL.
                 If a number is given, it is assumed to be the frequency
                 for all DSL.''',
-     'validate': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'validate': params.valueListOf( params.valueBetween(0,1))
     },
     {'longarg': 'minMutAge=',
      'default': 0,
@@ -344,7 +344,7 @@ options = [
                     aa  c1 c2 c3
                 3^n numbers are needed for n DSL.
         ''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
+     'validate':    params.valueListOf(params.valueGE(0.)),
     },
     {'longarg': 'selMultiLocusModel=',
     'default': 'none',
@@ -369,7 +369,7 @@ options = [
                 symmetric stepwise mutation wile SNP markers are mutaed
                 using a 2-allele model (kam) DSL are not mutated unless in disease
                 introduction stage.''',
-     'validate':    simuOpt.valueBetween(0,1)
+     'validate':    params.valueBetween(0,1)
     },
     {'longarg': 'recRate=',
      'default': [0.0005],
@@ -385,7 +385,7 @@ options = [
                  Note that the distance between 3-x, x-5 is smaller than distance
                  between markers.
      ''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
+     'validate': params.valueListOf(params.valueBetween(0,1))
     },
     #
     {'separator': 'Final population preparation:'},
@@ -394,7 +394,7 @@ options = [
      'useDefault': True,
      'label': 'Generations to save',
      'allowedTypes': [types.IntType, types.LongType],
-     'validate': simuOpt.valueBetween(1, 3),
+     'validate': params.valueBetween(1, 3),
      'description': '''How many generations to save in the final population. 1 means no parental 
                 generations, and 3 means grandparent, parent and current generations. Default
                 is two, which is good for sampling schemes like affected sibpair sampling.''',
@@ -408,7 +408,7 @@ options = [
                 is needed for the sampling of large pedigrees. The value can be the number of offspring
                 per mating when numOffMode=constant, but can also be parameters for a distribution. Details
                 see description of numOffMode.''',
-     'validate': simuOpt.valueGT(0),
+     'validate': params.valueGT(0),
     },
     {'longarg': 'numOffMode=',
      'default': 'constant',
@@ -424,16 +424,6 @@ options = [
     #
     # 
     {'separator': 'Miscellaneous:'},
-    {'longarg': 'simuAge=',
-     'default': 0,
-     'useDefault': True,
-     'allowedTypes': [types.IntType],
-     'validate': simuOpt.valueGE(0),
-     'description': '''Simulate the age of disease mutant given times, and print out the ages,
-                The simulation is not run if a positive number is given. This option is useful
-                when one want to determine minMutAge and maxMutAge for a specific demographic 
-                and fitness model.'''
-    },
     {'longarg': 'dryrun',
      'useDefault': True,
      'default': False,
@@ -445,7 +435,7 @@ options = [
      'useDefault': True,
      'label': 'Save population at generations',
      'allowedTypes': [types.ListType, types.TupleType],
-     'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
+     'validate': params.valueListOf(params.valueGE(0)),
      'description': '''A list of generations at which populations are saved, 
                 default to []. It can be used for intermediate analysis, but simulations can
                 not be resumed from this population due to the re-generation of allele 
@@ -543,7 +533,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
+        mutaRate, recRate, savedGen, numOffspring, numOffMode, 
         dryrun, savePop, filename):
     ''' run a simulation of complex disease with given parameters. 
     '''    
@@ -623,21 +613,9 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     elif maxMutAge > endingGen:
         print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
         maxMutAge = endingGen
-    if simuAge > 0:
-        for i in range(simuAge):
-            traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
-                genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
-                maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
-            mutantAges.append([len(x) for x in traj])
-        print "Simulated trajectory length:"
-        for i,age in enumerate(mutantAges):
-            print 'simu %3d:' % i, ', '.join(['%6d' % x for x in age])
-        mean = [sum([x[col] for x in mutantAges])*1./simuAge for col in range(len(DSLafter))]
-        print "Mean:    ", ', '.join(['%6.1f' % x for x in mean])
-        sys.exit(0)
-    traj = BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
-        genEnd=endingGen, freq=curAlleleFreq, minMutAge=minMutAge,
-        maxMutAge=maxMutAge, ploidy=2, restartIfFail=True)
+    traj = utils.BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+        endGen=endingGen, endFreq=curAlleleFreq, minMutAge=minMutAge,
+        maxMutAge=maxMutAge)
     #
     ### translate numChrom, numLoci, DSLafterLoci to
     ### loci, lociPos, DSL, nonDSL in the usual index
@@ -729,7 +707,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ###                                 endingGen
     ###            0 1 ...... i_T
-    operators.extend(traj.mutators())
+    operators.extend(traj.mutators(DSL))
     ### 
     ### split to subpopulations
     ### 
@@ -860,7 +838,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.simuOpt(options, 
+    par = params.simuParam(options, 
       '''This program simulates the evolution of a complex common disease, subject 
          to the impact of mutation, migration, recombination and population size change. 
          Click 'help' for more information about the evolutionary scenario.''',
@@ -877,20 +855,10 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
+        mutaRate, recRate, savedGen, numOffspring, numOffMode,
         dryrun, savePop, name) = par.asList()
     #
-    if markerType == 'SNP':
-        simuOpt.setOptions(alleleType='binary')
-    else:
-        simuOpt.setOptions(alleleType='short')
-        
-    #simuOpt.setOptions(quiet=True)
-
-    # load simuPOP libraries
-    from simuPOP import *
-    from simuUtil import *
-    #
+    #params.setOptions(quiet=True)
     #
     ################## RUN THE SIMULATION ###############
     simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
@@ -898,7 +866,7 @@ if __name__ == '__main__':
         burninGen, splitGen, mixingGen, endingGen, 
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
-        mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
+        mutaRate, recRate, savedGen, numOffspring, numOffMode,
         dryrun, savePop, os.path.join(name, name + '.pop'))
     
     print "Done!"

@@ -12,7 +12,9 @@ This program demonstrate the Hardy-weinberg equilibrium when the
 allele frequencies in females and males are different.
 """
 
-import simuOpt, os, sys, types, time
+import os, sys, types, time
+
+from simuPOP import *
 
 options = [
     {'arg':'s:',
@@ -20,7 +22,7 @@ options = [
      'default':100000,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'validate':params.valueGT(0),
      'description':'''Population size. HWE assumes infinite population size
          so large population size improves approximity to theoretical estimates.'''
     },
@@ -30,7 +32,7 @@ options = [
      'allowedTypes':[types.IntType, types.LongType],
      'label':'Ending Generation',
      'description':'Length of evolution',
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
     },
     {'arg':'m:',
      'longarg':'malleleFreq=',
@@ -38,7 +40,7 @@ options = [
      'allowedTypes':[types.FloatType, types.LongType],
      'label':'Male Allele Frequency',
      'description':'Initial allele frequency in males,',
-     'validate':simuOpt.valueBetween(0, 1)
+     'validate':params.valueBetween(0, 1)
     },
     {'arg':'f:',
      'longarg':'falleleFreq=',
@@ -46,15 +48,14 @@ options = [
      'allowedTypes':[types.FloatType, types.LongType],
      'label':'Female Allele Frequency',
      'description':'Initial allele frequency in females.',
-     'validate':simuOpt.valueBetween(0, 1)
+     'validate':params.valueBetween(0, 1)
     },
 ]
 
 
-from simuPOP import *
 
 # get all parameters
-par = simuOpt.simuOpt(options, __doc__)
+par = params.simuParam(options, __doc__)
 if not par.getParam():
     sys.exit(1)
 
@@ -71,8 +72,8 @@ print "p\tP00 (p^2)\tP01 (2p(1-p))\tP11 ((1-p)^2)"
 simu.evolve(
     preOps = [
         initSex(),
-        initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)], initSex=False),
-        initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)], initSex=False)
+        initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
+        initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
     ],
     ops = [
         stat(alleleFreq=[0], genoFreq=[0]),

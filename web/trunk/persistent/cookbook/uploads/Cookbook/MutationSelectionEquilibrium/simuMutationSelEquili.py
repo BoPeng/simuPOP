@@ -9,7 +9,7 @@ equilibrium.
 """
 
 
-import simuOpt, os, sys, types, time
+import os, sys, types, time
 from simuPOP import *
 
 # start simuPOP program
@@ -20,14 +20,14 @@ options = [
      'default':2000,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'validate':params.valueGT(0),
      },
     {
      'longarg':'m=',
      'default':0.001,
      'label':'Mutation Rate',
      'allowedTypes':[types.FloatType],
-     'validate':simuOpt.valueBetween(0., 1.),
+     'validate':params.valueBetween(0., 1.),
      },
     {
      'longarg':'generations=',
@@ -35,7 +35,7 @@ options = [
      'label':'Generations to evolve',
      'description':'Length of evolution',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
     {
      'longarg':'step=',
@@ -43,7 +43,7 @@ options = [
      'label':'Steps to take per generation',
      'description':'Values displayed per generation',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
 ]
 
@@ -87,7 +87,7 @@ def simuMigration(PopSize, m, generations, step):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuOpt(options, __doc__)
+    pars = params.simuParam(options, __doc__)
     if not pars.getParam():
         sys.exit(0)
 

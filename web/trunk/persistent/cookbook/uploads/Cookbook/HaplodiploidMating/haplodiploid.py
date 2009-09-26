@@ -49,7 +49,7 @@ class haplodiploidRecombinator(pyOperator):
         # *offspringOnly* is set to ``True``, the function can be simplied
         # to ``(off)`` or ``(off, param)``.
         pyOperator.__init__(self, func=self.transmitGenotype,
-            stage=DuringMating, isTransmitter=True, *args, **kwargs)
+            stage=DuringMating, *args, **kwargs)
 
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinator and copier needs to be initialized. Basically, they
@@ -112,6 +112,7 @@ def simuHaplodiploid(N, numMito=3, gen=10):
 
     simu.evolve(
         preOps=[
+            initSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
             initByFreq([0.4] + [0.2]*3),
         ],

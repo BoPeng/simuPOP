@@ -15,8 +15,7 @@ import simuOpt
 # set optimized=True will gain around 50% speed up.
 simuOpt.setOptions(optimized=True, alleleType='long')
 from simuPOP    import *
-from simuUtil   import *
-from simuRPy    import *
+from simuPOP.plotter import varPlotter
 
 import exceptions
 
@@ -45,7 +44,7 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
         raise exceptions.ValueError("Please specify mutation rate for each locus.")
     
     ## initialization (uniform, all possible alleles)
-    init = initByFreq( [1./ma]*ma )
+    init = [initSex(), initByFreq( [1./ma]*ma ) ]
     
     ## mutation
     ##    different mutation rate at each locus
@@ -107,7 +106,7 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     
     ## start simulation
     simu.evolve(
-        preOps = [ init ],
+        preOps = init,
         ops = [
             pyEval(r"'%d\n' % gen", step=100, reps=0),
             mutate, migrate, stats,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from simuPOP import *
-from simuUtil import MigrIslandRates
+from simuPOP.utils import MigrIslandRates
 
 def calcFst(pop):
     'Calculate Fst and Gst for the whole population and a random sample'
@@ -17,6 +17,7 @@ simu = simulator(population([10000]*2, loci=[1]*5, infoFields='migrate_to'),
     randomMating())
 simu.evolve(
     preOps = [
+        initSex(),
         initByFreq([0.5, 0.5], loci=[0, 2]),
         initByFreq([0.2, 0.4, 0.4], loci=[1, 3, 4]),
     ],

@@ -50,6 +50,7 @@ def simuMitochondrial(N, numMito=3, gen=10):
 
     simu.evolve(
         preOps=[
+            initSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
             initByFreq([0.4] + [0.2]*3),
         ],

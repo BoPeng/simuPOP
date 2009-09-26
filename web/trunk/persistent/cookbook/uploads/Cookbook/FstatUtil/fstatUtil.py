@@ -27,7 +27,7 @@
 # 
 
 from simuPOP import *
-import re
+import re, exceptions
 
 def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
     combine=None):

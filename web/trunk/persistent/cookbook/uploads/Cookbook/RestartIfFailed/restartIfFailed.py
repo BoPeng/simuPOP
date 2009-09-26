@@ -22,6 +22,7 @@ def simuRestartIfFailed(N, initFreq, freqRange, gen, genCheck):
     genCheck:  when to check allele frequency
     '''
     pop = population(size=N, loci=[1])
+    InitSex(pop)
     InitByFreq(pop, [1 - initFreq, initFreq])
     # put freqRange as a population variable so that it can be
     # used in an expression

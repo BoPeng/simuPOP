@@ -30,7 +30,9 @@ def simuSelfing(perc, N, n_rep, gen):
         rep=n_rep
     )
 
-    simu.evolve(preOps=[
+    simu.evolve(preOps=
+        [
+            initSex(),
             initByValue([0, 1, 1, 0]),
             pyExec('ld_hist=[]')  # record ld
         ],

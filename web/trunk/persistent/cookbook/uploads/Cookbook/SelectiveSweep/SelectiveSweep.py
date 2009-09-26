@@ -11,7 +11,7 @@ setOptions(alleleType='long')
 from simuPOP import *
 
 try:
-    from simuRPy import *
+    from simuPOP.plotter import varPlotter
 except:
     print "simuRPy import failed. Please check your rpy installation."
     useRPy = False
@@ -28,7 +28,7 @@ def I2k(pop, loci):
     pop.dvars().I2k = I2k
     return True            
 
-def simulate(size=30000, numLoci=2, gen=500):
+def simulate(r, eta, size=30000, numLoci=2, gen=500):
     pop = population(size=size, loci=[numLoci], infoFields='fitness')
 
     for i,ind in enumerate(pop.individuals()):
@@ -89,10 +89,11 @@ def simulate(size=30000, numLoci=2, gen=500):
     
     return simu.dvars(0).I2k[0], simu.dvars(0).alleleFreq[1][1], g[0]
 
-resFile = open('result.txt', 'w')
-
-for r, eta in zip((0.5, 0.01, 0.0033, 0.001, 0.001, 0.001, 0.001),
-                 (0.5, 0.5, 0.5, 0.02, 0.1, 0.5, 0.9)):
-  for rep in range(10):
-      res = simulate(size=10000, numLoci=2, gen=2000)
-      print >> resFile, r, eta, res, rep
+if __name__ == '__main__':
+    #resFile = open('result.txt', 'w')
+    #for r, eta in zip((0.5, 0.01, 0.0033, 0.001, 0.001, 0.001, 0.001),
+    #             (0.5, 0.5, 0.5, 0.02, 0.1, 0.5, 0.9)):
+    #    for rep in range(10):
+    #        res = simulate(r, eta, size=10000, numLoci=2, gen=2000)
+    #        print >> resFile, r, eta, res, rep
+    simulate(0.5, 0.5, size=10000, numLoci=2, gen=200)

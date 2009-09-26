@@ -18,6 +18,7 @@ def recordTrajectory(N, initFreq, gen):
     simu = simulator(population(N, loci=[1]), randomMating())
     simu.evolve(
         preOps = [
+            initSex(),
             initByFreq([1 - initFreq, initFreq]),
             # initialize an array in the population's local namespace
             pyExec('traj=[]')
@@ -47,7 +48,10 @@ def simuFollowTrajectory(N, locus, initFreq, traj):
         rep = 5
     )
     simu.evolve(
-        preOps = [initByFreq([1 - initFreq, initFreq])],
+        preOps = [
+            initSex(),
+            initByFreq([1 - initFreq, initFreq])
+        ],
         ops = [stat(alleleFreq=[locus], at=-1)],
         gen = len(traj)
     )

@@ -56,6 +56,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     #
     simu.evolve(
         preOps = [
+            initSex(),
             initByFreq([0.5, 0.5]),
             pyExec('AaNum=[]'),  # initialize a list in population's local dictionary
             ],

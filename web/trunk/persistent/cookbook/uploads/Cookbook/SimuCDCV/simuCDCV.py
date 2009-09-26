@@ -34,7 +34,6 @@ recorded and plotted (if R/Rpy is available).
 import simuOpt
 simuOpt.setOptions(alleleType='long')
 from simuPOP import *
-from simuUtil import *
 
 import os, sys, types, exceptions, math
 
@@ -46,7 +45,7 @@ options = [
      'label': 'Number of DSL',
      'description': '''Number of disease susecptibility loci for the disease.''',
      'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'initSpec=',
      'default': [0.9]+[0.02]*5,
@@ -66,7 +65,7 @@ options = [
                 is the wild type). For additive model, the fitness values are
                 [1,1-s/2,1-s]. You can also specify a list of models for each DSL.''' ,
      'allowedTypes': [types.ListType, types.TupleType],
-     'validate': simuOpt.valueListOf( simuOpt.valueOneOf(['recessive','additive'])),
+     'validate': params.valueListOf( params.valueOneOf(['recessive','additive'])),
     },
     {'longarg': 'selModelAllDSL=',
      'default': 'additive',
@@ -90,7 +89,7 @@ options = [
                 different values for each DSL. In the case of customized selection
                 model, this coefficient is a fitness table, NOT selection coefficient(s).''',
      'allowedTypes': [types.ListType, types.TupleType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueGT(0.))
+     'validate':    params.valueListOf( params.valueGT(0.))
     },
     {'longarg': 'mutaModel=',
      'default': 'k-allele',
@@ -100,7 +99,7 @@ options = [
                 symmetric stepwise mutation wile SNP markers are mutaed
                 using a 2-allele model (kam) DSL are not mutated unless in disease
                 introduction stage.''',
-     'validate':    simuOpt.valueOneOf(['k-allele', 'stepwise']),
+     'validate':    params.valueOneOf(['k-allele', 'stepwise']),
      'chooseOneOf': ['k-allele', 'stepwise']
     },
     {'longarg': 'maxAllele=',
@@ -115,14 +114,14 @@ options = [
                 significantly.
                 NOTE: very large maxAllele will significantly slow down the simulation
                 due to the creation of large array as population variable.''',
-     'validate':    simuOpt.valueGT(1),
+     'validate':    params.valueGT(1),
     }, 
     {'longarg': 'mutaRate=',
      'default': [0.0001],
      'label': 'Mutation rate(s)',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Mutation rate for all DSL. Can be different for each DSL.''',
-     'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'validate':    params.valueListOf( params.valueBetween(0,1))
     },
     {'longarg': 'initSize=',
      'default': 10000,
@@ -130,21 +129,21 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'finalSize=',
      'default': 1000000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending population size (after expansion.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     }, 
     {'longarg': 'burnin=',
      'default': 2000,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'noMigrGen=',
      'default': 400,
@@ -152,7 +151,7 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Number of generations when migration is zero. This stage
                 is used to build up population structure.''',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'mixingGen=',
      'default': 100,
@@ -161,7 +160,7 @@ options = [
      'description': '''Number of generations when migration is present. This stage
                 will mix individuals from subpopulations using an circular stepping stone
                 migration model.''',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },    
     {'longarg': 'growth=',
      'default': 'exponential',
@@ -175,7 +174,7 @@ options = [
      'label': 'Number of split subpops',
      'allowedTypes': [types.IntType],
      'description': 'Number of subpopulations to be split into after burnin stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validate':    params.valueGT(0)
     },
     {'longarg': 'migrModel=',
      'default': 'none',
@@ -183,7 +182,7 @@ options = [
      'allowedTypes': [types.StringType],
      'description': '''Migration model. Choose between stepping stone and island.    
                 A stepping stone model will be a circular model.''',
-     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+     'validate':    params.valueOneOf(['island', 'stepping stone', 'none']),
      'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
     {'longarg': 'migrRate=',
@@ -192,14 +191,14 @@ options = [
      'description': '''Migration rate during mixing stage. 
                 Island or circular stepping stone migration model can be used. ''',
      'allowedTypes': [types.FloatType, types.IntType],
-     'validate':    simuOpt.valueBetween(0,1)
+     'validate':    params.valueBetween(0,1)
     },
      {'longarg': 'update=',
      'default': 100,
      'label': 'Update figure every # gen',
      'allowedTypes': [types.IntType],
      'description': '''Update figure every some generation.''',
-     'validate':    simuOpt.valueGE(1)
+     'validate':    params.valueGE(1)
     },    
     {'longarg': 'dispPlot=',
      'default': True,
@@ -217,7 +216,7 @@ options = [
                     2); figures will not be displayed at these generations
                     3): file name will be cdcvXXX.eps
                 ''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0))
+     'validate':    params.valueListOf(params.valueGE(0))
     },
     {'longarg': 'savePop=',
      'default': '',
@@ -606,6 +605,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     # start evolution
     simu.evolve(                            # start evolution
         preOps=
+            [initSex()] + 
             # initialize DSL 
             [initByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
             [pyExec('allelesBeforeExpansion=[]')],
@@ -647,7 +647,7 @@ def simuCDCV(numDSL, initSpec, selModel,
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.simuOpt(options, 
+    par = params.simuParam(options, 
         'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
         'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
         'and plotted (if R/RPy is available).', __doc__)
@@ -667,7 +667,7 @@ if __name__ == '__main__':
 
     if dispPlot:
         try:
-            from simuRPy import *
+            from simuPOP.plotter import *
             from rpy import *
             r.library('lattice')
         except:

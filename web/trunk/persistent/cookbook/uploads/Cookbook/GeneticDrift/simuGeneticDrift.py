@@ -10,7 +10,7 @@ import simuOpt, os, sys, types, time
 from simuPOP import *
 
 try:
-    from simuRPy import *
+    from simuPOP.plotter import varPlotter
 except:
     print "simuRPy import failed. Please check your rpy installation."
     print "Allele Frequencies will not be plotted"
@@ -24,28 +24,28 @@ options = [
      'default':100,
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'validate':params.valueGT(0),
      },
     {'arg': 'P:',
      'longarg':'p=',
      'default':0.2,
      'allowedTypes': [types.FloatType],
      'label':'Initial Allele Frequency',
-     'validate':simuOpt.valueBetween(0., 1.),
+     'validate':params.valueBetween(0., 1.),
      },
     {'arg':'g:',
      'longarg':'generations=',
      'default':100,
      'label':'Number of Generations',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
     {'arg':'r:',
      'longarg':'replications=',
      'default':5,
      'label':'Number of Replicates',
      'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'validate':params.valueGT(0)
      },
 ]
 
@@ -75,7 +75,10 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
         
     simu.evolve(
         # everyone initially will have the same allele frequency
-        preOps=[initByFreq([p, 1-p])],
+        preOps = [
+            initSex(),
+            initByFreq([p, 1-p])
+        ],
         ops=[stat(alleleFreq=[0]),
             pyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),
 	    pyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
@@ -87,7 +90,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuOpt(options, __doc__)
+    pars = params.simuParam(options, __doc__)
     # cancelled
     if not pars.getParam():
         sys.exit(0)

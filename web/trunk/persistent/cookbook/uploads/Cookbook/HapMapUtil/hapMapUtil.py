@@ -32,7 +32,7 @@ populations.
 
 from simuPOP import *
 from types import *
-import simuOpt as opt
+import sys, os
 
 def mergeHapMapPops(HapMap_dir, HapMap_pops, chrom, logger=None):
     '''
@@ -223,7 +223,7 @@ options = [
         using script loadHapMap_r22.py from the simuPOP online cookbook. The
         files have names such as HapMap_CEU_chr10.pop.''',
      'allowedTypes': [StringType],
-     'validate': opt.valueValidDir(),
+     'validate': params.valueValidDir(),
     },
     {
     'longarg': 'HapMap_pops=',
@@ -234,7 +234,7 @@ options = [
     'allowedTypes': [StringType],
     'allowedTypes': [ListType, TupleType],
     'chooseFrom': HapMap_pops,
-    'validate': opt.valueListOf(opt.valueOneOf(HapMap_pops)),
+    'validate': params.valueListOf(params.valueOneOf(HapMap_pops)),
     },
     {
     'longarg': 'markerList=',
@@ -247,7 +247,7 @@ options = [
         parameter 'markerListCols' can be used to specify the columns if the
         fields are not in order.''',
     'allowedTypes': [StringType],
-    'validate': opt.valueOr(opt.valueEqual(''), opt.valueValidFile()),
+    'validate': params.valueOr(params.valueEqual(''), params.valueValidFile()),
     },
     {
     'longarg': 'markerListCols=',
@@ -258,7 +258,7 @@ options = [
         in the marker list file (start at 0). It should be [1, 9, 10] for an
         illumina annotation fiel.''',
     'allowedTypes': [TupleType, ListType],
-    'validate': opt.valueListOf(opt.valueGE(0)),
+    'validate': params.valueListOf(params.valueGE(0)),
     },
     {
     'longarg': 'chroms=',
@@ -267,7 +267,7 @@ options = [
     'label': 'Chromosomes to use',
     'description': 'A list of chromosomes (1-22) to use.',
     'allowedTypes': [TupleType, ListType],
-    'validate': opt.valueListOf(opt.valueBetween(1, 22)),
+    'validate': params.valueListOf(params.valueBetween(1, 22)),
     },
     {
     'longarg': 'numMarkers=',
@@ -279,7 +279,7 @@ options = [
         for some chromosomes.
         ''',
     'allowedTypes': [TupleType, ListType],
-    'validate': opt.valueOr(opt.valueGT(0), opt.valueListOf(opt.valueGE(0)))
+    'validate': params.valueOr(params.valueGT(0), params.valueListOf(params.valueGE(0)))
     },
     {
     'longarg': 'startPos=',
@@ -290,7 +290,7 @@ options = [
         The beginning of the chromosomes will be assumed if this parameter
         is unspecified or is set to zero.''',
     'allowedTypes': [TupleType, ListType],
-    'validate': opt.valueOr(opt.valueGE(0), opt.valueListOf(opt.valueGE(0)))
+    'validate': params.valueOr(params.valueGE(0), params.valueListOf(params.valueGE(0)))
     },
     {
     'longarg': 'endPos=',
@@ -301,7 +301,7 @@ options = [
         The end of the chromosomes will be assumed if this parameter is
         unspecifed or is set to zero.''',
      'allowedTypes': [TupleType, ListType],
-     'validate': opt.valueOr(opt.valueGE(0), opt.valueListOf(opt.valueGE(0)))
+     'validate': params.valueOr(params.valueGE(0), params.valueListOf(params.valueGE(0)))
     },
     {
     'longarg': 'minAF=',
@@ -310,7 +310,7 @@ options = [
     'label': 'Minimal minor allele frequency',
     'description': '''Minimal allele frequency of selected markers.''',
     'allowedTypes': [IntType, LongType, FloatType],
-    'validate': opt.valueBetween(0, 0.5)
+    'validate': params.valueBetween(0, 0.5)
     },
     {
     'longarg': 'minDist=',
@@ -319,7 +319,7 @@ options = [
     'label': 'Minimal distance between markers',
     'description': '''Minimal distance between adjacent markers''',
     'allowedTypes': [IntType, LongType, FloatType],
-    'validate': opt.valueGE(0),
+    'validate': params.valueGE(0),
     },
     {
     'longarg': 'filename=',
@@ -333,11 +333,13 @@ options = [
     }
 ]
 
+#BATCHTESTING --HapMap_dir=/local/bpeng/research/HapMap
+
 if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger()
-    pars = opt.simuOpt(options,
+    pars = params.simuParam(options,
         'This script chooses specified markers from one or more HapMap\n'
         'populations and saves them in simuPOP format.\n',
         __doc__)
