@@ -1,6 +1,8 @@
 ChangeLog of simuPOP
 
-version 0.9.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
 		when parameter pedFields is specified.
   - BUG: Install to dist-packages instead of built-in site-packages under ubuntu/python2.6.
