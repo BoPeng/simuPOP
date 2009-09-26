@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.6 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.7 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -1723,119 +1723,119 @@ status open
 
 
 \backslash
-simuPOPparamssimuParamRef
+simuOptsimuParamRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueNotRef
+simuOptvalueNotRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueOrRef
+simuOptvalueOrRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueAndRef
+simuOptvalueAndRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueOneOfRef
+simuOptvalueOneOfRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueTrueFalseRef
+simuOptvalueTrueFalseRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueBetweenRef
+simuOptvalueBetweenRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueGTRef
+simuOptvalueGTRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueGERef
+simuOptvalueGERef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueLTRef
+simuOptvalueLTRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueLERef
+simuOptvalueLERef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueEqualRef
+simuOptvalueEqualRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueNotEqualRef
+simuOptvalueNotEqualRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueIsNumRef
+simuOptvalueIsNumRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueIsListRef
+simuOptvalueIsListRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueValidDirRef
+simuOptvalueValidDirRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPparamsvalueValidFileRef
+simuOptvalueValidFileRef
 \end_layout
 
 \end_inset
