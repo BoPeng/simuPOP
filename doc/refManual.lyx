@@ -1687,7 +1687,7 @@ simuOptRef
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Function 
 \family typewriter
 setOptions
