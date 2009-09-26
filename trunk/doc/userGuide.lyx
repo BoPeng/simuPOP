@@ -17416,16 +17416,16 @@ most options can be set by environmental variables and command line options
  which are sometimes more versatile to use.
 \end_layout
 
-\begin_layout Section
-Module 
+\begin_layout Subsection
+Class 
 \family typewriter
-simuPOP.params
+simuOpt.simuParam
 \end_layout
 
 \begin_layout Standard
 The 
 \family typewriter
-simuPOP.params
+simuOpt
 \family default
  module also provides a class 
 \family typewriter
@@ -17438,7 +17438,7 @@ simuParam
  methods.
  More specifically, if a script uses the 
 \family typewriter
-params.simuParam
+simuOpt.simuParam
 \family default
  class to handle parameters,
 \end_layout
@@ -17501,7 +17501,7 @@ Define a parameter specification list.
 \begin_layout Standard
 A 
 \family typewriter
-simuOpt
+simuParam
 \family default
  object is created from a list of parameter specification dictionaries,
  and optional short and long descriptions of a script.
@@ -17636,9 +17636,9 @@ lstparams "caption={A sample parameter specification list},label={paramSpec},las
 \end_layout
 
 \begin_layout Subsection
-Get parameters (class 
+Get parameters (function 
 \family typewriter
-params.simuParam
+simuParam.getParam
 \family default
 )
 \end_layout
@@ -17972,18 +17972,18 @@ par.rep
 \begin_layout Standard
 When there are a large number of parameters, passing this 
 \family typewriter
-simuOpt
+simuParam
 \family default
  object, instead of tens of parameters, is a good way to provide clean interface
 s.
  Alternatively, you can get a list or a dictionary of parameters using member
  functions 
 \family typewriter
-simuOpt.asList()
+simuParam.asList()
 \family default
  and 
 \family typewriter
-simuOpt.asDict()
+simuParam.asDict()
 \family default
 .
 \end_layout
@@ -18006,7 +18006,7 @@ additional attributes
 \series default
  to a 
 \family typewriter
-simuOpt
+simuParam
 \family default
  object, using either 
 \family typewriter
@@ -18028,7 +18028,7 @@ simuOpt
  object (e.g.
  they are not returned by function 
 \family typewriter
-simuOpt.asDict()
+simuParam.asDict()
 \family default
 ) but could be used just like regular parameters.
  Note that the same operations for 
@@ -18062,7 +18062,7 @@ reference "useSimuOpt"
  are created easily with needed attributes.
  They can be passed to functions where a 
 \family typewriter
-simuOpt
+simuParam
 \family default
  object is needed, although some of the attributes are not real parameters
  (in the sense that they are not created by a parameter specification dictionary

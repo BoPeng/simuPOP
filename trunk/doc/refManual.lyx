@@ -1682,6 +1682,21 @@ status open
 simuOptRef
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Function 
+\family typewriter
+setOptions
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
 \begin_layout Plain Layout
 
 
@@ -1694,19 +1709,22 @@ simuOptsetOptionsRef
 
 \end_layout
 
-\begin_layout Section
-Module 
-\family typewriter
-simuPOP.params
-\end_layout
-
 \begin_layout Subsection
-Parameter handling
+Class 
+\family typewriter
+simuParam
 \end_layout
 
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPparamssimuParamRef
+\end_layout
 
 \begin_layout Plain Layout
 
@@ -1818,13 +1836,6 @@ simuPOPparamsvalueValidDirRef
 
 \backslash
 simuPOPparamsvalueValidFileRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPparamssimuParamRef
 \end_layout
 
 \end_inset

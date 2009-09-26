@@ -136,7 +136,7 @@ public:
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	inheritTagger(InheritanceType mode = Maternal, int stage = DuringMating,
+	inheritTagger(InheritanceType mode = Paternal, int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
