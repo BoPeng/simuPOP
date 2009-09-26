@@ -2763,7 +2763,7 @@ Details:
 
 Usage:
 
-    inheritTagger(mode=Maternal, stage=DuringMating, begin=0,
+    inheritTagger(mode=Paternal, stage=DuringMating, begin=0,
       end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       output=\"\", infoFields=[])
 

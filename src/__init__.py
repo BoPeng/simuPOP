@@ -290,7 +290,6 @@ __all__ = [
     # modules
     'utils',
     'plotter',
-    'params',
 ]
 
 # get options

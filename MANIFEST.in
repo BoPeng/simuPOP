@@ -85,7 +85,6 @@ include src/simuPOP_baop.i
 include simuOpt.py
 include src/__init__.py
 include src/utils.py
-include src/params.py
 include src/plotter.py
 
 # gsl files

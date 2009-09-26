@@ -3642,7 +3642,6 @@ from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
 import types, simuOpt
-from simuPOP import params
 options = [
     {'arg': 'r:',
      'longarg': 'rate=',
@@ -3652,14 +3651,14 @@ options = [
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
-     'validate': params.valueListOf(params.valueBetween(0, 1))
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
     },
     {'longarg': 'rep=',
      'default': 5,
      'label': 'Number of replicates',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Number of replicates to simulate.',
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     }, 
     {'longarg': 'pop=',
      'default': 'CEU',
@@ -3672,10 +3671,10 @@ options = [
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''',
      'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
-     'validate': params.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
+     'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
     }
 ]
-pars = params.simuParam(options, 'A demo simulation')
+pars = simuOpt.simuParam(options, 'A demo simulation')
 print pars.usage()
 # You can manually feed parameters...
 pars.processArgs(['--rep=10'])
@@ -3710,14 +3709,14 @@ pars.asDict()
 pars.asList()
 # Default value of parameter rep is changed
 # additional attribute is added.
-par1 = params.simuParam(options, # all parameters with default values
+par1 = simuOpt.simuParam(options, # all parameters with default values
     rep=50,                     # default value of rep is changed
     additional=10               # derived parameters are added
 )
 # print all parameters except for derived ones.
 print par1.asDict()
 # All parameters are derived ...
-par2 = params.simuParam(rep=50, pop='CEU', rate=[0.5])
+par2 = simuOpt.simuParam(rep=50, pop='CEU', rate=[0.5])
 print par2.asDict()
 print par2.rep, par2.pop
 #end_file
@@ -3917,7 +3916,6 @@ import simuOpt
 simuOpt.setOptions(quiet=True, alleleType='long')
 from simuPOP import *
 import sys, types, os, math
-from simuPOP import params
 options = [
     {'longarg': 'demo=',
      'default': 'instant',
@@ -3931,28 +3929,28 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'N1=',
      'default': 100000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending population size (after population expansion)',
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     }, 
     {'longarg': 'G0=',
      'default': 500,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'G1=',
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of geneartions of the population expansion stage',
-     'validate': params.valueGT(0)
+     'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'spec=',
      'default': [0.9] + [0.02]*5,
@@ -3960,7 +3958,7 @@ options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'description': '''Initial allelic spectrum, should be a list of allele
             frequencies, for allele 0, 1, 2, ... respectively.''',
-     'validate': params.valueListOf(params.valueBetween(0, 1)),
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
     },
     {'longarg': 's=',
      'default': 0.01,
@@ -3969,21 +3967,21 @@ options = [
      'description': '''Selection coefficient for homozygtes (aa) genotype.
             A recessive selection model is used so the fitness values of
             genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
-     'validate': params.valueGT(-1),
+     'validate': simuOpt.valueGT(-1),
     },
     {'longarg': 'mu=',
      'default': 1e-4,
      'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': 'Mutation rate of a k-allele mutation model',
-     'validate': params.valueBetween(0, 1),
+     'validate': simuOpt.valueBetween(0, 1),
     },
     {'longarg': 'k=',
      'default': 200,
      'label': 'Maximum allelic state',
      'allowedTypes': [types.IntType],
      'description': 'Maximum allelic state for a k-allele mutation model',
-     'validate': params.valueGT(1),
+     'validate': simuOpt.valueGT(1),
     },
 ]
 
@@ -4071,7 +4069,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt(options, __doc__)
+    par = simuOpt.simuParam(options, __doc__)
     if not par.getParam():
         sys.exit(1)
     
