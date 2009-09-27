@@ -848,6 +848,16 @@ pop = population(size=100, loci=[5])
 simu = simulator(pop, randomMating())
 \end_layout
 
+\begin_layout Plain Layout
+
+# use submodule simuPOP.utils directly
+\end_layout
+
+\begin_layout Plain Layout
+
+utils.BackwardTrajectory(N=1000, endGen=100, endFreq=0.1)
+\end_layout
+
 \end_inset
 
 it is recommended that you use simuPOP like
@@ -871,6 +881,21 @@ pop = simuPOP.population(size=100, loci=[5])
 \begin_layout Plain Layout
 
 simu = simuPOP.simulator(pop, simuPOP.randomMating())
+\end_layout
+
+\begin_layout Plain Layout
+
+# import and use submodule simuPOP.utils
+\end_layout
+
+\begin_layout Plain Layout
+
+import simuPOP.utils
+\end_layout
+
+\begin_layout Plain Layout
+
+simuPOP.utils.BackwardTrajectory(N=1000, endGen=100, endFreq=0.1)
 \end_layout
 
 \end_inset
@@ -946,7 +971,7 @@ import simuPOP
 import *
 \family default
  style for the sake of brevity.
- If you really dislike the omnipresence of 
+ If you really dislike the omnipresence of the 
 \family typewriter
 simuPOP
 \family default
