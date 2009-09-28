@@ -1583,6 +1583,27 @@ simuPOPMigrateRef
 
 
 \backslash
+simuPOPReiszeSubPops
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMergeSubPops
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPSplitSubPops
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPMatrixMutateRef
 \end_layout
 

@@ -277,9 +277,6 @@ enum DBG_CODE {
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 
-const string ParentsFields[2] = { "father_idx", "mother_idx" };
-
-
 // DBG_NAMES are defined in utility.cpp
 // if you add any debug code here, you need to add its name
 // in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
