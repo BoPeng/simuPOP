@@ -56,43 +56,39 @@ bool selector::apply(population & pop)
 
 double mapSelector::indFitness(individual * ind, ULONG gen)
 {
-	string key;
 	size_t ply = ind->ploidy();
 
-	vector<int> alleles(ply);
-
+	vectori alleles(ply*m_loci.size());
+	size_t idx = 0;
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		if (loc != m_loci.begin() )
-			key += '|';
-		for (size_t p = 0; p < ply; ++p)
-			alleles[p] = ind->allele(*loc, p);
+		for (size_t p = 0; p < ply; ++p, ++idx)
+			alleles[idx] = ind->allele(*loc, p);
 		// if no phase, sort alleles...
 		if (!m_phase && ply > 1) {
 			if (ply == 2) {
-				if (alleles[0] > alleles[1]) { // swap
-					int tmp = alleles[0];
-					alleles[0] = alleles[1];
-					alleles[1] = tmp;
+				if (alleles[idx - 2] > alleles[idx - 1]) { // swap
+					int tmp = alleles[idx - 2];
+					alleles[idx - 2] = alleles[idx - 1];
+					alleles[idx - 1] = tmp;
 				}
 			} else
-				std::sort(alleles.begin(), alleles.end());
-		}
-		// get key
-		if (ply == 1)
-			key += toStr(alleles[0]);
-		else if (ply == 2)
-			key += toStr(alleles[0]) + "-" + toStr(alleles[1]);
-		else {
-			key += toStr(alleles[0]);
-			for (size_t i = 1; i < ply; ++i)
-				key += "-" + toStr(alleles[i]);
+				std::sort(alleles.begin() + idx - ply, alleles.end());
 		}
 	}
 
-	strDict::iterator pos = m_dict.find(key);
+	tupleDict::iterator pos = m_dict.find(alleles);
 
-	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		"No fitness value for genotype " + key);
+	if (pos == m_dict.end()) {
+		string allele_string = "(";
+		for (size_t i = 0; i < alleles.size(); ++i) {
+			if (i != 0)
+				allele_string += ", ";
+			allele_string += toStr(alleles[i]);
+		}
+		allele_string += ")";
+		DBG_ASSERT(false, ValueError,
+			"No fitness value for genotype " + allele_string);
+	}
 
 	return pos->second;
 }

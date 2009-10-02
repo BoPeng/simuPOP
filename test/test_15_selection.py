@@ -128,7 +128,7 @@ class TestSelector(unittest.TestCase):
             [
                 stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
                 mapSelector(loci=0,
-                    fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
+                    fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
             ],
@@ -155,7 +155,7 @@ class TestSelector(unittest.TestCase):
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 mapSelector(loci=0,
-                    fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
+                    fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
@@ -211,7 +211,7 @@ class TestSelector(unittest.TestCase):
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 mapSelector(loci=0,
-                    fitness={'0-0':1-s1, '0-1':1, '1-1':1-s2}),
+                    fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
@@ -266,7 +266,7 @@ class TestSelector(unittest.TestCase):
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 mapSelector(loci=0,
-                    fitness={'0-0':1, '0-1':0.8, '1-1':1}),
+                    fitness={(0,0):1, (0,1):0.8, (1,1):1}),
                 # pyEval('alleleFreq[0][0]'),
                 terminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
                     begin=50),
@@ -326,8 +326,7 @@ class TestSelector(unittest.TestCase):
             infoFields=['fitness'])
         InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
         MapSelect(pop, loci=[0,1],
-            fitness={'0-0|0-0':0, '1-1|1-1':0.25,
-            '0-1|0-1':0.5, '1-0|1-0':0.75})
+            fitness={(0,0,0,0):0, (1,1,1,1):0.25, (0,1,0,1):0.5, (1,0,1,0):0.75})
         # there is only one field, so fitness is continuous
 ##         ft = pop.arrIndInfo()
 ##         for ind in range(pop.popSize()):
@@ -346,8 +345,7 @@ class TestSelector(unittest.TestCase):
         pop.turnOffSelection()
         # test phase
         MapSelect(pop, loci=[0,1], phase=True,
-            fitness={'0-0|0-0':0, '1-1|1-1':0.25,
-                '0-1|0-1':0.5, '1-0|1-0':0.75})
+            fitness={(0,0,0,0):0, (1,1,1,1):0.25, (0,1,0,1):0.5, (1,0,1,0):0.75})
 ##         ft = pop.arrIndInfo()
 ##         for ind in range(pop.popSize()):
 ##             gt = pop.individual(ind).genotype()
@@ -458,8 +456,8 @@ class TestSelector(unittest.TestCase):
             infoFields=['fitness', 'spare']),
             randomMating())
         sel = mlSelector([
-                    mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                    mapSelector(loci=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                    mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
+                    mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                 ], mode=Additive),
         simu.evolve(
             ops = sel,
@@ -470,7 +468,7 @@ class TestSelector(unittest.TestCase):
         simu.setGen(0)
         simu.evolve([
             mlSelector([
-                    mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                    mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=Multiplicative),
             ],
@@ -486,8 +484,8 @@ class TestSelector(unittest.TestCase):
             randomMating())
         self.assertRaises(exceptions.ValueError, simu.evolve,
             ops = [
-                mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                mapSelector(loci=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
+                mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
             ],
             gen = 10
         )
@@ -505,7 +503,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = [initSex(), initByFreq([.4, .6])],
             ops = [
-                mapSelector(loci = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
+                mapSelector(loci = 1, fitness = {(0,0):1.,(0,1):1.,(1,1):.8}, subPops=[1]),
                 pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
                 ],
             gen = 5
