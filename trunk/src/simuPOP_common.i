@@ -168,6 +168,7 @@ namespace std
     %template()         pair<string, double>;
     %template()         map<string, double>;
     %template()         map<int, int>;
+    %template()         map<vector<long int>, double>;
     %template()         pair<ULONG, ULONG>;
     %template()         vector<pair<ULONG, ULONG> >;
     %template()         vector< vector<long int> >;

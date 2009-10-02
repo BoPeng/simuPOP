@@ -140,7 +140,7 @@ public:
 	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
 	 */
-	mapSelector(const uintList & loci, const strDict & fitness, bool phase = false,
+	mapSelector(const uintList & loci, const tupleDict & fitness, bool phase = false,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
@@ -178,7 +178,7 @@ private:
 	vectoru m_loci;
 
 	/// fitness for each genotype
-	strDict m_dict;
+	tupleDict m_dict;
 
 	///
 	bool m_phase;
