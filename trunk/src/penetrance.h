@@ -151,7 +151,7 @@ public:
 	    Default to \c False.
 	   \param output and other parameters please refer to help(baseOperator.__init__)
 	 */
-	mapPenetrance(const uintList & loci, const strDict & penetrance, bool phase = false,
+	mapPenetrance(const uintList & loci, const tupleDict & penetrance, bool phase = false,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -188,7 +188,7 @@ private:
 	vectoru m_loci;
 
 	/// penetrance for each genotype
-	strDict m_dict;
+	tupleDict m_dict;
 
 	///
 	bool m_phase;

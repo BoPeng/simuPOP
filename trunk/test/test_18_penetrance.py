@@ -30,7 +30,7 @@ class TestPenetrance(unittest.TestCase):
     def testMapPenetrance(self):
         'Testing map penetrance'
         MapPenetrance(self.pop, loci = 0,
-            penetrance={'0-0':0, '0-1':1, '1-1':1})
+            penetrance={(0,0):0, (0,1):1, (1,1):1})
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertEqual(self.pop.dvars().numOfAffected, 1425)
         self.assertEqual(self.pop.dvars(0).numOfAffected, 375)
@@ -39,7 +39,7 @@ class TestPenetrance(unittest.TestCase):
         #
         # imcomlete penetrance
         MapPenetrance(self.pop, loci = 0,
-            penetrance={'0-0':0, '0-1':.3, '1-1':.5})
+            penetrance={(0,0):0, (0,1):.3, (1,1):.5})
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30
@@ -59,7 +59,7 @@ class TestPenetrance(unittest.TestCase):
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #
         MapPenetrance(pop, loci = 0,
-            penetrance={'0-0':0, '0-1':1, '1-1':1},
+            penetrance={(0,0):0, (0,1):1, (1,1):1},
             infoFields=['penetrance'])
         Stat(pop, numOfAffected=1)
         self.assertEqual(pop.dvars().numOfAffected, 1425)
@@ -105,7 +105,7 @@ class TestPenetrance(unittest.TestCase):
             maPenetrance(loci = 0,    wildtype=0,
                 penetrance=[0, .3, .5]),
             mapPenetrance(loci = 1,
-                penetrance={'0-0':0, '0-1':1, '1-1':1})
+                penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
             mode=Additive
         )
@@ -114,7 +114,7 @@ class TestPenetrance(unittest.TestCase):
             maPenetrance(loci = 2,    wildtype=0,
                 penetrance=[0, .3, .5]),
             mapPenetrance(loci = 4,
-                penetrance={'0-0':0, '0-1':1, '1-1':1})
+                penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
             mode=Multiplicative
         )
