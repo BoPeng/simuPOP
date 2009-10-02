@@ -17304,6 +17304,56 @@ Which is
  
 \end_layout
 
+\begin_layout Subsection
+Natural selection in a heterogeneous mating scheme **
+\end_layout
+
+\begin_layout Standard
+Multiple mating schemes could be applied to the same subpopulation in a
+ heterogeneous mating scheme (
+\family typewriter
+heteroMating
+\family default
+).
+ These mating schemes may or may not support natural selection, and they
+ may see individuals differently in terms of individual fitness.
+ Parameter 
+\family typewriter
+fitnessField
+\family default
+ of a mating scheme could be used to handle such cases.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+You can turn off the natural selection support of a mating scheme by setting
+ 
+\family typewriter
+fitnessField=''
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+If a mating scheme uses a different set of fitness values, you can add an
+ information field (e.g.
+ 
+\family typewriter
+fitness1
+\family default
+), setting individual fitness to this information field using a selector
+ (with parameter 
+\family typewriter
+infoFields='fitness1'
+\family default
+) and tells a mating scheme to look in this information field for fitness
+ values (using parameter 
+\family typewriter
+fitnessField='fitness1'
+\family default
+).
+\end_layout
+
 \begin_layout Section
 Penetrance (under revision)
 \end_layout
