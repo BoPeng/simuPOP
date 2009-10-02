@@ -85,27 +85,39 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 
 double mapPenetrance::penet(individual * ind)
 {
-	string key;
+	size_t ply = ind->ploidy();
 
+	vectori alleles(ply*m_loci.size());
+	size_t idx = 0;
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-
-		// get genotype of ind
-		Allele a = ToAllele(ind->allele(*loc, 0));
-		Allele b = ToAllele(ind->allele(*loc, 1));
-
-		if (loc != m_loci.begin() )
-			key += '|';
-
-		if (!m_phase && a > b)  // ab=ba
-			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-		else
-			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+		for (size_t p = 0; p < ply; ++p, ++idx)
+			alleles[idx] = ind->allele(*loc, p);
+		// if no phase, sort alleles...
+		if (!m_phase && ply > 1) {
+			if (ply == 2) {
+				if (alleles[idx - 2] > alleles[idx - 1]) { // swap
+					int tmp = alleles[idx - 2];
+					alleles[idx - 2] = alleles[idx - 1];
+					alleles[idx - 1] = tmp;
+				}
+			} else
+				std::sort(alleles.begin() + idx - ply, alleles.end());
+		}
 	}
 
-	strDict::iterator pos = m_dict.find(key);
+	tupleDict::iterator pos = m_dict.find(alleles);
 
-	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		"No penetrance value for genotype " + key);
+	if (pos == m_dict.end()) {
+		string allele_string = "(";
+		for (size_t i = 0; i < alleles.size(); ++i) {
+			if (i != 0)
+				allele_string += ", ";
+			allele_string += toStr(alleles[i]);
+		}
+		allele_string += ")";
+		DBG_ASSERT(false, ValueError,
+			"No fitness value for genotype " + allele_string);
+	}
 
 	return pos->second;
 }
