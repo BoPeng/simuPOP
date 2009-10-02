@@ -70,7 +70,10 @@ public:
 	 *  have any default during-mating operator but all stock mating schemes
 	 *  use an offspring generator with a default operator. For example, a
 	 *  \c mendelianOffspringGenerator is used by \c randomMating to trasmit
-	 *  genotypes.
+	 *  genotypes. Note that applicability parameters \c begin, \c step,
+	 *  \c end, \c at and \c reps could be used in these operators but
+	 *  negative population and generation indexes are unsupported.
+	 *
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each

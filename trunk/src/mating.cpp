@@ -154,6 +154,8 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		opList::iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {
 			try {
+				if (!(*iop)->isActive(pop.rep(), pop.gen()))
+					continue;
 				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
 					accept = false;
 					break;
@@ -293,7 +295,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				if (n == 0 && expFreq[sp * nLoci + i] > 0.)
 					throw RuntimeError("No disease allele exists at generation " +
 						toStr(pop.gen()) + " but exp allele frequency at locus " + toStr(locus) +
-                        " in subpopulation " + toStr(sp) + " is greater than 0.");
+						" in subpopulation " + toStr(sp) + " is greater than 0.");
 #endif
 				m_expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pop.ploidy() * expFreq[sp * nLoci + i]);
 				if (expFreq[sp * nLoci + i] > 0. && m_expAlleles[numSP * i + sp] == 0)

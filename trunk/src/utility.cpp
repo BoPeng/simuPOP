@@ -3528,7 +3528,7 @@ bool initialize()
 }
 
 
-bool intList::match(UINT rep, const vector<bool> & activeRep)
+bool intList::match(UINT rep, const vector<bool> * activeRep)
 {
     if (m_elems.empty())
 		return m_allAvail;
@@ -3542,17 +3542,20 @@ bool intList::match(UINT rep, const vector<bool> & activeRep)
             else
 				continue;
 		}
+        // do not check active rep if it is not provided.
+        if (activeRep == NULL)
+			return true;
         // negative index
-        DBG_ASSERT(!activeRep.empty() && activeRep[rep], SystemError,
+        DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
 			"Check is avtive should only be done for active replicates");
         // check the simple and most used case
-        if (*it == -1 && activeRep.back() && rep + 1 == activeRep.size())
+        if (*it == -1 && activeRep->back() && rep + 1 == activeRep->size())
 			return true;
         // find what exactly an negative index refer to
         int cnt = -*it;
-        int curRep = activeRep.size() - 1;
+        int curRep = activeRep->size() - 1;
         for (; curRep >= 0; --curRep) {
-            if (activeRep[curRep])
+            if ((*activeRep)[curRep])
 				--cnt;
             if (cnt == 0)
 				break;
