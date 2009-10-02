@@ -4110,7 +4110,7 @@ simu.evolve(
     ],
     ops = [
         stat(alleleFreq=0, genoFreq=0),
-        mapSelector(loci=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
+        mapSelector(loci=0, fitness={(0,0):(1-s1), (0,1):1, (1,1):(1-s2)}),
         pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     gen=300
@@ -4161,8 +4161,8 @@ simu.evolve(
         initByFreq(alleleFreq=[.2, .8])
     ],
     ops = [ mlSelector([
-         mapSelector(loci=0, fitness={'0-0':1, '0-1':1, '1-1':.8}),
-         mapSelector(loci=1, fitness={'0-0':1, '0-1':1, '1-1':.8}),
+         mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+         mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
          ], mode = Additive),
     ],
     gen = 2
@@ -4219,7 +4219,7 @@ GetRNG().setSeed(12345)
 pop = population(size=[2,8], ploidy=2, loci=2 )
 InitByFreq(pop, [.2, .8])
 MapPenetrance(pop, loci=0, 
-    penetrance={'0-0':0, '0-1':1, '1-1':1})
+    penetrance={(0,0):0, (0,1):1, (1,1):1})
 Stat(pop, numOfAffected=1)
 #end_file
 
