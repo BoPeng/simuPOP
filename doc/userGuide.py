@@ -750,17 +750,18 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=10000, loci=2), randomMating())
+simu = simulator(population(size=10000, loci=2),
+    randomMating(ops=[
+        mendelianGenoTransmitter(end=29),
+        recombinator(rates=0.01, begin=30),
+    ])
+)
 simu.evolve(
     preOps = [
         initSex(),
         initByValue([1, 2, 2, 1])
     ],
     ops = [
-        # Recombination only happens after generation 30. A
-        # mendelianGenoTransmitter defined in randomMating will be used
-        # at all generations so there are duplicated efforts here.
-        recombinator(rates=0.01, begin=30),
         stat(LD=[0, 1]),
         pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
     ],

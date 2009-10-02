@@ -264,15 +264,16 @@ public:
 	 *    this parameter.
 	 */
 	baseOperator(const stringFunc & output, int stage, int begin, int end, int step, const intList & at,
-		const intList & rep, const subPopList & subPops, const stringList & infoFields) :
+		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
-		m_flags(0), m_rep(rep), m_subPops(subPops),
+		m_flags(0), m_reps(reps), m_subPops(subPops),
 		m_ostream(output.value(), output.func()), m_infoFields(infoFields.elems()),
 		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
 
-		setApplicableStage(stage);
+		RESETFLAG(m_flags, PreDuringPostMating);
+		SETFLAG(m_flags, stage);
 		setFlags();
 	}
 
@@ -306,20 +307,15 @@ public:
 	 */
 	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false);
 
+	/** CPPONLY
+	 * Another version of isActive when negative gen is not considered.
+	 */
+	bool isActive(UINT rep, long gen);
 
 	//@}
 
 	/** @name applicable stages	pre, during, post-mating methods */
 	//@{
-
-	/// set applicable stage. Another way to set \c stage parameter.
-	/// CPPONLY
-	void setApplicableStage(int stage)
-	{
-		RESETFLAG(m_flags, PreDuringPostMating);
-		SETFLAG(m_flags, stage);
-	}
-
 
 	/// set if this operator can be applied \em pre-mating
 	/// CPPONLY
@@ -519,7 +515,7 @@ private:
 	unsigned char m_flags;
 
 	/// apply to all (-1) or one of the replicates.
-	intList m_rep;
+	intList m_reps;
 
 	/// apply to some of the (virtual) subpops.
 	subPopList m_subPops;

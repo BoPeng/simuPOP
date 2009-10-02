@@ -78,11 +78,52 @@ subPopList::subPopList(const vectorvsp & subPops)
 }
 
 
+bool baseOperator::isActive(UINT rep, long gen)
+{
+	if (!m_reps.match(rep))
+		return false;
+
+	DBG_FAILIF(gen < 0, ValueError, "Negative generation number.");
+
+	// if all active? (begin=0, end=-1)
+	if (ISSETFLAG(m_flags, m_flagAtAllGen))
+		return true;
+
+	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+		return gen == 0;
+
+	// at gen has higher priority.
+	if (!m_atGen.empty() ) {
+		// chech atGen.
+		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd;  ++i) {
+			int atGen = m_atGen[i];
+			DBG_FAILIF(atGen < 0, ValueError,
+				"During-mating operator used in a mating scheme does not support negative generation index.");
+			if (gen == atGen)
+				return true;
+			else
+				continue;
+		}
+		// Do not check other parameters
+		return false;
+	}
+
+	// finally, check start, end, every
+	DBG_FAILIF(m_beginGen < 0, ValueError,
+		"During-mating operator used in a mating scheme does not support negative generation index.");
+
+	if (m_endGen >= 0 && m_beginGen > m_endGen)
+		return false;
+
+	return gen >= m_beginGen && (m_endGen < 0 || gen <= m_endGen) && (gen - m_beginGen) % m_stepGen == 0;
+}
+
+
 bool baseOperator::isActive(UINT rep, long gen, long end,
                             const vector<bool> & activeRep, bool repOnly)
 {
 	// rep does not match
-	if (!m_rep.match(rep, activeRep))
+	if (!m_reps.match(rep, &activeRep))
 		return false;
 
 	// only check for rep value.
@@ -99,15 +140,11 @@ bool baseOperator::isActive(UINT rep, long gen, long end,
 	DBG_FAILIF(end > 0 && gen > end, IndexError,
 		"Current generation can not be bigger than ending generation.");
 
-	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) ) {
-		if (gen == 0) return true;
-		else return false;
-	}
+	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+		return gen == 0;
 
-	if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) && end > 0) {
-		if (gen == end) return true;
-		else return false;
-	}
+	if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) && end > 0)
+		return gen == end;
 
 	// at Gen has higher priority.
 	if (!m_atGen.empty() ) {
@@ -115,7 +152,7 @@ bool baseOperator::isActive(UINT rep, long gen, long end,
 		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd;  ++i) {
 			int atGen = m_atGen[i];
 
-			if (atGen > 0) {
+			if (atGen >= 0) {
 				if (gen == atGen) return true;
 				else continue;
 			}                                                                               // atGen <=0

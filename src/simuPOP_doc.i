@@ -157,7 +157,7 @@ Details:
 
 Usage:
 
-    baseOperator(output, stage, begin, end, step, at, rep, subPops,
+    baseOperator(output, stage, begin, end, step, at, reps, subPops,
       infoFields)
 
 Details:
@@ -247,7 +247,7 @@ Details:
 
 %ignore simuPOP::baseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false);
 
-%ignore simuPOP::baseOperator::setApplicableStage(int stage);
+%ignore simuPOP::baseOperator::isActive(UINT rep, long gen);
 
 %ignore simuPOP::baseOperator::canApplyPreMating() const;
 
@@ -3130,7 +3130,9 @@ Usage:
 
 %ignore simuPOP::intList::elems() const;
 
-%ignore simuPOP::intList::match(UINT rep, const vector< bool > &activeRep);
+%ignore simuPOP::intList::allAvail();
+
+%ignore simuPOP::intList::match(UINT rep, const vector< bool > *activeRep=NULL);
 
 %feature("docstring") simuPOP::kamMutator "
 
@@ -4614,31 +4616,33 @@ Details:
     mating operator but all stock mating schemes use an offspring
     generator with a default operator. For example, a
     mendelianOffspringGenerator is used by randomMating to trasmit
-    genotypes.  Parameter numOffspring is used to control the number
-    of offspring per mating event, or in another word the number of
-    offspring in each family. It can be a number, a function, or a
-    mode parameter followed by some optional arguments. If a number is
-    given, given number of offspring will be generated at each mating
-    event. If a Python function is given, it will be called each time
-    when a mating event happens. Current generation number will be
-    passed to this function, and its return value will be considered
-    the number of offspring. In the last case, a tuple (or a list) in
-    one of the following forms: (GeometricDistribution, p),
-    (PoissonDistribution, p), (BinomialDistribution, p, N), or
-    (UniformDistribution, a, b) can be given. The number of offspring
-    will be determined randomly following these statistical
-    distributions. Please refer to the simuPOP user's guide for a
-    detailed description of these distributions and their parameters.
-    Parameter sexMode is used to control the sex of each offspring.
-    Its default value is usually RandomSex which assign Male or Female
-    to each individual randomly, with equal probabilities. If NoSex is
-    given, all individuals will be Male. sexMode can also be one of
-    (ProbOfMale, p), (NumOfMale, n), and (NumOfFemale, n). The first
-    case specifies the probability of male for each offspring. The
-    next two cases specifies the number of male or female individuals
-    in each family, respectively. If n is greater than or equal to the
-    number of offspring in this family, all offspring in this family
-    will be Male or Female.
+    genotypes. Note that applicability parameters begin, step, end, at
+    and reps could be used in these operators but negative population
+    and generation indexes are unsupported.  Parameter numOffspring is
+    used to control the number of offspring per mating event, or in
+    another word the number of offspring in each family. It can be a
+    number, a function, or a mode parameter followed by some optional
+    arguments. If a number is given, given number of offspring will be
+    generated at each mating event. If a Python function is given, it
+    will be called each time when a mating event happens. Current
+    generation number will be passed to this function, and its return
+    value will be considered the number of offspring. In the last
+    case, a tuple (or a list) in one of the following forms:
+    (GeometricDistribution, p), (PoissonDistribution, p),
+    (BinomialDistribution, p, N), or (UniformDistribution, a, b) can
+    be given. The number of offspring will be determined randomly
+    following these statistical distributions. Please refer to the
+    simuPOP user's guide for a detailed description of these
+    distributions and their parameters.  Parameter sexMode is used to
+    control the sex of each offspring. Its default value is usually
+    RandomSex which assign Male or Female to each individual randomly,
+    with equal probabilities. If NoSex is given, all individuals will
+    be Male. sexMode can also be one of (ProbOfMale, p), (NumOfMale,
+    n), and (NumOfFemale, n). The first case specifies the probability
+    of male for each offspring. The next two cases specifies the
+    number of male or female individuals in each family, respectively.
+    If n is greater than or equal to the number of offspring in this
+    family, all offspring in this family will be Male or Female.
 
 "; 
 

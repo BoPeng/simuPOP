@@ -5915,8 +5915,12 @@ ops
 \family default
  parameter of a mating scheme (or an offspring generator if you are defining
  your own mating scheme).
- Operators specified in this way will replace the default operator a mating
- scheme uses and will be applied at every generations.
+ 
+\series bold
+Operators specified in this way will replace the default operator a mating
+ scheme uses
+\series default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -5929,8 +5933,12 @@ ops
 simulator.evolve
 \family default
  function.
- These operators will be applied after an offspring is created (using operators
- of a mating scheme), and can be applied to selected generations.
+ 
+\series bold
+These operators will be applied after an offspring is created using operators
+ of a mating scheme
+\series default
+.
 \end_layout
 
 \begin_layout Standard
@@ -5979,13 +5987,29 @@ subPops
 \end_layout
 
 \begin_layout Itemize
-Operators used in a mating scheme are applied at every generation.
- If you would like to apply during-mating operators at selective generations,
- they have to be used in 
+Operators used in a mating scheme honor applicability parameters 
 \family typewriter
-simulator.evolve
+begin
 \family default
-.
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+at
+\family default
+ and 
+\family typewriter
+reps
+\family default
+ although they do not support negative population and replicate indexes.
+ It is therefore possible to apply different during-mating operators at
+ different generations.
  For example, a 
 \family typewriter
 recombinator
@@ -5997,14 +6021,12 @@ reference "transmitter"
 
 \end_inset
 
- to transmit parental genotypes to offspring after generation 30.
- Because the default genotype transmitter 
+ to transmit parental genotypes to offspring after generation 30 while the
+ 
 \family typewriter
 mendelianGenoTransmitter
 \family default
- will always be applied, offspring genotypes are transmitted twice after
- the 30th generation.
- 
+ is applied before that.
 \end_layout
 
 \begin_layout Itemize
@@ -11440,11 +11462,6 @@ any ploidy
  It trasmits the first homologous copy of chromosomes maternally and clears
  alleles on other homologous copies of chromosomes of an offspring.
  
-\series bold
-This operator is not a genotype transmitter
-\series default
- so that its existence will not block the application of another genotype
- transmitter.
 \end_layout
 
 \begin_layout Subsection

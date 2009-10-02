@@ -322,7 +322,14 @@ public:
 
 
 	/// CPPONLY
-	bool match(UINT rep, const vector<bool> & activeRep);
+	bool allAvail()
+	{
+		return m_allAvail;
+	}
+
+
+	/// CPPONLY
+	bool match(UINT rep, const vector<bool> * activeRep = NULL);
 
 private:
 	vectori m_elems;

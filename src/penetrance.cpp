@@ -87,8 +87,9 @@ double mapPenetrance::penet(individual * ind)
 {
 	size_t ply = ind->ploidy();
 
-	vectori alleles(ply*m_loci.size());
+	vectori alleles(ply * m_loci.size());
 	size_t idx = 0;
+
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		for (size_t p = 0; p < ply; ++p, ++idx)
 			alleles[idx] = ind->allele(*loc, p);
