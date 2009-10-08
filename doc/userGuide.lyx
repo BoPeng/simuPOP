@@ -4145,6 +4145,8 @@ infoSplitter(field='x', values=[1, 2, 4])
 x
 \family default
 , respectively.
+ This operator also allows the use of cutoff values and ranges to define
+ VSPs.
  If different types of VSPs are needed, a combined splitter can be used
  to combine VSPs defined by several splitters.
 \end_layout

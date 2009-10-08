@@ -2711,7 +2711,7 @@ Details:
 
 Usage:
 
-    infoSplitter(field, values=[], cutoff=[])
+    infoSplitter(field, values=[], cutoff=[], ranges=[])
 
 Details:
 
@@ -2722,9 +2722,11 @@ Details:
     individuals are grouped by intervals defined by these cutoff
     values. For example, cutoff=[1,2] defines three VSPs with v < 1, 1
     <= v < 2 and v >=2 where v is the value of an individual at
-    information field field. Of course, only one of the parameters
-    values and cutoff should be defined, values in cutoff should be
-    distinct, and in an increasing order.
+    information field field. If parameter ranges is specified, each
+    range defines a VSP. For example, ranges=[[1, 3], [2, 5]] defines
+    two VSPs with 1 <= v < 3 and 2 <= 3 < 5. Of course, only one of
+    the parameters values, cutoff and ranges should be defined, and
+    values in cutoff should be distinct, and in an increasing order.
 
 "; 
 
