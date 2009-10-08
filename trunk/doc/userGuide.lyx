@@ -3671,33 +3671,26 @@ mother_idx
 \begin_layout Standard
 
 \series bold
-Information fields can be located both by names and by indexes
+Information fields can be accessed as attributes of individuals
 \series default
-, the former provides better readability at a slight cost of performance
- because these names have to be translated into indexes each time.
- Because 
+.
+ For example, 
 \family typewriter
-ind.info('x')
+ind.info('father_idx')
 \family default
- is essentially 
+ is equivalent to 
 \family typewriter
-ind.info(ind.infoIdx('x'))
+ind.father_idx
 \family default
-, it might be a good idea to look up the index of an information field (e.g.
- 
+ and 
 \family typewriter
-field = pop.infoIdx('x')
+ind.setInfo(35, 'age')
 \family default
-) and use this index to access the information field (e.g.
- 
+ is equivalent to 
 \family typewriter
-ind.info(field)
+ind.age = 35
 \family default
-) if functions such as 
-\family typewriter
-ind.info('x')
-\family default
- will be called repeatedly in a loop.
+.
 \end_layout
 
 \begin_layout Standard
@@ -3713,10 +3706,6 @@ individual.info
 \family default
 , 
 \family typewriter
-individual.intInfo
-\family default
-, 
-\family typewriter
 individual.setInfo
 \family default
 , 
@@ -3729,6 +3718,17 @@ population.setIndInfo
 \family default
 .
  These functions will be introduced in their respective classes.
+\end_layout
+
+\begin_layout Note
+Information fields can be located both by names and by indexes
+\series bold
+,
+\series default
+ the former provides better readability at a slight cost of performance
+ because these names have to be translated into indexes each time.
+ However, use of names are recommended in most cases for readability considerati
+ons.
 \end_layout
 
 \begin_layout Section
@@ -3766,44 +3766,6 @@ reference "individual_genotype"
 
  demonstrates how to access and modify individual sex, affection status
  and information fields.
- Note that
-\end_layout
-
-\begin_layout Itemize
-Although all information fields are stored as float values, a function 
-\family typewriter
-individual.intInfo
-\family default
- is provided to return an integer value (the same as 
-\family typewriter
-int(individual.info(field))
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-Individual information fields can be accessed as attributes.
- That is to say, 
-\family typewriter
-ind.name
-\family default
- is equivalent to 
-\family typewriter
-ind.info('name')
-\family default
- and 
-\family typewriter
-ind.name = value
-\family default
- is equivalent to 
-\family typewriter
-ind.setInfo(value, name)
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard

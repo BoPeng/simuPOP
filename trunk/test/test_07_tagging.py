@@ -55,9 +55,9 @@ class TestTagger(unittest.TestCase):
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
-            self.assertNotEqual(pop.individual(i,0).intInfo('paternal_tag'), 2)
+            self.assertNotEqual(pop.individual(i,0).info('paternal_tag'), 2)
         for i in range(pop.subPopSize(1)):
-            self.assertNotEqual(pop.individual(i,1).intInfo('paternal_tag'), 1)
+            self.assertNotEqual(pop.individual(i,1).info('paternal_tag'), 1)
         # from this test, we can see that genetic drift
         # can easily remove a signal (tag) from population.
 
@@ -104,9 +104,9 @@ class TestTagger(unittest.TestCase):
         pop = simu.population(0)
         for ind in pop.individuals():
             # 1 + 1 = 2, 2 + 2 = 4, ...
-            self.assertEqual(ind.intInfo('trait1'), 16)
+            self.assertEqual(ind.info('trait1'), 16)
             # 2 * 2 = 4, 4 * 4 = 16, ...
-            self.assertEqual(ind.intInfo('trait2'), 65536)
+            self.assertEqual(ind.info('trait2'), 65536)
 
 
     def TestPedigree(self):

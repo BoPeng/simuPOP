@@ -336,7 +336,7 @@ public:
 
 	/** Return the value of an information field \e field (by index or name)
 	 *  as an integer number.
-	 * <group>5-info</group>
+	 *  CPPONLY
 	 */
 	int intInfo(const uintString & field) const
 	{

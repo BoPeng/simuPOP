@@ -200,7 +200,7 @@ simu.evolve(
 pop = simu.extract(0)
 pop.indInfo('mother_idx')  # mother of all offspring
 ind = pop.individual(0)
-mom = pop.ancestor(ind.intInfo('mother_idx'), 1)
+mom = pop.ancestor(int(ind.mother_idx), 1)
 print ind.genotype(0)
 print mom.genotype(0)
 print mom.genotype(1)
@@ -225,7 +225,6 @@ ind.setInfo(4, 'x')     # and information fields
 ind.x = 5               # the same as ind.setInfo(4, 'x')
 ind.info('x')           # get information field x
 ind.x                   # the same as ind.info('x')
-ind.intInfo(0)          # obtain the value of 'x' as an integer.
 #end_file
 
 #begin_file log/individual_genotype.py
@@ -434,7 +433,7 @@ pop.ancestor(5, 0).x
 # access individual by ID
 pop.addInfoFields('ind_id')
 TagID(pop)
-[ind.intInfo('ind_id') for ind in pop.individuals()]
+[int(ind.ind_id) for ind in pop.individuals()]
 # access individual by ID. Note that individual 12 is in the parental generation
 pop.indByID(12).x
 #end_file
@@ -1133,8 +1132,8 @@ simu.evolve(
 )
 pop = simu.extract(0)
 [ind.sex() for ind in pop.individuals()]
-[ind.intInfo('father_idx') for ind in pop.individuals()]
-[ind.intInfo('mother_idx') for ind in pop.individuals()]
+[int(ind.father_idx) for ind in pop.individuals()]
+[int(ind.mother_idx) for ind in pop.individuals()]
 # count the number of distinct parents
 len(set(pop.indInfo('father_idx')))
 len(set(pop.indInfo('mother_idx')))
@@ -1155,8 +1154,8 @@ simu.evolve(
     gen = 5
 )
 pop = simu.extract(0)
-[ind.intInfo('father_idx') for ind in pop.individuals()][:20]
-[ind.intInfo('mother_idx') for ind in pop.individuals()][:20]
+[int(ind.father_idx) for ind in pop.individuals()][:20]
+[int(ind.mother_idx) for ind in pop.individuals()][:20]
 #end_file
 
 #begin_file log/randomSelection.py
@@ -1176,7 +1175,7 @@ simu.evolve(
 )
 pop = simu.extract(0)
 ind = pop.individual(0)
-par = pop.ancestor(ind.intInfo('parent_idx'), 1)
+par = pop.ancestor(int(ind.parent_idx), 1)
 print ind.sex(), ind.genotype()
 print par.sex(), par.genotype()
 #end_file
@@ -1204,8 +1203,8 @@ simu.evolve(
     gen = 20,
 )
 pop = simu.extract(0)
-[ind.intInfo('father_idx') for ind in pop.individuals()][:10]
-[ind.intInfo('mother_idx') for ind in pop.individuals()][:10]
+[int(ind.father_idx) for ind in pop.individuals()][:10]
+[int(ind.mother_idx) for ind in pop.individuals()][:10]
 #end_file
 
 #begin_file log/haplodiploidMating.py
@@ -1272,8 +1271,8 @@ simu.evolve(
     gen=10
 )
 pop = simu.extract(0)
-[ind.intInfo('father_idx') for ind in pop.individuals(0)][:10]
-[ind.intInfo('father_idx') for ind in pop.individuals(1)][:10]
+[int(ind.father_idx) for ind in pop.individuals(0)][:10]
+[int(ind.father_idx) for ind in pop.individuals(1)][:10]
 #end_file
 
 #begin_file log/heteroMatingVSP.py
@@ -1298,8 +1297,8 @@ simu.evolve(
     gen = 10
 )
 pop = simu.extract(0)
-[ind.intInfo('father_idx') for ind in pop.individuals(0)][:15]
-[ind.intInfo('mother_idx') for ind in pop.individuals(0)][:15]
+[int(ind.father_idx) for ind in pop.individuals(0)][:15]
+[int(ind.mother_idx) for ind in pop.individuals(0)][:15]
 #end_file
 
 #begin_file log/heteroMatingWeight.py
@@ -1551,7 +1550,7 @@ def randomChooser(pop, sp):
     #
     while True:
         # choose a rank randomly
-        rank = pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).intInfo('rank')
+        rank = int(pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).rank)
         yield males[rank][randint(0, len(males[rank]) - 1)], \
             females[rank][randint(0, len(females[rank]) - 1)]
 
@@ -1741,7 +1740,7 @@ simu.evolve(
 # Sample affected sibpairs
 pop = simu.extract(0)
 sample = AffectedSibpairSample(pop, size=5)[0]
-[ind.intInfo('father_idx') for ind in sample.individuals()]
+[int(ind.father_idx) for ind in sample.individuals()]
 #end_file
 
 #begin_file log/changeStru.py
@@ -3298,11 +3297,11 @@ simu.evolve(
     gen = 1
 )
 pop = simu.extract(0)
-print [ind.intInfo('ind_id') for ind in pop.individuals()]
+print [int(ind.ind_id) for ind in pop.individuals()]
 pop.useAncestralGen(1)
-print [ind.intInfo('ind_id') for ind in pop.individuals()]
+print [int(ind.ind_id) for ind in pop.individuals()]
 TagID(pop) # re-assign ID
-print [ind.intInfo('ind_id') for ind in pop.individuals()]
+print [int(ind.ind_id) for ind in pop.individuals()]
 #end_file
 
 #begin_file log/pedigreeTagger.py

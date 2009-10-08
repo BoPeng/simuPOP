@@ -185,7 +185,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(ind.affectedChar(), 'A')
 
     def testInfo(self):
-        'Testing individual::info(idx), info(name), intInfo(idx), intinfo(name), '
+        'Testing individual::info(idx), info(name)'
         'setInfo(value, idx), setInfo(value, name)'
         pop = population(10, infoFields=['age', 'fitness', 'trait1'])
         ind = pop.individual(0)
@@ -193,8 +193,6 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(ind.info(0), 2.5)
         self.assertEqual(ind.info('age'), 2.5)
         ind.setInfo(2, 0)
-        self.assertEqual(ind.intInfo(0), 2)
-        self.assertEqual(ind.intInfo('age'), 2)
         ind.setInfo(1, 'fitness')
         self.assertEqual(ind.info('fitness'), 1)
         self.assertEqual(ind.info(1), 1)
