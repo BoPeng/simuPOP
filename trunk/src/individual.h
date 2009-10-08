@@ -349,7 +349,7 @@ public:
 
 	/** set the value of an information field \e field (by index or name) to
 	 *  \e value. <tt>ind.setInfo(value, field)</tt> is equivalent to
-	 *  <tt>ind.field = value </tt> although the function form allows the use
+	 *  <tt>ind.field = value</tt> although the function form allows the use
 	 *  of indexes of information fieldes.
 	 *  <group>5-info</group>
 	 */
