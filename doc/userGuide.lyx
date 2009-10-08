@@ -4282,7 +4282,7 @@ combinedSplitter(splitters=[sexSplitter(), affectionSplitter()])
 
 This splitter simply stack VSPs defined in 
 \family typewriter
-affectedSplitter()
+affectionSplitter()
 \family default
  after 
 \family typewriter
