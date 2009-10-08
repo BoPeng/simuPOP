@@ -305,23 +305,19 @@ GetRNG().setSeed(12345)
 import random
 pop = population(size=[200, 400], loci=[30], infoFields='x')
 # assign random information fields
-pop.setIndInfo([random.randint(0, 3) for x in range(pop.popSize())], 'x')
+InitSex(pop)
+InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
+# define a virtual splitter by sex
+pop.setVirtualSplitter(sexSplitter())
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 0])    # Each VSP has a name
+pop.subPopSize([0, 1])    # Size of VSP 0 in subpopulation 0
 # define a virtual splitter by information field 'x'
 pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2, 3]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 0])    # Size of VSP 0 in subpopulation 0
 pop.subPopSize([1, 0])    # Size of VSP 0 in subpopulation 1
-# use a combined splitter that defines additional VSPs by sex
-InitSex(pop)
-pop.setSubPopName('subPop 1', 0)
-pop.setVirtualSplitter(combinedSplitter([
-    infoSplitter(field='x', values=[0, 1, 2, 3]),
-    sexSplitter()])
-)
-pop.numVirtualSubPop()    # Number of defined VSPs
-pop.subPopName([0, 4])    # VSP 4 is the first VSP defined by the sex splitter
-pop.subPopSize([0, 4])    # Number of male individuals
 #end_file
 
 #begin_file log/virtualSubPop.py
@@ -344,6 +340,54 @@ pop.setIndInfo([Female], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
 Dump(pop, structure=False)
 #end_file
+
+
+#begin_file log/advancedVSP.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+import random
+pop = population(size=[2000, 4000], loci=[30], infoFields='x')
+# assign random information fields
+InitSex(pop)
+InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
+#
+# 1, use a combined splitter
+pop.setVirtualSplitter(combinedSplitter(splitters = [
+    sexSplitter(),
+    infoSplitter(field='x', values=[0, 1, 2, 3])
+]))
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 0])    # Each VSP has a name
+pop.subPopSize([0, 0])    # Male
+pop.subPopSize([1, 4])    # individuals in sp 1 with value 2 at field x
+#
+# use a product splitter that defines additional VSPs by sex and info
+pop.setVirtualSplitter(productSplitter(splitters = [
+    sexSplitter(),
+    infoSplitter(field='x', values=[0, 1, 2, 3])
+]))
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 0])    # Each VSP has a name
+pop.subPopSize([0, 0])    # Male with value 1 in sp 0
+pop.subPopSize([1, 5])    # Female with value 1 in sp 1
+#
+# use a combined splitter to join VSPs defined by a
+# product splitter
+pop.setVirtualSplitter(combinedSplitter([
+    productSplitter([
+        sexSplitter(),
+        infoSplitter(field='x', values=[0, 1, 2, 3])])],
+    vspMap = [[0,1,2], [4,5,6], [7]]))
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 0])    # Each VSP has a name
+pop.subPopSize([0, 0])    # Male with value 0, 1, 2 at field x
+pop.subPopSize([1, 1])    # Female with value 0, 1 or 2 at field x
+#end_file
+
 
 #begin_file log/accessIndividual.py
 #begin_ignore
@@ -2941,6 +2985,7 @@ GetRNG().setSeed(12345)
 pop = population(10000, loci=1)
 pop.setVirtualSplitter(combinedSplitter(
     [sexSplitter(), affectionSplitter()]))
+InitSex(pop)
 InitByFreq(pop, [0.2, 0.8])
 MaPenetrance(pop, loci=0, penetrance=[0.1, 0.2, 0.5])
 # Count population size
@@ -2962,6 +3007,12 @@ print pop.dvars((0,2)).numOfMale, pop.dvars((0,3)).numOfMale
 # or number of affected male and females
 Stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
 print pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected
+# These can also be done using a productSplitter...
+pop.setVirtualSplitter(productSplitter(
+    [sexSplitter(), affectionSplitter()]))
+Stat(pop, popSize=True, subPops=[(0, x) for x in range(4)])
+# counts for male unaffected, male affected, female unaffected and female affected
+print pop.dvars().subPopSize
 #end_file
 
 #begin_file log/statAlleleFreq.py

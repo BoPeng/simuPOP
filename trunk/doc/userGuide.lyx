@@ -4223,6 +4223,196 @@ pop.individuals([0, 0])
 \end_layout
 
 \begin_layout Subsection
+Advanced virtual subpopulation splitters **
+\end_layout
+
+\begin_layout Standard
+simuPOP provides a number of virtual splitters that can define VSPs using
+ specified properties.
+ For example, 
+\family typewriter
+infoSplitter(field='a', values=[1,2,3])
+\family default
+ defines three VSPs whose individuals have values 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+, and 
+\family typewriter
+3
+\family default
+ at information field 
+\family typewriter
+a
+\family default
+, respectively; 
+\family typewriter
+sexSplitter()
+\family default
+ defines two VSPs of male and female individuals, respectively; and 
+\family typewriter
+rangeSplitter(ranges=[[0, 2000], [2000, 5000]])
+\family default
+ defines two VSPs using two blocks of individuals.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+combinedSplitter
+\family default
+ can be used if your simulation needs more than one sets of VSPs.
+ For example, you may want to split your subpopulations both by sex and
+ by affection status.
+ In this case, you can define a combined splitter using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+combinedSplitter(splitters=[sexSplitter(), affectionSplitter()])
+\end_layout
+
+\end_inset
+
+This splitter simply stack VSPs defined in 
+\family typewriter
+affectedSplitter()
+\family default
+ after 
+\family typewriter
+sexSplitter()
+\family default
+ so that unaffected and affected VSPs are now VSPs 2 and 3 (0 and 1 are
+ used for male and female VSPs).
+\end_layout
+
+\begin_layout Standard
+There are also scenarios when you would like to define finer VSPs with individua
+ls belonging to more than one VSPs.
+ For example, you may want to have a look of frequencies of certain alleles
+ in affected male vs affected females, or count the number of males and
+ females with certain value at an information field.
+ In this case, a 
+\family typewriter
+productSplitter
+\family default
+ can be used to define VSPs using interactions of several VSPs.
+ For example,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+productSplitter(splitters=[sexSplitter(), affectionSplitter()])
+\end_layout
+
+\end_inset
+
+defines 4 subpopulations by splitting VSPs defined by 
+\family typewriter
+sexSplitter()
+\family default
+ with affection status.
+ These four VSPs will then have unaffected male, affected male, unaffected
+ female and affected female individuals, respectively.
+\end_layout
+
+\begin_layout Standard
+If you view 
+\family typewriter
+productSplitter
+\family default
+ as an interaction splitter that defines new VSPs as intersections of existing
+ VSPs, you may wonder how to define unions of VSPs.
+ For example, you can make a case where you want to consider individuals
+ with information field a < 0 or a > 100 together.
+ A regular 
+\family typewriter
+infoSplitter(field='a', cutoff=[0, 100])
+\family default
+ cannot do that because it defines three VSPs with 
+\begin_inset Formula $a<0$
+\end_inset
+
+, 
+\begin_inset Formula $0\leq a<100$
+\end_inset
+
+ and 
+\begin_inset Formula $a\geq100$
+\end_inset
+
+, respectively.
+ The trick here is to use parameter 
+\family typewriter
+vspMap
+\family default
+ of a 
+\family typewriter
+combinedSplitter
+\family default
+.
+ If this parameter is defined, multiple VSPs could be groups or reordered
+ to define a new set of VSPs.
+ For example, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+combinedSplitter(
+splitters=[
+\lang english
+infoSplitter(field='a', cutoff=[0, 100])
+]
+\lang english
+, vspMap=[[0,2], [1]])
+\end_layout
+
+\end_inset
+
+ defines two VSPs using VSPs 0 and 2, and VSP 1 defined by the 
+\family typewriter
+infoSplitter
+\family default
+ so that the first VSP contains individuals with 
+\begin_inset Formula $a<0$
+\end_inset
+
+ or 
+\begin_inset Formula $a\geq100$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "advancedVSP"
+
+\end_inset
+
+ demonstrates some advanced usages of virtual splitters.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/advancedVSP.log"
+lstparams "caption={Advanced virtual subpopulation usages.},label={advancedVSP}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Individuals"
@@ -14421,7 +14611,7 @@ stat
 .
  It defines four VSPs by sex and affection status (using a 
 \family typewriter
-combinedSplitter
+stackedSplitter
 \family default
 ) and count individuals by sex and affection status.
  It is worth noting that 
@@ -17145,6 +17335,29 @@ lstparams "caption={A hybrid selector},label={pySelector}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Support for virtual subpopulations *
+\end_layout
+
+\begin_layout Standard
+Support for virtual subpopulations allows you to use different selectors
+ for different (virtual) subpopulations.
+ However, because virtual subpopulations may overlap, and they do not have
+ to cover all individuals in a subpopulation, it is important to remember:
+\end_layout
+
+\begin_layout Itemize
+If virtual subpopulations overlap, the fitness value set by the last selector
+ will be used.
+\end_layout
+
+\begin_layout Itemize
+If an individual is not included in any of the virtual subpopulation, its
+ fitness value is undefined.
+ In most cases, these individuals will have zero fitness values which prevent
+ them from producing any offspring.
 \end_layout
 
 \begin_layout Subsection

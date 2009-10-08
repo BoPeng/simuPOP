@@ -5,6 +5,8 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: mapPenetrance now accepts a dictionary of tuples, instead of strings.
   - NEW: during-mating operators used in a mating scheme now supports parameters
 		begin, step, end, at and reps.
+  - NEW: add parameter vspMap to combinedSplitter that can define VSPs by union of VSPs.
+  - NEW: add productSplitter that define VSPs by intersections of VSPs.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
