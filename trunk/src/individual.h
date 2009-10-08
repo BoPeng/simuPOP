@@ -333,7 +333,6 @@ public:
 		return m_infoPtr[idx];
 	}
 
-
 	/** Return the value of an information field \e field (by index or name)
 	 *  as an integer number.
 	 *  CPPONLY
@@ -345,6 +344,20 @@ public:
 		CHECKRANGEINFO(idx);
 		return static_cast<int>(m_infoPtr[idx]);
 	}
+
+    /** read info as attribute
+     */
+    InfoType __getattr__(const string & field) const
+    {
+        return m_infoPtr[infoIdx(field)];
+    }
+
+    /** write info as attribute
+     */
+    void __setattr__(const string & field, InfoType value) const
+    {
+        m_infoPtr[infoIdx(field)] = value;
+    }
 
 
 	/** set the value of an information field \e field (by index or name) to
