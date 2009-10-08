@@ -127,12 +127,16 @@ class cloneGenoTransmitter : public genoTransmitter
 public:
 	/** Create a clone genotype transmitter (a during-mating operator) that
 	 *  copies genotypes from parents to offspring. If two parents are
-	 *  specified, genotypes are copied maternally. Parameters \e subPops,
-	 *  and \e infoFields are ignored.
+	 *  specified, genotypes are copied maternally. After genotype
+	 *  transmission, offspring sex is copied from parental sex even if sex
+	 *  has been determined by an offspring generator. All or specified
+	 *  information fields (parameter \e infoFields, default to \c AllAvail)
+	 *  will also be copied from parent to offspring. Parameters \e subPops
+	 *  is ignored.
 	 */
 	cloneGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}

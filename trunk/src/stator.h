@@ -1155,11 +1155,11 @@ public:
 		//
 		const intMatrix & haploFreq = intMatrix(),
 		//
-		const stringList & sumOfInfo = stringList(),
-		const stringList & meanOfInfo = stringList(),
-		const stringList & varOfInfo = stringList(),
-		const stringList & maxOfInfo = stringList(),
-		const stringList & minOfInfo = stringList(),
+		const stringList & sumOfInfo = vectorstr(),
+		const stringList & meanOfInfo = vectorstr(),
+		const stringList & varOfInfo = vectorstr(),
+		const stringList & maxOfInfo = vectorstr(),
+		const stringList & minOfInfo = vectorstr(),
 		//
 		const intMatrix & LD = intMatrix(),
 		//

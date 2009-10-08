@@ -267,7 +267,7 @@ public:
 		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
-		m_ostream(output.value(), output.func()), m_infoFields(infoFields.elems()),
+		m_ostream(output.value(), output.func()), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
@@ -382,7 +382,7 @@ public:
 	/// CPPONLY
 	UINT infoSize()
 	{
-		return m_infoFields.size();
+		return m_infoFields.elems().size();
 	}
 
 
@@ -390,11 +390,16 @@ public:
 	/// CPPONLY
 	string infoField(UINT idx)
 	{
-		DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) +
-			" is out of range of 0 ~ " + toStr(m_infoFields.size()));
-		return m_infoFields[idx];
+		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError, "Given info index " + toStr(idx) +
+			" is out of range of 0 ~ " + toStr(m_infoFields.elems().size()));
+		return m_infoFields.elems()[idx];
 	}
 
+	/// CPPONLY
+	stringList & infoFields()
+	{
+		return m_infoFields;
+	}
 
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
@@ -524,7 +529,7 @@ private:
 	StreamProvider m_ostream;
 
 	/// information fields that will be used by this operator
-	vectorstr m_infoFields;
+	stringList m_infoFields;
 
 	/// last population to which this operator is applied.
 	/// If the population is changed, the operator needs to be

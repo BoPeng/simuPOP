@@ -271,6 +271,8 @@ Details:
 
 %ignore simuPOP::baseOperator::infoField(UINT idx);
 
+%ignore simuPOP::baseOperator::infoFields();
+
 %feature("docstring") simuPOP::baseOperator::apply "
 
 Usage:
@@ -579,14 +581,18 @@ Details:
 Usage:
 
     cloneGenoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
     Create a clone genotype transmitter (a during-mating operator)
     that copies genotypes from parents to offspring. If two parents
-    are specified, genotypes are copied maternally. Parameters
-    subPops, and infoFields are ignored.
+    are specified, genotypes are copied maternally. After genotype
+    transmission, offspring sex is copied from parental sex even if
+    sex has been determined by an offspring generator. All or
+    specified information fields (parameter infoFields, default to
+    AllAvail) will also be copied from parent to offspring. Parameters
+    subPops is ignored.
 
 "; 
 
@@ -9083,12 +9089,11 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], sumOfInfo=AllAvail, meanOfInfo=AllAvail,
-      varOfInfo=AllAvail, maxOfInfo=AllAvail, minOfInfo=AllAvail,
-      LD=[], association=[], neutrality=[], structure=[], HWE=[],
-      vars=AllAvail, suffix=\"\", output=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
+      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
+      neutrality=[], structure=[], HWE=[], vars=AllAvail, suffix=\"\",
+      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 

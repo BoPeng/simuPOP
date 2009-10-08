@@ -391,8 +391,9 @@ def cloneMating(numOffspring = 1, sexMode = None, ops = cloneGenoTransmitter(),
     for parameters *ops* and *numOffspring*, and to class ``homoMating`` for
     parameters  *subPopSize*, *subPop* and *weight*. Parameters *sexMode* and
     *selectionField* are ignored because this mating scheme does not support
-    natural selection, and ``cloneOffspringGenerator`` copies sex from parents
-    to offspring.
+    natural selection, and ``cloneGenoTransmitter`` copies sex from parents
+    to offspring. Note that ``cloneGenoTransmitter`` by default also copies
+    all parental information fields to offspring.
     '''
     return homoMating(
         chooser = sequentialParentChooser(),
