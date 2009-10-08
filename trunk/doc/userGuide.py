@@ -1545,9 +1545,9 @@ def randomChooser(pop, sp):
     # identify males and females in each social rank
     for rank in range(3):
         males.append([x for x in pop.individuals(sp) \
-            if x.sex() == Male and x.info('rank') == rank])
+            if x.sex() == Male and x.rank == rank])
         females.append([x for x in pop.individuals(sp) \
-            if x.sex() == Female and x.info('rank') == rank])
+            if x.sex() == Female and x.rank == rank])
     #
     while True:
         # choose a rank randomly
@@ -1557,7 +1557,7 @@ def randomChooser(pop, sp):
 
 def setRank(pop, dad, mom, off):
     'The rank of offspring can increase or drop to zero randomly'
-    off.rank = (dad.info('rank') + randint(-1, 1)) % 3
+    off.rank = (dad.rank + randint(-1, 1)) % 3
 
 pop = population(size=[1000, 2000], loci=1, infoFields='rank')
 simu = simulator(pop, homoMating(
@@ -1976,7 +1976,7 @@ simu.evolve(
 )
 pop = simu.population(3)
 print pop.ancestralGens()
-print pop.ancestor(10, 1).info('father_idx')
+print pop.ancestor(10, 1).father_idx
 #end_file
 
 #begin_file log/ifElse.py
