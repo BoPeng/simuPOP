@@ -10,6 +10,8 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: add productSplitter that define VSPs by intersections of VSPs.
   - NEW: allow access individual information fields as attributes.
   - CHG: Remove function individual.intInfo.
+  - CHG: cloneGenoTransmitter accepts a list of information fields to be copied
+		from parents to offspring. Default to all information fields.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
