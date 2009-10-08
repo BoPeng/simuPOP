@@ -2321,18 +2321,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::intInfo "
-
-Usage:
-
-    x.intInfo(field)
-
-Details:
-
-    Return the value of an information field field (by index or name)
-    as an integer number.
-
-"; 
+%ignore simuPOP::individual::intInfo(const uintString &field) const;
 
 %feature("docstring") simuPOP::individual::setInfo "
 

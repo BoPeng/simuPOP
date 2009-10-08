@@ -1017,31 +1017,31 @@ class affectedSibpairSample(_sample):
             # or if no valid spouse
             # or if no valid first offspring
             # or if no valid second offspring
-            if ind.intInfo(pedindex) != -1 \
-                or ind.intInfo(spouse) == -1 \
-                or ind.intInfo(offspring0) == -1 \
-                or ind.intInfo(offspring1) == -1:
+            if int(ind.info(pedindex)) != -1 \
+                or int(ind.info(spouse)) == -1 \
+                or int(ind.info(offspring0)) == -1 \
+                or int(ind.info(offspring1)) == -1:
                 continue
             # if spouse has been used
-            spouseIdx = ind.intInfo(spouse)
+            spouseIdx = int(ind.info(spouse))
             spouseInd = self.pedigree.individual(spouseIdx)
-            if spouseInd.intInfo(pedindex) != -1:
+            if int(spouseInd.info(pedindex)) != -1:
                 continue
             # if the first offspring has been used, or if parents do not match, or if
             # not affected.
-            offspring0Ind = self.pedigree.ancestor(ind.intInfo(offspring0), 0)
+            offspring0Ind = self.pedigree.ancestor(int(ind.info(offspring0)), 0)
             if not offspring0Ind.affected() \
-                or offspring0Ind.intInfo(pedindex) != -1 \
-                or offspring0Ind.intInfo(parent0) not in [selfIdx, spouseIdx] \
-                or offspring0Ind.intInfo(parent1) not in [selfIdx, spouseIdx]:
+                or int(offspring0Ind.info(pedindex)) != -1 \
+                or int(offspring0Ind.info(parent0)) not in [selfIdx, spouseIdx] \
+                or int(offspring0Ind.info(parent1)) not in [selfIdx, spouseIdx]:
                 continue
             # if the second offspring has been used, or if parents do not match, or
             # if not affected
-            offspring1Ind = self.pedigree.ancestor(ind.intInfo(offspring1), 0)
+            offspring1Ind = self.pedigree.ancestor(int(ind.info(offspring1)), 0)
             if not offspring1Ind.affected() \
-                or offspring1Ind.intInfo(pedindex) != -1 \
-                or offspring1Ind.intInfo(parent1) not in [selfIdx, spouseIdx] \
-                or offspring1Ind.intInfo(parent1) not in [selfIdx, spouseIdx]:
+                or int(offspring1Ind.info(pedindex)) != -1 \
+                or int(offspring1Ind.info(parent1)) not in [selfIdx, spouseIdx] \
+                or int(offspring1Ind.info(parent1)) not in [selfIdx, spouseIdx]:
                 continue
             # good pedigree
             ind.setInfo(pedCount, pedindex)
@@ -1095,7 +1095,7 @@ class affectedSibpairSample(_sample):
         for gen in range(1, -1, -1):
             self.pedigree.useAncestralGen(gen)
             for ind in self.pedigree.individuals():
-                ped = ind.intInfo(pedindex)
+                ped = int(ind.info(pedindex))
                 if ped != -1 and chosenPeds[ped]:
                     ind.setInfo(ped, sample)
                 else:
