@@ -36,6 +36,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::affectionSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+
 %ignore simuPOP::affectionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::affectionSplitter::deactivate(population &pop, SubPopID sp);
@@ -656,8 +658,10 @@ Details:
     together. For example, if the first splitter defines 3 VSPs and
     the second splitter defines 2, the two VSPs from the second
     splitter become the fourth (index 3) and the fifth (index 4) VSPs
-    of the combined splitter. This splitter is usually used to define
-    different types of VSPs to a population.
+    of the combined splitter. In addition, a new set of VSPs could be
+    defined as the union of one or more of the original VSPs. This
+    splitter is usually used to define different types of VSPs to a
+    population.
 
 "; 
 
@@ -665,13 +669,19 @@ Details:
 
 Usage:
 
-    combinedSplitter(splitters=[])
+    combinedSplitter(splitters=[], vspMap=[])
 
 Details:
 
     Create a combined splitter using a list of splitters. For example,
     combinedSplitter([sexSplitter(), affectionSplitter()]) defines a
-    combined splitter with four VSPs.
+    combined splitter with four VSPs, defined by male (vsp 0), female
+    (vsp 1), unaffected (vsp 2) and affected individuals (vsp 3).
+    Optionally, a new set of VSPs could be defined by parameter
+    vspMap. Each item in this parameter is a list of VSPs that will be
+    combined to a single VSP. For example, vspMap=[(0, 2), (1, 3)] in
+    the previous example will define two VSPs defined by male or
+    unaffected, and female or affected individuals.
 
 "; 
 
@@ -699,6 +709,8 @@ Details:
     sum of the number of VSPs of all combined splitters.
 
 "; 
+
+%ignore simuPOP::combinedSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::combinedSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
@@ -1681,6 +1693,8 @@ Usage:
     x.numVirtualSubPop()
 
 "; 
+
+%ignore simuPOP::genotypeSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::genotypeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
@@ -2727,6 +2741,8 @@ Details:
     depending on which parameter is specified.
 
 "; 
+
+%ignore simuPOP::infoSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::infoSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
@@ -6326,6 +6342,77 @@ Details:
 
 %feature("docstring") simuPOP::population::execute "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::productSplitter "
+
+Details:
+
+    This splitter takes several splitters and take their intersections
+    as new VSPs. For example, if the first splitter defines 3 VSPs and
+    the second splitter defines 2, 6 VSPs will be defined by splitting
+    3 VSPs defined by the first splitter each to two VSPs. This
+    splitter is usually used to define finer VSPs from existing VSPs.
+
+"; 
+
+%feature("docstring") simuPOP::productSplitter::productSplitter "
+
+Usage:
+
+    productSplitter(splitters=[])
+
+Details:
+
+    Create a product splitter using a list of splitters. For example,
+    productSplitter([sexSplitter(), affectionSplitter()]) defines four
+    VSPs by male unaffected, male affected, female unaffected, and
+    female affected individuals.
+
+"; 
+
+%feature("docstring") simuPOP::productSplitter::~productSplitter "
+
+Usage:
+
+    x.~productSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::productSplitter::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::productSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+
+%feature("docstring") simuPOP::productSplitter::numVirtualSubPop "
+
+Usage:
+
+    x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter, which is the
+    sum of the number of VSPs of all combined splitters.
+
+"; 
+
+%ignore simuPOP::productSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+
+%ignore simuPOP::productSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+
+%ignore simuPOP::productSplitter::deactivate(population &pop, SubPopID sp);
+
+%feature("docstring") simuPOP::productSplitter::name "
+
+Usage:
+
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is the name a VSP defined by
+    one of the combined splitters.
+
+"; 
+
 %feature("docstring") simuPOP::proportionSplitter "
 
 Details:
@@ -6365,6 +6452,8 @@ Details:
     length of parameter proportions.
 
 "; 
+
+%ignore simuPOP::proportionSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::proportionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
@@ -7438,6 +7527,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::rangeSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+
 %ignore simuPOP::rangeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::rangeSplitter::deactivate(population &pop, SubPopID sp);
@@ -8360,6 +8451,8 @@ Usage:
     x.numVirtualSubPop()
 
 "; 
+
+%ignore simuPOP::sexSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::sexSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
@@ -10239,6 +10332,8 @@ Details:
     Return the number of VSPs defined by this splitter.
 
 "; 
+
+%ignore simuPOP::vspSplitter::contains(const population &pop, ULONG ind, vspID vsp);
 
 %ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 

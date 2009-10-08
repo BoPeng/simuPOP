@@ -370,8 +370,20 @@ simulatorRef
 pedigreeRef
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
 
+
+\end_layout
+
+\begin_layout Section
+Virtual splitters
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
 
 \backslash
 vspSplitterRef
@@ -379,13 +391,11 @@ vspSplitterRef
 
 \begin_layout Plain Layout
 
-
 \backslash
 sexSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 affectionSplitterRef
@@ -393,13 +403,11 @@ affectionSplitterRef
 
 \begin_layout Plain Layout
 
-
 \backslash
 infoSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 proportionSplitterRef
@@ -407,13 +415,11 @@ proportionSplitterRef
 
 \begin_layout Plain Layout
 
-
 \backslash
 rangeSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 genotypeSplitterRef
@@ -421,9 +427,14 @@ genotypeSplitterRef
 
 \begin_layout Plain Layout
 
-
 \backslash
 combinedSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+productSplitterRef
 \end_layout
 
 \end_inset

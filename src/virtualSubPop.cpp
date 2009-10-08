@@ -68,15 +68,39 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 }
 
 
-combinedSplitter::combinedSplitter(const vectorsplitter & splitters)
-	: vspSplitter(), m_numVSP(0), m_splitter(), m_vsp(), m_curSplitter(0)
+combinedSplitter::combinedSplitter(const vectorsplitter & splitters,
+	const intMatrix & vspMap)
+	: vspSplitter(), m_splitters(0), m_vspMap(0), m_inputMap(vspMap)
 {
-	for (size_t i = 0; i < splitters.size(); ++i) {
+	for (size_t i = 0; i < splitters.size(); ++i)
 		m_splitters.push_back(splitters[i]->clone());
-		for (size_t j = 0; j < splitters[i]->numVirtualSubPop(); ++j) {
-			m_splitter.push_back(i);
-			m_vsp.push_back(j);
-			m_numVSP++;
+	// default vsp map
+	if (vspMap.empty()) {
+		size_t idx = 0;
+		for (size_t i = 0; i < splitters.size(); ++i)
+			for (size_t j = 0; j < splitters[i]->numVirtualSubPop(); ++j, ++idx)
+				m_vspMap.push_back(vspList(1, vspPair(i, j)));
+	} else {
+		for (size_t i = 0; i < vspMap.size(); ++i) {
+			vspList list;
+			for (size_t j = 0; j < vspMap[i].size(); ++j) {
+				// find out which splitter and which vsp
+				UINT lower = 0;
+				UINT higher = 0;
+				bool done = false;
+				for (size_t s = 0; s < splitters.size(); ++s) {
+					higher += splitters[s]->numVirtualSubPop();
+					if (vspMap[i][j] >= lower && vspMap[i][j] < higher) {
+						list.push_back(vspPair(s, vspMap[i][j] - lower));
+						done = true;
+						break;
+					}
+					lower = higher;
+				}
+				DBG_ASSERT(done, IndexError,
+					"Given vsp index " + toStr(vspMap[i][j]) + " is larger than the number of total VSPs");
+			}
+			m_vspMap.push_back(list);
 		}
 	}
 }
@@ -91,23 +115,79 @@ combinedSplitter::~combinedSplitter()
 
 vspSplitter * combinedSplitter::clone() const
 {
-	return new combinedSplitter(m_splitters);
+	return new combinedSplitter(m_splitters, m_inputMap);
 }
 
 
 ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
-	return m_splitters[m_splitter[virtualSubPop]]->size(pop, subPop,
-		m_vsp[virtualSubPop]);
+	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_vspMap.size(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	if (m_vspMap[virtualSubPop].empty())
+		return 0;
+
+	const vspList & list = m_vspMap[virtualSubPop];
+	if (list.size() == 1)
+		return m_splitters[list[0].first]->size(pop, subPop, list[0].second);
+
+	size_t count = 0;
+	for (size_t ind = 0; ind < pop.subPopSize(subPop); ++ind) {
+		bool ok = false;
+		for (size_t s = 0; s < list.size(); ++s) {
+			if (m_splitters[list[s].first]->contains(pop, ind, vspID(subPop, list[s].second))) {
+				ok = true;
+				break;
+			}
+		}
+		if (ok)
+			++count;
+	}
+	return count;
+}
+
+
+bool combinedSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	SubPopID virtualSubPop = vsp.virtualSubPop();
+
+	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_vspMap.size(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	const vspList & list = m_vspMap[virtualSubPop];
+	for (size_t s = 0; s < list.size(); ++s)
+		if (m_splitters[list[s].first]->contains(pop, ind, vspID(vsp.subPop(), list[s].second)))
+			return true;
+	return false;
 }
 
 
 void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                                 IterationType type)
 {
-	m_curSplitter = m_splitter[virtualSubPop];
-	m_splitters[m_curSplitter]->activate(pop, subPop,
-		m_vsp[virtualSubPop], type);
+	const vspList & list = m_vspMap[virtualSubPop];
+
+	if (list.size() == 0)
+		return;
+
+	if (list.size() == 1)
+		m_splitters[list[0].first]->activate(pop, subPop, list[0].second, type);
+	else {
+		const vspList & list = m_vspMap[virtualSubPop];
+		for (size_t ind = 0; ind < pop.subPopSize(subPop); ++ind) {
+			bool ok = false;
+			for (size_t i = 0; i < list.size(); ++i) {
+				if (m_splitters[list[i].first]->contains(pop, ind, vspID(subPop, list[i].second))) {
+					ok = true;
+					break;
+				}
+			}
+			if (type == VisibleInds)
+				pop.ind(ind, subPop).setVisible(ok);
+			else
+				pop.ind(ind, subPop).setIteratable(ok);
+		}
+	}
 	if (type == VisibleInds)
 		m_activated = subPop;
 }
@@ -115,15 +195,140 @@ void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 
 void combinedSplitter::deactivate(population & pop, SubPopID sp)
 {
-	m_splitters[m_curSplitter]->deactivate(pop, sp);
+	resetSubPop(pop, sp);
 	m_activated = InvalidSubPopID;
 }
 
 
 string combinedSplitter::name(SubPopID sp)
 {
-	return m_splitters[m_splitter[sp]]->name(m_vsp[sp]);
+	const vspList & list = m_vspMap[sp];
+	string name;
 
+	for (size_t i = 0; i < list.size(); ++i) {
+		if (i != 0)
+			name += " or ";
+		name += m_splitters[list[i].first]->name(list[i].second);
+	}
+	return name;
+}
+
+
+productSplitter::productSplitter(const vectorsplitter & splitters)
+	: vspSplitter(), m_numVSP(0)
+{
+	for (size_t i = 0; i < splitters.size(); ++i) {
+		if (m_numVSP == 0)
+			m_numVSP = 1;
+		m_numVSP *= splitters[i]->numVirtualSubPop();
+		m_splitters.push_back(splitters[i]->clone());
+	}
+}
+
+
+vectori productSplitter::getVSPs(SubPopID vsp) const
+{
+	DBG_FAILIF(vsp >= m_numVSP, IndexError,
+		"Subpopulation index out of range.");
+
+	vectori res;
+	UINT tmpMod = m_numVSP;
+	UINT tmpIdx = vsp;
+	for (size_t i = 0; i < m_splitters.size(); ++i) {
+		tmpMod /= m_splitters[i]->numVirtualSubPop();
+		res.push_back(tmpIdx / tmpMod);
+		tmpIdx %= tmpMod;
+	}
+	return res;
+}
+
+
+productSplitter::~productSplitter()
+{
+	for (size_t i = 0; i < m_splitters.size(); ++i)
+		delete m_splitters[i];
+}
+
+
+vspSplitter * productSplitter::clone() const
+{
+	return new productSplitter(m_splitters);
+}
+
+
+ULONG productSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+{
+	vectori idx = getVSPs(virtualSubPop);
+	size_t count = 0;
+
+	for (size_t i = 0; i < pop.subPopSize(subPop); ++i) {
+		bool ok = true;
+		for (size_t s = 0; s < m_splitters.size(); ++s) {
+			if (!m_splitters[s]->contains(pop, i, vspID(subPop, idx[s]))) {
+				ok = false;
+				break;
+			}
+		}
+		if (ok)
+			++count;
+	}
+	return count;
+}
+
+
+bool productSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	vectori idx = getVSPs(vsp.virtualSubPop());
+
+	for (size_t s = 0; s < m_splitters.size(); ++s)
+		if (!m_splitters[s]->contains(pop, ind, vspID(vsp.subPop(), idx[s])))
+			return false;
+	return true;
+}
+
+
+void productSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+                               IterationType type)
+{
+	vectori idx = getVSPs(virtualSubPop);
+
+	for (size_t i = 0; i < pop.subPopSize(subPop); ++i) {
+		bool ok = true;
+		for (size_t s = 0; s < m_splitters.size(); ++s) {
+			if (!m_splitters[s]->contains(pop, i, vspID(subPop, idx[s]))) {
+				ok = false;
+				break;
+			}
+		}
+		if (type == VisibleInds)
+			pop.ind(i, subPop).setVisible(ok);
+		else
+			pop.ind(i, subPop).setIteratable(ok);
+	}
+
+	if (type == VisibleInds)
+		m_activated = subPop;
+}
+
+
+void productSplitter::deactivate(population & pop, SubPopID sp)
+{
+	resetSubPop(pop, sp);
+	m_activated = InvalidSubPopID;
+}
+
+
+string productSplitter::name(SubPopID sp)
+{
+	vectori idx = getVSPs(sp);
+	string name;
+
+	for (size_t i = 0; i < idx.size(); ++i) {
+		if (i != 0)
+			name += ", ";
+		name += m_splitters[i]->name(idx[i]);
+	}
+	return name;
 }
 
 
@@ -140,6 +345,12 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 		if (it->sex() == s)
 			++count;
 	return count;
+}
+
+
+bool sexSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	return (vsp.virtualSubPop() == 0 ? Male : Female) == pop.ind(ind, vsp.subPop()).sex();
 }
 
 
@@ -181,6 +392,12 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 		if (it->affected() == aff)
 			++count;
 	return count;
+}
+
+
+bool affectionSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	return (vsp.virtualSubPop() == 0 ? false : true) == pop.ind(ind, vsp.subPop()).affected();
 }
 
 
@@ -286,6 +503,38 @@ UINT infoSplitter::numVirtualSubPop()
 		return m_cutoff.size() + 1;
 	else
 		return m_values.size();
+}
+
+
+bool infoSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	SubPopID virtualSubPop = vsp.virtualSubPop();
+	UINT idx = pop.infoIdx(m_info);
+
+	if (m_values.empty()) {
+		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
+			"Virtual Subpoplation index out of range of 0 ~ "
+			+ toStr(m_cutoff.size()));
+
+		// using cutoff, below
+		if (virtualSubPop == 0)
+			return pop.ind(ind, vsp.subPop()).info(idx) < m_cutoff[0];
+		else if (static_cast<UINT>(virtualSubPop) == m_cutoff.size())
+			return pop.ind(ind, vsp.subPop()).info(idx) >= m_cutoff.back();
+		else {         // in between
+			double v1 = m_cutoff[virtualSubPop - 1];
+			double v2 = m_cutoff[virtualSubPop];
+			double v = pop.ind(ind, vsp.subPop()).info(idx);
+			return v >= v1 && v < v2;
+		}
+	} else {
+		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
+			"Virtual Subpoplation index " + toStr(virtualSubPop) + " out of range of 0 ~ "
+			+ toStr(m_values.size() - 1));
+		return fcmp_eq(pop.ind(ind, vsp.subPop()).info(idx), m_values[virtualSubPop]);
+	}
+	// this should not be reached.
+	return false;
 }
 
 
@@ -405,6 +654,27 @@ UINT proportionSplitter::numVirtualSubPop()
 }
 
 
+bool proportionSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	DBG_FAILIF(static_cast<UINT>(vsp.virtualSubPop()) >= m_proportions.size(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	ULONG size = pop.subPopSize(vsp.subPop());
+	ULONG lower = 0;
+	ULONG higher = 0;
+	for (UINT sp = 0; sp < m_proportions.size(); ++sp) {
+		if (static_cast<UINT>(sp) + 1 < m_proportions.size())
+			higher += static_cast<ULONG>(size * m_proportions[sp]);
+		else
+			higher = size;
+		if (ind >= lower && ind < higher)
+			return vsp.virtualSubPop() == static_cast<int>(sp);
+		lower = higher;
+	}
+	return false;
+}
+
+
 void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                                   IterationType type)
 {
@@ -488,6 +758,15 @@ UINT rangeSplitter::numVirtualSubPop()
 }
 
 
+bool rangeSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	SubPopID virtualSubPop = vsp.virtualSubPop();
+
+	return ind >= static_cast<ULONG>(m_ranges[virtualSubPop][0]) &&
+	       ind < static_cast<ULONG>(m_ranges[virtualSubPop][1]);
+}
+
+
 void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                              IterationType type)
 {
@@ -554,6 +833,19 @@ ULONG genotypeSplitter::size(const population & pop, SubPopID subPop, SubPopID v
 UINT genotypeSplitter::numVirtualSubPop()
 {
 	return m_alleles.size();
+}
+
+
+bool genotypeSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+{
+	SubPopID virtualSubPop = vsp.virtualSubPop();
+
+	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
+		"Virtual subpopulation index out of genotype");
+
+	const vectori & alleles = m_alleles[virtualSubPop];
+
+	return match(&pop.ind(ind, vsp.subPop()), alleles);
 }
 
 

@@ -132,6 +132,12 @@ public:
 	 */
 	virtual UINT numVirtualSubPop() = 0;
 
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	virtual bool contains(const population & pop, ULONG ind, vspID vsp) = 0;
+
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
@@ -161,17 +167,25 @@ typedef std::vector<vspSplitter *> vectorsplitter;
  *  example, if the first splitter defines \c 3 VSPs and the second splitter
  *  defines \c 2, the two VSPs from the second splitter become the fourth
  *  (index \c 3) and the fifth (index \c 4) VSPs of the combined splitter.
- *  This splitter is usually used to define different types of VSPs to a
- *  population.
+ *  In addition, a new set of VSPs could be defined as the union of one or more
+ *  of the original VSPs. This splitter is usually used to define different
+ *  types of VSPs to a population.
  */
 class combinedSplitter : public vspSplitter
 {
 public:
 	/** Create a combined splitter using a list of \e splitters. For example,
 	 *  <tt>combinedSplitter([sexSplitter(), affectionSplitter()])</tt> defines
-	 *  a combined splitter with four VSPs.
+	 *  a combined splitter with four VSPs, defined by male (vsp \c 0), female
+	 *  (vsp \c 1), unaffected (vsp \c 2) and affected individuals (vsp \c 3).
+	 *  Optionally, a new set of VSPs could be defined by parameter \e vspMap.
+	 *  Each item in this parameter is a list of VSPs that will be combined to
+	 *  a single VSP. For example, <tt>vspMap=[(0, 2), (1, 3)]</tt> in the
+	 *  previous example will define two VSPs defined by male or unaffected,
+	 *  and female or affected individuals.
 	 */
-	combinedSplitter(const vectorsplitter & splitters = vectorsplitter());
+	combinedSplitter(const vectorsplitter & splitters = vectorsplitter(),
+		const intMatrix & vspMap = intMatrix());
 
 	~combinedSplitter();
 
@@ -187,9 +201,15 @@ public:
 	 */
 	UINT numVirtualSubPop()
 	{
-		return m_numVSP;
+		return m_vspMap.size();
 	}
 
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -209,14 +229,80 @@ private:
 	/// the splitters
 	vector<vspSplitter *> m_splitters;
 
+	/// the splitter correspond to a vsp
+	typedef std::pair<UINT, UINT> vspPair;
+	typedef vector<vspPair> vspList;
+	vector<vspList> m_vspMap;
+
+	/// old parameter for clone use
+	intMatrix m_inputMap;
+};
+
+
+/** This splitter takes several splitters and take their intersections as new
+ *  VSPs. For example, if the first splitter defines \c 3 VSPs and the second
+ *  splitter defines \c 2, \c 6 VSPs will be defined by splitting 3 VSPs
+ *  defined by the first splitter each to two VSPs. This splitter is usually
+ *  used to define finer VSPs from existing VSPs.
+ */
+class productSplitter : public vspSplitter
+{
+public:
+	/** Create a product splitter using a list of \e splitters. For example,
+	 *  <tt>productSplitter([sexSplitter(), affectionSplitter()])</tt> defines
+	 *  four VSPs by male unaffected, male affected, female unaffected, and
+	 *  female affected individuals.
+	 */
+	productSplitter(const vectorsplitter & splitters = vectorsplitter());
+
+	~productSplitter();
+
+	/// HIDDEN
+	vspSplitter * clone() const;
+
+	/// the size of a given virtual subpopulation.
+	/// CPPONLY
+	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+
+	/** Return the number of VSPs defined by this splitter, which is the sum of
+	 *  the number of VSPs of all combined splitters.
+	 */
+	UINT numVirtualSubPop()
+	{
+		return m_numVSP;
+	}
+
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
+
+
+	/// mark individuals in the given vsp as visible, and others invisible.
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		IterationType type);
+
+	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
+	void deactivate(population & pop, SubPopID sp);
+
+	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
+	 *  of the combined splitters.
+	 */
+	string name(SubPopID vsp);
+
+private:
+	vectori getVSPs(SubPopID vsp) const;
+
+private:
+	/// the splitters
+	vector<vspSplitter *> m_splitters;
+
 	/// total number of vsp
 	int m_numVSP;
-	/// the splitter correspond to a vsp
-	vectori m_splitter;
-	/// the real vsp of a splitter correspond to a vsp
-	vectori m_vsp;
-	/// currently activated splitter
-	int m_curSplitter;
 };
 
 
@@ -249,6 +335,13 @@ public:
 	{
 		return 2;
 	}
+
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -300,6 +393,13 @@ public:
 	{
 		return 2;
 	}
+
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -359,6 +459,12 @@ public:
 	 */
 	UINT numVirtualSubPop();
 
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
+
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
@@ -411,6 +517,12 @@ public:
 	 */
 	UINT numVirtualSubPop();
 
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
+
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
@@ -460,6 +572,12 @@ public:
 	 *  parameter \e ranges.
 	 */
 	UINT numVirtualSubPop();
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -531,6 +649,12 @@ public:
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const population & pop, ULONG ind, vspID vsp);
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY

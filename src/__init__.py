@@ -107,6 +107,7 @@ __all__ = [
     'sexSplitter',
     'affectionSplitter',
     'combinedSplitter',
+    'productSplitter',
     'proportionSplitter',
     'infoSplitter',
     'genotypeSplitter',
