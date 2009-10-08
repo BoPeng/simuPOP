@@ -435,12 +435,15 @@ public:
 	 *  individuals are grouped by intervals defined by these cutoff values.
 	 *  For example, <tt>cutoff=[1,2]</tt> defines three VSPs with
 	 *  <tt>v < 1</tt>, <tt>1 <= v < 2</tt> and <tt>v >=2</tt> where \c v is the
-	 *  value of an individual at information field \e field. Of course, only
-	 *  one of the parameters \e values and \e cutoff should be defined,
+	 *  value of an individual at information field \e field. If parameter
+	 *  \c ranges is specified, each range defines a VSP. For example,
+	 *  <tt>ranges=[[1, 3], [2, 5]]</tt> defines two VSPs with
+	 *  <tt>1 <= v < 3</tt> and <tt>2 <= 3 < 5</tt>. Of course, only one of the
+	 *  parameters \e values, \e cutoff and \e ranges should be defined, and
 	 *  values in \e cutoff should be distinct, and in an increasing order.
 	 */
-	infoSplitter(string field, vectorinfo const & values = vectorinfo(),
-		vectorf const & cutoff = vectorf());
+	infoSplitter(string field, const vectorinfo & values = vectorinfo(),
+		const vectorf & cutoff = vectorf(), const matrix & ranges = matrix());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -487,6 +490,8 @@ private:
 	vectorinfo m_values;
 	//
 	vectorf m_cutoff;
+	//
+	matrix m_ranges;
 };
 
 

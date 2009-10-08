@@ -949,7 +949,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize([0, 4]), infos.count(14))
         for i in range(5):
             for ind in pop.individuals([0, i]):
-                self.assertEqual(ind.intInfo('x'), 10+i)
+                self.assertEqual(ind.info('x'), 10+i)
         # test cutoff
         pop.setVirtualSplitter(infoSplitter('x', cutoff=[11.5, 13.5]))
         self.assertEqual(pop.subPopName([0, 0]), "x < 11.5")
@@ -960,11 +960,22 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize([0, 2]),
             sum([infos.count(x) for x in range(14, 21)]))
         for ind in pop.individuals([0, 0]):
-            self.assertEqual(ind.intInfo('x') < 11.5, True)
+            self.assertEqual(ind.info('x') < 11.5, True)
         for ind in pop.individuals([0, 1]):
-            self.assertEqual(11.5 <= ind.intInfo('x') < 13.5, True)
+            self.assertEqual(11.5 <= ind.info('x') < 13.5, True)
         for ind in pop.individuals([0, 2]):
-            self.assertEqual(ind.intInfo('x') >=13.5, True)
+            self.assertEqual(ind.info('x') >=13.5, True)
+        # test range
+        pop.setVirtualSplitter(infoSplitter('x', ranges=[[11.5, 13.5], [9.5, 12.5]]))
+        self.assertEqual(pop.numVirtualSubPop(), 2)
+        self.assertEqual(pop.subPopName([0, 0]), "11.5 <= x < 13.5")
+        self.assertEqual(pop.subPopName([0, 1]), "9.5 <= x < 12.5")
+        self.assertEqual(pop.subPopSize([0, 0]), infos.count(12) + infos.count(13))
+        self.assertEqual(pop.subPopSize([0, 1]), infos.count(10) + infos.count(11) + infos.count(12))
+        for ind in pop.individuals([0, 0]):
+            self.assertEqual(ind.info('x') >= 11.5 and ind.info('x') < 13.5, True)
+        for ind in pop.individuals([0, 1]):
+            self.assertEqual(9.5 <= ind.info('x') < 12.5, True)
 
     def testProportionSplitter(self):
         'Testing proportionSplitter::proportionSplitter(proportions=[])'
@@ -1094,9 +1105,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numVirtualSubPop(), 2)
         self.assertEqual(pop.subPopName([0, 0]), "a = 0 or a = 2")
         for ind in pop.individuals([0,0]):
-            self.assertTrue(ind.intInfo('a') in [0, 2])
+            self.assertTrue(ind.info('a') in [0, 2])
         for ind in pop.individuals([0,1]):
-            self.assertTrue(ind.intInfo('a') in [1, 3])
+            self.assertTrue(ind.info('a') in [1, 3])
         self.assertEqual(pop.subPopSize([0,0]) + pop.subPopSize([0,1]), pop.popSize())
 
 
