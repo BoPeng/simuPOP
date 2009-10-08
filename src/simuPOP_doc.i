@@ -2316,6 +2316,8 @@ Usage:
 Details:
 
     Return the value of an information field filed (by index or name).
+    ind.info(name) is equivalent to ind.name although the function
+    form allows the use of indexes of information fieldes.
 
 "; 
 
@@ -2341,7 +2343,9 @@ Usage:
 Details:
 
     set the value of an information field field (by index or name) to
-    value.
+    value. ind.setInfo(value, field) is equivalent to ind.field =
+    value although the function form allows the use of indexes of
+    information fieldes.
 
 "; 
 

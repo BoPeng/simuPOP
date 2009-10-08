@@ -321,6 +321,8 @@ public:
 
 
 	/** Return the value of an information field \e filed (by index or name).
+	 *  <tt>ind.info(name)</tt> is equivalent to <tt>ind.name</tt> although the
+	 *  function form allows the use of indexes of information fieldes.
 	 * <group>5-info</group>
 	 */
 	InfoType info(const uintString & field) const
@@ -346,7 +348,9 @@ public:
 
 
 	/** set the value of an information field \e field (by index or name) to
-	 *  \e value.
+	 *  \e value. <tt>ind.setInfo(value, field)</tt> is equivalent to
+	 *  <tt>ind.field = value </tt> although the function form allows the use
+	 *  of indexes of information fieldes.
 	 *  <group>5-info</group>
 	 */
 	void setInfo(InfoType value, const uintString & field)
