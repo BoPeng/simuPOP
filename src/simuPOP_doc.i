@@ -2323,6 +2323,30 @@ Details:
 
 %ignore simuPOP::individual::intInfo(const uintString &field) const;
 
+%feature("docstring") simuPOP::individual::__getattr__ "
+
+Usage:
+
+    x.__getattr__(field)
+
+Details:
+
+    read info as attribute
+
+"; 
+
+%feature("docstring") simuPOP::individual::__setattr__ "
+
+Usage:
+
+    x.__setattr__(field, value)
+
+Details:
+
+    write info as attribute
+
+"; 
+
 %feature("docstring") simuPOP::individual::setInfo "
 
 Usage:

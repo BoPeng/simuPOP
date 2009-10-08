@@ -398,29 +398,4 @@ _new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
 del genotypeSplitter.__init__
 genotypeSplitter.__init__ = _new_genotypeSplitter
 
-
-# allow the use of attribute to access individual infomation fields
-def __ind__getattr__(self, name):
-    return self.info(name)
-
-def __ind__setattr__(self, name, value):
-    self.setInfo(value, name)
-
-individual.__getattr__ = __ind__getattr__
-individual.__setattr__ = __ind__setattr__
-
-# allow the use of attribute to access population variables
-# This is a very tempting feature to have but it tent to confuse
-# users because there are two many ways to access variables.
-#
-#def __pop__getattr__(self, name):
-#    return self.vars()[name]
-#
-#def __pop__setattr__(self, name, value):
-#    self.vars()[name] = value
-#
-#population.__getattr__ = __pop__getattr__
-#population.__setattr__ = __pop__setattr__
-
-
 %}
