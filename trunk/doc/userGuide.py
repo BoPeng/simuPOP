@@ -222,7 +222,9 @@ ind.affected()
 ind.setAffected(True)   # access affection status,
 ind.sex()               # sex,
 ind.setInfo(4, 'x')     # and information fields
-ind.info('x')
+ind.x = 5               # the same as ind.setInfo(4, 'x')
+ind.info('x')           # get information field x
+ind.x                   # the same as ind.info('x')
 ind.intInfo(0)          # obtain the value of 'x' as an integer.
 #end_file
 
@@ -405,35 +407,36 @@ pop1.setIndInfo(range(10), 'x')
 pop.push(pop1)
 #
 ind = pop.individual(5)       # using absolute index
-ind.info('x')
+ind.x
+ind.x       # the same as ind.x
 # use a for loop, and relative index
 for idx in range(pop.subPopSize(1)):
-    print pop.individual(idx, 1).info('x'),
+    print pop.individual(idx, 1).x,
 
 # It is usually easier to use an iterator
 for ind in pop.individuals(1):
-    print ind.info('x'),
+    print ind.x,
 
 # Access individuals in VSPs
 pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
 for ind in pop.individuals([1, 1]):
-    print ind.info('x'),
+    print ind.x,
 
 # Access individuals in ancetral generations
-pop.ancestor(5, 1).info('x')        # absolute index
-pop.ancestor(0, 1, 1).info('x')     # relative index
+pop.ancestor(5, 1).x        # absolute index
+pop.ancestor(0, 1, 1).x     # relative index
 # Or make ancestral generation the current generation and use 'individual'
 pop.useAncestralGen(1)
-pop.individual(5).info('x')         # absolute index
-pop.individual(0, 1).info('x')      # relative index
+pop.individual(5).x         # absolute index
+pop.individual(0, 1).x      # relative index
 # 'ancestor' can still access the 'present' (generation 0) generation
-pop.ancestor(5, 0).info('x')
+pop.ancestor(5, 0).x
 # access individual by ID
 pop.addInfoFields('ind_id')
 TagID(pop)
 [ind.intInfo('ind_id') for ind in pop.individuals()]
 # access individual by ID. Note that individual 12 is in the parental generation
-pop.indByID(12).info('x')
+pop.indByID(12).x
 #end_file
 
 #begin_file log/batchAccess.py
@@ -469,15 +472,13 @@ pop.addInfoFields('c')
 pop.addInfoFields(['d', 'e'])
 pop.infoFields()
 #
-cIdx = pop.infoIdx('c')
-eIdx = pop.infoIdx('e')
 # information fields can be accessed in batch mode
-pop.setIndInfo([1], cIdx)
+pop.setIndInfo([1], 'c')
 # as well as individually.
 for ind in pop.individuals():
-    ind.setInfo(ind.info(cIdx) + 1, eIdx)
+    ind.e = ind.c + 1
 
-print pop.indInfo(eIdx)
+print pop.indInfo('e')
 #end_file
 
 #begin_file log/ancestralPop.py
@@ -1316,7 +1317,7 @@ def markOff(param):
        individual information field 'mark'
     '''
     def func(off, param):
-        off.setInfo(param, 'mark')
+        off.mark = param
         return True
     return pyOperator(func=func, param=param, stage=DuringMating,
         offspringOnly=True)
@@ -1556,7 +1557,7 @@ def randomChooser(pop, sp):
 
 def setRank(pop, dad, mom, off):
     'The rank of offspring can increase or drop to zero randomly'
-    off.setInfo((dad.info('rank') + randint(-1, 1)) % 3, 'rank')
+    off.rank = (dad.info('rank') + randint(-1, 1)) % 3
 
 pop = population(size=[1000, 2000], loci=1, infoFields='rank')
 simu = simulator(pop, homoMating(
@@ -3238,7 +3239,7 @@ GetRNG().setSeed(12345)
 pop = population(size=[1000]*10, loci=1, infoFields='x')
 # tag the first individual of each subpopulation.
 for sp in range(pop.numSubPop()):
-    pop.individual(0, sp).setInfo(1, 'x')
+    pop.individual(0, sp).x = 1
 
 simu = simulator(pop, randomMating())
 simu.evolve(

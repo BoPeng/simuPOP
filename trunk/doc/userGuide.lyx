@@ -3766,17 +3766,47 @@ reference "individual_genotype"
 
  demonstrates how to access and modify individual sex, affection status
  and information fields.
- Note that although all information fields are stored as float values, a
- function 
+ Note that
+\end_layout
+
+\begin_layout Itemize
+Although all information fields are stored as float values, a function 
 \family typewriter
-intInfo
+individual.intInfo
 \family default
  is provided to return an integer value (the same as 
 \family typewriter
-int(info(field))
+int(individual.info(field))
 \family default
 ).
- 
+\end_layout
+
+\begin_layout Itemize
+Individual information fields can be accessed as attributes.
+ That is to say, 
+\family typewriter
+ind.name
+\family default
+ is equivalent to 
+\family typewriter
+ind.info('name')
+\family default
+ and 
+\family typewriter
+ind.name = value
+\family default
+ is equivalent to 
+\family typewriter
+ind.setInfo(value, name)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/individual.log"
@@ -4367,13 +4397,9 @@ inline false
 status open
 
 \begin_layout Plain Layout
-combinedSplitter(
-splitters=[
-\lang english
-infoSplitter(field='a', cutoff=[0, 100])
-]
-\lang english
-, vspMap=[[0,2], [1]])
+
+combinedSplitter(splitters=[infoSplitter(field='a', cutoff=[0, 100])], vspMap=[[
+0,2], [1]])
 \end_layout
 
 \end_inset
