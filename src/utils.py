@@ -54,7 +54,7 @@ from simuOpt import simuOptions
 # avoid duplicated banner message
 q = simuOptions['Quiet']
 simuOptions['Quiet'] = True
-from simuPOP import Male, Female, pointMutator, PreMating, GetRNG
+from simuPOP import Male, Female, pointMutator, GetRNG
 simuOptions['Quiet'] = q
 
 def ViewVars(var, gui=None):
@@ -691,10 +691,10 @@ class trajectory:
                             if len(loci) != self.nLoci:
                                 raise exceptions.ValueError('%d loci is expected' % self.nLoci)
                             mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
-                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                                subPops=sp, at=gen + 1, *args, **kwargs))
                         elif self.nLoci == 1 and type(loci) == type(0):
                             mut.append(pointMutator(inds=inds, loci=loci, allele=allele,
-                                subPops=sp, at=gen + 1, stage=PreMating, *args, **kwargs))
+                                subPops=sp, at=gen + 1, *args, **kwargs))
                         else:
                             raise exceptions.ValueError('Invalid parameter loci')
         return mut

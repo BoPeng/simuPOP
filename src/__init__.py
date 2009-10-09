@@ -88,14 +88,6 @@ __all__ = [
     'Summation',
     'Multiplication',
     # 
-    'PreMating',
-    'DuringMating',
-    'PostMating',
-    'PreDuringMating',
-    'PrePostMating',
-    'DuringPostMating',
-    'PreDuringPostMating',
-    #
     'Haplodiploid',
     'AllAvail',
     #
@@ -1353,49 +1345,49 @@ def TagID(pop, *args, **kwargs):
     idTagger(*args, **kwargs).apply(pop)
 
 def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
-    mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)
+    mapSelector(loci, fitness, phase, *args, **kwargs).apply(pop)
 
 if mapSelector.__init__.__doc__ is not None:
     MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
 def MaSelect(pop, loci, fitness, wildtype, *args, **kwargs):
-    maSelector(loci, fitness, wildtype, PostMating, *args, **kwargs).apply(pop)
+    maSelector(loci, fitness, wildtype, *args, **kwargs).apply(pop)
 
 if maSelector.__init__.__doc__ is not None:
     MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
 
 def MlSelect(pop, selectors, mode = Multiplicative, *args, **kwargs):
-    mlSelector(selectors, mode, PostMating, *args, **kwargs).apply(pop)
+    mlSelector(selectors, mode, *args, **kwargs).apply(pop)
 
 if mlSelector.__init__.__doc__ is not None:
     MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
 
 def PySelect(pop, loci, func, *args, **kwargs):
-    pySelector(loci, func, PostMating, *args, **kwargs).apply(pop)
+    pySelector(loci, func, *args, **kwargs).apply(pop)
 
 if pySelector.__init__.__doc__ is not None:
     PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
 def MapPenetrance(pop, loci, penetrance, phase = False, ancGen = -1, *args, **kwargs):
-    mapPenetrance(loci, penetrance, phase, ancGen, PostMating, *args, **kwargs).apply(pop)
+    mapPenetrance(loci, penetrance, phase, ancGen, *args, **kwargs).apply(pop)
 
 if mapPenetrance.__init__.__doc__ is not None:
     MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
 
 def MaPenetrance(pop, loci, penetrance, wildtype = 0, ancGen = -1, *args, **kwargs):
-    maPenetrance(loci, penetrance, wildtype, ancGen, PostMating, *args, **kwargs).apply(pop)
+    maPenetrance(loci, penetrance, wildtype, ancGen, *args, **kwargs).apply(pop)
 
 if maPenetrance.__init__.__doc__ is not None:
     MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
 
 def MlPenetrance(pop, peneOps, mode = Multiplicative, ancGen = -1, *args, **kwargs):
-    mlPenetrance(peneOps, mode, ancGen, PostMating, *args, **kwargs).apply(pop)
+    mlPenetrance(peneOps, mode, ancGen, *args, **kwargs).apply(pop)
 
 if mlPenetrance.__init__.__doc__ is not None:
     MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
 
 def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
-    pyPenetrance(loci, func, ancGen, PostMating, *args, **kwargs).apply(pop)
+    pyPenetrance(loci, func, ancGen, *args, **kwargs).apply(pop)
 
 if pyPenetrance.__init__.__doc__ is not None:
     PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
