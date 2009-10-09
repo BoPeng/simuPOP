@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -17033,11 +17033,11 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_layout
 
 \begin_layout Section
-Selection (under revision)
+Selection
 \end_layout
 
 \begin_layout Subsection
-How natural selection works in simuPOP
+Natural selection through the selection of parents
 \end_layout
 
 \begin_layout Standard
@@ -17140,7 +17140,267 @@ Not all mating schemes support natural selection.
 \end_layout
 
 \begin_layout Subsection
+Natural selection through the selection of offspring **
+\end_layout
+
+\begin_layout Standard
+Natural selection can also be implemented as selection of offspring.
+ Remember that an individual will be discarded if one of the during-mating
+ operators fails (return 
+\family typewriter
+False
+\family default
+), 
+\series bold
+a
+\series default
+ 
+\series bold
+during-mating selector
+\series default
+ 
+\series bold
+discards offspring according to fitness values of offspring
+\series default
+.
+ Instead of relative fitness that will be compared against other individuals
+ during the selection of parents, 
+\series bold
+fitness values of a during-mating selector are considered as absolute fitness
+ which are probabilities to survive
+\series default
+ and have to be between 0 and 1.
+\end_layout
+
+\begin_layout Standard
+A during-mating selector works as follows:
+\end_layout
+
+\begin_layout Enumerate
+During evolution, parents are chosen randomly to produce one or more offspring.
+ (Nothing prevents you from choosing parents according to their fitness
+ values, but it is rarely justifiable to apply natural selection to both
+ parents and offspring.)
+\end_layout
+
+\begin_layout Enumerate
+A selection operator is applied to each offspring during mating and determines
+ his or her fitness value.
+ 
+\end_layout
+
+\begin_layout Enumerate
+The fitness value is considered as probability to survive so an offspring
+ will be discarded (operator returns 
+\family typewriter
+False
+\family default
+) if the fitnessvalue is larger than an uniform random number.
+\end_layout
+
+\begin_layout Enumerate
+Repeat steps 1, 2 and 3 until the offspring generation is populated.
+\end_layout
+
+\begin_layout Standard
+Because many offspring will be generated and discarded, especially when
+ offspring fitness values are low, selection through offspring is less efficient
+ than selection through parents.
+ In addition, absolute fitness is usually more difficult to estimate than
+ relative fitness.
+ So, unless there are compelling reasons (e.g.
+ simulating realistic scenarios of survival competition among offspring),
+ selection through parents are recommended.
+\end_layout
+
+\begin_layout Subsection
+Are two selection scenarios equivalent? **
+\end_layout
+
+\begin_layout Standard
+Let us look at the consequence of selection through parents or offspring
+ in a simple case with asexual mating.
+\end_layout
+
+\begin_layout Standard
+Assuming a diallelic marker with three genotypes 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $g_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{aa}$
+\end_inset
+
+, with frequencies 
+\begin_inset Formula $P_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $P_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{aa}$
+\end_inset
+
+, and relative fitness values 
+\begin_inset Formula $w_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $w_{Aa}$
+\end_inset
+
+, and 
+\begin_inset Formula $w_{22}$
+\end_inset
+
+ respectively.
+ If we select through offspring, the proportion of genotype 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+ etc., should be
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+because offspring genotypes are randomly drawn from the parental generation,
+ and each offspring has certain probability to survive.
+\end_layout
+
+\begin_layout Standard
+Now, if we select through parents, the proportion of parents with genotype
+ 
+\begin_inset Formula $AA$
+\end_inset
+
+ will be the number of 
+\begin_inset Formula $AA$
+\end_inset
+
+ individuals times its probability to be chosen: 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
+
+\end_inset
+
+This is, however, exactly 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
+
+\end_inset
+
+which corresponds to the proportion of offspring with such genotype.
+ That is to say, in this simple case,
+\series bold
+ two types of selection scenarios yield the same result
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+These two types of selection scenarios do not have to yield identical results.
+ Exceptions may be found in cases with more than one offspring or sexual
+ mating with sex-specific survival rate.
+ simuPOP provides both selection implementations and you should choose one
+ of them for your particular simulation.
+\end_layout
+
+\begin_layout Subsection
 Map selector
+\end_layout
+
+\begin_layout Standard
+The following operators, when applied, will set a variable 
+\family typewriter
+fitness
+\family default
+ and an indicator so that selector-aware mating scheme can select individuals
+ according to these values.
+ This has two consequences:
+\end_layout
+
+\begin_layout Itemize
+Selector only set information field and mark subpopulations as selection
+ ready.
+ However, how these information are used to select parents can vary from
+ mating scheme to mating scheme.
+ As a matter of fact, some mating schemes do not support selection at all.
+\end_layout
+
+\begin_layout Itemize
+Selector has to be applied to the parental generation (e.g.
+ used in the 
+\family typewriter
+preOps
+\family default
+ parameter of function 
+\family typewriter
+simulator.evolve
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+The example for 
+\family typewriter
+class mapSelector
+\family default
+ is a typical example of heterozygote superiority.
+ When 
+\begin_inset Formula $w_{11}<w_{12}>w_{22},$
+\end_inset
+
+ the genotype frequencies will go to an equilibrium state.
+ Theoretically, if 
+\begin_inset Formula $s_{1}=w_{12}-w_{11}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}=w_{12}-w_{22}$
+\end_inset
+
+, the stable allele frequency of allele 1 is
+\begin_inset Formula \[
+p=\frac{s_{2}}{s_{1}+s_{2}}\]
+
+\end_inset
+
+Which is 
+\begin_inset Formula $.677$
+\end_inset
+
+ in the example (
+\begin_inset Formula $s_{1}=.1$
+\end_inset
+
+, 
+\begin_inset Formula $s_{2}=.2$
+\end_inset
+
+).
+ 
 \end_layout
 
 \begin_layout Standard
@@ -17252,148 +17512,6 @@ If an individual is not included in any of the virtual subpopulation, its
  fitness value is undefined.
  In most cases, these individuals will have zero fitness values which prevent
  them from producing any offspring.
-\end_layout
-
-\begin_layout Subsection
-Should we select parents or offspring? **
-\end_layout
-
-\begin_layout Standard
-It is not very clear that our method agrees with the traditional 'average
- number of offspring' definition of fitness.
- (Note that this concept is very difficult to simulate because we do not
- know who will determine the number of offspring if two parents are involved.)
- We can, instead, look at the consequence of selection in a simple case
- (as derived in any population genetics textbook):
-\end_layout
-
-\begin_layout Standard
-At generation 
-\begin_inset Formula $t$
-\end_inset
-
-, genotype 
-\begin_inset Formula $P_{11},P_{12},P_{22}$
-\end_inset
-
- has fitness values 
-\begin_inset Formula $w_{11},w_{12,}w_{22}$
-\end_inset
-
- respectively.
- In the next generation the proportion of genotype 
-\begin_inset Formula $P_{11}$
-\end_inset
-
- etc., should be
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
-\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now, using the 'ability-to-mate' approach, for the sexless case, the proportion
- of genotype 
-\begin_inset Formula $11$
-\end_inset
-
- will be the number of 
-\begin_inset Formula $11$
-\end_inset
-
- individuals times its probability to be chosen: 
-\begin_inset Formula \[
-n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}\]
-
-\end_inset
-
-This is, however, exactly 
-\begin_inset Formula \[
-n_{11}\frac{w_{11}}{\sum_{n=1}^{N}w_{n}}=n_{11}\frac{w_{11}}{n_{11}w_{11}+n_{12}w_{12}+n_{22}w_{22}}=\frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
-
-\end_inset
-
-The same argument applies to the case of arbitrary number of genotypes and
- random mating.
- 
-\end_layout
-
-\begin_layout Standard
-The following operators, when applied, will set a variable 
-\family typewriter
-fitness
-\family default
- and an indicator so that selector-aware mating scheme can select individuals
- according to these values.
- This has two consequences:
-\end_layout
-
-\begin_layout Itemize
-Selector only set information field and mark subpopulations as selection
- ready.
- However, how these information are used to select parents can vary from
- mating scheme to mating scheme.
- As a matter of fact, some mating schemes do not support selection at all.
-\end_layout
-
-\begin_layout Itemize
-Selector has to be applied to the parental generation (e.g.
- used in the 
-\family typewriter
-preOps
-\family default
- parameter of function 
-\family typewriter
-simulator.evolve
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-The example for 
-\family typewriter
-class mapSelector
-\family default
- is a typical example of heterozygote superiority.
- When 
-\begin_inset Formula $w_{11}<w_{12}>w_{22},$
-\end_inset
-
- the genotype frequencies will go to an equilibrium state.
- Theoretically, if 
-\begin_inset Formula $s_{1}=w_{12}-w_{11}$
-\end_inset
-
- and 
-\begin_inset Formula $s_{2}=w_{12}-w_{22}$
-\end_inset
-
-, the stable allele frequency of allele 1 is
-\begin_inset Formula \[
-p=\frac{s_{2}}{s_{1}+s_{2}}\]
-
-\end_inset
-
-Which is 
-\begin_inset Formula $.677$
-\end_inset
-
- in the example (
-\begin_inset Formula $s_{1}=.1$
-\end_inset
-
-, 
-\begin_inset Formula $s_{2}=.2$
-\end_inset
-
-).
- 
 \end_layout
 
 \begin_layout Subsection
