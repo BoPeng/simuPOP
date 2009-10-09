@@ -284,6 +284,14 @@ Details:
 
 %ignore simuPOP::baseOperator::noOutput();
 
+%feature("docstring") simuPOP::baseOperator::initializeIfNeeded "
+
+Usage:
+
+    x.initializeIfNeeded(pop)
+
+"; 
+
 %feature("docstring") simuPOP::baseOperator::initialize "Obsolete or undocumented function."
 
 %ignore simuPOP::baseOperator::applicableSubPops() const;
@@ -8758,54 +8766,51 @@ Details:
 Usage:
 
     x.evolve(initOps=[], preOps=[], duringOps=[], postOps=[],
-      endOps=[], gen=-1, dryrun=False)
+      finalOps=[], gen=-1, dryrun=False)
 
 Details:
 
-    Evolve all populations gen generations, subject to operators ops,
-    preOps and postOps. Operators preOps are applied to all
+    Evolve all populations gen generations, subject to several lists
+    of operators which are applied at different stages of an
+    evolutionary process. Operators initOps are applied to all
     populations (subject to applicability restrictions of the
     operators, imposed by the rep parameter of these operators) before
-    evolution. They are usually used to initialize populations.
-    Operators postOps are applied to all populations after the
-    evolution.  Operators ops are applied during the life cycle of
-    each generation. Depending on the stage of these operators, they
-    can be applied before-, during-, and/or post-mating. These
-    operators can be applied at all or some of the generations,
-    depending the begin, end, step, and at parameters of these
-    operators. Populations in a simulator are evolved one by one. At
-    each generation, the applicability of these operators are
-    determined. Pre-mating operators are applied to a population
-    first. A mating scheme is then used to populate an offspring
-    generation. For each offspring, his or her sex is determined
-    before during-mating operators of the mating scheme are used to
-    transmit parental genotypes. During-mating operators specified in
-    this function will be applied afterwards. An offspring will be
-    discarded if any of the during-mating operator fails (return
-    False). After an offspring generation is successfully generated
-    and becomes the current generation, applicable post-mating
-    operators are applied to it. Because the order at which operators
-    are applied can be important, and the stage(s) at which operators
-    are applied are not always clear, a parameter dryRun can be used.
-    If set to True, this function will print out the order at which
-    all operators are applied, without actually evolving the
-    populations.  Parameter gen can be set to a positive number, which
-    is the number of generations to evolve. If gen is negative
-    (default), the evolution will continue indefinitely, until all
-    replicates are stopped by a special kind of operators called
-    terminators. At the end of the evolution, the generations that
-    each replicates have evolved are returned. If not all replicates
-    are stopped at the same generation, the negative replicate numbers
-    are calculated according to active replicates, meaning replicate
-    -1 will refer to the last active replicate even if the last
-    replicate has stopped. In addition, postOps are applied to all
-    replicates, including those that stopped before other replicates.
-
-Note:
-
-    Operators ops, preOps and postOps are copied before they are
-    applied during evolution. Input operators will therefore not be
-    changed.
+    evolution. They are used to initialize populations before
+    evolution. Operators finalOps are applied to all populations after
+    the evolution.  Operators preOps, duringOps and postOps are
+    applied during the life cycle of each generation. These operators
+    can be applied at all or some of the generations, to all or some
+    of the evolving populations, depending the begin, end, step, at
+    and reps parameters of these operators. These operators are
+    applied in the order at which they are specified. Populations in a
+    simulator are evolved one by one. At each generation, operators
+    preOps are applied to the parental generations. A mating scheme is
+    then used to populate an offspring generation. For each offspring,
+    his or her sex is determined before during-mating operators of the
+    mating scheme are used to transmit parental genotypes. During-
+    mating operators specified in parameters duringOps are applied
+    afterwards. An offspring will be discarded if any of the during-
+    mating operator fails (return False). After an offspring
+    generation is successfully generated and becomes the current
+    generation, operators postOps are applied to the offspring
+    generation. If any of the preOps and postOps fails (return False),
+    the evolution of a population will be stopped. The generation
+    number of a population is increased by one if an offspring
+    generation has been successfully populated even if a post-during
+    operator fails.  Parameter gen can be set to a positive number,
+    which is the number of generations to evolve. Because a simulator
+    always starts at the beginning of a generation g (e.g. 0), a
+    simulator will stop at the beginning (instead of the end) of
+    generation g + gen (e.g. gen). If gen is negative (default), the
+    evolution will continue indefinitely, until all replicates are
+    stopped by operators that return False at some point (these
+    operators are called terminators). At the end of the evolution,
+    the generations that each replicates have evolved are returned.
+    Note that finalOps are applied to all applicable population,
+    including those that have stopped before others.  The last
+    parameter dryrun, if set to True, will print a description of this
+    evolutionary process. It can help you understand what exactly will
+    happen at each generation during an evolutionary process.
 
 "; 
 

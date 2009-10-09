@@ -173,7 +173,7 @@ vectoru simulator::evolve(
                           const opList & preOps,
                           const opList & duringOps,
                           const opList & postOps,
-                          const opList & endOps,
+                          const opList & finalOps,
                           int gens, bool dryrun)
 {
 	// check compatibility of operators
@@ -223,9 +223,9 @@ vectoru simulator::evolve(
 						cerr << "      - " << postOps[it]->description() << postOps[it]->atRepr() << endl;
 			}
 		}
-		if (!endOps.empty() ) {
+		if (!finalOps.empty() ) {
 			cerr << "Apply post-evolution operators: " << endl;
-			apply(endOps, true);
+			apply(finalOps, true);
 		}
 		return vectoru(m_numRep, 0);
 	}
@@ -275,7 +275,7 @@ vectoru simulator::evolve(
 			// that is to say, if some one set selection=True in a post mating opertor
 			// it will have no effect
 			DBG_FAILIF(curPop.getVars().hasVar("selection") && curPop.getVars().getVarAsBool("selection"),
-				ValueError, "Selection is on from previous generation. Did you use PostMating selector?");
+				ValueError, "Selection is on from previous generation. Did you use a selector in the postOps parameter?");
 
 			curPop.getVars().setBoolVar("selection", false);
 
@@ -397,8 +397,8 @@ vectoru simulator::evolve(
 			break;
 	}                                                                                         // the big loop
 
-	if (!endOps.empty())
-		apply(endOps, false);
+	if (!finalOps.empty())
+		apply(finalOps, false);
 
 	// close every opened file (including append-cross-evolution ones)
 	ostreamManager().closeAll();

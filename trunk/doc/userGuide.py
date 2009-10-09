@@ -656,7 +656,7 @@ simu.evolve(
         pyEval(r"'Around gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
-    endOps = savePopulation(output='sample.pop'),
+    finalOps = savePopulation(output='sample.pop'),
     gen=100
 )
 #begin_ignore
@@ -686,7 +686,7 @@ simu.evolve(
         pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
-    endOps = [savePopulation(output='sample.pop')],
+    finalOps = [savePopulation(output='sample.pop')],
     gen=100,
     dryrun = True
 )
@@ -3273,8 +3273,8 @@ simu.evolve(
         initByFreq([0.5, 0.5]),
     ],
     preOps = maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
+    duringOps = summaryTagger(mode=Mean, infoFields=['fitness', 'avgFitness']),
     postOps = [
-        summaryTagger(mode=Mean, infoFields=['fitness', 'avgFitness']),
         stat(alleleFreq=0, meanOfInfo='avgFitness', step=10),
         pyEval(r"'gen %d: allele freq: %.3f, average fitness of parents: %.3f\n' % "
             "(gen, alleleFreq[0][1], meanOfInfo['avgFitness'])", step=10)
@@ -3391,15 +3391,16 @@ simu.evolve(
         initByFreq([0.5, 0.5]),
     ],
     preOps = [
-        # get affection status for both parents and offspring
+        # get affection status for parents
         maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # set 'aff' of parents
         infoExec('aff = ind.affected()', exposeInd='ind'),
     ],
-    postOps = [
-        maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # get number of affected parents for each offspring and store in numAff
-        summaryTagger(mode=Summation, infoFields=['aff', 'numAff']),
+    duringOps = summaryTagger(mode=Summation, infoFields=['aff', 'numAff']),
+    postOps = [
+        # get affection status for offspring
+        maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # calculate mean 'numAff' of offspring, for unaffected and affected subpopulations.
         stat(meanOfInfo='numAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
         # print mean number of affected parents for unaffected and affected offspring.

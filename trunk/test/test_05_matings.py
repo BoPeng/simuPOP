@@ -24,8 +24,8 @@ class TestMatingSchemes(unittest.TestCase):
             population(size=[N], infoFields=['father_idx', 'mother_idx']),
             matingScheme=ms)
         simu.evolve(
-            preOps = [initSex()],
-            ops=[parentsTagger()],
+            initOps = initSex(),
+            duringOps = parentsTagger(),
             gen=gen)
         # get the parents of each offspring
         parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
@@ -53,10 +53,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[500, 1000], infoFields=['migrate_to'])
         simu = simulator(pop, randomMating(subPopSize=demo))
         simu.evolve(
-            preOps = [initSex()],
-            ops = [
-                pyOperator(func=demoSize)
-            ],
+            initOps = [initSex()],
+            postOps = pyOperator(func=demoSize),
             gen = 100
         )
 
@@ -126,7 +124,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu = simulator(
             population(size=[40]),
             matingScheme=ms)
-        simu.evolve(preOps = [initSex()], ops=[], gen=1)
+        simu.evolve(initOps = initSex(), gen=1)
         # return individual sex as a string
         return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
@@ -150,8 +148,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(10000)
         simu = simulator(pop, randomMating(sexMode=(ProbOfMale, 0.3)))
         simu.evolve(
-            preOps = [initSex(), initByFreq([0.5, 0.5])],
-            ops = [
+            initOps = [initSex(), initByFreq([0.5, 0.5])],
+            postOps = [
                 stat(numOfMale=True),
                 # number of male should be variable, but not too much
                 terminateIf('numOfMale < 2500 or numOfMale > 3500'),
@@ -166,8 +164,8 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [0.2, 0.3, 0.5])
         simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NumOfMale, 1)))
         simu.evolve(
-            preOps = [initSex(sex=(Male, Female))], 
-            ops = [parentsTagger()],
+            initOps = initSex(sex=(Male, Female)), 
+            duringOps = parentsTagger(),
             gen = 5)
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
@@ -183,8 +181,8 @@ class TestMatingSchemes(unittest.TestCase):
                 randomMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
-            preOps=[initSex()],
-            ops=[parentsTagger()],
+            initOps = initSex(),
+            duringOps = parentsTagger(),
             gen=10)      
         parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
             simu.population(0).indInfo('father_idx'))]
@@ -209,8 +207,8 @@ class TestMatingSchemes(unittest.TestCase):
             ])
         )
         simu.evolve(
-            preOps = [initSex()],
-            ops = [parentsTagger()],
+            initOps = initSex(),
+            duringOps = parentsTagger(),
             gen =10
         )
         parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
@@ -236,8 +234,8 @@ class TestMatingSchemes(unittest.TestCase):
             pop.individual(100+i).setSex(Female)
         simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2))
         simu.evolve(
-            preOps = [],
-            ops = [parentsTagger()],
+            initOps = [],
+            duringOps = parentsTagger(),
             gen = 1)
         # there is only one Male...
         fi = simu.population(0).indInfo('father_idx')
@@ -254,15 +252,15 @@ class TestMatingSchemes(unittest.TestCase):
             infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, randomMating())
         simu.evolve(
-            preOps = [initSex()],
-            ops = [parentsTagger()],
+            initOps = initSex(),
+            duringOps = parentsTagger(),
             gen = 20
         )
         ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, pedigreeMating(ped,
             offspringGenerator(mendelianGenoTransmitter())))
         simu.evolve(
-            ops = [parentsTagger()],
+            duringOps = parentsTagger(),
             gen = 100
         )
         ped1 = simu.extract(0)
@@ -284,7 +282,7 @@ class TestMatingSchemes(unittest.TestCase):
             sequentialParentsChooser(),
             offspringGenerator(selfingGenoTransmitter())))
         simu.evolve(
-            ops=[parentsTagger(infoFields='parent_idx')], 
+            duringOps = parentsTagger(infoFields='parent_idx'), 
             gen=1)
 
     def testRandomParentsChooser(self):
@@ -297,7 +295,7 @@ class TestMatingSchemes(unittest.TestCase):
             randomParentChooser(),
             offspringGenerator(selfingGenoTransmitter())))
         simu.evolve(
-            ops=[parentsTagger(infoFields='parent_idx')], 
+            duringOps = parentsTagger(infoFields='parent_idx'), 
             gen=1)
 
     def testPyParentsChooserRetValue(self):
@@ -334,7 +332,6 @@ class TestMatingSchemes(unittest.TestCase):
                 )
             )
             simu.evolve(
-                ops = [],
                 gen = 5
             )
         testPyRetValue(retIndex)
@@ -354,11 +351,10 @@ class TestMatingSchemes(unittest.TestCase):
         simu = simulator(pop, 
             randomMating(ops=[mitochondrialGenoTransmitter()]))
         simu.evolve(
-            preOps = [initSex(),
+            initOps = [initSex(),
                 # female has [1]
                 initByValue([1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
-            ops = [ ],
             gen = 1
         )
         self.assertEqual(simu.population(0).genotype(), [1]*(150*25))

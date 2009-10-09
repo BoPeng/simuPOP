@@ -23,8 +23,8 @@ class TestTerminator(unittest.TestCase):
         pop = population(size=100, loci=[2])
         simu = simulator(pop, randomMating(), rep=5)
         gens = simu.evolve(
-            preOps = [initSex(), initByFreq([0.3, 0.7])],
-            ops = [
+            initOps = [initSex(), initByFreq([0.3, 0.7])],
+            postOps = [
                 stat(alleleFreq=[0]),
                 terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200')
             ]
@@ -42,8 +42,8 @@ class TestTerminator(unittest.TestCase):
         pop = population(size=100, loci=[2])
         simu = simulator(pop, randomMating(), rep=5)
         gens = simu.evolve(
-            preOps = [initSex(), initByFreq([0.3, 0.7])],
-            ops = [
+            initOps = [initSex(), initByFreq([0.3, 0.7])],
+            postOps = [
                 stat(alleleFreq=[0]),
                 terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)
             ]

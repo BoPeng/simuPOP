@@ -134,13 +134,21 @@ src_doc:
 	doxygen Doxy_web
 	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
 
-dist: html
+dist_svn: html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
 	cp build/example_*.py build/html/build
-	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual/build
-	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
+	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn/build
+	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn
+
+dist_release: html
+	# remove old directory
+	rm -rf build/empty
+	mkdir build/empty
+	cp build/example_*.py build/html/build
+	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_release/build
+	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_release
 
 pdf: userGuide.lyx refManual.lyx
 	/usr/local/bin/lyx --export pdf2 userGuide.lyx

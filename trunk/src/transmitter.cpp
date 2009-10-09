@@ -110,7 +110,7 @@ bool cloneGenoTransmitter::applyDuringMating(population & pop,
 		"Both parents are invalid");
 
 	// call initialize if needed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	individual * parent = mom != NULL ? mom : dad;
 
@@ -250,7 +250,7 @@ bool mendelianGenoTransmitter::applyDuringMating(population & pop,
 		"Mendelian offspring generator requires two valid parents");
 
 	// call initialize if needed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	// the next two functions.
 	transmitGenotype(*mom, *offspring, 0);
@@ -267,7 +267,7 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 		"Selfing genotype transmitter requires at least one valid parents");
 
 	// call mendelianGenoTransmitter::initialize if needed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	individual * parent = mom != NULL ? mom : dad;
 
@@ -293,7 +293,7 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 		"haplodiploid offspring generator: one of the parents is invalid.");
 
 	// call initialize if needed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	// mom generate the first...
 	transmitGenotype(*mom, *offspring, 0);
@@ -342,7 +342,7 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 		"mitochondrialGenoTransmitter requires valid female parent.");
 
 	// call initialize if needed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	if (m_numLoci == 0)
 		return true;
@@ -831,7 +831,7 @@ bool recombinator::applyDuringMating(population & pop,
 		ValueError, "None of the parents is invalid.");
 
 	// call initialize if the signature of pop has been changed.
-	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+	initializeIfNeeded(pop);
 
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
 		"Uninitialized recombinator");
