@@ -400,15 +400,6 @@ public:
 };
 
 
-#define PreMating            1
-#define DuringMating         2
-#define PostMating           4
-// combinations of mating scheme.
-#define PrePostMating        (PreMating + PostMating)
-#define PreDuringMating      (PreMating + DuringMating)
-#define DuringPostMating     (DuringMating + PostMating)
-#define PreDuringPostMating  (PreMating + DuringMating + PostMating)
-
 #define UnnamedSubPop        ""
 
 // standard library

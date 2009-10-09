@@ -68,7 +68,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields)
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 		DBG_FAILIF(infoFields.elems().size() != 1, ValueError,
 			"One and only one information field is needed for idTagger.");
@@ -136,12 +136,12 @@ public:
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	inheritTagger(InheritanceType mode = Paternal, int stage = DuringMating,
+	inheritTagger(InheritanceType mode = Paternal,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
 	};
 
@@ -194,12 +194,12 @@ public:
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	summaryTagger(InheritanceType mode = Mean, int stage = DuringMating,
+	summaryTagger(InheritanceType mode = Mean,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
 		DBG_FAILIF(infoFields.elems().size() < 2, ValueError,
 			"Please specify at least one parental field and one offspring field.");
@@ -256,12 +256,12 @@ public:
 	 *  (father if both parents are valid). This operator ignores parameters
 	 *  \e stage, \e output, and \e subPops.
 	 */
-	parentsTagger(int stage = DuringMating, int begin = 0, int end = -1,
+	parentsTagger(int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList("father_idx", "mother_idx")) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields)
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	};
 
@@ -324,7 +324,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("father_id", "mother_id")) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_idField(idField)
 	{
 	};
@@ -378,10 +378,10 @@ public:
 	 *  if only one information field is specified. This operator ignores
 	 *  parameters \e stage, \e output and \e subPops.
 	 */
-	pyTagger(PyObject * func = NULL, int stage = DuringMating, int begin = 0, int end = -1,
+	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "", const stringList & infoFields = vectorstr()) :
-		baseOperator(output, DuringMating, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,

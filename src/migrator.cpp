@@ -29,9 +29,9 @@
 namespace simuPOP {
 
 migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
-	int stage, int begin, int end, int step, const intList & at,
+	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_rate(rate), m_mode(mode), m_to(toSubPops)
 {
 	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),

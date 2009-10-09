@@ -52,11 +52,11 @@ public:
 	 *  description of common operator parameters such as \e stage, \e begin
 	 *  and \e output.
 	 */
-	pyOutput(const string & msg = string(), const stringFunc & output = ">", int stage = PostMating,
+	pyOutput(const string & msg = string(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_string(msg)
 	{
 	}
@@ -118,10 +118,10 @@ public:
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
 		int width = 1, UINT max = 100, const uintList & loci = vectoru(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_loci(loci.elems()), m_max(max)
 	{
@@ -190,10 +190,10 @@ public:
 	 *  class \c baseOperator for a detailed description about common operator
 	 *  parameters such as \e stage and \e begin.
 	 */
-	savePopulation(const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,
+	savePopulation(const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_filename(output.value())
 	{
 		if (output.empty())

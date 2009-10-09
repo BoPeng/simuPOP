@@ -437,11 +437,11 @@ bool ticToc::apply(population & pop)
 
 
 pyOperator::pyOperator(PyObject * func, PyObject * param,
-	int stage, bool passOffspringOnly,
+	bool passOffspringOnly,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
-	baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
+	baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 {
 	if (!m_func.isValid())

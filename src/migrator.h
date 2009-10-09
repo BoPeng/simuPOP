@@ -131,7 +131,7 @@ public:
 	 */
 	migrator(const matrix & rate = matrix(), int mode = ByProbability,
 		const uintList & toSubPops = uintList(),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "migrate_to"));
@@ -232,9 +232,9 @@ public:
 	 */
 	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = vectorstr(), bool randomize = true,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
@@ -303,9 +303,9 @@ public:
 	 *  all parameters.
 	 */
 	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_name(name)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
@@ -366,10 +366,10 @@ public:
 	 */
 	resizeSubPops(const subPopList & subPops = subPopList(),
 		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
-		bool propagate = true, int stage = PreMating,
+		bool propagate = true,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {

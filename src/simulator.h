@@ -255,9 +255,12 @@ public:
 	 *
 	 *  <group>2-evolve</group>
 	 */
-	vectoru evolve(const opList & ops = opList(),
+	vectoru evolve(
+		const opList & initOps = opList(),
 		const opList & preOps = opList(),
+		const opList & duringOps = opList(),
 		const opList & postOps = opList(),
+		const opList & endOps = opList(),
 		int gen = -1, bool dryrun = false);
 
 	/// CPPONLY apply a list of operators to all populations
