@@ -97,11 +97,11 @@ public:
 	 */
 	mutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		int context = 0, const stringFunc & output = ">", int stage = PostMating,
+		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci), m_mapIn(mapIn), m_mapOut(mapOut),
 		m_context(context * 2)
 	{
@@ -211,7 +211,7 @@ public:
 	 */
 	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		const stringFunc & output = ">", int stage = PostMating,
+		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
@@ -263,9 +263,9 @@ public:
 	kamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at,
+		: mutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
 		          reps, subPops, infoFields), m_k(k)
 	{
 #ifndef BINARYALLELE
@@ -343,7 +343,7 @@ public:
 	smmMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
@@ -405,9 +405,9 @@ public:
 	pyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_contextObj(NULL)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -461,9 +461,9 @@ public:
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_sampler(GetRNG())
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
@@ -535,9 +535,9 @@ public:
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_contexts(contexts)
 	{
 		if (m_contexts.size() != 0) {
@@ -604,10 +604,10 @@ public:
 	 */
 	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
 		const stringList & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
 	}

@@ -75,10 +75,10 @@ public:
 	/// create a selector
 	/**
 	 */
-	selector(int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	selector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness"))
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -141,10 +141,10 @@ public:
 
 	 */
 	mapSelector(const uintList & loci, const tupleDict & fitness, bool phase = false,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(stage, begin, end, step, at, reps, subPops, infoFields),
+		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(fitness), m_phase(phase)
 	{
 	};
@@ -218,10 +218,10 @@ public:
 
 	 */
 	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(stage, begin, end, step, at, reps, subPops, infoFields),
+		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -290,10 +290,10 @@ public:
 
 	 */
 	mlSelector(const opList & selectors, int mode = Multiplicative,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(stage, begin, end, step, at, reps, subPops, infoFields),
+		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_selectors(selectors), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -365,10 +365,10 @@ public:
 	 */
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(uintList loci, PyObject * func,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(stage, begin, end, step, at, reps, subPops, infoFields),
+		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())

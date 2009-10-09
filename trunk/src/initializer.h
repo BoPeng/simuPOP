@@ -59,10 +59,10 @@ public:
 	 *  used, is assigned repeatedly regardless of subpopulation boundaries.
 	 */
 	initSex(double maleFreq = 0.5, const intList & sex = vectori(),
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
@@ -124,10 +124,10 @@ public:
 	 *  only individuals in these subpopulations will be initialized.
 	 */
 	initInfo(const floatListFunc & values,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_values(values)
 	{
 		DBG_FAILIF(m_values.empty() && !m_values.func().isValid(), ValueError, "Please specify a list of values or a Python function.");
@@ -187,7 +187,7 @@ public:
 	 */
 	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(), bool identicalInds = false,
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
@@ -250,7 +250,7 @@ public:
 	initByValue(intMatrix value = intMatrix(),
 		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
 		const floatList & proportions = vectorf(),
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 

@@ -78,9 +78,9 @@ public:
 	 */
 	pyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
 	}
@@ -140,9 +140,9 @@ public:
 	 */
 	pyExec(const string & stmts = string(), const string & exposePop = string(),
 		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: pyEval("", stmts, exposePop, "", stage, begin, end, step, at, reps, subPops, infoFields)
+		: pyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -216,9 +216,9 @@ public:
 	 */
 	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
-		const stringFunc & output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
 	{
 	}
@@ -309,9 +309,9 @@ public:
 	 *  variables and functions in \e stmts is discouraged.
 	 */
 	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
-		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, reps, subPops, infoFields),
+		: infoEval(string(), stmts, usePopVars, exposeInd, output, begin, end, step, at, reps, subPops, infoFields),
 		m_simpleStmt(stmts)
 	{
 	}
@@ -1175,7 +1175,7 @@ public:
 		const string & suffix = string(),
 		// regular parameters
 		const stringFunc & output = "",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 

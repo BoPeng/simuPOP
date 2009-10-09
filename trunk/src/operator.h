@@ -227,13 +227,6 @@ public:
 	 *    \c 'filename' prefixed by one or more '>', or an Python expression
 	 *    prefixed by an exclamation mark (\c '!expr'). Alternatively, a
 	 *    Python function can be given to handle outputs.
-	 *  \param stage Stage(s) of a life cycle at which an operator will be
-	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating or
-	 *    any of their combined stages \c PrePostMating, \c PreDuringMating,
-	 *    \c DuringPostMating and \c PreDuringPostMating. Note that all
-	 *    operators have their default stage parameter and some of them ignore
-	 *    this parameter because they can only be applied at certain stage(s)
-	 *    of a life cycle.
 	 *  \param begin The starting generation at which an operator will be
 	 *    applied. Default to \c 0. A negative number is interpreted as a
 	 *    generation counted from the end of an evolution (-1 being the last
@@ -263,7 +256,7 @@ public:
 	 *    operators that use information fields usually have default values for
 	 *    this parameter.
 	 */
-	baseOperator(const stringFunc & output, int stage, int begin, int end, int step, const intList & at,
+	baseOperator(const stringFunc & output, int begin, int end, int step, const intList & at,
 		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
@@ -272,8 +265,6 @@ public:
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
 
-		RESETFLAG(m_flags, PreDuringPostMating);
-		SETFLAG(m_flags, stage);
 		setFlags();
 	}
 
@@ -316,30 +307,6 @@ public:
 
 	/** @name applicable stages	pre, during, post-mating methods */
 	//@{
-
-	/// set if this operator can be applied \em pre-mating
-	/// CPPONLY
-	bool canApplyPreMating() const
-	{
-		return ISSETFLAG(m_flags, m_flagPreMating);
-	}
-
-
-	/// set if this operator can be applied \em during-mating
-	/// CPPONLY
-	bool canApplyDuringMating() const
-	{
-		return ISSETFLAG(m_flags, m_flagDuringMating);
-	}
-
-
-	/// set if this operator can be applied \em post-mating
-	/// CPPONLY
-	bool canApplyPostMating() const
-	{
-		return ISSETFLAG(m_flags, m_flagPostMating);
-	}
-
 
 	/// CPPONLY
 	virtual bool isCompatible(const population & pop)
@@ -395,11 +362,13 @@ public:
 		return m_infoFields.elems()[idx];
 	}
 
+
 	/// CPPONLY
 	stringList & infoFields()
 	{
 		return m_infoFields;
 	}
+
 
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
@@ -491,16 +460,13 @@ protected:
 private:
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagPreMating = PreMating;
-	static const size_t m_flagDuringMating = DuringMating;
-	static const size_t m_flagPostMating = PostMating;
-	static const size_t m_flagAtAllGen = 8;
-	static const size_t m_flagOnlyAtBegin = 16;
-	static const size_t m_flagOnlyAtEnd = 32;
+	static const size_t m_flagAtAllGen = 1;
+	static const size_t m_flagOnlyAtBegin = 2;
+	static const size_t m_flagOnlyAtEnd = 4;
 	// limited to haploid?
-	static const size_t m_flagHaploid = 64;
+	static const size_t m_flagHaploid = 8;
 	// limited to diploid?
-	static const size_t m_flagDiploid = 128;
+	static const size_t m_flagDiploid = 16;
 
 private:
 	/// starting generation, default to 0
@@ -648,11 +614,11 @@ public:
 	 *  specified in parameter \e stopOnKeyStroke.
 	 */
 	pause(char stopOnKeyStroke = false, bool prompt = true,
-		const stringFunc & output = ">", int stage = PostMating,
+		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
 	}
@@ -699,9 +665,9 @@ public:
 	/** Create a \c noneOp.
 	 */
 	noneOp(const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
+		baseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -759,11 +725,11 @@ public:
 	 *  applicability is determined by the \c ifElse operator.
 	 */
 	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
-		const stringFunc & output = ">", int stage = PostMating,
+		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
 	{
 	};
@@ -816,9 +782,9 @@ public:
 	 *  time it was applied, and the overall time since it was created.
 	 */
 	ticToc(const stringFunc & output = ">",
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields)
+		baseOperator(">", begin, end, step, at, reps, subPops, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -866,10 +832,10 @@ public:
 	 *  <tt>population.setAncestralDepth</tt> member function of a population.
 	 */
 	setAncestralDepth(int depth, const stringFunc & output = ">",
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -923,9 +889,9 @@ public:
 	 *  when it is applied to a population.
 	 */
 	turnOnDebug(const string & code,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -974,9 +940,9 @@ public:
 	 *  \e code when it is applied to a population.
 	 */
 	turnOffDebug(const string & code = "DBG_ALL",
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
+		baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -1027,17 +993,15 @@ public:
 	/** Create a pure-Python operator that calls a user-defined function when
 	 *  it is applied. Depending on parameters \e stage, \e param, and
 	 *  \e offspringOnly, the function should have one of the following forms:
-	 *  \li <tt>func(pop)</tt> if <tt>stage=PreMating</tt> or \c PostMating,
-	 *    and without \c param.
-	 *  \li <tt>func(pop, param)</tt> if <tt>stage=PreMating</tt> or
-	 *    \c PostMating, and with \c param.
-	 *  \li <tt>func(pop, off, dad, mom)</tt> if <tt>stage=DuringMating</tt> and
-	 *    without \c param.
-	 *  \li <tt>func(pop, off, dad, mom, param)</tt> if <tt>stage=DuringMating</tt>,
-	 *    and with \c param.
-	 *  \li <tt>func(off)</tt> if <tt>stage=DuringMating</tt>,
+	 *  \li <tt>func(pop)</tt> if used pre- or post-mating without \c param.
+	 *  \li <tt>func(pop, param)</tt> if used pre- or post-mating with \c param.
+	 *  \li <tt>func(pop, off, dad, mom)</tt> if used during mating with
+	 *    \c param.
+	 *  \li <tt>func(pop, off, dad, mom, param)</tt> if used during mating with
+	 *    \c param.
+	 *  \li <tt>func(off)</tt> if used during mating, with
 	 *    <tt>offspringOnly=True</tt> and without \c param.
-	 *  \li <tt>func(off, param)</tt> if <tt>stage=DuringMating</tt>,
+	 *  \li <tt>func(off, param)</tt> if used during mating with
 	 *    <tt>offspringOnly=True</tt> and with \c param.
 	 *
 	 *  where \c pop is the population to which the operator is applied, \c off
@@ -1055,7 +1019,7 @@ public:
 	 *  evolution, they should not be open or closed in this Python operator.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		int stage = PostMating, bool offspringOnly = false,
+		bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());

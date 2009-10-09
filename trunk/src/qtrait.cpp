@@ -82,10 +82,10 @@ double mapQuanTrait::qtrait(individual * ind)
 
 
 maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const uintList & wildtype,
-	const floatList & sigma, int ancGen, int stage, int begin, int end, int step,
+	const floatList & sigma, int ancGen, int begin, int end, int step,
 	const intList & at, const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
-	quanTrait(ancGen, stage, begin, end, step, at, reps, subPops, infoFields),
+	quanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
 	m_loci(loci.elems()), m_qtrait(qtrait), m_sigma(sigma.elems()), m_wildtype(wildtype.elems())
 {
 	if (m_sigma.empty())

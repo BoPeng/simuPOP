@@ -285,9 +285,9 @@ stat::stat(
 	const string & suffix,
 	// regular parameters
 	const stringFunc & output,
-	int stage, int begin, int end, int step, const intList & at,
+	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-	: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
+	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize, subPops, vars, suffix),
 	m_numOfMale(numOfMale, subPops, vars, suffix),
