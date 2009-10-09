@@ -23,8 +23,8 @@ class TestIfElseOperator(unittest.TestCase):
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         simu.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
-            preOps = [ initSex(), initByFreq([.5,.5]) ],
-            ops = [
+            initOps = [ initSex(), initByFreq([.5,.5]) ],
+            postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
@@ -47,8 +47,8 @@ class TestIfElseOperator(unittest.TestCase):
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         simu.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
-            preOps = [ initSex(), initByFreq([.5,.5]) ],
-            ops = [
+            initOps = [ initSex(), initByFreq([.5,.5]) ],
+            postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq

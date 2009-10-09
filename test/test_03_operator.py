@@ -27,30 +27,12 @@ def opRecorder(*args, **kwargs):
 
 class TestOperator(unittest.TestCase):
 
-    def testStage(self):
-        'Testing stage parameter of operators'
-        simu = simulator(
-            population(size=[20, 80], loci=[3]),
-                randomMating())
-        simu.evolve(
-            preOps = [initSex(), initByFreq([0.2, 0.8])],
-            ops = [
-                recombinator(rates=0.001),
-                stat(stage=PrePostMating),
-                stat(alleleFreq=[1]),
-                kamMutator(k=10, rates=0.00005, loci=[0,2])
-            ],
-            postOps = [stat()],
-            #dryrun=True,
-            gen=10
-        )
-
     def testActiveGen(self):
         'Testing active generation specifications'
         def getActiveGens(endGen=20, *args, **kwargs):
             d = opRecorder(*args, **kwargs)
             simu = simulator(population(), cloneMating())
-            simu.evolve(ops=[d], gen=endGen)
+            simu.evolve(postOps=d, gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10),
             range(2,11))
@@ -74,7 +56,7 @@ class TestOperator(unittest.TestCase):
         'Testing replicate related functions'
         simu = simulator(population(), cloneMating(), rep=3)
         simu.evolve(
-            ops = [opRecorder(reps=-1)],
+            postOps = opRecorder(reps=-1),
             gen=10
         )
         try:
@@ -96,9 +78,8 @@ class TestOperator(unittest.TestCase):
     def testOutput(self):
         'Testing output specifications'
         simu = simulator( population(), cloneMating(), rep=5)
-        simu.evolve([
-            pyOutput("a", output=">a.txt"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output=">a.txt"),
+            gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         self.assertFileContent("a.txt", 'a')
@@ -106,9 +87,8 @@ class TestOperator(unittest.TestCase):
         #
         # you can ignore >
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output="a.txt"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output="a.txt"),
+            gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         self.assertFileContent("a.txt", 'a')
@@ -116,18 +96,16 @@ class TestOperator(unittest.TestCase):
         #
         # >>
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output=">>a.txt"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output=">>a.txt"),
+            gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*50)
         os.remove('a.txt')
         #
         # rep = ...
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output=">>a.txt", reps=-1),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output=">>a.txt", reps=-1),
+            gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*10)
         os.remove('a.txt')
@@ -137,9 +115,8 @@ class TestOperator(unittest.TestCase):
         simu = simulator( population(),
             cloneMating(), rep=5)
         # each replicate
-        simu.evolve([
-            pyOutput("a", output="!'rep%d.txt'%rep"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output="!'rep%d.txt'%rep"),
+            gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         for i in range(5):
@@ -148,9 +125,8 @@ class TestOperator(unittest.TestCase):
         #
         # you can ignore >
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output="!'>rep%d.txt'%rep"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output="!'>rep%d.txt'%rep"),
+            gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         for i in range(5):
@@ -159,18 +135,16 @@ class TestOperator(unittest.TestCase):
         #
         # >>
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output="!'>>rep%d.txt'%rep"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output="!'>>rep%d.txt'%rep"),
+            gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(5):
             self.assertFileContent("rep%d.txt"%i, 'a'*10)
             os.remove('rep%d.txt'%i)
         # each generation?
         simu.setGen(0)
-        simu.evolve([
-            pyOutput("a", output="!'>>gen%d.txt'%gen"),
-            ], gen=10)
+        simu.evolve(postOps = pyOutput("a", output="!'>>gen%d.txt'%gen"),
+            gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(10):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
@@ -184,10 +158,10 @@ class TestOperator(unittest.TestCase):
         def func2(msg):
             self.assertEqual(msg, 'func2')
         # each replicate
-        simu.evolve([
+        simu.evolve(postOps = [
             pyOutput("func1", output=func1),
             pyOutput("func2", output=func2),
-            ], gen=10)
+        ], gen=10)
 
     def testInfoEval(self):
         '''Testing operator infoEval'''
@@ -225,9 +199,9 @@ class TestOperator(unittest.TestCase):
         # as an operator
         simu = simulator(pop, cloneMating())
         simu.evolve(
-            preOps = [infoExec('b=0')],
-            ops = [
-                infoEval(r"'\t%.1f' % b", stage=PostMating, output=''),
+            initOps = [infoExec('b=0')],
+            postOps = [
+                infoEval(r"'\t%.1f' % b", output=''),
                 infoExec('b+=1', output=''),
                 pyOutput('\n', output=''),
             ],

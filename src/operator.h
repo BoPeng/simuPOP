@@ -446,6 +446,7 @@ public:
 		return m_ostream.noOutput();
 	}
 
+	void initializeIfNeeded(const population & pop);
 
 	/// HIDDEN Initialize an operator against a population.
 	virtual void initialize(const population & pop) {}
@@ -638,7 +639,7 @@ public:
 
 
 	/// apply the \c pause operator to one population
-	virtual bool apply(population & pop);
+	bool apply(population & pop);
 
 	/// HIDDEN
 	string description()
@@ -1055,7 +1056,7 @@ private:
 	/// parammeters
 	pyObject m_param;
 
-	// whether or not pass pop, dad, mon in a duringMating py function.
+	// whether or not pass pop, dad, mon to a python function if it is applied during-mating.
 	bool m_passOffspringOnly;
 };
 

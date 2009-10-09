@@ -26,14 +26,14 @@ class TestAscertainment(unittest.TestCase):
                 infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
             randomMating(numOffspring=2))
         simu.evolve(
-            ops = [
+            preOps = migrator(rate=[[0.1,0.1], [0.1,0.1]]),
+            duringOps = parentsTagger(),
+            postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
-                migrator(rate=[[0.1,0.1], [0.1,0.1]]),
                 mapPenetrance(loci=0,
                     penetrance={(0,0):0,(0,1):.7,(1,1):1}),
-                parentsTagger(),
             ],
-            preOps = [
+            initOps = [
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.population(0).totNumLoci()))
@@ -50,14 +50,14 @@ class TestAscertainment(unittest.TestCase):
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
             randomMating(numOffspring=(UniformDistribution, 2, 5)))
         simu1.evolve(
-            [
+            preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+            duringOps = parentsTagger(),
+            postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
-                migrator(rate=[[0.1,0.1],[0.1,0.1]]),
                 mapPenetrance(loci=0,
                     penetrance={(0,0):0,(0,1):.7,(1,1):1}),
-                parentsTagger(),
             ],
-            preOps=[
+            initOps=[
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci()))

@@ -221,13 +221,18 @@ void baseOperator::setFlags()
 	}
 }
 
-
-bool baseOperator::apply(population & pop)
+void baseOperator::initializeIfNeeded(const population & pop)
 {
 	if (m_lastPop != pop.genoStruIdx()) {
 		initialize(pop);
 		m_lastPop = pop.genoStruIdx();
 	}
+}
+
+bool baseOperator::apply(population & pop)
+{
+	DBG_FAILIF(true, RuntimeError,
+		"This operator can only be applied during mating.");
 	return true;
 }
 
@@ -235,10 +240,8 @@ bool baseOperator::apply(population & pop)
 bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
                                      individual * dad, individual * mom)
 {
-	if (m_lastPop != pop.genoStruIdx()) {
-		initialize(pop);
-		m_lastPop = pop.genoStruIdx();
-	}
+	DBG_FAILIF(true, RuntimeError,
+		"This operator cannot be applied during mating.");
 	return true;
 }
 
@@ -284,7 +287,7 @@ vectori pause::s_cachedKeys = vectori();
 bool pause::apply(population & pop)
 {
 	// call initialize if needed.
-	baseOperator::apply(pop);
+	initializeIfNeeded(pop);
 
 	char a;
 

@@ -23,8 +23,8 @@ class TestTagger(unittest.TestCase):
                     infoFields=['father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
         simu.evolve(
-            preOps = [initSex()],
-            ops = [parentsTagger()],
+            initOps = [initSex()],
+            duringOps =[parentsTagger()],
             gen = 1
         )
         pop = simu.population(0)
@@ -49,8 +49,8 @@ class TestTagger(unittest.TestCase):
         simu = simulator(pop, randomMating())
         # other mode include mode=Maternal, TAG_Both
         simu.evolve(
-            preOps = [initSex()],
-            ops = [inheritTagger(mode=Paternal)],
+            initOps = [initSex()],
+            duringOps =[inheritTagger(mode=Paternal)],
             gen = 1)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
@@ -72,8 +72,8 @@ class TestTagger(unittest.TestCase):
         simu = simulator( pop, randomMating())
         # other mode include mode=Maternal, TAG_Both
         simu.evolve(
-            preOps = [initSex()],
-            ops = [inheritTagger(mode=Paternal)],
+            initOps = [initSex()],
+            duringOps =[inheritTagger(mode=Paternal)],
             gen = 1
         )
         # we only know subpopulation 0 can not have tag 2
@@ -96,8 +96,8 @@ class TestTagger(unittest.TestCase):
         #
         simu = simulator(pop, randomMating())
         simu.evolve(
-            preOps = [initSex()],
-            ops = [
+            initOps = [initSex()],
+            duringOps =[
                 pyTagger(infoFields=['trait1', 'trait2'], func=myfunc),
             ],
             gen = 4)
@@ -117,7 +117,7 @@ class TestTagger(unittest.TestCase):
             return [val[0]+1]
         simu = simulator(pop, randomMating())
         simu.evolve(
-            ops = [
+            duringOps =[
                 parentsTagger(output='>>pedigree.dat', infoFields=[]),
                 pyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
                 ],

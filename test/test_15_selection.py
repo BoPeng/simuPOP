@@ -99,9 +99,9 @@ class TestSelector(unittest.TestCase):
             pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
             simu = simulator(pop, randomMating())
             simu.evolve(
-                preOps = [initSex(), initByFreq([1-p]+[p/10.]*10)],
-                ops = [
-                    sel,
+                initOps = [initSex(), initByFreq([1-p]+[p/10.]*10)],
+                preOps = sel,
+                postOps = [
                     stat(alleleFreq=[0]),
                     terminateIf('subPop[1]["alleleNum"][0][0] == %d*2' % N),
                     #pyEval(r'"%d\n"%alleleNum[0][0]', step=100)
@@ -125,14 +125,14 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
-                mapSelector(loci=0,
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5, .5])],
+            preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5, .5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -152,14 +152,14 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(loci=0,
+            initOps =[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -177,14 +177,14 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(loci=0, wildtype=[0],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            preOps = maSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -208,14 +208,14 @@ class TestSelector(unittest.TestCase):
         #        s2 = w12 - w22
         #    p_ = s2/ (s1+s2)
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(loci=0,
+            preOps = mapSelector(loci=0,
                     fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -240,14 +240,14 @@ class TestSelector(unittest.TestCase):
         #    p_ = s2/ (s1+s2)
         #
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(loci=0, wildtype=0,
+            preOps = maSelector(loci=0, wildtype=0,
                     fitness=[1-s1, 1, 1-s2]),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -263,15 +263,15 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12, w12 < w22
         #    p unstable, become fix
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(loci=0,
+            preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.8, (1,1):1}),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 # pyEval('alleleFreq[0][0]'),
                 terminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
                     begin=50),
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -291,15 +291,15 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12, w12 < w22
         #    p unstable, become fix
         simu.evolve(
-            [
-                stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(loci=0, wildtype=0,
+            preOps = maSelector(loci=0, wildtype=0,
                     fitness=[1, 0.7, 1]),
+            postOps = [
+                stat( alleleFreq=[0], genoFreq=[0]),
                 #pyEval('alleleFreq[0][0]'),
                 terminateIf('alleleFreq[0][0] > 0.3 and    alleleFreq[0][0]    < 0.7',
                     begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -312,11 +312,9 @@ class TestSelector(unittest.TestCase):
             infoFields=['fitness', 'spare']),
             randomMating() )
         simu.evolve(
-            [
-                maSelector(loci=[3,6], wildtype=0,
+            preOps = maSelector(loci=[3,6], wildtype=0,
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]),
-            ],
-            preOps=[initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
 
@@ -387,13 +385,13 @@ class TestSelector(unittest.TestCase):
         #        s2 = w12 - w22
         #    p_ = s2/ (s1+s2)
         simu.evolve(
-            [
+            preOps = pySelector(loci=[0], func=sel),
+            postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                pySelector(loci=[0], func=sel),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -437,13 +435,13 @@ class TestSelector(unittest.TestCase):
         #        s2 = w12 - w22
         #    p_ = s2/ (s1+s2)
         simu.evolve(
-            [
+            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            preOps = pySelector(loci=[0], func=sel),
+            postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                pySelector(loci=[0], func=sel),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -455,24 +453,25 @@ class TestSelector(unittest.TestCase):
             population(size=1000, ploidy=2, loci=[2],
             infoFields=['fitness', 'spare']),
             randomMating())
-        sel = mlSelector([
+        sel = mlSelector(
+            [
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                 ], mode=Additive),
         simu.evolve(
-            ops = sel,
-            preOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
+            preOps = sel,
+            initOps = [ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
         #
         simu.setGen(0)
-        simu.evolve([
+        simu.evolve(preOps = [
             mlSelector([
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=Multiplicative),
             ],
-            preOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
+            initOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
 
@@ -483,7 +482,7 @@ class TestSelector(unittest.TestCase):
             infoFields=['fitness', 'spare']),
             randomMating())
         self.assertRaises(exceptions.ValueError, simu.evolve,
-            ops = [
+            preOps = [
                 mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                 mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
             ],
@@ -501,10 +500,10 @@ class TestSelector(unittest.TestCase):
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
         simu.evolve(
-            preOps = [initSex(), initByFreq([.4, .6])],
-            ops = [
+            initOps = [initSex(), initByFreq([.4, .6])],
+            preOps = [
                 mapSelector(loci = 1, fitness = {(0,0):1.,(0,1):1.,(1,1):.8}, subPops=[1]),
-                pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
+                pyOperator(func=testFitness, param=([0, 2],)),
                 ],
             gen = 5
         )
@@ -514,13 +513,13 @@ class TestSelector(unittest.TestCase):
                 infoFields=['fitness']),
             randomMating())
         simu.evolve(
-            preOps = [initSex(), initByFreq([.4, .6])],
-            ops = [
+            initOps = [initSex(), initByFreq([.4, .6])],
+            preOps = [
                 maSelector(loci=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
                     subPops=1),
                 maSelector(loci=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
                     subPops=2),
-                pyOperator(func=testFitness, param=([0],), stage=PreMating),
+                pyOperator(func=testFitness, param=([0],)),
                 ],
             gen = 5
         )

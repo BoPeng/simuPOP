@@ -5357,7 +5357,7 @@ The following sections will introduce common features of all operators.
 \end_layout
 
 \begin_layout Subsection
-Applicable stages and generations
+Applicable generations
 \end_layout
 
 \begin_layout Standard
@@ -5383,29 +5383,27 @@ post-mating
  parental generation.
  In the post-mating stage, the offspring generation has become the present
  generation.
- An operator can be applied at one or more stages at a life cycle.
- However, each operator has its own default value for the 
+ Operators specified in the 
 \family typewriter
-stage
+preOps
 \family default
- parameter and changes to this parameter are not always allowed.
- For example, a 
+, 
 \family typewriter
-recombinator
+duringOps
 \family default
- can only be applied 
+ and 
 \family typewriter
-DuringMating
+postOps
 \family default
- and it will ignore your attemp to apply it at another stage.
+ parameters of the 
+\family typewriter
+simulator.evolve
+\family default
+ function are applied, respectively, at these stages.
 \end_layout
 
 \begin_layout Standard
 Operators that are passed to the 
-\family typewriter
-ops
-\family default
- parameter of the 
 \family typewriter
 simulator.evolve
 \family default
@@ -5498,11 +5496,11 @@ beginning
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "hybridOperator"
+reference "applicableGen"
 
 \end_inset
 
- demonstrates how to set applicable stages and generations of an operator.
+ demonstrates how to set applicable generations of an operator.
  In this example, a population is initialized before evolution using a 
 \family typewriter
 initByFreq
@@ -5583,8 +5581,8 @@ savePopulation
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/stageAndGen.log"
-lstparams "caption={Applicable stages and generations of an operator.},label={stageAndGen}"
+filename "log/applicableGen.log"
+lstparams "caption={Applicable generations of an operator.},label={applicableGen}"
 
 \end_inset
 
@@ -5740,7 +5738,7 @@ savePopulation
  operator in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "stageAndGen"
+reference "applicableGen"
 
 \end_inset
 
@@ -5898,7 +5896,7 @@ savePopulation
  operator in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "stageAndGen"
+reference "applicableGen"
 
 \end_inset
 
@@ -6039,7 +6037,7 @@ During-mating operators
 All operators in Examples 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "stageAndGen"
+reference "applicableGen"
 
 \end_inset
 
@@ -6500,12 +6498,8 @@ dynaMutator
 \family typewriter
 pyOperator
 \family default
- is applied at 
-\family typewriter
-stage=PreMating
-\family default
- (the default stage is post mating) so allele frequencies have to be recalculate
-d to be used by post-mating operator 
+ is applied at to the parental generation so allele frequencies have to
+ be recalculated to be used by post-mating operator 
 \family typewriter
 pyEval
 \family default
@@ -9492,86 +9486,6 @@ lstparams "caption={Generation number of a simulator},keywordstyle={\\ttfamily},
 \end_layout
 
 \begin_layout Subsection
-Operator calling sequence
-\end_layout
-
-\begin_layout Standard
-Operators can be applied at different stages of a life cycle (pre-, during-,
- and post-mating, controlled by parameter 
-\family typewriter
-stage
-\family default
-), at specified generations (controlled by parameters 
-\family typewriter
-begin, end, step
-\family default
- and 
-\family typewriter
-at
-\family default
-), and to specified replicates (controlled by parameter 
-\family typewriter
-rep
-\family default
-).
- The order at which operators are applied is usually clear but can become
- confusing when the number of operators increases.
- For example, 
-\family typewriter
-stat(...)
-\family default
- should be put before any operator (such as an terminator) that uses the
- shared variable set by this operator.
- An error will occur if the variables are used before they are set.
-\end_layout
-
-\begin_layout Standard
-Because it is not always clear which stage(s) an operator can be applied
- and in which order they will be applied, a parameter 
-\family typewriter
-dryrun
-\family default
- is provided to the 
-\family typewriter
-simulator.evolve()
-\family default
- function.
- If set to 
-\family typewriter
-True
-\family default
-, the 
-\family typewriter
-evolve
-\family default
- function will list all operators in the order at which they will be applied.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "dryrun"
-
-\end_inset
-
- shows the operator calling sequence for Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "stageAndGen"
-
-\end_inset
-
-.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/dryrun.log"
-lstparams "caption={List the order at which operators are applied},keywordstyle={\\ttfamily},label={dryrun}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Population access and other simulator operations
 \end_layout
 
@@ -10324,7 +10238,7 @@ reference "ancestralPop"
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "stageAndGen"
+reference "applicableGen"
 
 \end_inset
 
@@ -14147,11 +14061,7 @@ stat
 \family default
  operator calculates specified statistics of a population when it is applied
  to this population.
- This operator is by default applied after mating (parameter 
-\emph on
-stage
-\emph default
-) and can be applied to specified replicates (parameter 
+ This operator can be applied to specified replicates (parameter 
 \emph on
 rep
 \emph default
@@ -16413,13 +16323,13 @@ Tagging that involves other parental information
 
 \begin_layout Standard
 If the way how parental information fields pass to their offspring is affected
- by parental genotype, sex, or affection status, you could use a during-mating
- Python operator (
+ by parental genotype, sex, or affection status, you could use a Python
+ operator (
 \family typewriter
-pyOperator(stage=DurimgMating)
+pyOperator
 \family default
-) to explicitly obtain parental information and set offspring information
- fields.
+) during mating to explicitly obtain parental information and set offspring
+ information fields.
 \end_layout
 
 \begin_layout Standard
@@ -16448,15 +16358,12 @@ reference "otherTagging"
 summaryTagger
 \family default
  could be used to count the number of affected parents.
- A rare feature 
-\family typewriter
-stage=PrePostMating
-\family default
- is used in 
+ Two 
 \family typewriter
 maPenetrance
 \family default
- to assign affection status to both parental and offspring generations.
+ operators are used both before and after mating to assign affection status
+ to both parental and offspring generations.
  This helps dividing the offspring generation into affected and unaffected
  virtual subpopulations.
  Not surprisingly, the average number of affected parents is larger for
@@ -17093,12 +17000,9 @@ ary process.
  It outputs the elapsed time since the last time it is called, and the overall
  time since the operator is created.
  It is very flexible in that you can measure the time spent for mating in
- an evolutionary cycle if you set its stage to 
-\family typewriter
-prePostMating
-\family default
-, and you can measure time spent for several evolutionary cycles using generatio
-n applicability parameters such as 
+ an evolutionary cycle if you apply it before and after mating, and you
+ can measure time spent for several evolutionary cycles using generation
+ applicability parameters such as 
 \family typewriter
 step
 \family default
@@ -17439,31 +17343,16 @@ Selector only set information field and mark subpopulations as selection
 \end_layout
 
 \begin_layout Itemize
-selector has to be 
+Selector has to be applied to the parental generation (e.g.
+ used in the 
 \family typewriter
-PreMating
+preOps
 \family default
- operator.
- This is not a problem when you use the operator form of the selectors since
- their default stage is 
+ parameter of function 
 \family typewriter
-PreMating
+simulator.evolve
 \family default
-.
- However, if you use the function form of these selectors in a 
-\family typewriter
-pyOperator
-\family default
-, make sure to set the stage of 
-\family typewriter
-pyOperator
-\family default
- to 
-\family typewriter
-PreMating
-\family default
-.
- 
+).
 \end_layout
 
 \begin_layout Standard
@@ -19724,14 +19613,6 @@ plot
 par
 \family default
  respectively.
-\end_layout
-
-\begin_layout Itemize
-Use 
-\family typewriter
-stage=PreMating
-\family default
- to plot figures before mating.
 \end_layout
 
 \begin_layout Standard

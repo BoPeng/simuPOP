@@ -71,7 +71,7 @@ class TestUtility(unittest.TestCase):
             randomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
-            ops=[ pause(at=[10]),
+            postOps=[ pause(at=[10]),
                         # should quite, can not reach generation 12
                         terminateIf("True", at=[12] ) ] )
 
@@ -82,11 +82,11 @@ class TestUtility(unittest.TestCase):
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
         simu.evolve(
-            ops=[ pause(at=[10]) ], end=12)
+            postOps=[ pause(at=[10]) ], end=12)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable tmpPop\n\n"
         simu.evolve(
-            ops=[ pause(at=[20], popName='tmpPop') ], end=25)
+            postOps=[ pause(at=[20], popName='tmpPop') ], end=25)
 
 
     def testSetRNG(self):
@@ -211,7 +211,7 @@ class TestUtility(unittest.TestCase):
         import simuUtil
         pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, randomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
-        simu.evolve(ops=[parentsTagger()], end=5)
+        simu.evolve(duringOps=[parentsTagger()], end=5)
         pop = simu.population(0)
         #
         def comb(geno):
