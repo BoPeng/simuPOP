@@ -87,7 +87,7 @@ if os.name == 'nt':
 from simuOpt import simuOptions
 q = simuOptions['Quiet']
 simuOptions['Quiet'] = True
-from simuPOP import pyOperator, PostMating, subPopList, AllAvail
+from simuPOP import pyOperator, subPopList, AllAvail
 simuOptions['Quiet'] = q
 
 def newDevice():
@@ -368,7 +368,7 @@ class varPlotter(pyOperator):
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
-        plotHook=None, stage=PostMating, begin=0, end=-1, step=1, at=[],
+        plotHook=None, begin=0, end=-1, step=1, at=[],
         reps=AllAvail, **kwargs):
         '''
         expr
@@ -482,7 +482,7 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
-            at=at, reps=reps, stage=stage, subPops=subPopList(), infoFields=[])
+            at=at, reps=reps, subPops=subPopList(), infoFields=[])
 
     def __del__(self):
         # Close the device if needed.
@@ -700,7 +700,7 @@ class scatterPlotter(pyOperator):
     to customize lines by (virtual) subpopulation.
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
-        preHook=None, postHook=None, stage=PostMating, begin=0, end=-1, step=1,
+        preHook=None, postHook=None, begin=0, end=-1, step=1,
         at=[], reps=AllAvail, subPops=subPopList(), **kwargs):
         '''
         infoFields
@@ -775,7 +775,7 @@ class scatterPlotter(pyOperator):
                 col_sp = r.rainbow(len(self.subPops)))
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, reps=reps, stage=stage)
+            step=step, at=at, reps=reps)
 
     def __del__(self):
         # Close the device if needed.
@@ -861,7 +861,7 @@ class infoPlotter(pyOperator):
     to this function.
     '''
     def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
-        preHook=None, postHook=None, plotHook = None, stage=PostMating, begin=0,
+        preHook=None, postHook=None, plotHook = None, begin=0,
         end=-1, step=1, at=[], reps=AllAvail, subPops=subPopList(), **kwargs):
         '''
         func
@@ -953,7 +953,7 @@ class infoPlotter(pyOperator):
                 **kwargs)
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, reps=reps, stage=stage)
+            step=step, at=at, reps=reps)
 
     def __del__(self):
         # Close the device if needed.
@@ -1061,7 +1061,7 @@ class boxPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
         leaveOpen=False, preHook=None, postHook=None, plotHook = None,
-        stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+        begin=0, end=-1, step=1, at=[], reps=AllAvail,
         subPops=subPopList(), **kwargs):
         '''
         infoFields
@@ -1148,7 +1148,7 @@ class boxPlotter(pyOperator):
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, reps=reps, stage=stage)
+            step=step, at=at, reps=reps)
 
     def __del__(self):
         # Close the device if needed.

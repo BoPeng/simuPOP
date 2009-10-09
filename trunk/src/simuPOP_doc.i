@@ -159,7 +159,7 @@ Details:
 
 Usage:
 
-    baseOperator(output, stage, begin, end, step, at, reps, subPops,
+    baseOperator(output, begin, end, step, at, reps, subPops,
       infoFields)
 
 Details:
@@ -176,14 +176,6 @@ Arguments:
                     or more '>', or an Python expression prefixed by
                     an exclamation mark ('!expr'). Alternatively, a
                     Python function can be given to handle outputs.
-    stage:          Stage(s) of a life cycle at which an operator will
-                    be applied. It can be PreMating, DuringMating,
-                    PostMating or any of their combined stages
-                    PrePostMating, PreDuringMating, DuringPostMating
-                    and PreDuringPostMating. Note that all operators
-                    have their default stage parameter and some of
-                    them ignore this parameter because they can only
-                    be applied at certain stage(s) of a life cycle.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
                     interpreted as a generation counted from the end
@@ -251,12 +243,6 @@ Details:
 
 %ignore simuPOP::baseOperator::isActive(UINT rep, long gen);
 
-%ignore simuPOP::baseOperator::canApplyPreMating() const;
-
-%ignore simuPOP::baseOperator::canApplyDuringMating() const;
-
-%ignore simuPOP::baseOperator::canApplyPostMating() const;
-
 %ignore simuPOP::baseOperator::isCompatible(const population &pop);
 
 %ignore simuPOP::baseOperator::haploidOnly();
@@ -318,8 +304,8 @@ Details:
     Penetrance can be applied at any stage (default to DuringMating).
     When a penetrance operator is applied, it calculates the
     penetrance value of each offspring and assigns affected status
-    accordingly. Penetrance can also be used PreMating or PostMating.
-    In these cases, the affected status will be set to all individuals
+    accordingly. Penetrance can also be used pre- or post mating. In
+    these cases, the affected status will be set to all individuals
     according to their penetrance values.
     Penetrance values are usually not saved. If you would like to know
     the penetrance value, you need to
@@ -348,9 +334,8 @@ Description:
 
 Usage:
 
-    basePenetrance(ancestralGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    basePenetrance(ancestralGen=-1, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Arguments:
 
@@ -754,9 +739,8 @@ Details:
 Usage:
 
     contextMutator(rates=[], loci=AllAvail, mutators=[],
-      contexts=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      contexts=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -887,8 +871,8 @@ Details:
 Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
-      max=100, loci=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      max=100, loci=[], output=\">\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2033,9 +2017,8 @@ Details:
 
 Usage:
 
-    ifElse(cond, ifOps=[], elseOps=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    ifElse(cond, ifOps=[], elseOps=[], output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2467,8 +2450,8 @@ Note:
 Usage:
 
     infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2557,8 +2540,8 @@ Details:
 Usage:
 
     infoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -2804,9 +2787,8 @@ Details:
 
 Usage:
 
-    inheritTagger(mode=Paternal, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      output=\"\", infoFields=[])
+    inheritTagger(mode=Paternal, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
 
@@ -2873,8 +2855,8 @@ Details:
 Usage:
 
     initByFreq(alleleFreq=[], loci=AllAvail, ploidy=AllAvail,
-      identicalInds=False, stage=PreMating, begin=0, end=1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      identicalInds=False, begin=0, end=1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2945,8 +2927,8 @@ Details:
 Usage:
 
     initByValue(value=[], loci=AllAvail, ploidy=AllAvail,
-      proportions=[], stage=PreMating, begin=0, end=1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      proportions=[], begin=0, end=1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3016,8 +2998,8 @@ Details:
 
 Usage:
 
-    initInfo(values, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    initInfo(values, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3092,8 +3074,8 @@ Details:
 
 Usage:
 
-    initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    initSex(maleFreq=0.5, sex=[], begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3195,8 +3177,8 @@ Details:
 Usage:
 
     kamMutator(k, rates=[], loci=AllAvail, mapIn=[], mapOut=[],
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3267,8 +3249,8 @@ Description:
 Usage:
 
     maPenetrance(loci, penetrance, wildtype=AllAvail, ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Arguments:
 
@@ -3337,9 +3319,9 @@ Description:
 
 Usage:
 
-    mapPenetrance(loci, penetrance, phase=False, ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    mapPenetrance(loci, penetrance, phase=False, ancGen=-1, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Arguments:
 
@@ -3408,8 +3390,8 @@ Description:
 Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Arguments:
 
@@ -3484,9 +3466,8 @@ Description:
 
 Usage:
 
-    mapSelector(loci, fitness, phase=False, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
+    mapSelector(loci, fitness, phase=False, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Arguments:
 
@@ -3562,8 +3543,8 @@ Description:
 Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Details:
 
@@ -3646,9 +3627,8 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype=0, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
+    maSelector(loci, fitness, wildtype=0, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -3780,8 +3760,8 @@ Details:
 Usage:
 
     matrixMutator(rate, loci=AllAvail, mapIn=[], mapOut=[],
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -3916,8 +3896,8 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=AllAvail, name=\"\", stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, infoFields=[])
+    mergeSubPops(subPops=AllAvail, name=\"\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -4027,8 +4007,8 @@ Details:
 Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=AllAvail,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=\"migrate_to\")
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=\"migrate_to\")
 
 Details:
 
@@ -4175,9 +4155,8 @@ Details:
 Usage:
 
     mixedMutator(rates=[], loci=AllAvail, mutators=[], prob=[],
-      mapIn=[], mapOut=[], context=0, output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      mapIn=[], mapOut=[], context=0, output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4247,9 +4226,9 @@ Description:
 
 Usage:
 
-    mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Arguments:
 
@@ -4321,8 +4300,8 @@ Description:
 Usage:
 
     mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=AllAvail)
 
 Details:
 
@@ -4404,8 +4383,8 @@ Description:
 
 Usage:
 
-    mlSelector(selectors, mode=Multiplicative, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    mlSelector(selectors, mode=Multiplicative, begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=AllAvail)
 
 Details:
@@ -4460,8 +4439,8 @@ Details:
 Usage:
 
     mutator(rates=[], loci=AllAvail, mapIn=[], mapOut=[], context=0,
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4585,8 +4564,8 @@ Details:
 
 Usage:
 
-    noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    noneOp(output=\">\", begin=0, end=0, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -4844,9 +4823,9 @@ Details:
 
 Usage:
 
-    parentsTagger(stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
-      infoFields=[\"father_idx\", \"mother_idx\"])
+    parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, output=\"\", infoFields=[\"father_idx\",
+      \"mother_idx\"])
 
 Details:
 
@@ -4901,9 +4880,9 @@ Details:
 
 Usage:
 
-    pause(stopOnKeyStroke=False, prompt=True, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    pause(stopOnKeyStroke=False, prompt=True, output=\">\", begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -5281,8 +5260,8 @@ Details:
 Usage:
 
     pointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=0, infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=0,
+      infoFields=[])
 
 Details:
 
@@ -6515,9 +6494,9 @@ Details:
 
 Usage:
 
-    pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\", begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -6608,9 +6587,8 @@ Details:
 
 Usage:
 
-    pyExec(stmts=\"\", exposePop=\"\", output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    pyExec(stmts=\"\", exposePop=\"\", output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -6739,9 +6717,8 @@ Details:
 Usage:
 
     pyMutator(rates=[], loci=AllAvail, func=None, context=0,
-      mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      mapIn=[], mapOut=[], output=\">\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -6833,9 +6810,9 @@ Details:
 
 Usage:
 
-    pyOperator(func, param=None, stage=PostMating,
-      offspringOnly=False, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    pyOperator(func, param=None, offspringOnly=False, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -6843,18 +6820,16 @@ Details:
     when it is applied. Depending on parameters stage, param, and
     offspringOnly, the function should have one of the following
     forms:
-    *   func(pop) if stage=PreMating or PostMating, and without param.
-    *   func(pop, param) if stage=PreMating or PostMating, and with
+    *   func(pop) if used pre- or post-mating without param.
+    *   func(pop, param) if used pre- or post-mating with param.
+    *   func(pop, off, dad, mom) if used during mating with param.
+    *   func(pop, off, dad, mom, param) if used during mating with
     param.
-    *   func(pop, off, dad, mom) if stage=DuringMating and without
-    param.
-    *   func(pop, off, dad, mom, param) if stage=DuringMating, and
-    with param.
-    *   func(off) if stage=DuringMating, offspringOnly=True and
+    *   func(off) if used during mating, with offspringOnly=True and
     without param.
-    *   func(off, param) if stage=DuringMating, offspringOnly=True and
-    with param. where pop is the population to which the operator is
-    applied, off is the offspring of dad and mom, and param is the
+    *   func(off, param) if used during mating with offspringOnly=True
+    and with param. where pop is the population to which the operator
+    is applied, off is the offspring of dad and mom, and param is the
     parameter param specified when the operator is created. When this
     operator is applied during mating, it can be used in the ops
     parameter of a mating scheme, or used in the ops parameter of
@@ -6902,8 +6877,8 @@ Details:
 
 Usage:
 
-    pyOutput(msg=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    pyOutput(msg=\"\", output=\">\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -7053,9 +7028,8 @@ Description:
 
 Usage:
 
-    pyPenetrance(loci, func, ancGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    pyPenetrance(loci, func, ancGen=-1, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Arguments:
 
@@ -7173,9 +7147,8 @@ Description:
 
 Usage:
 
-    pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
+    pyQuanTrait(loci, func, ancGen=-1, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -7246,8 +7219,8 @@ Description:
 
 Usage:
 
-    pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+    pySelector(loci, func, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Arguments:
 
@@ -7299,9 +7272,8 @@ Details:
 
 Usage:
 
-    pyTagger(func=None, stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
-      infoFields=[])
+    pyTagger(func=None, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
 
@@ -7364,8 +7336,8 @@ Description:
 
 Usage:
 
-    quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+    quanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 "; 
 
@@ -7765,8 +7737,8 @@ Details:
 Usage:
 
     resizeSubPops(subPops=AllAvail, sizes=[], proportions=[],
-      propagate=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, infoFields=[])
+      propagate=True, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -8105,8 +8077,8 @@ Details:
 
 Usage:
 
-    savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    savePopulation(output=\"\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8212,8 +8184,8 @@ Description:
 
 Usage:
 
-    selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+    selector(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
 
 "; 
 
@@ -8399,9 +8371,8 @@ Details:
 
 Usage:
 
-    setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    setAncestralDepth(depth, output=\">\", begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8786,7 +8757,8 @@ Details:
 
 Usage:
 
-    x.evolve(ops=[], preOps=[], postOps=[], gen=-1, dryrun=False)
+    x.evolve(initOps=[], preOps=[], duringOps=[], postOps=[],
+      endOps=[], gen=-1, dryrun=False)
 
 Details:
 
@@ -8915,9 +8887,8 @@ Details:
 Usage:
 
     smmMutator(rates=[], loci=AllAvail, incProb=0.5, maxAllele=0,
-      mutStep=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      mutStep=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -8987,8 +8958,8 @@ Details:
 Usage:
 
     splitSubPops(subPops=AllAvail, sizes=[], proportions=[],
-      names=[], randomize=True, stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, infoFields=[])
+      names=[], randomize=True, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, infoFields=[])
 
 Details:
 
@@ -9092,8 +9063,8 @@ Usage:
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
       neutrality=[], structure=[], HWE=[], vars=AllAvail, suffix=\"\",
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      output=\"\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -9904,9 +9875,8 @@ Details:
 
 Usage:
 
-    summaryTagger(mode=Mean, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, output=\"\",
-      infoFields=[])
+    summaryTagger(mode=Mean, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
 
@@ -9983,8 +9953,8 @@ Details:
 Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      infoFields=[])
 
 Details:
 
@@ -10051,8 +10021,8 @@ Details:
 
 Usage:
 
-    ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    ticToc(output=\">\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10096,8 +10066,8 @@ Details:
 
 Usage:
 
-    turnOffDebug(code=\"DBG_ALL\", stage=PreMating, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    turnOffDebug(code=\"DBG_ALL\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -10146,8 +10116,8 @@ Details:
 
 Usage:
 
-    turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    turnOnDebug(code, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=[])
 
 Details:
 
