@@ -106,10 +106,11 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     
     ## start simulation
     simu.evolve(
-        preOps = init,
-        ops = [
+        initOps = init,
+        preOps = [mutate, migrate],
+        postOps = [
             pyEval(r"'%d\n' % gen", step=100, reps=0),
-            mutate, migrate, stats,
+            stats,
             saveFst, saveFst1, 
             v1, v2, v3, v4,
             ## report running time
@@ -179,10 +180,11 @@ if False:
     saveFst1 = pyOutput('\n', reps=-1, step=100, output=">>"+name+"_Fst.txt")
     # start simulation
     simu.evolve(
-        ops = [
+        preOps = [mutate, migrate],
+        postOps = [
             # report progress
             pyEval(r"'%d\n' % gen", step=100, reps=-1),
-            mutate, migrate, stats,
+            stats,
             saveFst, saveFst1,
             ticToc(step=1000,reps=0),
             ],

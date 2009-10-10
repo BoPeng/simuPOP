@@ -165,14 +165,14 @@ def killUnfit(pop):
 
 
 sim.evolve(
-    preOps = [
+    initOps = [
         initByFreq(alleleFreq=[1,0])
     ],
-    ops = [
+    preOps = [
+        pyOperator(killUnfit),
         kamMutator(k=2, rates=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2)),
-        pyOperator(dmp, stage=PreMating),
-        pyOperator(placeIndividual, stage=DuringMating),
-        pyOperator(killUnfit, stage=PreMating)
     ],
+    duringOps = pyOperator(placeIndividual),
+    postOps = pyOperator(dmp),
     gen = 1000
 )

@@ -58,11 +58,12 @@ def simuSpatial():
         infoFields='migrate_to'), randomSelection())
     simu.evolve(
         # only subpopulation 55 has genotype 1, 1
-        preOps = initByValue([1, 1], subPops=55),
-        ops = [
-            migrator(rate=r),
-            pyOperator(printAlleleFreq, at=3)
+        initOps = [
+            initSex(),
+            initByValue([1, 1], subPops=55),
         ],
+        preOps = migrator(rate=r),
+        postOps = pyOperator(printAlleleFreq, at=3),
         gen = 10
     )
                 

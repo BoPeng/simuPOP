@@ -16,12 +16,12 @@ def calcFst(pop):
 simu = simulator(population([10000]*2, loci=[1]*5, infoFields='migrate_to'),
     randomMating())
 simu.evolve(
-    preOps = [
+    initOps = [
         initSex(),
         initByFreq([0.5, 0.5], loci=[0, 2]),
         initByFreq([0.2, 0.4, 0.4], loci=[1, 3, 4]),
     ],
-    ops = [
+    postOps = [
         # migrator(rate=MigrIslandRates(0.01, 3)),
         pyOperator(func=calcFst, step=20),
     ],

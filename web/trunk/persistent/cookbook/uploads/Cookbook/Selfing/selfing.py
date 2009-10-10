@@ -25,19 +25,18 @@ def simuSelfing(perc, N, n_rep, gen):
     simu = simulator(pop,
         heteroMating([
             selfMating(subPop=(0, 0)),
-            randomMating(subPop=(0, 1))
+            randomMating(subPop=(0, 1), ops = recombinator(rates=0.01))
         ]),
         rep=n_rep
     )
 
-    simu.evolve(preOps=
-        [
+    simu.evolve(
+        initOps= [
             initSex(),
             initByValue([0, 1, 1, 0]),
             pyExec('ld_hist=[]')  # record ld
         ],
-        ops=[
-            recombinator(rates=0.01),
+        postOps=[
             stat(LD=[0,1]),
             pyExec('ld_hist.append(LD[0][1])')
         ],

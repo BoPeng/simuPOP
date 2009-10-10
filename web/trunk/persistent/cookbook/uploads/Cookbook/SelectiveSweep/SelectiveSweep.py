@@ -43,7 +43,7 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
             ind.setAllele(0, 1, ploidy=0)
             ind.setAllele(0, 1, ploidy=1)
 
-    simu = simulator(pop, randomMating())
+    simu = simulator(pop, randomMating(ops=recombinator(rates=r)))
 
     selLocus = 1
 
@@ -57,29 +57,25 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
     a=[]
 
     g = simu.evolve(
-    preOps = [
-        initSex()
+        initOps = initSex(),
+        preOps = [
+            stat (alleleFreq=[selLocus]),
+            ifElse('alleleFreq[%d][1] == 0' % selLocus, 
+                ifOps=[
+                    pyEval (r'"introduce at gen %d\n"% gen'),
+                    pointMutator(inds=0, loci=selLocus, allele=1, ploidy=0, at=0),
+                ]),
+            maSelector (loci = selLocus, fitness = [1, 1.+2*eta*0.05, 1+2*0.05]),
+            stat (alleleFreq=[selLocus]),
         ],
-    ops = [
-        stat (alleleFreq=[selLocus], stage=PreMating),
-        ifElse('alleleFreq[%d][1] == 0' % selLocus, stage=PreMating,
-            ifOps=[
-            pyEval (r'"introduce at gen %d\n"% gen'),
-            pointMutator(inds=0, loci=selLocus, allele=1, ploidy=0, at=0, stage=PreMating),
-            ]),
-        
-        recombinator(rates=r),
-
-        #dumper(stage=PreMating),
-        stat (alleleFreq=[selLocus], stage=PreMating),
-        maSelector (loci = selLocus, fitness = [1, 1.+2*eta*0.05, 1+2*0.05]),
-        #dumper(),
-        stat(alleleFreq=[0,1]),
-        pyOperator(func = I2k, param=[0]),
-        #pyEval(r"'Gen %d: allele frequency: %.3e I2k: %.2e\n' % (gen, alleleFreq[1][1], I2k[0])"),
-        terminateIf('len(alleleFreq[1]) == 1'),
-        #plotter,
-        #pause(at=gen-1)
+        postOps = [
+            #dumper(),
+            stat(alleleFreq=[0,1]),
+            pyOperator(func = I2k, param=[0]),
+            #pyEval(r"'Gen %d: allele frequency: %.3e I2k: %.2e\n' % (gen, alleleFreq[1][1], I2k[0])"),
+            terminateIf('len(alleleFreq[1]) == 1'),
+            #plotter,
+            #pause(at=gen-1)
         ],
 
     #dryrun=True,

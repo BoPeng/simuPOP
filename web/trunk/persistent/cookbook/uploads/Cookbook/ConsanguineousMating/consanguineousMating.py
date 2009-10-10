@@ -90,14 +90,12 @@ def simuConsanguineousMating(w, size, gen, numFields=4):
     )
     #
     simu.evolve(
-        preOps = [
+        initOps = [
             initSex(),
             initByFreq([0.5, 0.5])
         ],
-        ops = [
-            parentsTagger(),
-            pyEval(r'"%d\n" % gen'),
-        ],
+        duringOps = parentsTagger(),
+        postOps = pyEval(r'"%d\n" % gen'),
         gen = gen
     )
     return True

@@ -55,14 +55,14 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
         [randomMating(subPop=(0, x), weight = 0) for x in vsp]))
     #
     simu.evolve(
-        preOps = [
+        initOps = [
             initSex(),
             initByFreq([0.5, 0.5]),
             pyExec('AaNum=[]'),  # initialize a list in population's local dictionary
             ],
-        ops = [
             # calculate virtual population sizes, and allele frequency at locus 0.
-            stat(popSize=True, alleleFreq=[0], stage=PreMating, subPops=[(0,0), (0,1), (0,2)]),
+        preOps = stat(popSize=True, alleleFreq=[0], subPops=[(0,0), (0,1), (0,2)]),
+        postOps = [
             # print size of virtual populations and allele frequency
             pyEval(r"'#inds with genotype AA %4d, Aa %4d, aa %4d, freq of A: %.1f\n' % "
                 "(subPopSize[0], subPopSize[1], subPopSize[2], alleleFreq[0][0]*100)"),

@@ -93,10 +93,8 @@ def simu(N):
     pop.individual(0).setAllele(2,1)
     simu = simulator(pop, randomMating())
     simu.evolve(
-        ops=[
-            pyOperator(stage=DuringMating, func=offGen),
-            pyOperator(func=allTwos),
-        ]
+        duringOps = pyOperator(func=offGen),
+        postOps = pyOperator(func=allTwos),
     )
     return (simu.dvars(0).succ, simu.gen())
 

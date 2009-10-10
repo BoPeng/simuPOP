@@ -4,6 +4,9 @@ get:
 	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/web ${HOME}/simuPOP/web/persistent --exclude='sessions'
 	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/cookbook ${HOME}/simuPOP/web/persistent --exclude='sessions'
 
+put:
+	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/cookbook
+
 # figure out what has been added or changed
 diff:
 	@svn stat | grep -v -P '\.htaccess|\.flock|\.lastmod|\.page|\.stat|RecentChanges|config.php|skins|\.notify|SiteAdmin|\.pyc|\.pyo';\

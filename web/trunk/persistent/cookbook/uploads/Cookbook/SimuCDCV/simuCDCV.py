@@ -604,12 +604,22 @@ def simuCDCV(numDSL, initSpec, selModel,
     FMax = 0
     # start evolution
     simu.evolve(                            # start evolution
-        preOps=
+        initOps=
             [initSex()] + 
             # initialize DSL 
             [initByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
             [pyExec('allelesBeforeExpansion=[]')],
-        ops=[         
+        preOps = [
+            #
+            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
+            # mutate
+            mutation,
+            # selection
+            selection,
+            # migration
+            migration, 
+        ],
+        postOps = [         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
             stat(popSize=True, alleleFreq=range(numDSL), vars=['alleleFreq', 'alleleFreq_sp', 'alleleNum', 'alleleNum_sp'], step=update),
@@ -622,14 +632,6 @@ def simuCDCV(numDSL, initSpec, selModel,
                 allelesBeforeExpansion.extend([alleleFreq[i].keys()])
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
                 numDSL, at=[burnin]),
-            #
-            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
-            # mutate
-            mutation,
-            # selection
-            selection,
-            # migration
-            migration, 
             # visualizer
             pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, name), step=update ),
             # monitor execution time

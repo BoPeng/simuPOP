@@ -71,12 +71,12 @@ simu = simulator(pop, randomMating())
 # simulation
 print "p\tP00 (p^2)\tP01 (2p(1-p))\tP11 ((1-p)^2)"
 simu.evolve(
-    preOps = [
+    initOps = [
         initSex(),
         initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
     ],
-    ops = [
+    postOps = [
         stat(alleleFreq=[0], genoFreq=[0]),
         pyEval(r"'%.3f\t%.3f (%.3f)\t%.3f (%.3f)\t%.3f (%.3f)\n' % (alleleFreq[0][0], "\
             "genoFreq[0][(0,0)], alleleFreq[0][0]*alleleFreq[0][0], "\

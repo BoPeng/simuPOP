@@ -25,7 +25,7 @@ samples = 2 # just to make this script runs quicker for the routine syntax check
 simu = simulator(population(size=sz, ploidy=2, 
     loci=[31], lociPos=[x/30.*3 for x in range(0,31)],
     infoFields=['fitness']),
-    randomMating(), rep=1)
+    randomMating(ops=recombinator(rates=0.001)))
 
 valid = 0
 fixed = 0
@@ -36,7 +36,7 @@ while True:
 
     simu.setGen(0)
     ret = simu.evolve(
-        preOps = [
+        initOps = [
             # init SNP
             #initByFreq([.5,.5], atLoci=range(1,31)),
             # init MST
@@ -46,21 +46,21 @@ while True:
             # init QTL
             initByValue([0], loci=[0]),
         ],
-        ops = [
+        preOps = [
             # mutation
             smmMutator(rates=1e-4, loci=range(1,31), maxAllele=100),
-            # calculate LD
-            stat(alleleFreq=range(0,31)),
             # LD=[[0,x] for x in [1,10,25]]),
             #varPlotter("[LD_prime[0][1],LD_prime[0][10],LD_prime[0][25]]",
             #    varDim=3, byRep=1, history=True, update=10, ylim=[0,1]),
             # introduce mutation at 100 gen to 10 individuals
             pointMutator(inds=[0], loci=[0], allele=1, at = [100]),
-            # recombination, with rate 0.001. 
-            recombinator(rates=0.001),
             # selective advantage
-            mapSelector(loci=0, fitness={'0-0':1, '0-1':1.5, '1-1':2},
+            mapSelector(loci=0, fitness={(0,0):1, (0,1):1.5, (1,1):2},
                 begin = 100, end=110),
+        ], 
+        postOps = [
+            # calculate LD
+            stat(alleleFreq=range(0,31)),
             # check fixation
             terminateIf('alleleFreq[0][0]==1.', begin = 110),
             #pyEval('gen,alleleFreq[0][0]', begin = 100),

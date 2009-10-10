@@ -75,16 +75,17 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
         
     simu.evolve(
         # everyone initially will have the same allele frequency
-        preOps = [
+        initOps = [
             initSex(),
             initByFreq([p, 1-p])
         ],
-        ops=[stat(alleleFreq=[0]),
+        postOps = [
+            stat(alleleFreq=[0]),
             pyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),
-	    pyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
-	    pyOutput('\n', reps=-1, step = s),
-	    plotter,
-            ],
+	        pyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
+	        pyOutput('\n', reps=-1, step = s),
+	        plotter,
+        ],
         gen = generations
     )
 

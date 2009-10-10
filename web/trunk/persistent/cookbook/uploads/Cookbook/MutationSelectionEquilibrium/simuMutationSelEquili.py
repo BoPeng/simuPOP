@@ -60,14 +60,16 @@ def simuMigration(PopSize, m, generations, step):
 # simulate random mating within the population
 
     simu.evolve(
-        preOps = initSex(),
+        initOps = initSex(),
     # before evolve function takes place
     #   initiate population with males and females
-        ops = [
+        preOps = [
         # begin evolve function
             snpMutator(u=m),
         # mutation function with rate for "A -> a" set earlier
             maSelector(loci=0, fitness=[1, 1-10*m, 1-10*2*m]),
+        ],
+        postOps = [
         # apply a purifying selection pressure to the first locus
             stat(alleleFreq=[0, 1], step=step),
         # stat function taken set amount of steps

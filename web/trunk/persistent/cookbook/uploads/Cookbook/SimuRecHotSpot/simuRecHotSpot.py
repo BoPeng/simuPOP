@@ -45,7 +45,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-from simuUtil import *
+from simuPOP.utils import *
 import os, sys, types, exceptions, os.path, math
 
 #
@@ -348,24 +348,25 @@ def simuHotSpot(numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixing
         loci = [numLoci], lociPos = lociPos)
     # simulator
     simu = simulator( pop, 
-        randomMating(subPopSize=popSizeFunc ),
+        randomMating(subPopSize=popSizeFunc, ops = recombinator(rates=recRate)),
         rep = 1)
     # evolve! If --dryrun is set, only show info
     simu.evolve( 
-        preOps = [
+        initOps = [
+            initSex(),
             # initialize all loci with two haplotypes (111,222)
             initByValue(value=[[x]*numLoci for x in range(1,3)],
                 proportions=[.5]*2)
             ],
-        ops = [
+        preOps = [
             # k-allele model for mutation of SNP
             kamMutator(rates=mutaRate, k=2),
-            # recombination rate
-            recombinator(rates=recRate),
             # split population after burnin, to each sized subpopulations
             splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
             # migration
             migrOp,
+        ],
+        postOps = [
             # report statistics
             stat(popSize=True, alleleFreq=[0,1], LD=[0,1], step=10),
             # report progress
@@ -387,7 +388,7 @@ def simuHotSpot(numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixing
 
 if __name__ == '__main__':
         # get parameters
-    par = simuOpt.simuOpt(options,
+    par = simuOpt.simuParam(options,
         '''This program simulates the evolution of a set SNP loci, subject 
          to the impact of mutation, migration, recombination and population size change. 
          Click 'help' for more information about the evolutionary scenario.''',

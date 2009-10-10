@@ -565,7 +565,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     ### initialization 
     ###
     if maxAle > 1:    # Not SNP
-        preOperators = [
+        initOperators = [
             initSex(),
             # initialize all loci with 10 haplotypes
             initByValue(value=[[x]*sum(loci) for x in range(50, 60)],
@@ -574,7 +574,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             initByValue([0]*len(DSL), loci=DSL)
         ]
     else: # SNP
-        preOperators = [
+        initOperators = [
             initSex(),
             # initialize all loci with two haplotypes (000, 111)
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
@@ -616,9 +616,10 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     ###
     ### output progress
     ###
-    operators = [
-        mutator, 
-        rec, 
+    preOperators = [
+        mutator,
+    ]
+    postOperators = [
         savePopulation(burnin_pop, at=[burninGen-1]),
         stat(alleleFreq = DSL, popSize =True, end = burninGen, step = 100),
         stat(alleleFreq = DSL, popSize =True, begin = burninGen, end = burninGen + introLen),
@@ -645,7 +646,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         # this operator literally says: if there is no DS allele,
         # introduce one. Note that operator stat has to be called
         # before this one.
-        operators.append( 
+        postOperators.append( 
             ifElse("alleleFreq[%d][0]==1." % DSL[i],
                 pointMutator(loci=DSL[i], allele=1, inds=i),
             begin=burninGen, end = burninGen + introLen) 
@@ -654,11 +655,11 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     # if introSel < 0, mutants will have selective advantage and will
     # reach high allele frequency quickly.
     if introSel != 0:
-        operators.append(
+        preOperators.append(
             pyOperator(func=dynaAdvSelector, param = (minAlleleFreq, maxAlleleFreq, DSL, introSel), 
                 begin=burninGen, end = burninGen + introLen) )
     #
-    operators.extend([
+    postOperators.extend([
         # the simulation will stop if the disease allele frequencies
         # are not within range at the end of this stage
         terminateIf("True in [(1.-alleleFreq[DSL[i]][0] < minAlleleFreq[i] or 1.-alleleFreq[DSL[i]][0] > maxAlleleFreq[i]) for i in range(len(DSL))]",
@@ -671,7 +672,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     ### split to subpopulations
     ### 
     if numSubPop > 1:
-        operators.append( 
+        preOperators.append( 
             splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[splitGen]),
         )
     ###
@@ -680,7 +681,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     if mlSelModel in ['additive', 'multiplicative']:
         mlSelModel = {'additive':SEL_Additive, 
             'multiplicative':SEL_Multiplicative}[mlSelModel]
-        operators.append( mlSelector(
+        preOperators.append( mlSelector(
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
@@ -688,20 +689,20 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         )
     elif mlSelModel == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin = burninGen + introLen) )
+        preOperators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin = burninGen + introLen) )
     ###
     ### migration
     ###
     if numSubPop > 1 and migrModel == 'island' and migrRate > 0:
-        operators.append( migrator(MigrIslandRates(migrRate, numSubPop),
+        preOperators.append( migrator(MigrIslandRates(migrRate, numSubPop),
             mode=MigrByProbability, begin=mixingGen) )
     elif numSubPop > 1 and migrModel == 'stepping stone' and migrRate > 0:
-        operators.append( migrator(MigrSteppingStoneRates(migrRate, numSubPop, 
+        preOperators.append( migrator(MigrSteppingStoneRates(migrRate, numSubPop, 
             circular=True),    mode=MigrByProbability, begin=mixingGen) )
     ###
     ### output statistics, track performance
     ###
-    operators.extend([
+    postOperators.extend([
         pyOperator(func=outputStatistics, 
             param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
             at = [burninGen, splitGen, mixingGen, endingGen ] ), 
@@ -711,7 +712,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     )
     if len(savePop) > 0:
         # save population at given generations
-        operators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.pop" % (name, gen))', 
+        postOerators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.pop" % (name, gen))', 
             at=savePop))
     ###
     ###  demographic model
@@ -740,11 +741,11 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         # create a simulator
         if os.path.isfile(burnin_pop):
             pop = LoadPopulation(burnin_pop)
-            simu = simulator(pop, randomMating(), rep=1)
+            simu = simulator(pop, randomMating(ops=rec), rep=1)
             # skip the burnin stage.
             print "Loading %s and skip burnin stage (gen=%d)" % (burnin_pop, burninGen)
             simu.setGen(burninGen)
-            simu.evolve(ops = operators, gen = endingGen)
+            simu.evolve(preOps = preOperators, postOps = postOperators, gen = endingGen)
         else:
             pop = population(size=popSizeFunc(0), ploidy=2,
                     loci = loci,
@@ -755,9 +756,11 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             pop.dvars().minAlleleFreq = minAlleleFreq
             pop.dvars().maxAlleleFreq = maxAlleleFreq
             pop.dvars().numLoci = numLoci
-            simu = simulator(pop, randomMating(), rep=1)
+            simu = simulator(pop, randomMating(ops=rec), rep=1)
             #
-            simu.evolve( preOps = preOperators, ops = operators, gen=endingGen - savedGen)
+            simu.evolve( initOps = initOperators, 
+                preOps = preOperators, postOps = postOperators,
+                gen=endingGen - savedGen)
         if simu.gen() != endingGen - savedGen:
             print "Population restarted at gen ", simu.gen(), endingGen-savedGen
             print "Overall fixed population ", fixedCount

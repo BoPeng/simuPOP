@@ -102,11 +102,10 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
     for idx,ind in enumerate(pop.individuals()):
         ind.setGenotype([idx])
     #
-    simu = simulator(pop, randomMating(), rep = numRep)
+    simu = simulator(pop, randomMating(ops=recombinator(rates=recRate)), rep = numRep)
     simu.evolve(
-        preOps = [initSex()],
-        ops=[
-            recombinator(rates=recRate),
+        initOps = initSex(),
+        postOps=[
             pyOperator(func=avgNumOfAncestors),
             pyOutput('\n', reps=-1)
         ],

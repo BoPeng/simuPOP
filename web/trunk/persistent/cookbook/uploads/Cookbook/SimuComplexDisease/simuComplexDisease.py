@@ -650,7 +650,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ### initialization 
     ###
     if maxAle > 1:    # Not SNP
-        preOperators = [
+        initOperators = [
+            initSex(),
             # initialize all loci with 5 haplotypes
             initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
                 proportions=[.2]*5), 
@@ -658,7 +659,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             initByValue([0]*len(DSL), loci=DSL)
         ]
     else: # SNP
-        preOperators = [
+        initOperators = [
+            initSex(),
             # initialize all loci with two haplotypes (0001,111)
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2), 
@@ -692,9 +694,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ### output progress
     ###
-    operators = [
-        mutator, 
-        rec, 
+    preOperators = [mutator]
+    postOperators = [
         stat(alleleFreq=DSL, popSize=True, LD=[DSL[0], DSL[0]+1], step=1),
         # output to screen
         pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+" %f\n"%LD_prime[DSL[0]][DSL[0]+1]',
@@ -708,12 +709,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ###                                 endingGen
     ###            0 1 ...... i_T
-    operators.extend(traj.mutators(DSL))
+    preOperators.extend(traj.mutators(DSL))
     ### 
     ### split to subpopulations
     ### 
     if numSubPop > 1:
-        operators.append( 
+        preOperators.append( 
             splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[splitGen]),
         )
     ###
@@ -722,7 +723,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if mlSelModelTmp in ['additive', 'multiplicative']:
         mlSelModel = {'additive':SEL_Additive, 
             'multiplicative':SEL_Multiplicative}[mlSelModelTmp]
-        operators.append( mlSelector(
+        preOperators.append( mlSelector(
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
@@ -730,21 +731,21 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         )
     elif mlSelModelTmp == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0],
+        preOperators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0],
             begin=burninGen) )
     ###
     ### migration
     ###
     if numSubPop > 1 and migrModel == 'island' and migrRate > 0:
-        operators.append( migrator(migrIslandRates(migrRate, numSubPop),
+        preOperators.append( migrator(migrIslandRates(migrRate, numSubPop),
             mode=MigrByProbability, begin=mixingGen) )
     elif numSubPop > 1 and migrModel == 'stepping stone' and migrRate > 0:
-        operators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
+        preOperators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
             circular=True),    mode=MigrByProbability, begin=mixingGen) )
     ###
     ### output statistics, track performance
     ###
-    operators.extend([
+    postOperators.extend([
         pyOperator(func=outputStatistics, 
             param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
             at = [burninGen, splitGen, mixingGen, endingGen ] ), 
@@ -754,7 +755,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     )
     if len(savePop) > 0:
         # save population at given generations
-        operators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.%s" % (name, gen, format))', 
+        postOperators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.%s" % (name, gen, format))', 
             at=savePop))
     ### 
     ### prepare mating scheme
@@ -787,11 +788,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             subPopSize=popSizeFunc,            # demographic model
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
-            freqFunc=traj.func()                                # frequency control function
+            freqFunc=traj.func(),                                # frequency control function
+            ops = [rec, parentsTagger()],
         ),
         rep=1)
     # evolve! If --dryrun is set, only show info
-    simu.evolve( preOps = preOperators, ops = operators, 
+    simu.evolve( initOps = initOperators, preOps = preOperators, postOps = postOperators,
         gen=endingGen-savedGen, dryrun=dryrun )
     if dryrun:
         raise exceptions.SystemError("Stop since in dryrun mode.")
@@ -800,18 +802,17 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     #
     # save saveGen-1 ancestral generations
     simu.population(0).setAncestralDepth(savedGen-1)
-    operators.append(parentsTagger())
     simu.setMatingScheme(
         randomMating(
             subPopSize=popSizeFunc,            # demographic model
-            numOffspring = numOffspring,
-            mode = {'constant': NumOffspring, 
+            numOffspring = ({'constant': NumOffspring, 
                     'geometric': GeometricDistribution
-                   }[numOffMode]
+                   }[numOffMode], numOffspring),
+            ops = [rec, parentsTagger()],
         )
     )
     # different evolution method for the last few generations
-    simu.evolve(ops=operators, end=endingGen)
+    simu.evolve(preOps = preOperators, postOps = postOperators, end=endingGen)
     # succeed save information
     pop = simu.population(0)
     # we want to save info on how this population is generated.

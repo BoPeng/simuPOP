@@ -43,13 +43,12 @@ class haplodiploidRecombinator(pyOperator):
         # this operator is used to copy paternal chromosomes
         self.copier = genoTransmitter()
         self.initialized = False
-        # With no *param* and stage=DuringMating, this operator expects a function
+        # With no *param*, this operator expects a function
         # in the form of ``(pop, off, dad, mom)``. If *param* is given, the
         # function should have the form ``(pop, off, dad, mom, param)``. If
         # *offspringOnly* is set to ``True``, the function can be simplied
         # to ``(off)`` or ``(off, param)``.
-        pyOperator.__init__(self, func=self.transmitGenotype,
-            stage=DuringMating, *args, **kwargs)
+        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
 
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinator and copier needs to be initialized. Basically, they
@@ -111,15 +110,13 @@ def simuHaplodiploid(N, numMito=3, gen=10):
     simu = simulator(pop, haplodiploidRecMating(rates=0.1))
 
     simu.evolve(
-        preOps=[
+        initOps=[
             initSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
             initByFreq([0.4] + [0.2]*3),
         ],
-        ops=[
-            parentsTagger(),
-            dumper(structure=False),
-        ],
+        duringOps = parentsTagger(),
+        postOps = dumper(structure=False),
         gen = gen
     )
     return simu.extract(0)

@@ -93,12 +93,14 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
     else:
         s = 20
     simu.evolve(
-        preOps = initSex(),
-        ops = [
-            stat(alleleFreq=[0], vars=['alleleFreq_sp'], stage=PreMating), 
-            migrator(rate = a),
+        initOps = initSex(),
+        preOps = [
+            stat(alleleFreq=[0], vars=['alleleFreq_sp']), 
             pyEval(r'"Frequency at generation %d: %s\n" % (gen, ", ".join(["%.2f" % x for x in freq]))',
-                stmts = 'freq = [subPop[x]["alleleFreq"][0][0] for x in range(%i)]' % numOfSubPops, step = s, stage=PreMating),
+                stmts = 'freq = [subPop[x]["alleleFreq"][0][0] for x in range(%i)]' % numOfSubPops, step = s),
+        ],
+        postOps = [
+            migrator(rate = a),
             plotter,
             ],
         gen = generations,

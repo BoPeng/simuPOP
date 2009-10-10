@@ -30,7 +30,7 @@ def simuRestartIfFailed(N, initFreq, freqRange, gen, genCheck):
     while True:
         simu = simulator(pop, randomMating())
         evolved = simu.evolve(
-            ops = [
+            postOps = [
                 stat(alleleFreq=[0], at=genCheck),
                 terminateIf('alleleFreq[0][1] > fr[1] or alleleFreq[0][1] < fr[0]',
                     at=genCheck)

@@ -46,20 +46,16 @@ def simuMitochondrial(N, numMito=3, gen=10):
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 
-    simu = simulator(pop, randomMating())
+    simu = simulator(pop, randomMating(ops = [ recombinator(rates=0.1),
+            mitochondrialGenoTransmitter(), parentsTagger()]))
 
     simu.evolve(
-        preOps=[
+        initOps=[
             initSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
             initByFreq([0.4] + [0.2]*3),
         ],
-        ops=[
-            recombinator(rates=0.1),
-            mitochondrialGenoTransmitter(),
-            parentsTagger(),
-            dumper(structure=False),
-        ],
+        postOps = dumper(structure=False),
         gen = gen
     )
     return simu.extract(0)

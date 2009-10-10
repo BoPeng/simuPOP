@@ -10,7 +10,9 @@ from simuPOP import *
 import os, sys, math
 from types import *
 from exceptions import *
-from simuUtil import simuProgress, SaveCSV
+from simuPOP.utils import simuProgress, SaveCSV
+
+# This does not yet exist
 from simuCommon import *
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
@@ -237,7 +239,9 @@ def writeTrajectory(popFunc, trajFunc, gen, file):
 def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=False,
         recombination=False, selection=False):
     '''Return mutation and recombination operators'''
-    ops = []
+    preOps = []
+    postOps = []
+    duringOps = []
     if progress:
         # statistics calculation and display
         exp = ['gen %3d', 'size=%s']
@@ -251,7 +255,7 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
             exp.append('VSP=%s')
             var.append('virtualPopSize')
         keyGens = [par.initGen - 1, -1]
-        ops.extend([
+        postOps.extend([
             stat(popSize = True, Fst = range(pop.totNumLoci()),
                 step = par.step, stage=PreMating),
             pyEval(r'"At the beginning of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % preGen),
@@ -262,19 +266,19 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
                 at = keyGens)
         ])
     if savePop and par.saveStep > 0:
-        ops.extend([
+        postOps.extend([
             pyEval(r"'Saving current generation to %s%%d.pop\n' %% (gen*scale)" % par.saveName,
                 step=par.saveStep, stage=PreMating),
             savePopulation(outputExpr="'%s/%s%%d.pop' %% (gen*scale)" % (par.name, par.saveName),
                 step=par.saveStep, stage=PreMating),
         ])
     if mutation:
-        ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
+        preOps.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
     if recombination:
         if par.recMap == 'physical':
             print 'Scaled recombination at %.3f cM/Mb over %.2f Mb physical distance (first chromosome)' % \
                 (par.recIntensity * 1e6, pop.lociDist(0, pop.numLoci(0)-1))
-            ops.append(recombinator(intensity=par.recIntensity))
+            duringOps.append(recombinator(intensity=par.recIntensity))
         else: # use map distance
             try:
                 pos = [pop.dvars().genDist[pop.locusName(x)] for x in range(pop.totNumLoci())]
@@ -294,10 +298,10 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
                     pop.dvars().genDist[pop.locusName(0)]), pop.lociDist(0, pop.numLoci(0)-1))
             # recombination rate at the end of each chromosome will be invalid
             # but this does not matter
-            ops.append(recombinator(rate=rate, loci = loc))
+            duringOps.append(recombinator(rate=rate, loci = loc))
     if selection:
         if par.mlSelModel in [Additive, Multiplicative]:
-            ops.append(mlSelector(
+            preOps.append(mlSelector(
                 # with five multiple-allele selector as parameter
                 [ maSelector(locus=par.DSL_Idx[x], wildtype=[0],
                     fitness=[par.fitness[3*x], par.fitness[3*x+1], par.fitness[3*x+2]]) \
@@ -305,8 +309,8 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
                 mode=par.mlSelModel))
         elif par.mlSelModel == 'interaction':
             # multi-allele selector can handle multiple DSL case
-            ops.append(maSelector(loci=par.DSL_Idx, fitness=par.fitness, wildtype=[0]))
-    return ops
+            preOps.append(maSelector(loci=par.DSL_Idx, fitness=par.fitness, wildtype=[0]))
+    return {'preOps': preOps, 'duringOps': duringOps, 'postOps': postOps}
 
 
 def createInitialPopulation(par, logger=None):
@@ -424,15 +428,15 @@ def simuForward(par, pop, logger=None):
             logger.info("Evolving the population freely...")
         simu = simulator(pop, randomMating(subPopSize = popSizeFunc))
         simu.evolve(
-            preOps = [initSex()],
-            ops = getOperators(pop, par,
+            initOps = initSex(),
+            gen = par.initGen + par.expandGen,
+            **getOperators(pop, par,
                 progress=True,
                 savePop=False,
                 selection=False,
                 mutation=True,
-                recombination=True
-            ),
-            gen = par.initGen + par.expandGen)
+                recombination=True)
+            )
         expandedPop = simu.extract(0)
     else:
         if logger is not None:
@@ -477,15 +481,15 @@ def simuForward(par, pop, logger=None):
                 subPopSize = popSizeFunc)
         )
         simu.evolve(
-            preOps = [initSex()],
-            ops = getOperators(pop, par,
+            initOps = initSex(),
+            gen = par.initGen + par.expandGen,
+            ** getOperators(pop, par,
                 progress=True,
                 savePop=False,
                 selection=False,
                 mutation=True,
                 recombination=True
-            ),
-            gen = par.initGen + par.expandGen
+            )
         )
         expandedPop = simu.extract(0)
     if logger is not None:
@@ -496,9 +500,7 @@ def simuForward(par, pop, logger=None):
     par.progress = simuProgress('Generating case (%d) and control (%d) sample' % \
         (par.cases, par.controls), par.cases + par.controls)
     simu.evolve(
-        ops = [
-            pyOperator(stage=DuringMating, func=filterInd, param=par, offspringOnly=True)
-        ],
+        duringOps = pyOperator(func=filterInd, param=par, offspringOnly=True),
         gen = 1
     )
     par.progress.done()

@@ -28,11 +28,11 @@ def podParentsChooser(pop, sp):
     while True:
         # randomly choose a male
         male = males[random.randint(0, len(males)-1)]
-        pod = male.info('pod')
+        pod = male.pod
         # randomly choose a female from different pod
         while True:
             female = females[random.randint(0, len(females)-1)]
-            if female.info('pod') != pod:
+            if female.pod != pod:
                 break
         yield (male, female)
 
@@ -49,14 +49,17 @@ def simuPodMating(numPods, podSize):
 
     simu = simulator(pop, homoMating(
         pyParentsChooser(podParentsChooser),
-        mendelianOffspringGenerator(numOffspring=1)))
+        offspringGenerator(numOffspring=1, ops=mendelianGenoTransmitter())))
     simu.evolve(
-        preOps = [initByFreq([0.5, 0.5])],
-        ops = [
-            # offspring stays with their natal pod
-            inheritTagger(mode=TAG_Maternal, infoFields=['pod']),
+        initOps = [
+            initSex(),
+            initByFreq([0.5, 0.5])
+        ],
             # calculate size of pods
-            stat(popSize=True, subPops=[(0,x) for x in range(numPods)], stage=PrePostMating),
+        preOps = stat(popSize=True, subPops=[(0,x) for x in range(numPods)]),
+            # offspring stays with their natal pod
+        duringOps = inheritTagger(mode=Maternal, infoFields='pod'),
+        postOps = [
             # print size of each pod
             pyEval(r"'Size of pods: %s\n' % (','.join(['%d' % x for x in subPopSize]))")
             ],
