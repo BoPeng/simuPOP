@@ -8,7 +8,7 @@ put:
 	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent/cookbook/uploads simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/cookbook/ --exclude='.svn'
 
 clean:
-	rm -f *.png sample* *.dat *.txt *.log
+	rm -f *.png sample* *.dat *.txt *.log  persistent/cookbook/uploads/Cookbook/SimuRecHotSpot/simuRecHotSpot.cfg
 	rm -rf cdcv simu
 	
 # figure out what has been added or changed
