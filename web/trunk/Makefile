@@ -1,12 +1,16 @@
 # backup from webpage
 get:
-	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:htdocs ${HOME}/simuPOP/web --exclude='src_doc' --exclude='manual'
+	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:htdocs ${HOME}/simuPOP/web --exclude='src_doc' --exclude='manual_release' --exclude='manual_svn'
 	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/web ${HOME}/simuPOP/web/persistent --exclude='sessions'
 	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/cookbook ${HOME}/simuPOP/web/persistent --exclude='sessions'
 
 put:
-	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop/cookbook
+	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent/cookbook simupop,simupop@web.sourceforge.net:/home/persistent/s/si/simupop
 
+clean:
+	rm -f *.png sample* *.dat *.txt *.log
+	rm -rf cdcv simu
+	
 # figure out what has been added or changed
 diff:
 	@svn stat | grep -v -P '\.htaccess|\.flock|\.lastmod|\.page|\.stat|RecentChanges|config.php|skins|\.notify|SiteAdmin|\.pyc|\.pyo';\
