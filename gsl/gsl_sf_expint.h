@@ -1,10 +1,11 @@
 /* specfunc/gsl_sf_expint.h
  * 
+ * Copyright (C) 2007 Brian Gough
  * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002 Gerard Jungman
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -55,6 +56,15 @@ int     gsl_sf_expint_E2_e(const double x, gsl_sf_result * result);
 double  gsl_sf_expint_E2(const double x);
 
 
+/* E_n(x) := Re[ Integrate[ Exp[-xt]/t^n, {t,1,Infinity}] ]
+ *
+ * x != 0.0
+ * exceptions: GSL_EDOM, GSL_EOVRFLW, GSL_EUNDRFLW
+ */
+int     gsl_sf_expint_En_e(const int n, const double x, gsl_sf_result * result);
+double  gsl_sf_expint_En(const int n, const double x);
+
+
 /* E_1_scaled(x) := exp(x) E_1(x)
  *
  * x != 0.0
@@ -71,6 +81,14 @@ double  gsl_sf_expint_E1_scaled(const double x);
  */
 int     gsl_sf_expint_E2_scaled_e(const double x, gsl_sf_result * result);
 double  gsl_sf_expint_E2_scaled(const double x);
+
+/* E_n_scaled(x) := exp(x) E_n(x)
+ *
+ * x != 0.0
+ * exceptions: GSL_EDOM, GSL_EOVRFLW, GSL_EUNDRFLW
+ */
+int     gsl_sf_expint_En_scaled_e(const int n, const double x, gsl_sf_result * result);
+double  gsl_sf_expint_En_scaled(const int n, const double x);
 
 
 /* Ei(x) := - PV Integrate[ Exp[-t]/t, {t,-x,Infinity}]

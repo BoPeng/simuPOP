@@ -1,10 +1,10 @@
 /* complex/gsl_complex_math.h
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004 Jorma Olavi Tähtinen, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004, 2007 Jorma Olavi Tähtinen, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -19,6 +19,7 @@
 
 #ifndef __GSL_COMPLEX_MATH_H__
 #define __GSL_COMPLEX_MATH_H__
+#include <gsl/gsl_inline.h>
 #include <gsl/gsl_complex.h>
 
 #undef __BEGIN_DECLS
@@ -35,11 +36,12 @@ __BEGIN_DECLS
 
 /* Complex numbers */
 
-gsl_complex gsl_complex_rect (double x, double y);  /* r= real+i*imag */
 gsl_complex gsl_complex_polar (double r, double theta); /* r= r e^(i theta) */
 
+INLINE_DECL gsl_complex gsl_complex_rect (double x, double y);  /* r= real+i*imag */
+
 #ifdef HAVE_INLINE
-extern inline gsl_complex
+INLINE_FUN gsl_complex
 gsl_complex_rect (double x, double y)
 {                               /* return z = x + i y */
   gsl_complex z;
