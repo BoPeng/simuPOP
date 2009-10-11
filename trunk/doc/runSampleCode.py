@@ -103,6 +103,8 @@ def writeFile(content, srcFile, logFile=False):
     expect_error = False
     start = not logFile
     for line in content:
+        if line.startswith('#begin_file'):
+            continue
         if logFile and line.startswith('>>>'):
             start = True
         if not start:
