@@ -300,7 +300,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 	}
 
 	// increase
-	if (GetRNG().randUniform01() < m_incProb) {
+	if (GetRNG().randUniform() < m_incProb) {
 #ifdef BINARYALLELE
 		allele = 1;
 #else
@@ -363,7 +363,7 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 	mutator * mut = reinterpret_cast<mutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
 
-	if (mu == 1.0 || GetRNG().randUniform01() < mu)
+	if (mu == 1.0 || GetRNG().randUniform() < mu)
 		mut->mutate(allele, locus);
 }
 
@@ -391,7 +391,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 		if (match) {
 			DBG_DO(DBG_MUTATOR, cerr << "Context " << alleles << " mutator " << i << endl);
 			mutator * mut = reinterpret_cast<mutator *>(m_mutators[i]);
-			if (GetRNG().randUniform01() < mut->mutRate(locus))
+			if (GetRNG().randUniform() < mut->mutRate(locus))
 				mut->mutate(allele, locus);
 			return;
 		}
@@ -399,7 +399,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 	if (m_contexts.size() + 1 == m_mutators.size()) {
 		DBG_DO(DBG_MUTATOR, cerr << "No context found. Use last mutator." << endl);
 		mutator * mut = reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]);
-		if (GetRNG().randUniform01() < mut->mutRate(locus))
+		if (GetRNG().randUniform() < mut->mutRate(locus))
 			mut->mutate(allele, locus);
 	} else {
 		cerr << "Failed to find context " << alleles << endl;

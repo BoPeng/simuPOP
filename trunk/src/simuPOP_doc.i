@@ -7824,10 +7824,10 @@ Details:
 
     Create a RNG object using specified name and seed. If rng is not
     given, environmental variable GSL_RNG_TYPE will be used if it is
-    available. Otherwise, RNGmt19937 will be used. If seed is not
-    given, /dev/urandom, /dev/random, or other system random number
-    source will be used to guarantee that random seeds are used even
-    if more than one simuPOP sessions are started simultaneously.
+    available. Otherwise, generator mt19937 will be used. If seed is
+    not given, /dev/urandom, /dev/random, or other system random
+    number source will be used to guarantee that random seeds are used
+    even if more than one simuPOP sessions are started simultaneously.
 
 "; 
 
@@ -7850,6 +7850,19 @@ Details:
     Use another underlying RNG for the current RNG object. The
     handling of parameters rng and seed is the same as RNG::RNG(name,
     seed).
+
+"; 
+
+%feature("docstring") simuPOP::RNG::setSeed "
+
+Usage:
+
+    x.setSeed(seed=0)
+
+Details:
+
+    Set random seed for this random number generator. If seed is 0,
+    method described in setRNG is used.
 
 "; 
 
@@ -7878,68 +7891,22 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::maxSeed "
-
-Usage:
-
-    x.maxSeed()
-
-Details:
-
-    Return the maximum allowed seed value
-
-"; 
-
-%feature("docstring") simuPOP::RNG::setSeed "
-
-Usage:
-
-    x.setSeed(seed=0)
-
-Details:
-
-    Set random seed for this random number generator. If seed is 0,
-    method described in setRNG is used.
-
-"; 
-
 %ignore simuPOP::RNG::generateRandomSeed();
 
-%feature("docstring") simuPOP::RNG::max "
+%feature("docstring") simuPOP::RNG::randUniform "
 
 Usage:
 
-    x.max()
+    x.randUniform()
 
 Details:
 
-    Maximum value of this RNG
+    Generate a random number following a rng_uniform [0, 1)
+    distribution.
 
 "; 
 
-%feature("docstring") simuPOP::RNG::randGet "
-
-Usage:
-
-    x.randGet()
-
-Details:
-
-    Return a random number in the range of [0, 2, ... max()-1]
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randBit "
-
-Usage:
-
-    x.randBit()
-
-Details:
-
-    Return a random bit.
-
-"; 
+%feature("docstring") simuPOP::RNG::randBit "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RNG::randInt "
 
@@ -7953,7 +7920,57 @@ Details:
 
 "; 
 
-%ignore simuPOP::RNG::randIntArray(ULONG n, ULONG size, ULONG *vec);
+%feature("docstring") simuPOP::RNG::randNormal "
+
+Usage:
+
+    x.randNormal(mu, sigma)
+
+Details:
+
+    Generate a random number following a normal distribution with mean
+    mu and standard deviation sigma.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randExponential "
+
+Usage:
+
+    x.randExponential(mu)
+
+Details:
+
+    Generate a random number following a exponential distribution with
+    parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randGamma "
+
+Usage:
+
+    x.randGamma(a, b)
+
+Details:
+
+    Generate a random number following a gamma distribution with
+    parameters a and b.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randChisq "
+
+Usage:
+
+    x.randChisq(nu)
+
+Details:
+
+    Generate a random number following a Chi-squared distribution with
+    nu degrees of freedom.
+
+"; 
 
 %feature("docstring") simuPOP::RNG::randGeometric "
 
@@ -7964,54 +7981,9 @@ Usage:
 Details:
 
     Generate a random number following a geometric distribution with
-    parameter p. Please check the documentation of gsl_ran_geometric
-    for details.
+    parameter p.
 
 "; 
-
-%feature("docstring") simuPOP::RNG::randUniform01 "
-
-Usage:
-
-    x.randUniform01()
-
-Details:
-
-    Generate a random number following a uniform distribution between
-    0 and 1. Please check the documentation of gsl_ran_uniform for
-    details.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randNormal "
-
-Usage:
-
-    x.randNormal(m, v)
-
-Details:
-
-    Generate a random number following a normal distribution with mean
-    m and standard deviation v. Please check the documentation of
-    gsl_ran_gaussian for details.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randExponential "
-
-Usage:
-
-    x.randExponential(v)
-
-Details:
-
-    Generate a random number following a exponential distribution with
-    parameter v. Please check the documentation of gsl_ran_exponential
-    for details.
-
-"; 
-
-%ignore simuPOP::RNG::randUniform01Array(ULONG size, double *vec);
 
 %feature("docstring") simuPOP::RNG::randBinomial "
 
@@ -8022,24 +7994,7 @@ Usage:
 Details:
 
     Generate a random number following a binomial distribution with
-    parameters n and p. Please check the documentation of
-    gsl_ran_binomial for details.
-
-"; 
-
-%ignore simuPOP::RNG::randMultinomial(unsigned int N, const vectorf &p, vectoru::iterator n);
-
-%feature("docstring") simuPOP::RNG::randMultinomialVal "
-
-Usage:
-
-    x.randMultinomialVal(N, p)
-
-Details:
-
-    Generate a random number following a multinomial distribution with
-    parameters N and p (a list of probabilities). Please check the
-    documentation of gsl_ran_multinomial for details.
+    parameters n and p.
 
 "; 
 
@@ -8047,13 +8002,25 @@ Details:
 
 Usage:
 
-    x.randPoisson(p)
+    x.randPoisson(mu)
 
 Details:
 
     Generate a random number following a Poisson distribution with
-    parameter p. Please check the documentation of gsl_ran_poisson for
-    details.
+    parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randMultinomial "
+
+Usage:
+
+    x.randMultinomial(N, p)
+
+Details:
+
+    Generate a random number following a multinomial distribution with
+    parameters N and p (a list of probabilities).
 
 "; 
 

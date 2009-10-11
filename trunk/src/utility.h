@@ -1330,11 +1330,10 @@ class RNG
 public:
 	/** Create a RNG object using specified name and seed. If \e rng is not
 	 *  given, environmental variable \c GSL_RNG_TYPE will be used if it is
-	 *  available. Otherwise, RNG \c mt19937 will be used. If \e seed is not
-	 *  given, <tt>/dev/urandom</tt>, <tt>/dev/random</tt>, or other system
-	 *  random number source will be used to guarantee that random seeds
-	 *  are used even if more than one simuPOP sessions are started
-	 *  simultaneously.
+	 *  available. Otherwise, generator \c mt19937 will be used. If \e seed is
+	 *  not given, <tt>/dev/urandom</tt>, <tt>/dev/random</tt>, or other system
+	 *  random number source will be used to guarantee that random seeds are
+	 *  used even if more than one simuPOP sessions are started simultaneously.
 	 */
 	RNG(const char * name = NULL, unsigned long seed = 0);
 
@@ -1343,10 +1342,22 @@ public:
 
 	/** Use another underlying RNG for the current RNG object. The handling of
 	 *  parameters \e rng and \e seed is the same as \c RNG::RNG(name, seed).
+	 *  <group>1-setup</group>
 	 */
 	void setRNG(const char * name = NULL, unsigned long seed = 0);
 
+	/** Set random seed for this random number generator. If seed is 0, method
+	 *  described in \c setRNG is used.
+	 *  <group>1-setup</group>
+	 */
+	void setSeed(unsigned long seed = 0)
+	{
+		setRNG(name(), seed);
+	}
+
+
 	/** Return the name of the current random number generator.
+	 *  <group>2-info</group>
 	 */
 	const char * name()
 	{
@@ -1356,75 +1367,78 @@ public:
 
 	/** Return the seed used to initialize the RNG. This can be used to
 	 *  repeat a previous session.
+	 *  <group>2-info</group>
 	 */
 	unsigned long seed()
 	{
 		return m_seed;
 	}
 
-
-	/** Return the maximum allowed seed value
-	 */
-	unsigned long maxSeed()
-	{
-		return std::numeric_limits<unsigned long>::max();
-	}
-
-
-	/** Set random seed for this random number generator. If seed is 0, method
-	 *  described in \c setRNG is used.
-	 */
-	void setSeed(unsigned long seed = 0)
-	{
-		setRNG(name(), seed);
-	}
-
-
 	/// CPPONLY
 	unsigned long generateRandomSeed();
 
-	/** Maximum value of this RNG
+
+	/** Generate a random number following a rng_uniform [0, 1) distribution.
+	 *  <group>3-rng</group>
 	 */
-	unsigned long max()
+	double randUniform()
 	{
-		return gsl_rng_max(m_RNG);
+		return gsl_rng_uniform(m_RNG);
 	}
 
-
-	/** Return a random number in the range of <tt>[0, 2, ... max()-1]</tt>
-	 */
-	unsigned long int randGet()
-	{
-		return gsl_rng_get(m_RNG);
-	}
-
-
-	/** Return a random bit.</tt>
+	/** Return a random bit. This is not part of GSL.
+	 *  HIDDEN
 	 */
 	bool randBit();
 
 	/** return a random number in the range of <tt>[0, 1, 2, ... n-1]</tt>
+	 *  <group>3-rng</group>
 	 */
 	unsigned long int randInt(unsigned long int n)
 	{
 		return gsl_rng_uniform_int(m_RNG, n);
 	}
 
-
-	/// CPPONLY
-	void randIntArray(ULONG n, ULONG size, ULONG * vec)
+	/** Generate a random number following a normal distribution with mean
+	 *  \e mu and standard deviation \e sigma. 
+	 *  <group>4-distribution</group>
+	 */
+	double randNormal(double mu, double sigma)
 	{
-
-		DBG_FAILIF(n <= 0, ValueError, "RandInt: n should be positive.");
-
-		for (size_t i = 0; i < size; ++size)
-			vec[i] = gsl_rng_uniform_int(m_RNG, n);
+		return gsl_ran_gaussian(m_RNG, sigma) + mu;
 	}
 
+	
+	/** Generate a random number following a exponential distribution with
+	 *  parameter \e mu.
+	 *  <group>4-distribution</group>
+	 */
+	double randExponential(double mu)
+	{
+		return gsl_ran_exponential(m_RNG, mu);
+	}
+
+	/** Generate a random number following a gamma distribution with
+	 *  parameters \e a and \e b.
+	 *  <group>4-distribution</group>
+	 */
+	double randGamma(double a, double b)
+	{
+		return gsl_ran_gamma(m_RNG, a, b);
+	}
+
+	/** Generate a random number following a Chi-squared distribution with
+	 *  \e nu degrees of freedom.
+	 *  <group>4-distribution</group>
+	 */
+	double randChisq(double nu)
+	{
+		return gsl_ran_chisq(m_RNG, nu);
+	}
 
 	/** Generate a random number following a geometric distribution with
-	 *  parameter \e p. Please check the documentation of \c gsl_ran_geometric
-	 *  for details.
+	 *  parameter \e p.
+	 *  <group>4-distribution</group>
 	 */
 	int randGeometric(double p)
 	{
@@ -1432,46 +1446,9 @@ public:
 	}
 
 
-	/** Generate a random number following a uniform distribution between 0 and
-	 *  1. Please check the documentation of \c gsl_ran_uniform for details.
-	 */
-	double randUniform01()
-	{
-		return gsl_rng_uniform(m_RNG);
-	}
-
-
-	/** Generate a random number following a normal distribution with mean
-	 *  \e m and standard deviation \e v. Please check the documentation
-	 *  of \c gsl_ran_gaussian for details.
-	 */
-	double randNormal(double m, double v)
-	{
-		return gsl_ran_gaussian(m_RNG, v) + m;
-	}
-
-
-	/** Generate a random number following a exponential distribution with
-	 *  parameter \e v. Please check the documentation of
-	 *  \c gsl_ran_exponential for details.
-	 */
-	double randExponential(double v)
-	{
-		return gsl_ran_exponential(m_RNG, v);
-	}
-
-
-	/// CPPONLY
-	void randUniform01Array(ULONG size, double * vec)
-	{
-		for (size_t i = 0; i < size; ++size)
-			vec[i] = gsl_rng_uniform(m_RNG);
-	}
-
-
 	/** Generate a random number following a binomial distribution with
-	 *  parameters \e n and \e p. Please check the documentation of
-	 *  \c gsl_ran_binomial for details.
+	 *  parameters \e n and \e p.
+	 *  <group>4-distribution</group>
 	 */
 	UINT randBinomial(UINT n, double p)
 	{
@@ -1480,28 +1457,20 @@ public:
 		return gsl_ran_binomial(m_RNG, p, n);
 	}
 
-
-	/** CPPONLY
-	 *  Generate a random number following a multinomial distribution with
-	 *  parameters \e N and \e p (a list of probabilities). Please check the
-	 *  documentation of \c gsl_ran_multinomial for details.
+	/** Generate a random number following a Poisson distribution with
+	 *  parameter \e mu. 
+	 *  <group>4-distribution</group>
 	 */
-	void randMultinomial(unsigned int N, const vectorf & p, vectoru::iterator n)
+	UINT randPoisson(double mu)
 	{
-		// if sum p_i != 1, it will be normalized.
-		// the size of n is not checked!
-		vector<unsigned int> val(p.size());
-		gsl_ran_multinomial(m_RNG, p.size(), N, &p[0], &val[0]);
-		for (size_t i = 0; i < p.size(); ++i)
-			*(n++) = val[i];
+		return gsl_ran_poisson(m_RNG, mu);
 	}
 
-
 	/** Generate a random number following a multinomial distribution with
-	 *  parameters \e N and \e p (a list of probabilities). Please check the
-	 *  documentation of \c gsl_ran_multinomial for details.
+	 *  parameters \e N and \e p (a list of probabilities).
+	 *  <group>4-distribution</group>
 	 */
-	vectoru randMultinomialVal(unsigned int N, const vectorf & p)
+	vectoru randMultinomial(unsigned int N, const vectorf & p)
 	{
 		// if sum p_i != 1, it will be normalized.
 		// the size of n is not checked!
@@ -1513,17 +1482,6 @@ public:
 		return res;
 	}
 
-
-	/** Generate a random number following a Poisson distribution with
-	 *  parameter \e p. Please check the documentation of \c gsl_ran_poisson
-	 *  for details.
-	 */
-	UINT randPoisson(double p)
-	{
-		return gsl_ran_poisson(m_RNG, p);
-	}
-
-
 private:
 	/// global random number generator
 	gsl_rng * m_RNG;
@@ -1531,7 +1489,7 @@ private:
 	/// seed used
 	unsigned long m_seed;
 
-	/// used by RNG::randBit(). I was using static but this make it difficult
+	/// used by RNG::rand_bit(). I was using static but this make it difficult
 	/// to reset a RNG when a new seed is set.
 	WORDTYPE m_bitByte;
 	UINT m_bitIndex;
@@ -1570,7 +1528,7 @@ public:
 		if (m_fixed)
 			return m_fixedValue;
 
-		double rN = m_RNG->randUniform01() * m_N;
+		double rN = m_RNG->randUniform() * m_N;
 
 		size_t K = static_cast<size_t>(rN);
 
@@ -1595,7 +1553,7 @@ public:
 			return 0;
 		}
 		for (vectoru::iterator it = res.begin(); it != res.end(); ++it) {
-			rN = m_RNG->randUniform01() * m_N;
+			rN = m_RNG->randUniform() * m_N;
 			K = static_cast<size_t>(rN);
 
 			rN -= K;
@@ -1620,7 +1578,7 @@ public:
 			return;
 		}
 		for (Iterator it = beg; it != end; ++it) {
-			rN = m_RNG->randUniform01() * m_N;
+			rN = m_RNG->randUniform() * m_N;
 			K = static_cast<size_t>(rN);
 
 			rN -= K;

@@ -105,11 +105,11 @@ class TestUtility(unittest.TestCase):
         for n in range(1,10):
             rg.randBinomial(10, .7)
 
-    def testUniform01(self):
+    def testUniform(self):
         'Testing uniform distribution generator'
         rg = GetRNG()
         for n in range(1,10):
-            rg.randUniform01()
+            rg.randUniform()
 
     def testRandBit(self):
         'Testing random bit function'

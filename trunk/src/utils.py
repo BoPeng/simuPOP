@@ -1091,7 +1091,7 @@ class trajectorySimulator:
                 endingXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x) / sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    it = GetRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
                     for sp in range(len(Nt)):
                         endingXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(beginXt):
@@ -1184,7 +1184,7 @@ class trajectorySimulator:
                 beginXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x)/sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomialVal(int(tmpXt[loc]*sum(Nt)), p)
+                    it = GetRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
                     beginXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(endingXt):
                 # check length of previous Nt.

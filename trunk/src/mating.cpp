@@ -113,7 +113,7 @@ Sex offspringGenerator::getSex(int count)
 	else if (mode == RandomSex)
 		return GetRNG().randBit() ? Male : Female;
 	else if (mode == ProbOfMale)
-		return GetRNG().randUniform01() < m_sexMode[1] ? Male : Female;
+		return GetRNG().randUniform() < m_sexMode[1] ? Male : Female;
 	else if (mode == NumOfMale)
 		return count < static_cast<int>(m_sexMode[1]) ? Male : Female;
 	else if (mode == NumOfFemale)
@@ -273,8 +273,10 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			// step 2: assign these alleles to each subpopulation according to a multi-nomial
 			// distribution with p_i beging allele frequency at each subpopulation.
 			// assign these numbers to each subpopulation
-			GetRNG().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pop.ploidy()),
-				curFreq, m_expAlleles.begin() + numSP * i);
+			vectoru counts = GetRNG().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pop.ploidy()),
+				curFreq);
+			for (size_t sp = 0; sp < counts.size(); ++sp)
+				m_expAlleles[numSP * i + sp] = counts[sp];
 		}
 	} else {
 		// simpler case, one subpopulation, or with gieven allele frequency
