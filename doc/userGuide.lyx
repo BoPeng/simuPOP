@@ -387,7 +387,7 @@ A life cycle of an evolutionary process
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename evolve.png
+	filename figures/evolve.png
 	width 80text%
 
 \end_inset
@@ -3501,7 +3501,7 @@ Inheritance of different types of chromosomes in a diploid population
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename chromType.png
+	filename figures/chromType.png
 	lyxscale 40
 	width 90text%
 
@@ -3830,7 +3830,7 @@ Memory layout of individual genotype
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename genotype.png
+	filename figures/genotype.png
 	lyxscale 30
 	width 90text%
 
@@ -7009,7 +7009,7 @@ A homogeneous mating scheme
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename HomoMatingScheme.eps
+	filename figures/HomoMatingScheme.png
 	lyxscale 20
 	width 90text%
 
@@ -7955,7 +7955,7 @@ Illustration of a heterogeneous mating scheme
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename MatingScheme.eps
+	filename figures/MatingScheme.png
 	lyxscale 30
 	width 100text%
 
@@ -18202,7 +18202,7 @@ A sample parameter input dialog
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename getParam.png
+	filename figures/getParam.png
 	width 50line%
 
 \end_inset
@@ -18660,7 +18660,7 @@ Simulated trajectories of one locus in two subpopulations
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename forwardTrajectory.png
+	filename log/forwardTrajectory.png
 	lyxscale 40
 	width 80text%
 
@@ -18759,7 +18759,7 @@ Simulated trajectories of two unlinked loci
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename backTrajectory.png
+	filename log/backTrajectory.png
 	lyxscale 40
 	width 80text%
 
@@ -21208,7 +21208,7 @@ Parameter input dialog of the simuCDCV script
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename simuCDCV.png
+	filename figures/simuCDCV.png
 	lyxscale 40
 	width 5in
 

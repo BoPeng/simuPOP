@@ -632,28 +632,28 @@ os.remove('sample.pop')
 #end_ignore
 #end_file
 
-#begin_file log/stageAndGen.py
+#begin_file log/applicableGen.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=[20]), randomMating())
+simu = simulator(population(1000, loci=[20]), randomMating())
 simu.evolve(
     initOps = [
         initSex(),
-        initByFreq([0.2, 0.8])
+        initByFreq([0.8, 0.2])
     ],
     preOps = [
-        pyEval(r"'Around gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        pyEval(r"'At the beginning of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
     postOps = [
         stat(alleleFreq=0, begin=80, step=10),
-        pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        pyEval(r"'At the end of gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
             begin=80, step=10),
-        pyEval(r"'Around gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        pyEval(r"'At the end of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
     finalOps = savePopulation(output='sample.pop'),
@@ -745,6 +745,7 @@ print open('LD_2.txt').read()  # Each replicate writes to a different file.
 import os
 for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt']:
     os.remove(file)
+
 #end_ignore
 #end_file
 
@@ -3426,7 +3427,7 @@ from simuPOP.utils import trajectory, ForwardTrajectory
 traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
-traj.plot('forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
+traj.plot('log/forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
     plot_main='Simulated trajectory (forward-time)')
 simu = simulator(
     population(size=[2000, 4000], loci=10, infoFields='fitness'),
@@ -3471,7 +3472,7 @@ def fitness(gen, sp):
 # simulate a trajectory backward in time, from generation 1000
 traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      endGen=1000, endFreq=[0.1, 0.2])
-traj.plot('backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
+traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
     col_loc=['red', 'blue'], plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
 pop = population(size=Nt(0), loci=[1]*2)
