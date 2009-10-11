@@ -126,6 +126,7 @@ htmlview: html
 clean:
 	-rm -rf build/*
 	-rm -rf tools/sphinx
+	-rm `svn stat | grep '?' | cut -d' ' -f7`
 
 src_doc:
 	cd ..; \

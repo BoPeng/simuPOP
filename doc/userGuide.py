@@ -1950,6 +1950,7 @@ import os
 for rep in range(5):
     for gen in range(0, 50, 10):
         os.remove('snapshot_%d_%d.pop' % (rep, gen))
+
 #end_ignore
 #end_file
 
