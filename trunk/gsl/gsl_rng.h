@@ -1,10 +1,10 @@
 /* rng/gsl_rng.h
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <gsl/gsl_types.h>
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_inline.h>
 
 #undef __BEGIN_DECLS
 #undef __END_DECLS
@@ -147,32 +148,26 @@ void gsl_rng_print_state (const gsl_rng * r);
 
 const gsl_rng_type * gsl_rng_env_setup (void);
 
-unsigned long int gsl_rng_get (const gsl_rng * r);
-double gsl_rng_uniform (const gsl_rng * r);
-double gsl_rng_uniform_pos (const gsl_rng * r);
-unsigned long int gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n);
-
+INLINE_DECL unsigned long int gsl_rng_get (const gsl_rng * r);
+INLINE_DECL double gsl_rng_uniform (const gsl_rng * r);
+INLINE_DECL double gsl_rng_uniform_pos (const gsl_rng * r);
+INLINE_DECL unsigned long int gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n);
 
 #ifdef HAVE_INLINE
-extern inline unsigned long int gsl_rng_get (const gsl_rng * r);
 
-extern inline unsigned long int
+INLINE_FUN unsigned long int
 gsl_rng_get (const gsl_rng * r)
 {
   return (r->type->get) (r->state);
 }
 
-extern inline double gsl_rng_uniform (const gsl_rng * r);
-
-extern inline double
+INLINE_FUN double
 gsl_rng_uniform (const gsl_rng * r)
 {
   return (r->type->get_double) (r->state);
 }
 
-extern inline double gsl_rng_uniform_pos (const gsl_rng * r);
-
-extern inline double
+INLINE_FUN double
 gsl_rng_uniform_pos (const gsl_rng * r)
 {
   double x ;
@@ -185,9 +180,13 @@ gsl_rng_uniform_pos (const gsl_rng * r)
   return x ;
 }
 
-extern inline unsigned long int gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n);
+/* Note: to avoid integer overflow in (range+1) we work with scale =
+   range/n = (max-min)/n rather than scale=(max-min+1)/n, this reduces
+   efficiency slightly but avoids having to check for the out of range
+   value.  Note that range is typically O(2^32) so the addition of 1
+   is negligible in most usage. */
 
-extern inline unsigned long int
+INLINE_FUN unsigned long int
 gsl_rng_uniform_int (const gsl_rng * r, unsigned long int n)
 {
   unsigned long int offset = r->type->min;
