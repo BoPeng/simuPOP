@@ -89,6 +89,8 @@ include src/plotter.py
 
 # gsl files
 include gsl/gsl_machine.h
+include gsl/gsl_minmax.h
+include gsl/gsl_inline.h
 include gsl/gsl_sf_exp.h
 include gsl/gsl_sf_expint.h
 include gsl/gsl_sf_erf.h
@@ -103,6 +105,7 @@ include gsl/gsl_complex_math.h
 include gsl/gsl_sf_result.h
 include gsl/gsl_types.h
 include gsl/gsl_cdf.h
+include gsl/gsl_version.h
 include gsl/specfunc/chebyshev.h
 include gsl/specfunc/eval.h
 include gsl/specfunc/error.h

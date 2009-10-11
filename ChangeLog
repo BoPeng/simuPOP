@@ -15,6 +15,8 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Remove the stage feature of operators. Instead, operators should be passed
 		explicitly to parameters preOps, duringOps, postOps of the evolve function.
 		The existing preOps and postOps parameters are renamed to initOps and finalOps.
+  - NEW: Add Chi-Squared distribution to the RNG() class. Remove some rarely used
+		memeber functions of this class.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields

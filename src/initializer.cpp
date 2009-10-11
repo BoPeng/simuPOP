@@ -44,7 +44,7 @@ bool initSex::apply(population & pop)
 		size_t sexSz = m_sex.size();
 		if (m_sex.empty())
 			for (; ind.valid(); ++ind)
-				ind->setSex(GetRNG().randUniform01() < m_maleFreq ? Male : Female);
+				ind->setSex(GetRNG().randUniform() < m_maleFreq ? Male : Female);
 		else
 			for (; ind.valid(); ++ind, ++idx)
 				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
