@@ -10,13 +10,15 @@ Details:
 
 %feature("docstring") simuPOP::affectionSplitter::affectionSplitter "
 
-Description:
-
-    Create a splitter that defined two VSPs by affection status.
-
 Usage:
 
-    affectionSplitter()
+    affectionSplitter(names=[])
+
+Details:
+
+    Create a splitter that defined two VSPs by affection status.These
+    VSPs are named Unaffected and Affected unless a new set of names
+    are specified by parameter names.
 
 "; 
 
@@ -44,13 +46,14 @@ Usage:
 
 %feature("docstring") simuPOP::affectionSplitter::name "
 
-Description:
-
-    Return \"Unaffected\" if vsp=0 and \"Affected\" if vsp=1.
-
 Usage:
 
     x.name(vsp)
+
+Details:
+
+    Return \"Unaffected\" if vsp=0 and \"Affected\" if vsp=1, unless a new
+    set of names are specified.
 
 "; 
 
@@ -668,7 +671,7 @@ Details:
 
 Usage:
 
-    combinedSplitter(splitters=[], vspMap=[])
+    combinedSplitter(splitters=[], vspMap=[], names=[])
 
 Details:
 
@@ -680,7 +683,9 @@ Details:
     vspMap. Each item in this parameter is a list of VSPs that will be
     combined to a single VSP. For example, vspMap=[(0, 2), (1, 3)] in
     the previous example will define two VSPs defined by male or
-    unaffected, and female or affected individuals.
+    unaffected, and female or affected individuals. VSP names are
+    usually determined by splitters, but can also be specified using
+    parameter names.
 
 "; 
 
@@ -724,7 +729,8 @@ Usage:
 Details:
 
     Return the name of a VSP vsp, which is the name a VSP defined by
-    one of the combined splitters.
+    one of the combined splitters unless a new set of names is
+    specified.
 
 "; 
 
@@ -1645,7 +1651,7 @@ Details:
 
 Usage:
 
-    genotypeSplitter(loci, alleles, phase=False)
+    genotypeSplitter(loci, alleles, phase=False, names=[])
 
 Details:
 
@@ -1672,7 +1678,8 @@ Details:
     loci=[0, 1], alleles=[0, 0, 1, 1], phase=True defines a VSP with
     individuals having genotype -0-0-, -1-1- at loci 0 and 1. If
     phase=False (default), genotypes -1-1-, -0-0-, -0-1- and -1-0- are
-    all allowed.
+    all allowed.  A default set of names are given to each VSP unless
+    a new set of names is given by parameter names.
 
 "; 
 
@@ -1707,7 +1714,8 @@ Usage:
 Details:
 
     Return name of VSP vsp, which is \"Genotype loc1,loc2:genotype\" as
-    defined by parameters loci and alleles.
+    defined by parameters loci and alleles. A user provided name will
+    be returned if specified.
 
 "; 
 
@@ -2721,7 +2729,7 @@ Details:
 
 Usage:
 
-    infoSplitter(field, values=[], cutoff=[], ranges=[])
+    infoSplitter(field, values=[], cutoff=[], ranges=[], names=[])
 
 Details:
 
@@ -2736,7 +2744,9 @@ Details:
     range defines a VSP. For example, ranges=[[1, 3], [2, 5]] defines
     two VSPs with 1 <= v < 3 and 2 <= 3 < 5. Of course, only one of
     the parameters values, cutoff and ranges should be defined, and
-    values in cutoff should be distinct, and in an increasing order.
+    values in cutoff should be distinct, and in an increasing order. A
+    default set of names are given to each VSP unless a new set of
+    names is given by parameter names.
 
 "; 
 
@@ -2775,7 +2785,8 @@ Details:
     Return the name of a VSP vsp, which is field = value if VSPs are
     defined by values in parameter values, or field < value (the first
     VSP), v1 <= field < v2 and field >= v (the last VSP) if VSPs are
-    defined by cutoff values.
+    defined by cutoff values. A user-specified name, if specified,
+    will be returned instead.
 
 "; 
 
@@ -6370,14 +6381,15 @@ Details:
 
 Usage:
 
-    productSplitter(splitters=[])
+    productSplitter(splitters=[], names=[])
 
 Details:
 
     Create a product splitter using a list of splitters. For example,
     productSplitter([sexSplitter(), affectionSplitter()]) defines four
     VSPs by male unaffected, male affected, female unaffected, and
-    female affected individuals.
+    female affected individuals. VSP names are usually determined by
+    splitters, but can also be specified using parameter names.
 
 "; 
 
@@ -6420,8 +6432,9 @@ Usage:
 
 Details:
 
-    Return the name of a VSP vsp, which is the name a VSP defined by
-    one of the combined splitters.
+    Return the name of a VSP vsp, which is the names of indivdual VSPs
+    separated by a comma, unless a new set of names is specified for
+    each VSP.
 
 "; 
 
@@ -6438,13 +6451,14 @@ Details:
 
 Usage:
 
-    proportionSplitter(proportions=[])
+    proportionSplitter(proportions=[], names=[])
 
 Details:
 
     Create a splitter that divides subpopulations by proportions,
     which should be a list of float numbers (between 0 and 1) that add
-    up to 1.
+    up to 1. A default set of names are given to each VSP unless a new
+    set of names is given by parameter names.
 
 "; 
 
@@ -6480,7 +6494,8 @@ Usage:
 Details:
 
     Return the name of VSP vsp, which is \"Prop p\" where
-    p=propotions[vsp].
+    p=propotions[vsp]. A user specified name will be returned if
+    specified.
 
 "; 
 
@@ -7502,7 +7517,7 @@ Details:
 
 Usage:
 
-    rangeSplitter(ranges)
+    rangeSplitter(ranges, names=[])
 
 Details:
 
@@ -7511,7 +7526,8 @@ Details:
     [40, 50]]) defines two VSPs. The first VSP consists of individuals
     0, 1, ..., 19, and the sceond VSP consists of individuals 40, 41,
     ..., 49. Note that a nested list has to be used even if only one
-    range is defined.
+    range is defined. A default set of names are given to each VSP
+    unless a new set of names is given by parameter names.
 
 "; 
 
@@ -7547,7 +7563,8 @@ Usage:
 Details:
 
     Return the name of VSP vsp, which is \"Range [a, b]\" where [a, b]
-    is range ranges[vsp].
+    is range ranges[vsp]. A user specified name will be returned if
+    specified.
 
 "; 
 
@@ -8409,13 +8426,15 @@ Details:
 
 %feature("docstring") simuPOP::sexSplitter::sexSplitter "
 
-Description:
-
-    Create a sex splitter that defines male and female VSPs.
-
 Usage:
 
-    sexSplitter()
+    sexSplitter(names=[])
+
+Details:
+
+    Create a sex splitter that defines male and female VSPs. These
+    VSPs are named Male and Female unless a new set of names are
+    specified by parameter names.
 
 "; 
 
@@ -8443,13 +8462,14 @@ Usage:
 
 %feature("docstring") simuPOP::sexSplitter::name "
 
-Description:
-
-    Return \"Male\" if vsp=0 and \"Female\" otherwise.
-
 Usage:
 
     x.name(vsp)
+
+Details:
+
+    Return \"Male\" if vsp=0 and \"Female\" otherwise, unless a new set of
+    names are specified.
 
 "; 
 
@@ -10255,10 +10275,13 @@ Details:
     fixed number of named VSPs. They do not have to add up to the
     whole subpopulation, nor do they have to be distinct. After a
     splitter is assigned to a population, many functions and operators
-    can be applied to individuals within specified VSPs.  Only one VSP
-    splitter can be assigned to a population, which defined VSPs for
-    all its subpopulations. If different splitters are needed for
-    different subpopulations, a combinedSplitter should be used.
+    can be applied to individuals within specified VSPs.  Each VSP has
+    a name. A default name is determined by each splitter but you can
+    also assign a name to each VSP. The name of a VSP can be retrieved
+    by function population.subPopName.  Only one VSP splitter can be
+    assigned to a population, which defined VSPs for all its
+    subpopulations. If different splitters are needed for different
+    subpopulations, a combinedSplitter should be used.
 
 "; 
 
@@ -10266,7 +10289,7 @@ Details:
 
 Usage:
 
-    vspSplitter()
+    vspSplitter(names=[])
 
 Details:
 

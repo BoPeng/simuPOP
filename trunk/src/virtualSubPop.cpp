@@ -69,8 +69,8 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 
 
 combinedSplitter::combinedSplitter(const vectorsplitter & splitters,
-	const intMatrix & vspMap)
-	: vspSplitter(), m_splitters(0), m_vspMap(0), m_inputMap(vspMap)
+	const intMatrix & vspMap, const stringList & names)
+	: vspSplitter(names), m_splitters(0), m_vspMap(0), m_inputMap(vspMap)
 {
 	for (size_t i = 0; i < splitters.size(); ++i)
 		m_splitters.push_back(splitters[i]->clone());
@@ -202,6 +202,15 @@ void combinedSplitter::deactivate(population & pop, SubPopID sp)
 
 string combinedSplitter::name(SubPopID sp)
 {
+	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[sp];
+
 	const vspList & list = m_vspMap[sp];
 	string name;
 
@@ -214,8 +223,8 @@ string combinedSplitter::name(SubPopID sp)
 }
 
 
-productSplitter::productSplitter(const vectorsplitter & splitters)
-	: vspSplitter(), m_numVSP(0)
+productSplitter::productSplitter(const vectorsplitter & splitters, const stringList & names)
+	: vspSplitter(names), m_numVSP(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i) {
 		if (m_numVSP == 0)
@@ -320,6 +329,15 @@ void productSplitter::deactivate(population & pop, SubPopID sp)
 
 string productSplitter::name(SubPopID sp)
 {
+	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[sp];
+
 	vectori idx = getVSPs(sp);
 	string name;
 
@@ -426,8 +444,8 @@ void affectionSplitter::deactivate(population & pop, SubPopID subPop)
 
 
 infoSplitter::infoSplitter(string info, const vectorinfo & values,
-	const vectorf & cutoff, const matrix & ranges)
-	: vspSplitter(),
+	const vectorf & cutoff, const matrix & ranges, const stringList & names)
+	: vspSplitter(names),
 	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges)
 {
 	DBG_FAILIF(m_values.empty() && m_cutoff.empty() && m_ranges.empty(),
@@ -642,6 +660,15 @@ void infoSplitter::deactivate(population & pop, SubPopID subPop)
 
 string infoSplitter::name(SubPopID sp)
 {
+	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[sp];
+
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(sp) > m_cutoff.size(), IndexError,
 			"Virtual Subpoplation index out of range of 0 ~ "
@@ -668,8 +695,8 @@ string infoSplitter::name(SubPopID sp)
 }
 
 
-proportionSplitter::proportionSplitter(vectorf const & proportions)
-	: vspSplitter(), m_proportions(proportions)
+proportionSplitter::proportionSplitter(vectorf const & proportions, const stringList & names)
+	: vspSplitter(names), m_proportions(proportions)
 {
 	DBG_ASSERT(fcmp_eq(std::accumulate(proportions.begin(),
 				proportions.end(), 0.), 1.), ValueError,
@@ -767,14 +794,21 @@ void proportionSplitter::deactivate(population & pop, SubPopID subPop)
 
 string proportionSplitter::name(SubPopID subPop)
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= m_proportions.size(), IndexError,
+	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[subPop];
+
 	return "Prop " + toStr(m_proportions[subPop]);
 }
 
 
-rangeSplitter::rangeSplitter(const intMatrix & ranges)
-	: vspSplitter(), m_ranges(ranges)
+rangeSplitter::rangeSplitter(const intMatrix & ranges, const stringList & names)
+	: vspSplitter(names), m_ranges(ranges)
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
 		DBG_FAILIF(m_ranges[i].size() != 2
@@ -845,17 +879,23 @@ void rangeSplitter::deactivate(population & pop, SubPopID subPop)
 
 string rangeSplitter::name(SubPopID subPop)
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= m_ranges.size(), IndexError,
+	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[subPop];
+
 	return "Range [" + toStr(m_ranges[subPop][0]) + ", " +
 	       toStr(m_ranges[subPop][1]) + ")";
 }
 
 
 genotypeSplitter::genotypeSplitter(const uintList & loci,
-	const intMatrix & alleles,
-	bool phase)
-	: vspSplitter(), m_loci(loci.elems()), m_alleles(alleles),
+	const intMatrix & alleles, bool phase, const stringList & names)
+	: vspSplitter(names), m_loci(loci.elems()), m_alleles(alleles),
 	m_phase(phase)
 {
 }
@@ -929,8 +969,15 @@ void genotypeSplitter::deactivate(population & pop, SubPopID subPop)
 // 1, 2: 0 1 1 0 1 1 1 1
 string genotypeSplitter::name(SubPopID subPop)
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= m_alleles.size(), IndexError,
-		"Virtual subpopulation index out of genotype");
+	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
+		"Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[subPop];
+
 	string label = "Genotype ";
 	for (size_t i = 0; i < m_loci.size(); ++i) {
 		if (i != 0)

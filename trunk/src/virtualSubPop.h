@@ -91,6 +91,10 @@ ostream & operator<<(ostream & out, const vspID & vsp);
  *  be distinct. After a splitter is assigned to a population, many functions
  *  and operators can be applied to individuals within specified VSPs.
  *
+ *  Each VSP has a name. A default name is determined by each splitter but you
+ *  can also assign a name to each VSP. The name of a VSP can be retrieved by
+ *  function \c population.subPopName.
+ *
  *  Only one VSP splitter can be assigned to a population, which defined VSPs
  *  for all its subpopulations. If different splitters are needed for different
  *  subpopulations, a \c combinedSplitter should be used.
@@ -101,7 +105,8 @@ class vspSplitter
 public:
 	/** This is a virtual class that cannot be instantiated.
 	 */
-	vspSplitter() : m_activated(InvalidSubPopID)
+	vspSplitter(const stringList & names = vectorstr()) :
+		m_names(names.elems()), m_activated(InvalidSubPopID)
 	{
 	}
 
@@ -155,10 +160,12 @@ public:
 protected:
 	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
 
-	SubPopID m_activated;
 
 	void resetSubPop(population & pop, SubPopID subPop);
 
+	vectorstr m_names;
+
+	SubPopID m_activated;
 };
 
 typedef std::vector<vspSplitter *> vectorsplitter;
@@ -182,10 +189,11 @@ public:
 	 *  Each item in this parameter is a list of VSPs that will be combined to
 	 *  a single VSP. For example, <tt>vspMap=[(0, 2), (1, 3)]</tt> in the
 	 *  previous example will define two VSPs defined by male or unaffected,
-	 *  and female or affected individuals.
+	 *  and female or affected individuals. VSP names are usually determined
+	 *  by splitters, but can also be specified using parameter \e names.
 	 */
 	combinedSplitter(const vectorsplitter & splitters = vectorsplitter(),
-		const intMatrix & vspMap = intMatrix());
+		const intMatrix & vspMap = intMatrix(), const stringList & names = vectorstr());
 
 	~combinedSplitter();
 
@@ -221,7 +229,7 @@ public:
 	void deactivate(population & pop, SubPopID sp);
 
 	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
-	 *  of the combined splitters.
+	 *  of the combined splitters unless a new set of names is specified.
 	 */
 	string name(SubPopID vsp);
 
@@ -251,9 +259,11 @@ public:
 	/** Create a product splitter using a list of \e splitters. For example,
 	 *  <tt>productSplitter([sexSplitter(), affectionSplitter()])</tt> defines
 	 *  four VSPs by male unaffected, male affected, female unaffected, and
-	 *  female affected individuals.
+	 *  female affected individuals. VSP names are usually determined by
+	 *  splitters, but can also be specified using parameter \e names.
 	 */
-	productSplitter(const vectorsplitter & splitters = vectorsplitter());
+	productSplitter(const vectorsplitter & splitters = vectorsplitter(),
+		const stringList & names = vectorstr());
 
 	~productSplitter();
 
@@ -289,8 +299,9 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
-	 *  of the combined splitters.
+	/** Return the name of a VSP \e vsp, which is the names of indivdual VSPs
+	 *  separated by a comma, unless a new set of names is specified for each
+	 *  VSP.
 	 */
 	string name(SubPopID vsp);
 
@@ -313,8 +324,11 @@ private:
 class sexSplitter : public vspSplitter
 {
 public:
-	/// Create a sex splitter that defines male and female VSPs.
-	sexSplitter() : vspSplitter()
+	/** Create a sex splitter that defines male and female VSPs. These VSPs
+	 *  are named \c Male and \c Female unless a new set of names are specified
+	 *  by parameter \e names.
+	 */
+	sexSplitter(const stringList & names = vectorstr()) : vspSplitter(names)
 	{
 	}
 
@@ -353,7 +367,9 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// Return \c "Male" if \e vsp=0 and \c "Female" otherwise.
+	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
+	 *  set of names are specified.
+	 */
 	string name(SubPopID vsp)
 	{
 		DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
@@ -371,8 +387,11 @@ public:
 class affectionSplitter : public vspSplitter
 {
 public:
-	/// Create a splitter that defined two VSPs by affection status.
-	affectionSplitter() : vspSplitter()
+	/** Create a splitter that defined two VSPs by affection status.These VSPs
+	 *  are named \c Unaffected and \c Affected unless a new set of names are
+	 *  specified by parameter \e names.
+	 */
+	affectionSplitter(const stringList & names = vectorstr()) : vspSplitter(names)
 	{
 	}
 
@@ -411,7 +430,9 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1.
+	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
+	 *  unless a new set of names are specified.
+	 */
 	string name(SubPopID vsp)
 	{
 		DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
@@ -440,10 +461,13 @@ public:
 	 *  <tt>ranges=[[1, 3], [2, 5]]</tt> defines two VSPs with
 	 *  <tt>1 <= v < 3</tt> and <tt>2 <= 3 < 5</tt>. Of course, only one of the
 	 *  parameters \e values, \e cutoff and \e ranges should be defined, and
-	 *  values in \e cutoff should be distinct, and in an increasing order.
+	 *  values in \e cutoff should be distinct, and in an increasing order. A
+	 *  default set of names are given to each VSP unless a new set of names is
+	 *  given by parameter \e names.
 	 */
 	infoSplitter(string field, const vectorinfo & values = vectorinfo(),
-		const vectorf & cutoff = vectorf(), const matrix & ranges = matrix());
+		const vectorf & cutoff = vectorf(), const matrix & ranges = matrix(),
+		const stringList & names = vectorstr());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -480,7 +504,8 @@ public:
 	/** Return the name of a VSP \e vsp, which is <tt>field = value</tt> if VSPs
 	 *  are defined by values in parameter \e values, or <tt>field < value</tt>
 	 *  (the first VSP), <tt>v1 <= field < v2</tt> and <tt>field >= v</tt> (the
-	 *  last VSP) if VSPs are defined by cutoff values.
+	 *  last VSP) if VSPs are defined by cutoff values. A user-specified name,
+	 *  if specified, will be returned instead.
 	 */
 	string name(SubPopID vsp);
 
@@ -502,9 +527,11 @@ class proportionSplitter : public vspSplitter
 public:
 	/** Create a splitter that divides subpopulations by \e proportions, which
 	 *  should be a list of float numbers (between \c 0 and \c 1) that add up
-	 *  to \c 1.
+	 *  to \c 1.  A default set of names are given to each VSP unless a new set
+	 *  of names is given by parameter \e names.
 	 */
-	proportionSplitter(vectorf const & proportions = vectorf());
+	proportionSplitter(vectorf const & proportions = vectorf(),
+		const stringList & names = vectorstr());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -538,7 +565,8 @@ public:
 	void deactivate(population & pop, SubPopID sp);
 
 	/** Return the name of VSP \e vsp, which is <tt>"Prop p"</tt> where
-	 *  <tt>p=propotions[vsp]</tt>.
+	 *  <tt>p=propotions[vsp]</tt>. A user specified name will be returned if
+	 *  specified.
 	 */
 	string name(SubPopID vsp);
 
@@ -558,9 +586,11 @@ public:
 	 *  <tt>rangeSplitter(ranges=[[0, 20], [40, 50]])</tt> defines two VSPs.
 	 *  The first VSP consists of individuals \c 0, \c 1, ..., \c 19, and the
 	 *  sceond VSP consists of individuals \c 40, \c 41, ..., \c 49. Note that
-	 *  a nested list has to be used even if only one range is defined.
+	 *  a nested list has to be used even if only one range is defined. A
+	 *  default set of names are given to each VSP unless a new set of names is
+	 *  given by parameter \e names.
 	 */
-	rangeSplitter(const intMatrix & ranges);
+	rangeSplitter(const intMatrix & ranges, const stringList & names = vectorstr());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -594,7 +624,8 @@ public:
 	void deactivate(population & pop, SubPopID sp);
 
 	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b]"</tt> where
-	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>.
+	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>. A user specified name
+	 *  will be returned if specified.
 	 */
 	string name(SubPopID vsp);
 
@@ -637,9 +668,13 @@ public:
 	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> at loci \c 0 and \c 1.
 	 *  If <tt>phase=False</tt> (default), genotypes <tt>-1-1-, -0-0-</tt>,
 	 *  <tt>-0-1-</tt> and <tt>-1-0-</tt> are all allowed.
+	 *
+	 *  A default set of names are given to each VSP unless a new set of names
+	 *  is given by parameter \e names.
 	 */
 	genotypeSplitter(const uintList & loci,
-		const intMatrix & alleles, bool phase = false);
+		const intMatrix & alleles, bool phase = false,
+		const stringList & names = vectorstr());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -671,7 +706,8 @@ public:
 	void deactivate(population & pop, SubPopID sp);
 
 	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
-	 *  as defined by parameters \e loci and \e alleles.
+	 *  as defined by parameters \e loci and \e alleles. A user provided name
+	 *  will be returned if specified.
 	 */
 	string name(SubPopID vsp);
 
