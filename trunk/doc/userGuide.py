@@ -3414,6 +3414,55 @@ simu.evolve(
 
 #end_file
 
+#begin_file log/selectParents.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+pop = population(4000, loci=1, infoFields='fitness')
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    initOps = [
+        initSex(),
+        initByFreq([0.5, 0.5])
+    ],
+    preOps = mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+    postOps = [
+        stat(alleleFreq=0, step=10),
+        pyEval("'Gen:%3d ' % gen", reps=0, step=10),
+        pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
+        pyOutput('\n', reps=-1, step=10)
+    ],
+    gen = 50
+)
+#end_file
+
+#begin_file log/selectOffspring.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+from simuPOP import *
+GetRNG().setSeed(12345)
+#end_ignore
+pop = population(10000, loci=1)
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    initOps = [
+        initSex(),
+        initByFreq([0.5, 0.5])
+    ],
+    duringOps = mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+    postOps = [
+        stat(alleleFreq=0, step=10),
+        pyEval("'Gen:%3d ' % gen", reps=0, step=10),
+        pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
+        pyOutput('\n', reps=-1, step=10)
+    ],
+    gen = 50
+)
+#end_file
 
 #begin_file log/forwardTrajectory.py
 #begin_ignore
@@ -4153,6 +4202,7 @@ if os.path.file('log/simuCDCV.py'):
     hlp.close()
 #end_ignore
 #end_file
+
 
 #begin_file log/mapSelector.py
 #begin_ignore

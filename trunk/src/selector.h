@@ -108,6 +108,19 @@ public:
 	/// set fitness to all individuals. No selection will happen!
 	bool apply(population & pop);
 
+	/// apply the operator during mating.
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	                       individual * dad = NULL, individual * mom = NULL)
+	{
+		double fitness = indFitness(& * offspring, pop.gen());
+
+		DBG_FAILIF(fcmp_lt(fitness, 0) || fcmp_gt(fitness, 1), ValueError,
+			"Fitness (probability for an offspring to survive) must be between 0 and 1 if a selector is used as a during-mating operator.");
+		// accept an individual according to its fitness.
+		return GetRNG().randUniform() < fitness;
+	}
+
+
 	/// HIDDEN
 	string description()
 	{
