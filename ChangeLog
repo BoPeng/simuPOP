@@ -19,6 +19,7 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
 		memeber functions of this class.
   - NEW: Allow selectors to be applied during mating to allow for natural selection
 		through the selection of offspring.
+  - NEW: Allow the specification of VSP names in splitters.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
