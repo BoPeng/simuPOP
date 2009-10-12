@@ -8202,6 +8202,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::selector::applyDuringMating "
+
+Description:
+
+    apply the operator during mating.
+
+Usage:
+
+    x.applyDuringMating(pop, offspring, dad=None, mom=None)
+
+"; 
+
 %feature("docstring") simuPOP::selector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selfingGenoTransmitter "

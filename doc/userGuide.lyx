@@ -17139,6 +17139,68 @@ Although individual fitness is usually determined by individual genotype,
 Not all mating schemes support natural selection.
 \end_layout
 
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ gives an example of natural selection.
+ In this example, a 
+\family typewriter
+mapSelector
+\family default
+ is used to explicitly assign fitness value to genotypes at the first locus.
+ The fitness values are 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+0.98
+\family default
+, 
+\family typewriter
+0.97
+\family default
+ for genotypes 
+\family typewriter
+00
+\family default
+, 
+\family typewriter
+01
+\family default
+ and 
+\family typewriter
+11
+\family default
+ respectively.
+ The selector set individual fitness values to information field 
+\family typewriter
+fitness
+\family default
+ before mating happens.
+ The 
+\family typewriter
+randomMating
+\family default
+ mating scheme then selects parents according to parental fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectParents.log"
+lstparams "caption={Natural selection through the selection of parents},label={selectParents}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Natural selection through the selection of offspring **
 \end_layout
@@ -17211,6 +17273,39 @@ Because many offspring will be generated and discarded, especially when
  So, unless there are compelling reasons (e.g.
  simulating realistic scenarios of survival competition among offspring),
  selection through parents are recommended.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+ gives an example of natural selection through the selection of offspring.
+ This example looks almost identical to Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ but the underlying selection mechanism is quite different.
+ Note that selection through offspring does not need an information field
+ to hold fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectOffspring.log"
+lstparams "caption={Natural selection through the selection of offspring},label={selectOffspring}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -17218,8 +17313,24 @@ Are two selection scenarios equivalent? **
 \end_layout
 
 \begin_layout Standard
-Let us look at the consequence of selection through parents or offspring
- in a simple case with asexual mating.
+If you look closely at Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+, you will notice that their results are quite similar.
+ This is actually what you should expect in most cases.
+ Let us look at the theoretical consequence of selection through parents
+ or offspring in a simple case with asexual mating.
 \end_layout
 
 \begin_layout Standard
@@ -17312,15 +17423,16 @@ n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}
 \end_inset
 
 which corresponds to the proportion of offspring with such genotype.
- That is to say, in this simple case,
+ That is to say, in this simple case, 
 \series bold
- two types of selection scenarios yield the same result
+two types of selection scenarios yield identical results
 \series default
 .
 \end_layout
 
 \begin_layout Standard
-These two types of selection scenarios do not have to yield identical results.
+These two types of selection scenarios do not have to always yield identical
+ results.
  Exceptions may be found in cases with more than one offspring or sexual
  mating with sex-specific survival rate.
  simuPOP provides both selection implementations and you should choose one
