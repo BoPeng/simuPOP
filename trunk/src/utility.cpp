@@ -2652,6 +2652,45 @@ void weightedSampler::set(const vectorf & weight)
 }
 
 
+proportionSampler::proportionSampler(RNG & rng, const vectorf & weight, ULONG N)
+	: m_sequence(N, 0), m_index(0)
+{
+	if (N == 0)
+		return;
+
+	for (size_t i = 0; i < weight.size(); ++i) {
+		DBG_FAILIF(weight[i] < 0 || weight[i] > 1, ValueError,
+			"Proportions should be between 0 and 1");
+	}
+	// sum of weight
+	double w = accumulate(weight.begin(), weight.end(), 0.0);
+
+	DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
+
+	// turn weight into percentage
+	for (size_t i = 0, j = 0; i < weight.size(); ++i) {
+		size_t count = static_cast<size_t>(N * weight[i] / w);
+		for (size_t k = 0; k < count; ++k, ++j)
+			m_sequence[j] = i;
+		// fill the last piece because of possible round-off
+		if (i == weight.size() - 1) {
+			for (; j < weight.size(); ++j)
+				m_sequence[j] = i;
+		}
+	}
+	// random shuffle
+	rng.randomShuffle(m_sequence.begin(), m_sequence.end());
+}
+
+
+ULONG proportionSampler::get()
+{
+	DBG_FAILIF(m_index == m_sequence.size(), SystemError,
+		"Proportion sampler pool exhausted");
+	return m_sequence[m_index++];
+}
+
+
 // this is used for BernulliTrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
 

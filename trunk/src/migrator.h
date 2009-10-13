@@ -39,7 +39,6 @@ using std::endl;
 
 #include <algorithm>
 using std::sort;
-using std::random_shuffle;
 
 #include "simuPOP_cfg.h"
 #include <math.h>

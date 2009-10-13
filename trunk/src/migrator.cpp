@@ -199,7 +199,7 @@ bool migrator::apply(population & pop)
 			while (k < spSize)
 				toIndices[k++] = spFrom;
 
-			random_shuffle(toIndices.begin(), toIndices.end());
+			GetRNG().randomShuffle(toIndices.begin(), toIndices.end());
 			IndIterator ind = pop.indIterator(spFrom);
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
@@ -255,7 +255,7 @@ bool splitSubPops::apply(population & pop)
 
 		// randomize indiviudlas
 		if (m_randomize) {
-			random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
+			GetRNG().randomShuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
 			pop.setIndOrdered(false);
 		}
 

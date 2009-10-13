@@ -549,7 +549,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	}
 
 	if (!m_replacement)
-		std::random_shuffle(m_index.begin(), m_index.end());
+		GetRNG().randomShuffle(m_index.begin(), m_index.end());
 
 	m_shift = pop.subPopBegin(sp);
 	m_initialized = true;
@@ -630,8 +630,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	if (!m_replacement) {
 		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
 		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
-		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
-		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+		GetRNG().randomShuffle(m_maleIndex.begin(), m_maleIndex.end());
+		GetRNG().randomShuffle(m_femaleIndex.begin(), m_femaleIndex.end());
 	}
 
 	if (m_selection) {
@@ -990,7 +990,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 		m_size = m_index.size();
 
 	if (!m_replacement)
-		std::random_shuffle(m_index.begin(), m_index.end());
+		GetRNG().randomShuffle(m_index.begin(), m_index.end());
 
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
 		"Selection is not allowed in random sample without replacement");
@@ -1553,7 +1553,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
 			DBG_DO(DBG_MATING, cerr << "Random shuffle individuals in the offspring generation." << endl);
-			std::random_shuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
+			GetRNG().randomShuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
 			scratch.setIndOrdered(false);
 		}
 	}                         // each subpopulation.
