@@ -689,6 +689,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::combinedSplitter::combinedSplitter(const combinedSplitter &rhs);
+
 %feature("docstring") simuPOP::combinedSplitter::~combinedSplitter "
 
 Usage:
@@ -6392,6 +6394,8 @@ Details:
     splitters, but can also be specified using parameter names.
 
 "; 
+
+%ignore simuPOP::productSplitter::productSplitter(const productSplitter &rhs);
 
 %feature("docstring") simuPOP::productSplitter::~productSplitter "
 
