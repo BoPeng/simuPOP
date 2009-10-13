@@ -283,7 +283,6 @@ __all__ = [
     'ApplyDuringMatingOperator',
     'BernulliTrials',
     'weightedSampler',
-    'proportionSampler',
     # modules
     'utils',
     'plotter',

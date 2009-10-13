@@ -2576,9 +2576,29 @@ double hweTest(const vectoru & cnt)
 	return 1.0;
 }
 
+void propToCount(const vectorf & prop, ULONG N, vectoru & count)
+{
+	count.resize(prop.size());
+	size_t tot = 0;
+	for (size_t i = 0; i < prop.size(); ++i) {
+		count[i] = static_cast<ULONG>(N * prop[i]);
+		tot += count[i];
+	}
+	if (N == tot)
+		return;
+	// if tot < N, spead the round offs to the first several counts
+	for (size_t i = 0; tot < N && i < prop.size(); ++tot) {
+		if (count[i] < prop[i] * N)
+			count[i] += 1;
+	}
+	DBG_FAILIF(N != tot, SystemError, "Proportion to count failed.");
+
+}
 
 void weightedSampler::set(const vectorf & weight)
 {
+	m_algorithm = 1;
+
 	m_N = weight.size();
 
 	if (m_N == 0)
@@ -2652,9 +2672,10 @@ void weightedSampler::set(const vectorf & weight)
 }
 
 
-proportionSampler::proportionSampler(RNG & rng, const vectorf & weight, ULONG N)
-	: m_sequence(N, 0), m_index(0)
+void weightedSampler::set(const vectorf & weight, ULONG N)
 {
+	m_algorithm = 2;
+
 	if (N == 0)
 		return;
 
@@ -2667,27 +2688,45 @@ proportionSampler::proportionSampler(RNG & rng, const vectorf & weight, ULONG N)
 
 	DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
 
+	vectoru count(N);
+	propToCount(weight, N, count);
+
+	m_sequence.resize(N);
 	// turn weight into percentage
-	for (size_t i = 0, j = 0; i < weight.size(); ++i) {
-		size_t count = static_cast<size_t>(N * weight[i] / w);
-		for (size_t k = 0; k < count; ++k, ++j)
+	for (size_t i = 0, j = 0; i < weight.size(); ++i)
+		for (size_t k = 0; k < count[i]; ++k, ++j)
 			m_sequence[j] = i;
-		// fill the last piece because of possible round-off
-		if (i == weight.size() - 1) {
-			for (; j < weight.size(); ++j)
-				m_sequence[j] = i;
-		}
-	}
+
 	// random shuffle
-	rng.randomShuffle(m_sequence.begin(), m_sequence.end());
+	m_RNG->randomShuffle(m_sequence.begin(), m_sequence.end());
 }
 
 
-ULONG proportionSampler::get()
+ULONG weightedSampler::get()
 {
-	DBG_FAILIF(m_index == m_sequence.size(), SystemError,
-		"Proportion sampler pool exhausted");
-	return m_sequence[m_index++];
+	DBG_FAILIF(m_algorithm == 0, ValueError,
+		"weighted sample is not initialized");
+
+	// the first case: proportion.
+	if (m_algorithm == 2) {
+		DBG_FAILIF(m_index >= m_sequence.size(), SystemError,
+			"Proportion sampler pool exhausted");
+		return m_sequence[m_index++];
+	}
+
+	if (m_fixed)
+		return m_fixedValue;
+
+	double rN = m_RNG->randUniform() * m_N;
+
+	size_t K = static_cast<size_t>(rN);
+
+	rN -= K;
+
+	if (rN < m_q[K])
+		return K;
+	else
+		return m_a[K];
 }
 
 
