@@ -2948,8 +2948,8 @@ Details:
 Usage:
 
     initByValue(value=[], loci=AllAvail, ploidy=AllAvail,
-      proportions=[], begin=0, end=1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      proportions=[], freq=[], begin=0, end=1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
@@ -2958,10 +2958,12 @@ Details:
     are specified, only specified loci, ploidy, and individuals in
     these (virtual) subpopulations will be initialized. value can be
     used to initialize given loci, all loci, and all homologous copies
-    of these loci. If proportions (a list of positive numbers that add
-    up to 1) is given, value should be a list of values that will be
-    assigned randomly according to their respective proportion. If a
-    list of values are given without proportions, they will be used
+    of these loci. If freq (a list of positive numbers that add up to
+    1) is given, value should be a list of values that will be
+    assigned randomly according to their respective proportion.
+    Althernatively, you can use parameter proportions which assign
+    values randomly, but with exact proportion. If a list of values
+    are given without frequencies or proportions, they will be used
     for each (virtual) subpopulations. This operator initializes all
     chromosomes, including unused genotype locations and customized
     chromosomes.
@@ -3095,22 +3097,23 @@ Details:
 
 Usage:
 
-    initSex(maleFreq=0.5, sex=[], begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+    initSex(maleFreq=0.5, maleProp=-1, sex=[], begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
     Create an operator that initialize individual sex to Male or
     Female. By default, it assign sex to individuals randomly, with
     equal probability of having a male or a female. This probabability
-    can be adjusted through parameter maleFreq. Alternatively, a fixed
-    sequence of sexes can be assigned. For example, if sex=[Male,
-    Female], individuals will be assigned Male and Female
-    successively. Parameter maleFreq is ignored if sex is given. If a
-    list of (virtual) subpopulation is specified in parameter subPop,
-    only individuals in these subpopulations will be initialized. Note
-    that the sex sequence, if used, is assigned repeatedly regardless
-    of subpopulation boundaries.
+    can be adjusted through parameter maleFreq or be made to exact
+    proportions by specifying parameter maleProp. Alternatively, a
+    fixed sequence of sexes can be assigned. For example, if
+    sex=[Male, Female], individuals will be assigned Male and Female
+    successively. Parameter maleFreq or maleProp are ignored if sex is
+    given. If a list of (virtual) subpopulation is specified in
+    parameter subPop, only individuals in these subpopulations will be
+    initialized. Note that the sex sequence, if used, is assigned
+    repeatedly regardless of subpopulation boundaries.
 
 "; 
 
@@ -8045,6 +8048,18 @@ Details:
 
 "; 
 
+%ignore simuPOP::RNG::randomShuffle(T begin, T end) const;
+
+%ignore simuPOP::RNG_func;
+
+%feature("docstring") simuPOP::RNG_func::RNG_func "
+
+Usage:
+
+    RNG_func(rng)
+
+"; 
+
 %feature("docstring") simuPOP::RuntimeError "
 
 Description:
@@ -10365,7 +10380,7 @@ Details:
 
 Usage:
 
-    weightedSampler(rng, weight=[])
+    weightedSampler(rng)
 
 "; 
 
@@ -10379,9 +10394,25 @@ Usage:
 
 %feature("docstring") simuPOP::weightedSampler::set "
 
+Description:
+
+    set parameters
+
 Usage:
 
     x.set(weight)
+
+"; 
+
+%feature("docstring") simuPOP::weightedSampler::set "
+
+Description:
+
+    set parameters for the second case.
+
+Usage:
+
+    x.set(weight, N)
 
 "; 
 
@@ -10390,22 +10421,6 @@ Usage:
 Usage:
 
     x.get()
-
-"; 
-
-%feature("docstring") simuPOP::weightedSampler::q "
-
-Usage:
-
-    x.q()
-
-"; 
-
-%feature("docstring") simuPOP::weightedSampler::a "
-
-Usage:
-
-    x.a()
 
 "; 
 
@@ -10547,6 +10562,8 @@ Details:
 %ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
 
 %ignore simuPOP::hweTest(const vectoru &cnt);
+
+%ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
 
 %feature("docstring") simuPOP::GetRNG "
 

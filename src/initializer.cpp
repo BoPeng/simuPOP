@@ -38,16 +38,25 @@ bool initSex::apply(population & pop)
 	subPopList::iterator sp_end = subPops.end();
 	size_t idx = 0;
 	for (; sp != sp_end; ++sp) {
+		weightedSampler ws(GetRNG());
+		if (m_maleProp >= 0) {
+			vectorf prop(2, m_maleProp);
+			prop[1] = 1 - prop[0];
+			ws.set(prop, pop.subPopSize(*sp));
+		}
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
 		IndIterator ind = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		size_t sexSz = m_sex.size();
-		if (m_sex.empty())
+		if (!m_sex.empty())
+			for (; ind.valid(); ++ind, ++idx)
+				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
+		else if (m_maleProp < 0)
 			for (; ind.valid(); ++ind)
 				ind->setSex(GetRNG().randUniform() < m_maleFreq ? Male : Female);
 		else
-			for (; ind.valid(); ++ind, ++idx)
-				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
+			for (; ind.valid(); ++ind)
+				ind->setSex(ws.get() == 0 ? Male : Female);
 	}
 	return true;
 }
@@ -101,8 +110,7 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 	m_loci(loci), m_ploidy(ploidy)
 {
 
-	DBG_FAILIF(m_alleleFreq.empty(),
-		IndexError, "Should specify one of alleleFreq, alleleFreqs");
+	DBG_FAILIF(m_alleleFreq.empty(), IndexError, "Allele frequency list is empty.");
 
 	for (size_t i = 0; i < m_alleleFreq.size(); ++i) {
 		for (size_t j = 0; j < m_alleleFreq[i].size(); ++j)
@@ -171,19 +179,25 @@ bool initByFreq::apply(population & pop)
 
 
 initByValue::initByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
-	const floatList & proportions,
+	const floatList & proportions, const floatList & frequencies,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
-	m_value(value), m_proportion(proportions.elems()), m_loci(loci),
-	m_ploidy(ploidy)
+	m_value(value), m_proportion(proportions.elems()), m_frequencies(frequencies.elems()),
+	m_loci(loci), m_ploidy(ploidy)
 {
 	DBG_FAILIF(m_value.empty(), ValueError,
 		"Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
 
 	DBG_FAILIF(!m_proportion.empty() && fcmp_ne(accumulate(m_proportion.begin(), m_proportion.end(), 0.0), 1),
 		ValueError, "Proportion should add up to one.");
+
+	DBG_FAILIF(!m_frequencies.empty() && fcmp_ne(accumulate(m_frequencies.begin(), m_frequencies.end(), 0.0), 1),
+		ValueError, "Frequencies should add up to one.");
+
+	DBG_FAILIF(!m_frequencies.empty() && !m_proportion.empty(), ValueError,
+		"Please specify only one of parameters frequencies and proportions.");
 }
 
 
@@ -215,8 +229,11 @@ bool initByValue::apply(population & pop)
 	DBG_FAILIF(!m_proportion.empty() && m_proportion.size() != m_value.size(), ValueError,
 		"If proportions are given, its length should match that of values.");
 
+	DBG_FAILIF(!m_frequencies.empty() && m_frequencies.size() != m_value.size(), ValueError,
+		"If frequenciess are given, its length should match that of values.");
+
 	DBG_FAILIF(m_value.size() != 1 && m_value.size() != m_proportion.size()
-		&& m_value.size() != subPops.size(), ValueError,
+		&& m_value.size() != m_frequencies.size() && m_value.size() != subPops.size(), ValueError,
 		"If mutliple values are given, its length should match proportion or (virtual) subpopulations");
 
 	DBG_FAILIF(m_value[0].size() != loci.size() && m_value[0].size() != loci.size() * ploidy.size(),
@@ -226,7 +243,11 @@ bool initByValue::apply(population & pop)
 	subPopList::iterator sp_end = subPops.end();
 	for (size_t idx = 0; sp != sp_end; ++sp, ++idx) {
 		//
-		weightedSampler ws(GetRNG(), m_proportion);
+		weightedSampler ws(GetRNG());
+		if (!m_proportion.empty())
+			ws.set(m_proportion, pop.subPopSize(*sp) * ploidy.size());
+		if (!m_frequencies.empty())
+			ws.set(m_frequencies);
 
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
@@ -235,14 +256,14 @@ bool initByValue::apply(population & pop)
 		for (; it.valid(); ++it) {
 			if (m_value[0].size() == loci.size()) { // for each ploidy
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-					vectori & value = m_proportion.empty() ?
+					vectori & value = m_proportion.empty() && m_frequencies.empty() ?
 					                  (m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 					for (size_t i = 0; i < value.size(); ++i)
 						it->setAllele(ToAllele(value[i]), loci[i], *p);
 				}
 			} else {
 				// (m_value[0].size() == loci.size() * ploidy.size())
-				vectori & value = m_proportion.empty() ?
+				vectori & value = m_proportion.empty() && m_frequencies.empty() ?
 				                  (m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 				size_t i = 0;
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)

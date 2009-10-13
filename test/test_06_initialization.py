@@ -101,6 +101,18 @@ class TestInitialization(unittest.TestCase):
             if ind.sex() == Male:
                 count += 1
         assert count * 1.0 / 1500 > 0.25 and count * 1.0 /1500 < 0.35
+        # male proportion
+        InitSex(pop, maleProp=0.4)
+        count = 0
+        for ind in pop.individuals(0):
+            if ind.sex() == Male:
+                count += 1
+        self.assertEqual(count, 200)
+        for ind in pop.individuals(1):
+            if ind.sex() == Male:
+                count += 1
+        self.assertEqual(count, 600)
+
         # suBPop, virtual subPop
         pop = population(size=[500, 1000], loci=[1], infoFields=['x'])
         for ind in pop.individuals():
@@ -212,6 +224,8 @@ class TestInitialization(unittest.TestCase):
         InitByValue(pop, value= [ [0]*8, [1]*8 ],
             proportions=[.3,.7])
         self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75])
+        # by frequencies
+        InitByValue(pop, value= [ [0]*8, [1]*8 ], freq=[.3, .7])
         # ploidy
         self.clearGenotype(pop)
         InitByValue(pop, value=[0]*5 + [1]*3 , ploidy=[1])

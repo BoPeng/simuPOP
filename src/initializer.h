@@ -47,23 +47,25 @@ namespace simuPOP {
 class initSex : public baseOperator
 {
 public:
-	/** Create an operator that initialize individual sex to \c Male or \c Female.
-	 *  By default, it assign sex to individuals randomly, with equal probability
-	 *  of having a male or a female. This probabability can be adjusted through
-	 *  parameter \e maleFreq. Alternatively, a fixed sequence of sexes can be
-	 *  assigned. For example, if <tt>sex=[Male, Female]</tt>, individuals will
-	 *  be assigned \c Male and \c Female successively. Parameter \e maleFreq
-	 *  is ignored if \e sex is given. If a list of (virtual) subpopulation is
+	/** Create an operator that initialize individual sex to \c Male or
+	 *  \c Female. By default, it assign sex to individuals randomly, with
+	 *  equal probability of having a male or a female. This probabability can
+	 *  be adjusted through parameter \e maleFreq or be made to exact
+	 *  proportions by specifying parameter \e maleProp. Alternatively, a fixed
+	 *  sequence of sexes can be assigned. For example, if
+	 *  <tt>sex=[Male, Female]</tt>, individuals will be assigned \c Male and
+	 *  \c Female successively. Parameter \e maleFreq or \e maleProp are
+	 *  ignored if \e sex is given. If a list of (virtual) subpopulation is
 	 *  specified in parameter \e subPop, only individuals in these
 	 *  subpopulations will be initialized. Note that the \e sex sequence, if
 	 *  used, is assigned repeatedly regardless of subpopulation boundaries.
 	 */
-	initSex(double maleFreq = 0.5, const intList & sex = vectori(),
+	initSex(double maleFreq = 0.5, double maleProp = -1, const intList & sex = vectori(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
-		m_maleFreq(maleFreq), m_sex(sex.elems())
+		m_maleFreq(maleFreq), m_maleProp(maleProp), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
 			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
@@ -100,6 +102,8 @@ public:
 protected:
 	/// sex frequency
 	double m_maleFreq;
+
+	double m_maleProp;
 
 	/// specify sex
 	vectori m_sex;
@@ -239,17 +243,19 @@ public:
 	 *  and/or \e subPop are specified, only specified loci, ploidy, and
 	 *  individuals in these (virtual) subpopulations will be initialized.
 	 *  \e value can be used to initialize given \e loci, all loci, and all
-	 *  homologous copies of these loci. If \e proportions (a list of positive
+	 *  homologous copies of these loci. If \e freq (a list of positive
 	 *  numbers that add up to \c 1) is given, \e value should be a list of
 	 *  values that will be assigned randomly according to their respective
-	 *  proportion. If a list of values are given without \e proportions,
-	 *  they will be used for each (virtual) subpopulations. This operator
-	 *  initializes all chromosomes, including unused genotype locations and
-	 *  customized chromosomes.
+	 *  proportion. Althernatively, you can use parameter \e proportions which
+	 *  assign values randomly, but with exact proportion. If a list of values
+	 *  are given without \e frequencies or \e proportions, they will be used
+	 *  for each (virtual) subpopulations. This operator initializes all
+	 *  chromosomes, including unused genotype locations and customized
+	 *  chromosomes.
 	 */
 	initByValue(intMatrix value = intMatrix(),
 		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
-		const floatList & proportions = vectorf(),
+		const floatList & proportions = vectorf(), const floatList & freq = vectorf(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
@@ -282,6 +288,9 @@ private:
 
 	/// if assign randomly
 	vectorf m_proportion;
+
+	///
+	vectorf m_frequencies;
 
 	//
 	uintList m_loci;

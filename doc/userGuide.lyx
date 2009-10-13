@@ -9760,6 +9760,11 @@ Female
 maleFreq
 \emph default
  is used to specify the probability of having a male individual.
+ Alternatively, parameter 
+\emph on
+maleProp
+\emph default
+ can be used to specify exact proportions of male individuals.
  In the second case, a sequence of sex (
 \family typewriter
 Male
@@ -9941,10 +9946,14 @@ subPops
 ploidy
 \family default
 ).
- If multiple haplotypes are given, you can specify the probabilities at
- which each haplotype will be used using parameter 
+ If multiple haplotypes are given, you can specify the proportions at which
+ each haplotype will be used using parameter 
 \family typewriter
 proportions
+\family default
+, or by frequencies using parameter 
+\family typewriter
+frequencies
 \family default
 .
  Example 

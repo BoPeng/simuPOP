@@ -1549,113 +1549,59 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 /// CPPONLY
 double hweTest(const vectoru & cnt);
 
+/// CPPONLY
+void propToCount(const vectorf & prop, ULONG N, vectoru & count);
+
 // weighted sampling using Walker's alias algorithm
 class weightedSampler
 {
 public:
+	weightedSampler(RNG & rng)
+		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_fixed(false),
+		m_fixedValue(0), m_sequence(0), m_index(0)
+	{
+	}
+
+
 	// set up AliasMethod table
-	weightedSampler(RNG & rng, const vectorf & weight = vectorf())
-		: m_RNG(&rng), m_q(0), m_a(0), m_fixed(false), m_fixedValue(0)
+	weightedSampler(RNG & rng, const vectorf & weight)
+		: m_RNG(&rng), m_algorithm(1), m_q(0), m_a(0), m_fixed(false),
+		m_fixedValue(0), m_sequence(0), m_index(0)
 	{
 		set(weight);
-	};
+	}
+
+
+	// Return 0, 1, ... randomly according to a proportion table.
+	weightedSampler(RNG & rng, const vectorf & weight, ULONG N)
+		: m_RNG(&rng), m_algorithm(2), m_q(0), m_a(0), m_fixed(false),
+		m_fixedValue(0), m_sequence(0), m_index(0)
+	{
+		set(weight, N);
+	}
+
 
 	~weightedSampler()
 	{
-	};
+	}
 
+
+	/// set parameters
 	void set(const vectorf & weight);
 
-	// sample without replacement from 0,...,n-1,
-	// with weight freq
-	ULONG get()
-	{
-		if (m_fixed)
-			return m_fixedValue;
-
-		double rN = m_RNG->randUniform() * m_N;
-
-		size_t K = static_cast<size_t>(rN);
-
-		rN -= K;
-
-		if (rN < m_q[K])
-			return K;
-		else
-			return m_a[K];
-	}
-
+	/// set parameters for the second case.
+	void set(const vectorf & weight, ULONG N);
 
 	// sample without replacement from 0,...,n-1,
 	// with weight freq
-	ULONG get(vectoru & res, ULONG shift = 0)
-	{
-		double rN;
-		size_t K;
-
-		if (m_fixed) {
-			std::fill(res.begin(), res.end(), m_fixedValue);
-			return 0;
-		}
-		for (vectoru::iterator it = res.begin(); it != res.end(); ++it) {
-			rN = m_RNG->randUniform() * m_N;
-			K = static_cast<size_t>(rN);
-
-			rN -= K;
-
-			if (rN < m_q[K])
-				*it = K + shift;
-			else
-				*it = m_a[K] + shift;
-		}
-		return 0;
-	}
-
-
-	template<class Iterator>
-	ULONG get(Iterator beg, Iterator end,  ULONG shift = 0)
-	{
-		double rN;
-		size_t K;
-
-		if (m_fixed) {
-			std::fill(beg, end, m_fixedValue + shift);
-			return;
-		}
-		for (Iterator it = beg; it != end; ++it) {
-			rN = m_RNG->randUniform() * m_N;
-			K = static_cast<size_t>(rN);
-
-			rN -= K;
-
-			if (rN < m_q[K])
-				*it = static_cast<typename Iterator::value_type>(K + shift);
-			else
-				*it = static_cast<typename Iterator::value_type>(m_a[K] + shift);
-		}
-		return 0;
-	}
-
-
-	// print internal table
-#ifndef OPTIMIZED
-	vectorf q()
-	{
-		return m_q;
-	}
-
-
-	vectoru a()
-	{
-		return m_a;
-	}
-
-
-#endif
+	ULONG get();
 
 private:
 	/// pointer to a RNG
 	RNG * m_RNG;
+
+	/// which algorithm to use
+	int m_algorithm;
 
 	/// length of weight.
 	size_t m_N;
@@ -1663,27 +1609,19 @@ private:
 	/// internal table.
 	vectorf m_q;
 
+	///
 	vectoru m_a;
 
 	// handle special case
 	bool m_fixed;
 	ULONG m_fixedValue;
-};
 
-// Return 0, 1, ... randomly according to a proportion table.
-class proportionSampler
-{
-public:
-	//
-	proportionSampler(RNG & rng, const vectorf & weight = vectorf(), ULONG N = 0);
-
-	ULONG get();
-
-private:
+	///
 	vectoru m_sequence;
 
 	ULONG m_index;
 };
+
 
 /** this class encapsulate behavior of a sequence of Bernulli trial.
  *  the main idea is that when doing a sequence of Bernulli trials
