@@ -203,8 +203,18 @@ class TestUtility(unittest.TestCase):
         num = []
         for i in range(100000):
             num.append(sampler.get())
-        #print [num.count(i) for i in range(4)]
+        for i in range(4):
+            self.assertAlmostEqual(num.count(i) / 100000., 0.1 * (i+1), 2)
 
+    def testProportionSampler(self):
+        'Testing weighted sampler'
+        sampler = proportionSampler(GetRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
+        num = []
+        for i in range(100000):
+            num.append(sampler.get())
+        for i in range(4):
+            # the count must be exact
+            self.assertEqual(num.count(i), 10000 * (i+1))
 
     def TestLargePedigree(self):
         'Testing getting large pedigree, for simuUtils.ascertainPedigree'

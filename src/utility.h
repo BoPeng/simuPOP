@@ -1319,6 +1319,28 @@ void CloseOutput(const string & output = string());
 // / Random number generator
 // ////////////////////////////////////////////////////////////
 
+
+/// CPPONLY
+class RNG_func
+{
+public:
+	RNG_func(gsl_rng * rng) : m_RNG(rng)
+	{
+
+	}
+
+
+	unsigned long int operator()(unsigned long int N) const
+	{
+		return gsl_rng_uniform_int(m_RNG, N);
+	}
+
+
+private:
+	gsl_rng * m_RNG;
+};
+
+
 /** This random number generator class wraps around a number of random number
  *  generators from GNU Scientific Library. You can obtain and change the
  *  RNG used by the current simuPOP module through the \c GetRNG() function,
@@ -1374,6 +1396,7 @@ public:
 		return m_seed;
 	}
 
+
 	/// CPPONLY
 	unsigned long generateRandomSeed();
 
@@ -1385,6 +1408,7 @@ public:
 	{
 		return gsl_rng_uniform(m_RNG);
 	}
+
 
 	/** Return a random bit. This is not part of GSL.
 	 *  HIDDEN
@@ -1399,8 +1423,9 @@ public:
 		return gsl_rng_uniform_int(m_RNG, n);
 	}
 
+
 	/** Generate a random number following a normal distribution with mean
-	 *  \e mu and standard deviation \e sigma. 
+	 *  \e mu and standard deviation \e sigma.
 	 *  <group>4-distribution</group>
 	 */
 	double randNormal(double mu, double sigma)
@@ -1408,7 +1433,7 @@ public:
 		return gsl_ran_gaussian(m_RNG, sigma) + mu;
 	}
 
-	
+
 	/** Generate a random number following a exponential distribution with
 	 *  parameter \e mu.
 	 *  <group>4-distribution</group>
@@ -1417,6 +1442,7 @@ public:
 	{
 		return gsl_ran_exponential(m_RNG, mu);
 	}
+
 
 	/** Generate a random number following a gamma distribution with
 	 *  parameters \e a and \e b.
@@ -1427,6 +1453,7 @@ public:
 		return gsl_ran_gamma(m_RNG, a, b);
 	}
 
+
 	/** Generate a random number following a Chi-squared distribution with
 	 *  \e nu degrees of freedom.
 	 *  <group>4-distribution</group>
@@ -1435,6 +1462,7 @@ public:
 	{
 		return gsl_ran_chisq(m_RNG, nu);
 	}
+
 
 	/** Generate a random number following a geometric distribution with
 	 *  parameter \e p.
@@ -1457,14 +1485,16 @@ public:
 		return gsl_ran_binomial(m_RNG, p, n);
 	}
 
+
 	/** Generate a random number following a Poisson distribution with
-	 *  parameter \e mu. 
+	 *  parameter \e mu.
 	 *  <group>4-distribution</group>
 	 */
 	UINT randPoisson(double mu)
 	{
 		return gsl_ran_poisson(m_RNG, mu);
 	}
+
 
 	/** Generate a random number following a multinomial distribution with
 	 *  parameters \e N and \e p (a list of probabilities).
@@ -1481,6 +1511,21 @@ public:
 			res[i] = val[i];
 		return res;
 	}
+
+
+	/** Randomly shuffle a sequence
+	 *  CPPONLY
+	 */
+	template<typename T>
+	void randomShuffle(T begin, T end) const
+	{
+		// use the STL random shuffle function but a GSL random number
+		// generator.
+		RNG_func rng(m_RNG);
+
+		std::random_shuffle(begin, end, rng);
+	}
+
 
 private:
 	/// global random number generator
@@ -1623,6 +1668,21 @@ private:
 	// handle special case
 	bool m_fixed;
 	ULONG m_fixedValue;
+};
+
+// Return 0, 1, ... randomly according to a proportion table.
+class proportionSampler
+{
+public:
+	//
+	proportionSampler(RNG & rng, const vectorf & weight = vectorf(), ULONG N = 0);
+
+	ULONG get();
+
+private:
+	vectoru m_sequence;
+
+	ULONG m_index;
 };
 
 /** this class encapsulate behavior of a sequence of Bernulli trial.
