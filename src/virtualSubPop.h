@@ -195,6 +195,9 @@ public:
 	combinedSplitter(const vectorsplitter & splitters = vectorsplitter(),
 		const intMatrix & vspMap = intMatrix(), const stringList & names = vectorstr());
 
+	/// CPPONLY
+	combinedSplitter(const combinedSplitter & rhs);
+
 	~combinedSplitter();
 
 	/// HIDDEN
@@ -241,9 +244,6 @@ private:
 	typedef std::pair<UINT, UINT> vspPair;
 	typedef vector<vspPair> vspList;
 	vector<vspList> m_vspMap;
-
-	/// old parameter for clone use
-	intMatrix m_inputMap;
 };
 
 
@@ -264,6 +264,9 @@ public:
 	 */
 	productSplitter(const vectorsplitter & splitters = vectorsplitter(),
 		const stringList & names = vectorstr());
+
+	/// CPPONLY
+	productSplitter(const productSplitter & rhs);
 
 	~productSplitter();
 
@@ -370,12 +373,7 @@ public:
 	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
 	 *  set of names are specified.
 	 */
-	string name(SubPopID vsp)
-	{
-		DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
-		return vsp == 0 ? "Male" : "Female";
-	}
-
+	string name(SubPopID vsp);
 
 };
 
@@ -433,12 +431,7 @@ public:
 	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
 	 *  unless a new set of names are specified.
 	 */
-	string name(SubPopID vsp)
-	{
-		DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
-		return vsp == 0 ? "Unaffected" : "Affected";
-	}
-
+	string name(SubPopID vsp);
 
 };
 

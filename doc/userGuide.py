@@ -368,7 +368,7 @@ pop.subPopSize([1, 4])    # individuals in sp 1 with value 2 at field x
 #
 # use a product splitter that defines additional VSPs by sex and info
 pop.setVirtualSplitter(productSplitter(splitters = [
-    sexSplitter(),
+    sexSplitter(names=['M', 'F']),  # give a new set of names
     infoSplitter(field='x', values=[0, 1, 2, 3])
 ]))
 pop.numVirtualSubPop()    # Number of defined VSPs
@@ -382,7 +382,8 @@ pop.setVirtualSplitter(combinedSplitter([
     productSplitter([
         sexSplitter(),
         infoSplitter(field='x', values=[0, 1, 2, 3])])],
-    vspMap = [[0,1,2], [4,5,6], [7]]))
+    vspMap = [[0,1,2], [4,5,6], [7]],
+    names = ['Male x<=3', 'Female x<=3', 'Female x=4']))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 0])    # Male with value 0, 1, 2 at field x

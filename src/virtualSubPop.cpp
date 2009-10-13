@@ -70,7 +70,7 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 
 combinedSplitter::combinedSplitter(const vectorsplitter & splitters,
 	const intMatrix & vspMap, const stringList & names)
-	: vspSplitter(names), m_splitters(0), m_vspMap(0), m_inputMap(vspMap)
+	: vspSplitter(names), m_splitters(0), m_vspMap(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i)
 		m_splitters.push_back(splitters[i]->clone());
@@ -106,6 +106,14 @@ combinedSplitter::combinedSplitter(const vectorsplitter & splitters,
 }
 
 
+combinedSplitter::combinedSplitter(const combinedSplitter & rhs) :
+	vspSplitter(rhs), m_splitters(), m_vspMap(rhs.m_vspMap)
+{
+	for (size_t i = 0; i < rhs.m_splitters.size(); ++i)
+		m_splitters.push_back(rhs.m_splitters[i]->clone());
+}
+
+
 combinedSplitter::~combinedSplitter()
 {
 	for (size_t i = 0; i < m_splitters.size(); ++i)
@@ -115,7 +123,7 @@ combinedSplitter::~combinedSplitter()
 
 vspSplitter * combinedSplitter::clone() const
 {
-	return new combinedSplitter(m_splitters, m_inputMap);
+	return new combinedSplitter(*this);
 }
 
 
@@ -252,6 +260,14 @@ vectori productSplitter::getVSPs(SubPopID vsp) const
 }
 
 
+productSplitter::productSplitter(const productSplitter & rhs) :
+	vspSplitter(rhs), m_splitters(), m_numVSP(rhs.m_numVSP)
+{
+	for (size_t i = 0; i < rhs.m_splitters.size(); ++i)
+		m_splitters.push_back(rhs.m_splitters[i]->clone());
+}
+
+
 productSplitter::~productSplitter()
 {
 	for (size_t i = 0; i < m_splitters.size(); ++i)
@@ -261,7 +277,7 @@ productSplitter::~productSplitter()
 
 vspSplitter * productSplitter::clone() const
 {
-	return new productSplitter(m_splitters);
+	return new productSplitter(*this);
 }
 
 
@@ -390,6 +406,20 @@ void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSu
 }
 
 
+string sexSplitter::name(SubPopID vsp)
+{
+	DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == 2, ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[vsp];
+
+	return vsp == 0 ? "Male" : "Female";
+}
+
+
 void sexSplitter::deactivate(population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
@@ -434,6 +464,20 @@ void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID vir
 			it->setIteratable(it->affected() == aff);
 	if (type == VisibleInds)
 		m_activated = subPop;
+}
+
+
+string affectionSplitter::name(SubPopID vsp)
+{
+	DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
+
+	DBG_ASSERT(m_names.empty() || m_names.size() == 2, ValueError,
+		"VSP names, if given, should be assigned to all VSPs");
+
+	if (!m_names.empty())
+		return m_names[vsp];
+
+	return vsp == 0 ? "Unaffected" : "Affected";
 }
 
 
