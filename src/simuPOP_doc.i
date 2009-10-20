@@ -3467,51 +3467,34 @@ Usage:
 
 %feature("docstring") simuPOP::mapSelector "
 
-Function form:
-
-    MapSelector
-
 Applicability: all ploidy
-
-Description:
-
-    selection according to the genotype at one or more loci
 
 Details:
 
-    This map selector implements selection according to genotype at
-    one or more loci. A user provided dictionary (map) of genotypes
-    will be used in this selector to set each individual's fitness
-    value.
+    This selector assigns individual fitness values using a user-
+    specified dictionary.
 
 "; 
 
 %feature("docstring") simuPOP::mapSelector::mapSelector "
 
-Description:
-
-    create a map selector
-
 Usage:
 
-    mapSelector(loci, fitness, phase=False, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+    mapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
-Arguments:
+Details:
 
-    locus:          the locus index. A shortcut to loci=[locus]
-    loci:           the locus indexes. The genotypes at these loci
-                    will be used to determine the fitness value.
-    fitness:        a dictionary of fitness values. The genotype must
-                    be in the form of 'a-b' for a single locus, and
-                    'a-b|c-d|e-f' for multi-loci. In the haploid case,
-                    the genotype should be specified in the form of
-                    'a' for single locus, and 'a|b|c' for multi-locus
-                    models.
-    phase:          if True, genotypes a-b and b-a will have different
-                    fitness values. Default to False.
-    output:         and other parameters please refer to help
-                    (baseOperator.__init__)
+    Create a selector that assigns individual fitness values using a
+    dictionary fitness with genotype at loci as keys, and fitness as
+    values. For each individual (parents if this operator is applied
+    before mating, and offspring if this operator is applied during
+    mating), genotypes at loci are collected one by one (e.g. p0_loc0,
+    p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and are
+    looked up in the dictionary. If a genotype cannot be found, it
+    will be looked up again without phase information (e.g. (1,0) will
+    match key (0,1)). If the genotype still can not be found, a
+    ValueError will be returned.
 
 "; 
 
@@ -8148,10 +8131,6 @@ Usage:
 
 %feature("docstring") simuPOP::selector "
 
-Description:
-
-    A base selection operator for all selectors.
-
 Details:
 
     Genetic selection is tricky to simulate since there are many
@@ -8192,10 +8171,6 @@ Note:
 "; 
 
 %feature("docstring") simuPOP::selector::selector "
-
-Description:
-
-    create a selector
 
 Usage:
 

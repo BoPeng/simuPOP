@@ -42,7 +42,7 @@ bool selector::apply(population & pop)
 			pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind)
-			ind->setInfo(indFitness(& * it, pop.gen()), fit_id);
+			ind->setInfo(indFitness(& * ind, pop.gen()), fit_id);
 		pop.turnOnSelection(sp->subPop());
 	}
 
@@ -75,7 +75,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		tupleDict::iterator itEnd = m_dict.end();
 		for (; it != itEnd; ++it) {
 			bool ok = true;
-			const tupeDict::key_type & key = it->first;
+			const tupleDict::key_type & key = it->first;
 			for (size_t i = 0; i < m_loci.size(); ++i) {
 				if (ply == 2) {
 					if ((alleles[2 * i ] != key[0] || alleles[2 * i + 1] != key[1]) &&
@@ -85,7 +85,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 					}
 				} else {
 					std::sort(alleles.begin() + 2 * i, alleles.begin() + 2 * (i + 1));
-					tupeDict::key_type sorted_key = it->first;
+					tupleDict::key_type sorted_key = it->first;
 					std::sort(sorted_key.begin(), sorted_key.end());
 					for (size_t j = 0; j < key.size(); ++j) {
 						if (alleles[2 * i + j] != sorted_key[j]) {
