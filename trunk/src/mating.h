@@ -967,7 +967,7 @@ public:
 	 *  The return value of this function should be a list of subpopulation
 	 *  sizes for the offspring generation. A single number can be returned
 	 *  if there is only one subpopulation. If a function is passed to this
-	 *  parameter, it will be called at each generation to determine the 
+	 *  parameter, it will be called at each generation to determine the
 	 *  size of the offspring generation. The passed parental population is
 	 *  usually used to determine offspring population size from parental
 	 *  population size but nothing stops you from modifying this parental

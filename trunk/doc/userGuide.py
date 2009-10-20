@@ -2326,7 +2326,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-def demo(gen, pop=Mone):
+def demo(gen, pop=None):
     if gen < 2:
         return 1000 + 100 * gen
     else:

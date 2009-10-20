@@ -1164,8 +1164,8 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 		// if pop is valid?
 		if (popObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-			              "Compiled with the wrong version of SWIG?");
-		
+				              "Compiled with the wrong version of SWIG?");
+
 		vectori res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", gen, popObj);
 		Py_XDECREF(popObj);
 
