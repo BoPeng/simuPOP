@@ -376,6 +376,11 @@ individual & population::indByID(ULONG id, int ancGen, const string & idField)
 				return (*inds)[i];
 		}
 	}
+	// if an individual can not be found in the specified generation, search
+	// all ancestral generations.
+	if (ancGen != -1)
+		return indByID(id, -1, idField);
+	// if still cannot be found, raise an IndexError.
 	throw IndexError("No individual with ID " + toStr(id) + " could be found.");
 	// this is just to suppress a warning.
 	return m_inds[0];

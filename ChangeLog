@@ -24,6 +24,9 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add parameter maleProp to operator initSex.
   - CHG: The second parameter of a demographic function is now the parental
   population itself, instead of parental population sizes.
+  - CHG: Treat ancGen in population.indByID as suggested generation and will
+  continue to check other generations if an individual with specified ID is
+  not found in the suggested generation.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields

@@ -468,11 +468,13 @@ public:
 	/** Return a reference to individual with \e id stored in information
 	 *  field \e idField (default to \c ind_id). This function by default
 	 *  search the present and all ancestral generations (\c ancGen=-1),
-	 *  but you can specify a specific generation if you know which
+	 *  but you can suggest a specific generation if you know which
 	 *  generation to search (\c ancGen=0 for present generation, \c ancGen=1
-	 *  for parental generation, and so on). If no individual with \e id is
-	 *  found,an \c IndexError will be raised.
-	 * <group>4-ind</group>
+	 *  for parental generation, and so on). This function will search this
+	 *  generation first but will search the whole population if an
+	 *  individual with \e id is not found. If no individual with \e id is
+	 *  found, an \c IndexError will be raised.
+	 *  <group>4-ind</group>
 	 */
 	individual & indByID(ULONG id, int ancGen = -1, const string & idField = "ind_id");
 
