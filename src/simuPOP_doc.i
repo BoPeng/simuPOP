@@ -1877,17 +1877,21 @@ Details:
     parameter can be a list of subpopulation sizes (or a number if
     there is only one subpopulation) or a Python function. The
     function should take two parameters, a generation number and a
-    list of subpopulation sizes before mating, and return a list of
+    population object which is the parental population just before
+    mating. The return value of this function should be a list of
     subpopulation sizes for the offspring generation. A single number
-    can be returned if there is only one subpopulation. If latter form
-    is used, the specified function will be called at each generation
-    to determine the size of the offspring generation. Parameters
-    subPop and weight are ignored in this case.  If this mating shcme
-    is used within a heterogeneous mating scheme. Parameters subPop
-    and weight are used to determine which (virtual) subpopulation
-    this mating scheme will be applied to, and how many offspring this
-    mating scheme will produce. Please refer to mating scheme
-    heteroMating for the use of these two parameters.
+    can be returned if there is only one subpopulation. If a function
+    is passed to this parameter, it will be called at each generation
+    to determine the size of the offspring generation. The passed
+    parental population is usually used to determine offspring
+    population size from parental population size but nothing stops
+    you from modifying this parental population to prepare it for
+    mating.  If this mating shcme is used within a heterogeneous
+    mating scheme. Parameters subPop and weight are used to determine
+    which (virtual) subpopulation this mating scheme will be applied
+    to, and how many offspring this mating scheme will produce. Please
+    refer to mating scheme heteroMating for the use of these two
+    parameters.
 
 "; 
 
