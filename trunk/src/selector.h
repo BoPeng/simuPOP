@@ -27,7 +27,7 @@
 #define _SELECTOR_H
 /**
    \file
-   \brief head file of class selector:public baseOperator
+   \brief head file of class selector
  */
 #include "utility.h"
 #include "operator.h"
@@ -37,8 +37,8 @@
 using std::min;
 
 namespace simuPOP {
-/// A base selection operator for all selectors
-/**
+
+/** 
    Genetic selection is tricky to simulate since there are many different \em fitness
    values and many different ways to apply selection. simuPOP employs an
    \em 'ability-to-mate' approach. Namely, the probability that an individual will be
@@ -72,7 +72,6 @@ namespace simuPOP {
 class selector : public baseOperator
 {
 public:
-	/// create a selector
 	/**
 	 */
 	selector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -130,35 +129,31 @@ public:
 
 };
 
-/// selection according to the genotype at one or more loci
-/**
-   This map selector implements selection according to genotype at one or more loci.
-   A user provided dictionary (map) of genotypes will be used in this selector to set
-   each individual's fitness value.
-   <funcForm>MapSelector</funcForm>
-   <applicability>all ploidy</applicability>
+
+/** This selector assigns individual fitness values using a user-specified
+ *  dictionary. 
+ *  <applicability>all ploidy</applicability>
  */
 class mapSelector : public selector
 {
 public:
-	/// create a map selector
-	/**
-	   \param locus the locus index. A shortcut to <tt> loci=[locus] </tt>
-	   \param loci the locus indexes. The genotypes at these loci will be used to determine the fitness value.
-	   \param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
-	    for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci. In the haploid case, the genotype
-	    should be specified in the form of <tt>'a'</tt> for single locus, and <tt>'a|b|c'</tt> for multi-locus
-	    models.
-	   \param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to \c False.
-	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
-
+	/** Create a selector that assigns individual fitness values using a
+	 *  dictionary \e fitness with genotype at \e loci as keys, and fitness
+	 *  as values. For each individual (parents if this operator is applied
+	 *  before mating, and offspring if this operator is applied during
+	 *  mating), genotypes at \e loci are collected one by one (e.g. 
+	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and
+	 *  are looked up in the dictionary. If a genotype cannot be found, it
+	 *  will be looked up again without phase information (e.g.
+	 *  <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the genotype
+	 *  still can not be found, a \c ValueError will be returned.
 	 */
-	mapSelector(const uintList & loci, const tupleDict & fitness, bool phase = false,
-		int begin = 0, int end = -1, int step = 1,
-		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
+	mapSelector(const uintList & loci, const tupleDict & fitness, 
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	       	const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		selector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_dict(fitness), m_phase(phase)
+		m_loci(loci.elems()), m_dict(fitness)
 	{
 	};
 
@@ -192,9 +187,6 @@ private:
 
 	/// fitness for each genotype
 	tupleDict m_dict;
-
-	///
-	bool m_phase;
 };
 
 /// multiple allele selector (selection according to wildtype or diseased alleles)
