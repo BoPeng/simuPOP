@@ -269,11 +269,6 @@ __all__ = [
     'MlPenetrance',
     'PyPenetrance',
     #
-    'MaSelect',
-    'MapSelect',
-    'PySelect',
-    'MlSelect',
-    #
     'MlQuanTrait',
     'PyQuanTrait',
     'MaQuanTrait',
@@ -1344,29 +1339,6 @@ def TagID(pop, *args, **kwargs):
     to all individuals in the population.'''
     idTagger(*args, **kwargs).apply(pop)
 
-def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
-    mapSelector(loci, fitness, phase, *args, **kwargs).apply(pop)
-
-if mapSelector.__init__.__doc__ is not None:
-    MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
-
-def MaSelect(pop, loci, fitness, wildtype, *args, **kwargs):
-    maSelector(loci, fitness, wildtype, *args, **kwargs).apply(pop)
-
-if maSelector.__init__.__doc__ is not None:
-    MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
-
-def MlSelect(pop, selectors, mode = Multiplicative, *args, **kwargs):
-    mlSelector(selectors, mode, *args, **kwargs).apply(pop)
-
-if mlSelector.__init__.__doc__ is not None:
-    MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
-
-def PySelect(pop, loci, func, *args, **kwargs):
-    pySelector(loci, func, *args, **kwargs).apply(pop)
-
-if pySelector.__init__.__doc__ is not None:
-    PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
 def MapPenetrance(pop, loci, penetrance, phase = False, ancGen = -1, *args, **kwargs):
     mapPenetrance(loci, penetrance, phase, ancGen, *args, **kwargs).apply(pop)

@@ -31,23 +31,19 @@ bool selector::apply(population & pop)
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
 	subPopList subPops = applicableSubPops();
+	// the usual whole population, easy case.
+	if (subPops.allAvail())
+		subPops.useSubPopsFrom(pop);
 
-	if (subPops.empty()) {
-		IndInfoIterator fitness = pop.infoBegin(fit_id);
-		// fitness may change with generation so pass generation information
-		for (IndIterator it = pop.indIterator(); it.valid(); ++it)
-			*fitness++ = indFitness(& * it, pop.gen()) ;
-		pop.turnOnSelection();
-	} else {
-		for (subPopList::iterator sp = subPops.begin(); sp != subPops.end(); ++sp) {
-			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp);
-			DBG_FAILIF(static_cast<UINT>(sp->subPop()) > pop.numSubPop(), IndexError,
-				"Wrong subpopulation index" + toStr(sp->subPop()) + " (number of subpops is " +
-				toStr(pop.numSubPop()) + ")");
-			for (IndIterator it = pop.indIterator(sp->subPop()); it.valid(); ++it)
-				*fitness++ = indFitness(& * it, pop.gen());
-			pop.turnOnSelection(sp->subPop());
-		}
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp);
+		IndIterator ind = pop.indIterator(sp->subPop());
+		for (; ind.valid(); ++ind)
+			ind->setInfo(indFitness(& * it, pop.gen()), fit_id);
+		pop.turnOnSelection(sp->subPop());
 	}
 
 	return true;
@@ -61,37 +57,60 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	vectori alleles(ply * m_loci.size());
 	size_t idx = 0;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	vectoru::iterator loc = m_loci.begin();
+       	vectoru::iterator locEnd = m_loci.end();
+	for (; loc != locEnd; ++loc) {
 		for (size_t p = 0; p < ply; ++p, ++idx)
 			alleles[idx] = ind->allele(*loc, p);
-		// if no phase, sort alleles...
-		if (!m_phase && ply > 1) {
-			if (ply == 2) {
-				if (alleles[idx - 2] > alleles[idx - 1]) { // swap
-					int tmp = alleles[idx - 2];
-					alleles[idx - 2] = alleles[idx - 1];
-					alleles[idx - 1] = tmp;
-				}
-			} else
-				std::sort(alleles.begin() + idx - ply, alleles.end());
-		}
 	}
 
 	tupleDict::iterator pos = m_dict.find(alleles);
+	
+	if (pos != m_dict.end())
+		return pos->second;
 
-	if (pos == m_dict.end()) {
-		string allele_string = "(";
-		for (size_t i = 0; i < alleles.size(); ++i) {
-			if (i != 0)
-				allele_string += ", ";
-			allele_string += toStr(alleles[i]);
+	if (ply > 1) {
+		// try to look up the key without phase
+		tupleDict::iterator it = m_dict.begin();
+		tupleDict::iterator itEnd = m_dict.end();
+		for (; it != itEnd; ++it) {
+			bool ok = true;
+			const tupeDict::key_type & key = it->first;
+			for (size_t i = 0; i < m_loci.size(); ++i) {
+				if (ply == 2) {
+					if ((alleles[2 * i ] != key[0] || alleles[2 * i + 1] != key[1]) &&
+						(alleles[2 * i ] != key[1] || alleles[2 * i + 1] != key[0])) {
+						ok = false;
+						break;
+					}
+				} else {
+					std::sort(alleles.begin() + 2 * i, alleles.begin() + 2 * (i + 1));
+					tupeDict::key_type sorted_key = it->first;
+					std::sort(sorted_key.begin(), sorted_key.end());
+					for (size_t j = 0; j < key.size(); ++j) {
+						if (alleles[2 * i + j] != sorted_key[j]) {
+							ok = false;
+							break;
+						}
+					}
+				}
+					
+			}
+			if (ok)
+				return it->second;
 		}
-		allele_string += ")";
-		DBG_ASSERT(false, ValueError,
-			"No fitness value for genotype " + allele_string);
 	}
-
-	return pos->second;
+	// no match
+	string allele_string = "(";
+	for (size_t i = 0; i < alleles.size(); ++i) {
+		if (i != 0)
+			allele_string += ", ";
+		allele_string += toStr(alleles[i]);
+	}
+	allele_string += ")";
+	DBG_ASSERT(false, ValueError, "No fitness value for genotype " + allele_string);
+	// this line should not be reached.
+	return 0;
 }
 
 
