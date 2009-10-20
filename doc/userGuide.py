@@ -1030,7 +1030,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-def demo(gen, oldSize=[]):
+def demo(gen, pop=None):
     return [500 + gen*10, 1000 + gen*10]
 
 simu = simulator(
@@ -2326,11 +2326,11 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 GetRNG().setSeed(12345)
 #end_ignore
-def demo(gen, oldSize=[]):
+def demo(gen, pop=Mone):
     if gen < 2:
         return 1000 + 100 * gen
     else:
-        return [x + 50 * gen for x in oldSize]
+        return [x + 50 * gen for x in pop.subPopSizes()]
 
 simu = simulator(population(1000),
     randomSelection(subPopSize=demo))
@@ -3511,7 +3511,7 @@ GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import trajectory, BackwardTrajectory
 from math import exp
-def Nt(gen, oldSize=[]):
+def Nt(gen, pop=None):
     'An exponential population growth demographic model.'
     return int((10**4) * exp(.00115 * gen))
 
@@ -3931,13 +3931,13 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     G1:   Length of population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
-    def ins_expansion(gen, oldsize=[]):
+    def ins_expansion(gen, pop=None):
         if gen < G0:
             return N0
         else:
             return N1
     
-    def exp_expansion(gen, oldsize=[]):
+    def exp_expansion(gen, pop=None):
         if gen < G0:
             return N0
         else:            
@@ -4107,13 +4107,13 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     G1:   Length of population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
-    def ins_expansion(gen, oldsize=[]):
+    def ins_expansion(gen, pop=None):
         if gen < G0:
             return N0
         else:
             return N1
     
-    def exp_expansion(gen, oldsize=[]):
+    def exp_expansion(gen, pop=None):
         if gen < G0:
             return N0
         else:            

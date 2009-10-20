@@ -1159,16 +1159,15 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 	else {                                                                              // use m_subPopSizeFunc
 		// get generation number
 		int gen = pop.gen();
-		// convert current pop size to a tuple
-		PyObject * curSize = PyTuple_New(pop.numSubPop());
+		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 
-		DBG_ASSERT(curSize != NULL, SystemError, "Can not convert current pop size to a list");
-
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
-
-		vectori res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", gen, curSize);
-		Py_XDECREF(curSize);
+		// if pop is valid?
+		if (popObj == NULL)
+			throw SystemError("Could not pass population to the provided function. \n"
+			              "Compiled with the wrong version of SWIG?");
+		
+		vectori res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", gen, popObj);
+		Py_XDECREF(popObj);
 
 		vectoru sz(res.size());
 

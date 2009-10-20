@@ -1,4 +1,4 @@
-#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7076,7 +7076,7 @@ subPopSize
 \family default
 .
  This function should take two parameters: the generation number and the
- current subpopulation sizes, and return an array of new subpopulation sizes.
+ current parental population, and return an array of new subpopulation sizes.
  A single number can be returned if there is only one subpopulation.
 \end_layout
 
@@ -7170,15 +7170,12 @@ lstparams "caption={Use a demographic function to control population size},label
 \end_layout
 
 \begin_layout Standard
-All these examples have fixed number of subpopulations.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:splitAndMerge"
-
-\end_inset
-
- will introduce how to split and merge subpopulations dynamically.
+The parental population passed to a demographic function is usually used
+ to determine offspring population size from parental population size.
+ Although it is techniquely allowed to modify the parental population in
+ preparation for mating (e.g.
+ remove some individuals), such operation should generally be performed
+ by an operator.
 \end_layout
 
 \begin_layout Subsection
