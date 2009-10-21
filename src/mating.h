@@ -754,15 +754,10 @@ public:
 
 	/// CPPONLY
 	pyParentsChooser(const pyParentsChooser & rhs)
-		: parentChooser(rhs),
-		m_func(rhs.m_func),
-		m_generator(rhs.m_generator),
-		m_parIterator(rhs.m_parIterator)
+		: parentChooser(rhs), m_func(rhs.m_func),
+		m_popObj(NULL), m_generator(NULL), m_parIterator(NULL)
 	{
-		if (m_generator != NULL)
-			Py_INCREF(m_generator);
-		if (m_parIterator != NULL)
-			Py_INCREF(m_parIterator);
+		m_initialized = false;
 	}
 
 
@@ -777,19 +772,13 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	void finalize(population & pop, SubPopID sp)
-	{
-		m_initialized = false;
-	}
-
+	void finalize(population & pop, SubPopID sp);
 
 	/// destructor
 	~pyParentsChooser()
 	{
-		if (m_generator != NULL)
-			Py_XDECREF(m_generator);
-		if (m_parIterator != NULL)
-			Py_XDECREF(m_parIterator);
+		DBG_FAILIF(m_popObj != NULL || m_parIterator != NULL || m_generator != NULL,
+			SystemError, "Python generator is not properly destroyed.");
 	}
 
 
@@ -803,6 +792,7 @@ private:
 	IndIterator m_begin;
 
 	pyFunc m_func;
+	PyObject * m_popObj;
 	PyObject * m_generator;
 	PyObject * m_parIterator;
 };
