@@ -1036,7 +1036,8 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 
 
 pyParentsChooser::pyParentsChooser(PyObject * pc)
-	: parentChooser(), m_func(pc), m_generator(NULL), m_parIterator(NULL)
+	: parentChooser(), m_func(pc), m_popObj(NULL),
+	m_generator(NULL), m_parIterator(NULL)
 {
 }
 
@@ -1056,13 +1057,13 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 #endif
 	m_begin = pop.indIterator(sp);
 
-	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+	m_popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?
-	DBG_FAILIF(popObj == NULL, SystemError,
+	DBG_FAILIF(m_popObj == NULL, SystemError,
 		"Could not pass population to the provided function. \n"
 		"Compiled with the wrong version of SWIG?");
 
-	m_generator = m_func("(Oi)", popObj, sp);
+	m_generator = m_func("(Oi)", m_popObj, sp);
 
 	// test if m_generator is a generator
 	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
@@ -1124,6 +1125,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 				else
 					DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
 			}
+			Py_DECREF(v);
 		}
 		Py_DECREF(item);
 		return parentChooser::individualPair(parents[0], parents[1]);
@@ -1137,6 +1139,20 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 	}
 	// this should not be reached
 	return parentChooser::individualPair(NULL, NULL);
+}
+
+
+void pyParentsChooser::finalize(population & pop, SubPopID sp)
+{
+	DBG_FAILIF(m_popObj == NULL || m_parIterator == NULL || m_generator == NULL,
+		SystemError, "Python generator is not properly initialized.");
+	Py_DECREF(m_popObj);
+	Py_DECREF(m_parIterator);
+	Py_DECREF(m_generator);
+	m_popObj = NULL;
+	m_parIterator = NULL;
+	m_generator = NULL;
+	m_initialized = false;
 }
 
 
