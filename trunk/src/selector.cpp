@@ -51,16 +51,26 @@ bool selector::apply(population & pop)
 
 double mapSelector::indFitness(individual * ind, ULONG gen)
 {
+	vectoru chromTypes;
+	for (size_t i = 0; i < m_loci.size(); ++i)
+		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
+
 	size_t ply = ind->ploidy();
+	if (ind->isHaplodiploid() && ind->sex() == Male)
+		ply = 1;
 
-	vectori alleles(ply * m_loci.size());
-	size_t idx = 0;
+	vectori alleles;
+	alleles.reserve(ply * m_loci.size());
 
-	vectoru::iterator loc = m_loci.begin();
-       	vectoru::iterator locEnd = m_loci.end();
-	for (; loc != locEnd; ++loc) {
-		for (size_t p = 0; p < ply; ++p, ++idx)
-			alleles[idx] = ind->allele(*loc, p);
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		for (size_t p = 0; p < ply; ++p, ++idx) {
+			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+				continue;
+			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
+			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+				continue;
+			alleles.append(ind->allele(m_loci[idx], p));
+		}
 	}
 
 	tupleDict::iterator pos = m_dict.find(alleles);
@@ -75,18 +85,33 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
+			UINT start_idx = 0;
+			UING end_idx = 0;
 			for (size_t i = 0; i < m_loci.size(); ++i) {
+				if (chromTypes[i] == ChromosomeY) {
+				       if (ind->sex() == Female)
+					       continue;
+				       else
+						++end_idx;
+				} else if (chromTypes[i] == ChromosomeX && ind->sex() == Male)
+					++end_idx;
+				else
+					end_idx += ply;
+				if (key.size() != end_idx - begin_idx) {
+					ok = false;
+					break;
+				}
 				if (ply == 2) {
-					if ((alleles[2 * i ] != key[0] || alleles[2 * i + 1] != key[1]) &&
-						(alleles[2 * i ] != key[1] || alleles[2 * i + 1] != key[0])) {
+					if ((alleles[begin_idx] != key[0] || alleles[end_idx - 1] != key[1]) &&
+						(alleles[begin_idx] != key[1] || alleles[end_idx - 1] != key[0])) {
 						ok = false;
 						break;
 					}
 				} else {
-					std::sort(alleles.begin() + 2 * i, alleles.begin() + 2 * (i + 1));
+					std::sort(alleles.begin() + begin_idx, alleles.begin() + end_idx);
 					tupleDict::key_type sorted_key = it->first;
 					std::sort(sorted_key.begin(), sorted_key.end());
-					for (size_t j = 0; j < ply; ++j) {
+					for (size_t j = 0; j < sorted_key.size(); ++j) {
 						if (alleles[ply * i + j] != sorted_key[j]) {
 							ok = false;
 							break;

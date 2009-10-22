@@ -28,6 +28,8 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   continue to check other generations if an individual with specified ID is
   not found in the suggested generation.
   - BUG: Fix a memory leak bug in pyParentsChooser.
+  - NEW: Add support for haplodiploid population and sex chromosomes to
+  mapSelector.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
