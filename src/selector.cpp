@@ -86,8 +86,8 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 					std::sort(alleles.begin() + 2 * i, alleles.begin() + 2 * (i + 1));
 					tupleDict::key_type sorted_key = it->first;
 					std::sort(sorted_key.begin(), sorted_key.end());
-					for (size_t j = 0; j < key.size(); ++j) {
-						if (alleles[2 * i + j] != sorted_key[j]) {
+					for (size_t j = 0; j < ply; ++j) {
+						if (alleles[ply * i + j] != sorted_key[j]) {
 							ok = false;
 							break;
 						}
