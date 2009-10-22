@@ -2576,6 +2576,7 @@ double hweTest(const vectoru & cnt)
 	return 1.0;
 }
 
+
 void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 {
 	count.resize(prop.size());
@@ -2595,37 +2596,57 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 
 }
 
+
 void weightedSampler::set(const vectorf & weight)
 {
-	m_algorithm = 1;
-
 	m_N = weight.size();
-
-	if (m_N == 0)
-		return;
-
-	if (m_N == 1) {
-		m_fixed = true;
-		m_fixedValue = 0;
+	// no weight (wrong case)
+	if (m_N == 0) {
+		// invalid
+		m_algorithm = 0;
 		return;
 	}
+	// only one weight?
+	if (m_N == 1) {
+		// return 0 all time
+		m_algorithm = 1;
+		m_param = 0;
+		return;
+	}
+	// fixed value
+	bool allEqual = true;
+	for (size_t i = 1; i < weight.size(); ++i) {
+		if (weight[i] != weight[i - 1]) {
+			allEqual = false;
+			break;
+		}
+	}
 
-	m_fixed = true;
+	if (allEqual) {
+		m_algorithm = 2;
+		m_param = m_N;
+		return;
+	}
+	// only one value
+	bool fixed = true;
 	int prevIndex = -1;
 	for (size_t i = 0; i < weight.size(); ++i) {
 		if (weight[i] != 0) {
 			if (prevIndex == -1) {
-				m_fixedValue = i;
+				m_param = i;
 				prevIndex = i;
 			} else { // two non-zero index, not fixed.
-				m_fixed = false;
+				fixed = false;
 				break;
 			}
 		}
 	}
-	if (m_fixed)
+	if (fixed) {
+		m_algorithm = 1;
 		return;
-
+	}
+	// the mos difficult case
+	m_algorithm = 3;
 	// sum of weight
 	double w = accumulate(weight.begin(), weight.end(), 0.0);
 
@@ -2674,7 +2695,7 @@ void weightedSampler::set(const vectorf & weight)
 
 void weightedSampler::set(const vectorf & weight, ULONG N)
 {
-	m_algorithm = 2;
+	m_algorithm = 4;
 
 	if (N == 0)
 		return;
@@ -2707,26 +2728,35 @@ ULONG weightedSampler::get()
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
 
-	// the first case: proportion.
-	if (m_algorithm == 2) {
+	switch (m_algorithm) {
+	case 1:
+		// only return one
+		return m_param;
+	case 2:
+		// all weights are the same
+		return m_RNG->randInt(m_param);
+	case 3: {
+		double rN = m_RNG->randUniform() * m_N;
+
+		size_t K = static_cast<size_t>(rN);
+
+		rN -= K;
+
+		if (rN < m_q[K])
+			return K;
+		else
+			return m_a[K];
+	}
+	case 4:
+		// return according to proportion.
 		DBG_FAILIF(m_index >= m_sequence.size(), SystemError,
 			"Proportion sampler pool exhausted");
 		return m_sequence[m_index++];
+	default:
+		throw RuntimeError("Invalid weighted sampler (empty weight?)");
 	}
-
-	if (m_fixed)
-		return m_fixedValue;
-
-	double rN = m_RNG->randUniform() * m_N;
-
-	size_t K = static_cast<size_t>(rN);
-
-	rN -= K;
-
-	if (rN < m_q[K])
-		return K;
-	else
-		return m_a[K];
+	// should never be reached
+	return 0;
 }
 
 

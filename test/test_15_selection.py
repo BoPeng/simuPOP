@@ -36,7 +36,6 @@ class TestSelector(unittest.TestCase):
         #
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.turnOffSelection()
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # other than 1 alleles
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
@@ -46,7 +45,6 @@ class TestSelector(unittest.TestCase):
                 assert ind.info('fitness') > 0.25
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.turnOffSelection()
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # more than one wild type
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2])
@@ -320,7 +318,7 @@ class TestSelector(unittest.TestCase):
         )
 
     def testMultiLocusMapSelector(self):
-        'Testing basic parameters of selector'
+        'Testing multiple loci map selector.'
         pop = population(10, loci=[2],
             infoFields=['fitness'])
         InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
@@ -341,7 +339,6 @@ class TestSelector(unittest.TestCase):
 ##                 self.assertEqual( ft[ind], 0.25)
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        pop.turnOffSelection()
         # test phase
         #MapSelect(pop, loci=[0,1], phase=True,
         #    fitness={(0,0,0,0):0, (1,1,1,1):0.25, (0,1,0,1):0.5, (1,0,1,0):0.75})
@@ -474,20 +471,6 @@ class TestSelector(unittest.TestCase):
             ],
             initOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
-        )
-
-    def testMultipleSelector(self):
-        'Testing if multiple selector is allowed (should not)'
-        simu = simulator(
-            population(size=1000, ploidy=2, loci=[2],
-            infoFields=['fitness', 'spare']),
-            randomMating())
-        self.assertRaises(exceptions.ValueError, simu.evolve,
-            preOps = [
-                mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
-                mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
-            ],
-            gen = 10
         )
 
     def testSubPops(self):

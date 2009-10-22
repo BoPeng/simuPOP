@@ -43,7 +43,6 @@ bool selector::apply(population & pop)
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind)
 			ind->setInfo(indFitness(& * ind, pop.gen()), fit_id);
-		pop.turnOnSelection(sp->subPop());
 	}
 
 	return true;

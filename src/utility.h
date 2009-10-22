@@ -1557,16 +1557,16 @@ class weightedSampler
 {
 public:
 	weightedSampler(RNG & rng)
-		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_fixed(false),
-		m_fixedValue(0), m_sequence(0), m_index(0)
+		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+		m_sequence(0), m_index(0)
 	{
 	}
 
 
 	// set up AliasMethod table
 	weightedSampler(RNG & rng, const vectorf & weight)
-		: m_RNG(&rng), m_algorithm(1), m_q(0), m_a(0), m_fixed(false),
-		m_fixedValue(0), m_sequence(0), m_index(0)
+		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+		m_sequence(0), m_index(0)
 	{
 		set(weight);
 	}
@@ -1574,8 +1574,8 @@ public:
 
 	// Return 0, 1, ... randomly according to a proportion table.
 	weightedSampler(RNG & rng, const vectorf & weight, ULONG N)
-		: m_RNG(&rng), m_algorithm(2), m_q(0), m_a(0), m_fixed(false),
-		m_fixedValue(0), m_sequence(0), m_index(0)
+		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+		m_sequence(0), m_index(0)
 	{
 		set(weight, N);
 	}
@@ -1612,9 +1612,8 @@ private:
 	///
 	vectoru m_a;
 
-	// handle special case
-	bool m_fixed;
-	ULONG m_fixedValue;
+	///
+	ULONG m_param;
 
 	///
 	vectoru m_sequence;
