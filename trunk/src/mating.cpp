@@ -536,7 +536,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 			m_index.push_back(it.rawIter());
 	}
 
-	m_selection = pop.selectionOn(sp) && m_replacement && pop.hasInfoField(m_selectionField);
+	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx(m_selectionField);
 		// regardless of sex, get fitness for everyone.
@@ -601,7 +601,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
 
-	m_selection = pop.selectionOn(subPop) && m_replacement && pop.hasInfoField(m_selectionField);
+	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
 	UINT fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
@@ -706,7 +706,8 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
 
-	m_selection = pop.selectionOn(subPop);
+	m_selection = pop.hasInfoField(m_selectionField);
+
 	UINT fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
@@ -824,7 +825,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
 
-	m_selection = pop.selectionOn(subPop);
+	m_selection = pop.hasInfoField(m_selectionField);
 	UINT fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
@@ -950,7 +951,8 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 		m_infoIdx[i] = pop.infoIdx(m_infoFields[i]);
 	UINT infoSz = m_infoIdx.size();
 
-	m_selection = pop.selectionOn(sp);
+	m_selection = pop.hasInfoField(m_selectionField);
+	
 	m_index.clear();
 
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
@@ -1195,7 +1197,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 	}
 	// this is not absolutely necessary but will reduce confusions
 	scratch.setVirtualSplitter(pop.virtualSplitter());
-
+	scratch.clearInfo();
 	DBG_DO(DBG_SIMULATOR, cerr << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
@@ -1223,7 +1225,6 @@ bool mating::mate(population & pop, population & scratch,
 
 void mating::submitScratch(population & pop, population & scratch)
 {
-	pop.turnOffSelection();
 	// use scratch population,
 	pop.push(scratch);
 	scratch.validate("after push and discard");

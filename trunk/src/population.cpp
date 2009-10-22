@@ -61,8 +61,7 @@ population::population(const uintList & size,
 	m_rep(-1),
 	m_gen(0),
 	m_curAncestralGen(0),
-	m_indOrdered(true),
-	m_selectionFlags()
+	m_indOrdered(true)
 {
 	DBG_DO(DBG_POPULATION, cerr << "Constructor of population is called\n");
 
@@ -121,8 +120,7 @@ population::population(const population & rhs) :
 	m_rep(-1),                                                                              // rep is set to -1 for new pop (until simulator really set them
 	m_gen(0),
 	m_curAncestralGen(rhs.m_curAncestralGen),
-	m_indOrdered(true),
-	m_selectionFlags()
+	m_indOrdered(true)
 {
 	DBG_DO(DBG_POPULATION,
 		cerr << "Copy constructor of population is called" << endl);

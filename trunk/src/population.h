@@ -1021,6 +1021,13 @@ public:
 		return m_ancestralPops.size();
 	}
 
+	/** CPPONLY
+	 *  clear all information field.
+	 */
+	void clearInfo()
+	{
+		std::fill(m_info.begin(), m_info.end(), 0.0);
+	}
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in
@@ -1185,73 +1192,6 @@ public:
 	 *  <group>8-pop</group>
 	 */
 	void load(const string & filename);
-
-public:
-	/// CPPONLY selection is on at any subpopulation?
-	bool selectionOn() const
-	{
-		return !m_selectionFlags.empty();
-	}
-
-
-	/// CPPONLY
-	bool selectionOn(UINT sp) const
-	{
-		DBG_ASSERT(m_selectionFlags.empty() || m_selectionFlags.size() == numSubPop(),
-			IndexError, "Selection flags are wrong");
-		return !m_selectionFlags.empty() && m_selectionFlags[sp];
-	}
-
-
-	/** HIDDEN
-	    Turn off selection for all subpopulations
-	   This is only used when you would like to apply two selectors. Maybe using two
-	   different information fields.
-	 */
-	void turnOffSelection()
-	{
-		m_selectionFlags.clear();
-	}
-
-
-	/// CPPONLY
-	void turnOnSelection(UINT sp)
-	{
-		if (m_selectionFlags.empty())
-			m_selectionFlags.resize(numSubPop(), false);
-		// there is an extreme case
-		// selector turn on ...
-		// split population...
-		DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
-			SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
-		DBG_FAILIF(m_selectionFlags[sp], ValueError,
-			"\nOnly one selector is allowed because each individual has only one fitness value\n"
-			"If you need to select on more than one locus, use a multi-locus selector\n"
-			"If you really want to apply another selector on the same population, call \n"
-			"population::turnOffSelection() to walk around this restriction.\n");
-		m_selectionFlags[sp] = true;
-	}
-
-
-	/// CPPONLY Turn on selection for all subpopulations
-	void turnOnSelection()
-	{
-		if (m_selectionFlags.empty()) {
-			m_selectionFlags.resize(numSubPop(), true);
-			return;
-		}
-		// there is an extreme case
-		// selector turn on ...
-		// split population...
-		DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
-			SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
-		DBG_FAILIF(true, ValueError,
-			"\nOnly one selector is allowed because each individual has only one fitness value\n"
-			"If you need to select on more than one locus, use a multi-locus selector\n"
-			"If you really want to apply another selector on the same population, call \n"
-			"population::turnOffSelection() to walk around this restriction.\n");
-	}
-
 
 public:
 	/** CPPONLY
@@ -1777,10 +1717,6 @@ private:
 	/// whether or not individual genotype and information are in order
 	/// within a population.
 	mutable bool m_indOrdered;
-
-	/// selection flags for each subpopulation.
-	/// empty means no selection
-	vector<bool> m_selectionFlags;
 
 };
 

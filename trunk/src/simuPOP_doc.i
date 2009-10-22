@@ -5781,10 +5781,12 @@ Details:
     Return a reference to individual with id stored in information
     field idField (default to ind_id). This function by default search
     the present and all ancestral generations (ancGen=-1), but you can
-    specify a specific generation if you know which generation to
+    suggest a specific generation if you know which generation to
     search (ancGen=0 for present generation, ancGen=1 for parental
-    generation, and so on). If no individual with id is found,an
-    IndexError will be raised.
+    generation, and so on). This function will search this generation
+    first but will search the whole population if an individual with
+    id is not found. If no individual with id is found, an IndexError
+    will be raised.
 
 "; 
 
@@ -6180,6 +6182,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::population::clearInfo();
+
 %feature("docstring") simuPOP::population::setIndInfo "
 
 Usage:
@@ -6308,16 +6312,6 @@ Details:
 "; 
 
 %ignore simuPOP::population::load(const string &filename);
-
-%ignore simuPOP::population::selectionOn() const;
-
-%ignore simuPOP::population::selectionOn(UINT sp) const;
-
-%feature("docstring") simuPOP::population::turnOffSelection "Obsolete or undocumented function."
-
-%ignore simuPOP::population::turnOnSelection(UINT sp);
-
-%ignore simuPOP::population::turnOnSelection();
 
 %ignore simuPOP::population::rep();
 
