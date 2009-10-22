@@ -39,45 +39,73 @@ using std::min;
 namespace simuPOP {
 
 /** This class is the base class to all selectors, namely operators that
- *  perform natural selection, and specifies how such operators behave.
+ *  perform natural selection. It defines a common interface for all selectors.
  *
  *  A selector can be applied before mating or during mating. If a selector is
- *  applied to one or more (virtual) subpopulations of a parental population,
- *  it sets fitness values to all involved parents and .  
-   Genetic selection is tricky to simulate since there are many different \em fitness
-   values and many different ways to apply selection. simuPOP employs an
-   \em 'ability-to-mate' approach. Namely, the probability that an individual will be
-   chosen for mating is proportional to its fitness value. More specifically,
-   \li \c PreMating selectors assign fitness values to each individual, and mark part or
-    all subpopulations as under selection.
-   \li during sexless mating (e.g. \c binomialSelection mating scheme), individuals are chosen
-    at probabilities that are proportional to their fitness values. If there are
-   \f$ N \f$ individuals with fitness values \f$ f_{i},i=1,...,N \f$, individual
-   \f$ i \f$ will have probability \f$ \frac{f_{i}}{\sum_{j}f_{j}} \f$ to be chosen
-   and passed to the next generation.
-   \li during \c randomMating, males and females are separated. They are chosen from
-   their respective groups in the same manner as \c binomialSelection and mate.\n
-
-   All of the selection operators, when applied, will set an information field
-   \c fitness (configurable) and then mark part or all subpopulations as under
-   selection. (You can use different selectors to simulate various selection
-   intensities for different subpopulations). Then, a \em 'selector-aware' mating scheme
-   can select individuals according to their \c fitness information fields. This implies
-   that \n
-
-   \li only mating schemes can actually select individuals.
-   \li a selector has to be a \c PreMating operator. This is not a problem when you use the
-   operator form of the selector since its default stage is \c PreMating. However,
-   if you use the function form of the selector in a \c pyOperator, make sure to
-   set the stage of \c pyOperator to \c PreMating.
-
-   \note You can not apply two selectors to the same subpopulation, because only one
-   fitness value is allowed for each individual.
+ *  applied to one or more (virtual) subpopulations of a parental population
+ *  before mating, it sets individual fitness values to all involved parents to
+ *  an information field (default to \e fitness). When a mating scheme that
+ *  supports natural selection is applied to the parental population, it will
+ *  select parents with probabilities that are proportional to individual
+ *  fitness stored in an information field (default to \e fitness). Individual
+ *  fitness is considered \b relative fitness and can be any non-negative
+ *  number. This simple process has some implications that can lead to advanced
+ *  usages of natural selection in simuPOP:
+ *  \li It is up to the mating scheme how to handle individual fitness. Some
+ *      mating schemes do not support natural selection at all.
+ *  \li A mating scheme performs natural selection according to fitness values
+ *       stored in an information field. It does not care how these values are
+ *       set. For example, fitness values can be inherited from a parent using
+ *       a tagging operator, or set directly using a Python operator.
+ *  \li A mating scheme can treat any information field as fitness field. If an
+ *       specified information field does not exist, or if all individuals have
+ *       the same fitness values (e.g. 0), the mating scheme selects parents
+ *       randomly.
+ *  \li Multiple selectors can be applied to the same parental generation.
+ *       Individual fitness is determined by the last fitness value it is
+ *       assigned.
+ *  \li A selection operator can be applied to virtual subpopulations and set
+ *       fitness values only to part of the individuals.
+ *  \li Individuals with zero fitness in a subpopulation with anyone having a
+ *       positive fitness value will not be selected to produce offspring. This
+ *       can sometimes lead to unexpected behaviors. For example, if you only
+ *       assign fitness value to part of the individuals in a subpopulation,
+ *       the rest of them will be effectively discarded. If you migrate
+ *       individuals with valid fitness values to a subpopulation with all
+ *       individuals having zero fitness, the migrants will be the only mating
+ *       parents.
+ *  \li It is possible to assign multiple fitness values to different
+ *       information fields so that different homogeneous mating schemes can
+ *       react to different fitness schemes when they are used in a
+ *       heterogeneous mating scheme.
+ *  \li You can apply a selector to the offspring generation using the
+ *       \e postOps parameter of \e simulator.evolve, these fitness values will
+ *       be used when the offspring generation becomes parental generation in
+ *       the next generation.
+ *  
+ *  Alternatively, a selector can be used as a during mating operator. In this
+ *  case, it caculates fitness value for each offspring which will be treated
+ *  as \b absolute fitness, namely the probability for each offspring to
+ *  survive. This process uses the fact that an individual will be discarded
+ *  when any of the during mating operators returns \e False. It is important
+ *  to remember that:
+ *  \li Individual fitness needs to be between 0 and 1 in this case.
+ *  \li This method applies natural selection to offspring instead of parents.
+ *       These two implementation can be identical or different depending on
+ *       the mating scheme used.
+ *  \li Seleting offspring is less efficient than the selecting parents,
+ *       especially when fitness values are low.
+ *
+ *  It is worth noting that a selector used as a during-mating operator does
+ *  not support parameter \e subPops. If you need to apply different selection
+ *  scheme to different virtual subpopulations, you can use different selectors
+ *  in a heterogeneous mating scheme.
  */
 class selector : public baseOperator
 {
 public:
-	/**
+	/** Create a base selector object. This operator should not be created
+	 *  directly.
 	 */
 	selector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -136,7 +164,8 @@ public:
 
 
 /** This selector assigns individual fitness values using a user-specified
- *  dictionary. 
+ *  dictionary. This operator can be applied to populations with arbitrary
+ *  number of homologous chromosomes.
  *  <applicability>all ploidy</applicability>
  */
 class mapSelector : public selector
@@ -151,7 +180,10 @@ public:
 	 *  are looked up in the dictionary. If a genotype cannot be found, it
 	 *  will be looked up again without phase information (e.g.
 	 *  <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the genotype
-	 *  still can not be found, a \c ValueError will be returned.
+	 *  still can not be found, a \c ValueError will be raised. This
+	 *  operator supports sex chromosomes and haplodiploid populations. In
+	 *  these cases, only valid genotypes should be used to generator the
+	 *  dictionary keys.
 	 */
 	mapSelector(const uintList & loci, const tupleDict & fitness, 
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -175,7 +207,7 @@ public:
 
 
 	/** CPPONLY
-	 * calculate/return the fitness value, currently assuming diploid
+	 *  calculate/return the fitness value, currently assuming diploid
 	 */
 	virtual double indFitness(individual * ind, ULONG gen);
 
@@ -187,27 +219,20 @@ public:
 
 
 private:
-	/// one locus
+	///
 	vectoru m_loci;
 
 	/// fitness for each genotype
 	tupleDict m_dict;
 };
 
-/// multiple allele selector (selection according to wildtype or diseased alleles)
-/**
-   This is called 'multiple-allele' selector. It separates alleles into two groups:
-   wildtype and diseased alleles. Wildtype alleles are specified by parameter
-   \c wildtype and any other alleles are considered as diseased alleles.
-
-   This selector accepts an array of fitness values:
-
-   \li For single-locus, \c fitness is the fitness for genotypes AA, Aa, aa, while A stands for wildtype alleles.
-   \li For a two-locus model, \c fitness is the fitness for genotypes AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
-   \li For a model with more than two loci, use a table of length \f$ 3^{n} \f$ in a order similar to the two-locus model.
-
-   <funcForm>MaSelect</funcForm>
-
+/** This operator is called a 'multi-allele' selector because it groups
+ *  multiple alleles into two groups: wildtype and non-wildtype alleles.
+ *  Alleles in each allele group are assumed to have the same effect on
+ *  individual fitness. If we denote all wildtype alleles as \c A, and all
+ *  non-wildtype alleles \c a, this operator assign individual fitness
+ *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
+ *  \c A and \c a in the haploid case.
  */
 class maSelector : public selector
 {
