@@ -22,8 +22,7 @@ class TestSelector(unittest.TestCase):
         TurnOnDebug('DBG_MATING')
         pop = population(size=10, loci=[1], infoFields=['a', 'fitness', 'b'])
         InitByFreq(pop, [.2, .8])
-        return
-        #MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
+        maSelect(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
             if ind.genotype() == (0,0):
                 assert ind.info('fitness') == 1
@@ -38,7 +37,7 @@ class TestSelector(unittest.TestCase):
         # explicitly walk around this.
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # other than 1 alleles
-        MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
+        maSelect(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
             #print ind.genotype(), ind.info('fitness')
             if 0 in ind.genotype():
@@ -47,7 +46,7 @@ class TestSelector(unittest.TestCase):
         # explicitly walk around this.
         InitByFreq(pop, [.2, 0, .3, .4, .1])
         # more than one wild type
-        MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2])
+        maSelect(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2]).apply(pop)
         for ind in pop.individuals():
             # print ind.genotype(), ind.info('fitness')
             if 0 in ind.genotype() or 2 in ind.genotype():

@@ -8127,8 +8127,13 @@ Usage:
 
 Details:
 
-    Genetic selection is tricky to simulate since there are many
-    different fitness values and many different ways to apply
+    This class is the base class to all selectors, namely operators
+    that perform natural selection, and specifies how such operators
+    behave.  A selector can be applied before mating or during mating.
+    If a selector is applied to one or more (virtual) subpopulations
+    of a parental population, it sets fitness values to all involved
+    parents and . Genetic selection is tricky to simulate since there
+    are many different fitness values and many different ways to apply
     selection. simuPOP employs an 'ability-to-mate' approach. Namely,
     the probability that an individual will be chosen for mating is
     proportional to its fitness value. More specifically,

@@ -53,7 +53,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
 	for (size_t i = 0; i < m_loci.size(); ++i)
-		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
+		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
 	size_t ply = ind->ploidy();
 	if (ind->isHaplodiploid() && ind->sex() == Male)
@@ -69,7 +69,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
 			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
 				continue;
-			alleles.append(ind->allele(m_loci[idx], p));
+			alleles.push_back(ind->allele(m_loci[idx], p));
 		}
 	}
 
@@ -85,8 +85,8 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
-			UINT start_idx = 0;
-			UING end_idx = 0;
+			UINT begin_idx = 0;
+			UINT end_idx = 0;
 			for (size_t i = 0; i < m_loci.size(); ++i) {
 				if (chromTypes[i] == ChromosomeY) {
 				       if (ind->sex() == Female)
@@ -118,7 +118,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 						}
 					}
 				}
-					
+				begin_idx = end_idx;
 			}
 			if (ok)
 				return it->second;
