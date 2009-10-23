@@ -6510,7 +6510,7 @@ pyEval
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyOperator.log"
-lstparams "caption={Use a pyOperator during evolution},firstline=16,label={usePyOperator}"
+lstparams "caption={Use a pyOperator during evolution},firstline=17,label={usePyOperator}"
 
 \end_inset
 
@@ -8426,7 +8426,7 @@ simuPOP.py
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/randomMating.py"
-lstparams "caption={Define a random mating scheme},firstline=4,label={randomMating}"
+lstparams "caption={Define a random mating scheme},firstline=2,label={randomMating}"
 
 \end_inset
 
@@ -18172,7 +18172,7 @@ the simuPOP reference manual
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Get prameters using function getParam},firstline=36,keywordstyle={\\small\\ttfamily},label={getParam},lastline=69"
+lstparams "caption={Get prameters using function getParam},firstline=35,keywordstyle={\\small\\ttfamily},label={getParam},lastline=69"
 
 \end_inset
 
