@@ -63,7 +63,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	alleles.reserve(ply * m_loci.size());
 
 	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		for (size_t p = 0; p < ply; ++p, ++idx) {
+		for (size_t p = 0; p < ply; ++p) {
 			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
 				continue;
 			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
