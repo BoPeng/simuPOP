@@ -3,19 +3,21 @@
 #begin_file log/importSimuPOP.py
 import simuOpt
 simuOpt.setOptions(optimized=False, alleleType='long', quiet=False)
-from simuPOP import *
+import simuPOP as sim
 #end_file
 
 #begin_file log/standard.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 #expect_error
-from simuPOP import *
-pop = population(10, loci=2)
+import simuPOP as sim
+pop = sim.population(10, loci=2)
 pop.locusPos(10)
 pop.individual(20).setAllele(1, 0)
 #end_file
@@ -24,20 +26,22 @@ pop.individual(20).setAllele(1, 0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=1000, loci=2)
-simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=1000, loci=2)
+simu = sim.simulator(pop, sim.randomMating(ops=sim.recombinator(rates=0.01)), rep=3)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([1, 2, 2, 1])
+        sim.initSex(),
+        sim.initByValue([1, 2, 2, 1])
     ],
     postOps = [
-        stat(LD=[0, 1]),
-        pyEval(r"'%.2f\t' % LD[0][1]", step=10),
-        pyOutput('\n', reps=-1, step=10)
+        sim.stat(LD=[0, 1]),
+        sim.pyEval(r"'%.2f\t' % LD[0][1]", step=10),
+        sim.pyOutput('\n', reps=-1, step=10)
     ],
     gen=100
 )
@@ -47,20 +51,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-help(population.addInfoFields)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+help(sim.population.addInfoFields)
 #end_file
 
 #begin_file log/absIndex.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[10, 20], loci=[5, 7])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[10, 20], loci=[5, 7])
 print pop.chromLocusPair(7)
 print pop.absLocusIndex(1, 1)
 print pop.absIndIndex(2, 1)
@@ -71,11 +79,13 @@ print pop.subPopIndPair(25)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=2, loci=[5, 6])
-InitByFreq(pop, [0.2, 0.3, 0.5])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=2, loci=[5, 6])
+sim.InitByFreq(pop, [0.2, 0.3, 0.5])
 for ind in pop.individuals():
     for loc in range(pop.chromBegin(1), pop.chromEnd(1)):
         print ind.allele(loc),
@@ -86,11 +96,13 @@ for ind in pop.individuals():
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=2, loci=[3, 4])
-InitByFreq(pop, [0.3, 0.5, 0.2])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=2, loci=[3, 4])
+sim.InitByFreq(pop, [0.3, 0.5, 0.2])
 ind = pop.individual(0)
 arr = ind.genotype()    # a carray to the underlying genotype
 geno = list(arr)        # a list of alleles
@@ -109,13 +121,15 @@ print ind.genotype()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population([100]*2, loci=1)
-InitByFreq(pop, [0, 0.2, 0.8], subPops=0)
-InitByFreq(pop, [0.2, 0.8], subPops=1)
-Stat(pop, alleleFreq=0, vars=['alleleFreq_sp'])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population([100]*2, loci=1)
+sim.InitByFreq(pop, [0, 0.2, 0.8], subPops=0)
+sim.InitByFreq(pop, [0.2, 0.8], subPops=1)
+sim.Stat(pop, alleleFreq=0, vars=['alleleFreq_sp'])
 for sp in range(2):
     print 'Subpop %d (with %d alleles): ' % (sp, len(pop.dvars(sp).alleleFreq[0])),
     for a in range(3):
@@ -127,13 +141,15 @@ for sp in range(2):
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2, 3], ploidy=2, loci=[5, 10],
     lociPos=range(0, 5) + range(0, 20, 2), chromNames=['Chr1', 'Chr2'],
     alleleNames=['A', 'C', 'T', 'G'])
-# access genotypic information from the population
+# access genotypic information from the sim.population
 pop.ploidy()
 pop.ploidyName()
 pop.numChrom()
@@ -148,7 +164,7 @@ ind.locusName(1)
 ind.chromBegin(1)
 ind.chromByName('Chr2')
 # loci pos can be unordered within each chromosome
-pop = population(loci=[2, 3], lociPos=[3, 1, 1, 3, 2],
+pop = sim.population(loci=[2, 3], lociPos=[3, 1, 1, 3, 2],
     lociNames=['loc%d' % x for x in range(5)])
 pop.lociPos()
 pop.lociNames()
@@ -158,43 +174,49 @@ pop.lociNames()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2,5], ploidy=Haplodiploid, loci=[3, 5])
-InitByFreq(pop, [0.3, 0.7])
-Dump(pop)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2,5], ploidy=sim.Haplodiploid, loci=[3, 5])
+sim.InitByFreq(pop, [0.3, 0.7])
+sim.Dump(pop)
 #end_file
 
 #begin_file log/chromType.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
-    chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-InitByFreq(pop, [0.3, 0.7])
-Dump(pop, structure=False) # does not display genotypic structure information
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
+    chromTypes=[sim.Autosome]*2 + [sim.ChromosomeX, sim.ChromosomeY] + [sim.Customized]*2)
+sim.InitByFreq(pop, [0.3, 0.7])
+sim.Dump(pop, structure=False) # does not display genotypic structure information
 #end_file
 
 #begin_file log/infoField.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10, loci=[20], ancGen=1,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10, loci=[20], ancGen=1,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)))
+simu = sim.simulator(pop, sim.randomMating(ops=sim.recombinator(rates=0.01)))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([0]*20+[1]*20)
+        sim.initSex(),
+        sim.initByValue([0]*20+[1]*20)
     ],
-    duringOps = parentsTagger(),
+    duringOps = sim.parentsTagger(),
     gen = 1
 )
 pop = simu.extract(0)
@@ -210,16 +232,18 @@ print mom.genotype(1)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population([5, 4], loci=[2, 5], infoFields='x')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population([5, 4], loci=[2, 5], infoFields='x')
 # get an individual
 ind = pop.individual(3)
 ind.ploidy()            # access to genotypic structure
 ind.numChrom()
 ind.affected()
-ind.setAffected(True)   # access affection status,
+ind.setAffected(True)   # access affection sim.status,
 ind.sex()               # sex,
 ind.setInfo(4, 'x')     # and information fields
 ind.x = 5               # the same as ind.setInfo(4, 'x')
@@ -231,10 +255,12 @@ ind.x                   # the same as ind.info('x')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population([2, 1], loci=[2, 5])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population([2, 1], loci=[2, 5])
 for ind in pop.individuals(1):
     for marker in range(pop.totNumLoci()):
         ind.setAllele(marker % 2, marker, 0)
@@ -257,10 +283,12 @@ geno
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[3, 4, 5], ploidy=1, loci=1, infoFields='x')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[3, 4, 5], ploidy=1, loci=1, infoFields='x')
 # individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
 pop.setGenotype(range(pop.popSize()))
 #
@@ -275,17 +303,19 @@ pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
 # this manually triggers an migration, individuals with negative values
 # at this information field are removed.
 pop.setSubPopByIndInfo('x')
-Dump(pop, width=2, structure=False)
+sim.Dump(pop, width=2, structure=False)
 #end_file
 
 #begin_file log/subPopName.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
 pop.removeSubPops([1])
 pop.subPopNames()
 pop.subPopByName('z')
@@ -300,21 +330,23 @@ pop.subPopByName('z')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(size=[200, 400], loci=[30], infoFields='x')
+pop = sim.population(size=[200, 400], loci=[30], infoFields='x')
 # assign random information fields
-InitSex(pop)
-InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
+sim.InitSex(pop)
+sim.InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
 # define a virtual splitter by sex
-pop.setVirtualSplitter(sexSplitter())
+pop.setVirtualSplitter(sim.sexSplitter())
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 1])    # Size of VSP 0 in subpopulation 0
 # define a virtual splitter by information field 'x'
-pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2, 3]))
+pop.setVirtualSplitter(sim.infoSplitter(field='x', values=[0, 1, 2, 3]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 0])    # Size of VSP 0 in subpopulation 0
@@ -325,21 +357,23 @@ pop.subPopSize([1, 0])    # Size of VSP 0 in subpopulation 1
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(10, loci=[2, 3], infoFields='Sex')
-InitSex(pop)
-pop.setVirtualSplitter(sexSplitter())
-# initialize male and females with different genotypes. Set initSex
+pop = sim.population(10, loci=[2, 3], infoFields='Sex')
+sim.InitSex(pop)
+pop.setVirtualSplitter(sim.sexSplitter())
+# initialize male and females with different genotypes. Set sim.initSex
 # to False because this operator will by default also initialize sex.
-InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]))
+sim.InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]))
 # set Sex information field to 0 for all males, and 1 for all females
-pop.setIndInfo([Male], 'Sex', [0, 0])
-pop.setIndInfo([Female], 'Sex', [0, 1])
+pop.setIndInfo([sim.Male], 'Sex', [0, 0])
+pop.setIndInfo([sim.Female], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
-Dump(pop, structure=False)
+sim.Dump(pop, structure=False)
 #end_file
 
 
@@ -347,47 +381,49 @@ Dump(pop, structure=False)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(size=[2000, 4000], loci=[30], infoFields='x')
+pop = sim.population(size=[2000, 4000], loci=[30], infoFields='x')
 # assign random information fields
-InitSex(pop)
-InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
+sim.InitSex(pop)
+sim.InitInfo(pop, lambda: random.randint(0, 3), infoFields='x')
 #
 # 1, use a combined splitter
-pop.setVirtualSplitter(combinedSplitter(splitters = [
-    sexSplitter(),
-    infoSplitter(field='x', values=[0, 1, 2, 3])
+pop.setVirtualSplitter(sim.combinedSplitter(splitters = [
+    sim.sexSplitter(),
+    sim.infoSplitter(field='x', values=[0, 1, 2, 3])
 ]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # Male
+pop.subPopSize([0, 0])    # sim.Male
 pop.subPopSize([1, 4])    # individuals in sp 1 with value 2 at field x
 #
 # use a product splitter that defines additional VSPs by sex and info
-pop.setVirtualSplitter(productSplitter(splitters = [
-    sexSplitter(names=['M', 'F']),  # give a new set of names
-    infoSplitter(field='x', values=[0, 1, 2, 3])
+pop.setVirtualSplitter(sim.productSplitter(splitters = [
+    sim.sexSplitter(names=['M', 'F']),  # give a new set of names
+    sim.infoSplitter(field='x', values=[0, 1, 2, 3])
 ]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # Male with value 1 in sp 0
-pop.subPopSize([1, 5])    # Female with value 1 in sp 1
+pop.subPopSize([0, 0])    # sim.Male with value 1 in sp 0
+pop.subPopSize([1, 5])    # sim.Female with value 1 in sp 1
 #
 # use a combined splitter to join VSPs defined by a
 # product splitter
-pop.setVirtualSplitter(combinedSplitter([
-    productSplitter([
-        sexSplitter(),
-        infoSplitter(field='x', values=[0, 1, 2, 3])])],
+pop.setVirtualSplitter(sim.combinedSplitter([
+    sim.productSplitter([
+        sim.sexSplitter(),
+        sim.infoSplitter(field='x', values=[0, 1, 2, 3])])],
     vspMap = [[0,1,2], [4,5,6], [7]],
-    names = ['Male x<=3', 'Female x<=3', 'Female x=4']))
+    names = ['sim.Male x<=3', 'sim.Female x<=3', 'sim.Female x=4']))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # Male with value 0, 1, 2 at field x
-pop.subPopSize([1, 1])    # Female with value 0, 1 or 2 at field x
+pop.subPopSize([0, 0])    # sim.Male with value 0, 1, 2 at field x
+pop.subPopSize([1, 1])    # sim.Female with value 0, 1 or 2 at field x
 #end_file
 
 
@@ -395,12 +431,14 @@ pop.subPopSize([1, 1])    # Female with value 0, 1 or 2 at field x
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-# create a population with two generations. The current generation has values
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+# create a sim.population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
-pop = population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
+pop = sim.population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
 pop.setIndInfo(range(11, 20), 'x')
 pop1 = pop.clone()
 pop1.setIndInfo(range(10), 'x')
@@ -418,7 +456,7 @@ for ind in pop.individuals(1):
     print ind.x,
 
 # Access individuals in VSPs
-pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
+pop.setVirtualSplitter(sim.infoSplitter(cutoff=[3, 7], field='x'))
 for ind in pop.individuals([1, 1]):
     print ind.x,
 
@@ -433,7 +471,7 @@ pop.individual(0, 1).x      # relative index
 pop.ancestor(5, 0).x
 # access individual by ID
 pop.addInfoFields('ind_id')
-TagID(pop)
+sim.TagID(pop)
 [int(ind.ind_id) for ind in pop.individuals()]
 # access individual by ID. Note that individual 12 is in the parental generation
 pop.indByID(12).x
@@ -443,16 +481,18 @@ pop.indByID(12).x
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(size=[4, 6], loci=2, infoFields='x')
+pop = sim.population(size=[4, 6], loci=2, infoFields='x')
 pop.setIndInfo([random.randint(0, 10) for x in range(10)], 'x')
 pop.indInfo('x')
 pop.setGenotype([0, 1, 2, 3], 0)
 pop.genotype(0)
-pop.setVirtualSplitter(infoSplitter(cutoff=[3], field='x'))
+pop.setVirtualSplitter(sim.infoSplitter(cutoff=[3], field='x'))
 pop.setGenotype([0])    # clear all values
 pop.setGenotype([5, 6, 7], [1, 1])
 pop.indInfo('x', 1)
@@ -463,10 +503,12 @@ pop.genotype(1)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10)
 pop.setInfoFields(['a', 'b'])
 pop.addInfoFields('c')
 pop.addInfoFields(['d', 'e'])
@@ -485,20 +527,22 @@ print pop.indInfo('e')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(500, loci=1), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(500, loci=1), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     # start recording ancestral generations at generation 18
-    preOps = setAncestralDepth(2, at=[-2]),
+    preOps = sim.setAncestralDepth(2, at=[-2]),
     postOps = [
-        stat(alleleFreq=0, begin=-3),
-        pyEval(r"'%.3f\n' % alleleFreq[0][0]", begin=-3)
+        sim.stat(alleleFreq=0, begin=-3),
+        sim.pyEval(r"'%.3f\n' % alleleFreq[0][0]", begin=-3)
     ],
     gen = 20
 )
@@ -506,7 +550,7 @@ pop = simu.population(0)
 # start from current generation
 for i in range(pop.ancestralGens(), -1, -1):
   pop.useAncestralGen(i)
-  Stat(pop, alleleFreq=0)
+  sim.Stat(pop, alleleFreq=0)
   print '%d   %.3f' % (i, pop.dvars().alleleFreq[0][0])
 
 # restore to the current generation  
@@ -517,16 +561,18 @@ pop.useAncestralGen(0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10, loci=3, chromNames=['chr1'])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10, loci=3, chromNames=['chr1'])
 # 1 1 1, 
 pop.setGenotype([1])
 # 1 1 1, 0 0 0
 pop.addChrom(lociPos=[0.5, 1, 2], lociNames=['rs1', 'rs2', 'rs3'],
     chromName='chr2')
-pop1 = population(10, loci=3, chromNames=['chr3'],
+pop1 = sim.population(10, loci=3, chromNames=['chr3'],
     lociNames=['rs4', 'rs5', 'rs6'])
 # 2 2 2,
 pop1.setGenotype([2])
@@ -536,22 +582,24 @@ pop.addChromFrom(pop1)
 pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], lociNames=['rs7', 'rs8'])
 # 1 1 1, 0 0 0, 2 0 2 0
 pop.removeLoci([8])
-Dump(pop)
+sim.Dump(pop)
 #end_file
 
 #begin_file log/recode.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
-InitByFreq(pop, [0.2, 0.3, 0.4, 0.1])
-Dump(pop, structure=False)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
+sim.InitByFreq(pop, [0.2, 0.3, 0.4, 0.1])
+sim.Dump(pop, structure=False)
 print pop.genotype()
 pop.recodeAlleles([0, 3, 1, 2], alleleNames=['A', 'C', 'G', 'T'])
-Dump(pop, structure=False)
+sim.Dump(pop, structure=False)
 print pop.genotype()
 #end_file
 
@@ -559,31 +607,35 @@ print pop.genotype()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(size=[10, 10], loci=[5, 5], infoFields=['x', 'y'])
-InitByValue(pop, range(10))
+pop = sim.population(size=[10, 10], loci=[5, 5], infoFields=['x', 'y'])
+sim.InitByValue(pop, range(10))
 pop.setIndInfo([-1]*4 + [0]*3 + [-1]*3 + [2]*4 + [-1]*3 + [1]*4, 'x')
 pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields='x')
-Dump(pop1, structure=False)
+sim.Dump(pop1, structure=False)
 #end_file
 
 #begin_file log/popVars.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from pprint import pprint
-pop = population(100, loci=2)
-InitByFreq(pop, [0.3, 0.7])
+pop = sim.population(100, loci=2)
+sim.InitByFreq(pop, [0.3, 0.7])
 print pop.vars()    # No variable now
 pop.dvars().myVar = 21
 print pop.vars()
-Stat(pop, popSize=1, alleleFreq=0)
+sim.Stat(pop, popSize=1, alleleFreq=0)
 # pprint prints in a less messy format
 pprint(pop.vars())
 # print number of allele 1 at locus 0
@@ -597,19 +649,21 @@ print pop.dvars().alleleFreq[0]
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=1),
-    randomMating(), 5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=1),
+    sim.randomMating(), 5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     postOps = [
-        stat(alleleFreq=0),
-        terminateIf('len(alleleFreq[0]) == 1')
+        sim.stat(alleleFreq=0),
+        sim.terminateIf('len(alleleFreq[0]) == 1')
     ]
 )
 #end_file
@@ -618,13 +672,15 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=5, chromNames=['chrom1'])
-pop.dvars().name = 'my population'
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=5, chromNames=['chrom1'])
+pop.dvars().name = 'my sim.population'
 pop.save('sample.pop')
-pop1 = LoadPopulation('sample.pop')
+pop1 = sim.LoadPopulation('sample.pop')
 pop1.chromName(0)
 pop1.dvars().name
 #begin_ignore
@@ -637,27 +693,29 @@ os.remove('sample.pop')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(1000, loci=[20]), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(1000, loci=[20]), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.8, 0.2])
+        sim.initSex(),
+        sim.initByFreq([0.8, 0.2])
     ],
     preOps = [
-        pyEval(r"'At the beginning of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.pyEval(r"'At the beginning of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
     postOps = [
-        stat(alleleFreq=0, begin=80, step=10),
-        pyEval(r"'At the end of gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.stat(alleleFreq=0, begin=80, step=10),
+        sim.pyEval(r"'At the end of gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
             begin=80, step=10),
-        pyEval(r"'At the end of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.pyEval(r"'At the end of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
-    finalOps = savePopulation(output='sample.pop'),
+    finalOps = sim.savePopulation(output='sample.pop'),
     gen=100
 )
 #begin_ignore
@@ -670,24 +728,26 @@ os.remove('sample.pop')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=[20]), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=[20]), sim.randomMating())
 simu.evolve(
-    initOps = initByFreq([0.2, 0.8]),
+    initOps = sim.initByFreq([0.2, 0.8]),
     preOps = [
-        pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
     postOps = [
-        stat(alleleFreq=0, begin=80, step=10),
-        pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.stat(alleleFreq=0, begin=80, step=10),
+        sim.pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
             begin=80, step=10),
-        pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
+        sim.pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
-    finalOps = [savePopulation(output='sample.pop')],
+    finalOps = [sim.savePopulation(output='sample.pop')],
     gen=100,
     dryrun = True
 )
@@ -697,20 +757,22 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=[20]), randomMating(), 5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=[20]), sim.randomMating(), 5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.2, 0.8])
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.8])
     ],
     postOps = [
-        stat(alleleFreq=0, step=10),
-        pyEval('gen', step=10, reps=0),
-        pyEval(r"'\t%.2f' % alleleFreq[0][0]", step=10, reps=(0, 2, -1)),
-        pyOutput('\n', step=10, reps=-1)
+        sim.stat(alleleFreq=0, step=10),
+        sim.pyEval('gen', step=10, reps=0),
+        sim.pyEval(r"'\t%.2f' % alleleFreq[0][0]", step=10, reps=(0, 2, -1)),
+        sim.pyOutput('\n', step=10, reps=-1)
     ],
     gen=30,
 )
@@ -720,22 +782,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=1000, loci=2),
-    randomMating(ops=recombinator(rates=0.01)), rep=3)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=1000, loci=2),
+    sim.randomMating(ops=sim.recombinator(rates=0.01)), rep=3)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([1, 2, 2, 1])
+        sim.initSex(),
+        sim.initByValue([1, 2, 2, 1])
     ],
     postOps = [
-        stat(LD=[0, 1]),
-        pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
-        pyOutput('\n', reps=-1, step=20, output='>>LD.txt'),
-        pyEval(r"'%.2f\t' % R2[0][1]", output='R2.txt'),
-        pyEval(r"'%.2f\t' % LD[0][1]", step=20, output="!'>>LD_%d.txt' % rep"),
+        sim.stat(LD=[0, 1]),
+        sim.pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
+        sim.pyOutput('\n', reps=-1, step=20, output='>>LD.txt'),
+        sim.pyEval(r"'%.2f\t' % R2[0][1]", output='R2.txt'),
+        sim.pyEval(r"'%.2f\t' % LD[0][1]", step=20, output="!'>>LD_%d.txt' % rep"),
     ],
     gen=100
 )
@@ -754,8 +818,10 @@ for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt']:
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import logging
 # logging to a file simulation.log, with detailed debug information
@@ -773,18 +839,18 @@ console.setFormatter(formatter)
 logger = logging.getLogger('')
 logger.addHandler(console)
 #
-simu = simulator(population(size=1000, loci=2),
-    randomMating(ops=recombinator(rates=0.01)))
+simu = sim.simulator(sim.population(size=1000, loci=2),
+    sim.randomMating(ops=sim.recombinator(rates=0.01)))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([1, 2, 2, 1])
+        sim.initSex(),
+        sim.initByValue([1, 2, 2, 1])
     ],
     postOps = [
-        stat(LD=[0, 1]),
-        pyEval(r"'LD: %d, %.2f' % (gen, LD[0][1])", step=20,
+        sim.stat(LD=[0, 1]),
+        sim.pyEval(r"'LD: %d, %.2f' % (gen, LD[0][1])", step=20,
             output=logger.info),   # send LD to console and a logfile
-        pyEval(r"'R2: %d, %.2f' % (gen, R2[0][1])", step=20,
+        sim.pyEval(r"'R2: %d, %.2f' % (gen, R2[0][1])", step=20,
             output=logger.debug),  # send R2 only to a logfile
     ],
     gen=100
@@ -801,23 +867,25 @@ os.remove('simulation.log')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=10000, loci=2),
-    randomMating(ops=[
-        mendelianGenoTransmitter(end=29),
-        recombinator(rates=0.01, begin=30),
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=10000, loci=2),
+    sim.randomMating(ops=[
+        sim.mendelianGenoTransmitter(end=29),
+        sim.recombinator(rates=0.01, begin=30),
     ])
 )
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([1, 2, 2, 1])
+        sim.initSex(),
+        sim.initByValue([1, 2, 2, 1])
     ],
     postOps = [
-        stat(LD=[0, 1]),
-        pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
+        sim.stat(LD=[0, 1]),
+        sim.pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
     ],
     gen=100
 )
@@ -827,8 +895,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def myPenetrance(geno):
     'A three-locus heterogeneity penetrance model'
@@ -837,16 +907,16 @@ def myPenetrance(geno):
     else:
         return sum(geno)*0.1
 
-simu = simulator(population(1000, loci=[20]*3), randomMating())
+simu = sim.simulator(sim.population(1000, loci=[20]*3), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.8, 0.2])
+        sim.initSex(),
+        sim.initByFreq([0.8, 0.2])
     ],
     postOps = [
-        pyPenetrance(func=myPenetrance, loci=[10, 30, 50]),
-        stat(numOfAffected=True),
-        pyEval(r"'%d: %d\n' % (gen, numOfAffected)")
+        sim.pyPenetrance(func=myPenetrance, loci=[10, 30, 50]),
+        sim.stat(numOfAffected=True),
+        sim.pyEval(r"'%d: %d\n' % (gen, numOfAffected)")
     ],
     gen = 5
 )
@@ -856,8 +926,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def dynaMutator(pop, param):
     '''This mutator mutates commom loci with low mutation rate and rare
@@ -865,27 +937,27 @@ def dynaMutator(pop, param):
     of rare loci to an higher level.'''
     # unpack parameter
     (cutoff, mu1, mu2) = param;
-    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    sim.Stat(pop, alleleFreq=range(pop.totNumLoci()))
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
-            KamMutate(pop, k=2, rates=mu1, loci=[i])
+            sim.KamMutate(pop, k=2, rates=mu1, loci=[i])
         else:
-            KamMutate(pop, k=2, rates=mu2, loci=[i])
+            sim.KamMutate(pop, k=2, rates=mu2, loci=[i])
     return True
 
-simu = simulator(population(size=10000, loci=[2, 3]),
-    randomMating())
+simu = sim.simulator(sim.population(size=10000, loci=[2, 3]),
+    sim.randomMating())
 simu.evolve(
     initOps = [ 
-        initSex(),
-        initByFreq([.99, .01], loci=[0, 2, 4]),
-        initByFreq([.8, .2], loci=[1, 3])
+        sim.initSex(),
+        sim.initByFreq([.99, .01], loci=[0, 2, 4]),
+        sim.initByFreq([.8, .2], loci=[1, 3])
     ],
-    preOps = pyOperator(func=dynaMutator, param=(.2, 1e-2, 1e-5)),
+    preOps = sim.pyOperator(func=dynaMutator, param=(.2, 1e-2, 1e-5)),
     postOps = [
-        stat(alleleFreq=range(5), step=10),
-        pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
+        sim.stat(alleleFreq=range(5), step=10),
+        sim.pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
             step=10),
     ],
     gen = 31
@@ -896,21 +968,23 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def rejectInd(off):
     'reject an individual if it off.allele(0) == 1'
     return off.allele(0) == 0
 
-simu = simulator(population(size=100, loci=1),
-    randomMating())
+simu = sim.simulator(sim.population(size=100, loci=1),
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    duringOps = pyOperator(func=rejectInd, offspringOnly=True),
+    duringOps = sim.pyOperator(func=rejectInd, offspringOnly=True),
     gen = 1
 )
 # You should see no individual with allele 1 at locus 0, ploidy 0.
@@ -921,10 +995,12 @@ simu.population(0).genotype()[:20]
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-class dynaMutator(pyOperator):
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+class dynaMutator(sim.pyOperator):
     '''This mutator mutates commom loci with low mutation rate and rare
     loci with high mutation rate, as an attempt to raise allele frequency
     of rare loci to an higher level.'''
@@ -932,30 +1008,30 @@ class dynaMutator(pyOperator):
         self.cutoff = cutoff
         self.mu1 = mu1
         self.mu2 = mu2
-        pyOperator.__init__(self, func=self.mutate, *args, **kwargs)
+        sim.pyOperator.__init__(self, func=self.mutate, *args, **kwargs)
     #
     def mutate(self, pop):
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        sim.Stat(pop, alleleFreq=range(pop.totNumLoci()))
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                KamMutate(pop, k=2, rates=self.mu1, loci=[i])
+                sim.KamMutate(pop, k=2, rates=self.mu1, loci=[i])
             else:
-                KamMutate(pop, k=2, rates=self.mu2, loci=[i])
+                sim.KamMutate(pop, k=2, rates=self.mu2, loci=[i])
         return True
 
-simu = simulator(population(size=10000, loci=[2, 3]),
-    randomMating())
+simu = sim.simulator(sim.population(size=10000, loci=[2, 3]),
+    sim.randomMating())
 simu.evolve(
     initOps = [ 
-        initSex(),
-        initByFreq([.99, .01], loci=[0, 2, 4]),
-        initByFreq([.8, .2], loci=[1, 3])
+        sim.initSex(),
+        sim.initByFreq([.99, .01], loci=[0, 2, 4]),
+        sim.initByFreq([.8, .2], loci=[1, 3])
     ],
     preOps = dynaMutator(cutoff=.2, mu1=1e-2, mu2=1e-5),
     postOps = [
-        stat(alleleFreq=range(5), step=10),
-        pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
+        sim.stat(alleleFreq=range(5), step=10),
+        sim.pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
             step=10),
     ],
     gen = 31
@@ -966,33 +1042,37 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def InitByFreq(pop, *args, **kwargs):
-    initByFreq(*args, **kwargs).apply(pop)
+    sim.initByFreq(*args, **kwargs).apply(pop)
 
-pop = population(1000, loci=[2,3])
-InitByFreq(pop, [.2, .3, .5])
+pop = sim.population(1000, loci=[2,3])
+sim.InitByFreq(pop, [.2, .3, .5])
 #end_file
 
 #begin_file log/migrSize.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=[500, 1000], infoFields='migrate_to'),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=[500, 1000], infoFields='migrate_to'),
+    sim.randomMating())
 
 simu.evolve(
-    initOps = initSex(),
-    preOps = migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+    initOps = sim.initSex(),
+    preOps = sim.migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
     postOps = [
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize')
+        sim.stat(popSize=True),
+        sim.pyEval(r'"%s\n" % subPopSize')
     ],
     gen = 3
 )
@@ -1002,22 +1082,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=[500, 1000], infoFields='migrate_to'),
-    randomMating(subPopSize=[500, 1000]))
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=[500, 1000], infoFields='migrate_to'),
+    sim.randomMating(subPopSize=[500, 1000]))
 simu.evolve(
-    initOps = initSex(),
+    initOps = sim.initSex(),
     preOps = [
-        migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize')
+        sim.migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+        sim.stat(popSize=True),
+        sim.pyEval(r'"%s\n" % subPopSize')
     ],
     postOps = [
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize')
+        sim.stat(popSize=True),
+        sim.pyEval(r'"%s\n" % subPopSize')
     ],
     gen = 3
 )
@@ -1027,21 +1109,23 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def demo(gen, pop=None):
     return [500 + gen*10, 1000 + gen*10]
 
-simu = simulator(
-    population(size=[500, 1000], infoFields='migrate_to'),
-    randomMating(subPopSize=demo))
+simu = sim.simulator(
+    sim.population(size=[500, 1000], infoFields='migrate_to'),
+    sim.randomMating(subPopSize=demo))
 simu.evolve(
-    initOps = initSex(),
-    preOps = migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+    initOps = sim.initSex(),
+    preOps = sim.migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
     postOps = [
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize')
+        sim.stat(popSize=True),
+        sim.pyEval(r'"%s\n" % subPopSize')
     ],
     gen = 3
 )
@@ -1051,19 +1135,21 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def checkNumOffspring(ms):
     '''Check the number of offspring for each family using
        information field father_idx
     '''
-    simu = simulator(
-        population(size=[30], infoFields=['father_idx', 'mother_idx']),
+    simu = sim.simulator(
+        sim.population(size=[30], infoFields=['father_idx', 'mother_idx']),
         matingScheme=ms)
     simu.evolve(
-        initOps = initSex(),
-        duringOps = parentsTagger(),
+        initOps = sim.initSex(),
+        duringOps = sim.parentsTagger(),
         gen=1)
     # get the parents of each offspring
     parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
@@ -1080,51 +1166,53 @@ def checkNumOffspring(ms):
     return famSize
 
 # Case 1: produce the given number of offspring
-checkNumOffspring(randomMating(numOffspring=2))
+checkNumOffspring(sim.randomMating(numOffspring=2))
 # Case 2: Use a Python function
 import random
 def func(gen):
     return random.randint(5, 8)
 
-checkNumOffspring(randomMating(numOffspring=func))
+checkNumOffspring(sim.randomMating(numOffspring=func))
 # Case 3: A geometric distribution
-checkNumOffspring(randomMating(numOffspring=(GeometricDistribution, 0.3)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.GeometricDistribution, 0.3)))
 # Case 4: A Possition distribution
-checkNumOffspring(randomMating(numOffspring=(PoissonDistribution, 3)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.PoissonDistribution, 3)))
 # Case 5: A Binomial distribution
-checkNumOffspring(randomMating(numOffspring=(BinomialDistribution, 0.1, 10)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.BinomialDistribution, 0.1, 10)))
 # Case 6: A uniform distribution
-checkNumOffspring(randomMating(numOffspring=(UniformDistribution, 2, 6)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 6)))
 #end_file
 
 #begin_file log/sexMode.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def checkSexMode(ms):
     '''Check the assignment of sex to offspring'''
-    simu = simulator(
-        population(size=[40]),
+    simu = sim.simulator(
+        sim.population(size=[40]),
         matingScheme=ms)
-    simu.evolve(initOps = initSex(), gen=1)
+    simu.evolve(initOps = sim.initSex(), gen=1)
     # return individual sex as a string
     return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
-# Case 1: NoSex (all male, randomMating will not continue)
-checkSexMode(randomMating(sexMode=NoSex))
-# Case 2: RandomSex (Male/Female with probability 0.5)
-checkSexMode(randomMating(sexMode=RandomSex))
-# Case 3: ProbOfMale (Specify probability of male)
-checkSexMode(randomMating(sexMode=(ProbOfMale, 0.8)))
-# Case 4: NumOfMale (Specify number of male in each family)
-checkSexMode(randomMating(numOffspring=3, sexMode=(NumOfMale, 1)))
-# Case 5: NumOfFemale (Specify number of female in each family)
-checkSexMode(randomMating(
-    numOffspring=(UniformDistribution, 4, 6),
-    sexMode=(NumOfFemale, 2))
+# Case 1: sim.NoSex (all male, sim.randomMating will not continue)
+checkSexMode(sim.randomMating(sexMode=sim.NoSex))
+# Case 2: sim.RandomSex (sim.Male/Female with probability 0.5)
+checkSexMode(sim.randomMating(sexMode=sim.RandomSex))
+# Case 3: sim.ProbOfMale (Specify probability of male)
+checkSexMode(sim.randomMating(sexMode=(sim.ProbOfMale, 0.8)))
+# Case 4: sim.NumOfMale (Specify number of male in each family)
+checkSexMode(sim.randomMating(numOffspring=3, sexMode=(sim.NumOfMale, 1)))
+# Case 5: sim.NumOfFemale (Specify number of female in each family)
+checkSexMode(sim.randomMating(
+    numOffspring=(sim.UniformDistribution, 4, 6),
+    sexMode=(sim.NumOfFemale, 2))
 )
 #end_file
 
@@ -1132,14 +1220,16 @@ checkSexMode(randomMating(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(20, infoFields=['father_idx', 'mother_idx']),
-    monogamousMating(numOffspring=2, sexMode=(NumOfMale, 1)))
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(20, infoFields=['father_idx', 'mother_idx']),
+    sim.monogamousMating(numOffspring=2, sexMode=(sim.NumOfMale, 1)))
 simu.evolve(
-    initOps = initSex(sex=(Male, Female)),
-    duringOps = parentsTagger(),
+    initOps = sim.initSex(sex=(sim.Male, sim.Female)),
+    duringOps = sim.parentsTagger(),
     gen = 5
 )
 pop = simu.extract(0)
@@ -1155,14 +1245,16 @@ len(set(pop.indInfo('mother_idx')))
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, infoFields=['father_idx', 'mother_idx']),
-    polygamousMating(polySex=Male, polyNum=2))
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, infoFields=['father_idx', 'mother_idx']),
+    sim.polygamousMating(polySex=sim.Male, polyNum=2))
 simu.evolve(
-    initOps = initSex(),
-    duringOps = parentsTagger(),
+    initOps = sim.initSex(),
+    duringOps = sim.parentsTagger(),
     gen = 5
 )
 pop = simu.extract(0)
@@ -1174,15 +1266,17 @@ pop = simu.extract(0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, ploidy=1, loci=[5, 5], ancGen=1,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, ploidy=1, loci=[5, 5], ancGen=1,
     infoFields='parent_idx'),
-    randomSelection())
+    sim.randomSelection())
 simu.evolve(
-    initOps = initByFreq([0.3, 0.7]),
-    duringOps = parentsTagger(infoFields='parent_idx'),
+    initOps = sim.initByFreq([0.3, 0.7]),
+    duringOps = sim.parentsTagger(infoFields='parent_idx'),
     gen = 5
 )
 pop = simu.extract(0)
@@ -1196,22 +1290,24 @@ print par.sex(), par.genotype()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(1000, loci=5, 
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(1000, loci=5, 
     infoFields=['father_idx', 'mother_idx', 'fitness']),
-    alphaMating(alphaSex=Male, alphaNum=2))
+    sim.alphaMating(alphaSex=sim.Male, alphaNum=2))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    preOps = maSelector(loci=0, fitness=[0.8, 0.8, 1]),
-    duringOps = parentsTagger(),
+    preOps = sim.maSelector(loci=0, fitness=[0.8, 0.8, 1]),
+    duringOps = sim.parentsTagger(),
     postOps = [
-        stat(alleleFreq=0),
-        pyEval(r'"%.2f\n" % alleleFreq[0][1]', step=5)
+        sim.stat(alleleFreq=0),
+        sim.pyEval(r'"%.2f\n" % alleleFreq[0][1]', step=5)
     ],
     gen = 20,
 )
@@ -1224,22 +1320,24 @@ pop = simu.extract(0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10, ploidy=Haplodiploid, loci=[5, 5],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10, ploidy=sim.Haplodiploid, loci=[5, 5],
     infoFields=['father_idx', 'mother_idx'])
-pop.setVirtualSplitter(sexSplitter())
-simu = simulator(pop, haplodiploidMating())
+pop.setVirtualSplitter(sim.sexSplitter())
+simu = sim.simulator(pop, sim.haplodiploidMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([0]*10, subPops=[(0, 0)]),
-        initByValue([1]*10+[2]*10, subPops=[(0, 1)])
+        sim.initSex(),
+        sim.initByValue([0]*10, subPops=[(0, 0)]),
+        sim.initByValue([1]*10+[2]*10, subPops=[(0, 1)])
     ],
-    preOps = dumper(structure=False),
-    duringOps = parentsTagger(),
-    postOps = dumper(structure=False),
+    preOps = sim.dumper(structure=False),
+    duringOps = sim.parentsTagger(),
+    postOps = sim.dumper(structure=False),
     gen = 1
 )
 #end_file
@@ -1248,37 +1346,41 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(20, loci=8)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(20, loci=8)
 # every chromosomes are different. :-)
 for idx, ind in enumerate(pop.individuals()):
     ind.setGenotype([idx*2], 0)
     ind.setGenotype([idx*2+1], 1)
 
-simu = simulator(pop, selfMating(ops=recombinator(rates=0.01)))
+simu = sim.simulator(pop, sim.selfMating(ops=sim.recombinator(rates=0.01)))
 simu.evolve( gen = 1)
-Dump(simu.population(0), width=3, structure=False, max=10)
+sim.Dump(simu.population(0), width=3, structure=False, max=10)
 #end_file
 
 #begin_file log/heteroMatingSP.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000, 1000], loci=2,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000, 1000], loci=2,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, heteroMating(
-    [randomMating(numOffspring=2, subPop=0),
-     randomMating(numOffspring=4, subPop=1)
+simu = sim.simulator(pop, sim.heteroMating(
+    [sim.randomMating(numOffspring=2, subPop=0),
+     sim.randomMating(numOffspring=4, subPop=1)
     ])
 )
 simu.evolve(
-    initOps = initSex(),
-    duringOps = parentsTagger(),
+    initOps = sim.initSex(),
+    duringOps = sim.parentsTagger(),
     gen=10
 )
 pop = simu.extract(0)
@@ -1290,21 +1392,23 @@ pop = simu.extract(0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000], loci=2,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000], loci=2,
     infoFields=['father_idx', 'mother_idx'])
-pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
-simu = simulator(pop, heteroMating(
+pop.setVirtualSplitter(sim.proportionSplitter([0.2, 0.8]))
+simu = sim.simulator(pop, sim.heteroMating(
     matingSchemes = [
-        selfMating(subPop=(0, 0)),
-        randomMating(subPop=(0, 1))
+        sim.selfMating(subPop=(0, 0)),
+        sim.randomMating(subPop=(0, 1))
     ])
 )
 simu.evolve(
-    initOps = initSex(),
-    duringOps = parentsTagger(),
+    initOps = sim.initSex(),
+    duringOps = sim.parentsTagger(),
     gen = 10
 )
 pop = simu.extract(0)
@@ -1316,12 +1420,14 @@ pop = simu.extract(0)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000], loci=2,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000], loci=2,
     infoFields='mark')
-pop.setVirtualSplitter(rangeSplitter([[0, 500], [200, 1000]]))
+pop.setVirtualSplitter(sim.rangeSplitter([[0, 500], [200, 1000]]))
 def markOff(param):
     '''define a Python during mating operator that marks
        individual information field 'mark'
@@ -1329,17 +1435,17 @@ def markOff(param):
     def func(off, param):
         off.mark = param
         return True
-    return pyOperator(func=func, param=param, offspringOnly=True)
+    return sim.pyOperator(func=func, param=param, offspringOnly=True)
 
-simu = simulator(pop, heteroMating(
+simu = sim.simulator(pop, sim.heteroMating(
     matingSchemes = [
-        randomMating(subPop=0, weight=-0.5, ops=[markOff(0), mendelianGenoTransmitter()]),
-        randomMating(subPop=(0, 0), weight=2, ops=[markOff(1), mendelianGenoTransmitter()]),
-        randomMating(subPop=(0, 1), weight=3, ops=[markOff(2), mendelianGenoTransmitter()])
+        sim.randomMating(subPop=0, weight=-0.5, ops=[markOff(0), sim.mendelianGenoTransmitter()]),
+        sim.randomMating(subPop=(0, 0), weight=2, ops=[markOff(1), sim.mendelianGenoTransmitter()]),
+        sim.randomMating(subPop=(0, 1), weight=3, ops=[markOff(2), sim.mendelianGenoTransmitter()])
     ])
 )
 simu.evolve(
-    initOps = initSex(),
+    initOps = sim.initSex(),
     gen = 10
 )
 marks = list(simu.extract(0).indInfo('mark'))
@@ -1352,16 +1458,18 @@ marks.count(2.)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-def randomMating(numOffspring = 1., sexMode = RandomSex,
-        preOps = mendelianGenoTransmitter(), subPopSize = [],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+def randomMating(numOffspring = 1., sexMode = sim.RandomSex,
+        preOps = sim.mendelianGenoTransmitter(), subPopSize = [],
         subPop = (), weight = 0, selectionField = 'fitness'):
     'A basic diploid sexual random mating scheme.'
-    return homoMating(
-        chooser = randomParentsChooser(True, selectionField),
-        generator = offspringGenerator(ops, numOffspring, sexMode),
+    return sim.homoMating(
+        chooser = sim.randomParentsChooser(True, selectionField),
+        generator = sim.offspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,
         weight = weight)
@@ -1371,17 +1479,19 @@ def randomMating(numOffspring = 1., sexMode = RandomSex,
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=5*3, infoFields='parent_idx'),
-    homoMating(sequentialParentChooser(),
-    offspringGenerator(ops=selfingGenoTransmitter())))
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=5*3, infoFields='parent_idx'),
+    sim.homoMating(sim.sequentialParentChooser(),
+    sim.offspringGenerator(ops=sim.selfingGenoTransmitter())))
 simu.evolve(
-    initOps = [initByFreq([0.2]*5)],
-    preOps = dumper(structure=False, max=5),
-    duringOps = parentsTagger(infoFields='parent_idx'),
-    postOps = dumper(structure=False, max=5),
+    initOps = [sim.initByFreq([0.2]*5)],
+    preOps = sim.dumper(structure=False, max=5),
+    duringOps = sim.parentsTagger(infoFields='parent_idx'),
+    postOps = sim.dumper(structure=False, max=5),
     gen = 1
 )
 #end_file
@@ -1390,27 +1500,29 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def traj(gen):
     return [0.5 + gen * 0.01]
 
-simu = simulator(population(1000, loci=[10]*2),
-    homoMating(randomParentChooser(),
-        controlledOffspringGenerator(loci=5,
+simu = sim.simulator(sim.population(1000, loci=[10]*2),
+    sim.homoMating(sim.randomParentChooser(),
+        sim.controlledOffspringGenerator(loci=5,
             alleles=[0], freqFunc=traj,
-            ops = selfingGenoTransmitter()))
+            ops = sim.selfingGenoTransmitter()))
 )
-# evolve the population while keeping allele frequency 0.5
+# evolve the sim.population while keeping allele frequency 0.5
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     postOps = [
-        stat(alleleFreq=[5, 15]),
-        pyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')
+        sim.stat(alleleFreq=[5, 15]),
+        sim.pyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')
     ],
     gen = 5
 )
@@ -1420,23 +1532,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10, loci=[5]*5,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10, loci=[5]*5,
     # one autosome, two sex chromosomes, and two mitochondrial chromosomes
-    chromTypes=[Autosome, ChromosomeX, ChromosomeY] + [Customized]*2,
+    chromTypes=[sim.Autosome, sim.ChromosomeX, sim.ChromosomeY] + [sim.Customized]*2,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(ops= [
-    recombinator(rates=0.1),
-    mitochondrialGenoTransmitter()]))
+simu = sim.simulator(pop, sim.randomMating(ops= [
+    sim.recombinator(rates=0.1),
+    sim.mitochondrialGenoTransmitter()]))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.4] + [0.2]*3)
+        sim.initSex(),
+        sim.initByFreq([0.4] + [0.2]*3)
     ],
-    duringOps = parentsTagger(),
-    postOps = dumper(structure=False),
+    duringOps = sim.parentsTagger(),
+    postOps = sim.dumper(structure=False),
     gen = 2
 )
 #end_file
@@ -1445,26 +1559,28 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-class sexSpecificRecombinator(pyOperator):
-    def __init__(self, intensity=0, rates=0, loci=[], convMode=NoConversion,
-            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=NoConversion,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+class sexSpecificRecombinator(sim.pyOperator):
+    def __init__(self, intensity=0, rates=0, loci=[], convMode=sim.NoConversion,
+            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=sim.NoConversion,
             *args, **kwargs):
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(rates, intensity, loci, convMode)
+        self.recombinator = sim.recombinator(rates, intensity, loci, convMode)
         # This operator is used to recombine paternal chromosomes
-        self.maleRecombinator = recombinator(maleRates, maleIntensity,
+        self.maleRecombinator = sim.recombinator(maleRates, maleIntensity,
             maleLoci, maleConvMode)
         #
         self.initialized = False
         #
-        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
+        sim.pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
     #
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinators need to be initialized. Basically, they cache some
-        # population properties to speed up genotype transmission.
+        # sim.population properties to speed up genotype transmission.
         if not self.initialized:
             self.recombinator.initialize(pop)
             self.maleRecombinator.initialize(pop)
@@ -1474,16 +1590,16 @@ class sexSpecificRecombinator(pyOperator):
         self.maleRecombinator.transmitGenotype(dad, off, 1)
         return True
 
-pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(
+pop = sim.population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
+simu = sim.simulator(pop, sim.randomMating(
     ops = sexSpecificRecombinator(rates=0.1, maleRates=0)))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.4] + [0.2]*3)
+        sim.initSex(),
+        sim.initByFreq([0.4] + [0.2]*3)
     ],
-    duringOps = parentsTagger(),
-    postOps = dumper(structure=False),
+    duringOps = sim.parentsTagger(),
+    postOps = sim.dumper(structure=False),
     gen = 2
 )
 #end_file
@@ -1492,28 +1608,30 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=[10],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=[10],
     infoFields=['father_idx', 'mother_idx', 'sibling'])
-pop.setVirtualSplitter(sexSplitter())
+pop.setVirtualSplitter(sim.sexSplitter())
 def locate_sibling(pop):
-    '''The population is arranged as MFMFMFMF... where MF are siblings, so the
+    '''The sim.population is arranged as MFMFMFMF... where MF are siblings, so the
     sibling of males are 1, 3, 5, .. and the slibling of females are 0, 2, 4, ...
     '''
     pop.setIndInfo([2*x+1 for x in range(pop.popSize()/2)], 'sibling', (0, 0))
     pop.setIndInfo([2*x for x in range(pop.popSize()/2)], 'sibling', (0, 1))
 
-simu = simulator(pop, consanguineousMating(func=locate_sibling, infoFields='sibling',
-    numOffspring=2, sexMode=(NumOfMale, 1)))
+simu = sim.simulator(pop, sim.consanguineousMating(func=locate_sibling, infoFields='sibling',
+    numOffspring=2, sexMode=(sim.NumOfMale, 1)))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.2, 0.8])
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.8])
     ],
-    duringOps = parentsTagger(),
-    postOps = dumper(structure=False, max=6, at=[-1]),
+    duringOps = sim.parentsTagger(),
+    postOps = sim.dumper(structure=False, max=6, at=[-1]),
     gen = 2
 )
 #end_file
@@ -1522,8 +1640,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def func():
     i = 1
@@ -1541,8 +1661,10 @@ for i in func():
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from random import randint
 def randomChooser(pop, sp):
@@ -1551,9 +1673,9 @@ def randomChooser(pop, sp):
     # identify males and females in each social rank
     for rank in range(3):
         males.append([x for x in pop.individuals(sp) \
-            if x.sex() == Male and x.rank == rank])
+            if x.sex() == sim.Male and x.rank == rank])
         females.append([x for x in pop.individuals(sp) \
-            if x.sex() == Female and x.rank == rank])
+            if x.sex() == sim.Female and x.rank == rank])
     #
     while True:
         # choose a rank randomly
@@ -1565,14 +1687,14 @@ def setRank(pop, dad, mom, off):
     'The rank of offspring can increase or drop to zero randomly'
     off.rank = (dad.rank + randint(-1, 1)) % 3
 
-pop = population(size=[1000, 2000], loci=1, infoFields='rank')
-simu = simulator(pop, homoMating(
-    pyParentsChooser(randomChooser),
-    offspringGenerator(ops=mendelianGenoTransmitter())))
+pop = sim.population(size=[1000, 2000], loci=1, infoFields='rank')
+simu = sim.simulator(pop, sim.homoMating(
+    sim.pyParentsChooser(randomChooser),
+    sim.offspringGenerator(ops=sim.mendelianGenoTransmitter())))
 simu.evolve(
     initOps = [
-        initSex(),
-        initInfo(lambda : randint(0, 2), infoFields='rank')
+        sim.initSex(),
+        sim.initInfo(lambda : randint(0, 2), infoFields='rank')
     ],
     gen = 5
 )    
@@ -1658,8 +1780,10 @@ except:
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 
 # The class myParentsChooser is defined in module myParentsChooser
@@ -1668,21 +1792,21 @@ def parentsChooser(pop, sp):
     'How to call a C++ level parents chooser.'
     # create an object with needed information (such as x, y) ...
     pc = myParentsChooser(
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == Male],
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == Female])
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.Male],
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.Female])
     while True:
         # return indexes of parents repeatedly
         yield pc.chooseParents()
 
-pop = population(100, loci=1)
-simu = simulator(pop,
-    homoMating(pyParentsChooser(parentsChooser),
-    offspringGenerator(ops=mendelianGenoTransmitter()))
+pop = sim.population(100, loci=1)
+simu = sim.simulator(pop,
+    sim.homoMating(sim.pyParentsChooser(parentsChooser),
+    sim.offspringGenerator(ops=sim.mendelianGenoTransmitter()))
 )
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     gen = 100
 )
@@ -1692,22 +1816,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(50, loci=[10], ploidy=1),
-    randomSelection(), rep=3)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(50, loci=[10], ploidy=1),
+    sim.randomSelection(), rep=3)
 simu.evolve(gen = 5)
 simu.gen()
 simu.evolve(
-    initOps = [initByFreq([0.5, 0.5])],
+    initOps = [sim.initByFreq([0.5, 0.5])],
     postOps = [
-        stat(alleleFreq=5),
-        ifElse('alleleNum[5][0] == 0',
-            pyEval(r"'Allele 0 is lost in rep %d at gen %d\n' % (rep, gen)")),
-        ifElse('alleleNum[5][0] == 50',
-            pyEval(r"'Allele 0 is fixed in rep %d at gen %d\n' % (rep, gen)")),
-        terminateIf('len(alleleNum[5]) == 1'),
+        sim.stat(alleleFreq=5),
+        sim.ifElse('alleleNum[5][0] == 0',
+            sim.pyEval(r"'Allele 0 is lost in rep %d at gen %d\n' % (rep, gen)")),
+        sim.ifElse('alleleNum[5][0] == 50',
+            sim.pyEval(r"'Allele 0 is fixed in rep %d at gen %d\n' % (rep, gen)")),
+        sim.terminateIf('len(alleleNum[5]) == 1'),
     ],
 )
 simu.gen()
@@ -1717,34 +1843,36 @@ simu.gen()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 # First stage: use the standard random mating scheme, do not use any
 # information field for efficiency considerations.
-simu = simulator(population(500, loci=[10]), randomMating())
+simu = sim.simulator(sim.population(500, loci=[10]), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     gen = 50
 )
 # Second stage: track parents and produce more offspring per mating
-# event. In preparation for pedigree ascertainment.
+# event. In preparation for sim.pedigree ascertainment.
 for pop in simu.populations():
     pop.addInfoFields(['father_idx', 'mother_idx'])
     pop.setAncestralDepth(1)
 
-simu.setMatingScheme(randomMating(numOffspring=2))
+simu.setMatingScheme(sim.randomMating(numOffspring=2))
 simu.evolve(
-    duringOps = parentsTagger(),
-    postOps = maPenetrance(loci=0, penetrance=(0.2, 0.4, 0.5)),
+    duringOps = sim.parentsTagger(),
+    postOps = sim.maPenetrance(loci=0, penetrance=(0.2, 0.4, 0.5)),
     gen = 5
 )
 # Sample affected sibpairs
 pop = simu.extract(0)
-sample = AffectedSibpairSample(pop, size=5)[0]
+sample = sim.AffectedSibpairSample(pop, size=5)[0]
 [int(ind.father_idx) for ind in sample.individuals()]
 #end_file
 
@@ -1752,8 +1880,10 @@ sample = AffectedSibpairSample(pop, size=5)[0]
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
 def mutator(pop, param):
@@ -1773,11 +1903,11 @@ def mutator(pop, param):
             ind.setAllele(1, idx)
     return True
 
-# The populations start with no loci at all.
-simu = simulator(population(1000, loci=[]), randomMating(), rep=3)
+# The sim.populations start with no loci at all.
+simu = sim.simulator(sim.population(1000, loci=[]), sim.randomMating(), rep=3)
 simu.evolve(
-    initOps = initSex(),
-    postOps = pyOperator(func=mutator, param=(10000, 2e-6)),
+    initOps = sim.initSex(),
+    postOps = sim.pyOperator(func=mutator, param=(10000, 2e-6)),
     gen = 200
 )
 for pop in simu.populations():
@@ -1788,15 +1918,17 @@ for pop in simu.populations():
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=[5, 10], infoFields='x'),
-    randomMating(), rep=5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=[5, 10], infoFields='x'),
+    sim.randomMating(), rep=5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.4, 0.6])
+        sim.initSex(),
+        sim.initByFreq([0.4, 0.6])
     ],
     gen=10
 )
@@ -1804,7 +1936,7 @@ simu.evolve(
 cloned = simu.clone()
 # save and load, using a different mating scheme
 simu.save("sample.sim")
-loaded = LoadSimulator("sample.sim", randomMating(numOffspring=2))
+loaded = sim.LoadSimulator("sample.sim", sim.randomMating(numOffspring=2))
 # 
 simu.numRep()
 loaded.numRep()
@@ -1824,13 +1956,15 @@ os.remove('sample.sim')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000, 1000])
-InitSex(pop, maleFreq=0.3, subPops=0)
-InitSex(pop, sex=[Male, Female, Female], subPops=1)
-Stat(pop, numOfMale=True, vars='numOfMale_sp')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000, 1000])
+sim.InitSex(pop, maleFreq=0.3, subPops=0)
+sim.InitSex(pop, sex=[sim.Male, sim.Female, sim.Female], subPops=1)
+sim.Stat(pop, numOfMale=True, vars='numOfMale_sp')
 print pop.dvars(0).numOfMale
 print pop.dvars(1).numOfMale
 #end_file
@@ -1839,93 +1973,105 @@ print pop.dvars(1).numOfMale
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2, 3], loci=[5, 7])
-InitByFreq(pop, alleleFreq=[[.2, .8], [.8, .2]])
-Dump(pop, structure=False)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2, 3], loci=[5, 7])
+sim.InitByFreq(pop, alleleFreq=[[.2, .8], [.8, .2]])
+sim.Dump(pop, structure=False)
 #end_file
 
 #begin_file log/initByFreqIdenticalInds.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2, 3], loci=[5, 7])
-InitByFreq(pop, alleleFreq=[.2, .8], identicalInds=True)
-Dump(pop, structure=False)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2, 3], loci=[5, 7])
+sim.InitByFreq(pop, alleleFreq=[.2, .8], identicalInds=True)
+sim.Dump(pop, structure=False)
 #end_file
 
 #begin_file log/initByValue.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2, 3], loci=[5, 7])
-InitByValue(pop, [1]*5 + [2]*7 + [3]*5 +[4]*7)
-Dump(pop, structure=False)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2, 3], loci=[5, 7])
+sim.InitByValue(pop, [1]*5 + [2]*7 + [3]*5 +[4]*7)
+sim.Dump(pop, structure=False)
 #end_file
 
 #begin_file log/initByValueProp.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[6, 8], loci=[5, 7])
-pop.setVirtualSplitter(sexSplitter())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[6, 8], loci=[5, 7])
+pop.setVirtualSplitter(sim.sexSplitter())
 # initialize sex and the first two loci
-InitSex(pop)
-InitByValue(pop, loci=range(5), value=range(10))
+sim.InitSex(pop)
+sim.InitByValue(pop, loci=range(5), value=range(10))
 # initialize all males
-InitByValue(pop, loci=range(5, 12), value=[2]*7,
+sim.InitByValue(pop, loci=range(5, 12), value=[2]*7,
     subPops=[(0, 0), (1, 0)])
 # initialize females by proportion
-InitByValue(pop, loci=range(5, 12), ploidy=1, value=[[3]*7, [4]*7],
+sim.InitByValue(pop, loci=range(5, 12), ploidy=1, value=[[3]*7, [4]*7],
     subPops=[(0, 1), (1, 1)], proportions=[0.4, 0.6])
-Dump(pop, structure=False)
+sim.Dump(pop, structure=False)
 #end_file
 
 #begin_file log/initInfo.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(size=[5], loci=[2], infoFields=['sex', 'age'])
-pop.setVirtualSplitter(sexSplitter())
-InitSex(pop)
-InitInfo(pop, 0, subPops=[(0,0)], infoFields='sex')
-InitInfo(pop, 1, subPops=[(0,1)], infoFields='sex')
-InitInfo(pop, lambda: random.randint(20, 70), infoFields='age')
-Dump(pop, structure=False)
+pop = sim.population(size=[5], loci=[2], infoFields=['sex', 'age'])
+pop.setVirtualSplitter(sim.sexSplitter())
+sim.InitSex(pop)
+sim.InitInfo(pop, 0, subPops=[(0,0)], infoFields='sex')
+sim.InitInfo(pop, 1, subPops=[(0,1)], infoFields='sex')
+sim.InitInfo(pop, lambda: random.randint(20, 70), infoFields='age')
+sim.Dump(pop, structure=False)
 #end_file
 
 #begin_file log/dumper.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[10, 10], loci=[20, 30], infoFields='gen',
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[10, 10], loci=[20, 30], infoFields='gen',
     ancGen=-1)
-pop.setVirtualSplitter(sexSplitter())
+pop.setVirtualSplitter(sim.sexSplitter())
 pop1 = pop.clone()
-InitByFreq(pop, [0]*20 + [0.1]*10)
+sim.InitByFreq(pop, [0]*20 + [0.1]*10)
 pop.setIndInfo(1, 'gen')
-InitByFreq(pop1, [0]*50 + [0.1]*10)
+sim.InitByFreq(pop1, [0]*50 + [0.1]*10)
 pop1.setIndInfo(2, 'gen')
 pop.push(pop1)
-Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
+sim.Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
     max=10, structure=False, ancGen=-1)
 #end_file
 
@@ -1933,17 +2079,19 @@ Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=2),
-    randomMating(), rep=5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=2),
+    sim.randomMating(), rep=5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.2, 0.8])
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.8])
     ],
-    postOps = savePopulation(output="!'snapshot_%d_%d.pop' % (rep, gen)",
+    postOps = sim.savePopulation(output="!'snapshot_%d_%d.pop' % (rep, gen)",
             step = 10),
     gen = 50
 )
@@ -1960,18 +2108,20 @@ for rep in range(5):
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, infoFields=['father_idx', 'mother_idx']),
-    randomMating(), rep=5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, infoFields=['father_idx', 'mother_idx']),
+    sim.randomMating(), rep=5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.3, 0.7])
+        sim.initSex(),
+        sim.initByFreq([0.3, 0.7])
     ],
-    preOps = setAncestralDepth(2, at=-2),
-    duringOps = parentsTagger(begin=-2),
+    preOps = sim.setAncestralDepth(2, at=-2),
+    duringOps = sim.parentsTagger(begin=-2),
     gen = 100
 )
 pop = simu.population(3)
@@ -1983,27 +2133,29 @@ print pop.ancestor(10, 1).father_idx
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=1000, loci=1),
-    randomMating(), rep=4)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, loci=1),
+    sim.randomMating(), rep=4)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5]),
-        pyExec('below40, above60 = 0, 0')
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
+        sim.pyExec('below40, above60 = 0, 0')
     ],
     postOps = [
-        stat(alleleFreq=0),
-        ifElse('alleleFreq[0][1] < 0.4',
-            pyExec('below40 += 1')),
-        ifElse('alleleFreq[0][1] > 0.6',
-            pyExec('above60 += 1')),
-        ifElse('len(alleleFreq[0]) == 1',
-            pyExec('stoppedAt = gen')),
-        terminateIf('len(alleleFreq[0]) == 1')
+        sim.stat(alleleFreq=0),
+        sim.ifElse('alleleFreq[0][1] < 0.4',
+            sim.pyExec('below40 += 1')),
+        sim.ifElse('alleleFreq[0][1] > 0.6',
+            sim.pyExec('above60 += 1')),
+        sim.ifElse('len(alleleFreq[0]) == 1',
+            sim.pyExec('stoppedAt = gen')),
+        sim.terminateIf('len(alleleFreq[0]) == 1')
     ]
 )
 for pop in simu.populations():
@@ -2015,20 +2167,22 @@ for pop in simu.populations():
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=100, loci=1),
-    randomMating(), rep=10)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=100, loci=1),
+    sim.randomMating(), rep=10)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5]),
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
     ],
     postOps = [
-        stat(alleleFreq=0),
-        terminateIf('len(alleleFreq[0]) == 1', stopAll=True)
+        sim.stat(alleleFreq=0),
+        sim.terminateIf('len(alleleFreq[0]) == 1', stopAll=True)
     ]
 )
 
@@ -2038,28 +2192,30 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=1), randomMating(), rep=5)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=1), sim.randomMating(), rep=5)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.1, 0.9])
+        sim.initSex(),
+        sim.initByFreq([0.1, 0.9])
     ],
     postOps = [
-        stat(alleleFreq=0),
-        ifElse('alleleNum[0][0] == 0',
+        sim.stat(alleleFreq=0),
+        sim.ifElse('alleleNum[0][0] == 0',
             ifOps = [
-                turnOnDebug("DBG_MUTATOR"),
-                pointMutator(loci=0, allele=0, inds=0),
+                sim.turnOnDebug("DBG_MUTATOR"),
+                sim.pointMutator(loci=0, allele=0, inds=0),
             ],
-            elseOps = turnOffDebug("DBG_MUTATOR")),
+            elseOps = sim.turnOffDebug("DBG_MUTATOR")),
     ],
     gen = 100
 )
 #begin_ignore
-TurnOffDebug("DBG_MUTATOR")
+sim.TurnOffDebug("DBG_MUTATOR")
 #end_ignore
 #end_file
 
@@ -2067,16 +2223,18 @@ TurnOffDebug("DBG_MUTATOR")
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100), randomMating(), rep=10)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100), sim.randomMating(), rep=10)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    postOps = [pause(stopOnKeyStroke=str(x), reps=x) for x in range(10)],
+    postOps = [sim.pause(stopOnKeyStroke=str(x), reps=x) for x in range(10)],
     gen = 100
 )
 #end_file
@@ -2085,18 +2243,20 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(10000, loci=[100]*5), randomMating(), rep=2)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(10000, loci=[100]*5), sim.randomMating(), rep=2)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.1, 0.9])
+        sim.initSex(),
+        sim.initByFreq([0.1, 0.9])
     ],
     postOps = [
-        stat(alleleFreq=0),
-        ticToc(step=50, reps=-1),
+        sim.stat(alleleFreq=0),
+        sim.ticToc(step=50, reps=-1),
     ],
     gen = 101
 )
@@ -2106,20 +2266,22 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(100, loci=1),
-    randomMating(), rep=2)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(100, loci=1),
+    sim.randomMating(), rep=2)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.2, 0.8]),
-        pyExec('traj=[]')
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.8]),
+        sim.pyExec('traj=[]')
     ],
     postOps = [
-        stat(alleleFreq=0),
-        pyExec('traj.append(alleleFreq[0][1])'),
+        sim.stat(alleleFreq=0),
+        sim.pyExec('traj.append(alleleFreq[0][1])'),
     ],
     gen=5
 )
@@ -2131,18 +2293,20 @@ print ', '.join(['%.3f' % x for x in simu.dvars(0).traj])
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(1000, loci=1,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(1000, loci=1,
     infoFields=['mother_idx', 'father_idx']),
-    randomMating())
+    sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
-    duringOps = parentsTagger(),
+    initOps = sim.initSex(),
+    duringOps = sim.parentsTagger(),
     postOps = [
-        stat(alleleFreq=0),
-        pyEval(r'"gen %d, #father %d, #mother %d\n"' \
+        sim.stat(alleleFreq=0),
+        sim.pyEval(r'"gen %d, #father %d, #mother %d\n"' \
             ' % (gen, numFather, numMother)',
             stmts="numFather = len(set(pop.indInfo('father_idx')))\n"
                 "numMother = len(set(pop.indInfo('mother_idx')))",
@@ -2156,38 +2320,42 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population(20, loci=1, infoFields='a')
-pop.setVirtualSplitter(infoSplitter('a', cutoff=[3]))
-InitByFreq(pop, [0.2, 0.8])
+pop = sim.population(20, loci=1, infoFields='a')
+pop.setVirtualSplitter(sim.infoSplitter('a', cutoff=[3]))
+sim.InitByFreq(pop, [0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
-InfoEval(pop, 'a', subPops=[(0, 0)]);print
-InfoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
-# use population variables
+sim.InfoEval(pop, 'a', subPops=[(0, 0)]);print
+sim.InfoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
+# use sim.population variables
 pop.dvars().b = 5
-InfoEval(pop, '"%d " % (a+b)', usePopVars=True);print
+sim.InfoEval(pop, '"%d " % (a+b)', usePopVars=True);print
 #end_file
 
 #begin_file log/infoExec.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=1, infoFields=['a', 'b', 'c'])
-InitByFreq(pop, [0.2, 0.8])
-InfoExec(pop, 'a=1')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=1, infoFields=['a', 'b', 'c'])
+sim.InitByFreq(pop, [0.2, 0.8])
+sim.InfoExec(pop, 'a=1')
 print pop.indInfo('a')[:10]
-InfoExec(pop, 'b=ind.sex()', exposeInd='ind')
+sim.InfoExec(pop, 'b=ind.sex()', exposeInd='ind')
 print pop.indInfo('b')[:10]
-InfoExec(pop, 'c=a+b')
+sim.InfoExec(pop, 'c=a+b')
 print pop.indInfo('c')[:10]
 pop.dvars().d = 5
-InfoExec(pop, 'c+=d', usePopVars=True)
+sim.InfoExec(pop, 'c+=d', usePopVars=True)
 print pop.indInfo('c')[:10]
 #end_file
 
@@ -2195,23 +2363,25 @@ print pop.indInfo('c')[:10]
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=[1000]*3, infoFields='migrate_to'),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=[1000]*3, infoFields='migrate_to'),
+    sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
-    preOps = migrator(rate=[
+    initOps = sim.initSex(),
+    preOps = sim.migrator(rate=[
             [0, 0.1, 0.1],
             [0, 0, 0.1],
             [0, 0.1, 0]
         ]), 
     postOps = [
-        stat(popSize=True),
-        pyEval('subPopSize'),
-        pyOutput('\n')
+        sim.stat(popSize=True),
+        sim.pyEval('subPopSize'),
+        sim.pyOutput('\n')
     ],
     gen = 5
 )        
@@ -2221,35 +2391,37 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=[1000]*3, infoFields='migrate_to'),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=[1000]*3, infoFields='migrate_to'),
+    sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
-    preOps = migrator(rate=[[0.1], [0.2]],
-            mode=ByProportion,
+    initOps = sim.initSex(),
+    preOps = sim.migrator(rate=[[0.1], [0.2]],
+            mode=sim.ByProportion,
             subPops=[1, 2],
             toSubPops=[3]),
     postOps = [
-        stat(popSize=True),
-        pyEval('subPopSize'),
-        pyOutput('\n')
+        sim.stat(popSize=True),
+        sim.pyEval('subPopSize'),
+        sim.pyOutput('\n')
     ],
     gen = 5
 )        
 #
 simu.evolve(
-    preOps = migrator(rate=[[50, 50], [100, 50]],
-            mode=ByCounts,
+    preOps = sim.migrator(rate=[[50, 50], [100, 50]],
+            mode=sim.ByCounts,
             subPops=[3, 2],
             toSubPops=[2, 1]),
     postOps = [
-        stat(popSize=True),
-        pyEval('subPopSize'),
-        pyOutput('\n')
+        sim.stat(popSize=True),
+        sim.pyEval('subPopSize'),
+        sim.pyOutput('\n')
     ],
     gen = 5
 )        
@@ -2259,29 +2431,31 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000]*2, infoFields='migrate_to')
-pop.setVirtualSplitter(sexSplitter())
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000]*2, infoFields='migrate_to')
+pop.setVirtualSplitter(sim.sexSplitter())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     # 500 males and 500 females
-    initOps = initSex(sex=[Male, Female]),
+    initOps = sim.initSex(sex=[sim.Male, sim.Female]),
     preOps = [
-        migrator(rate=[
+        sim.migrator(rate=[
             [0, 0.10],
             [0, 0.05],
             ],
-            mode = ByProportion,
+            mode = sim.ByProportion,
             subPops=[(0, 0), (0, 1)]),
-        stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
-        pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
+        sim.stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
+        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
             "subPop[1]['numOfMale'], subPopSize[1])"),
     ],
     postOps = [
-        stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
-        pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
+        sim.stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
+        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
             "subPop[1]['numOfMale'], subPopSize[1])"),
     ],
     gen = 2
@@ -2292,12 +2466,14 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population([10]*2, infoFields='migrate_to')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population([10]*2, infoFields='migrate_to')
 pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
-Migrate(pop, mode=ByIndInfo)
+sim.Migrate(pop, mode=sim.ByIndInfo)
 pop.subPopSizes()
 #end_file
 
@@ -2305,15 +2481,17 @@ pop.subPopSizes()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(1000), randomSelection())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(1000), sim.randomSelection())
 simu.evolve(
     preOps = [
-        splitSubPops(subPops=0, sizes=[300, 300, 400], at=2),
-        stat(popSize=True),
-        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+        sim.splitSubPops(subPops=0, sizes=[300, 300, 400], at=2),
+        sim.stat(popSize=True),
+        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
     gen = 4
 )
@@ -2323,8 +2501,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def demo(gen, pop=None):
     if gen < 2:
@@ -2332,13 +2512,13 @@ def demo(gen, pop=None):
     else:
         return [x + 50 * gen for x in pop.subPopSizes()]
 
-simu = simulator(population(1000),
-    randomSelection(subPopSize=demo))
+simu = sim.simulator(sim.population(1000),
+    sim.randomSelection(subPopSize=demo))
 simu.evolve(
     preOps = [
-        splitSubPops(subPops=0, proportions=[.5]*2, at=2),
-        stat(popSize=True),
-        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+        sim.splitSubPops(subPops=0, proportions=[.5]*2, at=2),
+        sim.stat(popSize=True),
+        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
     gen = 4
 )
@@ -2348,15 +2528,17 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields='x')
+pop = sim.population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields='x')
 pop.setIndInfo([random.randint(0, 3) for x in range(1000)], 'x')
 print pop.subPopSizes()
 print pop.subPopNames()
-SplitSubPops(pop, subPops=[0, 2], infoFields=['x'])
+sim.SplitSubPops(pop, subPops=[0, 2], infoFields=['x'])
 print pop.subPopSizes()
 print pop.subPopNames()
 #end_file
@@ -2365,16 +2547,18 @@ print pop.subPopNames()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population([500]*2),
-    randomSelection())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population([500]*2),
+    sim.randomSelection())
 simu.evolve(
     preOps = [
-        mergeSubPops(subPops=[0, 1], at=3),
-        stat(popSize=True),
-        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+        sim.mergeSubPops(subPops=[0, 1], at=3),
+        sim.stat(popSize=True),
+        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
     gen = 5
 )
@@ -2384,16 +2568,18 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population([500]*2),
-    randomSelection())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population([500]*2),
+    sim.randomSelection())
 simu.evolve(
     preOps = [
-        resizeSubPops(proportions=(1.5, 2), at=3),
-        stat(popSize=True),
-        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+        sim.resizeSubPops(proportions=(1.5, 2), at=3),
+        sim.stat(popSize=True),
+        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
     gen = 5
 )
@@ -2403,23 +2589,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=[1000], loci=[100]),
-    randomMating(ops = [
-        recombinator(rates=0.01, reps=0),
-        recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=[1000], loci=[100]),
+    sim.randomMating(ops = [
+        sim.recombinator(rates=0.01, reps=0),
+        sim.recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
     ]), rep=2)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([0]*100 + [1]*100)
+        sim.initSex(),
+        sim.initByValue([0]*100 + [1]*100)
     ],
     postOps = [
-        stat(LD=[[40, 55], [60, 70]]),
-        pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
-        pyOutput('\n', reps=-1)
+        sim.stat(LD=[[40, 55], [60, 70]]),
+        sim.pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
+        sim.pyOutput('\n', reps=-1)
     ],
     gen = 5
 )
@@ -2429,19 +2617,21 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=[1000], loci=3, lociPos=[0, 1, 1.1]),
-    randomMating(ops=recombinator(intensity=0.01)))
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=[1000], loci=3, lociPos=[0, 1, 1.1]),
+    sim.randomMating(ops=sim.recombinator(intensity=0.01)))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([0]*3 + [1]*3)
+        sim.initSex(),
+        sim.initByValue([0]*3 + [1]*3)
     ],
     postOps = [
-        stat(LD=[[0, 1], [1, 2]]),
-        pyEval(r'"%.3f\t%.3f\n" % (LD_prime[0][1], LD_prime[1][2])', step=10)
+        sim.stat(LD=[[0, 1], [1, 2]]),
+        sim.pyEval(r'"%.3f\t%.3f\n" % (LD_prime[0][1], LD_prime[1][2])', step=10)
     ],
     gen = 50
 )
@@ -2451,23 +2641,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=[1000], loci=[100]),
-    randomMating(ops=[
-        recombinator(rates=0.01, loci=50, reps=0),
-        recombinator(rates=0.01, loci=50, reps=1, convMode=(NumMarkers, 1, 10)),
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=[1000], loci=[100]),
+    sim.randomMating(ops=[
+        sim.recombinator(rates=0.01, loci=50, reps=0),
+        sim.recombinator(rates=0.01, loci=50, reps=1, convMode=(sim.NumMarkers, 1, 10)),
     ]), rep=2)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([0]*100 + [1]*100)
+        sim.initSex(),
+        sim.initByValue([0]*100 + [1]*100)
     ],
     postOps = [
-        stat(LD=[[40, 55], [40, 70]]),
-        pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
-        pyOutput('\n', reps=-1)
+        sim.stat(LD=[[40, 55], [40, 70]]),
+        sim.pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
+        sim.pyOutput('\n', reps=-1)
     ],
     gen = 5
 )
@@ -2477,18 +2669,20 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(1000, loci=[1000, 2000], infoFields='ind_id')
-simu = simulator(pop, randomMating(ops = [
-    idTagger(),
-    recombinator(rates=0.001, output='>>rec.log', infoFields='ind_id')])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=[1000, 2000], infoFields='ind_id')
+simu = sim.simulator(pop, sim.randomMating(ops = [
+    sim.idTagger(),
+    sim.recombinator(rates=0.001, output='>>rec.log', infoFields='ind_id')])
 )
 simu.evolve(
     initOps = [
-        initSex(),
-        idTagger(),
+        sim.initSex(),
+        sim.idTagger(),
     ],
     gen = 5
 )
@@ -2506,24 +2700,26 @@ os.remove('rec.log')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=[2000], loci=1),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=[2000], loci=1),
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.2, 0.3, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.3, 0.5])
     ],
-    preOps = matrixMutator(rate = [
+    preOps = sim.matrixMutator(rate = [
             [0, 1e-5, 1e-5],
             [1e-4, 0, 1e-4],
             [1e-3, 1e-3, 0]
         ]),
     postOps = [
-        stat(alleleFreq=0, step=100),
-        pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(3)]) + '\n'",
+        sim.stat(alleleFreq=0, step=100),
+        sim.pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(3)]) + '\n'",
             step=100),
     ],
     gen=1000
@@ -2534,17 +2730,19 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2000], loci=1*3)
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2000], loci=1*3)
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
+    initOps = sim.initSex(),
     postOps = [
-        kamMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
-        stat(alleleFreq=range(3), step=100),
-        pyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
+        sim.kamMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
+        sim.stat(alleleFreq=range(3), step=100),
+        sim.pyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
             step=100),
     ],
     gen=500
@@ -2555,20 +2753,22 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2000], loci=[1, 1], infoFields='fitness')
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2000], loci=[1, 1], infoFields='fitness')
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
+    initOps = sim.initSex(),
     preOps = [
-        snpMutator(u=0.001),
-        maSelector(loci=0, fitness=[1, 0.99, 0.98]),
+        sim.snpMutator(u=0.001),
+        sim.maSelector(loci=0, fitness=[1, 0.99, 0.98]),
     ],
     postOps = [
-        stat(alleleFreq=[0, 1], step=100),
-        pyEval(r"'%.3f\t%.3f\n' % (alleleFreq[0][1], alleleFreq[1][1])",
+        sim.stat(alleleFreq=[0, 1], step=100),
+        sim.pyEval(r"'%.3f\t%.3f\n' % (alleleFreq[0][1], alleleFreq[1][1])",
             step=100),
     ],
     gen=500
@@ -2579,21 +2779,23 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2000], loci=1,
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2000], loci=1,
     alleleNames=['A', 'C', 'G', 'T'])
-simu = simulator(pop, randomMating())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([.1, .1, .1, .7])
+        sim.initSex(),
+        sim.initByFreq([.1, .1, .1, .7])
     ],
     preOps = [
-        acgtMutator(rate=[1e-4, 0.5], model='K80'),
-        stat(alleleFreq=0, step=100),
-        pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(4)]) + '\n'",
+        sim.acgtMutator(rate=[1e-4, 0.5], model='K80'),
+        sim.stat(alleleFreq=0, step=100),
+        sim.pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(4)]) + '\n'",
             step=100),
     ],
     gen=500
@@ -2604,20 +2806,22 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(size=1000, loci=[1, 1]), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(size=1000, loci=[1, 1]), sim.randomMating())
 simu.evolve(
     # all start from allele 50
     initOps = [
-        initSex(),
-        initByFreq( [0]*50 + [1])
+        sim.initSex(),
+        sim.initByFreq( [0]*50 + [1])
     ],
     preOps = [
-        smmMutator(rates=1e-3, loci=0),
-        smmMutator(rates=1e-3, incProb=0.6, loci=1,
-            mutStep=(GeometricDistribution, 0.2)),
+        sim.smmMutator(rates=1e-3, loci=0),
+        sim.smmMutator(rates=1e-3, incProb=0.6, loci=1,
+            mutStep=(sim.GeometricDistribution, 0.2)),
     ],
     gen=100
 )
@@ -2635,18 +2839,20 @@ print 'Average number of repeats at two loci are %.2f and %.2f.' % \
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
 def incAllele(allele):
     return allele + random.randint(1, 5)
 
-simu = simulator(population(size=1000, loci=[20]),
-    randomMating())
+simu = sim.simulator(sim.population(size=1000, loci=[20]),
+    sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
-    postOps = pyMutator(func=incAllele, rates=[1e-4, 1e-3],
+    initOps = sim.initSex(),
+    postOps = sim.pyMutator(func=incAllele, rates=[1e-4, 1e-3],
             loci=[2, 10]),
     gen = 1000
 )
@@ -2666,23 +2872,25 @@ print 'Average number of repeats at two loci are %.2f and %.2f.' % \
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(5000, loci=[1, 1]),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(5000, loci=[1, 1]),
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([50, 50])
+        sim.initSex(),
+        sim.initByValue([50, 50])
     ],
     preOps = [
         # the first locus uses a pure stepwise mutation model
-        smmMutator(rates=0.001, loci=0),
+        sim.smmMutator(rates=0.001, loci=0),
         # the second locus uses a mixed model
-        mixedMutator(rates=0.001, loci=1, mutators=[        
-            kamMutator(rates=1, k=100),
-            smmMutator(rates=1)
+        sim.mixedMutator(rates=0.001, loci=1, mutators=[        
+            sim.kamMutator(rates=1, k=100),
+            sim.smmMutator(rates=1)
         ], prob=[0.1, 0.9])],
     gen = 20
 )
@@ -2701,28 +2909,30 @@ print 'Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)])
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population(5000, loci=[3, 3]),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population(5000, loci=[3, 3]),
+    sim.randomMating())
 simu.evolve(
     # initialize locus by 0, 0, 0, 1, 0, 1
     initOps = [
-        initSex(),
-        initByValue([1, 1], loci=[3, 5])
+        sim.initSex(),
+        sim.initByValue([1, 1], loci=[3, 5])
     ],
     preOps = [
-        contextMutator(mutators=[
-            snpMutator(u=0.1),
-            snpMutator(u=1),
+        sim.contextMutator(mutators=[
+            sim.snpMutator(u=0.1),
+            sim.snpMutator(u=1),
             ],
             contexts=[(0, 0), (1, 1)],
             loci=[1, 4],
             rates=0.01
         ),
-        stat(alleleFreq=[1, 4], step=5),
-        pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
+        sim.stat(alleleFreq=[1, 4], step=5),
+        sim.pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
             " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
     ], 
     gen = 20
@@ -2733,12 +2943,14 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-simu = simulator(population(5000, loci=[3, 3]),
-    randomMating())
+simu = sim.simulator(sim.population(5000, loci=[3, 3]),
+    sim.randomMating())
 def contextMut(allele, context):
     if context == [0, 0]:
         if allele == 0 and random.random() < 0.1:
@@ -2752,16 +2964,16 @@ def contextMut(allele, context):
 simu.evolve(
     # initialize locus by 0, 0, 0, 1, 0, 1
     initOps = [
-        initSex(),
-        initByValue([1, 1], loci=[3, 5])
+        sim.initSex(),
+        sim.initByValue([1, 1], loci=[3, 5])
     ],
     preOps = [
-        pyMutator(func=contextMut, context=1,
+        sim.pyMutator(func=contextMut, context=1,
             loci=[1, 4],  rates=0.01
         ),
-        #snpMutator(u=0.01, v= 0.01, loci=[1, 4]),
-        stat(alleleFreq=[1, 4], step=5),
-        pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
+        #sim.snpMutator(u=0.01, v= 0.01, loci=[1, 4]),
+        sim.stat(alleleFreq=[1, 4], step=5),
+        sim.pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
             " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
     ], 
     gen = 20
@@ -2772,24 +2984,26 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(1000, loci=1, infoFields='fitness')
-simu = simulator(pop, randomSelection())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=1, infoFields='fitness')
+simu = sim.simulator(pop, sim.randomSelection())
 simu.evolve(
-    initOps = pyOutput('Introducing alleles at generation'),
-    preOps = maSelector(loci=0, wildtype=0, fitness=[1, 1.05, 1.1]),
+    initOps = sim.pyOutput('Introducing alleles at generation'),
+    preOps = sim.maSelector(loci=0, wildtype=0, fitness=[1, 1.05, 1.1]),
     postOps = [
-        stat(alleleFreq=0),
-        ifElse('alleleNum[0][1] == 0', ifOps=[
-            pyEval(r"' %d' % gen"),
-            pointMutator(inds=0, loci=0, allele=1),
+        sim.stat(alleleFreq=0),
+        sim.ifElse('alleleNum[0][1] == 0', ifOps=[
+            sim.pyEval(r"' %d' % gen"),
+            sim.pointMutator(inds=0, loci=0, allele=1),
         ]),
-        ifElse('alleleFreq[0][1] > 0.05', ifOps=[
-            pyEval(r"'.\nTerminate at generation %d at allele freq %.3f.\n'" +
+        sim.ifElse('alleleFreq[0][1] > 0.05', ifOps=[
+            sim.pyEval(r"'.\nTerminate at generation %d at allele freq %.3f.\n'" +
                 " % (gen, alleleFreq[0][1])"),
-            terminateIf('True'),
+            sim.terminateIf('True'),
         ])
     ],
 )
@@ -2799,8 +3013,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 def fragileX(geno):
     '''A disease model where an individual has increased risk of 
@@ -2815,8 +3031,8 @@ def fragileX(geno):
         return min(1, (maxRep - 50)*0.05)
 
 def avgAllele(pop):
-    'Get average allele by affection status.'
-    Stat(pop, alleleFreq=(0,1), subPops=[(0,0), (0,1)],
+    'Get average allele by affection sim.status.'
+    sim.Stat(pop, alleleFreq=(0,1), subPops=[(0,0), (0,1)],
         numOfAffected=True, vars=['alleleNum', 'alleleNum_sp'])
     avg = []
     for alleleNum in [\
@@ -2836,27 +3052,27 @@ def avgAllele(pop):
     pop.dvars().avgAllele = avg
     return True
 
-pop = population(10000, loci=[1, 1])
-pop.setVirtualSplitter(affectionSplitter())
-simu = simulator(pop, randomMating())
+pop = sim.population(10000, loci=[1, 1])
+pop.setVirtualSplitter(sim.affectionSplitter())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([50, 50])
+        sim.initSex(),
+        sim.initByValue([50, 50])
     ],
     postOps = [
-        # determine affection status for each offspring (duringMating)
-        pyPenetrance(func=fragileX, loci=0),
+        # determine affection sim.status for each offspring (duringMating)
+        sim.pyPenetrance(func=fragileX, loci=0),
         # unaffected offspring, mutation rate is high to save some time
-        smmMutator(rates=1e-3, loci=1),
+        sim.smmMutator(rates=1e-3, loci=1),
         # unaffected offspring, mutation rate is high to save some time
-        smmMutator(rates=1e-3, loci=0, subPops=[(0, 0)]),
+        sim.smmMutator(rates=1e-3, loci=0, subPops=[(0, 0)]),
         # affected offspring have high probability of mutating upward
-        smmMutator(rates=1e-2, loci=0, subPops=[(0, 1)],
+        sim.smmMutator(rates=1e-2, loci=0, subPops=[(0, 1)],
            incProb=0.7, mutStep=3),
         # number of affected
-        pyOperator(func=avgAllele, step=20),
-        pyEval(r"'Gen: %3d #Aff: %d AvgRepeat: %.2f (unaff), %.2f (aff), %.2f (unrelated)\n'"
+        sim.pyOperator(func=avgAllele, step=20),
+        sim.pyEval(r"'Gen: %3d #Aff: %d AvgRepeat: %.2f (unaff), %.2f (aff), %.2f (unrelated)\n'"
             + " % (gen, numOfAffected, avgAllele[0], avgAllele[1], avgAllele[2])",
             step=20),
     ],
@@ -2868,21 +3084,23 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2000], loci=1)
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2000], loci=1)
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0]*4 + [0.1, 0.2, 0.3, 0.4])
+        sim.initSex(),
+        sim.initByFreq([0]*4 + [0.1, 0.2, 0.3, 0.4])
     ],
     postOps = [
-        kamMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
+        sim.kamMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
             mapOut=[4, 5, 6, 7]),
-        stat(alleleFreq=0, step=100),
-        pyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
+        sim.stat(alleleFreq=0, step=100),
+        sim.pyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
             step=100),
     ],
     gen=500
@@ -2895,9 +3113,9 @@ simuOpt.setOptions(alleleType='long')
 #begin_ignore
 simuOpt.setOptions(quiet=True)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
 #begin_ignore
-GetRNG().setSeed(12345)
+sim.GetRNG().setSeed(12345)
 #end_ignore
 
 def infSitesMutate(pop, param):
@@ -2909,7 +3127,7 @@ def infSitesMutate(pop, param):
         for p in range(2):
             # using a geometric distribution to determine
             # the first mutation location
-            loc = GetRNG().randGeometric(rate)
+            loc = sim.GetRNG().randGeometric(rate)
             # if a mutation happens, record the mutated location
             if startPos + loc < endPos:
                 try:
@@ -2922,17 +3140,17 @@ def infSitesMutate(pop, param):
                     pass
     return True
 
-pop = population(size=[2000], loci=[100])
-simu = simulator(pop, randomMating())
+pop = sim.population(size=[2000], loci=[100])
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
+    initOps = sim.initSex(),
     preOps = [
         # recombine in a 10Mb region at rate 1e-8
-        pyOperator(func=infSitesMutate, param=(1, 10000000, 1e-8)),
+        sim.pyOperator(func=infSitesMutate, param=(1, 10000000, 1e-8)),
     ],
     gen = 100
 )
-# now, we get a population. Let us have a look at the 'alleles'.
+# now, we get a sim.population. Let us have a look at the 'alleles'.
 pop = simu.extract(0)
 # print the first five mutation locations
 print pop.individual(0).genotype()[:5]
@@ -2957,21 +3175,23 @@ print max(cnt.values()) *0.5 / pop.popSize()
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population([5000]*3, loci=5), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population([5000]*3, loci=5), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     postOps = [
-        stat(structure=range(5), subPops=(0, 1), suffix='_01', step=40),
-        stat(structure=range(5), subPops=(1, 2), suffix='_12', step=40),
-        stat(structure=range(5), subPops=(0, 2), suffix='_02', step=40),
-        stat(structure=range(5), step=40),
-        pyEval(r"'Fst=%.3f (pairwise: %.3f %.3f %.3f)\n' % (F_st, F_st_01, F_st_12, F_st_02)",
+        sim.stat(structure=range(5), subPops=(0, 1), suffix='_01', step=40),
+        sim.stat(structure=range(5), subPops=(1, 2), suffix='_12', step=40),
+        sim.stat(structure=range(5), subPops=(0, 2), suffix='_02', step=40),
+        sim.stat(structure=range(5), step=40),
+        sim.pyEval(r"'Fst=%.3f (pairwise: %.3f %.3f %.3f)\n' % (F_st, F_st_01, F_st_12, F_st_02)",
             step=40),
     ],
     gen = 200
@@ -2982,38 +3202,40 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10000, loci=1)
-pop.setVirtualSplitter(combinedSplitter(
-    [sexSplitter(), affectionSplitter()]))
-InitSex(pop)
-InitByFreq(pop, [0.2, 0.8])
-MaPenetrance(pop, loci=0, penetrance=[0.1, 0.2, 0.5])
-# Count population size
-Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)])
-# popSize is the size of two VSPs, does not equal to total population size.
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10000, loci=1)
+pop.setVirtualSplitter(sim.combinedSplitter(
+    [sim.sexSplitter(), sim.affectionSplitter()]))
+sim.InitSex(pop)
+sim.InitByFreq(pop, [0.2, 0.8])
+sim.MaPenetrance(pop, loci=0, penetrance=[0.1, 0.2, 0.5])
+# Count sim.population size
+sim.Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)])
+# popSize is the size of two VSPs, does not equal to total sim.population size.
 # Because two VSPs overlap (all males and all unaffected), popSize can be
-# greater than real population size.
+# greater than real sim.population size.
 print pop.dvars().subPopSize, pop.dvars().popSize
 # print popSize of each virtual subpopulation.
-Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)], vars='popSize_sp')
+sim.Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)], vars='popSize_sp')
 # Note the two ways to access variable in (virtual) subpopulations.
 print pop.dvars((0,0)).popSize, pop.dvars().subPop[(0,2)]['popSize']
 # Count number of male (should be the same as the size of VSP (0,0).
-Stat(pop, numOfMale=True)
+sim.Stat(pop, numOfMale=True)
 print pop.dvars().numOfMale
 # Count the number of affected and unaffected male individual
-Stat(pop, numOfMale=True, subPops=[(0, 2), (0, 3)], vars='numOfMale_sp')
+sim.Stat(pop, numOfMale=True, subPops=[(0, 2), (0, 3)], vars='numOfMale_sp')
 print pop.dvars((0,2)).numOfMale, pop.dvars((0,3)).numOfMale
 # or number of affected male and females
-Stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
+sim.Stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
 print pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected
-# These can also be done using a productSplitter...
-pop.setVirtualSplitter(productSplitter(
-    [sexSplitter(), affectionSplitter()]))
-Stat(pop, popSize=True, subPops=[(0, x) for x in range(4)])
+# These can also be done using a sim.productSplitter...
+pop.setVirtualSplitter(sim.productSplitter(
+    [sim.sexSplitter(), sim.affectionSplitter()]))
+sim.Stat(pop, popSize=True, subPops=[(0, x) for x in range(4)])
 # counts for male unaffected, male affected, female unaffected and female affected
 print pop.dvars().subPopSize
 #end_file
@@ -3022,22 +3244,24 @@ print pop.dvars().subPopSize
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10000, loci=1)
-pop.setVirtualSplitter(affectionSplitter())
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10000, loci=1)
+pop.setVirtualSplitter(sim.affectionSplitter())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq(loci=0, alleleFreq=[0.8, 0.2])
+        sim.initSex(),
+        sim.initByFreq(loci=0, alleleFreq=[0.8, 0.2])
     ],
     postOps = [
-        maPenetrance(penetrance=[0.1, 0.4, 0.6], loci=0),
-        stat(alleleFreq=0, subPops=[(0, 0), (0, 1)],
+        sim.maPenetrance(penetrance=[0.1, 0.4, 0.6], loci=0),
+        sim.stat(alleleFreq=0, subPops=[(0, 0), (0, 1)],
             vars=['alleleFreq', 'alleleFreq_sp']),
-        pyEval(r"'Gen: %d, freq: %.2f, freq (aff): %.2f, freq (unaff): %.2f\n' % " + \
+        sim.pyEval(r"'Gen: %d, freq: %.2f, freq (aff): %.2f, freq (unaff): %.2f\n' % " + \
             "(gen, alleleFreq[0][1], subPop[(0,1)]['alleleFreq'][0][1]," + \
             "subPop[(0,0)]['alleleFreq'][0][1])"),
     ],
@@ -3049,12 +3273,14 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=[1, 1, 1], chromTypes=[Autosome, ChromosomeX, ChromosomeY])
-InitByFreq(pop, [0.01, 0.05, 0.94])
-Stat(pop, genoFreq=[0, 1])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=[1, 1, 1], chromTypes=[sim.Autosome, sim.ChromosomeX, sim.ChromosomeY])
+sim.InitByFreq(pop, [0.01, 0.05, 0.94])
+sim.Stat(pop, genoFreq=[0, 1])
 print 'Available genotypes on autosome:', pop.dvars().genoFreq[0].keys()
 for i in range(3):
     for j in range(3):
@@ -3068,19 +3294,21 @@ print 'Genotype frequency on chromosome X:\n', \
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=1)
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=1)
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
     postOps = [
-        stat(heteroFreq=0, step=10),
-        pyEval(r"'Gen: %d, HeteroFreq: %.2f\n' % (gen, heteroFreq[0])", step=20)
+        sim.stat(heteroFreq=0, step=10),
+        sim.pyEval(r"'Gen: %d, HeteroFreq: %.2f\n' % (gen, heteroFreq[0])", step=20)
     ],
     gen = 100
 )
@@ -3090,41 +3318,46 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(100, loci=3)
-InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
-InitByFreq(pop, [0.2, 0.8], loci=2)
-Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from simuPOP.utils import ViewVars
+pop = sim.population(100, loci=3)
+sim.InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
+sim.InitByFreq(pop, [0.2, 0.8], loci=2)
+sim.Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
     vars=['genoNum', 'haploFreq'])
-utils.ViewVars(pop.vars(), gui=False)
+ViewVars(pop.vars(), gui=False)
 #end_file
 
 #begin_file log/statInfo.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = population([500], infoFields='anc')
+pop = sim.population([500], infoFields='anc')
 # Defines VSP 0, 1, 2, 3, 4 by anc.
-pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
+pop.setVirtualSplitter(sim.infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
-simu = simulator(pop, randomMating())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
+        sim.initSex(),
         # anc is 0 or 1
-        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+        sim.initInfo(lambda : random.randint(0, 1), infoFields='anc')
     ],
-    duringOps = inheritTagger(mode=Mean, infoFields='anc'),
+    duringOps = sim.inheritTagger(mode=sim.Mean, infoFields='anc'),
     postOps = [
-        stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
+        sim.stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
             subPops=[(0,x) for x in range(5)]),
-        pyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \
+        sim.pyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \
             "(meanOfInfo['anc'], varOfInfo['anc'], " + \
             "', '.join(['%4d' % x for x in subPopSize]))")
     ],
@@ -3136,13 +3369,15 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population([1000]*2, loci=3)
-InitByFreq(pop, [0.2, 0.8], subPops=0)
-InitByFreq(pop, [0.8, 0.2], subPops=1)
-Stat(pop, LD=[[0, 1, 0, 0], [1, 2]],
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population([1000]*2, loci=3)
+sim.InitByFreq(pop, [0.2, 0.8], subPops=0)
+sim.InitByFreq(pop, [0.8, 0.2], subPops=1)
+sim.Stat(pop, LD=[[0, 1, 0, 0], [1, 2]],
     vars=['LD', 'LD_prime', 'R2', 'LD_ChiSq', 'LD_ChiSq_p', 'CramerV',
         'LD_prime_sp', 'LD_ChiSq_p_sp'])
 from pprint import pprint
@@ -3153,30 +3388,32 @@ pprint(pop.vars())
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import *
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
-    sample = CaseControlSample(pop, cases=500, controls=500)[0]
-    Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
+    sample = sim.CaseControlSample(pop, cases=500, controls=500)[0]
+    sim.Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
     print 'Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
         % (sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
         sample.dvars().Geno_ChiSq_p[0], sample.dvars().Geno_ChiSq_p[2],
         sample.dvars().Armitage_p[0], sample.dvars().Armitage_p[2])
     return True
 
-simu = simulator(population(size=100000, loci=3),
-    randomMating(ops=recombinator(loci=[0, 1], rates=[0.01, 0.005])))
+simu = sim.simulator(sim.population(size=100000, loci=3),
+    sim.randomMating(ops=sim.recombinator(loci=[0, 1], rates=[0.01, 0.005])))
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([[0]*3, [1]*3], proportions=[0.5, 0.5])
+        sim.initSex(),
+        sim.initByValue([[0]*3, [1]*3], proportions=[0.5, 0.5])
     ],
     postOps = [
-        maPenetrance(loci=1, penetrance=[0.1, 0.2, 0.4]),
-        pyOperator(func=assoTest, step=20),
+        sim.maPenetrance(loci=1, penetrance=[0.1, 0.2, 0.4]),
+        sim.pyOperator(func=assoTest, step=20),
     ],
     gen = 100
 )
@@ -3186,23 +3423,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import MigrIslandRates
-simu = simulator(population([5000]*3, loci=10, infoFields='migrate_to'),
-    randomMating(), rep=2)
+simu = sim.simulator(sim.population([5000]*3, loci=10, infoFields='migrate_to'),
+    sim.randomMating(), rep=2)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    preOps = migrator(rate=MigrIslandRates(0.01, 3), reps=1),
+    preOps = sim.migrator(rate=MigrIslandRates(0.01, 3), reps=1),
     postOps = [
-        stat(structure=range(10), step=40),
-        pyEval("'Fst=%.3f (rep=%d without migration) ' % (F_st, rep)", step=40, reps=0),
-        pyEval("'Fst=%.3f (rep=%d with migration) ' % (F_st, rep)", step=40, reps=1),
-        pyOutput('\n', reps=-1, step=40)
+        sim.stat(structure=range(10), step=40),
+        sim.pyEval("'Fst=%.3f (rep=%d without migration) ' % (F_st, rep)", step=40, reps=0),
+        sim.pyEval("'Fst=%.3f (rep=%d with migration) ' % (F_st, rep)", step=40, reps=1),
+        sim.pyOutput('\n', reps=-1, step=40)
     ],
     gen = 200
 )
@@ -3212,23 +3451,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(population([1000], loci=1), randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(sim.population([1000], loci=1), sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([[0,0], [0, 1], [1,1]], proportions=[0.4, 0.4, 0.2])
+        sim.initSex(),
+        sim.initByValue([[0,0], [0, 1], [1,1]], proportions=[0.4, 0.4, 0.2])
     ],
     preOps = [
-        stat(HWE=0, genoFreq=0),
-        pyEval(r'"HWE p-value: %.5f (AA: %.2f, Aa: %.2f, aa: %.2f)\n" % (HWE[0], '
+        sim.stat(HWE=0, genoFreq=0),
+        sim.pyEval(r'"HWE p-value: %.5f (AA: %.2f, Aa: %.2f, aa: %.2f)\n" % (HWE[0], '
             'genoFreq[0][(0,0)], genoFreq[0][(0,1)] + genoFreq[0][(1,0)], genoFreq[0][(1,1)])'),
     ],
     postOps = [
-        stat(HWE=0, genoFreq=0),
-        pyEval(r'"HWE p-value: %.5f (AA: %.2f, Aa: %.2f, aa: %.2f)\n" % (HWE[0], '
+        sim.stat(HWE=0, genoFreq=0),
+        sim.pyEval(r'"HWE p-value: %.5f (AA: %.2f, Aa: %.2f, aa: %.2f)\n" % (HWE[0], '
             'genoFreq[0][(0,0)], genoFreq[0][(0,1)] + genoFreq[0][(1,0)], genoFreq[0][(1,1)])'),
     ],
     gen = 1
@@ -3239,21 +3480,23 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[1000]*10, loci=1, infoFields='x')
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[1000]*10, loci=1, infoFields='x')
 # tag the first individual of each subpopulation.
 for sp in range(pop.numSubPop()):
     pop.individual(0, sp).x = 1
 
-simu = simulator(pop, randomMating())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
-    initOps = initSex(),
-    duringOps = inheritTagger(mode=Maximum, infoFields='x'),
+    initOps = sim.initSex(),
+    duringOps = sim.inheritTagger(mode=sim.Maximum, infoFields='x'),
     postOps = [
-        stat(sumOfInfo='x', vars=['sumOfInfo_sp']),
-        pyEval(r'", ".join(["%3d" % subPop[i]["sumOfInfo"]["x"] for i in range(10)])+"\n"'),
+        sim.stat(sumOfInfo='x', vars=['sumOfInfo_sp']),
+        sim.pyEval(r'", ".join(["%3d" % subPop[i]["sumOfInfo"]["x"] for i in range(10)])+"\n"'),
     ],
     gen = 5
 )
@@ -3263,23 +3506,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
-idTagger().reset(0)
 #end_ignore
-simu = simulator(
-    population(1000, loci=1, infoFields=['fitness', 'avgFitness']),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+sim.idTagger().reset(0)
+#end_ignore
+simu = sim.simulator(
+    sim.population(1000, loci=1, infoFields=['fitness', 'avgFitness']),
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5]),
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
     ],
-    preOps = maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
-    duringOps = summaryTagger(mode=Mean, infoFields=['fitness', 'avgFitness']),
+    preOps = sim.maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
+    duringOps = sim.summaryTagger(mode=sim.Mean, infoFields=['fitness', 'avgFitness']),
     postOps = [
-        stat(alleleFreq=0, meanOfInfo='avgFitness', step=10),
-        pyEval(r"'gen %d: allele freq: %.3f, average fitness of parents: %.3f\n' % "
+        sim.stat(alleleFreq=0, meanOfInfo='avgFitness', step=10),
+        sim.pyEval(r"'gen %d: allele freq: %.3f, average fitness of parents: %.3f\n' % "
             "(gen, alleleFreq[0][1], meanOfInfo['avgFitness'])", step=10)
     ],
     gen = 50,
@@ -3291,23 +3536,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
-idTagger().reset(0)
 #end_ignore
-simu = simulator(
-    population(10, infoFields='ind_id', ancGen=1),
-    randomSelection())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+sim.idTagger().reset(0)
+#end_ignore
+simu = sim.simulator(
+    sim.population(10, infoFields='ind_id', ancGen=1),
+    sim.randomSelection())
 simu.evolve(
-    initOps = idTagger(),
-    duringOps = idTagger(),
+    initOps = sim.idTagger(),
+    duringOps = sim.idTagger(),
     gen = 1
 )
 pop = simu.extract(0)
 print [int(ind.ind_id) for ind in pop.individuals()]
 pop.useAncestralGen(1)
 print [int(ind.ind_id) for ind in pop.individuals()]
-TagID(pop) # re-assign ID
+sim.TagID(pop) # re-assign ID
 print [int(ind.ind_id) for ind in pop.individuals()]
 #end_file
 
@@ -3315,30 +3562,32 @@ print [int(ind.ind_id) for ind in pop.individuals()]
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
-idTagger().reset(0)
 #end_ignore
-simu = simulator(
-    population(100, infoFields=['ind_id', 'father_id', 'mother_id']),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+sim.idTagger().reset(0)
+#end_ignore
+simu = sim.simulator(
+    sim.population(100, infoFields=['ind_id', 'father_id', 'mother_id']),
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        idTagger()
+        sim.initSex(),
+        sim.idTagger()
     ],
     duringOps = [
-        idTagger(),
-        pedigreeTagger(output=">>pedigree.txt")
+        sim.idTagger(),
+        sim.pedigreeTagger(output=">>sim.pedigree.txt")
     ],
     gen = 100
 )
-ped = open('pedigree.txt')
+ped = open('sim.pedigree.txt')
 print ''.join(ped.readlines()[100:105])
 #begin_ignore
 ped.close()
 import os
-os.remove('pedigree.txt')
+os.remove('sim.pedigree.txt')
 #end_ignore
 #end_file
 
@@ -3346,8 +3595,10 @@ os.remove('pedigree.txt')
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
 def randomMove(values):
@@ -3358,19 +3609,19 @@ def randomMove(values):
     y = random.normalvariate((y1+y2)/2., 0.1)
     return (x, y)
 
-pop = population(1000, loci=[1], infoFields=['x', 'y'])
-pop.setVirtualSplitter(genotypeSplitter(loci=0, alleles=[[0, 0], [0,1], [1, 1]]))
-simu = simulator(pop, randomMating())
+pop = sim.population(1000, loci=[1], infoFields=['x', 'y'])
+pop.setVirtualSplitter(sim.genotypeSplitter(loci=0, alleles=[[0, 0], [0,1], [1, 1]]))
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5]),
-        initInfo(random.random, infoFields=['x', 'y'])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
+        sim.initInfo(random.random, infoFields=['x', 'y'])
     ],
-    duringOps = pyTagger(func=randomMove, infoFields=['x', 'y']),
+    duringOps = sim.pyTagger(func=randomMove, infoFields=['x', 'y']),
     postOps = [
-        stat(minOfInfo='x', maxOfInfo='x'),
-        pyEval(r"'Range of x: %.2f, %.2f\n' % (minOfInfo['x'], maxOfInfo['x'])")
+        sim.stat(minOfInfo='x', maxOfInfo='x'),
+        sim.pyEval(r"'Range of x: %.2f, %.2f\n' % (minOfInfo['x'], maxOfInfo['x'])")
     ],
     gen = 5
 )
@@ -3381,33 +3632,35 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(1000, loci=[1], infoFields=['aff', 'numAff'])
-# define virtual subpopulations by affection status
-pop.setVirtualSplitter(affectionSplitter())
-simu = simulator(pop, randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=[1], infoFields=['aff', 'numAff'])
+# define virtual subpopulations by affection sim.status
+pop.setVirtualSplitter(sim.affectionSplitter())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5]),
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
     ],
     preOps = [
-        # get affection status for parents
-        maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
+        # get affection sim.status for parents
+        sim.maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # set 'aff' of parents
-        infoExec('aff = ind.affected()', exposeInd='ind'),
+        sim.infoExec('aff = ind.affected()', exposeInd='ind'),
     ],
         # get number of affected parents for each offspring and store in numAff
-    duringOps = summaryTagger(mode=Summation, infoFields=['aff', 'numAff']),
+    duringOps = sim.summaryTagger(mode=sim.Summation, infoFields=['aff', 'numAff']),
     postOps = [
-        # get affection status for offspring
-        maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
+        # get affection sim.status for offspring
+        sim.maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # calculate mean 'numAff' of offspring, for unaffected and affected subpopulations.
-        stat(meanOfInfo='numAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
+        sim.stat(meanOfInfo='numAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
         # print mean number of affected parents for unaffected and affected offspring.
-        pyEval(r"'Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
+        sim.pyEval(r"'sim.Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
             "(subPop[(0,0)]['meanOfInfo']['numAff'], subPop[(0,1)]['meanOfInfo']['numAff'])")
     ],
     gen = 5
@@ -3419,22 +3672,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(4000, loci=1, infoFields='fitness')
-simu = simulator(pop, randomMating(), rep=3)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(4000, loci=1, infoFields='fitness')
+simu = sim.simulator(pop, sim.randomMating(), rep=3)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    preOps = mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+    preOps = sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
     postOps = [
-        stat(alleleFreq=0, step=10),
-        pyEval("'Gen:%3d ' % gen", reps=0, step=10),
-        pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
-        pyOutput('\n', reps=-1, step=10)
+        sim.stat(alleleFreq=0, step=10),
+        sim.pyEval("'Gen:%3d ' % gen", reps=0, step=10),
+        sim.pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
+        sim.pyOutput('\n', reps=-1, step=10)
     ],
     gen = 50
 )
@@ -3444,22 +3699,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(10000, loci=1)
-simu = simulator(pop, randomMating(), rep=3)
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10000, loci=1)
+simu = sim.simulator(pop, sim.randomMating(), rep=3)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.5, 0.5])
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
     ],
-    duringOps = mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+    duringOps = sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
     postOps = [
-        stat(alleleFreq=0, step=10),
-        pyEval("'Gen:%3d ' % gen", reps=0, step=10),
-        pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
-        pyOutput('\n', reps=-1, step=10)
+        sim.stat(alleleFreq=0, step=10),
+        sim.pyEval("'Gen:%3d ' % gen", reps=0, step=10),
+        sim.pyEval(r"'%.3f\t' % alleleFreq[0][1]", step=10),
+        sim.pyOutput('\n', reps=-1, step=10)
     ],
     gen = 50
 )
@@ -3469,8 +3726,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import trajectory, ForwardTrajectory
 
@@ -3479,22 +3738,22 @@ traj = ForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
 traj.plot('log/forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
     plot_main='Simulated trajectory (forward-time)')
-simu = simulator(
-    population(size=[2000, 4000], loci=10, infoFields='fitness'),
-    controlledRandomMating(
-        ops=[recombinator(rates=0.01)],
+simu = sim.simulator(
+    sim.population(size=[2000, 4000], loci=10, infoFields='fitness'),
+    sim.controlledRandomMating(
+        ops=[sim.recombinator(rates=0.01)],
         loci=5, alleles=1, freqFunc=traj.func())
 )
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq([0.8, 0.2], subPops=0),
-        initByFreq([0.7, 0.3], subPops=1),
-        pyOutput('Sp0: loc2\tloc5\tSp1: loc2\tloc5\n'),
+        sim.initSex(),
+        sim.initByFreq([0.8, 0.2], subPops=0),
+        sim.initByFreq([0.7, 0.3], subPops=1),
+        sim.pyOutput('Sp0: loc2\tloc5\tSp1: loc2\tloc5\n'),
     ],
     postOps = [
-        stat(alleleFreq=[2, 5], vars=['alleleFreq_sp'], step=20),
-        pyEval(r"'%.2f\t%.2f\t%.2f\t%.2f\n' % (subPop[0]['alleleFreq'][2][1],"
+        sim.stat(alleleFreq=[2, 5], vars=['alleleFreq_sp'], step=20),
+        sim.pyEval(r"'%.2f\t%.2f\t%.2f\t%.2f\n' % (subPop[0]['alleleFreq'][2][1],"
             "subPop[0]['alleleFreq'][5][1], subPop[1]['alleleFreq'][2][1],"
             "subPop[1]['alleleFreq'][5][1])", step=20)
     ],
@@ -3506,17 +3765,19 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import trajectory, BackwardTrajectory
 from math import exp
 def Nt(gen, pop=None):
-    'An exponential population growth demographic model.'
+    'An exponential sim.population growth demographic model.'
     return int((10**4) * exp(.00115 * gen))
 
 def fitness(gen, sp):
-    'Constant positive selection pressure.'
+    'sim.Constant positive selection pressure.'
     return [1, 1.01, 1.02]
 
 # simulate a trajectory backward in time, from generation 1000
@@ -3525,18 +3786,18 @@ traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
 traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
     col_loc=['red', 'blue'], plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
-pop = population(size=Nt(0), loci=[1]*2)
-# save trajectory function in the population's local namespace
-# so that the pyEval operator can access it.
+pop = sim.population(size=Nt(0), loci=[1]*2)
+# save trajectory function in the sim.population's local namespace
+# so that the sim.pyEval operator can access it.
 pop.dvars().traj = traj.func()
-simu = simulator(pop, controlledRandomMating(loci=[0, 1], alleles=[1, 1],
+simu = sim.simulator(pop, sim.controlledRandomMating(loci=[0, 1], alleles=[1, 1],
         subPopSize=Nt, freqFunc=traj.func()))
 simu.evolve(
-    initOps = [initSex()],
+    initOps = [sim.initSex()],
     preOps = traj.mutators(loci=[0, 1]),
     postOps = [
-        stat(alleleFreq=[0, 1], begin=500, step=100),
-        pyEval(r"'%4d: %.3f (exp: %.3f), %.3f (exp: %.3f)\n' % (gen, alleleFreq[0][1],"
+        sim.stat(alleleFreq=[0, 1], begin=500, step=100),
+        sim.pyEval(r"'%4d: %.3f (exp: %.3f), %.3f (exp: %.3f)\n' % (gen, alleleFreq[0][1],"
             "traj(gen)[0], alleleFreq[1][1], traj(gen)[1])",
             begin=500, step=100)
     ],
@@ -3548,20 +3809,22 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
 from simuPOP.plotter import varPlotter
-pop = population(size=1000, loci=2)
-simu = simulator(pop, randomMating(ops=recombinator(rates=0.01)), rep=3)
+pop = sim.population(size=1000, loci=2)
+simu = sim.simulator(pop, sim.randomMating(ops=sim.recombinator(rates=0.01)), rep=3)
 simu.evolve(
     initOps = [
-        initSex(),
-        initByValue([1, 2, 2, 1])
+        sim.initSex(),
+        sim.initByValue([1, 2, 2, 1])
     ],
     postOps = [
-        stat(LD=[0, 1]),
+        sim.stat(LD=[0, 1]),
         varPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
             legend=['Replicate %d' % x for x in range(3)],
             ylab='LD between marker 1 and 2',
@@ -3576,18 +3839,20 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
 from simuPOP.plotter import varPlotter
-pop = population(size=1000, loci=1*4)
-simu = simulator(pop, randomMating(), rep=3)
+pop = sim.population(size=1000, loci=1*4)
+simu = sim.simulator(pop, sim.randomMating(), rep=3)
 simu.evolve(
-    initOps = [initSex()] +
-        [initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
+    initOps = [sim.initSex()] +
+        [sim.initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     postOps = [
-        stat(alleleFreq=range(4)),
+        sim.stat(alleleFreq=range(4)),
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
             update=10, saveAs='log/rpy_byRep.png',
             legend=['Locus %d' % x for x in range(4)],
@@ -3604,13 +3869,15 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
 from simuPOP.plotter import varPlotter
-pop = population(size=1000, loci=1*4)
-simu = simulator(pop, randomMating(), rep=3)
+pop = sim.population(size=1000, loci=1*4)
+simu = sim.simulator(pop, sim.randomMating(), rep=3)
 def drawFrame(r, dim=None, **kwargs):
     '''Draw a frame around subplot dim. Parameter r is defined in the rpy
     module and is used for calling R functions. Parameter dim is the dimension
@@ -3622,10 +3889,10 @@ def drawFrame(r, dim=None, **kwargs):
     r.mtext({0:'A', 1:'B', 2:'C', 3:'D'}[dim], adj=1)
 
 simu.evolve(
-    initOps = [initSex()]+
-        [initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
+    initOps = [sim.initSex()]+
+        [sim.initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     postOps = [
-        stat(alleleFreq=range(4)),
+        sim.stat(alleleFreq=range(4)),
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
             update=10, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
@@ -3650,15 +3917,17 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
 from simuPOP.plotter import scatterPlotter
 import random
-pop = population([500], infoFields=['x', 'y', 'anc'])
+pop = sim.population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
-pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
+pop.setVirtualSplitter(sim.infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
 def passInfo(fields):
     'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
@@ -3668,14 +3937,14 @@ def passInfo(fields):
     y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
     return x, y, anc
 
-simu = simulator(pop, randomMating())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
+        sim.initSex(),
         # random geographic location
-        initInfo(random.random, infoFields=['x', 'y']),
+        sim.initInfo(random.random, infoFields=['x', 'y']),
         # anc is 0 or 1
-        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+        sim.initInfo(lambda : random.randint(0, 1), infoFields='anc')
     ],
     postOps = [
         scatterPlotter(['x', 'y'], 
@@ -3689,7 +3958,7 @@ simu.evolve(
             par_mar = [0, 0, 2, 0],
         ),
     ],
-    duringOps = pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+    duringOps = sim.pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
     gen = 5,
 )
 #end_file
@@ -3698,15 +3967,17 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-from simuPOP import *
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
 from simuPOP.plotter import histPlotter, qqPlotter, boxPlotter
 import random
-pop = population([500], infoFields=['x', 'y', 'anc'])
+pop = sim.population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
-pop.setVirtualSplitter(sexSplitter())
+pop.setVirtualSplitter(sim.sexSplitter())
 def passInfo(fields):
     'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
     x1, y1, anc1, x2, y2, anc2 = fields
@@ -3715,14 +3986,14 @@ def passInfo(fields):
     y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
     return x, y, anc
 
-simu = simulator(pop, randomMating())
+simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
+        sim.initSex(),
         # random geographic location
-        initInfo(random.random, infoFields=['x', 'y']),
+        sim.initInfo(random.random, infoFields=['x', 'y']),
         # anc is 0 or 1
-        initInfo(lambda : random.randint(0, 1), infoFields='anc')
+        sim.initInfo(lambda : random.randint(0, 1), infoFields='anc')
     ],
     postOps = [
         histPlotter(infoFields='anc', 
@@ -3742,7 +4013,7 @@ simu.evolve(
             main="!'Boxplots of ancestry values at generation %d' % gen",
         ),
     ],
-    duringOps = pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+    duringOps = sim.pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
     gen = 5,
 )
 #end_file
@@ -3751,8 +4022,10 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import types, simuOpt
 options = [
@@ -3775,10 +4048,10 @@ options = [
     }, 
     {'longarg': 'pop=',
      'default': 'CEU',
-     'label': 'Initial population',
+     'label': 'Initial sim.population',
      'allowedTypes': [types.StringType],
-     'description': '''Use one of the HapMap populations as the initial
-            population for this simulation. You can choose from:
+     'description': '''Use one of the HapMap sim.populations as the initial
+            sim.population for this simulation. You can choose from:
             |YRI: 33 trios from the Yoruba people in Nigeria (Africa)
             |CEU: 30 trios from Utah with European ancestry (European)
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
@@ -3803,7 +4076,7 @@ else:
     sys.argv = ['getParam.py', '--rate=[0.25]', '--rep=5', '--pop="CEU"']
     simuOpt.setOptions(gui=False)
 
-from simuPOP import *
+import simuPOP as sim
 pars.processArgs(sys.argv)
 #end_ignore
 if not pars.getParam():
@@ -3838,17 +4111,19 @@ print par2.rep, par2.pop
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 import math
 def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     '''Return a demographic function 
     model: linear or exponential
-    N0:   Initial population size.
-    N1:   Ending population size.
+    N0:   Initial sim.population size.
+    N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     def ins_expansion(gen, oldsize=[]):
         if gen < G0:
@@ -3868,7 +4143,7 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
 
 # when needed, create a demographic function as follows
 demo_func = demo_model('exponential', 1000, 100000, 500, 500)
-# population size at generation 700
+# sim.population size at generation 700
 print demo_func(700)
 #end_file
 
@@ -3876,20 +4151,22 @@ print demo_func(700)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-class ne(pyOperator):
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+class ne(sim.pyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a population
+    alleles at given loci. The result is saved in a sim.population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
         self.loci = loci
-        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+        sim.pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
     #
     def calcNe(self, pop):
-        Stat(pop, alleleFreq=self.loci)
+        sim.Stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
             freq = pop.dvars().alleleFreq[loc]
@@ -3898,7 +4175,7 @@ class ne(pyOperator):
                 ne[loc] = 0
             else:
                 ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
-        # save the result to the population.
+        # save the result to the sim.population.
         pop.dvars().ne = ne
         return True
 
@@ -3907,8 +4184,8 @@ def Ne(pop, loci):
     ne(loci).apply(pop)
     return pop.dvars().ne
 
-pop = population(100, loci=[10])
-InitByFreq(pop, [.2] * 5)
+pop = sim.population(100, loci=[10])
+sim.InitByFreq(pop, [.2] * 5)
 print Ne(pop, loci=[2, 4])
 #end_file
 
@@ -3916,8 +4193,10 @@ print Ne(pop, loci=[2, 4])
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 
 #begin_ignore
@@ -3925,10 +4204,10 @@ import math
 def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     '''Return a demographic function 
     model: linear or exponential
-    N0:   Initial population size.
-    N1:   Ending population size.
+    N0:   Initial sim.population size.
+    N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
     def ins_expansion(gen, pop=None):
@@ -3948,17 +4227,17 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     elif model == 'exponential':
         return exp_expansion
 
-class ne(pyOperator):
+class ne(sim.pyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a population
+    alleles at given loci. The result is saved in a sim.population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
         self.loci = loci
-        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+        sim.pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
     
     def calcNe(self, pop):
-        Stat(pop, alleleFreq=self.loci)
+        sim.Stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
             freq = pop.dvars().alleleFreq[loc]
@@ -3968,14 +4247,14 @@ class ne(pyOperator):
             else:
                 ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
         
-        # save the result to the population.
+        # save the result to the sim.population.
         pop.dvars().ne = ne
         return True
 
 #end_ignore
 
 def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
-    '''Evolve a population using given demographic model
+    '''Evolve a sim.population using given demographic model
     and observe the evolution of its allelic spectrum.
     model: type of demographic model.
     N0, N1, G0, G1: parameters of demographic model.
@@ -3986,20 +4265,20 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
     k: k for the k-allele model
     '''
     demo_func = demo_model(model, N0, N1, G0, G1)
-    simu = simulator(
-        population(size=demo_func(0), loci=1, infoFields='fitness'),
-        randomMating(subPopSize=demo_func)
+    simu = sim.simulator(
+        sim.population(size=demo_func(0), loci=1, infoFields='fitness'),
+        sim.randomMating(subPopSize=demo_func)
     )
     simu.evolve(
         initOps = [
-            initSex(),
-            initByFreq(loci=0, alleleFreq=spec)
+            sim.initSex(),
+            sim.initByFreq(loci=0, alleleFreq=spec)
         ],
         postOps = [
-            kamMutator(k=k, rates=mu),
-            maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            sim.kamMutator(k=k, rates=mu),
+            sim.maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=[0], step=100),
-            pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
+            sim.pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
                 step=100),
         ],
         gen = G0 + G1
@@ -4012,8 +4291,10 @@ simulate('instant', 1000, 10000, 500, 500, [0.9]+[0.02]*5, 0.01, 1e-4, 200)
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
 #end_ignore
 #!/usr/bin/env python
 #
@@ -4022,33 +4303,33 @@ GetRNG().setSeed(12345)
 #
 '''
 Simulation the evolution of allelic spectra (number and frequencies
-of alleles at a locus), under the influence of population expansion,
+of alleles at a locus), under the influence of sim.population expansion,
 mutation, and natural selection.
 '''
 import simuOpt
 simuOpt.setOptions(quiet=True, alleleType='long')
-from simuPOP import *
+import simuPOP as sim
 import sys, types, os, math
 options = [
     {'longarg': 'demo=',
      'default': 'instant',
      'label': 'Population growth model',
-     'description': 'How does a population grow from N0 to N1.',
+     'description': 'How does a sim.population grow from N0 to N1.',
      'chooseOneOf': ['instant', 'exponential'],
     },
     {'longarg': 'N0=',
      'default': 10000,
-     'label': 'Initial population size',
+     'label': 'Initial sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'description': '''Initial population size. This size will be maintained
+     'description': '''Initial sim.population size. This size will be maintained
                 till the end of burnin stage''',
      'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'N1=',
      'default': 100000,
-     'label': 'Final population size',
+     'label': 'Final sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'description': 'Ending population size (after population expansion)',
+     'description': 'Ending sim.population size (after sim.population expansion)',
      'validate': simuOpt.valueGT(0)
     }, 
     {'longarg': 'G0=',
@@ -4062,7 +4343,7 @@ options = [
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
-     'description': 'Number of geneartions of the population expansion stage',
+     'description': 'Number of geneartions of the sim.population expansion stage',
      'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'spec=',
@@ -4091,9 +4372,9 @@ options = [
     },
     {'longarg': 'k=',
      'default': 200,
-     'label': 'Maximum allelic state',
+     'label': 'sim.Maximum allelic sim.state',
      'allowedTypes': [types.IntType],
-     'description': 'Maximum allelic state for a k-allele mutation model',
+     'description': 'sim.Maximum allelic sim.state for a k-allele mutation model',
      'validate': simuOpt.valueGT(1),
     },
 ]
@@ -4101,10 +4382,10 @@ options = [
 def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     '''Return a demographic function 
     type: linear or exponential
-    N0:   Initial population size.
-    N1:   Ending population size.
+    N0:   Initial sim.population size.
+    N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
     def ins_expansion(gen, pop=None):
@@ -4124,17 +4405,17 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     elif type == 'exponential':
         return exp_expansion
 
-class ne(pyOperator):
+class ne(sim.pyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a population
+    alleles at given loci. The result is saved in a sim.population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
         self.loci = loci
-        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+        sim.pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
     
     def calcNe(self, pop):
-        Stat(pop, alleleFreq=self.loci)
+        sim.Stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
             freq = pop.dvars().alleleFreq[loc][1:]
@@ -4143,12 +4424,12 @@ class ne(pyOperator):
                 ne[loc] = 0
             else:
                 ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
-        # save the result to the population.
+        # save the result to the sim.population.
         pop.dvars().ne = ne
         return True
 
 def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
-    '''Evolve a population using given demographic model
+    '''Evolve a sim.population using given demographic model
     and observe the evolution of its allelic spectrum.
     model: type of demographic model.
     N0, N1, G0, G1: parameters of demographic model.
@@ -4160,20 +4441,20 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
     '''
     demo_func = demo_model(model, N0, N1, G0, G1)
     print demo_func(0)
-    simu = simulator(
-        population(size=demo_func(0), loci=1, infoFields='fitness'),
-        randomMating(subPopSize=demo_func)
+    simu = sim.simulator(
+        sim.population(size=demo_func(0), loci=1, infoFields='fitness'),
+        sim.randomMating(subPopSize=demo_func)
     )
     simu.evolve(
         initOps = [
-            initSex(),
-            initByFreq(loci=0, alleleFreq=spec)
+            sim.initSex(),
+            sim.initByFreq(loci=0, alleleFreq=spec)
         ],
         postOps = [
-            kamMutator(rate=mu, maxAllele=k),
-            maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            sim.kamMutator(rate=mu, maxAllele=k),
+            sim.maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=0, step=100),
-            pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
+            sim.pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
                 step=100),
         ],
         gen = G0 + G1
@@ -4209,23 +4490,25 @@ if os.path.file('log/simuCDCV.py'):
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.randomMating())
 s1 = .1
 s2 = .2
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq(alleleFreq=[.2, .8])
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
     ],
-    preOps = mapSelector(loci=0, fitness={(0,0):(1-s1), (0,1):1, (1,1):(1-s2)}),
+    preOps = sim.mapSelector(loci=0, fitness={(0,0):(1-s1), (0,1):1, (1,1):(1-s2)}),
     postOps = [
-        stat(alleleFreq=0, genoFreq=0),
-        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     gen=300
 )
@@ -4236,23 +4519,25 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
-    randomMating())
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.randomMating())
 s1 = .1
 s2 = .2
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq(alleleFreq=[.2, .8])
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
     ],
-    preOps = maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
+    preOps = sim.maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
     postOps = [
-        stat(alleleFreq=0, genoFreq=0),
-        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     gen = 300)
 #end_file
@@ -4262,22 +4547,24 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=10, ploidy=2, loci=2, 
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=10, ploidy=2, loci=2, 
     infoFields=['fitness', 'spare']),
-    randomMating())
+    sim.randomMating())
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq(alleleFreq=[.2, .8])
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
     ],
-    preOps = [ mlSelector([
-         mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         ], mode = Additive),
+    preOps = [ sim.mlSelector([
+         sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+         ], mode = sim.Additive),
     ],
     gen = 2
 )
@@ -4287,12 +4574,14 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-simu = simulator(
-    population(size=1000, ploidy=2, loci=3, infoFields='fitness'),
-    randomMating()
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=3, infoFields='fitness'),
+    sim.randomMating()
 )
 s1 = .2
 s2 = .3
@@ -4311,13 +4600,13 @@ def sel(arr, gen=0):
 print sel([1, 1])
 simu.evolve(
     initOps = [
-        initSex(),
-        initByFreq(alleleFreq=[.2, .8])
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
     ],
-    preOps = pySelector(loci=[0, 1], func=sel),
+    preOps = sim.pySelector(loci=[0, 1], func=sel),
     postOps = [
-        stat(alleleFreq=0, genoFreq=0),
-        pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
     ],
     gen=100
 )
@@ -4327,33 +4616,37 @@ simu.evolve(
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(size=[2,8], ploidy=2, loci=2 )
-InitByFreq(pop, [.2, .8])
-MapPenetrance(pop, loci=0, 
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2,8], ploidy=2, loci=2 )
+sim.InitByFreq(pop, [.2, .8])
+sim.MapPenetrance(pop, loci=0, 
     penetrance={(0,0):0, (0,1):1, (1,1):1})
-Stat(pop, numOfAffected=1)
+sim.Stat(pop, numOfAffected=1)
 #end_file
 
 #begin_file log/mlPenetrance.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(1000, loci=3)
-InitByFreq(pop, [0.3, 0.7])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=3)
+sim.InitByFreq(pop, [0.3, 0.7])
 pen = []
 for loc in (0, 1, 2):
-    pen.append(maPenetrance(loci=loc, wildtype=[1],
+    pen.append(sim.maPenetrance(loci=loc, wildtype=[1],
         penetrance=[0, 0.3, 0.6] ) )
 
 # the multi-loci penetrance
-MlPenetrance(pop, mode=Multiplicative, peneOps=pen)
-Stat(pop, numOfAffected=True)
+sim.MlPenetrance(pop, mode=sim.Multiplicative, peneOps=pen)
+sim.Stat(pop, numOfAffected=True)
 print pop.dvars().numOfAffected
 #end_file
 
@@ -4361,11 +4654,13 @@ print pop.dvars().numOfAffected
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
-from simuPOP import *
-GetRNG().setSeed(12345)
 #end_ignore
-pop = population(1000, loci=3)
-InitByFreq(pop, [0.3, 0.7])
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=3)
+sim.InitByFreq(pop, [0.3, 0.7])
 def peneFunc(geno):
     p = 1
     for l in range(len(geno)/2):
@@ -4373,8 +4668,8 @@ def peneFunc(geno):
     #
     return p
 
-PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
-Stat(pop, numOfAffected=True)
+sim.PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
+sim.Stat(pop, numOfAffected=True)
 print pop.dvars().numOfAffected
 #
 # You can also define a function, that returns a penetrance
@@ -4386,7 +4681,7 @@ def peneFunc(table):
     return func
 
 # then, given a table, you can do
-PyPenetrance(pop, loci=(0, 1, 2),
+sim.PyPenetrance(pop, loci=(0, 1, 2),
     func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
 #end_file
 
