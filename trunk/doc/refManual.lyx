@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -379,11 +379,12 @@ pedigreeRef
 Virtual splitters
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
+
 
 \backslash
 vspSplitterRef
@@ -391,11 +392,13 @@ vspSplitterRef
 
 \begin_layout Plain Layout
 
+
 \backslash
 sexSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
+
 
 \backslash
 affectionSplitterRef
@@ -403,11 +406,13 @@ affectionSplitterRef
 
 \begin_layout Plain Layout
 
+
 \backslash
 infoSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
+
 
 \backslash
 proportionSplitterRef
@@ -415,11 +420,13 @@ proportionSplitterRef
 
 \begin_layout Plain Layout
 
+
 \backslash
 rangeSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
+
 
 \backslash
 genotypeSplitterRef
@@ -427,11 +434,13 @@ genotypeSplitterRef
 
 \begin_layout Plain Layout
 
+
 \backslash
 combinedSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
+
 
 \backslash
 productSplitterRef
@@ -1057,7 +1066,7 @@ pointMutatorRef
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Derived mutation operators
 \end_layout
 

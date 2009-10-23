@@ -961,39 +961,22 @@ Female
 \end_layout
 
 \begin_layout Standard
-Although the 
-\family typewriter
-import simuPOP
-\family default
- style is recommended, especially for large scripts that import a number
- of modules, all examples demonstrated in this user's guide use the 
-\family typewriter
-import *
-\family default
- style for the sake of brevity.
- If you really dislike the omnipresence of the 
-\family typewriter
-simuPOP
-\family default
- prefix, you could
-\end_layout
-
-\begin_layout Itemize
-Use the 
-\family typewriter
-from simuPOP import *
-\family default
- style but import and refer all other modules by name.
-\end_layout
-
-\begin_layout Itemize
-Use 
+For the sake of brevity, all examples in this user's guide use 
 \family typewriter
 import simuPOP as sim
 \family default
-, and use simuPOP like 
+ as an alternative form of the 
+\family typewriter
+import simuPOP
+\family default
+ style.
+ This saves some keystrokes by referring simuPOP functions as 
 \family typewriter
 sim.population()
+\family default
+ instead of 
+\family typewriter
+simuPOP.population()
 \family default
 .
 \end_layout
@@ -16386,6 +16369,731 @@ lstparams "caption={Tagging that involves other parental information},label={oth
 \end_layout
 
 \begin_layout Section
+Penetrance (under revision)
+\end_layout
+
+\begin_layout Subsection
+Map penetrance model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapPenetrance.log"
+lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-loci penetrance model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlPenetrance.log"
+lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Hybrid penetrance model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyPenetrance.log"
+lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Natural Selection
+\end_layout
+
+\begin_layout Subsection
+Natural selection through the selection of parents
+\end_layout
+
+\begin_layout Standard
+In the simplest scenario, natural selection is implemented in two steps:
+\end_layout
+
+\begin_layout Itemize
+Before mating happens, an operator (called a 
+\series bold
+selector
+\series default
+) goes through a populations and assign each individual a fitness value.
+ The fitness values are stored in an information field called 
+\family typewriter
+fitness
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+When mating happens, parents are chosen with probabilities that are proportional
+ to their fitness values.
+ For example, assuming that a parental population consists of four individuals
+ with fitness values 1, 2, 3, and 4, respectively, the probability that
+ they are picked to produce offspring are 
+\begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
+\end_inset
+
+, 
+\begin_inset Formula $0.2$
+\end_inset
+
+, 
+\begin_inset Formula $0.3$
+\end_inset
+
+, and 
+\begin_inset Formula $0.4$
+\end_inset
+
+ respectively.
+ As you can image, if the offspring population has 10 individuals, the four
+ parents will on average parent 1, 2, 3 and 4 offspring.
+\end_layout
+
+\begin_layout Standard
+Because parents with lower fitness values have less chance to be produce
+ offspring, their genotypes have less chance to be passed to an offspring
+ generation.
+ If the decreased fitness is caused by the presence of certain mutant (e.g.
+ a mutant causing a serious disease), individuals with that mutant will
+ have less change to survive and effecitively reduce or eleminate that mutant
+ from the population.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ gives an example of natural selection.
+ In this example, a 
+\family typewriter
+mapSelector
+\family default
+ is used to explicitly assign fitness value to genotypes at the first locus.
+ The fitness values are 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+0.98
+\family default
+, 
+\family typewriter
+0.97
+\family default
+ for genotypes 
+\family typewriter
+00
+\family default
+, 
+\family typewriter
+01
+\family default
+ and 
+\family typewriter
+11
+\family default
+ respectively.
+ The selector set individual fitness values to information field 
+\family typewriter
+fitness
+\family default
+ before mating happens.
+ The 
+\family typewriter
+randomMating
+\family default
+ mating scheme then selects parents according to parental fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectParents.log"
+lstparams "caption={Natural selection through the selection of parents},label={selectParents}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Natural selection through the selection of offspring *
+\end_layout
+
+\begin_layout Standard
+Natural selection can also be implemented as selection of offspring.
+ Remember that an individual will be discarded if one of the during-mating
+ operators fails (return 
+\family typewriter
+False
+\family default
+), 
+\series bold
+a
+\series default
+ 
+\series bold
+during-mating selector
+\series default
+ 
+\series bold
+discards offspring according to fitness values of offspring
+\series default
+.
+ Instead of relative fitness that will be compared against other individuals
+ during the selection of parents, 
+\series bold
+fitness values of a during-mating selector are considered as absolute fitness
+ which are probabilities to survive
+\series default
+ and have to be between 0 and 1.
+\end_layout
+
+\begin_layout Standard
+A during-mating selector works as follows:
+\end_layout
+
+\begin_layout Enumerate
+During evolution, parents are chosen randomly to produce one or more offspring.
+ (Nothing prevents you from choosing parents according to their fitness
+ values, but it is rarely justifiable to apply natural selection to both
+ parents and offspring.)
+\end_layout
+
+\begin_layout Enumerate
+A selection operator is applied to each offspring during mating and determines
+ his or her fitness value.
+ The fitness value is considered as probability to survive so an offspring
+ will be discarded (operator returns 
+\family typewriter
+False
+\family default
+) if the fitnessvalue is larger than an uniform random number.
+\end_layout
+
+\begin_layout Enumerate
+Repeat steps 1 and 2 until the offspring generation is populated.
+\end_layout
+
+\begin_layout Standard
+Because many offspring will be generated and discarded, especially when
+ offspring fitness values are low, selection through offspring is less efficient
+ than selection through parents.
+ In addition, absolute fitness is usually more difficult to estimate than
+ relative fitness.
+ So, unless there are compelling reasons (e.g.
+ simulating realistic scenarios of survival competition among offspring),
+ selection through parents are recommended.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+ gives an example of natural selection through the selection of offspring.
+ This example looks almost identical to Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ but the underlying selection mechanism is quite different.
+ Note that selection through offspring does not need an information field
+ to hold fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectOffspring.log"
+lstparams "caption={Natural selection through the selection of offspring},label={selectOffspring}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Are two selection scenarios equivalent? **
+\end_layout
+
+\begin_layout Standard
+If you look closely at Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+, you will notice that their results are quite similar.
+ This is actually what you should expect in most cases.
+ Let us look at the theoretical consequence of selection through parents
+ or offspring in a simple case with asexual mating.
+\end_layout
+
+\begin_layout Standard
+Assuming a diallelic marker with three genotypes 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $g_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{aa}$
+\end_inset
+
+, with frequencies 
+\begin_inset Formula $P_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $P_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{aa}$
+\end_inset
+
+, and relative fitness values 
+\begin_inset Formula $w_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $w_{Aa}$
+\end_inset
+
+, and 
+\begin_inset Formula $w_{22}$
+\end_inset
+
+ respectively.
+ If we select through offspring, the proportion of genotype 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+ etc., should be
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+because offspring genotypes are randomly drawn from the parental generation,
+ and each offspring has certain probability to survive.
+\end_layout
+
+\begin_layout Standard
+Now, if we select through parents, the proportion of parents with genotype
+ 
+\begin_inset Formula $AA$
+\end_inset
+
+ will be the number of 
+\begin_inset Formula $AA$
+\end_inset
+
+ individuals times its probability to be chosen: 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
+
+\end_inset
+
+This is, however, exactly 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
+
+\end_inset
+
+which corresponds to the proportion of offspring with such genotype.
+ That is to say, in this simple case, 
+\series bold
+two types of selection scenarios yield identical results
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+These two types of selection scenarios do not have to always yield identical
+ results.
+ Exceptions may be found in cases with more than one offspring or sexual
+ mating with sex-specific survival rate.
+ simuPOP provides both selection implementations and you should choose one
+ of them for your particular simulation.
+\end_layout
+
+\begin_layout Subsection
+Map selector (operator 
+\family typewriter
+mapSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A map selector uses a Python dictionary to provide fitness values for each
+ type of genotype.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mapSelector"
+
+\end_inset
+
+ uses a dictionary with keys 
+\family typewriter
+(0,0)
+\family default
+, 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ to specify fitness values for individuals with these genotypes at locus
+ 0.
+ This example is a typical example of heterozygote advantage.
+ When 
+\begin_inset Formula $w_{11}<w_{12}>w_{22},$
+\end_inset
+
+ the genotype frequencies will go to an equilibrium state.
+ Theoretically, if 
+\begin_inset Formula $s_{1}=w_{12}-w_{11}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}=w_{12}-w_{22}$
+\end_inset
+
+, the stable allele frequency of allele 1 is
+\begin_inset Formula \[
+p=\frac{s_{1}}{s_{1}+s_{2}}\]
+
+\end_inset
+
+which is 
+\begin_inset Formula $.333$
+\end_inset
+
+ in the example (
+\begin_inset Formula $s_{1}=.1$
+\end_inset
+
+, 
+\begin_inset Formula $s_{2}=.2$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapSelector.log"
+lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above example assumes that the fitness value for individuals with genotypes
+ 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,0)
+\family default
+ are the same.
+ This assumption is usually valid but can be vialoated with impriting.
+ In that case, you can specify fitness for both types of genotypes.
+ The underlying mechanism is that the 
+\family typewriter
+mapSelector
+\family default
+ looks up a genotype in the dictionary first directly, and then without
+ phase information if a genotype is not found.
+\end_layout
+
+\begin_layout Standard
+This operator supports haplodiploid populations and sex chromosomes.
+ In these cases, only valid alleles should be listed which can lead to dictionar
+y keys with different lengths.
+ In addition, although less used because of potentially a large number of
+ keys, this operator can act on multiple loci.
+ For example, 
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2)
+\family default
+ and 
+\family typewriter
+(a1,)
+\family default
+ can be used to specify fitness values for female and male individuals in
+ a haplodiploid population, respectively
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(x1,x2)
+\family default
+ and 
+\family typewriter
+(x1,)
+\family default
+ can be used to specify fitness for female and male individuals according
+ to a locus on the X chromosome in a diploid population, respectively.
+ Similarly, keys 
+\family typewriter
+()
+\family default
+ and 
+\family typewriter
+(y,)
+\family default
+ for a locus on chromosome Y.
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2,b1,b2)
+\family default
+ can be used to specify fitness values according to genotype at two loci
+ in a diploid population.
+\end_layout
+
+\begin_layout Subsection
+Multi-allele selector (operator 
+\family typewriter
+maSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A multi-allele selector divides alleles into two groups, wildtype 
+\emph on
+A
+\emph default
+ and mutants 
+\emph on
+a
+\emph default
+, and treat alleles within each group as the same.
+ The fitness model is therefore simplified to three fitness values: fitness
+ for genotype 
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+.
+ The most widely used model treat allele 0 as wildtype and any other alleles
+ as mutants.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelector.log"
+lstparams "caption={A multi-allele selector},label={maSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-loci selector (operator 
+\family typewriter
+mlSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlSelector.log"
+lstparams "caption={A multi-loci selector},label={mlSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A hybrid selector (operator 
+\family typewriter
+pySelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pySelector.log"
+lstparams "caption={A hybrid selector},label={pySelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Natural selection without a selector.
+\end_layout
+
+\begin_layout Subsection
+Selection and penetrance (fitness from affection status)
+\end_layout
+
+\begin_layout Subsection
+Support for virtual subpopulations *
+\end_layout
+
+\begin_layout Standard
+Support for virtual subpopulations allows you to use different selectors
+ for different (virtual) subpopulations.
+ However, because virtual subpopulations may overlap, and they do not have
+ to cover all individuals in a subpopulation, it is important to remember:
+\end_layout
+
+\begin_layout Itemize
+If virtual subpopulations overlap, the fitness value set by the last selector
+ will be used.
+\end_layout
+
+\begin_layout Itemize
+If an individual is not included in any of the virtual subpopulation, its
+ fitness value is undefined.
+ In most cases, these individuals will have zero fitness values which prevent
+ them from producing any offspring.
+\end_layout
+
+\begin_layout Subsection
+Natural selection in a heterogeneous mating scheme **
+\end_layout
+
+\begin_layout Standard
+Multiple mating schemes could be applied to the same subpopulation in a
+ heterogeneous mating scheme (
+\family typewriter
+heteroMating
+\family default
+).
+ These mating schemes may or may not support natural selection, and they
+ may see individuals differently in terms of individual fitness.
+ Parameter 
+\family typewriter
+fitnessField
+\family default
+ of a mating scheme could be used to handle such cases.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+You can turn off the natural selection support of a mating scheme by setting
+ 
+\family typewriter
+fitnessField=''
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+If a mating scheme uses a different set of fitness values, you can add an
+ information field (e.g.
+ 
+\family typewriter
+fitness1
+\family default
+), setting individual fitness to this information field using a selector
+ (with parameter 
+\family typewriter
+infoFields='fitness1'
+\family default
+) and tells a mating scheme to look in this information field for fitness
+ values (using parameter 
+\family typewriter
+fitnessField='fitness1'
+\family default
+).
+\end_layout
+
+\begin_layout Section
 Miscellaneous operators
 \end_layout
 
@@ -17032,699 +17740,6 @@ reference "ticToc"
 LatexCommand lstinputlisting
 filename "log/ticToc.log"
 lstparams "caption={Monitor the performance of operators},label={ticToc}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Selection
-\end_layout
-
-\begin_layout Subsection
-Natural selection through the selection of parents
-\end_layout
-
-\begin_layout Standard
-In the simplest scenario, natural selection is implemented in two steps:
-\end_layout
-
-\begin_layout Itemize
-Before mating happens, an operator (called a 
-\series bold
-selector
-\series default
-) goes through a populations and assign each individual a fitness value.
- The fitness values are stored in an information field called 
-\family typewriter
-fitness
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-When mating happens, parents are chosen with probabilities that are proportional
- to their fitness values.
- For example, assuming that a parental population consists of four individuals
- with fitness values 1, 2, 3, and 4, respectively, the probability that
- they are picked to produce offspring are 
-\begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
-\end_inset
-
-, 
-\begin_inset Formula $0.2$
-\end_inset
-
-, 
-\begin_inset Formula $0.3$
-\end_inset
-
-, and 
-\begin_inset Formula $0.4$
-\end_inset
-
- respectively.
- As you can image, if the offspring population has 10 individuals, the four
- parents will on average parent 1, 2, 3 and 4 offspring.
-\end_layout
-
-\begin_layout Standard
-Because parents with lower fitness values have less chance to be produce
- offspring, their genotypes have less chance to be passed to an offspring
- generation.
- If the decreased fitness is caused by the presence of certain mutant (e.g.
- a mutant causing a serious disease), individuals with that mutant will
- have less change to survive and effecitively reduce or eleminate that mutant
- from the population.
-\end_layout
-
-\begin_layout Standard
-Although the underlying mechanisms are the same, more complicated selection
- schemes could be simulated in simuPOP.
- For example
-\end_layout
-
-\begin_layout Itemize
-Individuals are chosen in their own groups.
- For example, in sexual random mating, relative fitness values of fathers
- and mothers are calculated separately.
-\end_layout
-
-\begin_layout Itemize
-In the diploid case, the same allele can be protective in heterozygotes
- (
-\emph on
-Aa
-\emph default
-) and detrimental in homozygotes (
-\emph on
-aa
-\emph default
-) so a mutant (
-\emph on
-a
-\emph default
-) could be maintained in a population in the form of heterozygotes.
-\end_layout
-
-\begin_layout Itemize
-Individual fitness could be determined by multiple disease predisposing
- loci and their interacting with environmental factors.
-\end_layout
-
-\begin_layout Itemize
-Although individual fitness is usually determined by individual genotype,
- it can be caused purely by environmental factors.
- For example, if geographical distributions of individuals are simulated,
- individuals located in the north may have lower fitness values and produce
- less offspring than individual located in the south.
-\end_layout
-
-\begin_layout Itemize
-Not all mating schemes support natural selection.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- gives an example of natural selection.
- In this example, a 
-\family typewriter
-mapSelector
-\family default
- is used to explicitly assign fitness value to genotypes at the first locus.
- The fitness values are 
-\family typewriter
-1
-\family default
-, 
-\family typewriter
-0.98
-\family default
-, 
-\family typewriter
-0.97
-\family default
- for genotypes 
-\family typewriter
-00
-\family default
-, 
-\family typewriter
-01
-\family default
- and 
-\family typewriter
-11
-\family default
- respectively.
- The selector set individual fitness values to information field 
-\family typewriter
-fitness
-\family default
- before mating happens.
- The 
-\family typewriter
-randomMating
-\family default
- mating scheme then selects parents according to parental fitness values.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/selectParents.log"
-lstparams "caption={Natural selection through the selection of parents},label={selectParents}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Natural selection through the selection of offspring **
-\end_layout
-
-\begin_layout Standard
-Natural selection can also be implemented as selection of offspring.
- Remember that an individual will be discarded if one of the during-mating
- operators fails (return 
-\family typewriter
-False
-\family default
-), 
-\series bold
-a
-\series default
- 
-\series bold
-during-mating selector
-\series default
- 
-\series bold
-discards offspring according to fitness values of offspring
-\series default
-.
- Instead of relative fitness that will be compared against other individuals
- during the selection of parents, 
-\series bold
-fitness values of a during-mating selector are considered as absolute fitness
- which are probabilities to survive
-\series default
- and have to be between 0 and 1.
-\end_layout
-
-\begin_layout Standard
-A during-mating selector works as follows:
-\end_layout
-
-\begin_layout Enumerate
-During evolution, parents are chosen randomly to produce one or more offspring.
- (Nothing prevents you from choosing parents according to their fitness
- values, but it is rarely justifiable to apply natural selection to both
- parents and offspring.)
-\end_layout
-
-\begin_layout Enumerate
-A selection operator is applied to each offspring during mating and determines
- his or her fitness value.
- 
-\end_layout
-
-\begin_layout Enumerate
-The fitness value is considered as probability to survive so an offspring
- will be discarded (operator returns 
-\family typewriter
-False
-\family default
-) if the fitnessvalue is larger than an uniform random number.
-\end_layout
-
-\begin_layout Enumerate
-Repeat steps 1, 2 and 3 until the offspring generation is populated.
-\end_layout
-
-\begin_layout Standard
-Because many offspring will be generated and discarded, especially when
- offspring fitness values are low, selection through offspring is less efficient
- than selection through parents.
- In addition, absolute fitness is usually more difficult to estimate than
- relative fitness.
- So, unless there are compelling reasons (e.g.
- simulating realistic scenarios of survival competition among offspring),
- selection through parents are recommended.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectOffspring"
-
-\end_inset
-
- gives an example of natural selection through the selection of offspring.
- This example looks almost identical to Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- but the underlying selection mechanism is quite different.
- Note that selection through offspring does not need an information field
- to hold fitness values.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/selectOffspring.log"
-lstparams "caption={Natural selection through the selection of offspring},label={selectOffspring}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Are two selection scenarios equivalent? **
-\end_layout
-
-\begin_layout Standard
-If you look closely at Examples 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectOffspring"
-
-\end_inset
-
-, you will notice that their results are quite similar.
- This is actually what you should expect in most cases.
- Let us look at the theoretical consequence of selection through parents
- or offspring in a simple case with asexual mating.
-\end_layout
-
-\begin_layout Standard
-Assuming a diallelic marker with three genotypes 
-\begin_inset Formula $g_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $g_{Aa}$
-\end_inset
-
- and 
-\begin_inset Formula $g_{aa}$
-\end_inset
-
-, with frequencies 
-\begin_inset Formula $P_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $P_{Aa}$
-\end_inset
-
- and 
-\begin_inset Formula $P_{aa}$
-\end_inset
-
-, and relative fitness values 
-\begin_inset Formula $w_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $w_{Aa}$
-\end_inset
-
-, and 
-\begin_inset Formula $w_{22}$
-\end_inset
-
- respectively.
- If we select through offspring, the proportion of genotype 
-\begin_inset Formula $g_{AA}$
-\end_inset
-
- etc., should be
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
-P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-because offspring genotypes are randomly drawn from the parental generation,
- and each offspring has certain probability to survive.
-\end_layout
-
-\begin_layout Standard
-Now, if we select through parents, the proportion of parents with genotype
- 
-\begin_inset Formula $AA$
-\end_inset
-
- will be the number of 
-\begin_inset Formula $AA$
-\end_inset
-
- individuals times its probability to be chosen: 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
-
-\end_inset
-
-This is, however, exactly 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
-
-\end_inset
-
-which corresponds to the proportion of offspring with such genotype.
- That is to say, in this simple case, 
-\series bold
-two types of selection scenarios yield identical results
-\series default
-.
-\end_layout
-
-\begin_layout Standard
-These two types of selection scenarios do not have to always yield identical
- results.
- Exceptions may be found in cases with more than one offspring or sexual
- mating with sex-specific survival rate.
- simuPOP provides both selection implementations and you should choose one
- of them for your particular simulation.
-\end_layout
-
-\begin_layout Subsection
-Map selector
-\end_layout
-
-\begin_layout Standard
-The following operators, when applied, will set a variable 
-\family typewriter
-fitness
-\family default
- and an indicator so that selector-aware mating scheme can select individuals
- according to these values.
- This has two consequences:
-\end_layout
-
-\begin_layout Itemize
-Selector only set information field and mark subpopulations as selection
- ready.
- However, how these information are used to select parents can vary from
- mating scheme to mating scheme.
- As a matter of fact, some mating schemes do not support selection at all.
-\end_layout
-
-\begin_layout Itemize
-Selector has to be applied to the parental generation (e.g.
- used in the 
-\family typewriter
-preOps
-\family default
- parameter of function 
-\family typewriter
-simulator.evolve
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-The example for 
-\family typewriter
-class mapSelector
-\family default
- is a typical example of heterozygote superiority.
- When 
-\begin_inset Formula $w_{11}<w_{12}>w_{22},$
-\end_inset
-
- the genotype frequencies will go to an equilibrium state.
- Theoretically, if 
-\begin_inset Formula $s_{1}=w_{12}-w_{11}$
-\end_inset
-
- and 
-\begin_inset Formula $s_{2}=w_{12}-w_{22}$
-\end_inset
-
-, the stable allele frequency of allele 1 is
-\begin_inset Formula \[
-p=\frac{s_{2}}{s_{1}+s_{2}}\]
-
-\end_inset
-
-Which is 
-\begin_inset Formula $.677$
-\end_inset
-
- in the example (
-\begin_inset Formula $s_{1}=.1$
-\end_inset
-
-, 
-\begin_inset Formula $s_{2}=.2$
-\end_inset
-
-).
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mapSelector.log"
-lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-allele selector (operator 
-\family typewriter
-maOperator
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A multi-allele selector divides alleles into two groups, wildtype 
-\emph on
-A
-\emph default
- and mutants 
-\emph on
-a
-\emph default
-, and treat alleles within each group as the same.
- The fitness model is therefore simplified to three fitness values: fitness
- for genotype 
-\emph on
-AA
-\emph default
-, 
-\emph on
-Aa
-\emph default
- and 
-\emph on
-aa
-\emph default
-.
- The most widely used model treat allele 0 as wildtype and any other alleles
- as mutants.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/maSelector.log"
-lstparams "caption={A multi-allele selector},label={maSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-loci selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mlSelector.log"
-lstparams "caption={A multi-loci selector},label={mlSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-A hybrid selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pySelector.log"
-lstparams "caption={A hybrid selector},label={pySelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Support for virtual subpopulations *
-\end_layout
-
-\begin_layout Standard
-Support for virtual subpopulations allows you to use different selectors
- for different (virtual) subpopulations.
- However, because virtual subpopulations may overlap, and they do not have
- to cover all individuals in a subpopulation, it is important to remember:
-\end_layout
-
-\begin_layout Itemize
-If virtual subpopulations overlap, the fitness value set by the last selector
- will be used.
-\end_layout
-
-\begin_layout Itemize
-If an individual is not included in any of the virtual subpopulation, its
- fitness value is undefined.
- In most cases, these individuals will have zero fitness values which prevent
- them from producing any offspring.
-\end_layout
-
-\begin_layout Subsection
-Natural selection in a heterogeneous mating scheme **
-\end_layout
-
-\begin_layout Standard
-Multiple mating schemes could be applied to the same subpopulation in a
- heterogeneous mating scheme (
-\family typewriter
-heteroMating
-\family default
-).
- These mating schemes may or may not support natural selection, and they
- may see individuals differently in terms of individual fitness.
- Parameter 
-\family typewriter
-fitnessField
-\family default
- of a mating scheme could be used to handle such cases.
- More specifically,
-\end_layout
-
-\begin_layout Itemize
-You can turn off the natural selection support of a mating scheme by setting
- 
-\family typewriter
-fitnessField=''
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-If a mating scheme uses a different set of fitness values, you can add an
- information field (e.g.
- 
-\family typewriter
-fitness1
-\family default
-), setting individual fitness to this information field using a selector
- (with parameter 
-\family typewriter
-infoFields='fitness1'
-\family default
-) and tells a mating scheme to look in this information field for fitness
- values (using parameter 
-\family typewriter
-fitnessField='fitness1'
-\family default
-).
-\end_layout
-
-\begin_layout Section
-Penetrance (under revision)
-\end_layout
-
-\begin_layout Subsection
-Map penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mapPenetrance.log"
-lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-loci penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mlPenetrance.log"
-lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Hybrid penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyPenetrance.log"
-lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
 
 \end_inset
 

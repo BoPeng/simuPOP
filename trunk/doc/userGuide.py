@@ -1702,6 +1702,7 @@ simu.evolve(
 
 
 #begin_file log/cppParentChooser.py
+#expect_error because some system does not have swig or vc to compile
 #begin_ignore
 classFile = open('log/myParentsChooser.h', 'w')
 classFile.write('''#include <stdlib.h>
@@ -1787,7 +1788,19 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 
 # The class myParentsChooser is defined in module myParentsChooser
-from myParentsChooser import myParentsChooser
+try:
+    from myParentsChooser import myParentsChooser
+except ImportError:
+    # if failed to import the C++ version, use a Python version
+    import random
+    class myParentsChooser:
+        def __init__(self, maleIndexes, femaleIndexes):
+	    self.maleIndexes = maleIndexes
+	    self.femaleIndexes = femaleIndexes
+	def chooseParents(self):
+	    return self.maleIndexes[random.randint(0, len(self.maleIndexes)-1)],\
+	        self.femaleIndexes[random.randint(0, len(self.femaleIndexes)-1)]
+
 def parentsChooser(pop, sp):
     'How to call a C++ level parents chooser.'
     # create an object with needed information (such as x, y) ...
@@ -3722,6 +3735,134 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/mapSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.randomMating())
+s1 = .1
+s2 = .2
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
+    ],
+    preOps = sim.mapSelector(loci=0, fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
+    postOps = [
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+    ],
+    gen=301
+)
+
+#end_file
+
+
+#begin_file log/maSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.randomMating())
+s1 = .1
+s2 = .2
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
+    ],
+    preOps = sim.maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
+    postOps = [
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+    ],
+    gen = 300)
+#end_file
+
+
+#begin_file log/mlSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=10, ploidy=2, loci=2, 
+    infoFields=['fitness', 'spare']),
+    sim.randomMating())
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
+    ],
+    preOps = [ sim.mlSelector([
+         sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+         ], mode = sim.Additive),
+    ],
+    gen = 2
+)
+#end_file
+
+#begin_file log/pySelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=2, loci=3, infoFields='fitness'),
+    sim.randomMating()
+)
+s1 = .2
+s2 = .3
+# the second parameter gen can be used for varying selection pressure
+def sel(arr, gen=0):
+  if arr[0] == 1 and arr[1] == 1:
+    return 1 - s1
+  elif arr[0] == 1 and arr[1] == 2:
+    return 1
+  elif arr[0] == 2 and arr[1] == 1:
+    return 1
+  else:
+    return 1 - s2
+
+# test func
+print sel([1, 1])
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.2, .8])
+    ],
+    preOps = sim.pySelector(loci=[0, 1], func=sel),
+    postOps = [
+        sim.stat(alleleFreq=0, genoFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
+    ],
+    gen=100
+)
+#end_file
+
+
 #begin_file log/forwardTrajectory.py
 #begin_ignore
 import simuOpt
@@ -4485,132 +4626,6 @@ if os.path.file('log/simuCDCV.py'):
 #end_ignore
 #end_file
 
-
-#begin_file log/mapSelector.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
-    sim.randomMating())
-s1 = .1
-s2 = .2
-simu.evolve(
-    initOps = [
-        sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
-    ],
-    preOps = sim.mapSelector(loci=0, fitness={(0,0):(1-s1), (0,1):1, (1,1):(1-s2)}),
-    postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
-    ],
-    gen=300
-)
-#end_file
-
-
-#begin_file log/maSelector.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
-    sim.randomMating())
-s1 = .1
-s2 = .2
-simu.evolve(
-    initOps = [
-        sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
-    ],
-    preOps = sim.maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
-    postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
-    ],
-    gen = 300)
-#end_file
-
-
-#begin_file log/mlSelector.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(
-    sim.population(size=10, ploidy=2, loci=2, 
-    infoFields=['fitness', 'spare']),
-    sim.randomMating())
-simu.evolve(
-    initOps = [
-        sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
-    ],
-    preOps = [ sim.mlSelector([
-         sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         ], mode = sim.Additive),
-    ],
-    gen = 2
-)
-#end_file
-
-#begin_file log/pySelector.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=3, infoFields='fitness'),
-    sim.randomMating()
-)
-s1 = .2
-s2 = .3
-# the second parameter gen can be used for varying selection pressure
-def sel(arr, gen=0):
-  if arr[0] == 1 and arr[1] == 1:
-    return 1 - s1
-  elif arr[0] == 1 and arr[1] == 2:
-    return 1
-  elif arr[0] == 2 and arr[1] == 1:
-    return 1
-  else:
-    return 1 - s2
-
-# test func
-print sel([1, 1])
-simu.evolve(
-    initOps = [
-        sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
-    ],
-    preOps = sim.pySelector(loci=[0, 1], func=sel),
-    postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
-    ],
-    gen=100
-)
-#end_file
 
 #begin_file log/mapPenetrance.py
 #begin_ignore
