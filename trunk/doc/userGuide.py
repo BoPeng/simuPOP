@@ -3802,7 +3802,7 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
-    sim.population(size=1000, ploidy=1, loci=[1,1], infoFields='fitness'),
+    sim.population(size=10000, ploidy=1, loci=[1,1], infoFields='fitness'),
     sim.randomSelection())
 simu.evolve(
     initOps = [
@@ -3810,10 +3810,10 @@ simu.evolve(
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
     # fitness values for AB, Ab, aB and ab
-    preOps = sim.maSelector(loci=0, fitness=[1, 1, 1, 0.9]),
+    preOps = sim.maSelector(loci=[0,1], fitness=[1, 1, 1, 0.95]),
     postOps = [
-        sim.stat(haploFreq=[0, 1]),
-        sim.pyEval(r"'%.3f\t%.3f\t%.3f\t%.3f\n' % (haploFreq[(0,1)][(0,0)]"
+        sim.stat(haploFreq=[0, 1], step=25),
+        sim.pyEval(r"'%.3f\t%.3f\t%.3f\t%.3f\n' % (haploFreq[(0,1)][(0,0)],"
 		"haploFreq[(0,1)][(0,1)], haploFreq[(0,1)][(1,0)],"
 		"haploFreq[(0,1)][(1,1)])", step=25)
     ],
