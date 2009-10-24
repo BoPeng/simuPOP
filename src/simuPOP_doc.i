@@ -3622,10 +3622,6 @@ Details:
 
 %feature("docstring") simuPOP::maSelector::maSelector "
 
-Description:
-
-    create a multiple allele selector
-
 Usage:
 
     maSelector(loci, fitness, wildtype=0, begin=0, end=-1, step=1,
@@ -3633,25 +3629,21 @@ Usage:
 
 Details:
 
-    Please refer to baseOperator for other parameter descriptions.
-
-Arguments:
-
-    fitness:        for the single locus case, fitness is an array of
-                    fitness of AA, Aa, aa. A is the wildtype group. In
-                    the case of multiple loci, fitness should be in
-                    the order of AABB, AABb, AAbb, AaBB, AaBb, Aabb,
-                    aaBB, aaBb, aabb.
-    wildtype:       an array of alleles in the wildtype group. Any
-                    other alleles are considered to be diseased
-                    alleles. Default to [0].
-    output:         and other parameters please refer to help
-                    (baseOperator.__init__)
-
-Note:
-
-    * maSelector only works for diploid populations.
-    * wildtype alleles at all loci are the same.
+    Creates a multi-allele selector that groups multiple alleles into
+    a wildtype group (with alleles wildtype, default to [0]), and a
+    non-wildtype group. A list of fitness values is specified through
+    parameter fitness, for genotypes at one or more loci. If we denote
+    wildtype alleles using capital letters A, B ... and non-wildtype
+    alleles using small letters a, b ..., the fitness values should be
+    for
+    *   genotypes A and a for the haploid single-locus case,
+    *   genotypes AB, Ab, aB and bb for haploid two=locus cases,
+    *   genotypes AA, Aa and aa for diploid single-locus cases,
+    *   genotypes AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, and
+    aabb for diploid two-locus cases,
+    *   and in general 2**n for diploid and 3**n for haploid cases if
+    there are n loci. This operator does not support haplodiploid
+    populations and sex chromosomes.
 
 "; 
 
@@ -8235,17 +8227,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selector::applyDuringMating "
-
-Description:
-
-    apply the operator during mating.
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, dad=None, mom=None)
-
-"; 
+%ignore simuPOP::selector::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::selector::description "Obsolete or undocumented function."
 

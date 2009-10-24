@@ -31,6 +31,7 @@ bool selector::apply(population & pop)
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
 	subPopList subPops = applicableSubPops();
+
 	// the usual whole population, easy case.
 	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
@@ -52,6 +53,7 @@ bool selector::apply(population & pop)
 double mapSelector::indFitness(individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
+
 	for (size_t i = 0; i < m_loci.size(); ++i)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
@@ -74,7 +76,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	}
 
 	tupleDict::iterator pos = m_dict.find(alleles);
-	
+
 	if (pos != m_dict.end())
 		return pos->second;
 
@@ -89,9 +91,9 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 			UINT end_idx = 0;
 			for (size_t i = 0; i < m_loci.size(); ++i) {
 				if (chromTypes[i] == ChromosomeY) {
-				       if (ind->sex() == Female)
-					       continue;
-				       else
+					if (ind->sex() == Female)
+						continue;
+					else
 						++end_idx;
 				} else if (chromTypes[i] == ChromosomeX && ind->sex() == Male)
 					++end_idx;
@@ -103,7 +105,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 				}
 				if (ply == 2) {
 					if ((alleles[begin_idx] != key[0] || alleles[end_idx - 1] != key[1]) &&
-						(alleles[begin_idx] != key[1] || alleles[end_idx - 1] != key[0])) {
+					    (alleles[begin_idx] != key[1] || alleles[end_idx - 1] != key[0])) {
 						ok = false;
 						break;
 					}
@@ -144,26 +146,40 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
 
+	DBG_FAILIF((ind->ploidy() == 2 and m_fitness.size() != static_cast<UINT>(pow(3., static_cast<double>(m_loci.size())))) ||
+		(ind->ploidy() == 1 and m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
+		ValueError, "Please specify fitness for each combination of genotype.");
+
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		// get genotype of ind
-		Allele a = ToAllele(ind->allele(*loc, 0));
-		Allele b = ToAllele(ind->allele(*loc, 1));
+		if (ind->ploidy() == 1) {
+			Allele a = ToAllele(ind->allele(*loc));
+			if (singleST)
+				index = index * 2 + (AlleleUnsigned(a) != m_wildtype[0]);
+			else
+				index = index * 2 + (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) == m_wildtype.end());
+		} else if (ind->ploidy() == 2) {
+			// get genotype of ind
+			Allele a = ToAllele(ind->allele(*loc, 0));
+			Allele b = ToAllele(ind->allele(*loc, 1));
 
-		int numWildtype = 0;
+			int numWildtype = 0;
 
-		// count number of wildtype
-		// this improve the performance a little bit
-		if (singleST) {
-			numWildtype = (AlleleUnsigned(a) == m_wildtype[0]) + (AlleleUnsigned(b) == m_wildtype[0]);
+			// count number of wildtype
+			// this improve the performance a little bit
+			if (singleST) {
+				numWildtype = (AlleleUnsigned(a) == m_wildtype[0]) + (AlleleUnsigned(b) == m_wildtype[0]);
+			} else {
+				if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end() )
+					numWildtype++;
+
+				if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end() )
+					numWildtype++;
+			}
+
+			index = index * 3 + 2 - numWildtype;
 		} else {
-			if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end() )
-				numWildtype++;
-
-			if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end() )
-				numWildtype++;
+			DBG_FAILIF(true, ValueError, "The maSelector only supports haploid and diploid populations.");
 		}
-
-		index = index * 3 + 2 - numWildtype;
 	}
 	return m_fitness[index];
 }

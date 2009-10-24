@@ -79,10 +79,10 @@ namespace simuPOP {
  *       react to different fitness schemes when they are used in a
  *       heterogeneous mating scheme.
  *  \li You can apply a selector to the offspring generation using the
- *       \e postOps parameter of \e simulator.evolve, these fitness values will
+ *       \e postOps parameter of \c simulator.evolve, these fitness values will
  *       be used when the offspring generation becomes parental generation in
  *       the next generation.
- *  
+ *
  *  Alternatively, a selector can be used as a during mating operator. In this
  *  case, it caculates fitness value for each offspring which will be treated
  *  as \b absolute fitness, namely the probability for each offspring to
@@ -140,7 +140,7 @@ public:
 	/// set fitness to all individuals. No selection will happen!
 	bool apply(population & pop);
 
-	/// apply the operator during mating.
+	/// CPPONLY
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                       individual * dad = NULL, individual * mom = NULL)
 	{
@@ -175,7 +175,7 @@ public:
 	 *  dictionary \e fitness with genotype at \e loci as keys, and fitness
 	 *  as values. For each individual (parents if this operator is applied
 	 *  before mating, and offspring if this operator is applied during
-	 *  mating), genotypes at \e loci are collected one by one (e.g. 
+	 *  mating), genotypes at \e loci are collected one by one (e.g.
 	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and
 	 *  are looked up in the dictionary. If a genotype cannot be found, it
 	 *  will be looked up again without phase information (e.g.
@@ -185,9 +185,9 @@ public:
 	 *  these cases, only valid genotypes should be used to generator the
 	 *  dictionary keys.
 	 */
-	mapSelector(const uintList & loci, const tupleDict & fitness, 
+	mapSelector(const uintList & loci, const tupleDict & fitness,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-	       	const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(fitness)
@@ -237,20 +237,23 @@ private:
 class maSelector : public selector
 {
 public:
-	/// create a multiple allele selector
-	/**
-	   \param fitness for the single locus case, \c fitness is an array of fitness of AA, Aa, aa.
-	    A is the wildtype group. In the case of multiple loci, fitness should be in the order of
-	    AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
-	   \param wildtype an array of alleles in the wildtype group. Any other alleles are
-	    considered to be diseased alleles. Default to <tt>[0]</tt>.
-	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
-
-	   Please refer to \c baseOperator for other parameter descriptions.
-
-	   \note \li \c maSelector only works for diploid populations.
-	   \li \c wildtype alleles at all loci are the same.
-
+	/** Creates a multi-allele selector that groups multiple alleles into a
+	 *  wildtype group (with alleles \e wildtype, default to \c [0]), and a
+	 *  non-wildtype group. A list of fitness values is specified through
+	 *  parameter \e fitness, for genotypes at one or more \e loci. If we
+	 *  denote wildtype alleles using capital letters \c A, \c B ... and
+	 *  non-wildtype alleles using small letters \c a, \c b ..., the fitness
+	 *  values should be for
+	 *  \li genotypes A and a for the haploid single-locus case,
+	 *  \li genotypes AB, Ab, aB and bb for haploid two=locus cases,
+	 *  \li genotypes AA, Aa and aa for diploid single-locus cases,
+	 *  \li genotypes AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, and aabb
+	 *       for diploid two-locus cases,
+	 *  \li and in general 2**n for diploid and 3**n for haploid cases if there
+	 *       are \c n loci.
+	 *
+	 *  This operator does not support haplodiploid populations and sex
+	 *  chromosomes.
 	 */
 	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
 		int begin = 0, int end = -1, int step = 1,
@@ -259,10 +262,6 @@ public:
 		selector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
-		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
-															 static_cast<double>(m_loci.size()))),
-			ValueError, "Please specify fitness for each combination of genotype.");
-
 		DBG_WARNING(m_wildtype.empty(), "No wild type allele is defined.");
 	};
 
@@ -299,6 +298,7 @@ private:
 	///
 	vectoru m_wildtype;
 };
+
 
 /// selection according to genotypes at multiple loci in a multiplicative model
 /**
