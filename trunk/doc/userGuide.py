@@ -3745,7 +3745,7 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.population(size=1000, loci=1, infoFields='fitness'),
     sim.randomMating())
 s1 = .1
 s2 = .2
@@ -3756,8 +3756,8 @@ simu.evolve(
     ],
     preOps = sim.mapSelector(loci=0, fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
     postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+        sim.stat(alleleFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][0]", step=100)
     ],
     gen=301
 )
@@ -3775,23 +3775,51 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=1, infoFields='fitness'),
+    sim.population(size=1000, loci=1, infoFields='fitness'),
     sim.randomMating())
 s1 = .1
 s2 = .2
 simu.evolve(
     initOps = [
         sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
+        sim.initByFreq(alleleFreq=[.2] * 5)
     ],
     preOps = sim.maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
     postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
+        sim.stat(alleleFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][0]", step=100)
     ],
-    gen = 300)
+    gen = 301)
 #end_file
 
+#begin_file log/maSelectorHaploid.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, ploidy=1, loci=[1,1], infoFields='fitness'),
+    sim.randomSelection())
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.5, .5])
+    ],
+    # fitness values for AB, Ab, aB and ab
+    preOps = sim.maSelector(loci=0, fitness=[1, 1, 1, 0.9]),
+    postOps = [
+        sim.stat(haploFreq=[0, 1]),
+        sim.pyEval(r"'%.3f\t%.3f\t%.3f\t%.3f\n' % (haploFreq[(0,1)][(0,0)]"
+		"haploFreq[(0,1)][(0,1)], haploFreq[(0,1)][(1,0)],"
+		"haploFreq[(0,1)][(1,1)])", step=25)
+    ],
+    gen = 100
+)
+#end_file
 
 #begin_file log/mlSelector.py
 #begin_ignore
