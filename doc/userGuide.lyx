@@ -16820,14 +16820,14 @@ reference "mapSelector"
 \begin_inset Formula $s_{2}=w_{12}-w_{22}$
 \end_inset
 
-, the stable allele frequency of allele 1 is
+, the stable allele frequency of allele 0 is
 \begin_inset Formula \[
-p=\frac{s_{1}}{s_{1}+s_{2}}\]
+p=\frac{s_{2}}{s_{1}+s_{2}}\]
 
 \end_inset
 
 which is 
-\begin_inset Formula $.333$
+\begin_inset Formula $\frac{2}{3}$
 \end_inset
 
  in the example (
@@ -16945,8 +16945,23 @@ A
 a
 \emph default
 , and treat alleles within each group as the same.
- The fitness model is therefore simplified to three fitness values: fitness
- for genotype 
+ The fitness model is therefore simplified to
+\end_layout
+
+\begin_layout Itemize
+Two fitness values for genotype 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $a$
+\end_inset
+
+ in the haploid case
+\end_layout
+
+\begin_layout Itemize
+Three fitness values for genotype 
 \emph on
 AA
 \emph default
@@ -16958,9 +16973,30 @@ Aa
 \emph on
 aa
 \emph default
-.
- The most widely used model treat allele 0 as wildtype and any other alleles
- as mutants.
+ in the diploid single locus case.
+ Genotype Aa and aA are assumed to have the same impact on fitness.
+\end_layout
+
+\begin_layout Standard
+The default wildtype group contains allele 0 so the two allele groups are
+ zero and non-zero alleles.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "maSelector"
+
+\end_inset
+
+ demonstrates the use of this operator.
+ This example is identical to Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mapSelector"
+
+\end_inset
+
+ except that there are five alleles at locus 0 and alleles 1, 2, 3, 4 are
+ treated as a single non-widetype group.
 \end_layout
 
 \begin_layout Standard
@@ -16968,6 +17004,109 @@ aa
 LatexCommand lstinputlisting
 filename "log/maSelector.log"
 lstparams "caption={A multi-allele selector},label={maSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+maSelector
+\family default
+ also supports multiple loci by specifying fitness values for all combination
+ of genotype at specified loci.
+ In the case of two loci, this operator requires
+\end_layout
+
+\begin_layout Itemize
+Four fitness values for genotype 
+\family typewriter
+AB
+\family default
+, 
+\family typewriter
+Ab
+\family default
+, 
+\family typewriter
+aB
+\family default
+ and 
+\family typewriter
+ab
+\family default
+ in the haploid case,
+\end_layout
+
+\begin_layout Itemize
+Nine fitness values for genotype 
+\family typewriter
+AABB
+\family default
+, 
+\family typewriter
+AABb
+\family default
+, 
+\family typewriter
+AAbb
+\family default
+, 
+\family typewriter
+AaBB
+\family default
+, 
+\family typewriter
+AaBb
+\family default
+, 
+\family typewriter
+Aabb
+\family default
+, 
+\family typewriter
+aaBB
+\family default
+, 
+\family typewriter
+aaBb
+\family default
+, and 
+\family typewriter
+aabb
+\family default
+ in the haploid case.
+\end_layout
+
+\begin_layout Standard
+In general, 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ values are needed for haploid populations and 
+\begin_inset Formula $3^{n}$
+\end_inset
+
+ values are needed for diploid populations where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of loci.
+ This operator does not yet support haplodiploid populations and sex chromosomes.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "maSelectorHaploid"
+
+\end_inset
+
+ demonstrates the use of a multi-locus model in a haploid population.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelectorHaploid.log"
+lstparams "caption={A multi-locus multi-allele selection model in a haploid population},label={maSelectorHaploid}"
 
 \end_inset
 
@@ -17013,11 +17152,11 @@ lstparams "caption={A hybrid selector},label={pySelector}"
 \end_layout
 
 \begin_layout Subsection
-Natural selection without a selector.
+Natural selection without a selector
 \end_layout
 
 \begin_layout Subsection
-Selection and penetrance (fitness from affection status)
+Individual fitness affected by affection status and information fields
 \end_layout
 
 \begin_layout Subsection
