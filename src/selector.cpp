@@ -146,8 +146,8 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
 
-	DBG_FAILIF((ind->ploidy() == 2 and m_fitness.size() != static_cast<UINT>(pow(3., static_cast<double>(m_loci.size())))) ||
-		(ind->ploidy() == 1 and m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
+	DBG_FAILIF((ind->ploidy() == 2 && m_fitness.size() != static_cast<UINT>(pow(3., static_cast<double>(m_loci.size())))) ||
+		(ind->ploidy() == 1 && m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
 		ValueError, "Please specify fitness for each combination of genotype.");
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
