@@ -204,7 +204,7 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
-		return 1 - fit;
+		return fit < 1 ? 1 - fit : 0;
 	}
 	// this is the case for none.
 	return 1.0;
