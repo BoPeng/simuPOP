@@ -238,17 +238,17 @@ class maSelector : public selector
 {
 public:
 	/** Creates a multi-allele selector that groups multiple alleles into a
-	 *  wildtype group (with alleles \e wildtype, default to \c [0]), and a
-	 *  non-wildtype group. A list of fitness values is specified through
+	 *  wildtype group (with alleles \e wildtype, default to <tt>[0]</tt>), and
+	 *  a non-wildtype group. A list of fitness values is specified through
 	 *  parameter \e fitness, for genotypes at one or more \e loci. If we
 	 *  denote wildtype alleles using capital letters \c A, \c B ... and
 	 *  non-wildtype alleles using small letters \c a, \c b ..., the fitness
 	 *  values should be for
-	 *  \li genotypes A and a for the haploid single-locus case,
-	 *  \li genotypes AB, Ab, aB and bb for haploid two=locus cases,
-	 *  \li genotypes AA, Aa and aa for diploid single-locus cases,
-	 *  \li genotypes AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, and aabb
-	 *       for diploid two-locus cases,
+	 *  \li genotypes \c A and \c a for the haploid single-locus case,
+	 *  \li genotypes \c AB, \c Ab, \c aB and \c bb for haploid two=locus cases,
+	 *  \li genotypes \c AA, \c Aa and \c aa for diploid single-locus cases,
+	 *  \li genotypes \c AABB, \c AABb, \c AAbb, \c AaBB, \c AaBb, \c Aabb,
+	 *       \c aaBB, \c aaBb, and \c aabb for diploid two-locus cases,
 	 *  \li and in general 2**n for diploid and 3**n for haploid cases if there
 	 *       are \c n loci.
 	 *
@@ -300,10 +300,16 @@ private:
 };
 
 
-/// selection according to genotypes at multiple loci in a multiplicative model
-/**
-   This selector is a 'multiple-locus model' selector. The selector takes a vector of
-   selectors (can not be another \c mlSelector) and evaluate the fitness of an
+/** This selector is created by a list of selectors. When it is applied to an
+ *  individual, it applies these selectors to the individual, obtain a list of
+ *  fitness values, and compute a combined fitness value from them. Additive, 
+ *  multiplicative, and a heterogeneour multi-locus model are supported.
+ */
+class mlSelector : public selector
+{
+public:
+	/** Create a multiple-locus selector. The selector takes a vector of
+     *  selectors and evaluate the fitness of an
    individual as the product or sum of individual fitness values. The mode is
    determined by parameter \c mode, which takes one of the following values
    \li \c Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$, where \f$ f_{i} \f$
@@ -311,14 +317,6 @@ private:
    \li \c Additive: the fitness is calculated as
    \f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right) \f$.
    \f$ f \f$ will be set to \c 0 when \f$ f<0 \f$.
-
-   <funcForm>MlSelect</funcForm>
- */
-class mlSelector : public selector
-{
-public:
-	/// create a multiple-locus selector
-	/**
 	   \param selectors a list of selectors
 
 	   Please refer to \c mapSelector for other parameter descriptions.
@@ -377,7 +375,7 @@ private:
    of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
    More specifically, \c func can be
    \li <tt>func(geno, gen)</tt> if \c infoFields has length 0 or 1.
-   \li <tt>func(geno, gen, fields)</tt> when \c infoFields has more than 1 fields.
+   \li <tt>func(geno, fields, gen)</tt> when \c infoFields has more than 1 fields.
     Values of fields 1, 2, ... will be passed.
    Both \c geno and \c fields should be a list.
 
