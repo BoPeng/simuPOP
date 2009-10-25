@@ -3831,20 +3831,27 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
-    sim.population(size=10, ploidy=2, loci=2, 
-    infoFields=['fitness', 'spare']),
-    sim.randomMating())
+    sim.population(size=10000, loci=2, infoFields='fitness'),
+    sim.randomMating(), rep=3)
 simu.evolve(
     initOps = [
         sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
+        sim.initByFreq(alleleFreq=[.5, .5])
     ],
-    preOps = [ sim.mlSelector([
-         sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-         ], mode = sim.Additive),
+    preOps = [
+	sim.mlSelector([
+            sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+            sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
+            ], mode = sim.Additive, reps=0),
+        sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}, reps=1),
+        sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}, reps=2)
     ],
-    gen = 2
+    postOps = [
+	 sim.stat(alleleFreq=[0,1]),
+	 sim.pyEval(r"'REP %d:\t%.3f\t%.3f\t' % (rep, alleleFreq[0][1], alleleFreq[1][1])"),
+	 sim.pyOutput('\n', reps=-1),
+    ],
+    gen = 5
 )
 #end_file
 
@@ -3854,39 +3861,81 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
+import random
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
-    sim.population(size=1000, ploidy=2, loci=3, infoFields='fitness'),
+    sim.population(size=2000, loci=[1]*2, infoFields=['fitness', 'smoking']),
     sim.randomMating()
 )
-s1 = .2
-s2 = .3
+s1 = .02
+s2 = .03
 # the second parameter gen can be used for varying selection pressure
-def sel(arr, gen=0):
-  if arr[0] == 1 and arr[1] == 1:
-    return 1 - s1
-  elif arr[0] == 1 and arr[1] == 2:
-    return 1
-  elif arr[0] == 2 and arr[1] == 1:
-    return 1
-  else:
-    return 1 - s2
+def sel(arr, smoking, gen=0):
+    #     BB  Bb   bb
+    # AA  1   1    1
+    # Aa  1   1-s1 1-s2
+    # aa  1   1    1-s2
+    #
+    # arr is (A1 A2 B1 B2)
+    if arr[0] + arr[1] == 1 and arr[2] + arr[3] == 1:
+        v = 1 - s1  # case of AaBb
+    elif arr[2] + arr[3] == 2:
+	v = 1 - s2  # case of ??bb
+    else:                
+        v = 1       # other cases
+    if smoking[0]:
+	return v * 0.9
+    else:
+	return v
 
-# test func
-print sel([1, 1])
 simu.evolve(
     initOps = [
         sim.initSex(),
-        sim.initByFreq(alleleFreq=[.2, .8])
+        sim.initByFreq(alleleFreq=[.5, .5])
     ],
-    preOps = sim.pySelector(loci=[0, 1], func=sel),
+    preOps = sim.pySelector(loci=[0, 1], func=sel, infoFields='smoking'),
     postOps = [
-        sim.stat(alleleFreq=0, genoFreq=0),
-        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
+	# set smoking status randomly
+	sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
+        sim.stat(alleleFreq=[0, 1]),
+        sim.pyEval(r"'%.4f\t%.4f\n' % (alleleFreq[0][1], alleleFreq[1][1])", step=50)
     ],
-    gen=100
+    gen=151
+)
+#end_file
+
+
+#begin_file log/peneSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=2000, loci=1, infoFields='fitness'),
+    sim.randomMating()
+)
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.5, .5])
+    ],
+    preOps = [
+	sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.2]),
+	sim.stat(numOfAffected=True, step=25),
+	sim.pyEval(r"'Affected: %d\t' % numOfAffected", step=50),
+	sim.infoExec('fitness = not ind.affected()', exposeInd='ind')
+    ],
+    postOps = [
+        sim.stat(alleleFreq=0),
+        sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=50)
+    ],
+    gen=151
 )
 #end_file
 

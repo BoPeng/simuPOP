@@ -17114,11 +17114,101 @@ lstparams "caption={A multi-locus multi-allele selection model in a haploid popu
 \end_layout
 
 \begin_layout Subsection
-Multi-loci selector (operator 
+Multi-locus selection models (operator 
 \family typewriter
 mlSelector
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+Although an individual's fitness can be affected by several factors, each
+ of which can be modeled individually, 
+\series bold
+only one fitness value is used to determine a person's ability to pass all
+ these factors to his or her offspring
+\series default
+.
+ Although in theory we sometimes assume independent evolution of disease
+ predisposing loci (mostly for mathematical reasons), in practise we have
+ to use a multi-locus selection model to combine single-locus models.
+\end_layout
+
+\begin_layout Standard
+This multi-loci selector applies several selectors to each individual and
+ computes an overall fitness value from the fitness values provided by these
+ selectors.
+ Although this selector is designed to obtain multi-loci fitness values
+ from several single-locus fitness models, any selector, including those
+ obtain their fitness values from multiple disease predisposing loci, can
+ be used in this selector.
+ This selector uses parameter 
+\family typewriter
+mode
+\family default
+ to control how individual fitness values are combined.
+ More specifically, if 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+ are fitness values obtained from individual selectors, this selector returns
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Pi_{i}f_{i}$
+\end_inset
+
+ if 
+\family typewriter
+mode=Multiplicative
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1-\sum_{i}\left(1-f_{i}\right)$
+\end_inset
+
+ if 
+\family typewriter
+mode=Additive
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1-\Pi_{i}\left(1-f_{i}\right)$
+\end_inset
+
+ if 
+\family typewriter
+mode=Heterogeneity
+\end_layout
+
+\begin_layout Standard
+0 will be returned if the returned fitness value is less than 0.
+\end_layout
+
+\begin_layout Standard
+This operator simply combines individual fitness values and it is your responsib
+ility to apply and interpret these models.
+ For example, if relative fitness values are greater than one, the heterogeneity
+ model hardly makes sense.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mlSelector"
+
+\end_inset
+
+ demonstrates the use of this operator using an additive multi-locus model
+ over an additive and a recessive single-locus model at two diesease predisposin
+g loci.
+ For comparison, we simulate two additional replicates with selection only
+ applying to one of the two loci.
+ It would be interesting to see if these two loci evolve more or less independen
+tly by comparing allele freqency trajectories of these two replicates to
+ those in the first replicate.
 \end_layout
 
 \begin_layout Standard
@@ -17141,6 +17231,114 @@ pySelector
 \end_layout
 
 \begin_layout Standard
+When your selection model involves multiple interacting genetic and environmenta
+l factors, it might be easier to calculate a fitness value explicitly using
+ a Python function.
+ A hybrid selector can be used for this purpose.
+ If your selection model depends solely on genotype, you can define a function
+ such as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fitness_func(genotype, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate fitness according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and use this function in an operator 
+\family typewriter
+pySelector(func=fitness_func, loci=loci)
+\family default
+.
+ If your selection model depends on genotype as well as individual fitness,
+ you can define a function in the form of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fitness_func(genotype, fields, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate fitness according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    # and values at specified informaton fields.
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and use this function in an operator 
+\family typewriter
+pySelector(func=fitness_func, loci=loci, infoFields=fields)
+\family default
+.
+ When a 
+\family typewriter
+pySelector
+\family default
+ is used to calculate fitness for an individual (parents if applied pre-mating,
+ offspring if applied during-mating), it will collect his or her genotype
+ at specified loci, and optionally values at specified information fields
+ to a user-specified Python function, and take its return value as fitness.
+ Generation number is also passed to make it easy to implement time-dependent
+ selection pressures.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pySelector"
+
+\end_inset
+
+ demonstrates how to use a 
+\family typewriter
+pySelector
+\family default
+ to specify fitness values according to a fitness table and the smoking
+ status of each individual.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pySelector.log"
@@ -17153,6 +17351,37 @@ lstparams "caption={A hybrid selector},label={pySelector}"
 
 \begin_layout Subsection
 Natural selection without a selector
+\end_layout
+
+\begin_layout Standard
+Because If you know how selection works in simuPOP, you can define a function
+ 
+\family typewriter
+fitness(pop)
+\family default
+ and assign fitness values to all individuals in a 
+\family typewriter
+pyOperator(func=fitness)
+\family default
+ and use it before mating.
+\end_layout
+
+\begin_layout Itemize
+Define a function 
+\family typewriter
+fitness(ind)
+\family default
+ to calculate offspring fitness value and reject him or her if this fitness
+ value is greater than a random number.
+ Use this function in 
+\family typewriter
+pyOpeartor(func
+\family default
+=
+\family typewriter
+fitness, offspringOnly=True
+\family default
+) during mating.
 \end_layout
 
 \begin_layout Subsection
