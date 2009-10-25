@@ -17354,8 +17354,13 @@ Natural selection without a selector
 \end_layout
 
 \begin_layout Standard
-Because If you know how selection works in simuPOP, you can define a function
- 
+If you know how natural selection works in simuPOP, you do not have to use
+ a selector to perform natural selection in simuPOP.
+ All you need to do is
+\end_layout
+
+\begin_layout Itemize
+Set can define a function 
 \family typewriter
 fitness(pop)
 \family default

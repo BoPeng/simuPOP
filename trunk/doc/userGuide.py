@@ -3872,7 +3872,7 @@ simu = sim.simulator(
 s1 = .02
 s2 = .03
 # the second parameter gen can be used for varying selection pressure
-def sel(arr, smoking, gen=0):
+def sel(arr, smoking, gen):
     #     BB  Bb   bb
     # AA  1   1    1
     # Aa  1   1-s1 1-s2
@@ -3895,7 +3895,7 @@ simu.evolve(
         sim.initSex(),
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
-    preOps = sim.pySelector(loci=[0, 1], func=sel, infoFields='smoking'),
+    preOps = sim.pySelector(loci=[0, 1], func=sel, infoFields=['fitness', 'smoking']),
     postOps = [
 	# set smoking status randomly
 	sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
