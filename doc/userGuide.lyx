@@ -21964,11 +21964,65 @@ simuCDCV(model='instant', N0=10000, N1=10000, G0=500, G1=500,
 \end_layout
 
 \begin_layout Chapter
-Advanced applications
+Advanced topics *
 \end_layout
 
 \begin_layout Section
-Overlapping generations
+Age structured populations with overlapping generations *
+\end_layout
+
+\begin_layout Standard
+Age is an important factor in many applications because it is related to
+ many genetic (most obviously mating) and environmental factors that influence
+ the evolution of a population.
+ The evolution of age structured populations will lead to overlapping generation
+s because parents can co-exist with their offspring in such a population.
+ Although simuPOP is based on a discrete generation model, it can be used
+ to simulate age structured populations.
+\end_layout
+
+\begin_layout Standard
+To evolve an age structured population, you will need to
+\end_layout
+
+\begin_layout Itemize
+Define an information field 
+\family typewriter
+age
+\family default
+ and use it to store age of all individuals.
+ Age is usally assigned randomly at the beginning of a simulation.
+\end_layout
+
+\begin_layout Itemize
+Define a virtual splitter that splits the parental population into several
+ virtual subpopulation.
+ The most important VSP consists of mating individuals (e.g.
+ individuals with age between 20 and 40).
+ Advanced features of virtual splitters can be used to define complex VSPs
+ such as males between age 20 - 40 and females between age 15-30 (use a
+ 
+\family typewriter
+productSplitter
+\family default
+ to split subpopulations by sex and age, and then a 
+\family typewriter
+combinedSplitter
+\family default
+ to join several smaller VSPs together).
+\end_layout
+
+\begin_layout Itemize
+Use a heterogeneous mating scheme that clones most individuals to the next
+ generation (year) and produce offspring from the mating VSP.
+\end_layout
+
+\begin_layout Standard
+Example 
+\end_layout
+
+\begin_layout Section
+Pedigree Sampling
 \end_layout
 
 \begin_layout Standard
