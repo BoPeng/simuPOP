@@ -1030,7 +1030,8 @@ public:
 		Decrement = 103,
 		MultipliedBy = 104,
 		SetSex = 105,
-		SetAffection = 106,
+		SetAffected = 106,
+		SetUnaffected = 107,
 	};
 
 public:

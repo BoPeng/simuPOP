@@ -3927,13 +3927,46 @@ simu.evolve(
     ],
     preOps = [
         sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.2]),
-        sim.stat(numOfAffected=True, step=25),
-        sim.pyEval(r"'Affected: %d\t' % numOfAffected", step=50),
+        sim.stat(numOfAffected=True, step=25, vars='propOfAffected'),
+        sim.pyEval(r"'Percent of affected: %.3f\t' % propOfAffected", step=50),
         sim.infoExec('fitness = not ind.affected()', exposeInd='ind')
     ],
     postOps = [
         sim.stat(alleleFreq=0),
         sim.pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=50)
+    ],
+    gen=151
+)
+#end_file
+
+
+#begin_file log/vspSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[5000, 5000], loci=1, infoFields='fitness')
+pop.setVirtualSplitter(sim.sexSplitter())
+simu = sim.simulator(pop, sim.randomMating())
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.5, .5])
+    ],
+    preOps = [
+        sim.maSelector(loci=0, fitness=[1, 1, 0.98], subPops=[(0,0), (1,1)]),
+        sim.maSelector(loci=0, fitness=[1, 1, 1], subPops=[(0,1), (1,0)]),
+    ],
+    postOps = [
+        sim.stat(alleleFreq=[0], subPops=[(0,0), (0,1), (1,0), (1,1)],
+            vars='alleleFreq_sp', step=50),
+        sim.pyEval(r"'%.4f\t%.4f\t%.4f\t%.4f\n' % "
+            "tuple([subPop[x]['alleleFreq'][0][1] for x in ((0,0),(0,1),(1,0),(1,1))])",
+            step=50)
     ],
     gen=151
 )

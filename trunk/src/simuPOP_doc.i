@@ -4357,9 +4357,8 @@ Details:
 
 Usage:
 
-    mlSelector(selectors, mode=Multiplicative, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
+    mlSelector(ops, mode=Multiplicative, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
@@ -7200,6 +7199,14 @@ Details:
     loci, optional values at specified information fields (parameter
     paramFields), and a generation number to a user-defined function
     func. The return value will be treated as individual fitness.
+
+"; 
+
+%feature("docstring") simuPOP::pySelector::~pySelector "
+
+Usage:
+
+    x.~pySelector()
 
 "; 
 
