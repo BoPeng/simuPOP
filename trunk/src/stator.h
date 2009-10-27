@@ -312,7 +312,7 @@ public:
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: infoEval(string(), stmts, usePopVars, exposeInd, output, begin, end, step, at, reps, subPops, infoFields),
-		m_simpleStmt(stmts)
+		m_simpleStmt(stmts, exposeInd)
 	{
 	}
 

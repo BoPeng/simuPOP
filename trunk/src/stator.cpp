@@ -210,6 +210,12 @@ bool infoExec::apply(population & pop)
 			case simpleStmt::MultipliedBy:
 				ind->setInfo(ind->info(oVarIdx) * oValue, oVarIdx);
 				break;
+			case simpleStmt::SetSex:
+				ind->setInfo(ind->sex(), oVarIdx);
+				break;
+			case simpleStmt::SetAffection:
+				ind->setInfo(ind->affected(), oVarIdx);
+				break;
 			default:
 				throw RuntimeError("Incorrect operation type");
 			}

@@ -1766,7 +1766,7 @@ vectorf Expression::valueAsArray()
 }
 
 
-simpleStmt::simpleStmt(const string & stmt) : m_var(""),
+simpleStmt::simpleStmt(const string & stmt, const string & indVar) : m_var(""),
 	m_operation(NoOperation), m_value(0)
 {
 	const regex assign("\\s*([\\d\\w]+)\\s*=\\s*([-]*[1-9\\.]+)\\s*");
@@ -1777,7 +1777,9 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 	const regex decrement2("\\s*([\\d\\w]+)\\s*=\\s*\\1\\s*-\\s*([-]*[1-9\\.]+)\\s*");
 	const regex multiplied1("\\s*([\\d\\w]+)\\s*\\*=\\s*([-]*[1-9\\.]+)\\s*");
 	const regex multiplied2("\\s*([\\d\\w]+)\\s*\\=\\s*\\1\\s*\\*\\s*([-]*[1-9\\.]+)\\s*");
-	const regex multiplied3("\\s*([\\d\\w]+)\\s*\\=\\s*\\s*([-]*[1-9\\.]+)\\s*\\*\\s*\\1\\s*");
+	const regex multiplied3("\\s*([\\d\\w]+)\\s*\\=\\s*([-]*[1-9\\.]+)\\s*\\*\\s*\\1\\s*");
+	const regex setSex("\\s*([\\d\\w]+)\\s*\\=\\s*([\\w]+).sex\\s*[(]\\s*[)]\\s*");
+	const regex setAffection("\\s*([\\d\\w]+)\\s*\\=\\s*([\\w]+).affected\\s*[(]\\s*[)]\\s*");
 
 	cmatch matches;
 
@@ -1795,15 +1797,25 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 	         regex_match(stmt.c_str(), matches, multiplied2) ||
 	         regex_match(stmt.c_str(), matches, multiplied3))
 		m_operation = MultipliedBy;
-	else
+	else if (regex_match(stmt.c_str(), matches, setSex)) {
+		string name = string(matches[2].first, matches[2].second);
+		if (name == indVar)
+			m_operation = SetSex;
+	} else if (regex_match(stmt.c_str(), matches, setAffection)) {
+		string name = string(matches[2].first, matches[2].second);
+		if (name == indVar)
+			m_operation = SetAffection;
+	} else
 		return;
 
 	m_var = string(matches[1].first, matches[1].second);
-	try {
-		m_value = boost::lexical_cast<double>(string(matches[2].first, matches[2].second));
-	} catch (...) {
-		m_operation = NoOperation;
-		return;
+	if (m_operation != SetSex && m_operation != SetAffection) {
+		try {
+			m_value = boost::lexical_cast<double>(string(matches[2].first, matches[2].second));
+		} catch (...) {
+			m_operation = NoOperation;
+			return;
+		}
 	}
 	DBG_DO(DBG_DEVEL, cerr << "Match statement with name " << m_var
 		                   << " and value " << m_value << " with operation " << m_operation << endl);

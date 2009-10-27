@@ -472,11 +472,11 @@ class TestSelector(unittest.TestCase):
         p = .2/ (.1+.2)
         # gen may not be used.
         def sel(arr, gen=0):
-            if arr == [0, 0]:
+            if arr == (0, 0):
                 return 1 - s1
-            elif arr == [0, 1]:
+            elif arr == (0, 1):
                 return 1
-            elif arr == [1, 0]:
+            elif arr == (1, 0):
                 return 1
             else:
                 return 1 - s2
@@ -493,13 +493,15 @@ class TestSelector(unittest.TestCase):
         #        s2 = w12 - w22
         #    p_ = s2/ (s1+s2)
         simu.evolve(
-            preOps = pySelector(loci=[0], func=sel),
+            initOps = [
+                initSex(),
+                initByFreq(alleleFreq=[.5,.5])],
+            preOps = pySelector(loci=0, func=sel),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -513,20 +515,20 @@ class TestSelector(unittest.TestCase):
         # gen may not be used.
         def sel(arr, gen):
             if gen > 50:
-                if arr == [0, 0]:
+                if arr == (0, 0):
                     return 1 - s1
-                elif arr == [0, 1]:
+                elif arr == (0, 1):
                     return 1
-                elif arr == [1, 0]:
+                elif arr == (1, 0):
                     return 1
                 else:
                     return 1 - s2
             else:
-                if arr == [0, 0]:
+                if arr == (0, 0):
                     return 1 - s1/2.
-                elif arr == [0, 1]:
+                elif arr == (0, 1):
                     return 1
-                elif arr == [1, 0]:
+                elif arr == (1, 0):
                     return 1
                 else:
                     return 1 - s2/2.
@@ -543,10 +545,12 @@ class TestSelector(unittest.TestCase):
         #        s2 = w12 - w22
         #    p_ = s2/ (s1+s2)
         simu.evolve(
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps = [
+                initSex(),
+                initByFreq(alleleFreq=[.5,.5])],
             preOps = pySelector(loci=[0], func=sel),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                stat(alleleFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],

@@ -213,37 +213,56 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 
 double pySelector::indFitness(individual * ind, ULONG gen)
 {
-	if (m_len == 0) {
-		m_len = m_loci.size() * ind->ploidy();
-		m_alleles.resize(m_len);
-		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
-	}
+	vectoru chromTypes;
 
-	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-		SystemError,
-		"Length of m_len is wrong. Have you changed pop type?");
+	for (size_t i = 0; i < m_loci.size(); ++i)
+		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
-	UINT pEnd = ind->ploidy();
-	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
-		for (UINT p = 0; p < pEnd; ++p)
-			m_alleles[j++] = ToAllele(ind->allele(m_loci[i], p));
+	size_t ply = ind->ploidy();
+	if (ind->isHaplodiploid() && ind->sex() == Male)
+		ply = 1;
 
-	if (infoSize() > 1) {
-		if (m_info.size() + 1 != infoSize()) {
-			m_info.resize(infoSize() - 1);
-			m_infoArray = Double_Vec_As_NumArray(m_info.begin(), m_info.end());
+	vectori alleles;
+	alleles.reserve(ply * m_loci.size());
+
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		for (size_t p = 0; p < ply; ++p) {
+			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+				continue;
+			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
+			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+				continue;
+			alleles.push_back(ind->allele(m_loci[idx], p));
 		}
-		// assign information fields from individusl
-		for (size_t i = 1; i < infoSize(); ++i)
-			m_info[i - 1] = ind->info(infoField(i));
 	}
 
+	vectorf info(m_paramFields.size());
+	for (size_t i = 0; i < m_paramFields.size(); ++i)
+		info[i] = ind->info(m_paramFields[i]);
 
-	if (infoSize() <= 1)
-		return m_func(PyObj_As_Double, "(Oi)", m_numArray, gen);
+	//
+	if (m_genotype == NULL || static_cast<UINT>(PySequence_Size(m_genotype)) != alleles.size()) {
+		Py_XDECREF(m_genotype);
+		m_genotype = PyTuple_New(alleles.size());
+	}
+	if (!info.empty() && (m_info == NULL || static_cast<UINT>(PySequence_Size(m_info)) != info.size())) {
+		Py_XDECREF(m_info);
+		m_info = PyTuple_New(info.size());
+	}
+	// set value
+	for (size_t i = 0; i < alleles.size(); ++i)
+		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
+	for (size_t i = 0; i < info.size(); ++i)
+		PyTuple_SetItem(m_info, i, PyInt_FromLong(alleles[i]));
+
+    double fitness;
+	if (info.empty())
+		fitness = m_func(PyObj_As_Double, "(Oi)", m_genotype, gen);
 	else
-		return m_func(PyObj_As_Double, "(OOi)", m_numArray, m_infoArray, gen);
-	return 0.;
+		fitness = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
+
+    DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " fitness " << fitness << endl);
+	return fitness;
 }
 
 
