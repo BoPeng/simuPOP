@@ -4813,3 +4813,72 @@ if os.path.file('log/simuCDCV.py'):
 #end_file
 
 
+
+#begin_file log/ageStructured.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import random
+N = 10000
+pop = sim.population(10000, loci=4, infoFields='age')
+pop.setSplitter(sim.infoSplitter(cutoff=[20, 50, 75]))
+
+def demoModel(gen, pop):
+    '''A demographic model that keep a constant supply of new individuals'''
+    # number of individuals that will die
+    Stat(pop, popSize=True, subPops=[(0,3)])
+    # individuals that will be kept, plus some new guys.
+    return pop.popSize() - pop.dvars().popSize + N / 75
+
+def pene(geno, age, gen):
+    'Define an age-dependent penetrance function'
+    # the probability of getting disease increases with age
+    return (0., 0.01*age[0], 0.01*age[0])[sum(geno)]
+
+def outputStat(pop):
+    'Calculate and output statistics'
+    sim.Stat(pop, popSize=True, numOfAffected=True,
+        subPos=[(0,0), (0,1), (0,2), (0,3)],
+        vars=['popSize_sp', 'propOfAffected_sp'])
+    print 'Prevalence of disease in three age groups:'
+    for sp in range(3):
+        print '%s: %.3f (size %d)' % (pop.subPopName((0,sp)), pop.dvars((0,sp)).propOfAffected,
+                pop.dvars((0,sp)).popSize),
+    print
+    return True
+
+simu = sim.simulator(pop,
+    sim.heteroMating([
+        # all individuals with age < 75 will be kept. Note that
+        # cloneMating will keep individual sex, affection status and all
+        # information fields (by default).
+        sim.cloneMating(subPops=[(0,0), (0,1), (0,2)], weight=-1),
+        # only individuals with age between 20 and 50 will mate and produce
+        # offspring. The age of offspring will be zero.
+        sim.randomMating(subPops=[(0,1)]),
+    ], subPopSize=demoModel)
+)
+
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        # random assign age
+        sim.initInfo(lambda: random.randint(0, 75), infoFields='age')
+        # random genotype
+        
+    ],
+    # increase the age of everyone by 1 before mating.
+    preOps = sim.infoExec('age += 1'),
+    # number of individuals?
+    postOps = [
+        sim.pyPenetrance(func=pene, paramFields='age'),
+        simu.pyOperator(func=outputStat)
+    ],
+    gen = 10
+)     
+#end_file
