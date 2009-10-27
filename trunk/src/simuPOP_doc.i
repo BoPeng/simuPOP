@@ -301,63 +301,50 @@ Usage:
 
 %feature("docstring") simuPOP::basePenetrance "
 
-Description:
-
-    Base class of all penetrance operators.
-
 Details:
 
-    Penetrance is the probability that one will have the disease when
-    he has certain genotype(s). An individual will be randomly marked
-    as affected/unaffected according to his/her penetrance value. For
-    example, an individual will have probability 0.8 to be affected if
-    the penetrance is 0.8.
-    Penetrance can be applied at any stage (default to DuringMating).
-    When a penetrance operator is applied, it calculates the
-    penetrance value of each offspring and assigns affected status
-    accordingly. Penetrance can also be used pre- or post mating. In
-    these cases, the affected status will be set to all individuals
-    according to their penetrance values.
-    Penetrance values are usually not saved. If you would like to know
-    the penetrance value, you need to
-    *   use addInfoField('penetrance') to the population to analyze.
-    (Or use infoFields parameter of the population constructor), and
-    *   use e.g., mlPenetrance(...., infoFields=['penetrance']) to add
-    the penetrance field to the penetrance operator you use. You may
-    choose a name other than 'penetrance' as long as the field names
-    for the operator and population match. Penetrance functions can be
-    applied to the current, all, or certain number of ancestral
-    generations. This is controlled by the ancestralGen parameter,
-    which is default to -1 (all available ancestral generations). You
-    can set it to 0 if you only need affection status for the current
-    generation, or specify a number n for the number of ancestral
-    generations (n + 1 total generations) to process. Note that the
-    ancestralGen parameter is ignored if the penetrance operator is
-    used as a during mating operator.
+    A penetrance model models the probability that an individual has a
+    certain disease provided that he or she has certain genetic
+    (genotype) and environmental (information field) riske factors. A
+    penetrance operator calculates this probability according to
+    provided information and set his or her affection status randomly.
+    For example, an individual will have probability 0.8 to be
+    affected if the penetrance is 0.8. This class is the base class to
+    all penetrance operators and defines a common interface for all
+    penetrance operators.  A penetrance operator can be applied at any
+    stage of an evolutionary cycle. If it is applied before or after
+    mating, it will set affection status of all parents and offspring,
+    respectively. If it is applied during mating, it will set the
+    affection status of each offspring.  By default, a penetrance
+    operator assigns affection status of individuals but does not save
+    the actual penetrance value. However, if an information field is
+    specified, penetrance values will be saved to this field for
+    future analysis.  When a penetrance operator is applied to a
+    population, it is only applied to the current generation. You can,
+    however, use parameter ancGen=-1 to set affection status for all
+    ancestral generations, or a generation index to apply to only
+    ancestral generation younger than ancGen. Note that this parameter
+    is ignored if the operator is applied during mating.
 
 "; 
 
 %feature("docstring") simuPOP::basePenetrance::basePenetrance "
 
-Description:
-
-    create a penetrance operator
-
 Usage:
 
-    basePenetrance(ancestralGen=-1, begin=0, end=-1, step=1, at=[],
+    basePenetrance(ancGen=0, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, infoFields=[])
 
-Arguments:
+Details:
 
-    ancestralGen:   if this parameter is set to be 0, apply penetrance
-                    to the current generation; if -1, apply to all
-                    generations; otherwise, apply to the specified
-                    numbers of ancestral generations.
-    stage:          specify the stage this operator will be applied.
-                    Default to DuringMating.
-    infoFields:     If one field is specified, it will be used to
-                    store penetrance values.
+    Create a base penetrance operator. If ancGen=0 (default), only the
+    current generation will be applied. If ancGen=-1, affection status
+    of all ancestral generations will be set. If a positive number is
+    given, ancestral generations with index <= ancGen will be applied.
+    A penetrance operator can be applied to specified (virtual)
+    subpopulations (parameter subPops) and replicates (parameter
+    reps). If an informatio field is given, penetrance value will be
+    stored in this information field of each individual.
 
 "; 
 
@@ -385,7 +372,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::basePenetrance::penet(individual *);
+%ignore simuPOP::basePenetrance::penet(individual *, ULONG gen);
 
 %feature("docstring") simuPOP::basePenetrance::apply "
 
@@ -403,6 +390,132 @@ Usage:
 %ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::basePenetrance::description "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::baseSelector "
+
+Details:
+
+    This class is the base class to all selectors, namely operators
+    that perform natural selection. It defines a common interface for
+    all selectors.  A selector can be applied before mating or during
+    mating. If a selector is applied to one or more (virtual)
+    subpopulations of a parental population before mating, it sets
+    individual fitness values to all involved parents to an
+    information field (default to fitness). When a mating scheme that
+    supports natural selection is applied to the parental population,
+    it will select parents with probabilities that are proportional to
+    individual fitness stored in an information field (default to
+    fitness). Individual fitness is considered relative fitness and
+    can be any non-negative number. This simple process has some
+    implications that can lead to advanced usages of natural selection
+    in simuPOP:
+    *   It is up to the mating scheme how to handle individual
+    fitness. Some mating schemes do not support natural selection at
+    all.
+    *   A mating scheme performs natural selection according to
+    fitness values stored in an information field. It does not care
+    how these values are set. For example, fitness values can be
+    inherited from a parent using a tagging operator, or set directly
+    using a Python operator.
+    *   A mating scheme can treat any information field as fitness
+    field. If an specified information field does not exist, or if all
+    individuals have the same fitness values (e.g. 0), the mating
+    scheme selects parents randomly.
+    *   Multiple selectors can be applied to the same parental
+    generation. Individual fitness is determined by the last fitness
+    value it is assigned.
+    *   A selection operator can be applied to virtual subpopulations
+    and set fitness values only to part of the individuals.
+    *   Individuals with zero fitness in a subpopulation with anyone
+    having a positive fitness value will not be selected to produce
+    offspring. This can sometimes lead to unexpected behaviors. For
+    example, if you only assign fitness value to part of the
+    individuals in a subpopulation, the rest of them will be
+    effectively discarded. If you migrate individuals with valid
+    fitness values to a subpopulation with all individuals having zero
+    fitness, the migrants will be the only mating parents.
+    *   It is possible to assign multiple fitness values to different
+    information fields so that different homogeneous mating schemes
+    can react to different fitness schemes when they are used in a
+    heterogeneous mating scheme.
+    *   You can apply a selector to the offspring generation using the
+    postOps parameter of simulator.evolve, these fitness values will
+    be used when the offspring generation becomes parental generation
+    in the next generation. Alternatively, a selector can be used as a
+    during mating operator. In this case, it caculates fitness value
+    for each offspring which will be treated as absolute fitness,
+    namely the probability for each offspring to survive. This process
+    uses the fact that an individual will be discarded when any of the
+    during mating operators returns False. It is important to remember
+    that:
+    *   Individual fitness needs to be between 0 and 1 in this case.
+    *   This method applies natural selection to offspring instead of
+    parents. These two implementation can be identical or different
+    depending on the mating scheme used.
+    *   Seleting offspring is less efficient than the selecting
+    parents, especially when fitness values are low. It is worth
+    noting that a selector used as a during-mating operator does not
+    support parameter subPops. If you need to apply different
+    selection scheme to different virtual subpopulations, you can use
+    different selectors in a heterogeneous mating scheme.
+
+"; 
+
+%feature("docstring") simuPOP::baseSelector::baseSelector "
+
+Usage:
+
+    baseSelector(begin=0, end=-1, step=1, at=[], reps=AllAvail,
+      subPops=AllAvail, infoFields=AllAvail)
+
+Details:
+
+    Create a base selector object. This operator should not be created
+    directly.
+
+"; 
+
+%feature("docstring") simuPOP::baseSelector::~baseSelector "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~baseSelector()
+
+"; 
+
+%feature("docstring") simuPOP::baseSelector::clone "
+
+Description:
+
+    deep copy of a selector
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::baseSelector::indFitness(individual *, ULONG gen);
+
+%feature("docstring") simuPOP::baseSelector::apply "
+
+Description:
+
+    set fitness to all individuals. No selection will happen!
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::baseSelector::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::baseSelector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BernulliTrials "
 
@@ -3251,50 +3364,43 @@ Function form:
 
     MaPenetrance
 
-Description:
-
-    multiple allele penetrance operator
-
 Details:
 
-    This is called 'multiple-allele' penetrance. It separates alleles
-    into two groups: wildtype and diseased alleles. Wildtype alleles
-    are specified by parameter wildtype and any other alleles are
-    considered as diseased alleles. maPenetrance accepts an array of
-    penetrance for AA, Aa, aa in the single-locus case, and a longer
-    table for the multi-locus case. Penetrance is then set for any
-    given genotype.
+    This operator is called a 'multi-allele' penetrance operator
+    because it groups multiple alleles into two groups: wildtype and
+    non-wildtype alleles. Alleles in each allele group are assumed to
+    have the same effect on individual penetrance. If we denote all
+    wildtype alleles as A, and all non-wildtype alleles a, this
+    operator assign individual penetrance according to genotype AA,
+    Aa, aa in the diploid case, and A and a in the haploid case.
 
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::maPenetrance "
 
-Description:
-
-    create a multiple allele penetrance operator (penetrance according
-    to diseased or wildtype alleles)
-
 Usage:
 
-    maPenetrance(loci, penetrance, wildtype=AllAvail, ancGen=-1,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+    maPenetrance(loci, penetrance, wildtype=0, ancGen=0, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
-Arguments:
+Details:
 
-    locus:          the locus index. The genotype of this locus will
-                    be used to determine penetrance.
-    loci:           the locus indexes. The genotypes of these loci
-                    will be examed.
-    penet:          an array of penetrance values of AA, Aa, aa. A is
-                    the wild type group. In the case of multiple loci,
-                    penetrance should be in the order of AABB, AABb,
-                    AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
-    wildtype:       an array of alleles in the wildtype group. Any
-                    other alleles will be considered as in the
-                    diseased allele group.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    Creates a multi-allele penetrance operator that groups multiple
+    alleles into a wildtype group (with alleles wildtype, default to
+    [0]), and a non-wildtype group. A list of penetrance values is
+    specified through parameter penetrance, for genotypes at one or
+    more loci. If we denote wildtype alleles using capital letters A,
+    B ... and non-wildtype alleles using small letters a, b ..., the
+    penetrance values should be for
+    *   genotypes A and a for the haploid single-locus case,
+    *   genotypes AB, Ab, aB and bb for haploid two=locus cases,
+    *   genotypes AA, Aa and aa for diploid single-locus cases,
+    *   genotypes AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, and
+    aabb for diploid two-locus cases,
+    *   and in general 2**n for diploid and 3**n for haploid cases if
+    there are n loci. This operator does not support haplodiploid
+    populations and sex chromosomes.
 
 "; 
 
@@ -3318,7 +3424,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::maPenetrance::penet(individual *ind);
+%ignore simuPOP::maPenetrance::penet(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::maPenetrance::description "Obsolete or undocumented function."
 
@@ -3328,40 +3434,35 @@ Function form:
 
     MapPenetrance
 
-Description:
-
-    penetrance according to the genotype at one locus
+Applicability: all ploidy
 
 Details:
 
-    Assign penetrance using a table with keys 'X-Y' where X and Y are
-    allele numbers.
+    This penetrance operator assigns individual affection status using
+    a user-specified penetrance dictionary.
 
 "; 
 
 %feature("docstring") simuPOP::mapPenetrance::mapPenetrance "
 
-Description:
-
-    create a map penetrance operator
-
 Usage:
 
-    mapPenetrance(loci, penetrance, phase=False, ancGen=-1, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    mapPenetrance(loci, penetrance, ancGen=0, begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
-Arguments:
+Details:
 
-    locus:          the locus index. Shortcut to loci=[locus]
-    loci:           the locus indexes. The genotypes of these loci
-                    will be used to determine penetrance.
-    penet:          a dictionary of penetrance. The genotype must be
-                    in the form of 'a-b' for a single locus.
-    phase:          if True, a/b and b/a will have different
-                    penetrance values. Default to False.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+    Create a penetrance operator that get penetrance value from a
+    dictionary penetrance with genotype at loci as keys, and
+    penetrance as values. For each individual, genotypes at loci are
+    collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1...
+    for a diploid individual) and are looked up in the dictionary. If
+    a genotype cannot be found, it will be looked up again without
+    phase information (e.g. (1,0) will match key (0,1)). If the
+    genotype still can not be found, a ValueError will be raised. This
+    operator supports sex chromosomes and haplodiploid populations. In
+    these cases, only valid genotypes should be used to generator the
+    dictionary keys.
 
 "; 
 
@@ -3385,7 +3486,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mapPenetrance::penet(individual *ind);
+%ignore simuPOP::mapPenetrance::penet(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::mapPenetrance::description "Obsolete or undocumented function."
 
@@ -4190,44 +4291,41 @@ Function form:
 
     MlPenetrance
 
-Description:
-
-    penetrance according to the genotype according to a multiple loci
-    multiplicative model
-
 Details:
 
-    This is the 'multiple-locus' penetrnace calculator. It accepts a
-    list of penetrances and combine them according to the mode
-    parameter, which takes one of the following values:
-    *   PEN_Multiplicative: the penetrance is calculated as $ f=\\prod
-    f_{i} $.
-    *   PEN_Additive: the penetrance is calculated as $
-    f=\\min\\left(1,\\sum f_{i}\\right) $. $ f $ will be set to 1 when $
-    f<0 $. In this case, $ s_{i} $ are added, not $ f_{i} $ directly.
-    *   PEN_Heterogeneity: the penetrance is calculated as $
-    f=1-\\prod\\left(1-f_{i}\\right) $. Please refer to Neil Risch (1990)
-    for detailed information about these models.
+    This penetrance operator is created by a list of penetrance
+    operators. When it is applied to an individual, it applies these
+    penetrance operators to the individual, obtain a list of
+    penetrance values, and compute a combined penetrance value from
+    them and assign affection status accordingly. Additive,
+    multiplicative, and a heterogeneour multi-locus model are
+    supported. Please refer to Neil Rish (1989) \"Linkage Strategies
+    for Genetically Complex Traits\" for some analysis of these models.
 
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance::mlPenetrance "
 
-Description:
-
-    create a multiple locus penetrance operator
-
 Usage:
 
-    mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1, begin=0,
+    mlPenetrance(ops, mode=Multiplicative, ancGen=0, begin=0,
       end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
-Arguments:
+Details:
 
-    peneOps:        a list of penetrance operators
-    mode:           can be one of PEN_Multiplicative, PEN_Additive,
-                    and PEN_Heterogeneity
+    Create a multiple-locus penetrance operator from a list penetrance
+    operator ops. When this operator is applied to an individual
+    (parents when used before mating and offspring when used during
+    mating), it applies these operators to the individual and obtain a
+    list of (usually single-locus) penetrance values. These penetrance
+    values are combined to a single penetrance value using
+    *   Prod(f_i), namely the product of individual penetrance if mode
+    = Multiplicative,
+    *   sum(f_i) if mode = Additive, and
+    *   1-Prod(1 - f_i) if mode = Heterogeneity 0 or 1 will be
+    returned if the combined penetrance value is less than zero or
+    greater than 1.
 
 "; 
 
@@ -4251,7 +4349,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mlPenetrance::penet(individual *ind);
+%ignore simuPOP::mlPenetrance::penet(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::mlPenetrance::description "Obsolete or undocumented function."
 
@@ -6981,52 +7079,41 @@ Function form:
 
     PyPenetrance
 
-Description:
-
-    assign penetrance values by calling a user provided function
-
 Details:
 
-    For each individual, the penetrance is determined by a user-
-    defined penetrance function func. This function takes genetypes at
-    specified loci, and optionally values of specified information
-    fields. The return value is considered as the penetrance for this
-    individual.  More specifically, func can be
-    *   func(geno) if infoFields has length 0 or 1.
-    *   func(geno, fields) when infoFields has more than 1 fields.
-    Both parameters should be an list.
+    This penetrance operator assigns penetrance values by calling a
+    user provided function. It accepts a list of loci and a Python
+    function func. For each individual, this operator passes the
+    genotypes at these loci, and a generation number to this function.
+    The return value is treated as the penetrance value. Optionally,
+    several information fields can be given to parameter paramFields.
+    In this case, the user-defined Python function should accept a
+    second parameter that is a list of values at these information
+    fields. In another word, a user-defined function in the form of
+    *   func(geno, gen) is needed if paramFields is empty, or
+    *   func(geno, fields, gen) is needed if paramFields has some
+    information fields. If you need to pass sex or affection status to
+    this function, you should define an information field (e.g. sex)
+    and sync individual property with this field using operator
+    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
 
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance::pyPenetrance "
 
-Description:
-
-    provide locus and penetrance for 11, 12, 13 (in the form of
-    dictionary)
-
 Usage:
 
-    pyPenetrance(loci, func, ancGen=-1, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+    pyPenetrance(loci, func, ancGen=0, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, paramFields=[],
+      infoFields=[])
 
-Arguments:
+Details:
 
-    loci:           the genotypes at these loci will be passed to the
-                    provided Python function in the form of loc1_1,
-                    loc1_2, loc2_1, loc2_2, ... if the individuals are
-                    diploid.
-    func:           a user-defined Python function that accepts an
-                    array of genotypes at specified loci and return a
-                    penetrance value. The return value should be
-                    between 0 and 1.
-    infoFields:     if specified, the first field should be the
-                    information field to save calculated penetrance
-                    value. The values of the rest of the information
-                    fields (if available) will also be passed to the
-                    user defined penetrance function.
-    output:         and other parameters please refer to help
-                    (baseOperator.__init__)
+    Create a Python hybrid penetrance operator that passes genotype at
+    specified loci, optional values at specified information fields
+    (parameter paramFields), and a generation number to a user-defined
+    function func. The return value will be treated as individual
+    penetrance.
 
 "; 
 
@@ -7056,7 +7143,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyPenetrance::penet(individual *ind);
+%ignore simuPOP::pyPenetrance::penet(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::pyPenetrance::description "Obsolete or undocumented function."
 
@@ -8081,132 +8168,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::savePopulation::description "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::selector "
-
-Details:
-
-    This class is the base class to all selectors, namely operators
-    that perform natural selection. It defines a common interface for
-    all selectors.  A selector can be applied before mating or during
-    mating. If a selector is applied to one or more (virtual)
-    subpopulations of a parental population before mating, it sets
-    individual fitness values to all involved parents to an
-    information field (default to fitness). When a mating scheme that
-    supports natural selection is applied to the parental population,
-    it will select parents with probabilities that are proportional to
-    individual fitness stored in an information field (default to
-    fitness). Individual fitness is considered relative fitness and
-    can be any non-negative number. This simple process has some
-    implications that can lead to advanced usages of natural selection
-    in simuPOP:
-    *   It is up to the mating scheme how to handle individual
-    fitness. Some mating schemes do not support natural selection at
-    all.
-    *   A mating scheme performs natural selection according to
-    fitness values stored in an information field. It does not care
-    how these values are set. For example, fitness values can be
-    inherited from a parent using a tagging operator, or set directly
-    using a Python operator.
-    *   A mating scheme can treat any information field as fitness
-    field. If an specified information field does not exist, or if all
-    individuals have the same fitness values (e.g. 0), the mating
-    scheme selects parents randomly.
-    *   Multiple selectors can be applied to the same parental
-    generation. Individual fitness is determined by the last fitness
-    value it is assigned.
-    *   A selection operator can be applied to virtual subpopulations
-    and set fitness values only to part of the individuals.
-    *   Individuals with zero fitness in a subpopulation with anyone
-    having a positive fitness value will not be selected to produce
-    offspring. This can sometimes lead to unexpected behaviors. For
-    example, if you only assign fitness value to part of the
-    individuals in a subpopulation, the rest of them will be
-    effectively discarded. If you migrate individuals with valid
-    fitness values to a subpopulation with all individuals having zero
-    fitness, the migrants will be the only mating parents.
-    *   It is possible to assign multiple fitness values to different
-    information fields so that different homogeneous mating schemes
-    can react to different fitness schemes when they are used in a
-    heterogeneous mating scheme.
-    *   You can apply a selector to the offspring generation using the
-    postOps parameter of simulator.evolve, these fitness values will
-    be used when the offspring generation becomes parental generation
-    in the next generation. Alternatively, a selector can be used as a
-    during mating operator. In this case, it caculates fitness value
-    for each offspring which will be treated as absolute fitness,
-    namely the probability for each offspring to survive. This process
-    uses the fact that an individual will be discarded when any of the
-    during mating operators returns False. It is important to remember
-    that:
-    *   Individual fitness needs to be between 0 and 1 in this case.
-    *   This method applies natural selection to offspring instead of
-    parents. These two implementation can be identical or different
-    depending on the mating scheme used.
-    *   Seleting offspring is less efficient than the selecting
-    parents, especially when fitness values are low. It is worth
-    noting that a selector used as a during-mating operator does not
-    support parameter subPops. If you need to apply different
-    selection scheme to different virtual subpopulations, you can use
-    different selectors in a heterogeneous mating scheme.
-
-"; 
-
-%feature("docstring") simuPOP::selector::selector "
-
-Usage:
-
-    selector(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
-
-Details:
-
-    Create a base selector object. This operator should not be created
-    directly.
-
-"; 
-
-%feature("docstring") simuPOP::selector::~selector "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~selector()
-
-"; 
-
-%feature("docstring") simuPOP::selector::clone "
-
-Description:
-
-    deep copy of a selector
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::selector::indFitness(individual *, ULONG gen);
-
-%feature("docstring") simuPOP::selector::apply "
-
-Description:
-
-    set fitness to all individuals. No selection will happen!
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::selector::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::selector::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::selfingGenoTransmitter "
 

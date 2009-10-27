@@ -101,13 +101,13 @@ namespace simuPOP {
  *  scheme to different virtual subpopulations, you can use different selectors
  *  in a heterogeneous mating scheme.
  */
-class selector : public baseOperator
+class baseSelector : public baseOperator
 {
 public:
 	/** Create a base selector object. This operator should not be created
 	 *  directly.
 	 */
-	selector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	baseSelector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness"))
 		: baseOperator("", begin, end, step, at, reps, subPops, infoFields)
@@ -116,7 +116,7 @@ public:
 
 
 	/// destructor
-	virtual ~selector()
+	virtual ~baseSelector()
 	{
 	}
 
@@ -124,7 +124,7 @@ public:
 	/// deep copy of a selector
 	virtual baseOperator * clone() const
 	{
-		return new selector(*this);
+		return new baseSelector(*this);
 	}
 
 
@@ -168,7 +168,7 @@ public:
  *  number of homologous chromosomes.
  *  <applicability>all ploidy</applicability>
  */
-class mapSelector : public selector
+class mapSelector : public baseSelector
 {
 public:
 	/** Create a selector that assigns individual fitness values using a
@@ -189,7 +189,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(begin, end, step, at, reps, subPops, infoFields),
+		baseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(fitness)
 	{
 	};
@@ -234,7 +234,7 @@ private:
  *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
  *  \c A and \c a in the haploid case.
  */
-class maSelector : public selector
+class maSelector : public baseSelector
 {
 public:
 	/** Creates a multi-allele selector that groups multiple alleles into a
@@ -259,7 +259,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(begin, end, step, at, reps, subPops, infoFields),
+		baseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
 		DBG_WARNING(m_wildtype.empty(), "No wild type allele is defined.");
@@ -305,7 +305,7 @@ private:
  *  fitness values, and compute a combined fitness value from them. Additive,
  *  multiplicative, and a heterogeneour multi-locus model are supported.
  */
-class mlSelector : public selector
+class mlSelector : public baseSelector
 {
 public:
 	/** Create a multiple-locus selector from a list selection operator
@@ -325,10 +325,10 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(begin, end, step, at, reps, subPops, infoFields),
+		baseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_selectors(ops), m_mode(mode)
 	{
-		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
+		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one selector.");
 	};
 
 	virtual ~mlSelector()
@@ -381,7 +381,7 @@ private:
  *  this field using operator \e infoExec (e.g.
  *  <tt>infoExec('sex=ind.sex', exposeInd='ind')</tt>.
  */
-class pySelector : public selector
+class pySelector : public baseSelector
 {
 public:
 	/** Create a Python hybrid selector that passes genotype at specified
@@ -394,7 +394,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & paramFields = vectorstr(),
 		const stringList & infoFields = stringList("fitness")) :
-		selector(begin, end, step, at, reps, subPops, infoFields),
+		baseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func), m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
@@ -405,15 +405,16 @@ public:
 			"Please specify susceptibility loci");
 	};
 
-    ~pySelector()
-    {
-        Py_XDECREF(m_genotype);
-        Py_XDECREF(m_info);
-    }
+	~pySelector()
+	{
+		Py_XDECREF(m_genotype);
+		Py_XDECREF(m_info);
+	}
+
 
 	/// CPPONLY
 	pySelector(const pySelector & rhs) :
-		selector(rhs),
+		baseSelector(rhs),
 		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
 		m_paramFields(rhs.m_paramFields),

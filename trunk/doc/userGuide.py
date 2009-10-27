@@ -900,7 +900,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def myPenetrance(geno):
+def myPenetrance(geno, gen):
     'A three-locus heterogeneity penetrance model'
     if sum(geno) < 2:
         return 0
@@ -3031,7 +3031,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def fragileX(geno):
+def fragileX(geno, gen):
     '''A disease model where an individual has increased risk of 
     affected if the number of tandem repeats exceed 75.
     '''
@@ -3680,6 +3680,82 @@ simu.evolve(
 )
 
 #end_file
+
+
+
+#begin_file log/mapPenetrance.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(size=[2,8], ploidy=2, loci=2 )
+sim.InitByFreq(pop, [.2, .8])
+sim.MapPenetrance(pop, loci=0, 
+    penetrance={(0,0):0, (0,1):1, (1,1):1})
+sim.Stat(pop, numOfAffected=1)
+#end_file
+
+#begin_file log/mlPenetrance.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=3)
+sim.InitByFreq(pop, [0.3, 0.7])
+pen = []
+for loc in (0, 1, 2):
+    pen.append(sim.maPenetrance(loci=loc, wildtype=[1],
+        penetrance=[0, 0.3, 0.6] ) )
+
+# the multi-loci penetrance
+sim.MlPenetrance(pop, ops=pen, mode=sim.Multiplicative)
+sim.Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
+#end_file
+
+#begin_file log/pyPenetrance.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(1000, loci=3)
+sim.InitByFreq(pop, [0.3, 0.7])
+def peneFunc(geno, gen):
+    p = 1
+    for l in range(len(geno)/2):
+        p *= (geno[l*2]+geno[l*2+1])*0.3
+    #
+    return p
+
+sim.PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
+sim.Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
+#
+# You can also define a function, that returns a penetrance
+# function using given parameters
+def peneFunc(table):
+    def func(geno, gen):
+      return table[geno[0]][geno[1]]
+    #  
+    return func
+
+# then, given a table, you can do
+sim.PyPenetrance(pop, loci=(0, 1, 2),
+    func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
+#end_file
+
 
 #begin_file log/selectParents.py
 #begin_ignore
@@ -4736,77 +4812,4 @@ if os.path.file('log/simuCDCV.py'):
 #end_ignore
 #end_file
 
-
-#begin_file log/mapPenetrance.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(size=[2,8], ploidy=2, loci=2 )
-sim.InitByFreq(pop, [.2, .8])
-sim.MapPenetrance(pop, loci=0, 
-    penetrance={(0,0):0, (0,1):1, (1,1):1})
-sim.Stat(pop, numOfAffected=1)
-#end_file
-
-#begin_file log/mlPenetrance.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(1000, loci=3)
-sim.InitByFreq(pop, [0.3, 0.7])
-pen = []
-for loc in (0, 1, 2):
-    pen.append(sim.maPenetrance(loci=loc, wildtype=[1],
-        penetrance=[0, 0.3, 0.6] ) )
-
-# the multi-loci penetrance
-sim.MlPenetrance(pop, mode=sim.Multiplicative, peneOps=pen)
-sim.Stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
-#end_file
-
-#begin_file log/pyPenetrance.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(1000, loci=3)
-sim.InitByFreq(pop, [0.3, 0.7])
-def peneFunc(geno):
-    p = 1
-    for l in range(len(geno)/2):
-        p *= (geno[l*2]+geno[l*2+1])*0.3
-    #
-    return p
-
-sim.PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
-sim.Stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
-#
-# You can also define a function, that returns a penetrance
-# function using given parameters
-def peneFunc(table):
-    def func(geno):
-      return table[geno[0]][geno[1]]
-    #  
-    return func
-
-# then, given a table, you can do
-sim.PyPenetrance(pop, loci=(0, 1, 2),
-    func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
-#end_file
 
