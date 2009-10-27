@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1094,64 +1094,6 @@ simuPOPacgtMutatorRef
 \end_layout
 
 \begin_layout Section
-Selection
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-selection
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-selectorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mapSelectorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-maSelectorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mlSelectorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pySelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Penetrance
 \begin_inset Index
 status collapsed
@@ -1202,6 +1144,64 @@ mlPenetranceRef
 
 \backslash
 pyPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Natural selection
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+selection
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+baseSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mapSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+maSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mlSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pySelectorRef
 \end_layout
 
 \end_inset

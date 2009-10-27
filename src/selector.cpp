@@ -26,7 +26,7 @@
 #include "selector.h"
 
 namespace simuPOP {
-bool selector::apply(population & pop)
+bool baseSelector::apply(population & pop)
 {
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
@@ -193,19 +193,19 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= static_cast<selector * >(*s)->indFitness(ind, gen);
+			fit *= static_cast<baseSelector * >(*s)->indFitness(ind, gen);
 		return fit;
 	} else if (m_mode == Additive) {
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit -= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
+			fit -= 1 - static_cast<baseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
 	} else if (m_mode == Heterogeneity) {
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
+			fit *= 1 - static_cast<baseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 1 ? 1 - fit : 0;
 	}
 	// this is the case for none.
@@ -257,13 +257,13 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	for (size_t i = 0; i < info.size(); ++i)
 		PyTuple_SetItem(m_info, i, PyInt_FromLong(alleles[i]));
 
-    double fitness;
+	double fitness;
 	if (info.empty())
 		fitness = m_func(PyObj_As_Double, "(Oi)", m_genotype, gen);
 	else
 		fitness = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
 
-    DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " fitness " << fitness << endl);
+	DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " fitness " << fitness << endl);
 	return fitness;
 }
 

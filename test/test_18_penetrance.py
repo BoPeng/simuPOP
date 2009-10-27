@@ -81,7 +81,7 @@ class TestPenetrance(unittest.TestCase):
         MaPenetrance(self.pop, loci = 0,    wildtype=0,
             penetrance=[0, .3, .5])
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
-        assert abs(self.pop.dvars().numOfAffected -    880*0.3 - 545*0.5) < 100
+        assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) < 15
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) < 50
@@ -121,12 +121,12 @@ class TestPenetrance(unittest.TestCase):
 
     def testPyPenetrance(self):
         'Testing python penetrance operator'
-        def pen(geno):
-            if geno == [0, 0]:
+        def pen(geno, gen):
+            if geno == (0, 0):
                 return 0
-            elif geno == [0, 1]:
+            elif geno == (0, 1):
                 return 0.5
-            elif geno == [1, 0]:
+            elif geno == (1, 0):
                 return 0.5
             else:
                 return 1
@@ -138,7 +138,7 @@ class TestPenetrance(unittest.TestCase):
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) < 50
 
     def testAncestralPenetrance(self):
-        'Testing the ancestralGen parameter... (FIXME)'
+        'Testing the ancestralGen parameter... '
         # test the ancestralGen parameter
         # 0: set affection status for the current generation
         # -1: for all generation
