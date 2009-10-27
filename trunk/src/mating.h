@@ -964,15 +964,15 @@ public:
 	 *  population to prepare it for mating.
 	 *
 	 *  If this mating shcme is used within a heterogeneous mating scheme.
-	 *  Parameters \e subPop and \e weight are used to determine which (virtual)
-	 *  subpopulation this mating scheme will be applied to, and how many
+	 *  Parameters \e subPops and \e weight are used to determine which (virtual)
+	 *  subpopulations this mating scheme will be applied to, and how many
 	 *  offspring this mating scheme will produce. Please refer to mating scheme
 	 *  \c heteroMating for the use of these two parameters.
 	 */
 	homoMating(parentChooser & chooser,
 		offspringGenerator & generator,
 		const uintListFunc & subPopSize = uintListFunc(),
-		vspID subPop = vspID(),
+		subPopList subPops = subPopList(),
 		double weight = 0);
 
 	/// destructor
@@ -985,7 +985,7 @@ public:
 
 	/// CPPONLY
 	homoMating(const homoMating & rhs) :
-		mating(rhs), m_subPop(rhs.m_subPop), m_weight(rhs.m_weight)
+		mating(rhs), m_subPops(rhs.m_subPops), m_weight(rhs.m_weight)
 	{
 		m_offspringGenerator = rhs.m_offspringGenerator->clone();
 		m_parentChooser = rhs.m_parentChooser->clone();
@@ -1000,16 +1000,9 @@ public:
 
 
 	/// CPPONLY
-	SubPopID subPop() const
+	subPopList subPops() const
 	{
-		return m_subPop.subPop();
-	}
-
-
-	/// CPPONLY
-	SubPopID virtualSubPop() const
-	{
-		return m_subPop.virtualSubPop();
+		return m_subPops;
 	}
 
 
@@ -1020,11 +1013,7 @@ public:
 	}
 
 
-	/// CPPONLY perform Python mating
-	/**
-	   All individuals will be passed to during mating operators but
-	   no one will die (ignore during mating failing signal).
-	 */
+	/// CPPONLY
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd,
 		vector<baseOperator * > & ops);
@@ -1034,7 +1023,7 @@ private:
 	offspringGenerator * m_offspringGenerator;
 
 	///
-	vspID m_subPop;
+	subPopList m_subPops;
 
 	///
 	double m_weight;
@@ -1058,13 +1047,10 @@ public:
 	 *  explanation of this parameter.
 	 *
 	 *  Each mating scheme defined in \e matingSchemes can be applied to
-	 *  one or more (virtual) subpopulation. If parameter \e subPop is not
+	 *  one or more (virtual) subpopulation. If parameter \e subPops is not
 	 *  specified, a mating scheme will be applied to all subpopulations.
-	 *  If a (virtual) subpopulation is specified, a mating scheme will be
-	 *  applied to a specific (virtual) subpopulation. A special case is
-	 *  when \e subPop is given as <tt>(-1, vsp)</tt>. In this case, the
-	 *  mating scheme will be applied to virtual subpopulation \c vsp in
-	 *  all subpopulations.
+	 *  If a list of (virtual) subpopulation is specified, the mating scheme
+	 *  will be applied to specific (virtual) subpopulations.
 	 *
 	 *  If multiple mating schemes are applied to the same subpopulation, a
 	 *  weight (parameter \e weight) can be given to each mating scheme to

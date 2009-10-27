@@ -1908,19 +1908,17 @@ Details:
     sizes at each generation. Please refer to homoMating for a
     detailed explanation of this parameter.  Each mating scheme
     defined in matingSchemes can be applied to one or more (virtual)
-    subpopulation. If parameter subPop is not specified, a mating
-    scheme will be applied to all subpopulations. If a (virtual)
-    subpopulation is specified, a mating scheme will be applied to a
-    specific (virtual) subpopulation. A special case is when subPop is
-    given as (-1, vsp). In this case, the mating scheme will be
-    applied to virtual subpopulation vsp in all subpopulations.  If
-    multiple mating schemes are applied to the same subpopulation, a
-    weight (parameter weight) can be given to each mating scheme to
-    determine how many offspring it will produce. The default for all
-    mating schemes are 0. In this case, the number of offspring each
-    mating scheme produces is proportional to the size of its parental
-    (virtual) subpopulation. If all weights are negative, the numbers
-    of offspring are determined by the multiplication of the absolute
+    subpopulation. If parameter subPops is not specified, a mating
+    scheme will be applied to all subpopulations. If a list of
+    (virtual) subpopulation is specified, the mating scheme will be
+    applied to specific (virtual) subpopulations.  If multiple mating
+    schemes are applied to the same subpopulation, a weight (parameter
+    weight) can be given to each mating scheme to determine how many
+    offspring it will produce. The default for all mating schemes are
+    0. In this case, the number of offspring each mating scheme
+    produces is proportional to the size of its parental (virtual)
+    subpopulation. If all weights are negative, the numbers of
+    offspring are determined by the multiplication of the absolute
     values of the weights and their respective parental (virtual)
     subpopulation sizes. If all weights are positive, the number of
     offspring produced by each mating scheme is proportional to these
@@ -1978,7 +1976,7 @@ Details:
 
 Usage:
 
-    homoMating(chooser, generator, subPopSize=[], subPop=[],
+    homoMating(chooser, generator, subPopSize=[], subPops=AllAvail,
       weight=0)
 
 Details:
@@ -2000,8 +1998,8 @@ Details:
     population size from parental population size but nothing stops
     you from modifying this parental population to prepare it for
     mating.  If this mating shcme is used within a heterogeneous
-    mating scheme. Parameters subPop and weight are used to determine
-    which (virtual) subpopulation this mating scheme will be applied
+    mating scheme. Parameters subPops and weight are used to determine
+    which (virtual) subpopulations this mating scheme will be applied
     to, and how many offspring this mating scheme will produce. Please
     refer to mating scheme heteroMating for the use of these two
     parameters.
@@ -2034,9 +2032,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::homoMating::subPop() const;
-
-%ignore simuPOP::homoMating::virtualSubPop() const;
+%ignore simuPOP::homoMating::subPops() const;
 
 %ignore simuPOP::homoMating::weight() const;
 

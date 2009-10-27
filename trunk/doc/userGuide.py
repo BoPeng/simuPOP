@@ -1374,8 +1374,8 @@ sim.GetRNG().setSeed(12345)
 pop = sim.population(size=[1000, 1000], loci=2,
     infoFields=['father_idx', 'mother_idx'])
 simu = sim.simulator(pop, sim.heteroMating(
-    [sim.randomMating(numOffspring=2, subPop=0),
-     sim.randomMating(numOffspring=4, subPop=1)
+    [sim.randomMating(numOffspring=2, subPops=0),
+     sim.randomMating(numOffspring=4, subPops=1)
     ])
 )
 simu.evolve(
@@ -1402,8 +1402,8 @@ pop = sim.population(size=[1000], loci=2,
 pop.setVirtualSplitter(sim.proportionSplitter([0.2, 0.8]))
 simu = sim.simulator(pop, sim.heteroMating(
     matingSchemes = [
-        sim.selfMating(subPop=(0, 0)),
-        sim.randomMating(subPop=(0, 1))
+        sim.selfMating(subPops=[(0, 0)]),
+        sim.randomMating(subPops=[(0, 1)])
     ])
 )
 simu.evolve(
@@ -1439,9 +1439,9 @@ def markOff(param):
 
 simu = sim.simulator(pop, sim.heteroMating(
     matingSchemes = [
-        sim.randomMating(subPop=0, weight=-0.5, ops=[markOff(0), sim.mendelianGenoTransmitter()]),
-        sim.randomMating(subPop=(0, 0), weight=2, ops=[markOff(1), sim.mendelianGenoTransmitter()]),
-        sim.randomMating(subPop=(0, 1), weight=3, ops=[markOff(2), sim.mendelianGenoTransmitter()])
+        sim.randomMating(subPops=0, weight=-0.5, ops=[markOff(0), sim.mendelianGenoTransmitter()]),
+        sim.randomMating(subPops=[(0, 0)], weight=2, ops=[markOff(1), sim.mendelianGenoTransmitter()]),
+        sim.randomMating(subPops=[(0, 1)], weight=3, ops=[markOff(2), sim.mendelianGenoTransmitter()])
     ])
 )
 simu.evolve(
@@ -1465,13 +1465,13 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 def randomMating(numOffspring = 1., sexMode = sim.RandomSex,
         preOps = sim.mendelianGenoTransmitter(), subPopSize = [],
-        subPop = (), weight = 0, selectionField = 'fitness'):
+        subPops = AllAvail, weight = 0, selectionField = 'fitness'):
     'A basic diploid sexual random mating scheme.'
     return sim.homoMating(
         chooser = sim.randomParentsChooser(True, selectionField),
         generator = sim.offspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
-        subPop = subPop,
+        subPops = subPops,
         weight = weight)
 #end_file
 
@@ -4825,13 +4825,12 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
 N = 10000
-pop = sim.population(10000, loci=4, infoFields='age')
-pop.setSplitter(sim.infoSplitter(cutoff=[20, 50, 75]))
-
+pop = sim.population(10000, loci=1, infoFields='age')
+pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[20, 50, 75]))
 def demoModel(gen, pop):
     '''A demographic model that keep a constant supply of new individuals'''
     # number of individuals that will die
-    Stat(pop, popSize=True, subPops=[(0,3)])
+    sim.Stat(pop, popSize=True, subPops=[(0,3)])
     # individuals that will be kept, plus some new guys.
     return pop.popSize() - pop.dvars().popSize + N / 75
 
@@ -4843,12 +4842,12 @@ def pene(geno, age, gen):
 def outputStat(pop):
     'Calculate and output statistics'
     sim.Stat(pop, popSize=True, numOfAffected=True,
-        subPos=[(0,0), (0,1), (0,2), (0,3)],
+        subPops=[(0,0), (0,1), (0,2), (0,3)],
         vars=['popSize_sp', 'propOfAffected_sp'])
-    print 'Prevalence of disease in three age groups:'
     for sp in range(3):
-        print '%s: %.3f (size %d)' % (pop.subPopName((0,sp)), pop.dvars((0,sp)).propOfAffected,
-                pop.dvars((0,sp)).popSize),
+        print '%s: %.3f%% (size %d)' % (pop.subPopName((0,sp)),
+            pop.dvars((0,sp)).propOfAffected * 100.,
+            pop.dvars((0,sp)).popSize),
     print
     return True
 
@@ -4868,16 +4867,17 @@ simu.evolve(
     initOps = [
         sim.initSex(),
         # random assign age
-        sim.initInfo(lambda: random.randint(0, 75), infoFields='age')
+        sim.initInfo(lambda: random.randint(0, 75), infoFields='age'),
         # random genotype
-        
+        sim.initByFreq([0.5, 0.5]),
+        sim.pyOutput('Prevalence of disease in each age group:\n'),
     ],
     # increase the age of everyone by 1 before mating.
     preOps = sim.infoExec('age += 1'),
     # number of individuals?
     postOps = [
-        sim.pyPenetrance(func=pene, paramFields='age'),
-        simu.pyOperator(func=outputStat)
+        sim.pyPenetrance(func=pene, loci=0, paramFields='age'),
+        sim.pyOperator(func=outputStat)
     ],
     gen = 10
 )     
