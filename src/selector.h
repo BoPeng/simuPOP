@@ -321,12 +321,12 @@ public:
 	 *
 	 *  zero will be returned if the combined fitness value is less than zero.
 	 */
-	mlSelector(const opList & selectors, int mode = Multiplicative,
+	mlSelector(const opList & ops, int mode = Multiplicative,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		selector(begin, end, step, at, reps, subPops, infoFields),
-		m_selectors(selectors), m_mode(mode)
+		m_selectors(ops), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
 	};

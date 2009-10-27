@@ -33,6 +33,7 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add support of haploid population to maSelector.
   - CHG: separate additional fields from infoFields to paramFields in operator
 		pySelector.
+  - CHG: Change parameter selectors to ops in operator pySelector.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields

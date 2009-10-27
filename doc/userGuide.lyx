@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14032,6 +14032,1715 @@ reference "newOperator"
 \end_layout
 
 \begin_layout Section
+Penetrance
+\end_layout
+
+\begin_layout Subsection
+Map penetrance model (operator 
+\family typewriter
+mapPenetrance
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapPenetrance.log"
+lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-allele penetrance model (operator 
+\family typewriter
+maPenetrance
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlPenetrance.log"
+lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-loci penetrance model (operator 
+\family typewriter
+mlPenetrance
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Hybrid penetrance model (operator 
+\family typewriter
+pyPenetrance
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyPenetrance.log"
+lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Natural Selection
+\end_layout
+
+\begin_layout Subsection
+Natural selection through the selection of parents
+\end_layout
+
+\begin_layout Standard
+In the simplest scenario, natural selection is implemented in two steps:
+\end_layout
+
+\begin_layout Itemize
+Before mating happens, an operator (called a 
+\series bold
+selector
+\series default
+) goes through a populations and assign each individual a fitness value.
+ The fitness values are stored in an information field called 
+\family typewriter
+fitness
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+When mating happens, parents are chosen with probabilities that are proportional
+ to their fitness values.
+ For example, assuming that a parental population consists of four individuals
+ with fitness values 1, 2, 3, and 4, respectively, the probability that
+ they are picked to produce offspring are 
+\begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
+\end_inset
+
+, 
+\begin_inset Formula $0.2$
+\end_inset
+
+, 
+\begin_inset Formula $0.3$
+\end_inset
+
+, and 
+\begin_inset Formula $0.4$
+\end_inset
+
+ respectively.
+ As you can image, if the offspring population has 10 individuals, the four
+ parents will on average parent 1, 2, 3 and 4 offspring.
+\end_layout
+
+\begin_layout Standard
+Because parents with lower fitness values have less chance to be produce
+ offspring, their genotypes have less chance to be passed to an offspring
+ generation.
+ If the decreased fitness is caused by the presence of certain mutant (e.g.
+ a mutant causing a serious disease), individuals with that mutant will
+ have less change to survive and effecitively reduce or eleminate that mutant
+ from the population.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ gives an example of natural selection.
+ In this example, a 
+\family typewriter
+mapSelector
+\family default
+ is used to explicitly assign fitness value to genotypes at the first locus.
+ The fitness values are 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+0.98
+\family default
+, 
+\family typewriter
+0.97
+\family default
+ for genotypes 
+\family typewriter
+00
+\family default
+, 
+\family typewriter
+01
+\family default
+ and 
+\family typewriter
+11
+\family default
+ respectively.
+ The selector set individual fitness values to information field 
+\family typewriter
+fitness
+\family default
+ before mating happens.
+ The 
+\family typewriter
+randomMating
+\family default
+ mating scheme then selects parents according to parental fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectParents.log"
+lstparams "caption={Natural selection through the selection of parents},label={selectParents}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Natural selection through the selection of offspring *
+\end_layout
+
+\begin_layout Standard
+Natural selection can also be implemented as selection of offspring.
+ Remember that an individual will be discarded if one of the during-mating
+ operators fails (return 
+\family typewriter
+False
+\family default
+), 
+\series bold
+a
+\series default
+ 
+\series bold
+during-mating selector
+\series default
+ 
+\series bold
+discards offspring according to fitness values of offspring
+\series default
+.
+ Instead of relative fitness that will be compared against other individuals
+ during the selection of parents, 
+\series bold
+fitness values of a during-mating selector are considered as absolute fitness
+ which are probabilities to survive
+\series default
+ and have to be between 0 and 1.
+\end_layout
+
+\begin_layout Standard
+A during-mating selector works as follows:
+\end_layout
+
+\begin_layout Enumerate
+During evolution, parents are chosen randomly to produce one or more offspring.
+ (Nothing prevents you from choosing parents according to their fitness
+ values, but it is rarely justifiable to apply natural selection to both
+ parents and offspring.)
+\end_layout
+
+\begin_layout Enumerate
+A selection operator is applied to each offspring during mating and determines
+ his or her fitness value.
+ The fitness value is considered as probability to survive so an offspring
+ will be discarded (operator returns 
+\family typewriter
+False
+\family default
+) if the fitnessvalue is larger than an uniform random number.
+\end_layout
+
+\begin_layout Enumerate
+Repeat steps 1 and 2 until the offspring generation is populated.
+\end_layout
+
+\begin_layout Standard
+Because many offspring will be generated and discarded, especially when
+ offspring fitness values are low, selection through offspring is less efficient
+ than selection through parents.
+ In addition, absolute fitness is usually more difficult to estimate than
+ relative fitness.
+ So, unless there are compelling reasons (e.g.
+ simulating realistic scenarios of survival competition among offspring),
+ selection through parents are recommended.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+ gives an example of natural selection through the selection of offspring.
+ This example looks almost identical to Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ but the underlying selection mechanism is quite different.
+ Note that selection through offspring does not need an information field
+ to hold fitness values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selectOffspring.log"
+lstparams "caption={Natural selection through the selection of offspring},label={selectOffspring}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Are two selection scenarios equivalent? **
+\end_layout
+
+\begin_layout Standard
+If you look closely at Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectParents"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selectOffspring"
+
+\end_inset
+
+, you will notice that their results are quite similar.
+ This is actually what you should expect in most cases.
+ Let us look at the theoretical consequence of selection through parents
+ or offspring in a simple case with asexual mating.
+\end_layout
+
+\begin_layout Standard
+Assuming a diallelic marker with three genotypes 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $g_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{aa}$
+\end_inset
+
+, with frequencies 
+\begin_inset Formula $P_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $P_{Aa}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{aa}$
+\end_inset
+
+, and relative fitness values 
+\begin_inset Formula $w_{AA}$
+\end_inset
+
+, 
+\begin_inset Formula $w_{Aa}$
+\end_inset
+
+, and 
+\begin_inset Formula $w_{22}$
+\end_inset
+
+ respectively.
+ If we select through offspring, the proportion of genotype 
+\begin_inset Formula $g_{AA}$
+\end_inset
+
+ etc., should be
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+
+\end_inset
+
+because offspring genotypes are randomly drawn from the parental generation,
+ and each offspring has certain probability to survive.
+\end_layout
+
+\begin_layout Standard
+Now, if we select through parents, the proportion of parents with genotype
+ 
+\begin_inset Formula $AA$
+\end_inset
+
+ will be the number of 
+\begin_inset Formula $AA$
+\end_inset
+
+ individuals times its probability to be chosen: 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
+
+\end_inset
+
+This is, however, exactly 
+\begin_inset Formula \[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
+
+\end_inset
+
+which corresponds to the proportion of offspring with such genotype.
+ That is to say, 
+\series bold
+in this simple case, two types of selection scenarios yield identical results
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+These two types of selection scenarios do not have to always yield identical
+ results.
+ Exceptions may be found in cases with more than one offspring or sexual
+ mating with sex-specific survival rate.
+ simuPOP provides both selection implementations and you should choose one
+ of them for your particular simulation.
+\end_layout
+
+\begin_layout Subsection
+Map selector (operator 
+\family typewriter
+mapSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A map selector uses a Python dictionary to provide fitness values for each
+ type of genotype.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mapSelector"
+
+\end_inset
+
+ uses a dictionary with keys 
+\family typewriter
+(0,0)
+\family default
+, 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ to specify fitness values for individuals with these genotypes at locus
+ 0.
+ This example is a typical example of heterozygote advantage.
+ When 
+\begin_inset Formula $w_{11}<w_{12}>w_{22},$
+\end_inset
+
+ the genotype frequencies will go to an equilibrium state.
+ Theoretically, if 
+\begin_inset Formula $s_{1}=w_{12}-w_{11}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}=w_{12}-w_{22}$
+\end_inset
+
+, the stable allele frequency of allele 0 is
+\begin_inset Formula \[
+p=\frac{s_{2}}{s_{1}+s_{2}}\]
+
+\end_inset
+
+which is 
+\begin_inset Formula $\frac{2}{3}$
+\end_inset
+
+ in the example (
+\begin_inset Formula $s_{1}=.1$
+\end_inset
+
+, 
+\begin_inset Formula $s_{2}=.2$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapSelector.log"
+lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The above example assumes that the fitness value for individuals with genotypes
+ 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,0)
+\family default
+ are the same.
+ This assumption is usually valid but can be vialoated with impriting.
+ In that case, you can specify fitness for both types of genotypes.
+ The underlying mechanism is that the 
+\family typewriter
+mapSelector
+\family default
+ looks up a genotype in the dictionary first directly, and then without
+ phase information if a genotype is not found.
+\end_layout
+
+\begin_layout Standard
+This operator supports haplodiploid populations and sex chromosomes.
+ In these cases, only valid alleles should be listed which can lead to dictionar
+y keys with different lengths.
+ In addition, although less used because of potentially a large number of
+ keys, this operator can act on multiple loci.
+ For example, 
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2)
+\family default
+ and 
+\family typewriter
+(a1,)
+\family default
+ can be used to specify fitness values for female and male individuals in
+ a haplodiploid population, respectively
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(x1,x2)
+\family default
+ and 
+\family typewriter
+(x1,)
+\family default
+ can be used to specify fitness for female and male individuals according
+ to a locus on the X chromosome in a diploid population, respectively.
+ Similarly, keys 
+\family typewriter
+()
+\family default
+ and 
+\family typewriter
+(y,)
+\family default
+ for a locus on chromosome Y.
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2,b1,b2)
+\family default
+ can be used to specify fitness values according to genotype at two loci
+ in a diploid population.
+\end_layout
+
+\begin_layout Subsection
+Multi-allele selector (operator 
+\family typewriter
+maSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A multi-allele selector divides alleles into two groups, wildtype 
+\emph on
+A
+\emph default
+ and mutants 
+\emph on
+a
+\emph default
+, and treat alleles within each group as the same.
+ The fitness model is therefore simplified to
+\end_layout
+
+\begin_layout Itemize
+Two fitness values for genotype 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $a$
+\end_inset
+
+ in the haploid case
+\end_layout
+
+\begin_layout Itemize
+Three fitness values for genotype 
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+ in the diploid single locus case.
+ Genotype Aa and aA are assumed to have the same impact on fitness.
+\end_layout
+
+\begin_layout Standard
+The default wildtype group contains allele 0 so the two allele groups are
+ zero and non-zero alleles.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "maSelector"
+
+\end_inset
+
+ demonstrates the use of this operator.
+ This example is identical to Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mapSelector"
+
+\end_inset
+
+ except that there are five alleles at locus 0 and alleles 1, 2, 3, 4 are
+ treated as a single non-widetype group.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelector.log"
+lstparams "caption={A multi-allele selector},label={maSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+maSelector
+\family default
+ also supports multiple loci by specifying fitness values for all combination
+ of genotype at specified loci.
+ In the case of two loci, this operator requires
+\end_layout
+
+\begin_layout Itemize
+Four fitness values for genotype 
+\family typewriter
+AB
+\family default
+, 
+\family typewriter
+Ab
+\family default
+, 
+\family typewriter
+aB
+\family default
+ and 
+\family typewriter
+ab
+\family default
+ in the haploid case,
+\end_layout
+
+\begin_layout Itemize
+Nine fitness values for genotype 
+\family typewriter
+AABB
+\family default
+, 
+\family typewriter
+AABb
+\family default
+, 
+\family typewriter
+AAbb
+\family default
+, 
+\family typewriter
+AaBB
+\family default
+, 
+\family typewriter
+AaBb
+\family default
+, 
+\family typewriter
+Aabb
+\family default
+, 
+\family typewriter
+aaBB
+\family default
+, 
+\family typewriter
+aaBb
+\family default
+, and 
+\family typewriter
+aabb
+\family default
+ in the haploid case.
+\end_layout
+
+\begin_layout Standard
+In general, 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ values are needed for haploid populations and 
+\begin_inset Formula $3^{n}$
+\end_inset
+
+ values are needed for diploid populations where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of loci.
+ This operator does not yet support haplodiploid populations and sex chromosomes.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "maSelectorHaploid"
+
+\end_inset
+
+ demonstrates the use of a multi-locus model in a haploid population.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelectorHaploid.log"
+lstparams "caption={A multi-locus multi-allele selection model in a haploid population},label={maSelectorHaploid}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-locus selection models (operator 
+\family typewriter
+mlSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Although an individual's fitness can be affected by several factors, each
+ of which can be modeled individually, 
+\series bold
+only one fitness value is used to determine a person's ability to pass all
+ these factors to his or her offspring
+\series default
+.
+ Although in theory we sometimes assume independent evolution of disease
+ predisposing loci (mostly for mathematical reasons), in practise we have
+ to use a multi-locus selection model to combine single-locus models.
+\end_layout
+
+\begin_layout Standard
+This multi-loci selector applies several selectors to each individual and
+ computes an overall fitness value from the fitness values provided by these
+ selectors.
+ Although this selector is designed to obtain multi-loci fitness values
+ from several single-locus fitness models, any selector, including those
+ obtain their fitness values from multiple disease predisposing loci, can
+ be used in this selector.
+ This selector uses parameter 
+\family typewriter
+mode
+\family default
+ to control how individual fitness values are combined.
+ More specifically, if 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+ are fitness values obtained from individual selectors, this selector returns
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Pi_{i}f_{i}$
+\end_inset
+
+ if 
+\family typewriter
+mode=Multiplicative
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1-\sum_{i}\left(1-f_{i}\right)$
+\end_inset
+
+ if 
+\family typewriter
+mode=Additive
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1-\Pi_{i}\left(1-f_{i}\right)$
+\end_inset
+
+ if 
+\family typewriter
+mode=Heterogeneity
+\end_layout
+
+\begin_layout Standard
+0 will be returned if the returned fitness value is less than 0.
+\end_layout
+
+\begin_layout Standard
+This operator simply combines individual fitness values and it is your responsib
+ility to apply and interpret these models.
+ For example, if relative fitness values are greater than one, the heterogeneity
+ model hardly makes sense.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mlSelector"
+
+\end_inset
+
+ demonstrates the use of this operator using an additive multi-locus model
+ over an additive and a recessive single-locus model at two diesease predisposin
+g loci.
+ For comparison, we simulate two additional replicates with selection only
+ applying to one of the two loci.
+ It would be interesting to see if these two loci evolve more or less independen
+tly by comparing allele freqency trajectories of these two replicates to
+ those in the first replicate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlSelector.log"
+lstparams "caption={A multi-loci selector},label={mlSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A hybrid selector (operator 
+\family typewriter
+pySelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+When your selection model involves multiple interacting genetic and environmenta
+l factors, it might be easier to calculate a fitness value explicitly using
+ a Python function.
+ A hybrid selector can be used for this purpose.
+ If your selection model depends solely on genotype, you can define a function
+ such as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fitness_func(genotype, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate fitness according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+and use this function in an operator 
+\family typewriter
+pySelector(func=fitness_func, loci=loci)
+\family default
+.
+ If your selection model depends on genotype as well as some information
+ fields, you can define a function in the form of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fitness_func(genotype, fields, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate fitness according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    # and values at specified informaton fields.
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+and use this function in an operator 
+\family typewriter
+pySelector(func=fitness_func, loci=loci, paramFields=fields)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+When a 
+\family typewriter
+pySelector
+\family default
+ is used to calculate fitness for an individual (parents if applied pre-mating,
+ offspring if applied during-mating), it will collect his or her genotype
+ at specified loci, optional values at specified information fields, and
+ the generation number to a user-specified Python function, and take its
+ return value as fitness.
+ As you can imagine, the incorporation of information fields and generation
+ number allow the implementation of very complex selection scenarios such
+ as gene environment interaction and varying selection pressures.
+ Note that this operator does not pass sex and affection status to the user-defi
+ned function.
+ If your selection model is sex-dependent, you can define an information
+ field 
+\family typewriter
+sex
+\family default
+, synchronize its value with individual sex (e.g.
+ using operator 
+\family typewriter
+infoExec('sex=ind.sex()', exposeInd='ind'
+\family default
+) and pass this information to the user-defined function (
+\family typewriter
+pySelector(func=func, paramFields='sex')
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pySelector"
+
+\end_inset
+
+ demonstrates how to use a 
+\family typewriter
+pySelector
+\family default
+ to specify fitness values according to a fitness table and the smoking
+ status of each individual.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pySelector.log"
+lstparams "caption={A hybrid selector},label={pySelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Alternative implementations of natural selection
+\end_layout
+
+\begin_layout Standard
+If you know how natural selection works in simuPOP, you do not have to use
+ a selector to perform natural selection in simuPOP.
+ All you need to do is
+\end_layout
+
+\begin_layout Itemize
+Set individual fitness values to individuals who will be involved in mating.
+ You do not have to use information field 
+\family typewriter
+fitness
+\family default
+ because you can specify which information field to use in a mating scheme
+ using parameter 
+\family typewriter
+selectionField
+\family default
+.
+ Or,
+\end_layout
+
+\begin_layout Itemize
+Using a during-mating opearator as a filter to remove some offspring.
+ Because during-mating operators other than selectors usually do not return
+ 
+\family typewriter
+False
+\family default
+, a 
+\family typewriter
+pyOperator(func=func, offspringOnly=True)
+\family default
+ is usually used in this case.
+\end_layout
+
+\begin_layout Standard
+A number of operators could then be used to implement natural selection.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "peneSelector"
+
+\end_inset
+
+ demonstrates a commonly used case where parents who are affected with certain
+ disease are excluded from producing offspring.
+ In this example, a penetrance model (operator 
+\family typewriter
+maPenetrance
+\family default
+) is applied to the parental generation to determine who will be affected.
+ An 
+\family typewriter
+infoExec
+\family default
+ operator is used to set individual fitness to 1 if he or she is unaffected,
+ and 0 if he or she is affected.
+ Due to the way parents are selected, affected parents will not be able
+ to produce offspring as long as there is any unaffected individual.
+ Because individual affection status is determined by his or her genotype,
+ this genotype - affection status - fitness relationship could be implemented
+ using an equivalent 
+\family typewriter
+maSelector
+\family default
+.
+ Note that you could use something like 
+\family typewriter
+infoExec('fitness = 1 - 0.01*ind.affected()', exposeInd='ind')
+\family default
+ to select against, but not remove, affected parents.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/peneSelector.log"
+lstparams "caption={Natural selection according to individual affection status},label={peneSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Support for virtual subpopulations *
+\end_layout
+
+\begin_layout Standard
+Support for virtual subpopulations allows you to use different selectors
+ for different (virtual) subpopulations.
+ Because virtual subpopulations may overlap, and they do not have to cover
+ all individuals in a subpopulation, it is important to remember that
+\end_layout
+
+\begin_layout Itemize
+If virtual subpopulations overlap, the fitness value set by the last selector
+ will be used.
+\end_layout
+
+\begin_layout Itemize
+If an individual is not included in any of the virtual subpopulation, its
+ fitness value will be zero which will prevent them from producing any offspring.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "vspSelector"
+
+\end_inset
+
+ demonstrates how to apply selectors to virtual subpopulations.
+ This example has two subpopulations, each having two virtual subpopulations
+ defined by sex.
+ Natural selection is applied to male individuals in the first subpopulation,
+ and female individuals in the second subpopulation.
+ However, because the sex of offspring is randomly determined, the selection
+ actually decreases the disease allele frequency for all inviduals.
+ Note that the second selector that set fitness 
+\family typewriter
+[1,1,1]
+\family default
+ to females in the first subpopulation and males in the second subpopulation
+ is, strictly speaking, not needed because 
+\family typewriter
+randomMating
+\family default
+ performs naturally selection separately in males and females so females
+ will be handled correctly in the first subpopulation if their fitness values
+ are all zero.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/vspSelector.log"
+lstparams "caption={Selector in virtual subpopulations},label={vspSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Natural selection in heterogeneous mating schemes **
+\end_layout
+
+\begin_layout Standard
+Multiple mating schemes could be applied to the same subpopulation in a
+ heterogeneous mating scheme (
+\family typewriter
+heteroMating
+\family default
+).
+ These mating schemes may or may not support natural selection, may be applied
+ to different virtual subpopulations of population, and they may see individuals
+ differently in terms of individual fitness.
+ Parameter 
+\family typewriter
+fitnessField
+\family default
+ of a mating scheme could be used to handle such cases.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+You can turn off the natural selection support of a mating scheme by setting
+ 
+\family typewriter
+fitnessField=''
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+If a mating scheme uses a different set of fitness values, you can add an
+ information field (e.g.
+ 
+\family typewriter
+fitness1
+\family default
+), setting individual fitness to this information field using a selector
+ (with parameter 
+\family typewriter
+infoFields='fitness1'
+\family default
+) and tells a mating scheme to look in this information field for fitness
+ values (using parameter 
+\family typewriter
+fitnessField='fitness1'
+\family default
+).
+\end_layout
+
+\begin_layout Section
+Tagging operators
+\end_layout
+
+\begin_layout Standard
+In simuPOP, tagging refers to the action of setting various information
+ fields of offspring, usually using various parental information during
+ the production of offspring.
+ simuPOP provides a number of tagging operators (called taggers) for various
+ purposes.
+ Because tagging operators are during-mating operators, they do not support
+ parameter 
+\family typewriter
+subPops
+\family default
+.
+ If you would like to apply different  taggers to different (virtual) subpopulat
+ions, you can use them in the homogeneous mating schemes of a heterogeneous
+ mating scheme.
+\end_layout
+
+\begin_layout Subsection
+Inheritance tagger (operator 
+\family typewriter
+inheritTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+An inheritance tagger passes values of parental information field(s) to
+ the corresponding offspring information field(s).
+ Depending on the parameters, an inheritTagger can 
+\end_layout
+
+\begin_layout Itemize
+For asexual mating schemes, pass one or more information fields from parent
+ to offspring.
+\end_layout
+
+\begin_layout Itemize
+Pass one or more information fields from father to offspring (
+\family typewriter
+mode=Paternal
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Pass one or more information fields from mother to offspring (
+\family typewriter
+mode=Maternal
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Pass the maximal, minimal, sum, multiplcation or average of values of one
+ or more information fields of both parents (
+\family typewriter
+mode=Maximum
+\family default
+, 
+\family typewriter
+Minimum
+\family default
+, 
+\family typewriter
+Addition, Multiplication
+\family default
+ or 
+\family typewriter
+Average
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+This can be used to track the spread of certain information during evolution.
+ For example, Example
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "inheritTagger"
+
+\end_inset
+
+ tags the first individuals of ten subpopulations of size 1000.
+ Individuals in the offspring generation inherits the maximum value of field
+ 
+\family typewriter
+x
+\family default
+ from his/her parents so 
+\family typewriter
+x
+\family default
+ is inherited regardless of the sex of parents.
+ A stat operator is used to calculate the number of offspring having this
+ tag in each subpopulation.
+ The results show that some tagged ancestors have many offspring, and some
+ have none.
+ If you run this simulation long enough, you can see that all ancestors
+ become the ancestor of either none or all indiviudals in a population.
+ Note that this simulation only considers genealogical inheritance and ancestors
+ do not have to pass any genotype to the last generation.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/inheritTagger.log"
+lstparams "caption={Use an inherit tagger to track offspring of individuals},label={inheritTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Summarize parental informatin fields (operator 
+\family typewriter
+summaryTagger)
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+summaryTagger
+\family default
+ summarize values of one or more parental information fields and place the
+ result in an offspring information field.
+ If mating is sexual, two sets of values will be involved.
+ Summarization methods include 
+\family typewriter
+Mean
+\family default
+, 
+\family typewriter
+Minimum
+\family default
+, 
+\family typewriter
+Miximum
+\family default
+,
+\family typewriter
+ Summation
+\family default
+ and 
+\family typewriter
+Multiplication
+\family default
+.
+ The operator is usually used to summarize certain characteristic of parents
+ of each offspring.
+ For example, a 
+\family typewriter
+summaryTagger
+\family default
+ is used in  Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "summaryTagger"
+
+\end_inset
+
+ to calculate the mean fitness of parents during each  mating event.
+ The results are saved in the 
+\family typewriter
+avgFitness
+\family default
+ field of offspring.
+ Because allele 1 at locus 0 is under purifying selection, the allele frequency
+ of this allele decreases.
+ In the mean time, fitness of parents increases because less and less parents
+ have this allele.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/summaryTagger.log"
+lstparams "caption={Using a summary tagger to calculate mean fitness of parents.},label={summaryTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tracking parents (operator 
+\family typewriter
+parentsTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A parents tagger is used to record the indexes of parents (in the parental
+ population) in the information fields (default to 
+\family typewriter
+father_idx
+\family default
+, 
+\family typewriter
+mother_idx
+\family default
+) of their offspring.
+ These indexes provide a way to track down an individuals parents, offspring
+ and consequently all relatives in a multi-generation population.
+ Because this operator has been extensively used in this guide, please refer
+ to other sections for an Example (e.g.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "basicInfoFields"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+As long as parental generations do not change after the offspring generation
+ is created, recorded parental indexes can be used to locate parents of
+ an individual.
+ However, in certain applications when parental generations change (e.g.
+ to draw a pedigree from a large population), or when individuals can not
+ be looked up easily using indexes (e.g.
+ after individuals are saved to a file), giving every individual an unique
+ ID and refer to them using ID will be a better choice.
+\end_layout
+
+\begin_layout Subsection
+Assign unique IDs to individuals (operator 
+\family typewriter
+idTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Although it is possible to use generation number and individual indexes
+ to locate individuals in an evolving population, an unique I D makes it
+ much easier to identify individuals when migration is involved, and to
+ analyze an evolutionary process outside of simuPOP.
+ An operator 
+\family typewriter
+idTagger
+\family default
+ (and its function form 
+\family typewriter
+TagID
+\family default
+) is provided by simuPOP to assign an unique ID to all individuals during
+ evolution.
+\end_layout
+
+\begin_layout Standard
+The IDs of individuals are usually stored in an information field named
+ 
+\family typewriter
+ind_id
+\family default
+.
+ To ensure uniqueness across populations, a single source of ID is used
+ for this operator.
+ Individual IDs are assigned consecutively starting from 0.
+ If you would like to reset the sequence or start from a different number,
+ you can call the 
+\family typewriter
+reset(startID)
+\family default
+ function of any 
+\family typewriter
+idTagger
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+idTagger
+\family default
+ is usually used during-mating to assign ID to each offspring.
+ However, if it is applied directly to a population, it will assign unique
+ IDs to all individuals in this population.
+ This property is usually used in the 
+\family typewriter
+preOps
+\family default
+ parameter of function 
+\family typewriter
+simulator.evolve
+\family default
+ to assign initial ID to a population.
+ For example, three 
+\family typewriter
+idTagger
+\family default
+ operators are used in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "idTagger"
+
+\end_inset
+
+ to assign IDs to individuals before, during and after evolution.
+ Although different operators are used, different IDs are assigned to individual
+s.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/idTagger.log"
+lstparams "caption={Assign unique IDs to individuals},label={idTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tracking pedigrees (operator 
+\family typewriter
+pedigreeTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pedigreeTagger
+\family default
+ is similar to a 
+\family typewriter
+parentsTagger
+\family default
+ in that it records parental information in offspring's information fields.
+ However, instead of indexes of parents, this operator records an unique
+ ID of each parent to make it easier to study and reconstruct a complete
+ pedigree of a whole evolutionary process.
+ The default information fields are 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+By default, the 
+\family typewriter
+pedigreeTagger
+\family default
+ does not produce any output.
+ However, if a valid output string (or function) is specified, it will output
+ the ID of offspring and all available parents.
+ Such information is enough to reconstruct the complete pedigree of an evolution
+ary process.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pedigreeTagger"
+
+\end_inset
+
+ demonstrates how to output the complete pedigree of an evolutionary process.
+ Note that 
+\family typewriter
+idTagger
+\family default
+ has to be applied before 
+\family typewriter
+pedigreeTagger
+\family default
+ so that IDs of offspring could be assigned before they are outputted.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pedigreeTagger.log"
+lstparams "caption={Output a complete pedigree of an evolutionary process},label={pedigreeTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+A hybrid tagger (operator 
+\family typewriter
+pyTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyTagger
+\family default
+ uses a user-defined function to pass parental information fields to offspring.
+ When a mating event happens, this operator collect values of specified
+ information fields of parents, pass them to a user-provided function, and
+ use the return values to set corresponding offspring information fields.
+ A typical usage of this operator is to set random environmental factors
+ that are affected by parental values.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyTagger"
+
+\end_inset
+
+ demonstrates such an example where the location of each offspring (x, y)
+ is randomly assigned around the middle position of his or her parents.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyTagger.log"
+lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tagging that involves other parental information
+\end_layout
+
+\begin_layout Standard
+If the way how parental information fields pass to their offspring is affected
+ by parental genotype, sex, or affection status, you could use a Python
+ operator (
+\family typewriter
+pyOperator
+\family default
+) during mating to explicitly obtain parental information and set offspring
+ information fields.
+\end_layout
+
+\begin_layout Standard
+Alternatively, you can add another information field, translate needed informati
+on to this field and pass the genotype information in the form of information
+ field.
+ Operator 
+\family typewriter
+infoExec
+\family default
+ could be helpful in this case.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "otherTagging"
+
+\end_inset
+
+ demonstrates such an example where the number of affected parents are recorded
+ in an information field.
+ Before mating happens, a penetrance operator is used to assign affection
+ status to parents.
+ The affection status is then copied to an information field affected so
+ that operator 
+\family typewriter
+summaryTagger
+\family default
+ could be used to count the number of affected parents.
+ Two 
+\family typewriter
+maPenetrance
+\family default
+ operators are used both before and after mating to assign affection status
+ to both parental and offspring generations.
+ This helps dividing the offspring generation into affected and unaffected
+ virtual subpopulations.
+ Not surprisingly, the average number of affected parents is larger for
+ affected individuals than unaffected individuals.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/otherTagging.log"
+lstparams "caption={Tagging that involves other parental information},label={otherTagging}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Statistics calculation (operator 
 \family typewriter
 stat
@@ -15870,1600 +17579,6 @@ If performance becomes a problem, you might want to have a look at the source
  If you believe that your statistics are popular enough, please send your
  implementation to the simuPOP mailinglist for possible inclusion of your
  statistics into simuPOP.
-\end_layout
-
-\begin_layout Section
-Tagging operators
-\end_layout
-
-\begin_layout Standard
-In simuPOP, tagging refers to the action of setting various information
- fields of offspring, usually using various parental information during
- the production of offspring.
- simuPOP provides a number of tagging operators (called taggers) for various
- purposes.
- Because tagging operators are during-mating operators, they do not support
- parameter 
-\family typewriter
-subPops
-\family default
-.
- If you would like to apply different  taggers to different (virtual) subpopulat
-ions, you can use them in the homogeneous mating schemes of a heterogeneous
- mating scheme.
-\end_layout
-
-\begin_layout Subsection
-Inheritance tagger (operator 
-\family typewriter
-inheritTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-An inheritance tagger passes values of parental information field(s) to
- the corresponding offspring information field(s).
- Depending on the parameters, an inheritTagger can 
-\end_layout
-
-\begin_layout Itemize
-For asexual mating schemes, pass one or more information fields from parent
- to offspring.
-\end_layout
-
-\begin_layout Itemize
-Pass one or more information fields from father to offspring (
-\family typewriter
-mode=Paternal
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-Pass one or more information fields from mother to offspring (
-\family typewriter
-mode=Maternal
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-Pass the maximal, minimal, sum, multiplcation or average of values of one
- or more information fields of both parents (
-\family typewriter
-mode=Maximum
-\family default
-, 
-\family typewriter
-Minimum
-\family default
-, 
-\family typewriter
-Addition, Multiplication
-\family default
- or 
-\family typewriter
-Average
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-This can be used to track the spread of certain information during evolution.
- For example, Example
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "inheritTagger"
-
-\end_inset
-
- tags the first individuals of ten subpopulations of size 1000.
- Individuals in the offspring generation inherits the maximum value of field
- 
-\family typewriter
-x
-\family default
- from his/her parents so 
-\family typewriter
-x
-\family default
- is inherited regardless of the sex of parents.
- A stat operator is used to calculate the number of offspring having this
- tag in each subpopulation.
- The results show that some tagged ancestors have many offspring, and some
- have none.
- If you run this simulation long enough, you can see that all ancestors
- become the ancestor of either none or all indiviudals in a population.
- Note that this simulation only considers genealogical inheritance and ancestors
- do not have to pass any genotype to the last generation.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/inheritTagger.log"
-lstparams "caption={Use an inherit tagger to track offspring of individuals},label={inheritTagger}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Summarize parental informatin fields (operator 
-\family typewriter
-summaryTagger)
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-summaryTagger
-\family default
- summarize values of one or more parental information fields and place the
- result in an offspring information field.
- If mating is sexual, two sets of values will be involved.
- Summarization methods include 
-\family typewriter
-Mean
-\family default
-, 
-\family typewriter
-Minimum
-\family default
-, 
-\family typewriter
-Miximum
-\family default
-,
-\family typewriter
- Summation
-\family default
- and 
-\family typewriter
-Multiplication
-\family default
-.
- The operator is usually used to summarize certain characteristic of parents
- of each offspring.
- For example, a 
-\family typewriter
-summaryTagger
-\family default
- is used in  Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "summaryTagger"
-
-\end_inset
-
- to calculate the mean fitness of parents during each  mating event.
- The results are saved in the 
-\family typewriter
-avgFitness
-\family default
- field of offspring.
- Because allele 1 at locus 0 is under purifying selection, the allele frequency
- of this allele decreases.
- In the mean time, fitness of parents increases because less and less parents
- have this allele.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/summaryTagger.log"
-lstparams "caption={Using a summary tagger to calculate mean fitness of parents.},label={summaryTagger}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Tracking parents (operator 
-\family typewriter
-parentsTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A parents tagger is used to record the indexes of parents (in the parental
- population) in the information fields (default to 
-\family typewriter
-father_idx
-\family default
-, 
-\family typewriter
-mother_idx
-\family default
-) of their offspring.
- These indexes provide a way to track down an individuals parents, offspring
- and consequently all relatives in a multi-generation population.
- Because this operator has been extensively used in this guide, please refer
- to other sections for an Example (e.g.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "basicInfoFields"
-
-\end_inset
-
-).
-\end_layout
-
-\begin_layout Standard
-As long as parental generations do not change after the offspring generation
- is created, recorded parental indexes can be used to locate parents of
- an individual.
- However, in certain applications when parental generations change (e.g.
- to draw a pedigree from a large population), or when individuals can not
- be looked up easily using indexes (e.g.
- after individuals are saved to a file), giving every individual an unique
- ID and refer to them using ID will be a better choice.
-\end_layout
-
-\begin_layout Subsection
-Assign unique IDs to individuals (operator 
-\family typewriter
-idTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-Although it is possible to use generation number and individual indexes
- to locate individuals in an evolving population, an unique I D makes it
- much easier to identify individuals when migration is involved, and to
- analyze an evolutionary process outside of simuPOP.
- An operator 
-\family typewriter
-idTagger
-\family default
- (and its function form 
-\family typewriter
-TagID
-\family default
-) is provided by simuPOP to assign an unique ID to all individuals during
- evolution.
-\end_layout
-
-\begin_layout Standard
-The IDs of individuals are usually stored in an information field named
- 
-\family typewriter
-ind_id
-\family default
-.
- To ensure uniqueness across populations, a single source of ID is used
- for this operator.
- Individual IDs are assigned consecutively starting from 0.
- If you would like to reset the sequence or start from a different number,
- you can call the 
-\family typewriter
-reset(startID)
-\family default
- function of any 
-\family typewriter
-idTagger
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-An 
-\family typewriter
-idTagger
-\family default
- is usually used during-mating to assign ID to each offspring.
- However, if it is applied directly to a population, it will assign unique
- IDs to all individuals in this population.
- This property is usually used in the 
-\family typewriter
-preOps
-\family default
- parameter of function 
-\family typewriter
-simulator.evolve
-\family default
- to assign initial ID to a population.
- For example, three 
-\family typewriter
-idTagger
-\family default
- operators are used in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "idTagger"
-
-\end_inset
-
- to assign IDs to individuals before, during and after evolution.
- Although different operators are used, different IDs are assigned to individual
-s.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/idTagger.log"
-lstparams "caption={Assign unique IDs to individuals},label={idTagger}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Tracking pedigrees (operator 
-\family typewriter
-pedigreeTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pedigreeTagger
-\family default
- is similar to a 
-\family typewriter
-parentsTagger
-\family default
- in that it records parental information in offspring's information fields.
- However, instead of indexes of parents, this operator records an unique
- ID of each parent to make it easier to study and reconstruct a complete
- pedigree of a whole evolutionary process.
- The default information fields are 
-\family typewriter
-father_id
-\family default
- and 
-\family typewriter
-mother_id
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-By default, the 
-\family typewriter
-pedigreeTagger
-\family default
- does not produce any output.
- However, if a valid output string (or function) is specified, it will output
- the ID of offspring and all available parents.
- Such information is enough to reconstruct the complete pedigree of an evolution
-ary process.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pedigreeTagger"
-
-\end_inset
-
- demonstrates how to output the complete pedigree of an evolutionary process.
- Note that 
-\family typewriter
-idTagger
-\family default
- has to be applied before 
-\family typewriter
-pedigreeTagger
-\family default
- so that IDs of offspring could be assigned before they are outputted.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pedigreeTagger.log"
-lstparams "caption={Output a complete pedigree of an evolutionary process},label={pedigreeTagger}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Subsection
-A hybrid tagger (operator 
-\family typewriter
-pyTagger
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyTagger
-\family default
- uses a user-defined function to pass parental information fields to offspring.
- When a mating event happens, this operator collect values of specified
- information fields of parents, pass them to a user-provided function, and
- use the return values to set corresponding offspring information fields.
- A typical usage of this operator is to set random environmental factors
- that are affected by parental values.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyTagger"
-
-\end_inset
-
- demonstrates such an example where the location of each offspring (x, y)
- is randomly assigned around the middle position of his or her parents.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyTagger.log"
-lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Tagging that involves other parental information
-\end_layout
-
-\begin_layout Standard
-If the way how parental information fields pass to their offspring is affected
- by parental genotype, sex, or affection status, you could use a Python
- operator (
-\family typewriter
-pyOperator
-\family default
-) during mating to explicitly obtain parental information and set offspring
- information fields.
-\end_layout
-
-\begin_layout Standard
-Alternatively, you can add another information field, translate needed informati
-on to this field and pass the genotype information in the form of information
- field.
- Operator 
-\family typewriter
-infoExec
-\family default
- could be helpful in this case.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "otherTagging"
-
-\end_inset
-
- demonstrates such an example where the number of affected parents are recorded
- in an information field.
- Before mating happens, a penetrance operator is used to assign affection
- status to parents.
- The affection status is then copied to an information field affected so
- that operator 
-\family typewriter
-summaryTagger
-\family default
- could be used to count the number of affected parents.
- Two 
-\family typewriter
-maPenetrance
-\family default
- operators are used both before and after mating to assign affection status
- to both parental and offspring generations.
- This helps dividing the offspring generation into affected and unaffected
- virtual subpopulations.
- Not surprisingly, the average number of affected parents is larger for
- affected individuals than unaffected individuals.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/otherTagging.log"
-lstparams "caption={Tagging that involves other parental information},label={otherTagging}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Penetrance (under revision)
-\end_layout
-
-\begin_layout Subsection
-Map penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mapPenetrance.log"
-lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-loci penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mlPenetrance.log"
-lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Hybrid penetrance model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyPenetrance.log"
-lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Natural Selection
-\end_layout
-
-\begin_layout Subsection
-Natural selection through the selection of parents
-\end_layout
-
-\begin_layout Standard
-In the simplest scenario, natural selection is implemented in two steps:
-\end_layout
-
-\begin_layout Itemize
-Before mating happens, an operator (called a 
-\series bold
-selector
-\series default
-) goes through a populations and assign each individual a fitness value.
- The fitness values are stored in an information field called 
-\family typewriter
-fitness
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-When mating happens, parents are chosen with probabilities that are proportional
- to their fitness values.
- For example, assuming that a parental population consists of four individuals
- with fitness values 1, 2, 3, and 4, respectively, the probability that
- they are picked to produce offspring are 
-\begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
-\end_inset
-
-, 
-\begin_inset Formula $0.2$
-\end_inset
-
-, 
-\begin_inset Formula $0.3$
-\end_inset
-
-, and 
-\begin_inset Formula $0.4$
-\end_inset
-
- respectively.
- As you can image, if the offspring population has 10 individuals, the four
- parents will on average parent 1, 2, 3 and 4 offspring.
-\end_layout
-
-\begin_layout Standard
-Because parents with lower fitness values have less chance to be produce
- offspring, their genotypes have less chance to be passed to an offspring
- generation.
- If the decreased fitness is caused by the presence of certain mutant (e.g.
- a mutant causing a serious disease), individuals with that mutant will
- have less change to survive and effecitively reduce or eleminate that mutant
- from the population.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- gives an example of natural selection.
- In this example, a 
-\family typewriter
-mapSelector
-\family default
- is used to explicitly assign fitness value to genotypes at the first locus.
- The fitness values are 
-\family typewriter
-1
-\family default
-, 
-\family typewriter
-0.98
-\family default
-, 
-\family typewriter
-0.97
-\family default
- for genotypes 
-\family typewriter
-00
-\family default
-, 
-\family typewriter
-01
-\family default
- and 
-\family typewriter
-11
-\family default
- respectively.
- The selector set individual fitness values to information field 
-\family typewriter
-fitness
-\family default
- before mating happens.
- The 
-\family typewriter
-randomMating
-\family default
- mating scheme then selects parents according to parental fitness values.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/selectParents.log"
-lstparams "caption={Natural selection through the selection of parents},label={selectParents}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Natural selection through the selection of offspring *
-\end_layout
-
-\begin_layout Standard
-Natural selection can also be implemented as selection of offspring.
- Remember that an individual will be discarded if one of the during-mating
- operators fails (return 
-\family typewriter
-False
-\family default
-), 
-\series bold
-a
-\series default
- 
-\series bold
-during-mating selector
-\series default
- 
-\series bold
-discards offspring according to fitness values of offspring
-\series default
-.
- Instead of relative fitness that will be compared against other individuals
- during the selection of parents, 
-\series bold
-fitness values of a during-mating selector are considered as absolute fitness
- which are probabilities to survive
-\series default
- and have to be between 0 and 1.
-\end_layout
-
-\begin_layout Standard
-A during-mating selector works as follows:
-\end_layout
-
-\begin_layout Enumerate
-During evolution, parents are chosen randomly to produce one or more offspring.
- (Nothing prevents you from choosing parents according to their fitness
- values, but it is rarely justifiable to apply natural selection to both
- parents and offspring.)
-\end_layout
-
-\begin_layout Enumerate
-A selection operator is applied to each offspring during mating and determines
- his or her fitness value.
- The fitness value is considered as probability to survive so an offspring
- will be discarded (operator returns 
-\family typewriter
-False
-\family default
-) if the fitnessvalue is larger than an uniform random number.
-\end_layout
-
-\begin_layout Enumerate
-Repeat steps 1 and 2 until the offspring generation is populated.
-\end_layout
-
-\begin_layout Standard
-Because many offspring will be generated and discarded, especially when
- offspring fitness values are low, selection through offspring is less efficient
- than selection through parents.
- In addition, absolute fitness is usually more difficult to estimate than
- relative fitness.
- So, unless there are compelling reasons (e.g.
- simulating realistic scenarios of survival competition among offspring),
- selection through parents are recommended.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectOffspring"
-
-\end_inset
-
- gives an example of natural selection through the selection of offspring.
- This example looks almost identical to Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- but the underlying selection mechanism is quite different.
- Note that selection through offspring does not need an information field
- to hold fitness values.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/selectOffspring.log"
-lstparams "caption={Natural selection through the selection of offspring},label={selectOffspring}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Are two selection scenarios equivalent? **
-\end_layout
-
-\begin_layout Standard
-If you look closely at Examples 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectParents"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "selectOffspring"
-
-\end_inset
-
-, you will notice that their results are quite similar.
- This is actually what you should expect in most cases.
- Let us look at the theoretical consequence of selection through parents
- or offspring in a simple case with asexual mating.
-\end_layout
-
-\begin_layout Standard
-Assuming a diallelic marker with three genotypes 
-\begin_inset Formula $g_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $g_{Aa}$
-\end_inset
-
- and 
-\begin_inset Formula $g_{aa}$
-\end_inset
-
-, with frequencies 
-\begin_inset Formula $P_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $P_{Aa}$
-\end_inset
-
- and 
-\begin_inset Formula $P_{aa}$
-\end_inset
-
-, and relative fitness values 
-\begin_inset Formula $w_{AA}$
-\end_inset
-
-, 
-\begin_inset Formula $w_{Aa}$
-\end_inset
-
-, and 
-\begin_inset Formula $w_{22}$
-\end_inset
-
- respectively.
- If we select through offspring, the proportion of genotype 
-\begin_inset Formula $g_{AA}$
-\end_inset
-
- etc., should be
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
-P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
-
-\end_inset
-
-because offspring genotypes are randomly drawn from the parental generation,
- and each offspring has certain probability to survive.
-\end_layout
-
-\begin_layout Standard
-Now, if we select through parents, the proportion of parents with genotype
- 
-\begin_inset Formula $AA$
-\end_inset
-
- will be the number of 
-\begin_inset Formula $AA$
-\end_inset
-
- individuals times its probability to be chosen: 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
-
-\end_inset
-
-This is, however, exactly 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
-
-\end_inset
-
-which corresponds to the proportion of offspring with such genotype.
- That is to say, in this simple case, 
-\series bold
-two types of selection scenarios yield identical results
-\series default
-.
-\end_layout
-
-\begin_layout Standard
-These two types of selection scenarios do not have to always yield identical
- results.
- Exceptions may be found in cases with more than one offspring or sexual
- mating with sex-specific survival rate.
- simuPOP provides both selection implementations and you should choose one
- of them for your particular simulation.
-\end_layout
-
-\begin_layout Subsection
-Map selector (operator 
-\family typewriter
-mapSelector
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A map selector uses a Python dictionary to provide fitness values for each
- type of genotype.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mapSelector"
-
-\end_inset
-
- uses a dictionary with keys 
-\family typewriter
-(0,0)
-\family default
-, 
-\family typewriter
-(0,1)
-\family default
- and 
-\family typewriter
-(1,1)
-\family default
- to specify fitness values for individuals with these genotypes at locus
- 0.
- This example is a typical example of heterozygote advantage.
- When 
-\begin_inset Formula $w_{11}<w_{12}>w_{22},$
-\end_inset
-
- the genotype frequencies will go to an equilibrium state.
- Theoretically, if 
-\begin_inset Formula $s_{1}=w_{12}-w_{11}$
-\end_inset
-
- and 
-\begin_inset Formula $s_{2}=w_{12}-w_{22}$
-\end_inset
-
-, the stable allele frequency of allele 0 is
-\begin_inset Formula \[
-p=\frac{s_{2}}{s_{1}+s_{2}}\]
-
-\end_inset
-
-which is 
-\begin_inset Formula $\frac{2}{3}$
-\end_inset
-
- in the example (
-\begin_inset Formula $s_{1}=.1$
-\end_inset
-
-, 
-\begin_inset Formula $s_{2}=.2$
-\end_inset
-
-).
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mapSelector.log"
-lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The above example assumes that the fitness value for individuals with genotypes
- 
-\family typewriter
-(0,1)
-\family default
- and 
-\family typewriter
-(1,0)
-\family default
- are the same.
- This assumption is usually valid but can be vialoated with impriting.
- In that case, you can specify fitness for both types of genotypes.
- The underlying mechanism is that the 
-\family typewriter
-mapSelector
-\family default
- looks up a genotype in the dictionary first directly, and then without
- phase information if a genotype is not found.
-\end_layout
-
-\begin_layout Standard
-This operator supports haplodiploid populations and sex chromosomes.
- In these cases, only valid alleles should be listed which can lead to dictionar
-y keys with different lengths.
- In addition, although less used because of potentially a large number of
- keys, this operator can act on multiple loci.
- For example, 
-\end_layout
-
-\begin_layout Itemize
-keys 
-\family typewriter
-(a1,a2)
-\family default
- and 
-\family typewriter
-(a1,)
-\family default
- can be used to specify fitness values for female and male individuals in
- a haplodiploid population, respectively
-\end_layout
-
-\begin_layout Itemize
-keys 
-\family typewriter
-(x1,x2)
-\family default
- and 
-\family typewriter
-(x1,)
-\family default
- can be used to specify fitness for female and male individuals according
- to a locus on the X chromosome in a diploid population, respectively.
- Similarly, keys 
-\family typewriter
-()
-\family default
- and 
-\family typewriter
-(y,)
-\family default
- for a locus on chromosome Y.
-\end_layout
-
-\begin_layout Itemize
-keys 
-\family typewriter
-(a1,a2,b1,b2)
-\family default
- can be used to specify fitness values according to genotype at two loci
- in a diploid population.
-\end_layout
-
-\begin_layout Subsection
-Multi-allele selector (operator 
-\family typewriter
-maSelector
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-A multi-allele selector divides alleles into two groups, wildtype 
-\emph on
-A
-\emph default
- and mutants 
-\emph on
-a
-\emph default
-, and treat alleles within each group as the same.
- The fitness model is therefore simplified to
-\end_layout
-
-\begin_layout Itemize
-Two fitness values for genotype 
-\begin_inset Formula $A$
-\end_inset
-
-, 
-\begin_inset Formula $a$
-\end_inset
-
- in the haploid case
-\end_layout
-
-\begin_layout Itemize
-Three fitness values for genotype 
-\emph on
-AA
-\emph default
-, 
-\emph on
-Aa
-\emph default
- and 
-\emph on
-aa
-\emph default
- in the diploid single locus case.
- Genotype Aa and aA are assumed to have the same impact on fitness.
-\end_layout
-
-\begin_layout Standard
-The default wildtype group contains allele 0 so the two allele groups are
- zero and non-zero alleles.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "maSelector"
-
-\end_inset
-
- demonstrates the use of this operator.
- This example is identical to Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mapSelector"
-
-\end_inset
-
- except that there are five alleles at locus 0 and alleles 1, 2, 3, 4 are
- treated as a single non-widetype group.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/maSelector.log"
-lstparams "caption={A multi-allele selector},label={maSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Operator 
-\family typewriter
-maSelector
-\family default
- also supports multiple loci by specifying fitness values for all combination
- of genotype at specified loci.
- In the case of two loci, this operator requires
-\end_layout
-
-\begin_layout Itemize
-Four fitness values for genotype 
-\family typewriter
-AB
-\family default
-, 
-\family typewriter
-Ab
-\family default
-, 
-\family typewriter
-aB
-\family default
- and 
-\family typewriter
-ab
-\family default
- in the haploid case,
-\end_layout
-
-\begin_layout Itemize
-Nine fitness values for genotype 
-\family typewriter
-AABB
-\family default
-, 
-\family typewriter
-AABb
-\family default
-, 
-\family typewriter
-AAbb
-\family default
-, 
-\family typewriter
-AaBB
-\family default
-, 
-\family typewriter
-AaBb
-\family default
-, 
-\family typewriter
-Aabb
-\family default
-, 
-\family typewriter
-aaBB
-\family default
-, 
-\family typewriter
-aaBb
-\family default
-, and 
-\family typewriter
-aabb
-\family default
- in the haploid case.
-\end_layout
-
-\begin_layout Standard
-In general, 
-\begin_inset Formula $2^{n}$
-\end_inset
-
- values are needed for haploid populations and 
-\begin_inset Formula $3^{n}$
-\end_inset
-
- values are needed for diploid populations where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of loci.
- This operator does not yet support haplodiploid populations and sex chromosomes.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "maSelectorHaploid"
-
-\end_inset
-
- demonstrates the use of a multi-locus model in a haploid population.
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/maSelectorHaploid.log"
-lstparams "caption={A multi-locus multi-allele selection model in a haploid population},label={maSelectorHaploid}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-locus selection models (operator 
-\family typewriter
-mlSelector
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-Although an individual's fitness can be affected by several factors, each
- of which can be modeled individually, 
-\series bold
-only one fitness value is used to determine a person's ability to pass all
- these factors to his or her offspring
-\series default
-.
- Although in theory we sometimes assume independent evolution of disease
- predisposing loci (mostly for mathematical reasons), in practise we have
- to use a multi-locus selection model to combine single-locus models.
-\end_layout
-
-\begin_layout Standard
-This multi-loci selector applies several selectors to each individual and
- computes an overall fitness value from the fitness values provided by these
- selectors.
- Although this selector is designed to obtain multi-loci fitness values
- from several single-locus fitness models, any selector, including those
- obtain their fitness values from multiple disease predisposing loci, can
- be used in this selector.
- This selector uses parameter 
-\family typewriter
-mode
-\family default
- to control how individual fitness values are combined.
- More specifically, if 
-\begin_inset Formula $f_{i}$
-\end_inset
-
- are fitness values obtained from individual selectors, this selector returns
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\Pi_{i}f_{i}$
-\end_inset
-
- if 
-\family typewriter
-mode=Multiplicative
-\family default
-, and
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $1-\sum_{i}\left(1-f_{i}\right)$
-\end_inset
-
- if 
-\family typewriter
-mode=Additive
-\family default
-, and
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $1-\Pi_{i}\left(1-f_{i}\right)$
-\end_inset
-
- if 
-\family typewriter
-mode=Heterogeneity
-\end_layout
-
-\begin_layout Standard
-0 will be returned if the returned fitness value is less than 0.
-\end_layout
-
-\begin_layout Standard
-This operator simply combines individual fitness values and it is your responsib
-ility to apply and interpret these models.
- For example, if relative fitness values are greater than one, the heterogeneity
- model hardly makes sense.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mlSelector"
-
-\end_inset
-
- demonstrates the use of this operator using an additive multi-locus model
- over an additive and a recessive single-locus model at two diesease predisposin
-g loci.
- For comparison, we simulate two additional replicates with selection only
- applying to one of the two loci.
- It would be interesting to see if these two loci evolve more or less independen
-tly by comparing allele freqency trajectories of these two replicates to
- those in the first replicate.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mlSelector.log"
-lstparams "caption={A multi-loci selector},label={mlSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-A hybrid selector (operator 
-\family typewriter
-pySelector
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-When your selection model involves multiple interacting genetic and environmenta
-l factors, it might be easier to calculate a fitness value explicitly using
- a Python function.
- A hybrid selector can be used for this purpose.
- If your selection model depends solely on genotype, you can define a function
- such as
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def fitness_func(genotype, gen):
-\end_layout
-
-\begin_layout Plain Layout
-
-    # calculate fitness according to genotype at specified loci
-\end_layout
-
-\begin_layout Plain Layout
-
-    return val
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and use this function in an operator 
-\family typewriter
-pySelector(func=fitness_func, loci=loci)
-\family default
-.
- If your selection model depends on genotype as well as individual fitness,
- you can define a function in the form of 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def fitness_func(genotype, fields, gen):
-\end_layout
-
-\begin_layout Plain Layout
-
-    # calculate fitness according to genotype at specified loci
-\end_layout
-
-\begin_layout Plain Layout
-
-    # and values at specified informaton fields.
-\end_layout
-
-\begin_layout Plain Layout
-
-    return val
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and use this function in an operator 
-\family typewriter
-pySelector(func=fitness_func, loci=loci, infoFields=fields)
-\family default
-.
- When a 
-\family typewriter
-pySelector
-\family default
- is used to calculate fitness for an individual (parents if applied pre-mating,
- offspring if applied during-mating), it will collect his or her genotype
- at specified loci, and optionally values at specified information fields
- to a user-specified Python function, and take its return value as fitness.
- Generation number is also passed to make it easy to implement time-dependent
- selection pressures.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pySelector"
-
-\end_inset
-
- demonstrates how to use a 
-\family typewriter
-pySelector
-\family default
- to specify fitness values according to a fitness table and the smoking
- status of each individual.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pySelector.log"
-lstparams "caption={A hybrid selector},label={pySelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Natural selection without a selector
-\end_layout
-
-\begin_layout Standard
-If you know how natural selection works in simuPOP, you do not have to use
- a selector to perform natural selection in simuPOP.
- All you need to do is
-\end_layout
-
-\begin_layout Itemize
-Set can define a function 
-\family typewriter
-fitness(pop)
-\family default
- and assign fitness values to all individuals in a 
-\family typewriter
-pyOperator(func=fitness)
-\family default
- and use it before mating.
-\end_layout
-
-\begin_layout Itemize
-Define a function 
-\family typewriter
-fitness(ind)
-\family default
- to calculate offspring fitness value and reject him or her if this fitness
- value is greater than a random number.
- Use this function in 
-\family typewriter
-pyOpeartor(func
-\family default
-=
-\family typewriter
-fitness, offspringOnly=True
-\family default
-) during mating.
-\end_layout
-
-\begin_layout Subsection
-Individual fitness affected by affection status and information fields
-\end_layout
-
-\begin_layout Subsection
-Support for virtual subpopulations *
-\end_layout
-
-\begin_layout Standard
-Support for virtual subpopulations allows you to use different selectors
- for different (virtual) subpopulations.
- However, because virtual subpopulations may overlap, and they do not have
- to cover all individuals in a subpopulation, it is important to remember:
-\end_layout
-
-\begin_layout Itemize
-If virtual subpopulations overlap, the fitness value set by the last selector
- will be used.
-\end_layout
-
-\begin_layout Itemize
-If an individual is not included in any of the virtual subpopulation, its
- fitness value is undefined.
- In most cases, these individuals will have zero fitness values which prevent
- them from producing any offspring.
-\end_layout
-
-\begin_layout Subsection
-Natural selection in a heterogeneous mating scheme **
-\end_layout
-
-\begin_layout Standard
-Multiple mating schemes could be applied to the same subpopulation in a
- heterogeneous mating scheme (
-\family typewriter
-heteroMating
-\family default
-).
- These mating schemes may or may not support natural selection, and they
- may see individuals differently in terms of individual fitness.
- Parameter 
-\family typewriter
-fitnessField
-\family default
- of a mating scheme could be used to handle such cases.
- More specifically,
-\end_layout
-
-\begin_layout Itemize
-You can turn off the natural selection support of a mating scheme by setting
- 
-\family typewriter
-fitnessField=''
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-If a mating scheme uses a different set of fitness values, you can add an
- information field (e.g.
- 
-\family typewriter
-fitness1
-\family default
-), setting individual fitness to this information field using a selector
- (with parameter 
-\family typewriter
-infoFields='fitness1'
-\family default
-) and tells a mating scheme to look in this information field for fitness
- values (using parameter 
-\family typewriter
-fitnessField='fitness1'
-\family default
-).
 \end_layout
 
 \begin_layout Section

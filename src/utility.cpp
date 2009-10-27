@@ -1779,7 +1779,8 @@ simpleStmt::simpleStmt(const string & stmt, const string & indVar) : m_var(""),
 	const regex multiplied2("\\s*([\\d\\w]+)\\s*\\=\\s*\\1\\s*\\*\\s*([-]*[1-9\\.]+)\\s*");
 	const regex multiplied3("\\s*([\\d\\w]+)\\s*\\=\\s*([-]*[1-9\\.]+)\\s*\\*\\s*\\1\\s*");
 	const regex setSex("\\s*([\\d\\w]+)\\s*\\=\\s*([\\w]+).sex\\s*[(]\\s*[)]\\s*");
-	const regex setAffection("\\s*([\\d\\w]+)\\s*\\=\\s*([\\w]+).affected\\s*[(]\\s*[)]\\s*");
+	const regex setAffected("\\s*([\\d\\w]+)\\s*\\=\\s*([\\w]+).affected\\s*[(]\\s*[)]\\s*");
+	const regex setUnaffected("\\s*([\\d\\w]+)\\s*\\=\\s*not\\s+([\\w]+).affected\\s*[(]\\s*[)]\\s*");
 
 	cmatch matches;
 
@@ -1801,15 +1802,19 @@ simpleStmt::simpleStmt(const string & stmt, const string & indVar) : m_var(""),
 		string name = string(matches[2].first, matches[2].second);
 		if (name == indVar)
 			m_operation = SetSex;
-	} else if (regex_match(stmt.c_str(), matches, setAffection)) {
+	} else if (regex_match(stmt.c_str(), matches, setAffected)) {
 		string name = string(matches[2].first, matches[2].second);
 		if (name == indVar)
-			m_operation = SetAffection;
+			m_operation = SetAffected;
+	} else if (regex_match(stmt.c_str(), matches, setUnaffected)) {
+		string name = string(matches[2].first, matches[2].second);
+		if (name == indVar)
+			m_operation = SetUnaffected;
 	} else
 		return;
 
 	m_var = string(matches[1].first, matches[1].second);
-	if (m_operation != SetSex && m_operation != SetAffection) {
+	if (m_operation != SetSex && m_operation != SetAffected && m_operation != SetUnaffected) {
 		try {
 			m_value = boost::lexical_cast<double>(string(matches[2].first, matches[2].second));
 		} catch (...) {

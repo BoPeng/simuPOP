@@ -213,8 +213,11 @@ bool infoExec::apply(population & pop)
 			case simpleStmt::SetSex:
 				ind->setInfo(ind->sex(), oVarIdx);
 				break;
-			case simpleStmt::SetAffection:
+			case simpleStmt::SetAffected:
 				ind->setInfo(ind->affected(), oVarIdx);
+				break;
+			case simpleStmt::SetUnaffected:
+				ind->setInfo(!ind->affected(), oVarIdx);
 				break;
 			default:
 				throw RuntimeError("Incorrect operation type");

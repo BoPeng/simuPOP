@@ -44,6 +44,8 @@ bool selector::apply(population & pop)
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind)
 			ind->setInfo(indFitness(& * ind, pop.gen()), fit_id);
+		if (sp->isVirtual())
+			pop.deactivateVirtualSubPop(sp->subPop());
 	}
 
 	return true;
