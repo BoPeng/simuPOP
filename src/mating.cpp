@@ -952,7 +952,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	UINT infoSz = m_infoIdx.size();
 
 	m_selection = pop.hasInfoField(m_selectionField);
-	
+
 	m_index.clear();
 
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
@@ -1365,8 +1365,8 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 homoMating::homoMating(parentChooser & chooser,
 	offspringGenerator & generator,
 	const uintListFunc & subPopSize,
-	vspID subPop, double weight)
-	: mating(subPopSize), m_subPop(subPop), m_weight(weight)
+	subPopList subPops, double weight)
+	: mating(subPopSize), m_subPops(subPops), m_weight(weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
@@ -1454,12 +1454,15 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectormating m;
 		vectorf w_pos;                          // positive weights
 		vectorf w_neg;                          // negative weights
+		subPopList sps;                         // each subpopulations
+		//
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
-			// if it is used for this subpop, or all subpopulations
-			if ((*it)->subPop() == sp || (*it)->subPop() == InvalidSubPopID) {
+			subPopList subPops = (*it)->subPops();
+			if (subPops.allAvail()) {
 				m.push_back(*it);
+				sps.push_back(vspID(sp));
 				double w = (*it)->weight();
 				// less than zero...
 				if (fcmp_lt(w, 0.)) {
@@ -1468,6 +1471,25 @@ bool heteroMating::mate(population & pop, population & scratch,
 				} else {
 					w_pos.push_back(w);
 					w_neg.push_back(0);
+				}
+			} else {
+				subPopList::const_iterator vsp = subPops.begin();
+				subPopList::const_iterator vspEnd = subPops.end();
+				for (; vsp != vspEnd; ++vsp) {
+					if (vsp->subPop() != sp)
+						continue;
+					// if it is used for this subpop, or all subpopulations
+					m.push_back(*it);
+					sps.push_back(*vsp);
+					double w = (*it)->weight();
+					// less than zero...
+					if (fcmp_lt(w, 0.)) {
+						w_pos.push_back(0);
+						w_neg.push_back(-w);
+					} else {
+						w_pos.push_back(w);
+						w_neg.push_back(0);
+					}
 				}
 			}
 		}
@@ -1485,7 +1507,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			for (size_t i = 0; i < m.size(); ++i)
 				// if there is no negative weight...
 				if (w_neg[i] == 0)
-					w_pos[i] = pop.subPopSize(vspID(sp, m[i]->virtualSubPop()));
+					w_pos[i] = pop.subPopSize(sps[i]);
 		}
 		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
 			                   << "Negative mating scheme weights: " << w_neg << endl);
@@ -1502,7 +1524,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
-				vspSize[i] = static_cast<ULONG>(pop.subPopSize(vspID(sp, m[i]->virtualSubPop())) * w_neg[i]);
+				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sps[i]) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
 					"Not enough offspring to accommodate specified weight scheme. "
 					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
@@ -1537,16 +1559,16 @@ bool heteroMating::mate(population & pop, population & scratch,
 		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
 			                   << vspSize << endl);
 
+		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
+			SystemError, "Failed to determine subpopulation size");
 		// it points to the first mating scheme.
-		it = m.begin();
-		it_end = m.end();
 		vectoru::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
 			"Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
-		for (; it != it_end; ++it, ++itSize) {
-			if ((*it)->virtualSubPop() != InvalidSubPopID)
-				pop.activateVirtualSubPop(vspID(sp, (*it)->virtualSubPop()));
+		for (UINT idx = 0; idx < m.size(); ++idx, ++itSize) {
+			if (sps[idx].isVirtual())
+				pop.activateVirtualSubPop(sps[idx]);
 			// if previous mating scheme works on a virtual subpop,
 			// and the current one is not. deactivate it.
 			else if (pop.hasActivatedVirtualSubPop(sp))
@@ -1554,7 +1576,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 			// real mating
 			try {
-				if (!(*it)->mateSubPop(pop, sp, ind, ind + *itSize, ops))
+				if (!m[idx]->mateSubPop(pop, sp, ind, ind + *itSize, ops))
 					return false;
 			} catch (...) {
 				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
@@ -1564,7 +1586,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 		}
 		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,
 			"Mating scheme somehow does not fill the whole offspring population.");
-		pop.deactivateVirtualSubPop(sp);
+		// we do not deactivate each time to save some time
+		if (pop.hasActivatedVirtualSubPop(sp))
+			pop.deactivateVirtualSubPop(sp);
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {

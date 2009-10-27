@@ -177,8 +177,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[10000, 10000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop,
             heteroMating(
-                [randomMating(numOffspring=2, subPop=0),
-                randomMating(numOffspring=4, subPop=1)])
+                [randomMating(numOffspring=2, subPops=0),
+                randomMating(numOffspring=4, subPops=1)])
         )
         simu.evolve(
             initOps = initSex(),
@@ -202,8 +202,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
         simu = simulator(pop, heteroMating(
             matingSchemes = [
-                randomMating(numOffspring=1, subPop=(0,0)),
-                randomMating(numOffspring=2, subPop=(1,1))
+                randomMating(numOffspring=1, subPops=[(0,0)]),
+                randomMating(numOffspring=2, subPops=[(1,1)])
             ])
         )
         simu.evolve(
