@@ -1,4 +1,4 @@
-#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -21963,8 +21963,12 @@ simuCDCV(model='instant', N0=10000, N1=10000, G0=500, G1=500,
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Chapter
+Advanced applications
+\end_layout
 
+\begin_layout Section
+Overlapping generations
 \end_layout
 
 \begin_layout Standard
