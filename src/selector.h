@@ -302,25 +302,24 @@ private:
 
 /** This selector is created by a list of selectors. When it is applied to an
  *  individual, it applies these selectors to the individual, obtain a list of
- *  fitness values, and compute a combined fitness value from them. Additive, 
+ *  fitness values, and compute a combined fitness value from them. Additive,
  *  multiplicative, and a heterogeneour multi-locus model are supported.
  */
 class mlSelector : public selector
 {
 public:
-	/** Create a multiple-locus selector. The selector takes a vector of
-     *  selectors and evaluate the fitness of an
-   individual as the product or sum of individual fitness values. The mode is
-   determined by parameter \c mode, which takes one of the following values
-   \li \c Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$, where \f$ f_{i} \f$
-   is the single-locus fitness value.
-   \li \c Additive: the fitness is calculated as
-   \f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right) \f$.
-   \f$ f \f$ will be set to \c 0 when \f$ f<0 \f$.
-	   \param selectors a list of selectors
-
-	   Please refer to \c mapSelector for other parameter descriptions.
-
+	/** Create a multiple-locus selector from a list selection operator
+	 *  \e selectors. When this operator is applied to an individual (parents
+	 *  when used before mating and offspring when used during mating), it
+	 *  applies these operators to the individual and obtain a list of (usually
+	 *  single-locus) fitness values. These fitness values are combined to a
+	 *  single fitness value using
+	 *  \li <em>Prod(f_i)</em>, namely the product of individual fitness if
+	 *       \e mode = \c Multiplicative,
+	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c Additive, and
+	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c Heterogeneity
+	 *
+	 *  zero will be returned if the combined fitness value is less than zero.
 	 */
 	mlSelector(const opList & selectors, int mode = Multiplicative,
 		int begin = 0, int end = -1, int step = 1,
@@ -364,45 +363,40 @@ private:
 	int m_mode;
 };
 
-/// selection using user provided function
-/**
-   This selector assigns fitness values by calling a user provided function.
-   It accepts a list of loci and a Python function \c func. For
-   each individual, this operator will pass the genotypes at these loci,
-   generation number, and optionally values at some information fields
-   to this function. The return value is treated as the fitness value.
-   The genotypes are arranged in the order
-   of <tt>0-0,0-1,1-0,1-1</tt> etc. where X-Y represents locus X - ploidy Y.
-   More specifically, \c func can be
-   \li <tt>func(geno, gen)</tt> if \c infoFields has length 0 or 1.
-   \li <tt>func(geno, fields, gen)</tt> when \c infoFields has more than 1 fields.
-    Values of fields 1, 2, ... will be passed.
-   Both \c geno and \c fields should be a list.
-
-   <funcForm>PySelect</funcForm>
+/** This selector assigns fitness values by calling a user provided function.
+ *  It accepts a list of loci and a Python function \c func. For each
+ *  individual, this operator passes the genotypes at these loci, and a
+ *  generation number to this function. The return value is treated as the
+ *  fitness value. Optionally, several information fields can be given to
+ *  parameter \e paramFields. In this case, the user-defined Python function
+ *  should accept a second parameter that is a list of values at these
+ *  information fields. In another word, a user-defined function in the form
+ *  of
+ *  \li <tt>func(geno, gen)</tt> is needed if \c paramFields is empty, or
+ *  \li <tt>func(geno, fields, gen)</tt> is needed if \c paramFields has some
+ *      information fields.
+ *
+ *  If you need to pass sex or affection status to this function, you should
+ *  define an information field (e.g. sex) and sync individual property with
+ *  this field using operator \e infoExec (e.g.
+ *  <tt>infoExec('sex=ind.sex', exposeInd='ind')</tt>.
  */
 class pySelector : public selector
 {
 public:
-	/// create a Python hybrid selector
-	/**
-	   \param loci susceptibility loci. The genotype at these loci will be
-	    passed to \c func.
-	   \param func a Python function that accepts genotypes at specified loci,
-	    generation number, and optionally information fields. It returns the fitness value.
-	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
-	   \param infoFields if specified, the first field should be the information
-	    field to save calculated fitness value (should be 'fitness' in most cases).
-	    The values of the rest of the information fields (if available) will also
-	    be passed to the user defined penetrance function.
+	/** Create a Python hybrid selector that passes genotype at specified
+	 *  \e loci, optional values at specified information fields (parameter
+	 *  \e paramFields), and a generation number to a user-defined function
+	 *  \e func. The return value will be treated as individual fitness.
 	 */
-	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(uintList loci, PyObject * func,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & paramFields = vectorstr(),
 		const stringList & infoFields = stringList("fitness")) :
 		selector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
+		m_loci(loci.elems()), m_func(func), m_paramFields(paramFields.elems()),
+		m_genotype(NULL), m_info(NULL)
 	{
 		if (!m_func.isValid())
 			throw ValueError("Passed variable is not a callable python function.");
@@ -411,16 +405,20 @@ public:
 			"Please specify susceptibility loci");
 	};
 
+    ~pySelector()
+    {
+        Py_XDECREF(m_genotype);
+        Py_XDECREF(m_info);
+    }
+
 	/// CPPONLY
 	pySelector(const pySelector & rhs) :
 		selector(rhs),
 		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
-		m_alleles(rhs.m_alleles),
-		m_info(rhs.m_info),
-		m_len(rhs.m_len),
-		m_numArray(NULL),
-		m_infoArray(NULL)
+		m_paramFields(rhs.m_paramFields),
+		m_genotype(NULL),
+		m_info(NULL)
 	{
 	}
 
@@ -451,20 +449,14 @@ private:
 	/// user supplied python function
 	pyFunc m_func;
 
-	/// copy of alleles of each individual a time.
-	vectora m_alleles;
-
 	/// copy of information fields
-	vectorinfo m_info;
-
-	/// length of m_alleles
-	int m_len;
+	vectorstr m_paramFields;
 
 	/// the object that passed to func
-	PyObject * m_numArray;
+	PyObject * m_genotype;
 
 	// the object that passed to func
-	PyObject * m_infoArray;
+	PyObject * m_info;
 
 };
 }

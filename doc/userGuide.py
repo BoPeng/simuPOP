@@ -1713,22 +1713,22 @@ using std::vector;
 class myParentsChooser
 {
 public:
-	// A constructor takes all locations of male and female.
-	myParentsChooser(const std::vector<int> & m, const std::vector<int> & f)
-		: male_idx(m), female_idx(f)
-	{
-		srand(time(0));
-	}
+        // A constructor takes all locations of male and female.
+        myParentsChooser(const std::vector<int> & m, const std::vector<int> & f)
+                : male_idx(m), female_idx(f)
+        {
+                srand(time(0));
+        }
 
-	pair<unsigned long, unsigned long> chooseParents()
-	{
-		unsigned long male = rand() % male_idx.size();
-		unsigned long female = rand() % male_idx.size();
-		return std::make_pair(male, female);
-	}
+        pair<unsigned long, unsigned long> chooseParents()
+        {
+                unsigned long male = rand() % male_idx.size();
+                unsigned long female = rand() % male_idx.size();
+                return std::make_pair(male, female);
+        }
 private:
-	vector<int> male_idx;
-	vector<int> female_idx;
+        vector<int> male_idx;
+        vector<int> female_idx;
 };
 ''')
 classFile.close()
@@ -1795,11 +1795,11 @@ except ImportError:
     import random
     class myParentsChooser:
         def __init__(self, maleIndexes, femaleIndexes):
-	    self.maleIndexes = maleIndexes
-	    self.femaleIndexes = femaleIndexes
-	def chooseParents(self):
-	    return self.maleIndexes[random.randint(0, len(self.maleIndexes)-1)],\
-	        self.femaleIndexes[random.randint(0, len(self.femaleIndexes)-1)]
+            self.maleIndexes = maleIndexes
+            self.femaleIndexes = femaleIndexes
+        def chooseParents(self):
+            return self.maleIndexes[random.randint(0, len(self.maleIndexes)-1)],\
+                self.femaleIndexes[random.randint(0, len(self.femaleIndexes)-1)]
 
 def parentsChooser(pop, sp):
     'How to call a C++ level parents chooser.'
@@ -3814,8 +3814,8 @@ simu.evolve(
     postOps = [
         sim.stat(haploFreq=[0, 1], step=25),
         sim.pyEval(r"'%.3f\t%.3f\t%.3f\t%.3f\n' % (haploFreq[(0,1)][(0,0)],"
-		"haploFreq[(0,1)][(0,1)], haploFreq[(0,1)][(1,0)],"
-		"haploFreq[(0,1)][(1,1)])", step=25)
+                "haploFreq[(0,1)][(0,1)], haploFreq[(0,1)][(1,0)],"
+                "haploFreq[(0,1)][(1,1)])", step=25)
     ],
     gen = 100
 )
@@ -3839,7 +3839,7 @@ simu.evolve(
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
     preOps = [
-	sim.mlSelector([
+        sim.mlSelector([
             sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
             sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             ], mode = sim.Additive, reps=0),
@@ -3847,9 +3847,9 @@ simu.evolve(
         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}, reps=2)
     ],
     postOps = [
-	 sim.stat(alleleFreq=[0,1]),
-	 sim.pyEval(r"'REP %d:\t%.3f\t%.3f\t' % (rep, alleleFreq[0][1], alleleFreq[1][1])"),
-	 sim.pyOutput('\n', reps=-1),
+         sim.stat(alleleFreq=[0,1]),
+         sim.pyEval(r"'REP %d:\t%.3f\t%.3f\t' % (rep, alleleFreq[0][1], alleleFreq[1][1])"),
+         sim.pyOutput('\n', reps=-1),
     ],
     gen = 5
 )
@@ -3882,27 +3882,27 @@ def sel(arr, smoking, gen):
     if arr[0] + arr[1] == 1 and arr[2] + arr[3] == 1:
         v = 1 - s1  # case of AaBb
     elif arr[2] + arr[3] == 2:
-	v = 1 - s2  # case of ??bb
+        v = 1 - s2  # case of ??bb
     else:                
         v = 1       # other cases
     if smoking[0]:
-	return v * 0.9
+        return v * 0.9
     else:
-	return v
+        return v
 
 simu.evolve(
     initOps = [
         sim.initSex(),
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
-    preOps = sim.pySelector(loci=[0, 1], func=sel, infoFields=['fitness', 'smoking']),
+    preOps = sim.pySelector(loci=[0, 1], func=sel, paramFields='smoking'),
     postOps = [
-	# set smoking status randomly
-	sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
-        sim.stat(alleleFreq=[0, 1]),
-        sim.pyEval(r"'%.4f\t%.4f\n' % (alleleFreq[0][1], alleleFreq[1][1])", step=50)
+        # set smoking status randomly
+        sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
+        sim.stat(alleleFreq=[0, 1], step=20),
+        sim.pyEval(r"'%.4f\t%.4f\n' % (alleleFreq[0][1], alleleFreq[1][1])", step=20)
     ],
-    gen=151
+    gen = 50
 )
 #end_file
 
@@ -3926,10 +3926,10 @@ simu.evolve(
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
     preOps = [
-	sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.2]),
-	sim.stat(numOfAffected=True, step=25),
-	sim.pyEval(r"'Affected: %d\t' % numOfAffected", step=50),
-	sim.infoExec('fitness = not ind.affected()', exposeInd='ind')
+        sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.2]),
+        sim.stat(numOfAffected=True, step=25),
+        sim.pyEval(r"'Affected: %d\t' % numOfAffected", step=50),
+        sim.infoExec('fitness = not ind.affected()', exposeInd='ind')
     ],
     postOps = [
         sim.stat(alleleFreq=0),

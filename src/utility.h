@@ -1029,10 +1029,12 @@ public:
 		Increment = 102,
 		Decrement = 103,
 		MultipliedBy = 104,
+		SetSex = 105,
+		SetAffection = 106,
 	};
 
 public:
-	simpleStmt(const string & stmt);
+	simpleStmt(const string & stmt, const string & indVar);
 
 	string var() const
 	{

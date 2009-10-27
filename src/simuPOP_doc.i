@@ -4343,36 +4343,17 @@ Usage:
 
 %feature("docstring") simuPOP::mlSelector "
 
-Function form:
-
-    MlSelect
-
-Description:
-
-    selection according to genotypes at multiple loci in a
-    multiplicative model
-
 Details:
 
-    This selector is a 'multiple-locus model' selector. The selector
-    takes a vector of selectors (can not be another mlSelector) and
-    evaluate the fitness of an individual as the product or sum of
-    individual fitness values. The mode is determined by parameter
-    mode, which takes one of the following values
-    *   Multiplicative: the fitness is calculated as $
-    f=\\prod_{i}f_{i} $, where $ f_{i} $ is the single-locus fitness
-    value.
-    *   Additive: the fitness is calculated as $
-    f=\\max\\left(0,1-\\sum_{i}(1-f_{i})\\right) $. $ f $ will be set to 0
-    when $ f<0 $.
+    This selector is created by a list of selectors. When it is
+    applied to an individual, it applies these selectors to the
+    individual, obtain a list of fitness values, and compute a
+    combined fitness value from them. Additive, multiplicative, and a
+    heterogeneour multi-locus model are supported.
 
 "; 
 
 %feature("docstring") simuPOP::mlSelector::mlSelector "
-
-Description:
-
-    create a multiple-locus selector
 
 Usage:
 
@@ -4382,11 +4363,17 @@ Usage:
 
 Details:
 
-    Please refer to mapSelector for other parameter descriptions.
-
-Arguments:
-
-    selectors:      a list of selectors
+    Create a multiple-locus selector from a list selection operator
+    selectors. When this operator is applied to an individual (parents
+    when used before mating and offspring when used during mating), it
+    applies these operators to the individual and obtain a list of
+    (usually single-locus) fitness values. These fitness values are
+    combined to a single fitness value using
+    *   Prod(f_i), namely the product of individual fitness if mode =
+    Multiplicative,
+    *   1-sum(1 - f_i) if mode = Additive, and
+    *   1-Prod(1 - f_i) if mode = Heterogeneity zero will be returned
+    if the combined fitness value is less than zero.
 
 "; 
 
@@ -7179,57 +7166,40 @@ Usage:
 
 %feature("docstring") simuPOP::pySelector "
 
-Function form:
-
-    PySelect
-
-Description:
-
-    selection using user provided function
-
 Details:
 
     This selector assigns fitness values by calling a user provided
     function. It accepts a list of loci and a Python function func.
-    For each individual, this operator will pass the genotypes at
-    these loci, generation number, and optionally values at some
-    information fields to this function. The return value is treated
-    as the fitness value. The genotypes are arranged in the order of
-    0-0,0-1,1-0,1-1 etc. where X-Y represents locus X - ploidy Y. More
-    specifically, func can be
-    *   func(geno, gen) if infoFields has length 0 or 1.
-    *   func(geno, gen, fields) when infoFields has more than 1
-    fields. Values of fields 1, 2, ... will be passed. Both geno and
-    fields should be a list.
+    For each individual, this operator passes the genotypes at these
+    loci, and a generation number to this function. The return value
+    is treated as the fitness value. Optionally, several information
+    fields can be given to parameter paramFields. In this case, the
+    user-defined Python function should accept a second parameter that
+    is a list of values at these information fields. In another word,
+    a user-defined function in the form of
+    *   func(geno, gen) is needed if paramFields is empty, or
+    *   func(geno, fields, gen) is needed if paramFields has some
+    information fields. If you need to pass sex or affection status to
+    this function, you should define an information field (e.g. sex)
+    and sync individual property with this field using operator
+    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
 
 "; 
 
 %feature("docstring") simuPOP::pySelector::pySelector "
 
-Description:
-
-    create a Python hybrid selector
-
 Usage:
 
     pySelector(loci, func, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      reps=AllAvail, subPops=AllAvail, paramFields=[],
+      infoFields=AllAvail)
 
-Arguments:
+Details:
 
-    loci:           susceptibility loci. The genotype at these loci
-                    will be passed to func.
-    func:           a Python function that accepts genotypes at
-                    specified loci, generation number, and optionally
-                    information fields. It returns the fitness value.
-    output:         and other parameters please refer to help
-                    (baseOperator.__init__)
-    infoFields:     if specified, the first field should be the
-                    information field to save calculated fitness value
-                    (should be 'fitness' in most cases). The values of
-                    the rest of the information fields (if available)
-                    will also be passed to the user defined penetrance
-                    function.
+    Create a Python hybrid selector that passes genotype at specified
+    loci, optional values at specified information fields (parameter
+    paramFields), and a generation number to a user-defined function
+    func. The return value will be treated as individual fitness.
 
 "; 
 
@@ -8571,7 +8541,7 @@ Usage:
 
 Usage:
 
-    simpleStmt(stmt)
+    simpleStmt(stmt, indVar)
 
 "; 
 
