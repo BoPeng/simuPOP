@@ -26,12 +26,16 @@
 #include "qtrait.h"
 
 namespace simuPOP {
+
 bool quanTrait::apply(population & pop)
 {
-	UINT idx = pop.infoIdx(infoField(0));
+	vectoru infoIdx(infoSize());
+
+	for (size_t i = 0; i < infoSize(); ++i)
+		infoIdx[i] = pop.infoIdx(infoField(i));
 
 	UINT ansGen = 0;
-
+	UINT oldGen = pop.curAncestralGen();
 	if (m_ancGen == -1)
 		ansGen = pop.ancestralGens();
 	else if (m_ancGen > 0) {
@@ -40,128 +44,102 @@ bool quanTrait::apply(population & pop)
 		else
 			ansGen = m_ancGen;
 	}
-
+	vectorf traits(infoSize());
 	for (UINT i = 0; i <= ansGen; ++i) {
 		pop.useAncestralGen(i);
 
-		// we need info to be in order
-		IndInfoIterator traitIt = pop.infoBegin(idx);
-		for (IndIterator it = pop.indIterator(); it.valid(); ++it)
-			*traitIt++ = qtrait(& * it) ;
-	}
-	pop.useAncestralGen(0);
+		subPopList subPops = applicableSubPops();
 
+		// the usual whole population, easy case.
+		if (subPops.allAvail())
+			subPops.useSubPopsFrom(pop);
+
+		subPopList::const_iterator sp = subPops.begin();
+		subPopList::const_iterator spEnd = subPops.end();
+		for (; sp != spEnd; ++sp) {
+			if (sp->isVirtual())
+				pop.activateVirtualSubPop(*sp);
+
+			IndIterator ind = pop.indIterator(sp->subPop());
+			for (; ind.valid(); ++ind) {
+				qtrait(& * ind, pop.gen(), traits);
+				for (size_t i = 0; i < infoSize(); ++i)
+					ind->setInfo(traits[i], infoIdx[i]);
+			}
+
+			if (sp->isVirtual())
+				pop.deactivateVirtualSubPop(sp->subPop());
+		}
+	}
+	pop.useAncestralGen(oldGen);
 	return true;
 }
 
 
-double mapQuanTrait::qtrait(individual * ind)
+void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 {
-	string key;
+	vectoru chromTypes;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		// get genotype of ind
-		Allele a = ToAllele(ind->allele(*loc, 0));
-		Allele b = ToAllele(ind->allele(*loc, 1));
+	for (size_t i = 0; i < m_loci.size(); ++i)
+		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
-		if (loc != m_loci.begin() )
-			key += '|';
+	size_t ply = ind->ploidy();
+	if (ind->isHaplodiploid() && ind->sex() == Male)
+		ply = 1;
 
-		if (!m_phase && a > b)  // ab=ba
-			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-		else
-			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
-	}
-	strDict::iterator pos = m_dict.find(key);
+	vectori alleles;
+	alleles.reserve(ply * m_loci.size());
 
-	DBG_ASSERT(pos != m_dict.end(), ValueError,
-		"No qtrait value for genotype " + key);
-
-	return GetRNG().randNormal(pos->second, m_sigma) ;
-}
-
-
-maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const uintList & wildtype,
-	const floatList & sigma, int ancGen, int begin, int end, int step,
-	const intList & at, const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
-	quanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
-	m_loci(loci.elems()), m_qtrait(qtrait), m_sigma(sigma.elems()), m_wildtype(wildtype.elems())
-{
-	if (m_sigma.empty())
-		m_sigma.resize(m_qtrait.size(), 0.);
-	else if (m_sigma.size() == 1)
-		m_sigma.resize(m_qtrait.size(), m_sigma[0]);
-
-	DBG_ASSERT(m_qtrait.size() == static_cast<UINT>(pow(static_cast<double>(3),
-														static_cast<double>(m_loci.size()))),
-		ValueError, "Please specify qtrait for every combination of genotype.");
-	DBG_ASSERT(m_sigma.size() == m_qtrait.size(), ValueError,
-		"Size of sigma does not match that of qtrait");
-};
-
-
-double maQuanTrait::qtrait(individual * ind)
-{
-	UINT index = 0;
-
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		// get genotype of ind
-		Allele a = ToAllele(ind->allele(*loc, 0));
-		Allele b = ToAllele(ind->allele(*loc, 1));
-
-		int numWildtype = 0;
-
-		// count number of wildtype
-		if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end() )
-			numWildtype++;
-
-		if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end() )
-			numWildtype++;
-		index = index * 3 + 2 - numWildtype;
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		for (size_t p = 0; p < ply; ++p) {
+			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+				continue;
+			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
+			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+				continue;
+			alleles.push_back(ind->allele(m_loci[idx], p));
+		}
 	}
 
-	return GetRNG().randNormal(m_qtrait[index], m_sigma[index]);
-}
+	vectorf info(m_paramFields.size());
+	for (size_t i = 0; i < m_paramFields.size(); ++i)
+		info[i] = ind->info(m_paramFields[i]);
 
-
-double mlQuanTrait::qtrait(individual * ind)
-{
-	if (m_mode == Multiplicative) {
-		double fit = 1;
-		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
-		     s != sEnd; ++s)
-			fit *= static_cast<quanTrait *>(*s)->qtrait(ind);
-		return GetRNG().randNormal(fit, m_sigma);
-	} else if (m_mode == Additive) {
-		double fit = 0;
-		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
-		     s != sEnd; ++s)
-			fit += static_cast<quanTrait *>(*s)->qtrait(ind);
-		return GetRNG().randNormal(fit, m_sigma);
+	//
+	if (m_genotype == NULL || static_cast<UINT>(PySequence_Size(m_genotype)) != alleles.size()) {
+		Py_XDECREF(m_genotype);
+		m_genotype = PyTuple_New(alleles.size());
 	}
-	return 0.;
-}
-
-
-double pyQuanTrait::qtrait(individual * ind)
-{
-	if (m_len == 0) {
-		m_len = m_loci.size() * ind->ploidy();
-		m_alleles.resize(m_len);
-		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
+	if (!info.empty() && (m_info == NULL || static_cast<UINT>(PySequence_Size(m_info)) != info.size())) {
+		Py_XDECREF(m_info);
+		m_info = PyTuple_New(info.size());
 	}
+	// set value
+	for (size_t i = 0; i < alleles.size(); ++i)
+		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
+	for (size_t i = 0; i < info.size(); ++i)
+		PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
 
-	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-		SystemError,
-		"Length of m_len is wrong. Have you changed pop type?");
+	PyObject * res = NULL;
+	if (info.empty())
+		res = m_func("(Oi)", m_genotype, gen);
+	else
+		res = m_func("(OOi)", m_genotype, m_info, gen);
 
-	UINT pEnd = ind->ploidy();
-	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
-		for (UINT p = 0; p < pEnd; ++p)
-			m_alleles[j++] = ToAllele(ind->allele(m_loci[i], p));
-
-	return m_func(PyObj_As_Double, "(O)", m_numArray);
+	if (PyNumber_Check(res)) {
+		DBG_ASSERT(infoSize() == 1, RuntimeError,
+			"A number is returned from a user-defined function but a sequence is expected.");
+		PyObj_As_Double(res, traits[0]);
+		Py_DECREF(res);
+	} else if (PySequence_Check(res)) {
+		DBG_ASSERT(PySequence_Size(res) == traits.size(), RuntimeError,
+			"Length of returned sequence does not match number of trait fields");
+		PyObj_As_Array(res, traits);
+		Py_DECREF(res);
+	} else {
+		DBG_FAILIF(true, RuntimeError, "Invalid return value");
+	}
+	return;
 }
 
 

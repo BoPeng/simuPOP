@@ -354,7 +354,6 @@ private:
  *
  *  <funcForm>PyPenetrance</funcForm>
  */
-
 class pyPenetrance : public basePenetrance
 {
 public:
@@ -432,8 +431,6 @@ private:
 
 	// the object that passed to func
 	PyObject * m_info;
-
-
 };
 
 }

@@ -255,7 +255,7 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	for (size_t i = 0; i < alleles.size(); ++i)
 		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
 	for (size_t i = 0; i < info.size(); ++i)
-		PyTuple_SetItem(m_info, i, PyInt_FromLong(info[i]));
+		PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
 
 	double fitness;
 	if (info.empty())
