@@ -38,13 +38,15 @@
 namespace simuPOP {
 
 pedigree::pedigree(const population & pop, const uintList & loci,
-	const stringList & infoFields, int ancGen,
+	const stringList & infoFields, int ancGen, const string & idField,
 	const string & fatherField, const string & motherField)
-	: m_fatherField(fatherField), m_motherField(motherField),
-	m_fatherIdx(-1), m_motherIdx(-1)
+	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
+	m_idIdx(-1), m_fatherIdx(-1), m_motherIdx(-1)
 {
 	vectorstr extractFields = infoFields.elems();
 
+	if (!m_idField.empty() && find(extractFields.begin(), extractFields.end(), idField) == extractFields.end())
+		extractFields.push_back(idField);
 	if (!m_fatherField.empty() && find(extractFields.begin(), extractFields.end(), fatherField) == extractFields.end())
 		extractFields.push_back(fatherField);
 	if (!m_motherField.empty() && find(extractFields.begin(), extractFields.end(), motherField) == extractFields.end())
@@ -54,11 +56,14 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 
 	swap(ped);
 
+	DBG_FAILIF(!m_idField.empty() && !pop.hasInfoField(m_idField), ValueError,
+		"Invalid id information field " + m_idField);
 	DBG_FAILIF(!m_fatherField.empty() && !pop.hasInfoField(m_fatherField), ValueError,
 		"Invalid father information field " + m_fatherField);
 	DBG_FAILIF(!m_motherField.empty() && !pop.hasInfoField(m_motherField), ValueError,
 		"Invalid mother information field " + m_motherField);
 
+	m_idIdx = m_idField.empty() ? -1 : static_cast<int>(infoIdx(idField));
 	m_fatherIdx = m_fatherField.empty() ? -1 : static_cast<int>(infoIdx(fatherField));
 	m_motherIdx = m_motherField.empty() ? -1 : static_cast<int>(infoIdx(motherField));
 }
@@ -66,8 +71,8 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 
 pedigree::pedigree(const pedigree & rhs) :
 	population(rhs),
-	m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
-	m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
+	m_idField(rhs.m_idField), m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
+	m_idIdx(rhs.m_idIdx), m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
 {
 }
 
@@ -129,7 +134,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 		for (size_t ans = 0; ans <= topGen; ++ans) {
 			useAncestralGen(ans);
 			for (size_t idx = 0; idx < popSize(); ++idx)
-				ind(idx).setInfo(idx, fieldIdx);
+				ind(idx).setInfo(m_idIdx == -1 ? idx : ind(idx).info(m_idIdx), fieldIdx);
 		}
 		useAncestralGen(0);
 	} else if (relType == Spouse) {
@@ -147,12 +152,13 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 		for (size_t i = 0; i < maxSpouse; ++i) {
 			spouseIdx[i] = infoIdx(relFields[i]);
 			// clear these fields for the last generation
-			for (IndInfoIterator ptr = infoBegin(spouseIdx[i]);
-			     ptr != infoEnd(spouseIdx[i]); ++ptr)
+			IndInfoIterator ptr = infoBegin(spouseIdx[i]);
+			IndInfoIterator ptrEnd = infoEnd(spouseIdx[i]);
+			for ( ; ptr != ptrEnd; ++ptr)
 				*ptr = static_cast<InfoType>(-1);
 		}
 
-		DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
+		DBG_WARNING(topGen == 0 && m_idIdx == -1, "Spouse can not be located because there is no parental generation.");
 		// start from the parental generation
 		for (unsigned ans = 1; ans <= topGen; ++ans) {
 			vectoru numSpouse;
@@ -479,7 +485,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 
 	const matrixstr & pathFields = pathFieldsMatrix.elems();
 
-	DBG_ASSERT(pathGen.size() == pathFields.size() + 1, ValueError,
+	DBG_ASSERT(m_idIdx == -1 && pathGen.size() == pathFields.size() + 1, ValueError,
 		"Parameter pathGen should be one element longer than pathFields");
 	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
 		ValueError,
@@ -512,7 +518,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 	for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
 		// start from one individual from pathGen[0]
 		Sex mySex = ind->sex();
-		vectoru inds = vectoru(1, idx);
+		vectoru inds = vectoru(1, m_idIdx == -1 ? idx : static_cast<ULONG>(ind->info(m_idIdx)));
 		// go through the path
 		for (size_t path = 0; path < pathFields.size(); ++path) {
 			DBG_DO(DBG_POPULATION, cerr << "Start of path " << path
@@ -520,7 +526,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 			UINT fromGen = pathGen[path];
 			UINT toGen = pathGen[path + 1];
 
-			if (fromGen > ancestralGens() || toGen > ancestralGens()) {
+			if (m_idIdx == -1 && (fromGen > ancestralGens() || toGen > ancestralGens())) {
 				DBG_WARNING(true, "Insufficient ancestral generations to trace relatives.");
 				return false;
 			}
@@ -533,10 +539,12 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 			for (size_t i = 0; i < inds.size(); ++i) {
 				// for all fields
 				for (size_t s = 0; s < fields.size(); ++s) {
-					InfoType sIdx = ancestor(inds[i], fromGen).info(fields[s]);
+					InfoType sIdx = m_idIdx == -1 ? ancestor(inds[i], fromGen).info(fields[s])
+									: indByID(inds[i], fromGen).info(fields[s]);
 					if (sIdx < 0)
 						continue;
-					Sex indSex = ancestor(static_cast<ULONG>(sIdx), toGen).sex();
+					Sex indSex = m_idIdx == -1 ? ancestor(static_cast<ULONG>(sIdx), toGen).sex() :
+					             indByID(static_cast<ULONG>(sIdx), toGen).sex();
 					if ((sex == MaleOnly && indSex == Female) ||
 					    (sex == FemaleOnly && indSex == Male) ||
 					    (sex == SameSex && indSex != mySex) ||
@@ -554,7 +562,6 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 		for (size_t i = 0; i < maxResult; ++i)
 			if (i < inds.size())
 				ind->setInfo(inds[i], resultIdx[i]);
-
 	}
 	return true;
 }
