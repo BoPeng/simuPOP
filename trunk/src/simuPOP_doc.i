@@ -4871,8 +4871,8 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
-      fatherField=\"father_idx\", motherField=\"mother_idx\")
+    pedigree(pop, loci=[], infoFields=[], ancGen=-1, idField=\"\",
+      fatherField=\"\", motherField=\"\")
 
 Details:
 
@@ -4881,11 +4881,16 @@ Details:
     (parameter infoFields, default to no information field except for
     parentFields), and ancestral generations (parameter ancGen,
     default to all ancestral generations). By default, information
-    field father_idx and mother_idx are used to locate parents. If
-    individuals in a pedigree has only one parent, the information
-    field that stores parental indexes should be specified in
-    parameter fatherField or motherField. The other field should be
-    set to an empty string.
+    field father_id (parameter fatherField) and mother_id (parameter
+    motherField) are used to locate parents with ind_id (parameter
+    idField) as an ID field storing an unique ID for every individual.
+    If idField is not specified, field fatherField and motherField are
+    handled as indexes of parents in the parental generation. Please
+    refer to operator idTagger, pedigreeTagger (use unique ID) and
+    parentsTagger (use indexes in parental generation) for how to
+    track pedigree structure using these information fields. This
+    pedigree object works with one or no parents but certain functions
+    such as relative tracking will not be available for such cases.
 
 "; 
 
@@ -4900,20 +4905,6 @@ Usage:
 Details:
 
     Create a cloned copy of a pedigree.
-
-"; 
-
-%feature("docstring") simuPOP::pedigree::numParents "
-
-Usage:
-
-    x.numParents()
-
-Details:
-
-    Return the number of parents each individual has. This function
-    returns the number of information fields used to store parental
-    indexes, even if one of the fields are unused.
 
 "; 
 
@@ -4947,6 +4938,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::pedigree::numParents "
+
+Usage:
+
+    x.numParents()
+
+Details:
+
+    Return the number of parents each individual has. This function
+    returns the number of information fields used to store parental
+    indexes, even if one of the fields are unused.
+
+"; 
+
 %feature("docstring") simuPOP::pedigree::locateRelatives "
 
 Usage:
@@ -4956,12 +4961,13 @@ Usage:
 Details:
 
     This function locates relatives (of type relType) of each
-    individual and store their indexes in specified information fields
-    relFields. The length of relFields determines how many relatives
-    an individual can have.  Parameter relType specifies what type of
-    relative to locate. It can be Self, Spouse (having at least one
-    common offspring), Offspring, FullSibling (having common father
-    and mother), Sibling (having at least one common parent) or
+    individual and store their ID (if idField is specified) or indexes
+    (if idField is not specified) in information fields relFields. The
+    length of relFields determines how many relatives an individual
+    can have.  Parameter relType specifies what type of relative to
+    locate. It can be Self, Spouse (having at least one common
+    offspring), Offspring, FullSibling (having common father and
+    mother), Sibling (having at least one common parent) or
     SpouseAndOffspring (One spouse and their common offspring).
     Optionally, you can specify the sex of relatives you would like to
     locate, in the form of relType=(type, sexChoice). sexChoice can be
@@ -4997,7 +5003,9 @@ Details:
     each generation, which should be a list of AnySex, MaleOnly,
     FemaleOnly, SameSex and OppsiteSex. The default value for this
     paramter is AnySex at all steps. The length of pathGen should be
-    one more than pathFields, and pathSex if pathSex is given.  For
+    one more than pathFields, and pathSex if pathSex is given. If
+    individual ID is used, pathGen could be ignored, although they
+    could help the location of relatives in the population.  For
     example, if pathGen=[0, 1, 1, 0], pathFields = [['father_idx',
     'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']], and pathSex =
     [AnySex, MaleOnly, FemaleOnly], this function will locate
