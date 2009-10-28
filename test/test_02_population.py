@@ -1154,8 +1154,6 @@ class TestPopulation(unittest.TestCase):
             ind = pop.indByID(id)
             self.assertEqual(ind.info('ind_id'), id)
         self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
-        self.assertRaises(exceptions.IndexError, pop.indByID, 5, ancGen=0)
-        self.assertRaises(exceptions.IndexError, pop.indByID, 3000, ancGen=3)
  
 
 if __name__ == '__main__':
