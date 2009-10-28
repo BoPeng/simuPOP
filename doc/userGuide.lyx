@@ -1,4 +1,4 @@
-#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14035,12 +14035,87 @@ reference "newOperator"
 Penetrance
 \end_layout
 
+\begin_layout Standard
+Penetrance is the probability for an individual to be affected with a disease
+ conditioning on his or her genotype and other risk factors.
+ A penetrance model calculates such a probability for an individual and
+ assign affection status randomly according to this probability.
+ For example, if an individual with genotype 
+\family typewriter
+10
+\family default
+ has probability 0.2 to be affected according to a penetrance model, he or
+ she will be affected with probability 0.2.
+ Note that simuPOP supports only one affection status.
+ If there are multiple affection outcomes involved, you can treat them as
+ binary quantitative traits and use information fields to store them.
+\end_layout
+
+\begin_layout Standard
+A penetrance operator can be applied before or after mating, to assign affection
+ status to all individuals in the parental or offspring generation, respectively.
+ It can also be applied during mating and assign affection status to each
+ offspring.
+ The latter could be used to assit natural selection through the selection
+ of offspring.
+ You can also assign affection status to all individuals in a population
+ using the function form of a penetrance operator (e.g.
+ function 
+\family typewriter
+MapPenetrance
+\family default
+ for operator 
+\family typewriter
+mapPenetrance
+\family default
+).
+ Compared the penetrance operators that assign affection status to only
+ the current generation, 
+\series bold
+these functions by default assign affection status to all ancestral generations
+ as well
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+A penetrance operator usually do not store the penetrance values.
+ However, if an information field is given, penetrance values will be saved
+ to this information field before it is used to determine individual affection
+ status.
+\end_layout
+
 \begin_layout Subsection
 Map penetrance model (operator 
 \family typewriter
 mapPenetrance
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+A map penetrance opertor uses a Python dictionary to provide penetrance
+ values for each type of genotype.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mapPenetrance"
+
+\end_inset
+
+ uses a dictionary with keys 
+\family typewriter
+(0,0)
+\family default
+, 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ to specify penetrance for individuals with these genotypes at locus 0.
 \end_layout
 
 \begin_layout Standard
@@ -14054,12 +14129,341 @@ lstparams "caption={A penetrance model that uses pre-defined fitness value},labe
 
 \end_layout
 
+\begin_layout Standard
+The above example assumes that penetrance for individuals with genotypes
+ 
+\family typewriter
+(0,1)
+\family default
+ and 
+\family typewriter
+(1,0)
+\family default
+ are the same.
+ This assumption is usually valid but can be vialoated with impriting.
+ In that case, you can specify fitness for both types of genotypes.
+ The underlying mechanism is that the 
+\family typewriter
+mapPenetrance
+\family default
+ looks up a genotype in the dictionary first directly, and then without
+ phase information if a genotype is not found.
+\end_layout
+
+\begin_layout Standard
+This operator supports haplodiploid populations and sex chromosomes.
+ In these cases, only valid alleles should be listed which can lead to dictionar
+y keys with different lengths.
+ In addition, although less used because of potentially a large number of
+ keys, this operator can act on multiple loci.
+ For example, 
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2)
+\family default
+ and 
+\family typewriter
+(a1,)
+\family default
+ can be used to specify fitness values for female and male individuals in
+ a haplodiploid population, respectively
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(x1,x2)
+\family default
+ and 
+\family typewriter
+(x1,)
+\family default
+ can be used to specify fitness for female and male individuals according
+ to a locus on the X chromosome in a diploid population, respectively.
+ Similarly, keys 
+\family typewriter
+()
+\family default
+ and 
+\family typewriter
+(y,)
+\family default
+ for a locus on chromosome Y.
+\end_layout
+
+\begin_layout Itemize
+keys 
+\family typewriter
+(a1,a2,b1,b2)
+\family default
+ can be used to specify fitness values according to genotype at two loci
+ in a diploid population.
+\end_layout
+
 \begin_layout Subsection
 Multi-allele penetrance model (operator 
 \family typewriter
 maPenetrance
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+A multi-allele penetrance model divides alleles into two groups, wildtype
+ 
+\emph on
+A
+\emph default
+ and mutants 
+\emph on
+a
+\emph default
+, and treat alleles within each group as the same.
+ The penetrance model is therefore simplified to
+\end_layout
+
+\begin_layout Itemize
+Two fitness values for genotype 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $a$
+\end_inset
+
+ in the haploid case
+\end_layout
+
+\begin_layout Itemize
+Three fitness values for genotype 
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+ in the diploid single locus case.
+ Genotype 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aA
+\emph default
+ are assumed to have the same impact on fitness.
+\end_layout
+
+\begin_layout Standard
+The default wildtype group contains allele 0 so the two allele groups are
+ zero and non-zero alleles.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "maPenetrance"
+
+\end_inset
+
+ demonstrates the use of this operator.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maPenetrance.log"
+lstparams "caption={A multi-allele penetrance model},label={maPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+maPenetrance
+\family default
+ also supports multiple loci by specifying fitness values for all combination
+ of genotype at specified loci.
+ In the case of two loci, this operator requires
+\end_layout
+
+\begin_layout Itemize
+Four fitness values for genotype 
+\family typewriter
+AB
+\family default
+, 
+\family typewriter
+Ab
+\family default
+, 
+\family typewriter
+aB
+\family default
+ and 
+\family typewriter
+ab
+\family default
+ in the haploid case,
+\end_layout
+
+\begin_layout Itemize
+Nine fitness values for genotype 
+\family typewriter
+AABB
+\family default
+, 
+\family typewriter
+AABb
+\family default
+, 
+\family typewriter
+AAbb
+\family default
+, 
+\family typewriter
+AaBB
+\family default
+, 
+\family typewriter
+AaBb
+\family default
+, 
+\family typewriter
+Aabb
+\family default
+, 
+\family typewriter
+aaBB
+\family default
+, 
+\family typewriter
+aaBb
+\family default
+, and 
+\family typewriter
+aabb
+\family default
+ in the haploid case.
+\end_layout
+
+\begin_layout Standard
+In general, 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ values are needed for haploid populations and 
+\begin_inset Formula $3^{n}$
+\end_inset
+
+ values are needed for diploid populations where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of loci.
+ This operator does not yet support haplodiploid populations and sex chromosomes.
+\end_layout
+
+\begin_layout Subsection
+Multi-loci penetrance model (operator 
+\family typewriter
+mlPenetrance
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Although an individual's affection status can be affected by several factors,
+ each of which can be modeled individually, 
+\series bold
+only one penetrance value is used to determine a person's affection status
+\series default
+ and we have to use a multi-locus penetrance model to combine single-locus
+ models.
+\end_layout
+
+\begin_layout Standard
+This multi-loci penetrance model applies several penetrance models to each
+ individual and computes an overall penetrance value from the penetrance
+ values provided by these operators.
+ Although this selector is designed to obtain multi-loci penetrance values
+ from several single-locus penetrance models, any penetrance operator, including
+ those obtain their penetrance values from multiple disease predisposing
+ loci, can be used in this operator.
+ This operator uses parameter 
+\family typewriter
+mode
+\family default
+ to control how individual penetrance values are combined.
+ More specifically, if 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+ are penetrance values obtained from individual selectors, this selector
+ returns
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Pi_{i}f_{i}$
+\end_inset
+
+ if 
+\family typewriter
+mode=Multiplicative
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\sum_{i}f_{i}$
+\end_inset
+
+ if 
+\family typewriter
+mode=Additive
+\family default
+, and
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1-\Pi_{i}\left(1-f_{i}\right)$
+\end_inset
+
+ if 
+\family typewriter
+mode=Heterogeneity
+\end_layout
+
+\begin_layout Standard
+0 or 1 will be returned if the returned fitness value is out of range of
+ 
+\family typewriter
+[0,1]
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mlPenetrance"
+
+\end_inset
+
+ demonstrates the use of this operator using an multiplicative multi-locus
+ model over three additive single-locus models at three diesease predisposing
+ loci.
 \end_layout
 
 \begin_layout Standard
@@ -14074,14 +14478,6 @@ lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
 \end_layout
 
 \begin_layout Subsection
-Multi-loci penetrance model (operator 
-\family typewriter
-mlPenetrance
-\family default
-)
-\end_layout
-
-\begin_layout Subsection
 Hybrid penetrance model (operator 
 \family typewriter
 pyPenetrance
@@ -14090,10 +14486,222 @@ pyPenetrance
 \end_layout
 
 \begin_layout Standard
+When your selection model involves multiple interacting genetic and environmenta
+l factors, it might be easier to calculate a penetrance value explicitly
+ using a Python function.
+ A hybrid penetrance operator can be used for this purpose.
+ If your penetrance model depends solely on genotype, you can define a function
+ such as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def pfunc(genotype, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate penetrance according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+and use this function in an operator 
+\family typewriter
+pySelector(func=pfunc, loci=loci)
+\family default
+.
+ If your penetrance model depends on genotype as well as some information
+ fields, you can define a function in the form of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def pfunc(genotype, fields, gen):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # calculate penetrance according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    # and values at specified informaton fields.
+\end_layout
+
+\begin_layout Plain Layout
+
+    return val
+\end_layout
+
+\end_inset
+
+and use this function in an operator 
+\family typewriter
+pySelector(func=pfunc, loci=loci, paramFields=fields)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+When a 
+\family typewriter
+pyPenetrance
+\family default
+ operator is used to calculate penetrance for an individual, it will collect
+ his or her genotype at specified loci, optional values at specified information
+ fields, and the generation number to a user-specified Python function,
+ and take its return value as penetrance.
+ As you can imagine, the incorporation of information fields and generation
+ number allow the implementation of very complex penetrance scenarios such
+ as gene environment interaction and varying selection pressures.
+ Note that this operator does not pass sex and affection status to the user-defi
+ned function.
+ If your selection model is sex-dependent, you can define an information
+ field 
+\family typewriter
+sex
+\family default
+, synchronize its value with individual sex (e.g.
+ using operator 
+\family typewriter
+infoExec('sex=ind.sex()', exposeInd='ind'
+\family default
+) and pass this information to the user-defined function (
+\family typewriter
+pySelector(func=func, paramFields='sex')
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pySelector"
+
+\end_inset
+
+ demonstrates how to use a 
+\family typewriter
+pyPenetrance
+\family default
+ to specify penetrance values according to a fitness table and the smoking
+ status of each individual.
+ In this example, individual risk is doubled when he or she smokes.
+ The disease prevalence is therefore much higher in smokers than in non-smokers.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyPenetrance.log"
 lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Quantitative trait
+\end_layout
+
+\begin_layout Standard
+Quantitative traits are naturally stored in information fields of each individua
+l.
+ A quantitative trait operator assigns quantitative trait fields according
+ to individual genetic (genotype) and environmental (other information fields)
+ information.
+ Although a large number of quantitative trait models have been used in
+ theoretical and empirical studies, no model is popular enough to deserve
+ a specialized operator.
+ Therefore, only one hybrid operator is currently provided in simuPOP.
+\end_layout
+
+\begin_layout Subsection
+A hybrid quantitative trait operator (operator 
+\family typewriter
+pyQuanTrait
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pyQuanTrait
+\family default
+ accepts a user defined function that returns quantitative trait values
+ for specified information fields.
+ This operator uses parameter 
+\family typewriter
+infoFields
+\family default
+ to specify one or more trait fields, and 
+\family typewriter
+paramFields
+\family default
+ to specify additional information that will be passed to the user-defined
+ function.
+ Depending on the value of parameter 
+\family typewriter
+paramFields
+\family default
+, the function can have form 
+\family typewriter
+func(genotype, gen)
+\family default
+ or 
+\family typewriter
+func(genotype, fields, gen)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A quantitative trait operator can be applied before or after mating and
+ assign values to the trait fields of all parents or offspring, respectively.
+ It can also be applied during mating to assign trait values to offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyQuanTrait"
+
+\end_inset
+
+ demonstrates the use of this operator, using two trait fields 
+\family typewriter
+trait1
+\family default
+ and 
+\family typewriter
+trait2
+\family default
+ which are determined by individual genotype and age.
+ This example also demonstrates how to calculate statistics within virtual
+ subpopulations (defined by age).
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyQuanTrait.log"
+lstparams "caption={A hybrid quantitative trait model},label={pyQuanTrait}"
 
 \end_inset
 
@@ -14580,51 +15188,11 @@ This operator supports haplodiploid populations and sex chromosomes.
 y keys with different lengths.
  In addition, although less used because of potentially a large number of
  keys, this operator can act on multiple loci.
- For example, 
-\end_layout
-
-\begin_layout Itemize
-keys 
+ Please refer to 
 \family typewriter
-(a1,a2)
+mapPenetrance
 \family default
- and 
-\family typewriter
-(a1,)
-\family default
- can be used to specify fitness values for female and male individuals in
- a haplodiploid population, respectively
-\end_layout
-
-\begin_layout Itemize
-keys 
-\family typewriter
-(x1,x2)
-\family default
- and 
-\family typewriter
-(x1,)
-\family default
- can be used to specify fitness for female and male individuals according
- to a locus on the X chromosome in a diploid population, respectively.
- Similarly, keys 
-\family typewriter
-()
-\family default
- and 
-\family typewriter
-(y,)
-\family default
- for a locus on chromosome Y.
-\end_layout
-
-\begin_layout Itemize
-keys 
-\family typewriter
-(a1,a2,b1,b2)
-\family default
- can be used to specify fitness values according to genotype at two loci
- in a diploid population.
+ for details.
 \end_layout
 
 \begin_layout Subsection
@@ -15133,11 +15701,15 @@ infoExec
 maSelector
 \family default
 .
- Note that you could use something like 
+ This method could be extended to 
 \family typewriter
 infoExec('fitness = 1 - 0.01*ind.affected()', exposeInd='ind')
 \family default
- to select against, but not remove, affected parents.
+ to select against, but not remove, affected parents, and similarly 
+\family typewriter
+infoExec('fitness = 1 - 0.01*(LDL > 250)')
+\family default
+ to select against individuals according to a quantitative trait.
 \end_layout
 
 \begin_layout Standard
@@ -15259,18 +15831,6 @@ infoFields='fitness1'
 fitnessField='fitness1'
 \family default
 ).
-\end_layout
-
-\begin_layout Section
-Quantitative trait
-\end_layout
-
-\begin_layout Subsection
-A hybrid quantitative trait operator (operator 
-\family typewriter
-pyQuanTrait
-\family default
-)
 \end_layout
 
 \begin_layout Section

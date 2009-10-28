@@ -270,7 +270,10 @@ protected:
  *  difference is that instead of evaluating an expression and outputing its
  *  result, this operator execute one or more statements and <bf>update
  *  individual information fields</bf> from the namespace after the
- *  specified statements are execuated.
+ *  specified statements are execuated. This implies that you have to set new
+ *  values to information fields through variables (e.g. <tt>"a = 5"</tt>),
+ *  not through functions (e.g. <tt>"ind.setInfo(5, 'a')"</tt> with individuals
+ *  exposed as \c "ind" will not work).
  *
  *  <funcForm>InfoExec</funcForm>
  */

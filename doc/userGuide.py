@@ -3692,11 +3692,41 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(size=[2,8], ploidy=2, loci=2 )
+pop = sim.population(size=2000, loci=2)
 sim.InitByFreq(pop, [.2, .8])
-sim.MapPenetrance(pop, loci=0, 
-    penetrance={(0,0):0, (0,1):1, (1,1):1})
-sim.Stat(pop, numOfAffected=1)
+sim.MapPenetrance(pop, loci=0,
+    penetrance={(0,0):0, (0,1):.2, (1,1):.3})
+sim.Stat(pop, genoFreq=0, numOfAffected=1, vars='genoNum')
+# number of affected individuals
+pop.dvars().numOfAffected
+# which should be roughly (#01 + #10) * 0.2 + #11 * 0.3
+(pop.dvars().genoNum[0][(0,1)] + pop.dvars().genoNum[0][(1,0)]) * 0.2 \
++ pop.dvars().genoNum[0][(1,1)] * 0.3
+#end_file
+
+#begin_file log/maPenetrance.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(5000, loci=3)
+simu = sim.simulator(pop, sim.randomMating())
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq([0.9] + [0.02]*5)
+    ],
+    postOps = [
+        sim.maPenetrance(loci=0, penetrance=(0.01, 0.2, 0.3)),
+        sim.stat(numOfAffected=True, vars='propOfAffected'),
+        sim.pyEval(r"'Gen: %d Prevalence: %.1f%%\n' % (gen, propOfAffected*100)"),
+    ],
+    gen = 5
+)
 #end_file
 
 #begin_file log/mlPenetrance.py
@@ -3708,17 +3738,15 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(1000, loci=3)
-sim.InitByFreq(pop, [0.3, 0.7])
-pen = []
-for loc in (0, 1, 2):
-    pen.append(sim.maPenetrance(loci=loc, wildtype=[1],
-        penetrance=[0, 0.3, 0.6] ) )
-
+pop = sim.population(5000, loci=3)
+sim.InitByFreq(pop, [0.2]*5)
 # the multi-loci penetrance
-sim.MlPenetrance(pop, ops=pen, mode=sim.Multiplicative)
+sim.MlPenetrance(pop, mode=sim.Multiplicative,
+    ops = [sim.maPenetrance(loci=loc,
+        penetrance=[0, 0.3, 0.6]) for loc in range(3)])
+# count the number of affected individuals.
 sim.Stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
+pop.dvars().numOfAffected
 #end_file
 
 #begin_file log/pyPenetrance.py
@@ -3730,32 +3758,91 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(1000, loci=3)
-sim.InitByFreq(pop, [0.3, 0.7])
-def peneFunc(geno, gen):
-    p = 1
-    for l in range(len(geno)/2):
-        p *= (geno[l*2]+geno[l*2+1])*0.3
+import random
+pop = sim.population(size=2000, loci=[1]*2, infoFields=['p', 'smoking'])
+pop.setVirtualSplitter(sim.infoSplitter(field='smoking', values=[0,1]))
+simu = sim.simulator(pop, sim.randomMating())
+# the second parameter gen can be used for varying selection pressure
+def penet(arr, smoking, gen):
+    #     BB     Bb      bb
+    # AA  0.01   0.01    0.01
+    # Aa  0.01   0.03    0.03
+    # aa  0.01   0.03    0.05
     #
-    return p
+    # arr is (A1 A2 B1 B2)
+    if arr[0] + arr[1] == 1 and arr[2] + arr[3] != 0:
+        v = 0.03   # case of AaBb
+    elif arr[0] + arr[1] == 2 and arr[2] + arr[3] == 1:
+        v = 0.03   # case of aaBb
+    elif arr[0] + arr[1] ==2 and arr[2] + arr[3] == 2:
+        v = 0.05   # case of aabb
+    else:                
+        v = 0.01   # other cases
+    if smoking[0]:
+        return v * 2
+    else:
+        return v
 
-sim.PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
-sim.Stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
-#
-# You can also define a function, that returns a penetrance
-# function using given parameters
-def peneFunc(table):
-    def func(geno, gen):
-      return table[geno[0]][geno[1]]
-    #  
-    return func
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq(alleleFreq=[.5, .5]),
+        sim.pyOutput('Calculate prevalence in smoker and non-smokers'),
+    ],
+    postOps = [
+        # set smoking status randomly
+        sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
+        # assign affection status
+        sim.pyPenetrance(loci=[0, 1], func=penet, paramFields='smoking'),
+        sim.stat(numOfAffected=True, subPops=[(0,0),(0,1)], 
+            vars='propOfAffected_sp', step=20),
+        sim.pyEval(r"'Non-smoker: %.2f%%\tSmoker: %.2f%%\n' % "
+            "(subPop[(0,0)]['propOfAffected']*100, subPop[(0,1)]['propOfAffected']*100)",
+            step=20)
+    ],
+    gen = 50
+)
 
-# then, given a table, you can do
-sim.PyPenetrance(pop, loci=(0, 1, 2),
-    func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
 #end_file
 
+
+
+#begin_file log/pyQuanTrait.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import random
+pop = sim.population(size=5000, loci=2, infoFields=['qtrait1', 'qtrait2', 'age'])
+pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[40]))
+simu = sim.simulator(pop, sim.randomMating())
+def qtrait(geno, age, gen):
+    'Return two traits that depends on genotype and age'
+    return random.normalvariate(age[0] * sum(geno), 10), random.randint(0, 10*sum(geno))
+
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq([0.2, 0.8]),
+    ],
+    postOps = [
+        # use random age for simplicity
+        sim.initInfo(lambda:random.randint(20, 75), infoFields='age'),
+        sim.pyQuanTrait(loci=(0,1), func=qtrait, paramFields='age',
+            infoFields=['qtrait1', 'qtrait2']),
+        sim.stat(meanOfInfo=['qtrait1'], subPops=[(0,0), (0,1)],
+            vars='meanOfInfo_sp'),
+        sim.pyEval(r"'Mean of trait1: %.3f (age < 40), %.3f (age >=40)\n' % "
+            "(subPop[(0,0)]['meanOfInfo']['qtrait1'], subPop[(0,1)]['meanOfInfo']['qtrait1'])"),
+    ],
+    gen = 5
+)
+
+#end_file
 
 #begin_file log/selectParents.py
 #begin_ignore
