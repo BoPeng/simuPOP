@@ -86,6 +86,7 @@ include simuOpt.py
 include src/__init__.py
 include src/utils.py
 include src/plotter.py
+include src/sampling.py
 
 # gsl files
 include gsl/gsl_machine.h

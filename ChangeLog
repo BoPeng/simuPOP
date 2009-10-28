@@ -39,6 +39,7 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Remove all quantitative trait opeartors except pyQuanTrait. Mofidy
 		the interface of pyQuanTrait so that it can handle multiple trait fields
 		and be applied during mating.
+  - CHG: More sampling operators and functions to submodule sampling.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields

@@ -531,6 +531,7 @@ if __name__ == '__main__':
             'simuPOP.__init__',
             'simuPOP.utils', 
             'simuPOP.plotter', 
+            'simuPOP.sampling', 
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,
