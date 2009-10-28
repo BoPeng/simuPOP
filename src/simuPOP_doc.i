@@ -108,6 +108,135 @@ Usage:
 
 %ignore simuPOP::alphaParentsChooser::chooseParents(RawIndIterator basePtr);
 
+%feature("docstring") simuPOP::baseMutator "
+
+Details:
+
+    Class mutator is the base class of all mutators. It handles all
+    the work of picking an allele at specified loci from certain
+    (virtual) subpopulation with certain probability, and calling a
+    derived mutator to mutate the allele. Alleles can be changed
+    before and after mutation if existing allele numbers do not match
+    those of a mutation model.
+
+"; 
+
+%feature("docstring") simuPOP::baseMutator::baseMutator "
+
+Usage:
+
+    baseMutator(rates=[], loci=AllAvail, mapIn=[], mapOut=[],
+      context=0, output=\">\", begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
+
+Details:
+
+    A mutator mutates alleles from one state to another with given
+    probability. This base mutator does not perform any mutation but
+    it defines common behaviors of all mutators.  By default, a
+    mutator mutates all alleles in all populations of a simulator at
+    all generations. A number of parameters can be used to restrict
+    mutations to certain generations (parameters begin, end, step and
+    at), replicate populations (parameter rep), (virtual)
+    subpopulations (parameter subPops) and loci (parameter loci).
+    Please refer to class baseOperator for a detailed explanation of
+    these parameters.  Parameter rate or its equivalence specifies the
+    probability that a a mutation event happens. The exact form and
+    meaning of rate is mutator-specific. If a single rate is
+    specified, it will be applied to all loci. If a list of mutation
+    rates are given, they will be applied to each locus specified in
+    parameter loci. Note that not all mutators allow specification of
+    multiple mutation rate, especially when the mutation rate itself
+    is a list or matrix.  Alleles at a locus are non-negative numbers
+    0, 1, ... up to the maximum allowed allele for the loaded module
+    (1 for binary, 255 for short and 65535 for long modules). Whereas
+    some general mutation models treat alleles as numbers, other
+    models assume specific interpretation of alleles. For example, an
+    acgtMutator assumes alleles 0, 1, 2 and 3 as nucleotides A, C, G
+    and T. Using a mutator that is incompatible with your simulation
+    will certainly yield erroneous results.  If your simulation
+    assumes different alleles with a mutation model, you can map an
+    allele to the allele used in the model and map the mutated allele
+    back. This is achieved using a mapIn list with its i-th item being
+    the corresponding allele of real allele i, and a mapOut list with
+    its i-th item being the real allele of allele i assumed in the
+    model. For example mapIn=[0, 0, 1] and mapOut=[1, 2] would allow
+    the use of a snpMutator to mutate between alleles 1 and 2, instead
+    of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
+    Python function that returns a corresponding allele for a given
+    allele. This allows easier mapping between a large number of
+    alleles and advanced models such as random emission of alleles.
+    Some mutation models are context dependent. Namely, how an allele
+    mutates will depend on its adjecent alleles. Whereas most simuPOP
+    mutators are context independent, some of them accept a parameter
+    context which is the number of alleles to the left and right of
+    the mutated allele. For example context=1 will make the alleles to
+    the immediate left and right to a mutated allele available to a
+    mutator. These alleles will be mapped in if parameter mapIn is
+    defined. How exactly a mutator makes use of these information is
+    mutator dependent.
+
+"; 
+
+%feature("docstring") simuPOP::baseMutator::~baseMutator "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~baseMutator()
+
+"; 
+
+%feature("docstring") simuPOP::baseMutator::clone "
+
+Description:
+
+    deep copy of a mutator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::baseMutator::setRate(const vectorf &rates, const uintList &loci);
+
+%ignore simuPOP::baseMutator::mutRate(UINT loc);
+
+%ignore simuPOP::baseMutator::mutate(AlleleRef allele, UINT locus);
+
+%feature("docstring") simuPOP::baseMutator::fillContext "
+
+Description:
+
+    a rarely used feature, performance should be a secondary
+    consideration.
+
+Usage:
+
+    x.fillContext(pop, ptr, locus)
+
+"; 
+
+%ignore simuPOP::baseMutator::setContext(int context);
+
+%ignore simuPOP::baseMutator::context();
+
+%feature("docstring") simuPOP::baseMutator::apply "
+
+Description:
+
+    Apply a mutator.
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
 %feature("docstring") simuPOP::baseOperator "
 
 Details:
@@ -390,6 +519,88 @@ Usage:
 %ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::basePenetrance::description "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::baseQuanTrait "
+
+Details:
+
+    A quantitative trait in simuPOP is simply an information field. A
+    quantitative trait model simply assigns values to one or more
+    information fields (called trait fields) of each individual
+    according to its genetic (genotype) and environmental (information
+    field) factors. It can be applied at any stage of an evolutionary
+    cycle. If a quantitative trait operator is applied before or after
+    mating, it will set the trait fields of all parents and offspring.
+    If it is applied during mating, it will set the trait fields of
+    each offspring.  When a quantitative trait operator is applied to
+    a population, it is only applied to the current generation. You
+    can, however, use parameter ancGen=-1 to set the trait field of
+    all ancestral generations, or a generation index to apply to only
+    ancestral generation younger than ancGen. Note that this parameter
+    is ignored if the operator is applied during mating.
+
+"; 
+
+%feature("docstring") simuPOP::baseQuanTrait::baseQuanTrait "
+
+Usage:
+
+    baseQuanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
+
+Details:
+
+    Create a base quantitative trait operator. If ancGen=0 (default),
+    only the current generation will be applied. If ancGen=-1, the
+    trait fields (infoFields) of all ancestral generations will be
+    set. If a positive number is given, ancestral generations with
+    index <= ancGen will be applied. A quantitative trait operator can
+    be applied to specified (virtual) subpopulations (parameter
+    subPops) and replicates (parameter reps).
+
+"; 
+
+%feature("docstring") simuPOP::baseQuanTrait::~baseQuanTrait "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~baseQuanTrait()
+
+"; 
+
+%feature("docstring") simuPOP::baseQuanTrait::clone "
+
+Description:
+
+    deep copy of a quantitative trait operator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::baseQuanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
+
+%feature("docstring") simuPOP::baseQuanTrait::apply "
+
+Description:
+
+    set qtrait to all individual
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::baseQuanTrait::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::baseQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::baseSelector "
 
@@ -4251,135 +4462,6 @@ Usage:
 
 %feature("docstring") simuPOP::mlSelector::description "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mutator "
-
-Details:
-
-    Class mutator is the base class of all mutators. It handles all
-    the work of picking an allele at specified loci from certain
-    (virtual) subpopulation with certain probability, and calling a
-    derived mutator to mutate the allele. Alleles can be changed
-    before and after mutation if existing allele numbers do not match
-    those of a mutation model.
-
-"; 
-
-%feature("docstring") simuPOP::mutator::mutator "
-
-Usage:
-
-    mutator(rates=[], loci=AllAvail, mapIn=[], mapOut=[], context=0,
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
-
-Details:
-
-    A mutator mutates alleles from one state to another with given
-    probability. This base mutator does not perform any mutation but
-    it defines common behaviors of all mutators.  By default, a
-    mutator mutates all alleles in all populations of a simulator at
-    all generations. A number of parameters can be used to restrict
-    mutations to certain generations (parameters begin, end, step and
-    at), replicate populations (parameter rep), (virtual)
-    subpopulations (parameter subPops) and loci (parameter loci).
-    Please refer to class baseOperator for a detailed explanation of
-    these parameters.  Parameter rate or its equivalence specifies the
-    probability that a a mutation event happens. The exact form and
-    meaning of rate is mutator-specific. If a single rate is
-    specified, it will be applied to all loci. If a list of mutation
-    rates are given, they will be applied to each locus specified in
-    parameter loci. Note that not all mutators allow specification of
-    multiple mutation rate, especially when the mutation rate itself
-    is a list or matrix.  Alleles at a locus are non-negative numbers
-    0, 1, ... up to the maximum allowed allele for the loaded module
-    (1 for binary, 255 for short and 65535 for long modules). Whereas
-    some general mutation models treat alleles as numbers, other
-    models assume specific interpretation of alleles. For example, an
-    acgtMutator assumes alleles 0, 1, 2 and 3 as nucleotides A, C, G
-    and T. Using a mutator that is incompatible with your simulation
-    will certainly yield erroneous results.  If your simulation
-    assumes different alleles with a mutation model, you can map an
-    allele to the allele used in the model and map the mutated allele
-    back. This is achieved using a mapIn list with its i-th item being
-    the corresponding allele of real allele i, and a mapOut list with
-    its i-th item being the real allele of allele i assumed in the
-    model. For example mapIn=[0, 0, 1] and mapOut=[1, 2] would allow
-    the use of a snpMutator to mutate between alleles 1 and 2, instead
-    of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
-    Python function that returns a corresponding allele for a given
-    allele. This allows easier mapping between a large number of
-    alleles and advanced models such as random emission of alleles.
-    Some mutation models are context dependent. Namely, how an allele
-    mutates will depend on its adjecent alleles. Whereas most simuPOP
-    mutators are context independent, some of them accept a parameter
-    context which is the number of alleles to the left and right of
-    the mutated allele. For example context=1 will make the alleles to
-    the immediate left and right to a mutated allele available to a
-    mutator. These alleles will be mapped in if parameter mapIn is
-    defined. How exactly a mutator makes use of these information is
-    mutator dependent.
-
-"; 
-
-%feature("docstring") simuPOP::mutator::~mutator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~mutator()
-
-"; 
-
-%feature("docstring") simuPOP::mutator::clone "
-
-Description:
-
-    deep copy of a mutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::mutator::setRate(const vectorf &rates, const uintList &loci);
-
-%ignore simuPOP::mutator::mutRate(UINT loc);
-
-%ignore simuPOP::mutator::mutate(AlleleRef allele, UINT locus);
-
-%feature("docstring") simuPOP::mutator::fillContext "
-
-Description:
-
-    a rarely used feature, performance should be a secondary
-    consideration.
-
-Usage:
-
-    x.fillContext(pop, ptr, locus)
-
-"; 
-
-%ignore simuPOP::mutator::setContext(int context);
-
-%ignore simuPOP::mutator::context();
-
-%feature("docstring") simuPOP::mutator::apply "
-
-Description:
-
-    Apply a mutator.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %feature("docstring") simuPOP::noneOp "
 
 Details:
@@ -7132,86 +7214,6 @@ Usage:
 %feature("docstring") simuPOP::pyTagger::description "Obsolete or undocumented function."
 
 %ignore simuPOP::pyTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::quanTrait "
-
-Details:
-
-    A quantitative trait in simuPOP is simply an information field. A
-    quantitative trait model simply assigns values to one or more
-    information fields (called trait fields) of each individual
-    according to its genetic (genotype) and environmental (information
-    field) factors. It can be applied at any stage of an evolutionary
-    cycle. If a quantitative trait operator is applied before or after
-    mating, it will set the trait fields of all parents and offspring.
-    If it is applied during mating, it will set the trait fields of
-    each offspring.  When a quantitative trait operator is applied to
-    a population, it is only applied to the current generation. You
-    can, however, use parameter ancGen=-1 to set the trait field of
-    all ancestral generations, or a generation index to apply to only
-    ancestral generation younger than ancGen. Note that this parameter
-    is ignored if the operator is applied during mating.
-
-"; 
-
-%feature("docstring") simuPOP::quanTrait::quanTrait "
-
-Usage:
-
-    quanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
-
-Details:
-
-    Create a base quantitative trait operator. If ancGen=0 (default),
-    only the current generation will be applied. If ancGen=-1, the
-    trait fields (infoFields) of all ancestral generations will be
-    set. If a positive number is given, ancestral generations with
-    index <= ancGen will be applied. A quantitative trait operator can
-    be applied to specified (virtual) subpopulations (parameter
-    subPops) and replicates (parameter reps).
-
-"; 
-
-%feature("docstring") simuPOP::quanTrait::~quanTrait "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~quanTrait()
-
-"; 
-
-%feature("docstring") simuPOP::quanTrait::clone "
-
-Description:
-
-    deep copy of a quantitative trait operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::quanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
-
-%feature("docstring") simuPOP::quanTrait::apply "
-
-Description:
-
-    set qtrait to all individual
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::quanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::randomParentChooser "
 

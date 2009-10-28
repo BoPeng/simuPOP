@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-bool quanTrait::apply(population & pop)
+bool baseQuanTrait::apply(population & pop)
 {
 	vectoru infoIdx(infoSize());
 
@@ -72,6 +72,19 @@ bool quanTrait::apply(population & pop)
 		}
 	}
 	pop.useAncestralGen(oldGen);
+	return true;
+}
+
+
+bool baseQuanTrait::applyDuringMating(population & pop, RawIndIterator offspring,
+                                      individual * dad, individual * mom)
+
+{
+	vectorf traits(infoSize());
+
+	qtrait(& * offspring, pop.gen(), traits);
+	for (size_t i = 0; i < traits.size(); ++i)
+		offspring->setInfo(traits[i], infoField(i));
 	return true;
 }
 
@@ -132,7 +145,7 @@ void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 		PyObj_As_Double(res, traits[0]);
 		Py_DECREF(res);
 	} else if (PySequence_Check(res)) {
-		DBG_ASSERT(PySequence_Size(res) == traits.size(), RuntimeError,
+		DBG_ASSERT(static_cast<UINT>(PySequence_Size(res)) == traits.size(), RuntimeError,
 			"Length of returned sequence does not match number of trait fields");
 		PyObj_As_Array(res, traits);
 		Py_DECREF(res);
