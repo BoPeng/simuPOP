@@ -2605,9 +2605,19 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 	if (N == tot)
 		return;
 	// if tot < N, spead the round offs to the first several counts
-	for (size_t i = 0; tot < N && i < prop.size(); ++tot) {
-		if (count[i] < prop[i] * N)
+	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
+		if (count[i] + 0.5 < prop[i] * N) {
 			count[i] += 1;
+            ++tot;
+        }
+	}
+    if (N == tot)
+        return;
+	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
+		if (count[i] < prop[i] * N) {
+			count[i] += 1;
+            ++tot;
+        }
 	}
 	DBG_FAILIF(N != tot, SystemError, "Proportion to count failed.");
 
