@@ -1676,6 +1676,41 @@ simuPOPStatRef
 simuPOPTagIDRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMapPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMaPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMlPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyQuanTraitRef
+\end_layout
+
 \end_inset
 
 
