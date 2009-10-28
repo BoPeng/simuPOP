@@ -1357,11 +1357,11 @@ def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
     this function by default assign affection status to all generations.'''
     pyPenetrance(loci, func, ancGen, *args, **kwargs).apply(pop)
 
-def PyQuanTrait(pop, ancGen = -1, *args, **kwargs):
+def PyQuanTrait(pop, loci, func, ancGen = -1, *args, **kwargs):
     '''Apply opertor ``pyQuanTrait`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    pyQuanTrait(*args, **kwargs).apply(pop)
+    pyQuanTrait(loci, func, ancGen, *args, **kwargs).apply(pop)
 
 
 
