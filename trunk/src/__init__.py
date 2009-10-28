@@ -1340,56 +1340,35 @@ def TagID(pop, *args, **kwargs):
     idTagger(*args, **kwargs).apply(pop)
 
 def MapPenetrance(pop, loci, penetrance, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop`` to assign
-    individual affection status according to a penetrance table. Unlike the
+    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     mapPenetrance(loci, penetrance, ancGen, *args, **kwargs).apply(pop)
 
 def MaPenetrance(pop, loci, penetrance, wildtype=0, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``maPenetrance`` to population ``pop`` to assign
-    individual affection status according to a penetrance table. Unlike the
+    '''Apply opertor ``maPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     maPenetrance(loci, penetrance, wildtype, ancGen, *args, **kwargs).apply(pop)
 
 def MlPenetrance(pop, ops, mode, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop`` to assign
-    individual affection status according to a penetrance table. Unlike the
+    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     mlPenetrance(ops, mode, ancGen, *args, **kwargs).apply(pop)
 
 def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop`` to assign
-    individual affection status according to a penetrance table. Unlike the
+    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     pyPenetrance(loci, func, ancGen, *args, **kwargs).apply(pop)
 
-def MapQuanTrait(pop, *args, **kwargs):
-    mapQuanTrait(*args, **kwargs).apply(pop)
-
-if mapQuanTrait.__init__.__doc__ is not None:
-    MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
-
-def MaQuanTrait(pop, *args, **kwargs):
-    maQuanTrait(*args, **kwargs).apply(pop)
-
-if maQuanTrait.__init__.__doc__ is not None:
-    MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
-
-def MlQuanTrait(pop, *args, **kwargs):
-    mlQuanTrait(*args, **kwargs).apply(pop)
-
-if mlQuanTrait.__init__.__doc__ is not None:
-    MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
-
-def PyQuanTrait(pop, *args, **kwargs):
+def PyQuanTrait(pop, ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``pyQuanTrait`` to population ``pop``. Unlike the
+    operator form of this operator that only handles the current generation,
+    this function by default assign affection status to all generations.'''
     pyQuanTrait(*args, **kwargs).apply(pop)
 
-if pyQuanTrait.__init__.__doc__ is not None:
-    PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
 
 
 

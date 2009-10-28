@@ -3486,82 +3486,6 @@ Usage:
 
 %feature("docstring") simuPOP::mapPenetrance::description "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mapQuanTrait "
-
-Function form:
-
-    MapQuanTrait
-
-Description:
-
-    quantitative trait according to genotype at one locus
-
-Details:
-
-    Assign quantitative trait using a table with keys 'X-Y' where X
-    and Y are allele numbers. If parameter sigma is not zero, the
-    return value is the sum of the trait plus $
-    N\\left(0,\\sigma^{2}\\right) $. This random part is usually
-    considered as the environmental factor of the trait.
-
-"; 
-
-%feature("docstring") simuPOP::mapQuanTrait::mapQuanTrait "
-
-Description:
-
-    create a map quantitative trait operator
-
-Usage:
-
-    mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
-
-Arguments:
-
-    locus:          the locus index. The quantitative trait is
-                    determined by genotype at this locus.
-    loci:           an array of locus indexes. The quantitative trait
-                    is determined by genotypes at these loci.
-    qtrait:         a dictionary of quantitative traits. The genotype
-                    must be in the form of 'a-b'. This is the mean of
-                    the quantitative trait. The actual trait value
-                    will be $ N\\left(mean,\\sigma^{2}\\right) $. For
-                    multiple loci, the form is 'a-b|c-d|e-f' etc.
-    sigma:          standard deviation of the environmental factor $
-                    N\\left(0,\\sigma^{2}\\right) $.
-    phase:          if True, a/b and b/a will have different
-                    quantitative trait values. Default to False.
-    output:         and other parameters please refer to help
-                    (baseOperator.__init__)
-
-"; 
-
-%feature("docstring") simuPOP::mapQuanTrait::~mapQuanTrait "
-
-Usage:
-
-    x.~mapQuanTrait()
-
-"; 
-
-%feature("docstring") simuPOP::mapQuanTrait::clone "
-
-Description:
-
-    deep copy of a map quantitative trait operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::mapQuanTrait::qtrait(individual *ind);
-
-%feature("docstring") simuPOP::mapQuanTrait::description "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::mapSelector "
 
 Applicability: all ploidy
@@ -3621,87 +3545,6 @@ Usage:
 %ignore simuPOP::mapSelector::indFitness(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::mapSelector::description "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::maQuanTrait "
-
-Function form:
-
-    MaQuanTrait
-
-Description:
-
-    multiple allele quantitative trait (quantitative trait according
-    to disease or wildtype alleles)
-
-Details:
-
-    This is called 'multiple-allele' quantitative trait. It separates
-    alleles into two groups: wildtype and diseased alleles. Wildtype
-    alleles are specified by parameter wildtype and any other alleles
-    are considered as diseased alleles. maQuanTrait accepts an array
-    of fitness. Quantitative trait is then set for any given genotype.
-    A standard normal distribution $ N\\left(0,\\sigma^{2}\\right) $ will
-    be added to the returned trait value.
-
-"; 
-
-%feature("docstring") simuPOP::maQuanTrait::maQuanTrait "
-
-Description:
-
-    create a multiple allele quantitative trait operator
-
-Usage:
-
-    maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
-
-Details:
-
-    Please refer to quanTrait for other parameter descriptions.
-
-Arguments:
-
-    qtrait:         an array of quantitative traits of AA, Aa, aa. A
-                    is the wildtype group
-    sigma:          an array of standard deviations for each of the
-                    trait genotype (AA, Aa, aa)
-    wildtype:       an array of alleles in the wildtype group. Any
-                    other alleles will be considered as diseased
-                    alleles. Default to [0].
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
-
-"; 
-
-%feature("docstring") simuPOP::maQuanTrait::~maQuanTrait "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~maQuanTrait()
-
-"; 
-
-%feature("docstring") simuPOP::maQuanTrait::clone "
-
-Description:
-
-    deep copy of a multiple allele quantitative trait
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::maQuanTrait::qtrait(individual *ind);
-
-%feature("docstring") simuPOP::maQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::maSelector "
 
@@ -4348,92 +4191,6 @@ Usage:
 %ignore simuPOP::mlPenetrance::penet(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::mlPenetrance::description "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::mlQuanTrait "
-
-Function form:
-
-    MlQuanTrait
-
-Description:
-
-    quantitative trait according to genotypes from a multiple loci
-    multiplicative model
-
-Details:
-
-    Operator mlQuanTrait is a 'multiple-locus' quantitative trait
-    calculator. It accepts a list of quantitative traits and combine
-    them according to the mode parameter, which takes one of the
-    following values
-    *   Multiplicative: the mean of the quantitative trait is
-    calculated as $ f=\\prod f_{i} $.
-    *   Additive: the mean of the quantitative trait is calculated as
-    $ f=\\sum f_{i} $. Note that all $ \\sigma_{i} $ (for $ f_{i} $) and
-    $ \\sigma $ (for $ f $) will be considered. I.e, the trait value
-    should be
-    $ f=\\sum_{i}\\left(f_{i}+N\\left(0,\\sigma_{i}^{2}\\right)\\right)+\\sig
-    ma^{2} $ for Additive case. If this is not desired, you can set
-    some of the $ \\sigma $ to zero.
-
-"; 
-
-%feature("docstring") simuPOP::mlQuanTrait::mlQuanTrait "
-
-Description:
-
-    create a multiple locus quantitative trait operator
-
-Usage:
-
-    mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
-
-Details:
-
-    Please refer to quanTrait for other parameter descriptions.
-
-Arguments:
-
-    qtraits:        a list of quantitative traits
-    mode:           can be one of Multiplicative and Additive
-
-"; 
-
-%feature("docstring") simuPOP::mlQuanTrait::~mlQuanTrait "
-
-Usage:
-
-    x.~mlQuanTrait()
-
-"; 
-
-%feature("docstring") simuPOP::mlQuanTrait::clone "
-
-Description:
-
-    deep copy of a multiple loci quantitative trait operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::mlQuanTrait::qtrait "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.qtrait(ind)
-
-"; 
-
-%feature("docstring") simuPOP::mlQuanTrait::description "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlSelector "
 
@@ -7190,41 +6947,57 @@ Function form:
 
     PyQuanTrait
 
-Description:
-
-    quantitative trait using a user provided function
-
 Details:
 
-    For each individual, a user provided function is used to calculate
-    quantitative trait.
+    This quantitative trait operator assigns a trait field by calling
+    a user provided function. It accepts a list of loci and a Python
+    function func. For each individual, this operator passes the
+    genotypes at these loci, and a generation number to this function.
+    The return value is used to set the trait fields of the
+    individual. Optionally, several information fields can be given to
+    parameter paramFields. In this case, the user-defined Python
+    function should accept a second parameter that is a list of values
+    at these information fields. In another word, a user-defined
+    function in the form of
+    *   func(geno, gen) is needed if paramFields is empty, or
+    *   func(geno, fields, gen) is needed if paramFields has some
+    information fields. If you need to pass sex or affection status to
+    this function, you should define an information field (e.g. sex)
+    and sync individual property with this field using operator
+    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
 
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait::pyQuanTrait "
 
-Description:
-
-    create a Python quantitative trait operator
-
 Usage:
 
-    pyQuanTrait(loci, func, ancGen=-1, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+    pyQuanTrait(loci, func, ancGen=0, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, paramFields=[],
+      infoFields=[])
 
 Details:
 
-    Please refer to quanTrait for other parameter descriptions.
+    Create a Python hybrid quantitative trait operator that passes
+    genotype at specified loci, optional values at specified
+    information fields (parameter paramFields), and a generation
+    number to a user-defined function func. The return value will be
+    assigned to specified trait fields (infoField). If only one trait
+    field is specified, a number or a sequence of one element is
+    acceptable. Otherwise, a sequence of values will be accepted and
+    be assigned to each trait field.
 
-Arguments:
+"; 
 
-    loci:           The genotypes at these loci will be passed to
-                    func.
-    func:           a Python function that accepts genotypes at
-                    specified loci and returns the quantitative trait
-                    value.
-    output:         and other parameters please refer to
-                    help(baseOperator.__init__)
+%feature("docstring") simuPOP::pyQuanTrait::~pyQuanTrait "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~pyQuanTrait()
 
 "; 
 
@@ -7242,7 +7015,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyQuanTrait::qtrait(individual *ind);
+%ignore simuPOP::pyQuanTrait::qtrait(individual *ind, ULONG gen, vectorf &traits);
 
 %feature("docstring") simuPOP::pyQuanTrait::description "Obsolete or undocumented function."
 
@@ -7362,35 +7135,41 @@ Usage:
 
 %feature("docstring") simuPOP::quanTrait "
 
-Description:
-
-    base class of quantitative trait
-
 Details:
 
-    Quantitative trait is the measure of certain phenotype for given
-    genotype. Quantitative trait is similar to penetrance in that the
-    consequence of penetrance is binary: affected or unaffected; while
-    it is continuous for quantitative trait.
-    In simuPOP, different operators or functions were implemented to
-    calculate quantitative traits for each individual and store the
-    values in the information fields specified by the user (default to
-    qtrait). The quantitative trait operators also accept the
-    ancestralGen parameter to control the number of generations for
-    which the qtrait information field will be set.
+    A quantitative trait in simuPOP is simply an information field. A
+    quantitative trait model simply assigns values to one or more
+    information fields (called trait fields) of each individual
+    according to its genetic (genotype) and environmental (information
+    field) factors. It can be applied at any stage of an evolutionary
+    cycle. If a quantitative trait operator is applied before or after
+    mating, it will set the trait fields of all parents and offspring.
+    If it is applied during mating, it will set the trait fields of
+    each offspring.  When a quantitative trait operator is applied to
+    a population, it is only applied to the current generation. You
+    can, however, use parameter ancGen=-1 to set the trait field of
+    all ancestral generations, or a generation index to apply to only
+    ancestral generation younger than ancGen. Note that this parameter
+    is ignored if the operator is applied during mating.
 
 "; 
 
 %feature("docstring") simuPOP::quanTrait::quanTrait "
 
-Description:
-
-    create a quantitative trait operator
-
 Usage:
 
     quanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
+
+Details:
+
+    Create a base quantitative trait operator. If ancGen=0 (default),
+    only the current generation will be applied. If ancGen=-1, the
+    trait fields (infoFields) of all ancestral generations will be
+    set. If a positive number is given, ancestral generations with
+    index <= ancGen will be applied. A quantitative trait operator can
+    be applied to specified (virtual) subpopulations (parameter
+    subPops) and replicates (parameter reps).
 
 "; 
 
@@ -7418,7 +7197,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::quanTrait::qtrait(individual *);
+%ignore simuPOP::quanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
 
 %feature("docstring") simuPOP::quanTrait::apply "
 

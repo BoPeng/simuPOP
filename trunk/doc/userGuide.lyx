@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -14223,6 +14223,23 @@ lstparams "caption={Natural selection through the selection of parents},label={s
 
 \end_layout
 
+\begin_layout Note
+The selection algorithm used in simuPOP is called 
+\emph on
+fitness proportionate selection
+\emph default
+, or 
+\emph on
+roulette-wheel selection
+\emph default
+.
+ simuPOP does not use the more efficient 
+\emph on
+stochastic universal sampling
+\emph default
+ algorithm because the number of needed offspring is unknown in advance.
+\end_layout
+
 \begin_layout Subsection
 Natural selection through the selection of offspring *
 \end_layout
@@ -15242,6 +15259,18 @@ infoFields='fitness1'
 fitnessField='fitness1'
 \family default
 ).
+\end_layout
+
+\begin_layout Section
+Quantitative trait
+\end_layout
+
+\begin_layout Subsection
+A hybrid quantitative trait operator (operator 
+\family typewriter
+pyQuanTrait
+\family default
+)
 \end_layout
 
 \begin_layout Section
