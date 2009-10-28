@@ -368,8 +368,7 @@ DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
         'COPYING', 'TODO', 'simuPOP_version.py']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-    ('share/simuPOP/test', glob.glob('test/test_*.py') + \
-        ['test/run_tests.py'])
+    ('share/simuPOP/test', glob.glob('test/test_*.py') + ['test/run_tests.py'])
 ]
 
 
