@@ -163,7 +163,7 @@ class randomSample(_sample):
         self.repr = '<simuPOP::randomSample>'
 
     def prepareSample(self, pop):
-        self.pedigree = pedigree(pop, fatherField='', motherField='')
+        self.pedigree = pedigree(pop, idField='', fatherField='', motherField='')
         self.pedigree.addInfoFields('sample', -1)
         return True
 
@@ -223,7 +223,7 @@ class caseControlSample(_sample):
         self.repr = '<simuPOP::caseControlSample>'
 
     def prepareSample(self, pop):
-        self.pedigree = pedigree(pop, fatherField='', motherField='')
+        self.pedigree = pedigree(pop, idField='', fatherField='', motherField='')
         self.pedigree.addInfoFields('sample', -1)
         self.pedigree.setVirtualSplitter(affectionSplitter())
         return True
@@ -343,7 +343,8 @@ class affectedSibpairSample(_sample):
             if field not in pop.infoFields():
                 raise ValueError('Information field %s not found in population' % field)
         #
-        self.pedigree = pedigree(pop, infoFields=self.fields, ancGen=1)
+        self.pedigree = pedigree(pop, infoFields=self.fields, fatherField=self.fields[0], motherField=self.fields[1],
+            ancGen=1)
         self.pedigree.addInfoFields(['sample', 'pedindex', 'offspring0', 'offspring1', 'spouse'], -1)
         # locate all affected siblings
         self.pedigree.locateRelatives(Offspring, ['offspring0', 'offspring1'])

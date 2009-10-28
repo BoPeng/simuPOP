@@ -51,15 +51,21 @@ public:
 	 *  (parameter \e infoFields, default to no information field except for
 	 *  \e parentFields), and ancestral generations (parameter \e ancGen,
 	 *  default to all ancestral generations). By default, information field
-	 *  \c father_idx and \c mother_idx are used to locate parents. If
-	 *  individuals in a pedigree has only one parent, the information field
-	 *  that stores parental indexes should be specified in parameter
-	 *  \e fatherField or \e motherField. The other field should be set to an
-	 *  empty string.
+	 *  \c father_id (parameter \e fatherField) and \c mother_id (parameter
+	 *  \e motherField) are used to locate parents with \c ind_id (parameter
+	 *  \e idField) as an ID field storing an unique ID for every individual.
+	 *  If \e idField is not specified, field \c fatherField and \c motherField
+	 *  are handled as indexes of parents in the parental generation. Please
+	 *  refer to operator \c idTagger, \c pedigreeTagger (use unique ID) and
+	 *  \c parentsTagger (use indexes in parental generation) for how to track
+	 *  pedigree structure using these information fields. This pedigree object
+	 *  works with one or no parents but certain functions such as relative
+	 *  tracking will not be available for such cases.
 	 */
 	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
-		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
+		const string & idField = "", const string & fatherField = "",
+		const string & motherField = "");
 
 	/// CPPONLY copy constructor
 	pedigree(const pedigree & rhs);
@@ -68,13 +74,6 @@ public:
 	 *  <group>1-ped</group>
 	 */
 	pedigree * clone() const;
-
-	/** Return the number of parents each individual has. This function returns
-	 *  the number of information fields used to store parental indexes, even
-	 *  if one of the fields are unused.
-	 *  <group>2-info</group>
-	 */
-	UINT numParents();
 
 	/** Return the index of the father of individual \e idx in subpopulation
 	 *  \e subPop in the parental generation. Return \c -1 if this individual
@@ -92,10 +91,18 @@ public:
 	 */
 	int mother(ULONG idx, SubPopID subPop);
 
+	/** Return the number of parents each individual has. This function returns
+	 *  the number of information fields used to store parental indexes, even
+	 *  if one of the fields are unused.
+	 *  <group>2-info</group>
+	 */
+	UINT numParents();
+
 	/** This function locates relatives (of type \e relType) of each individual
-	 *  and store their indexes in specified information fields \e relFields.
-	 *  The length of \e relFields determines how many relatives an individual
-	 *  can have.
+	 *  and store their ID (if \c idField is specified) or indexes (if
+	 *  \c idField is not specified) in information fields \e relFields. The
+	 *  length of \e relFields determines how many relatives an individual can
+	 *  have.
 	 *
 	 *  Parameter \e relType specifies what type of relative to locate. It can
 	 *  be \c Self, \c Spouse (having at least one common offspring),
@@ -132,7 +139,9 @@ public:
 	 *  \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex. The default
 	 *  value for this paramter is \c AnySex at all steps. The length of
 	 *  \e pathGen should be one more than \e pathFields, and \e pathSex if
-	 *  \e pathSex is given.
+	 *  \e pathSex is given. If individual ID is used, \e pathGen could be
+	 *  ignored, although they could help the location of relatives in the
+	 *  population.
 	 *
 	 *  For example, if <tt>pathGen=[0, 1, 1, 0]</tt>, <tt>pathFields =
 	 *  [['father_idx', 'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']]</tt>,
@@ -156,9 +165,11 @@ public:
 		const vectorstr & resultFields = vectorstr());
 
 private:
+	string m_idField;
 	string m_fatherField;
 	string m_motherField;
 
+	int m_idIdx;
 	int m_fatherIdx;
 	int m_motherIdx;
 };
