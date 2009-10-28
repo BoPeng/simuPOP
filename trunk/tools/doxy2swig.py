@@ -568,13 +568,13 @@ class Doxy2SWIG:
                 piece1 = entry['Details'].split('<funcForm>')
                 piece2 = piece1[1].split('</funcForm>')
                 entry['Details'] = piece1[0] + piece2[1]
-                entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
+                entry['funcForm'] = piece2[0]
             #
             if (entry.has_key('Details') and '<applicability>' in entry['Details']):
                 piece1 = entry['Details'].split('<applicability>')
                 piece2 = piece1[1].split('</applicability>')
                 entry['Details'] = piece1[0] + piece2[1]
-                entry['Applicability'] = '<tt>' + piece2[0] + '</tt>'
+                entry['Applicability'] = piece2[0]
             #
             if (entry.has_key('Details') and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
@@ -998,9 +998,17 @@ class Doxy2SWIG:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.', ''))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}' % (classname, classname)
-            if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
-                print >> out, '  (Function %s\index{function!%s})' % (
-                        self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
+            comment = ''
+            if entry.has_key('Applicability'):
+                comment += 'Applicable to %s' % self.latex_text(entry['Applicability']).strip()
+            if entry.has_key('funcForm'):
+                if comment != '':
+                    comment += ', can be '
+                else:
+                    comment += 'Can be '
+                comment += 'applied directly using function %s' % self.latex_text('<tt>' + entry['funcForm'].strip() + '</tt>').strip()
+            if comment != '':
+                print >> out, '  (%s)' % comment
             print >> out, '}\n'
             print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
@@ -1239,8 +1247,17 @@ class Doxy2SWIG:
             print >> out, '-' * (6 + len(classname))
             print >> out
             print >> out, '.. class::', classname
+            comment = ''
+            if entry.has_key('Applicability'):
+                comment += 'Applicable to %s' % self.wrap_reST(entry['Applicability']).strip()
             if entry.has_key('funcForm'):
-                print >> out, '\n   Function form: %s' % self.wrap_reST(entry['funcForm'])
+                if comment != '':
+                    comment += ', can be '
+                else:
+                    comment += 'Can be '
+                comment += 'applied directly using function %s' % self.wrap_reST('<tt>' + entry['funcForm'].strip() + '</tt>').strip()
+            if comment != '':
+                print >> out, '\n   ' + comment
             print >> out
             print >> out, self.wrap_reST(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':

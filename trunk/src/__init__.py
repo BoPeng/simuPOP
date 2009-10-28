@@ -180,9 +180,6 @@ __all__ = [
     'mlPenetrance',
     'pyPenetrance',
     #
-    'mapQuanTrait',
-    'maQuanTrait',
-    'mlQuanTrait',
     'pyQuanTrait',
     #
     'stat',
@@ -269,10 +266,7 @@ __all__ = [
     'MlPenetrance',
     'PyPenetrance',
     #
-    'MlQuanTrait',
     'PyQuanTrait',
-    'MaQuanTrait',
-    'MapQuanTrait',
     #
     # For testing only
     'ApplyDuringMatingOperator',
