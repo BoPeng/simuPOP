@@ -2873,7 +2873,11 @@ Details:
     variables. The difference is that instead of evaluating an
     expression and outputing its result, this operator execute one or
     more statements and update individual information fields from the
-    namespace after the specified statements are execuated.
+    namespace after the specified statements are execuated. This
+    implies that you have to set new values to information fields
+    through variables (e.g. \"a = 5\"), not through functions (e.g.
+    \"ind.setInfo(5, 'a')\" with individuals exposed as \"ind\" will not
+    work).
 
 "; 
 

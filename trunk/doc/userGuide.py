@@ -1885,7 +1885,8 @@ simu.evolve(
 )
 # Sample affected sibpairs
 pop = simu.extract(0)
-sample = sim.AffectedSibpairSample(pop, size=5)[0]
+from simuPOP.sampling import AffectedSibpairSample
+sample = AffectedSibpairSample(pop, size=5)[0]
 [int(ind.father_idx) for ind in sample.individuals()]
 #end_file
 
@@ -3407,9 +3408,10 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import *
+from simuPOP.sampling import CaseControlSample
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
-    sample = sim.CaseControlSample(pop, cases=500, controls=500)[0]
+    sample = CaseControlSample(pop, cases=500, controls=500)[0]
     sim.Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
     print 'Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
         % (sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],

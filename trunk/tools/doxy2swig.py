@@ -1446,6 +1446,7 @@ if __name__ == '__main__':
     p.scan_module('simuPOP.params')
     p.scan_module('simuPOP.utils')
     p.scan_module('simuPOP.plotter')
+    p.scan_module('simuPOP.sampling')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []

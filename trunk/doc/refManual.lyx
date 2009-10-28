@@ -1066,7 +1066,7 @@ pointMutatorRef
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Derived mutation operators
 \end_layout
 
@@ -1152,6 +1152,43 @@ pyPenetranceRef
 \end_layout
 
 \begin_layout Section
+Quantitative Trait
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+quantitative trait
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+baseQuanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Natural selection
 \begin_inset Index
 status collapsed
@@ -1202,43 +1239,6 @@ mlSelectorRef
 
 \backslash
 pySelectorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Quantitative Trait
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-quantitative trait
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-baseQuanTraitRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyQuanTraitRef
 \end_layout
 
 \end_inset
@@ -1362,65 +1362,6 @@ pyOperatorRef
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Section
-Ascertainment operators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPRandomSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcaseControlSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPCaseControlSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPaffectedSibpairSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPAffectedSibpairSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -2133,6 +2074,68 @@ simuPOPplotterqqPlotterRef
 
 \backslash
 simuPOPplotterboxPlotterRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module simuPOP.sampling
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingrandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingRandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingcaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingCaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingaffectedSibpairSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingAffectedSibpairSampleRef
 \end_layout
 
 \end_inset
