@@ -202,7 +202,7 @@ include gsl/cdf/gamma.c
 
 # tests
 include test/run_tests.py
-include test/test_00_carray.py
+include test/test_00_genoStru.py
 include test/test_01_individual.py
 include test/test_02_population.py
 include test/test_03_operator.py
@@ -216,9 +216,9 @@ include test/test_10_opIfElse.py
 include test/test_11_opPause.py
 include test/test_12_migration.py
 include test/test_13_mutation.py
-include test/test_14_recombination.py
+include test/test_14_transmitter.py
 include test/test_15_selection.py
-include test/test_16_asertainment.py
+include test/test_16_sampling.py
 include test/test_17_qtrait.py
 include test/test_18_penetrance.py
 include test/test_19_utilitp.py
