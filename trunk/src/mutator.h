@@ -1,5 +1,5 @@
 /**
- *  $File: mutator.h $
+ *  $File: baseMutator.h $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -40,7 +40,7 @@ namespace simuPOP {
  *  allele. Alleles can be changed before and after mutation if existing allele
  *  numbers do not match those of a mutation model.
  */
-class mutator : public baseOperator
+class baseMutator : public baseOperator
 {
 public:
 	/** A mutator mutates alleles from one state to another with given
@@ -95,7 +95,7 @@ public:
 	 *  defined. How exactly a mutator makes use of these information is
 	 *  mutator dependent.
 	 */
-	mutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	baseMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -116,7 +116,7 @@ public:
 
 
 	/// destructor
-	virtual ~mutator()
+	virtual ~baseMutator()
 	{
 	}
 
@@ -124,7 +124,7 @@ public:
 	/// deep copy of a \c mutator
 	virtual baseOperator * clone() const
 	{
-		return new mutator(*this);
+		return new baseMutator(*this);
 	}
 
 
@@ -196,7 +196,7 @@ protected:
  #
  *  <funcForm>MatrixMutate</funcForm>
  */
-class matrixMutator : public mutator
+class matrixMutator : public baseMutator
 {
 public:
 	/** Create a mutator that mutates alleles \c 0, \c 1, ..., \c n-1 using a
@@ -249,7 +249,7 @@ private:
  *  probability.
  *  <funcForm>KamMutate</funcForm>
  */
-class kamMutator : public mutator
+class kamMutator : public baseMutator
 {
 public:
 	/** Create a k-allele mutator that mutates alleles to one of the other
@@ -265,7 +265,7 @@ public:
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
+		: baseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
 		          reps, subPops, infoFields), m_k(k)
 	{
 #ifndef BINARYALLELE
@@ -313,7 +313,7 @@ private:
  *  boundaries (0 and maximum allowed allele).
  *  <funcForm>SmmMutate</funcForm>
  */
-class smmMutator : public mutator
+class smmMutator : public baseMutator
 {
 public:
 	/** Create a stepwise mutation mutator that mutates an allele by increasing
@@ -383,7 +383,7 @@ private:
  *  an allele when an mutation event happens.
  *  <funcForm>PyMutate</funcForm>
  */
-class pyMutator : public mutator
+class pyMutator : public baseMutator
 {
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
@@ -407,7 +407,7 @@ public:
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
+		: baseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_contextObj(NULL)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -443,7 +443,7 @@ private:
  *  an allele when an mutation event happens.
  *  <funcForm>MixedMutate</funcForm>
  */
-class mixedMutator : public mutator
+class mixedMutator : public baseMutator
 {
 public:
 	/** Create a mutator that randomly chooses one of the specified \e mutators
@@ -463,7 +463,7 @@ public:
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
+		: baseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_sampler(GetRNG())
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
@@ -508,7 +508,7 @@ private:
  *  them to mutate an allele depending on the context of the mutated allele.
  *  <funcForm>ContextMutate</funcForm>
  */
-class contextMutator : public mutator
+class contextMutator : public baseMutator
 {
 public:
 	/** Create a mutator that choose one of the specified \e mutators to mutate
@@ -537,7 +537,7 @@ public:
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: mutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
+		: baseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
 		m_mutators(mutators), m_contexts(contexts)
 	{
 		if (m_contexts.size() != 0) {

@@ -54,7 +54,7 @@ namespace simuPOP {
  *  \e ancGen. Note that this parameter is ignored if the operator is applied
  *  during mating.
  */
-class quanTrait : public baseOperator
+class baseQuanTrait : public baseOperator
 {
 public:
 	/** Create a base quantitative trait operator. If \e ancGen=0 (default),
@@ -65,7 +65,7 @@ public:
 	 *  specified (virtual) subpopulations (parameter \e subPops) and
 	 *  replicates (parameter \e reps).
 	 */
-	quanTrait(int ancGen = -1,  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	baseQuanTrait(int ancGen = -1,  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
 		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
@@ -77,7 +77,7 @@ public:
 
 
 	/// destructor
-	virtual ~quanTrait()
+	virtual ~baseQuanTrait()
 	{
 	}
 
@@ -85,7 +85,7 @@ public:
 	/// deep copy of a quantitative trait operator
 	virtual baseOperator * clone() const
 	{
-		return new quanTrait(*this);
+		return new baseQuanTrait(*this);
 	}
 
 
@@ -101,6 +101,10 @@ public:
 
 	/// set \c qtrait to all individual
 	bool apply(population & pop);
+
+	/// CPPONLY
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
 	string description()
@@ -135,7 +139,7 @@ private:
  *
  *  <funcForm>PyQuanTrait</funcForm>
  */
-class pyQuanTrait : public quanTrait
+class pyQuanTrait : public baseQuanTrait
 {
 public:
 	/** Create a Python hybrid quantitative trait operator that passes genotype
@@ -150,7 +154,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & paramFields = vectorstr(), const stringList & infoFields = vectorstr()) :
-		quanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		baseQuanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func),  m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
@@ -172,7 +176,7 @@ public:
 
 	/// CPPONLY
 	pyQuanTrait(const pyQuanTrait & rhs) :
-		quanTrait(rhs),
+		baseQuanTrait(rhs),
 		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
 		m_paramFields(rhs.m_paramFields),
