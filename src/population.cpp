@@ -348,9 +348,6 @@ individual & population::indByID(ULONG id, int ancGen, const string & idField)
 {
 	UINT idx = infoIdx(idField);
 
-	DBG_FAILIF(ancGen != -1 && static_cast<UINT>(ancGen) > m_ancestralPops.size(), IndexError,
-		"Ancestray generation " + toStr(ancGen) + " does not exist");
-
 	for (UINT gen = 0; gen <= ancestralGens(); ++gen) {
 		// only search specific generation
 		if (ancGen != -1 && static_cast<UINT>(ancGen) != gen)

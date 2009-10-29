@@ -2082,7 +2082,9 @@ simuPOPplotterboxPlotterRef
 \end_layout
 
 \begin_layout Section
-Module simuPOP.sampling
+Module 
+\family typewriter
+simuPOP.sampling
 \end_layout
 
 \begin_layout Standard
