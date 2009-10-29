@@ -165,6 +165,34 @@ public:
 		const vectorstr & resultFields = vectorstr());
 
 private:
+	// a list of functions that will be used in locateRelatives.
+	// they are called only once. The reason this is separated is because
+	// they are too long when putting in one function.
+	void locateSelfByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSelfByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSiblingByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSiblingByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateFullSiblingByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateFullSiblingByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSpouseAndOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+	void locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+
+private:
 	string m_idField;
 	string m_fatherField;
 	string m_motherField;
