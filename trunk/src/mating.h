@@ -961,7 +961,9 @@ public:
 	 *  size of the offspring generation. The passed parental population is
 	 *  usually used to determine offspring population size from parental
 	 *  population size but nothing stops you from modifying this parental
-	 *  population to prepare it for mating.
+	 *  population to prepare it for mating. A common practice is to split and
+	 *  merge parental populations in this function so that you do not have to
+	 *  use operators for these tasks.
 	 *
 	 *  If this mating shcme is used within a heterogeneous mating scheme.
 	 *  Parameters \e subPops and \e weight are used to determine which (virtual)

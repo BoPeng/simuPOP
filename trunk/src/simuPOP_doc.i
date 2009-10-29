@@ -2208,12 +2208,14 @@ Details:
     parental population is usually used to determine offspring
     population size from parental population size but nothing stops
     you from modifying this parental population to prepare it for
-    mating.  If this mating shcme is used within a heterogeneous
-    mating scheme. Parameters subPops and weight are used to determine
-    which (virtual) subpopulations this mating scheme will be applied
-    to, and how many offspring this mating scheme will produce. Please
-    refer to mating scheme heteroMating for the use of these two
-    parameters.
+    mating. A common practice is to split and merge parental
+    populations in this function so that you do not have to use
+    operators for these tasks.  If this mating shcme is used within a
+    heterogeneous mating scheme. Parameters subPops and weight are
+    used to determine which (virtual) subpopulations this mating
+    scheme will be applied to, and how many offspring this mating
+    scheme will produce. Please refer to mating scheme heteroMating
+    for the use of these two parameters.
 
 "; 
 

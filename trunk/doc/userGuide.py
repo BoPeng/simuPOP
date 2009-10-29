@@ -1131,6 +1131,37 @@ simu.evolve(
 )
 #end_file
 
+
+#begin_file log/advancedDemoFunc.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+def demo(gen, pop):
+    if gen < 2:
+        return 1000 + 100 * gen
+    if gen == 2:
+        # this happens right before mating at generation 2
+        size = pop.popSize()
+        pop.splitSubPop(0, [size/2, size - size/2]) 
+    # for generation two and later
+    return [x + 50 * gen for x in pop.subPopSizes()]
+
+simu = sim.simulator(sim.population(1000),
+    sim.randomSelection(subPopSize=demo))
+simu.evolve(
+    preOps = [
+        sim.stat(popSize=True),
+        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    gen = 5
+)
+#end_file
+
 #begin_file log/numOff.py
 #begin_ignore
 import simuOpt
