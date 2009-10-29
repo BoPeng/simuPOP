@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7053,7 +7053,11 @@ subPopSize
 \end_layout
 
 \begin_layout Itemize
-A demographic function can be specified to parameter 
+A 
+\series bold
+demographic function
+\series default
+ can be specified to parameter 
 \family typewriter
 subPopSize
 \family default
@@ -7152,13 +7156,56 @@ lstparams "caption={Use a demographic function to control population size},label
 
 \end_layout
 
+\begin_layout Subsection
+Advanced use of demographic functions 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Advanced-demo-func"
+
+\end_inset
+
+*
+\end_layout
+
 \begin_layout Standard
 The parental population passed to a demographic function is usually used
  to determine offspring population size from parental population size.
- Although it is techniquely allowed to modify the parental population in
- preparation for mating (e.g.
- remove some individuals), such operation should generally be performed
- by an operator.
+ However, because this function is called immediately before mating happens,
+ it provides a good opportunity for you to prepare the parental generation
+ for mating.
+ Such activities could generally be done by operators, but operations related
+ to demographic changes could be done here.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "advancedDemoFunc"
+
+\end_inset
+
+ uses a demographic function to split populations at certain generation.
+ The advantage of this method over the use of a 
+\family typewriter
+splitSubPops
+\family default
+ operator (for example as in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitByProp"
+
+\end_inset
+
+) is that all demographic information presents in the same function so you
+ do not have to worry about changing an operator when your demographic model
+ changes.
+  
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/advancedDemoFunc.log"
+lstparams "caption={Use a demographic function to split parental population},label={advancedDemoFunc}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -11250,7 +11297,8 @@ splitSubPops
  It is often easier to do so with proportions.
  In addition, if a demographic function is used, you should make sure that
  the number of subpopulations will be the same before and after mating at
- any generation, namely apply a 
+ any generation.
+ One way of doing this is to apply a 
 \family typewriter
 splitSubPops
 \family default
@@ -11263,6 +11311,15 @@ reference "splitByProp"
 \end_inset
 
  demonstrates such an evolutionary scenario.
+ However, it is often easier to split the population in the demographic
+ function in such case (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Advanced-demo-func"
+
+\end_inset
+
+ for details).
 \end_layout
 
 \begin_layout Standard
