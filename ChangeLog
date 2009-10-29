@@ -1,36 +1,22 @@
 ChangeLog of simuPOP
 
-version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.8 - Rev 3074 (Oct 28, 2009)
+  - BUG: Fix a memory leak bug in pyParentsChooser.
   - CHG: mapSelector now accepts a dictionary of tuples, instead of strings.
   - CHG: mapPenetrance now accepts a dictionary of tuples, instead of strings.
-  - NEW: during-mating operators used in a mating scheme now supports parameters
-		begin, step, end, at and reps.
-  - NEW: add parameter vspMap to combinedSplitter that can define VSPs by union of VSPs.
-  - NEW: add parameter ranges to infoSplitter.
-  - NEW: add productSplitter that define VSPs by intersections of VSPs.
-  - NEW: allow access individual information fields as attributes.
   - CHG: Remove function individual.intInfo.
   - CHG: cloneGenoTransmitter accepts a list of information fields to be copied
 		from parents to offspring. Default to all information fields.
   - CHG: Remove the stage feature of operators. Instead, operators should be passed
 		explicitly to parameters preOps, duringOps, postOps of the evolve function.
 		The existing preOps and postOps parameters are renamed to initOps and finalOps.
-  - NEW: Add Chi-Squared distribution to the RNG() class. Remove some rarely used
-		memeber functions of this class.
-  - NEW: Allow selectors to be applied during mating to allow for natural selection
-		through the selection of offspring.
-  - NEW: Allow the specification of VSP names in splitters.
-  - NEW: Add parameter freq to operator initByValue.
-  - NEW: Add parameter maleProp to operator initSex.
   - CHG: The second parameter of a demographic function is now the parental
-  population itself, instead of parental population sizes.
+		population itself, instead of parental population sizes.
   - CHG: Treat ancGen in population.indByID as suggested generation and will
-  continue to check other generations if an individual with specified ID is
-  not found in the suggested generation.
-  - BUG: Fix a memory leak bug in pyParentsChooser.
-  - NEW: Add support for haplodiploid population and sex chromosomes to
-  mapSelector.
-  - NEW: Add support of haploid population to maSelector.
+		continue to check other generations if an individual with specified ID is
+		not found in the suggested generation.
   - CHG: separate additional fields from infoFields to paramFields in operator
 		pySelector.
   - CHG: Change parameter selectors to ops in operator pySelector.
@@ -40,6 +26,22 @@ version 0.9.8 - Not released, available at https://simupop.svn.sourceforge.net/s
 		the interface of pyQuanTrait so that it can handle multiple trait fields
 		and be applied during mating.
   - CHG: More sampling operators and functions to submodule sampling.
+  - NEW: during-mating operators used in a mating scheme now supports parameters
+		begin, step, end, at and reps.
+  - NEW: add parameter vspMap to combinedSplitter that can define VSPs by union of VSPs.
+  - NEW: add parameter ranges to infoSplitter.
+  - NEW: add productSplitter that define VSPs by intersections of VSPs.
+  - NEW: allow access individual information fields as attributes.
+  - NEW: Add Chi-Squared distribution to the RNG() class. Remove some rarely used
+		memeber functions of this class.
+  - NEW: Allow selectors to be applied during mating to allow for natural selection
+		through the selection of offspring.
+  - NEW: Allow the specification of VSP names in splitters.
+  - NEW: Add parameter freq to operator initByValue.
+  - NEW: Add parameter maleProp to operator initSex.
+  - NEW: Add support for haplodiploid population and sex chromosomes to
+		mapSelector.
+  - NEW: Add support of haploid population to maSelector.
 
 version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - BUG: Fix a population.extract() bug with the copy of existing information fields
