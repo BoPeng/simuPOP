@@ -221,6 +221,7 @@ void baseOperator::setFlags()
 	}
 }
 
+
 void baseOperator::initializeIfNeeded(const population & pop)
 {
 	if (m_lastPop != pop.genoStruIdx()) {
@@ -228,6 +229,7 @@ void baseOperator::initializeIfNeeded(const population & pop)
 		m_lastPop = pop.genoStruIdx();
 	}
 }
+
 
 bool baseOperator::apply(population & pop)
 {
@@ -354,6 +356,23 @@ bool pause::apply(population & pop)
 }
 
 
+ifElse::ifElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops,
+	const stringList & infoFields) :
+	baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	m_cond(), m_ifOps(ifOps), m_elseOps(elseOps)
+{
+	if (PyString_Check(cond))
+		m_cond.setExpr(PyString_AsString(cond));
+	else {
+		bool c;
+		PyObj_As_Bool(cond, c);
+		m_cond.setExpr(c ? "True" : "False");
+	}
+}
+
+
 bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
                                individual * dad, individual * mom)
 {
@@ -364,6 +383,8 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 		opList::const_iterator it = m_ifOps.begin();
 		opList::const_iterator itEnd = m_ifOps.end();
 		for (; it != itEnd; ++it) {
+			if (!(*it)->isActive(pop.rep(), pop.gen()))
+				continue;
 			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
 			if (!ret)
 				return false;
@@ -373,6 +394,8 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 		opList::const_iterator it = m_elseOps.begin();
 		opList::const_iterator itEnd = m_elseOps.end();
 		for (; it != itEnd; ++it) {
+			if (!(*it)->isActive(pop.rep(), pop.gen()))
+				continue;
 			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
 			if (!ret)
 				return false;
@@ -393,6 +416,8 @@ bool ifElse::apply(population & pop)
 		vectorop::const_iterator it = ops.begin();
 		vectorop::const_iterator itEnd = ops.end();
 		for (; it != itEnd; ++it) {
+			if (!(*it)->isActive(pop.rep(), pop.gen()))
+				continue;
 			bool ret = (*it)->apply(pop);
 			if (!ret)
 				return false;
@@ -403,6 +428,8 @@ bool ifElse::apply(population & pop)
 		vectorop::const_iterator it = ops.begin();
 		vectorop::const_iterator itEnd = ops.end();
 		for (; it != itEnd; ++it) {
+			if (!(*it)->isActive(pop.rep(), pop.gen()))
+				continue;
 			bool ret = (*it)->apply(pop);
 			if (!ret)
 				return false;

@@ -546,20 +546,31 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
     called to obtain intended frequencies of alleles *alleles* at loci
     *loci*. The controlled offspring generator will control the acceptance of
     offspring so that the generation reaches desired allele frequencies at
-    these loci. Rationals and applications of this mating scheme is described
-    in details in a paper *Peng et al, 2007 (PLoS Genetics)*. Please refer to
-    class ``randomParentsChooser`` for parameters *selectionField*, to class
-    ``controlledOffspringGenerator`` for parameters *loci*, *alleles*,
-    *freqFunc*, to class ``offspringGenerator`` for parameters *ops*, *sexMode*
-    and *numOffspring*, and to class ``homoMating`` for parameters *subPopSize*,
-    *subPops* and *weight*.
+    these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
+    scheme works identically to a ``randomMating scheme``. Rationals and
+    applications of this mating scheme is described in details in a paper *Peng
+    et al, 2007 (PLoS Genetics)*. Please refer to class ``randomParentsChooser``
+    for parameters *selectionField*, to class ``controlledOffspringGenerator``
+    for parameters *loci*, *alleles*, *freqFunc*, to class
+    ``offspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
+    and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
+    *weight*.
     '''
-    return homoMating(chooser = randomParentsChooser(True, selectionField),
-        generator = controlledOffspringGenerator(loci, alleles, freqFunc,
-            ops, numOffspring, sexMode),
-        subPopSize = subPopSize,
-        subPops = subPops,
-        weight = weight)
+    if len(loci) == 0 or freqFunc is None:
+        return homoMating(
+            chooser = randomParentsChooser(True, selectionField),
+            generator = offspringGenerator(ops, numOffspring, sexMode),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+    else:
+        return homoMating(
+            chooser = randomParentsChooser(True, selectionField),
+            generator = controlledOffspringGenerator(loci, alleles, freqFunc,
+                ops, numOffspring, sexMode),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
 
 
 # Mutation models

@@ -446,6 +446,7 @@ public:
 		return m_ostream.noOutput();
 	}
 
+
 	void initializeIfNeeded(const population & pop);
 
 	/// HIDDEN Initialize an operator against a population.
@@ -713,27 +714,29 @@ public:
 /** This operator accepts an expression that will be evaluated when this
  *  operator is applied. A list of if-operators will be applied when the
  *  expression returns \c True. Otherwise a list of else-operators will be
- *  applied.
+ *  applied. If a value is passed directly, it will be considered as a fixed
+ *  condition upon which one of \e ifOps or \e elseOps will be called.
  */
 class ifElse : public baseOperator
 {
 
 public:
 	/** Create a conditional operator that will apply operators \e ifOps if
-	 *  condition \e cond is met and \e elseOps otherwise. The replicate and
-	 *  generation applicability parameters (\e begin, \e end, \e step, \e at
-	 *  and \e rep) of the \e ifOps and \e elseOps are ignored because their
-	 *  applicability is determined by the \c ifElse operator.
+	 *  condition \e cond is met and \e elseOps otherwise. If a Python
+	 *  expression is given to parameter \e cond, the expression will be
+	 *  evalulated in each population's local namespace when this operator
+	 *  is applied. If a fixed value is given, the condition when the operator
+	 *  is created always holds. The applicability of \e ifOps and \e elseOps
+	 *  are controlled by parameters \e begin, \e end, \e step, \e at and
+	 *  \e rep of both the \c ifElse operator and individual operators but
+	 *  \e ifOps and \e elseOps opeartors does not support negative indexes
+	 *  for replicate and generation numbers.
 	 */
-	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
+	ifElse(PyObject * cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
-		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
-		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
-	{
-	};
+		const stringList & infoFields = vectorstr());
 
 	/// destructor
 	virtual ~ifElse()
