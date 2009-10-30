@@ -2353,7 +2353,9 @@ Details:
     This operator accepts an expression that will be evaluated when
     this operator is applied. A list of if-operators will be applied
     when the expression returns True. Otherwise a list of else-
-    operators will be applied.
+    operators will be applied. If a value is passed directly, it will
+    be considered as a fixed condition upon which one of ifOps or
+    elseOps will be called.
 
 "; 
 
@@ -2367,10 +2369,15 @@ Usage:
 Details:
 
     Create a conditional operator that will apply operators ifOps if
-    condition cond is met and elseOps otherwise. The replicate and
-    generation applicability parameters (begin, end, step, at and rep)
-    of the ifOps and elseOps are ignored because their applicability
-    is determined by the ifElse operator.
+    condition cond is met and elseOps otherwise. If a Python
+    expression is given to parameter cond, the expression will be
+    evalulated in each population's local namespace when this operator
+    is applied. If a fixed value is given, the condition when the
+    operator is created always holds. The applicability of ifOps and
+    elseOps are controlled by parameters begin, end, step, at and rep
+    of both the ifElse operator and individual operators but ifOps and
+    elseOps opeartors does not support negative indexes for replicate
+    and generation numbers.
 
 "; 
 

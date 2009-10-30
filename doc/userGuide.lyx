@@ -18544,13 +18544,87 @@ Operator
 ifElse
 \family default
  provides a simple way to conditionally apply an operator.
+ The condition can be a fixed condition or a expression that will be evaluated
+ in a population's local namespace when it is applied to the population.
+\end_layout
+
+\begin_layout Standard
+The first case is used to control the execution of certain operators depending
+ on user input.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ifElseFixed"
+
+\end_inset
+
+ determines whether or not some outputs should be given depending on a variable
+ 
+\family typewriter
+verbose
+\family default
+.
+ Note that the applicability of the conditional operators are determined
+ by the 
+\family typewriter
+ifElse
+\family default
+ operator and individual opearators.
+ That is to say, the parameters 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+ of operators in 
+\family typewriter
+ifOps
+\family default
+ and 
+\family typewriter
+elseOps
+\family default
+ are only honored when operator 
+\family typewriter
+ifElse
+\family default
+ is applied.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ifElseFixed.log"
+lstparams "caption={A conditional opeartor with fixed condition},label={ifElseFixed}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The expression form of this operator is more useful.
  For example, you can re-introduce a mutant if it gets lost in the population,
  output a warning when certain condition is met, or record the occurance
  of certain events in a population.
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ticToc"
+reference "ifElse"
 
 \end_inset
 
@@ -18558,25 +18632,22 @@ reference "ticToc"
  0.4 and beyong 0.6 before it gets lost or fixed in the population.
  Note that an else-operator can also be executed when the condition is not
  met.
+ If more complicated logic is involved, a Python operator (
+\family typewriter
+pyOperator
+\family default
+) should be used.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/ifElse.log"
-lstparams "caption={A conditional opeartor},label={ifElse}"
+lstparams "caption={A conditional opeartor with dynamic condition},label={ifElse}"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-If more complicated logic is involved, a Python operator (
-\family typewriter
-pyOperator
-\family default
-) should be used.
 \end_layout
 
 \begin_layout Subsection

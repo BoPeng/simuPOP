@@ -1156,7 +1156,11 @@ simu = sim.simulator(sim.population(1000),
 simu.evolve(
     preOps = [
         sim.stat(popSize=True),
-        sim.pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+        sim.pyEval(r'"Gen %d:\t%s (before mating)\t" % (gen, subPopSize)')
+    ],
+    postOps = [
+        sim.stat(popSize=True),
+        sim.pyEval(r'"%s (after mating)\n" % subPopSize')
     ],
     gen = 5
 )
@@ -2173,6 +2177,37 @@ pop = simu.population(3)
 print pop.ancestralGens()
 print pop.ancestor(10, 1).father_idx
 #end_file
+
+
+#begin_file log/ifElseFixed.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(size=1000, loci=1),
+    sim.randomMating())
+verbose = True
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5]),
+    ],
+    postOps = sim.ifElse(verbose,
+        ifOps = [
+            sim.stat(alleleFreq=0),
+            sim.pyEval(r"'Gen: %3d, allele freq: %.3f\n' % (gen, alleleFreq[0][1])",
+                step=5)
+        ],
+        begin=10),
+    gen = 30
+)
+#end_file
+
 
 #begin_file log/ifElse.py
 #begin_ignore
