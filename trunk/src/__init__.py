@@ -556,7 +556,7 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
     and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
     *weight*.
     '''
-    if len(loci) == 0 or freqFunc is None:
+    if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
         return homoMating(
             chooser = randomParentsChooser(True, selectionField),
             generator = offspringGenerator(ops, numOffspring, sexMode),

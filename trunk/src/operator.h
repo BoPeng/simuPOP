@@ -767,6 +767,7 @@ public:
 
 private:
 	Expression m_cond;
+	int m_fixedCond;
 
 	opList m_ifOps;
 	opList m_elseOps;

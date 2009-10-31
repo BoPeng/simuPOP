@@ -16,7 +16,6 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 #expect_error
-import simuPOP as sim
 pop = sim.population(10, loci=2)
 pop.locusPos(10)
 pop.individual(20).setAllele(1, 0)
