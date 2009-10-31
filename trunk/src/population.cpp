@@ -910,13 +910,13 @@ void population::removeIndividuals(const uintList & indList)
 }
 
 
-UINT population::mergeSubPops(const vectoru & subPops, const string & name)
+UINT population::mergeSubPops(const uintList & subPops, const string & name)
 {
 	if (!name.empty() && m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 
 	// merge all subpopulations
-	if (subPops.empty()) {
+	if (subPops.allAvail()) {
 		// [ popSize() ]
 		vectoru sz(1, popSize());
 		if (m_subPopNames.empty())
@@ -925,18 +925,18 @@ UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 			setSubPopStru(sz, vectorstr(1, name.empty() ? m_subPopNames[0] : name));
 		return 0;
 	}
-	if (subPops.size() == 1) {
+	if (subPops.elems().size() == 1) {
 		if (!name.empty())
 			m_subPopNames[0] = name;
-		return subPops[0];
+		return subPops.elems()[0];
 	}
 
 	// are they in order?
 	bool consecutive = true;
-	vectoru sps = subPops;
+	vectoru sps = subPops.elems();
 	sort(sps.begin(), sps.end());
 	for (size_t i = 1; i < sps.size(); ++i)
-		if (subPops[i] != subPops[i - 1] + 1) {
+		if (sps[i] != sps[i - 1] + 1) {
 			consecutive = false;
 			break;
 		}
@@ -944,7 +944,7 @@ UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 	vectoru new_size;
 	vectorstr new_names;
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
-		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
+		if (find(sps.begin(), sps.end(), sp) != sps.end()) {
 			if (new_size.size() <= sps[0]) {
 				new_size.push_back(subPopSize(sp));
 				if (!m_subPopNames.empty())
@@ -970,7 +970,7 @@ UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 		sp_order.push_back(sp);
 	sp_order.insert(sp_order.end(), sps.begin(), sps.end());
 	for (size_t sp = sps[0]; sp < numSubPop(); ++sp)
-		if (find(subPops.begin(), subPops.end(), sp) == subPops.end())
+		if (find(sps.begin(), sps.end(), sp) == sps.end())
 			sp_order.push_back(sp);
 	//
 	DBG_ASSERT(sp_order.size() == numSubPop(), ValueError,

@@ -859,16 +859,16 @@ public:
 	 */
 	void removeIndividuals(const uintList & inds);
 
-	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
-	 *  subpopulations will be merged. \e subPops do not have to be adjacent to
-	 *  each other. They will all be merged to the subpopulation with the
+	/** Merge subpopulations \e subPops. If \e subPops is \c AllAvail (default),
+	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
+	 *  to each other. They will all be merged to the subpopulation with the
 	 *  smallest subpopulation ID. Indexes of the rest of the subpopulation may
 	 *  be changed. A new name can be assigned to the merged subpopulation
 	 *  through parameter \e name (an empty \e name will be ignored). This
 	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-	UINT mergeSubPops(const vectoru & subPops = vectoru(), const string & name = UnnamedSubPop);
+	UINT mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
@@ -1021,6 +1021,7 @@ public:
 		return m_ancestralPops.size();
 	}
 
+
 	/** CPPONLY
 	 *  clear all information field.
 	 */
@@ -1028,6 +1029,7 @@ public:
 	{
 		std::fill(m_info.begin(), m_info.end(), 0.0);
 	}
+
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in
