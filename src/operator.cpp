@@ -361,14 +361,14 @@ ifElse::ifElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
 	baseOperator("", begin, end, step, at, reps, subPops, infoFields),
-	m_cond(), m_ifOps(ifOps), m_elseOps(elseOps)
+	m_cond(), m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
 	if (PyString_Check(cond))
 		m_cond.setExpr(PyString_AsString(cond));
 	else {
 		bool c;
 		PyObj_As_Bool(cond, c);
-		m_cond.setExpr(c ? "True" : "False");
+		m_fixedCond = c ? 1 : 0;
 	}
 }
 
@@ -377,7 +377,7 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
                                individual * dad, individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
-	bool res = m_cond.valueAsBool();
+	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
 
 	if (res && !m_ifOps.empty()) {
 		opList::const_iterator it = m_ifOps.begin();
@@ -409,7 +409,7 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 bool ifElse::apply(population & pop)
 {
 	m_cond.setLocalDict(pop.dict());
-	bool res = m_cond.valueAsBool();
+	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
 
 	if (res && !m_ifOps.empty()) {
 		const vectorop & ops = m_ifOps.elems();
