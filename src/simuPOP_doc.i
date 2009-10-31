@@ -5877,18 +5877,18 @@ Details:
 
 Usage:
 
-    x.mergeSubPops(subPops=[], name=\"\")
+    x.mergeSubPops(subPops=AllAvail, name=\"\")
 
 Details:
 
-    Merge subpopulations subPops. If subPops is empty (default), all
-    subpopulations will be merged. subPops do not have to be adjacent
-    to each other. They will all be merged to the subpopulation with
-    the smallest subpopulation ID. Indexes of the rest of the
-    subpopulation may be changed. A new name can be assigned to the
-    merged subpopulation through parameter name (an empty name will be
-    ignored). This function returns the ID of the merged
-    subpopulation.
+    Merge subpopulations subPops. If subPops is AllAvail (default),
+    all subpopulations will be merged. subPops do not have to be
+    adjacent to each other. They will all be merged to the
+    subpopulation with the smallest subpopulation ID. Indexes of the
+    rest of the subpopulation may be changed. A new name can be
+    assigned to the merged subpopulation through parameter name (an
+    empty name will be ignored). This function returns the ID of the
+    merged subpopulation.
 
 "; 
 
