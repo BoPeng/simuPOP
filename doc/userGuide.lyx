@@ -1,4 +1,4 @@
-#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -21398,6 +21398,214 @@ Boxplot of individual ancestry values
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.sampling
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+Sampling, in simuPOP term, is the action of extracting individuals from
+ a large, potentially multi-generational, population according to certain
+ criteria.
+ the 
+\family typewriter
+simuPOP.sampling
+\family default
+ module provides several functions and allows you to define more complicated
+ sampling schemes by deriving from its 
+\family typewriter
+sampling
+\family default
+ class.
+ For example, you can use 
+\family typewriter
+RandomSample(pop, size=100)
+\family default
+ to select 100 random individuals from a population, or use 
+\family typewriter
+AffectedSibpairSample(pop, size=100)
+\family default
+ to select 100 pairs of affected invididuals with their parents from a multi-gen
+erational population, or a age-structured population with parents and offspring
+ in the same generation.
+\end_layout
+
+\begin_layout Standard
+If your sampling scheme involves parental information, two parents tracking
+ mechanisms could be used, depending on whether or not a valid ID field
+ is given.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+If you use 
+\family typewriter
+parentsTagger
+\family default
+ and information fields 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ to track indexes of parents in the parental generaitons, your samples can
+ not be mapped back to the original population.
+ This method also does not support age-structured population.
+\end_layout
+
+\begin_layout Itemize
+If you use 
+\family typewriter
+pedigreeTagger
+\family default
+ and information fields 
+\family typewriter
+mother_ID
+\family default
+ and 
+\family typewriter
+father_ID
+\family default
+ to track individual IDs stored in field 
+\family typewriter
+indID
+\family default
+, your sample will keep these IDs so the pedigree relationship will be kept.
+ This method also supports age-structured population when parents and offspring
+ can be in the same generation.
+\end_layout
+
+\begin_layout Standard
+Some sampling schemes may only support the ID based sampling scheme.
+ If you have a multi-generational population with parents tracked by the
+ 
+\family typewriter
+parentsTagger
+\family default
+ and information fields 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+, you can assign each individual an ID and convert index based pedigree-structur
+e to an ID based structure using function 
+\family typewriter
+sampling.indexToID
+\family default
+(
+\family typewriter
+pop, father_idx, mother_idx, id, father_ID, mother_ID)
+\family default
+.
+ This function will add missing fields to 
+\family typewriter
+pop
+\family default
+ and use an 
+\family typewriter
+IdTagger
+\family default
+ function to assign an unique ID to each individual if needed.
+ It will then goes through each individual and set 
+\family typewriter
+father_ID
+\family default
+ and 
+\family typewriter
+mother_ID
+\family default
+ using parents identified through their indexes.
+\end_layout
+
+\begin_layout Subsection
+Sampling individuals randomly (function 
+\family typewriter
+RandomSample
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+This sampling function sample random invidiauls from a given population.
+ If a simple number is given to parameter 
+\family typewriter
+size
+\family default
+, population structure will be ignored so individuals will be drawn from
+ all subpopulations.
+ If a list of numbers are given, this function will draw specified number
+ of individuals from each subpopulation.
+ This function does not need parental information.
+ If your population does not have an ID field, you will not be able to locate
+ extracted individuals in the original population.
+\end_layout
+
+\begin_layout Standard
+Example 
+\end_layout
+
+\begin_layout Subsection
+Sampling cases and controls (function 
+\family typewriter
+CaseControlSample
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+This sampling function sample cases (affected individuals) and controls
+ (unaffected invidiauls) from a given population.
+ If a simple number is given to parameter 
+\family typewriter
+cases
+\family default
+ and 
+\family typewriter
+controls
+\family default
+, population structure will be ignored so individuals will be drawn from
+ all subpopulations.
+ If a list of numbers are given, this function will draw specified number
+ of cases and controls from each subpopulation.
+ This function does not need parental information.
+ If your population does not have an ID field, you will not be able to locate
+ extracted individuals in the original population.
+\end_layout
+
+\begin_layout Subsection
+Sampling pedigrees (function 
+\family typewriter
+PedigreeSample
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Sampling different types of samples (function 
+\family typewriter
+MixedSample
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Define your own sampling function (class 
+\family typewriter
+Sampling
+\family default
+ and its derived classes)
 \end_layout
 
 \begin_layout Chapter
