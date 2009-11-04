@@ -280,6 +280,12 @@ int simuPOP_getch(void)
 	return getch();
 }
 
+/*
+BOOL WINAPI InterruptHandler(DWORD CEvent)
+{
+	throw RuntimeError("KeyboardInterruption");
+}
+*/
 
 #else
 
@@ -3605,6 +3611,12 @@ bool initialize()
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);
 
+/* Ctrl-C under windows still does not work... :-(
+#if  defined (_WIN32) || defined (__WIN32__)
+	if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)(InterruptHandler), TRUE) == FALSE)
+		cerr << "Warning: Unable to install keyboard interruption handler" << endl;
+#endif
+*/
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
