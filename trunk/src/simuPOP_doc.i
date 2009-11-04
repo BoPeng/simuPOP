@@ -3423,10 +3423,7 @@ Function form:
 Details:
 
     This operator initialize sex of individuals, either randomly or
-    use a list of sexes. For convenience, the function of this
-    operator is included in other initializers such as initByFreq and
-    initByValue so that you do not have to intiailize sexes separately
-    from genotype.
+    use a list of sexes.
 
 "; 
 
@@ -3450,7 +3447,7 @@ Details:
     given. If a list of (virtual) subpopulation is specified in
     parameter subPop, only individuals in these subpopulations will be
     initialized. Note that the sex sequence, if used, is assigned
-    repeatedly regardless of subpopulation boundaries.
+    repeatedly regardless of (virtual) subpopulation boundaries.
 
 "; 
 

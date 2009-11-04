@@ -34,10 +34,10 @@ bool initSex::apply(population & pop)
 	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
+    size_t idx = 0;
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
 	for (; sp != sp_end; ++sp) {
-	    size_t idx = 0;
 		weightedSampler ws(GetRNG());
 		if (m_maleProp >= 0) {
 			vectorf prop(2, m_maleProp);
