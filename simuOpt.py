@@ -1149,7 +1149,8 @@ class simuParam:
         is ``types.ListType`` or  ``types.TupleType`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
         will not be accepted if such conversion fails. If this item is not
-        specified, the type of the default value will be used.
+        specified, the type of the default value will be used. If only one type
+        is acceptable, a single value can be used as input (ignore []).
 
     validate
         A function to validate the parameter. The function will be applied to
@@ -1261,7 +1262,10 @@ class simuParam:
         opt = {}
         for key in kwargs:
             if key in allowed_keys:
-                opt[key] = kwargs[key]
+                if key == 'allowedTypes' and type(kwargs[key]) not in [types.TupleType, types.ListType]:
+                    opt[key] = [kwargs[key]]
+                else:
+                    opt[key] = kwargs[key]
             else:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
         #
@@ -1297,7 +1301,7 @@ class simuParam:
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuParam object." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
-            raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s." % opt['longarg'])
+            raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s. Missing '=' after longarg?" % opt['longarg'])
         #
         opt['value'] = opt['default']
         opt['processed'] = False
