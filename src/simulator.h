@@ -214,7 +214,7 @@ public:
 	 *  process. Operators \e initOps are applied to all populations (subject
 	 *  to applicability restrictions of the operators, imposed by the \e rep
 	 *  parameter of these operators) before evolution. They are used to
-	 *  initialize populations before evolution. Operators \e finalOps are 
+	 *  initialize populations before evolution. Operators \e finalOps are
 	 *  applied to all populations after the evolution.
 	 *
 	 *  Operators \e preOps, \e duringOps and \e postOps are applied during the
