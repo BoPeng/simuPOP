@@ -274,7 +274,7 @@ vectoru simulator::evolve(
 			size_t it = 0;                                            // asign a value to reduce compiler warning
 
 			if (PyErr_CheckSignals()) {
-				cerr << "Evolution stopped due to keyboard interrupt." << endl;
+				cerr << "Evolution stopped due to keyboard interruption." << endl;
 				fill(activeReps.begin(), activeReps.end(), false);
 				numStopped = activeReps.size();
 			}
@@ -296,7 +296,7 @@ vectoru simulator::evolve(
 							}
 						}
 						if (PyErr_CheckSignals())
-							throw StopEvolution("Evolution stopped due to keyboard interrupt.");
+							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preOps[it]->description() +
@@ -333,7 +333,7 @@ vectoru simulator::evolve(
 					continue;
 				}
 				if (PyErr_CheckSignals())
-					throw StopEvolution("Evolution stopped due to keyboard interrupt.");
+					throw StopEvolution("Evolution stopped due to keyboard interruption.");
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
@@ -363,7 +363,7 @@ vectoru simulator::evolve(
 							break;
 						}
 						if (PyErr_CheckSignals())
-							throw StopEvolution("Evolution stopped due to keyboard interrupt.");
+							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postOps[it]->description() +
