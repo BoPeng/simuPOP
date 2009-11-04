@@ -87,7 +87,8 @@ __all__ = [
     'valueValidDir',
     'valueValidFile',
     'valueListOf',
-    'simuParam'
+    'simuParam',
+    'param',
 ]
 
 import os, sys, exceptions, types, re, time, textwrap
@@ -1079,6 +1080,11 @@ class _wxParamDialog(_paramDialog):
         # related function is called.
         del self.app
 
+def param(**kwargs):
+    '''A simple wrapper that allows the specification of a parameter using a
+    function instead of a dictionary. Please refer to class
+    ``simuOpt.simuParam`` for allowed keyword arguments and their meanings.'''
+    return kwargs
 
 class simuParam:
     '''

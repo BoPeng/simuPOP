@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -19269,6 +19269,35 @@ lines with symbol '|' as the first non-space/tab character are outputed
 LatexCommand lstinputlisting
 filename "log/getParam.py"
 lstparams "caption={A sample parameter specification list},label={paramSpec},lastline=34"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you dislike an explicit list of dictionaries, you can use function 
+\family typewriter
+simuOpt.param
+\family default
+ with keyword arguments to return such a dictionary.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "paramFunc"
+
+\end_inset
+
+ shows an equivalent parameter specification dictionaries using this style.
+ 
+\series bold
+There is no functional difference between these two styles.
+\series default
+
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/paramFunc.py"
+lstparams "caption={Using simuOpt.param to specify parameters},label={paramFunc}"
 
 \end_inset
 

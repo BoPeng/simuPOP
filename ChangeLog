@@ -7,6 +7,8 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 		of applicability parameters in ifOps and elseOps operators.
   - NEW: Allow Ctrl-C to interrupt an evolving process. (The solution does not work
 		under windows).
+  - NEW: Add simuOpt.param() to allow a function style of inputting parameter
+		specification dictionaries.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
