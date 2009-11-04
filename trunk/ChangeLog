@@ -5,6 +5,7 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 		no locus to control.
   - NEW: Allow the use of a fixed value in operator ifElse, and allow the use
 		of applicability parameters in ifOps and elseOps operators.
+  - NEW: Allow Ctrl-C to interrupt an evolving process.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.

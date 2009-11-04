@@ -273,6 +273,11 @@ vectoru simulator::evolve(
 
 			size_t it = 0;                                            // asign a value to reduce compiler warning
 
+			if (PyErr_CheckSignals()) {
+				cerr << "Evolution stopped due to keyboard interrupt." << endl;
+				fill(activeReps.begin(), activeReps.end(), false);
+				numStopped = activeReps.size();
+			}
 			// apply pre-mating ops to current gen()
 			if (!preOps.empty()) {
 				for (it = 0; it < preOps.size(); ++it) {
@@ -290,6 +295,8 @@ vectoru simulator::evolve(
 								break;
 							}
 						}
+						if (PyErr_CheckSignals())
+							throw StopEvolution("Evolution stopped due to keyboard interrupt.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preOps[it]->description() +
@@ -316,7 +323,7 @@ vectoru simulator::evolve(
 			}
 
 			try {
-				if (!dryrun && !m_matingScheme->mate(curPop, scratchpopulation(), activeDuringMatingOps)) {
+				if (!m_matingScheme->mate(curPop, scratchpopulation(), activeDuringMatingOps)) {
 					DBG_DO(DBG_SIMULATOR, cerr << "During-mating Operator stops at replicate "
 						+ toStr(curRep) << endl);
 
@@ -325,6 +332,8 @@ vectoru simulator::evolve(
 					// does not execute post-mating operator
 					continue;
 				}
+				if (PyErr_CheckSignals())
+					throw StopEvolution("Evolution stopped due to keyboard interrupt.");
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
@@ -353,6 +362,8 @@ vectoru simulator::evolve(
 							// does not run the rest of the post-mating operators.
 							break;
 						}
+						if (PyErr_CheckSignals())
+							throw StopEvolution("Evolution stopped due to keyboard interrupt.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postOps[it]->description() +
@@ -366,7 +377,7 @@ vectoru simulator::evolve(
 					}
 					ElapsedTime("PostMatingOp: " + postOps[it]->description());
 				}
-			}                                                                                   // post mating ops
+			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
 			++evolvedGens[curRep];
 		}                                                                                       // each replicates
