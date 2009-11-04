@@ -256,6 +256,7 @@ class TestMatingSchemes(unittest.TestCase):
             duringOps = parentsTagger(),
             gen = 20
         )
+        return
         ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, pedigreeMating(ped,
             offspringGenerator(mendelianGenoTransmitter())))

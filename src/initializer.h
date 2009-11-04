@@ -39,9 +39,7 @@ using std::accumulate;
 namespace simuPOP {
 
 /** This operator initialize sex of individuals, either randomly or use a list
- *  of sexes. For convenience, the function of this operator is included in
- *  other \e initializers such as \c initByFreq and \c initByValue so that you
- *  do not have to intiailize sexes separately from genotype.
+ *  of sexes. 
  *  <funcForm>InitSex</funcForm>
  */
 class initSex : public baseOperator
@@ -58,7 +56,8 @@ public:
 	 *  ignored if \e sex is given. If a list of (virtual) subpopulation is
 	 *  specified in parameter \e subPop, only individuals in these
 	 *  subpopulations will be initialized. Note that the \e sex sequence, if
-	 *  used, is assigned repeatedly regardless of subpopulation boundaries.
+	 *  used, is assigned repeatedly regardless of (virtual) subpopulation
+	 *  boundaries.
 	 */
 	initSex(double maleFreq = 0.5, double maleProp = -1, const intList & sex = vectori(),
 		int begin = 0, int end = -1, int step = 1,
