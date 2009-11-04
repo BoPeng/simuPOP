@@ -4588,6 +4588,47 @@ print par2.asDict()
 print par2.rep, par2.pop
 #end_file
 
+#begin_file log/paramFunc.py
+import types, simuOpt
+options = [
+    simuOpt.param(
+        arg = 'r:',
+        longarg = 'rate=',
+        default = [0.01],
+        useDefault = True,
+        label = 'Recombination rate',
+        allowedTypes = [types.ListType, types.TupleType],
+        description = '''Recombination rate for each replicate. If a single value
+            is given, it will be used for all replicates.''',
+        validate = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
+    simuOpt.param(
+        longarg = 'rep=',
+        default = 5,
+        label = 'Number of replicates',
+        allowedTypes = [types.IntType, types.LongType],
+        description = 'Number of replicates to simulate.',
+        validate = simuOpt.valueGT(0)), 
+    simuOpt.param(
+        longarg = 'pop=',
+        default = 'CEU',
+        label = 'Initial sim.population',
+        allowedTypes = [types.StringType],
+        description = '''Use one of the HapMap sim.populations as the initial
+            sim.population for this simulation. You can choose from:
+            |YRI: 33 trios from the Yoruba people in Nigeria (Africa)
+            |CEU: 30 trios from Utah with European ancestry (European)
+            |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
+            ''',
+        chooseOneOf = ['CEU', 'YRI', 'CHB+JPT'],
+        validate = simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT']))
+]
+#begin_ignore
+pars = simuOpt.simuParam(options, 'A demo simulation')
+print pars.usage()
+#end_ignore
+#end_file
+
+
 #begin_file log/reichDemo.py
 #begin_ignore
 import simuOpt
