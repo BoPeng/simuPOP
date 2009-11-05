@@ -24,8 +24,8 @@ def simuSelfing(perc, N, n_rep, gen):
 
     simu = simulator(pop,
         heteroMating([
-            selfMating(subPop=(0, 0)),
-            randomMating(subPop=(0, 1), ops = recombinator(rates=0.01))
+            selfMating(subPops=[(0, 0)]),
+            randomMating(subPops=[(0, 1)], ops = recombinator(rates=0.01))
         ]),
         rep=n_rep
     )

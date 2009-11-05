@@ -49,9 +49,9 @@ def simuOverlappingGeneration(size, maxAge, minMatingAge, maxMatingAge, gen):
     #
     simu = simulator(pop, heteroMating(
         # age <= maxAge, copy to the next generation (weight=-1)
-        [cloneMating(subPop=(0, x), weight=-1) for x in (0, 1, 2)] +
+        [cloneMating(subPops=[(0, x) for x in (0, 1, 2)], weight=-1),
         # random mating for individuals in mating ages
-        [randomMating(subPop=(0, 1))])
+        randomMating(subPops=[(0, 1)])])
     )
     simu.evolve(
         initOps = [

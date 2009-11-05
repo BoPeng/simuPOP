@@ -58,7 +58,7 @@ sim = simulator(
     #randomMating(subPopSize=[POPSIZE]),
     homoMating(
         pyParentsChooser(geoChooser),
-        mendelianOffspringGenerator(),#numOffspring=(UniformDistribution, 2, 4)),
+        offspringGenerator(ops=mendelianGenoTransmitter()),#numOffspring=(UniformDistribution, 2, 4)),
         subPopSize=[POPSIZE]
     ),
     rep=1

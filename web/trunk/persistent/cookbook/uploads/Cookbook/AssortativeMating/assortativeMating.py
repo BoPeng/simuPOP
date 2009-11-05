@@ -51,8 +51,8 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     # Negative weight means fixed size (weight * current subpopulation size).
     # In the case of no positive weight, zero weights means proportional to
     # parental (virtual) subpopulation size.
-    simu = simulator(pop, heteroMating([randomMating(weight = -1*w)] + \
-        [randomMating(subPop=(0, x), weight = 0) for x in vsp]))
+    simu = simulator(pop, heteroMating([randomMating(weight = -1*w),
+        randomMating(subPops=[(0, x) for x in vsp], weight = 0)]))
     #
     simu.evolve(
         initOps = [

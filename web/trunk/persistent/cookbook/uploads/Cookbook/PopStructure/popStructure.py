@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from simuPOP import *
 from simuPOP.utils import MigrIslandRates
+from simuPOP.sampling import RandomSample
 
 def calcFst(pop):
     'Calculate Fst and Gst for the whole population and a random sample'
