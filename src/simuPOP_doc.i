@@ -104,6 +104,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::alphaParentsChooser::describe "
+
+Description:
+
+    describe an alpha parents chooser
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::alphaParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::alphaParentsChooser::chooseParents(RawIndIterator basePtr);
@@ -1194,6 +1206,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::controlledOffspringGenerator::describe "
+
+Description:
+
+    describe a controlled offspring generator
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %feature("docstring") simuPOP::dumper "
 
 Details:
@@ -2169,6 +2193,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::heteroMating::describe "
+
+Description:
+
+    describe a heterogeneous mating scheme.
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::homoMating "
@@ -2242,6 +2278,18 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::homoMating::describe "
+
+Description:
+
+    describe a homogeneous mating scheme.
+
+Usage:
+
+    x.describe()
 
 "; 
 
@@ -3019,6 +3067,18 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::infoParentsChooser::describe "
+
+Description:
+
+    describe a parents chooser using information fields
+
+Usage:
+
+    x.describe()
 
 "; 
 
@@ -3887,7 +3947,7 @@ Usage:
 
 Description:
 
-    describe
+    describe a general mating scheme.
 
 Usage:
 
@@ -4626,6 +4686,18 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::finalize(const population &pop);
 
+%feature("docstring") simuPOP::offspringGenerator::describe "
+
+Description:
+
+    describe an offspring generator
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::offspringGenerator::initialized();
 
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
@@ -4721,6 +4793,18 @@ Usage:
 %ignore simuPOP::parentChooser::initialize(population &pop, SubPopID subPop);
 
 %ignore simuPOP::parentChooser::finalize(population &pop, SubPopID subPop);
+
+%feature("docstring") simuPOP::parentChooser::describe "
+
+Description:
+
+    describe a general parent chooser
+
+Usage:
+
+    x.describe()
+
+"; 
 
 %ignore simuPOP::parentChooser::initialized() const;
 
@@ -5111,6 +5195,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pedigreeMating::describe "
+
+Description:
+
+    describe a pedigree mating scheme.
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::pedigreeMating::prepareScratchPop(population &pop, population &scratch);
 
 %ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
@@ -5300,6 +5396,18 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::polyParentsChooser::describe "
+
+Description:
+
+    describe a polygenic parents chooser
+
+Usage:
+
+    x.describe()
 
 "; 
 
@@ -6920,6 +7028,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyParentsChooser::describe "
+
+Description:
+
+    describe a hybrid parent chooser
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::pyParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::pyParentsChooser::finalize(population &pop, SubPopID sp);
@@ -7290,6 +7410,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::randomParentChooser::describe "
+
+Description:
+
+    describe a random parent chooser
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::randomParentChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::randomParentChooser::chooseParents(RawIndIterator basePtr);
@@ -7338,6 +7470,18 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::randomParentsChooser::describe "
+
+Description:
+
+    describe a random parents chooser
+
+Usage:
+
+    x.describe()
 
 "; 
 
@@ -8056,6 +8200,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::sequentialParentChooser::describe "
+
+Description:
+
+    describe a sequential parent chooser
+
+Usage:
+
+    x.describe()
+
+"; 
+
 %ignore simuPOP::sequentialParentChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::sequentialParentChooser::chooseParents(RawIndIterator basePtr);
@@ -8094,6 +8250,18 @@ Description:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::sequentialParentsChooser::describe "
+
+Description:
+
+    describe a sequential parents chooser.
+
+Usage:
+
+    x.describe()
 
 "; 
 
