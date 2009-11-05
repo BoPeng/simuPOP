@@ -67,21 +67,10 @@ class _sample:
     Individual ascertainment operators (derived class) only need to
     write *prepareSample* and *drawSample* functions.
     '''
-    def __init__(self, times = 1, name = '', nameExpr = '',
-	       saveAs = '', saveAsExpr = '', *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         '''
         Create an operator that draws a certain type of samples from a
-        population *times* times. The samples are saved in the population's
-        local namespace if *name* or *nameExpr* is given, and are saved as
-        diskfiles if *saveAs* or *saveAsExpr* is given. *nameExpr* or
-        *saveAsExpr* are evaluated at the population's local namespace.
-        '''
-        self.times = times
-        self.name = name
-        self.nameExpr = nameExpr
-        self.saveAs = saveAs
-        self.saveAsExpr = saveAsExpr
-        self.samples = []
+        population *times* times. '''
         self.pedigree = None
 
     def prepareSample(self, pop):
@@ -100,37 +89,13 @@ class _sample:
         raise SystemError('Please re-implement this drawSample function in the derived class.')
         return True
 
-    def drawSamples(self, pop):
-        if not self.prepareSample(pop) or self.times <= 0:
-            return True
-
-        self.samples = []
-        for t in range(self.times):
-            sample = self.drawSample(pop)
-            self.samples.append(sample)
-            # svae sample to local namespace
-            if self.nameExpr != '':
-                name = eval(self.nameExpr, globals(), pop.vars())
-            elif self.name != '':
-                name = self.name
-            else:
-                name = None
-            if name is not None:
-                if not pop.vars().has_key(name):
-                    pop.dvars().name = []
-                elif type(pop.vars()[name]) != type([]):
-                    raise ValueError("Variable %s already exsits in population's local namespace." % name)
-                pop.vars()[name].append(sample)
-            # save to a file
-            if self.saveAsExpr != '':
-                saveAs = eval(self.saveExpr, globals(), pop.vars())
-            elif self.saveAs != '':
-                saveAs = self.saveAs
-            else:
-                saveAs = None
-            if saveAs is not None:
-                sample.save(saveAs)
-        return True
+    def drawSamples(self, pop, times):
+        if times < 0:
+            raise ValueError("Negative number of samples are unacceptable")
+        if not self.prepareSample(pop):
+            raise RuntimeError("Failed to prepare population for sampleing")
+        # 
+        return [self.drawSample(pop) for x in range(times)]
 
     def parent(self, idx, gen):
         if self.idField == '':
@@ -285,11 +250,10 @@ class caseControlSample(_sample):
         return pop.extract(field='sample', ped=self.pedigree)
 
 
-def CaseControlSample(pop, *args, **kwargs):
+def CaseControlSample(pop, times=1, *args, **kwargs):
     'Draw case controls ample'
     s = caseControlSample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples
+    return s.drawSamples(pop, times)
  
 
 
@@ -309,7 +273,7 @@ class affectedSibpairSample(_sample):
     can only be ascertained from populations that are generated using a mating
     scheme that produes more than one offspring at each mating event.
     '''
-    def __init__(self, size, idField='', fatherField='', motherField='', *args, **kwargs):
+    def __init__(self, size, idField='', fatherField='father_idx', motherField='mother_idx', *args, **kwargs):
         '''
         Draw *size* families, including two affected siblings and their parents
         from a population repeatedly. The population to be sampled must have
@@ -326,7 +290,13 @@ class affectedSibpairSample(_sample):
         '''
         _sample.__init__(self, *args, **kwargs)
         self.size = size
-        self.fields = infoFields
+        self.fields = []
+        if fatherField != '':
+            self.fields.append(fatherField)
+        if motherField != '':
+            self.fields.append(motherField)
+        if idField != '':
+            self.fields.append(idField)
         if len(self.fields) != 2:
             raise ValueError('Two information fields that indicate indexes of parents in the parental generation is needed')
 
@@ -337,7 +307,8 @@ class affectedSibpairSample(_sample):
             if field not in pop.infoFields():
                 raise ValueError('Information field %s not found in population' % field)
         #
-        self.pedigree = pedigree(pop, infoFields=self.fields, fatherField=self.fields[0], motherField=self.fields[1],
+        print self.fields
+        self.pedigree = pedigree(pop, fatherField=self.fields[0], motherField=self.fields[1],
             ancGen=1)
         self.pedigree.addInfoFields(['sample', 'pedindex', 'offspring0', 'offspring1', 'spouse'], -1)
         # locate all affected siblings
@@ -449,11 +420,10 @@ class affectedSibpairSample(_sample):
         return sample
 
 
-def AffectedSibpairSample(pop, size, *args, **kwargs):
+def AffectedSibpairSample(pop, size, times=1, *args, **kwargs):
     'Draw affected sibpair sample from ...'
     s = affectedSibpairSample(size, *args, **kwargs)
-    s.apply(pop)
-    return s.samples
+    return s.drawSamples(pop, times)
  
 
 
