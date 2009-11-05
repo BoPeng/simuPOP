@@ -136,6 +136,9 @@ public:
 	}
 
 
+	/// describe an offspring generator
+	virtual string describe() const;
+
 	/// CPPONLY
 	bool initialized()
 	{
@@ -234,6 +237,9 @@ public:
 	}
 
 
+	/// describe a controlled offspring generator
+	virtual string describe() const;
+
 private:
 	void getExpectedAlleles(const population & pop, vectorf & expFreq);
 
@@ -293,6 +299,13 @@ public:
 	}
 
 
+	/// describe a general parent chooser
+	virtual string describe() const
+	{
+		return "chooses parents (UNDEFINED)";
+	}
+
+
 	/// CPPONLY
 	bool initialized() const
 	{
@@ -340,6 +353,13 @@ public:
 	}
 
 
+	/// describe a sequential parent chooser
+	virtual string describe() const
+	{
+		return "chooses a parent sequentially";
+	}
+
+
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
@@ -379,6 +399,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new sequentialParentsChooser(*this);
+	}
+
+
+	/// describe a sequential parents chooser.
+	virtual string describe() const
+	{
+		return "chooses two parents sequentially";
 	}
 
 
@@ -432,6 +459,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new randomParentChooser(*this);
+	}
+
+
+	/// describe a random parent chooser
+	virtual string describe() const
+	{
+		return "chooses one parent randomly";
 	}
 
 
@@ -490,6 +524,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new randomParentsChooser(*this);
+	}
+
+
+	/// describe a random parents chooser
+	virtual string describe() const
+	{
+		return "chooses two parents randomly";
 	}
 
 
@@ -556,6 +597,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new polyParentsChooser(*this);
+	}
+
+
+	/// describe a polygenic parents chooser
+	virtual string describe() const
+	{
+		return "chooses parents with several spouses";
 	}
 
 
@@ -628,6 +676,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new alphaParentsChooser(*this);
+	}
+
+
+	/// describe an alpha parents chooser
+	virtual string describe() const
+	{
+		return "chooses alpha individuals and their spouses";
 	}
 
 
@@ -707,6 +762,13 @@ public:
 	}
 
 
+	/// describe a parents chooser using information fields
+	virtual string describe() const
+	{
+		return "chooses parents from specified information fields";
+	}
+
+
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
@@ -765,6 +827,13 @@ public:
 	parentChooser * clone() const
 	{
 		return new pyParentsChooser(*this);
+	}
+
+
+	/// describe a hybrid parent chooser
+	virtual string describe() const
+	{
+		return "chooses parents according to a user-provided Python function";
 	}
 
 
@@ -832,7 +901,8 @@ public:
 		return NULL;
 	}
 
-	/// describe
+
+	/// describe a general mating scheme.
 	virtual string describe() const
 	{
 		return "A general mating scheme";
@@ -922,6 +992,13 @@ public:
 	}
 
 
+	/// describe a pedigree mating scheme.
+	virtual string describe() const
+	{
+		return "A pedigree mating scheme";
+	}
+
+
 	/// CPPONLY
 	bool prepareScratchPop(population & pop, population & scratch);
 
@@ -1007,6 +1084,14 @@ public:
 	}
 
 
+	/// describe a homogeneous mating scheme.
+	virtual string describe() const
+	{
+		return "A homogeneous mating scheme that " + m_parentChooser->describe()
+		       + " and " + m_offspringGenerator->describe();
+	}
+
+
 	/// CPPONLY
 	subPopList subPops() const
 	{
@@ -1019,6 +1104,7 @@ public:
 	{
 		return m_weight;
 	}
+
 
 	/// CPPONLY
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
@@ -1094,6 +1180,9 @@ public:
 		return new heteroMating(*this);
 	}
 
+
+	/// describe a heterogeneous mating scheme.
+	virtual string describe() const;
 
 	/** CPPONLY Call each homogeneous mating scheme to populate offspring
 	 *  generation.

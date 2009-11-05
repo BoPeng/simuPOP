@@ -9827,6 +9827,7 @@ Orders at which operators are applied during an evolutionary process
 \begin_inset Graphics
 	filename figures/operators.png
 	lyxscale 40
+	width 80text%
 
 \end_inset
 

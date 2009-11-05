@@ -723,35 +723,6 @@ os.remove('sample.pop')
 #end_ignore
 #end_file
 
-#begin_file log/dryrun.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(sim.population(100, loci=[20]), sim.randomMating())
-simu.evolve(
-    initOps = sim.initByFreq([0.2, 0.8]),
-    preOps = [
-        sim.pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
-            at = [-10, -1])
-    ],
-    postOps = [
-        sim.stat(alleleFreq=0, begin=80, step=10),
-        sim.pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
-            begin=80, step=10),
-        sim.pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
-            at = [-10, -1])
-    ],
-    finalOps = [sim.savePopulation(output='sample.pop')],
-    gen=100,
-    dryrun = True
-)
-#end_file
-
 #begin_file log/replicate.py
 #begin_ignore
 import simuOpt

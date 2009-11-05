@@ -129,6 +129,18 @@ void offspringGenerator::initialize(const population & pop, SubPopID subPop, vec
 }
 
 
+string offspringGenerator::describe() const
+{
+	string desc = "produces offspring using\n";
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+
+	for (; iop != iopEnd; ++iop)
+		desc += "        - " + (*iop)->describe() + (*iop)->atRepr() + "\n";
+	return desc;
+}
+
+
 UINT offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                            RawIndIterator & it,
                                            RawIndIterator & itEnd,
@@ -215,6 +227,19 @@ controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffsp
 	m_alleles(rhs.m_alleles),
 	m_freqFunc(rhs.m_freqFunc)
 {
+}
+
+
+string controlledOffspringGenerator::describe() const
+{
+	string desc = "produces offspring using ";
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+
+	for (; iop != iopEnd; ++iop)
+		desc += "        - " + (*iop)->describe() + (*iop)->atRepr() + "\n";
+	desc += " while controlling allele frequency";
+	return desc;
 }
 
 
@@ -1417,6 +1442,36 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 
 	for (; it != it_end; ++it)
 		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
+}
+
+
+string heteroMating::describe() const
+{
+	string desc = "A heterogeneous mating scheme with " +
+	              toStr(m_matingSchemes.size()) + " homogeneous mating schemes:\n";
+	vectormating::const_iterator it = m_matingSchemes.begin();
+	vectormating::const_iterator it_end = m_matingSchemes.end();
+
+	for (; it != it_end; ++it) {
+		desc += "    ** " + dynamic_cast<homoMating *>(*it)->describe() + "       in ";
+		subPopList subPops = (*it)->subPops();
+		if (subPops.allAvail())
+			desc += " all subpopulations.\n";
+		else {
+			desc += " subpopulations ";
+			for (size_t i = 0; i < subPops.size(); ++i) {
+				vspID sp = subPops[i];
+				if (i != 0)
+					desc += ", ";
+				if (sp.isVirtual())
+					desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
+				else
+					desc += toStr(sp.subPop());
+			}
+			desc += ".\n";
+		}
+	}
+	return desc;
 }
 
 

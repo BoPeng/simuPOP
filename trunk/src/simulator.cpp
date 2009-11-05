@@ -189,7 +189,7 @@ string simulator::describe(const opList & initOps,
 		else {
 			desc << "Apply pre-evolution operators to the initial population (initOps)." << endl;
 			for (size_t it = 0; it < initOps.size(); ++it)
-				desc << "\t- " << initOps[it]->describe() << initOps[it]->atRepr() << endl;
+				desc << "    - " << initOps[it]->describe() << endl;
 		}
 		if (gen < 0)
 			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
@@ -198,32 +198,35 @@ string simulator::describe(const opList & initOps,
 			     << "(generations " << m_gen << " - " << m_gen + gen - 1
 			     << ", stops at generation " << m_gen + gen << ")" << endl;
 		if (preOps.empty())
-			desc << "\tNo operator is applied to the parental generation (preOps)." << endl;
+			desc << "    No operator is applied to the parental generation (preOps)." << endl;
 		else {
-			desc << "\tApply pre-mating operators to the parental generation (preOps)" << endl;
+			desc << "    Apply pre-mating operators to the parental generation (preOps)" << endl;
 			for (size_t it = 0; it < preOps.size(); ++it)
 				if (preOps[it]->isActive(curRep, 0, 0, activeReps, true))
-					desc << "\t- " << preOps[it]->describe() << preOps[it]->atRepr() << endl;
+					desc << "    - " << preOps[it]->describe() << preOps[it]->atRepr() << endl;
 		}
-		desc << "\n\tPopulation an offspring populaton from the parental population." << endl
-		     << "\t" << m_matingScheme->describe() << endl;
-		for (size_t it = 0; it < duringOps.size(); ++it)
-			desc << "\t- " << duringOps[it]->describe() << duringOps[it]->atRepr() << endl;
+		desc << "\n    Populate an offspring populaton from the parental population." << endl
+		     << "    " << m_matingScheme->describe() << endl;
+		if (!duringOps.empty()) {
+			desc << "    with additional during mating operators" << endl;
+			for (size_t it = 0; it < duringOps.size(); ++it)
+				desc << "        - " << duringOps[it]->describe() << duringOps[it]->atRepr() << endl;
+		}
 		//
 		if (postOps.empty())
-			desc << "\n\tNo operator is applied to the offspring population (postOps)." << endl;
+			desc << "\n    No operator is applied to the offspring population (postOps)." << endl;
 		else {
-			desc << "\n\tApply post-mating operators to the offspring population (postOps)." << endl;
+			desc << "\n    Apply post-mating operators to the offspring population (postOps)." << endl;
 			for (size_t it = 0; it < postOps.size(); ++it)
 				if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
-					desc << "\t- " << postOps[it]->describe() << postOps[it]->atRepr() << endl;
+					desc << "    - " << postOps[it]->describe() << postOps[it]->atRepr() << endl;
 		}
 		if (finalOps.empty() )
 			desc << "\nNo operator is applied to the final population (finalOps)." << endl;
 		else {
 			desc << "\nApply post-evolution operators (finalOps)" << endl;
 			for (size_t it = 0; it < finalOps.size(); ++it)
-				desc << "      - " << finalOps[it]->describe() << finalOps[it]->atRepr() << endl;
+				desc << "      - " << finalOps[it]->describe() << endl;
 		}
 		allDesc[curRep] = desc.str();
 	}
