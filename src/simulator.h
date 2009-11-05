@@ -209,6 +209,21 @@ public:
 	}
 
 
+	/** This function takes the same parameters as \c simulator.evolve and
+	 *  output a description of how an evolutionary process will be executed,
+	 *  basically by calling the \c describe() function of all operators. It
+	 *  is recommended that you call this function if you have any doubt how
+	 *  your simulation will proceed.
+	 *  <group>2-evolve</group>
+	 */
+	string describe(
+		const opList & initOps = opList(),
+		const opList & preOps = opList(),
+		const opList & duringOps = opList(),
+		const opList & postOps = opList(),
+		const opList & finalOps = opList(),
+		int gen = -1);
+
 	/** Evolve all populations \e gen generations, subject to several lists of
 	 *  operators which are applied at different stages of an evolutionary
 	 *  process. Operators \e initOps are applied to all populations (subject
@@ -262,10 +277,11 @@ public:
 		const opList & duringOps = opList(),
 		const opList & postOps = opList(),
 		const opList & finalOps = opList(),
-		int gen = -1, bool dryrun = false);
+		int gen = -1);
+
 
 	/// CPPONLY apply a list of operators to all populations
-	bool apply(const opList & ops, bool dryrun = false);
+	bool apply(const opList & ops);
 
 
 	/** Set a new mating scheme \e matingScheme to a simulator.

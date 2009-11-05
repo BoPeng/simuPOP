@@ -30,6 +30,7 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
+using std::ostringstream;
 
 namespace simuPOP {
 
@@ -168,67 +169,116 @@ void simulator::setGen(ULONG gen)
 }
 
 
+string simulator::describe(const opList & initOps,
+                           const opList & preOps,
+                           const opList & duringOps,
+                           const opList & postOps,
+                           const opList & finalOps,
+                           int gen)
+{
+	vectorstr allDesc(m_numRep, "");
+
+	// assuming all active replicates.
+	vector<bool> activeReps(m_numRep);
+
+	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+		ostringstream desc;
+
+		if (initOps.empty())
+			desc << "No operator is used to initialize population (initOps)." << endl;
+		else {
+			desc << "Apply pre-evolution operators to the initial population (initOps)." << endl;
+			for (size_t it = 0; it < initOps.size(); ++it)
+				desc << "\t- " << initOps[it]->describe() << initOps[it]->atRepr() << endl;
+		}
+		if (gen < 0)
+			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
+		else
+			desc << "\nEvolve a population for " << gen << " generations. "
+			     << "(generations " << m_gen << " - " << m_gen + gen - 1
+			     << ", stops at generation " << m_gen + gen << ")" << endl;
+		if (preOps.empty())
+			desc << "\tNo operator is applied to the parental generation (preOps)." << endl;
+		else {
+			desc << "\tApply pre-mating operators to the parental generation (preOps)" << endl;
+			for (size_t it = 0; it < preOps.size(); ++it)
+				if (preOps[it]->isActive(curRep, 0, 0, activeReps, true))
+					desc << "\t- " << preOps[it]->describe() << preOps[it]->atRepr() << endl;
+		}
+		desc << "\n\tPopulation an offspring populaton from the parental population." << endl
+		     << "\t" << m_matingScheme->describe() << endl;
+		for (size_t it = 0; it < duringOps.size(); ++it)
+			desc << "\t- " << duringOps[it]->describe() << duringOps[it]->atRepr() << endl;
+		//
+		if (postOps.empty())
+			desc << "\n\tNo operator is applied to the offspring population (postOps)." << endl;
+		else {
+			desc << "\n\tApply post-mating operators to the offspring population (postOps)." << endl;
+			for (size_t it = 0; it < postOps.size(); ++it)
+				if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
+					desc << "\t- " << postOps[it]->describe() << postOps[it]->atRepr() << endl;
+		}
+		if (finalOps.empty() )
+			desc << "\nNo operator is applied to the final population (finalOps)." << endl;
+		else {
+			desc << "\nApply post-evolution operators (finalOps)" << endl;
+			for (size_t it = 0; it < finalOps.size(); ++it)
+				desc << "      - " << finalOps[it]->describe() << finalOps[it]->atRepr() << endl;
+		}
+		allDesc[curRep] = desc.str();
+	}
+	ostringstream desc;
+	vectoru reps;
+	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+		if (reps.empty())
+			reps.push_back(curRep);
+		else {
+			if (allDesc[curRep] == allDesc[curRep - 1])
+				reps.push_back(curRep);
+			else {
+				desc << "Replicate";
+				for (size_t i = 0; i < reps.size(); ++i)
+					desc << " " << i;
+				desc << ":\n" << allDesc[curRep - 1] << "\n";
+				reps.clear();
+				reps.push_back(curRep);
+			}
+		}
+	}
+	// reps should not be empty
+	desc << "Replicate";
+	for (size_t i = 0; i < reps.size(); ++i)
+		desc << " " << i;
+	desc << ":\n" << allDesc.back() << "\n";
+	return desc.str();
+}
+
+
 vectoru simulator::evolve(
                           const opList & initOps,
                           const opList & preOps,
                           const opList & duringOps,
                           const opList & postOps,
                           const opList & finalOps,
-                          int gens, bool dryrun)
+                          int gens)
 {
 	// check compatibility of operators
 	for (size_t i = 0; i < preOps.size(); ++i) {
 		DBG_ASSERT(preOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + preOps[i]->description() + " is not compatible.");
+			"Operator " + preOps[i]->describe() + " is not compatible.");
 	}
 	for (size_t i = 0; i < duringOps.size(); ++i) {
 		DBG_ASSERT(duringOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + duringOps[i]->description() + " is not compatible.");
+			"Operator " + duringOps[i]->describe() + " is not compatible.");
 	}
 	for (size_t i = 0; i < postOps.size(); ++i) {
 		DBG_ASSERT(postOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + postOps[i]->description() + " is not compatible.");
+			"Operator " + postOps[i]->describe() + " is not compatible.");
 	}
 
 	vector<bool> activeReps(m_numRep);
 	fill(activeReps.begin(), activeReps.end(), true);
 	UINT numStopped = 0;
-
-	if (dryrun) {
-		cerr << "Dryrun mode: display calling sequence" << endl;
-		if (!initOps.empty() ) {
-			cerr << "Apply pre-evolution operators" << endl;
-			apply(initOps, true);
-		}
-		cerr << "Start evolution" << endl;
-
-		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-			cerr << "  Replicate " << curRep << endl;
-			// apply pre-mating ops to current gen()
-			if (!preOps.empty()) {
-				cerr << "    Pre-mating operators" << endl;
-				for (size_t it = 0; it < preOps.size(); ++it)
-					if (preOps[it]->isActive(curRep, 0, 0, activeReps, true))
-						cerr << "      - " << preOps[it]->description() << preOps[it]->atRepr() << endl;
-			}
-			cerr << "    Start mating" << endl;
-			for (vectorop::const_iterator op = duringOps.begin(), opEnd = duringOps.end();
-			     op != opEnd; ++op)
-				cerr << "      - " << (*op)->description() << (*op)->atRepr() << endl;
-			// apply post-mating ops to next gen()
-			if (!postOps.empty()) {
-				cerr << "    Apply post-mating operators" << endl;
-				for (size_t it = 0; it < postOps.size(); ++it)
-					if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
-						cerr << "      - " << postOps[it]->description() << postOps[it]->atRepr() << endl;
-			}
-		}
-		if (!finalOps.empty() ) {
-			cerr << "Apply post-evolution operators: " << endl;
-			apply(finalOps, true);
-		}
-		return vectoru(m_numRep, 0);
-	}
 
 	// evolved generations, which will be returned.
 	vectoru evolvedGens(m_numRep, 0U);
@@ -249,7 +299,7 @@ vectoru simulator::evolve(
 	// appy pre-op, most likely initializer. Do not check if they are active
 	// or if they are successful
 	if (!initOps.empty())
-		apply(initOps, false);
+		apply(initOps);
 
 	ElapsedTime("PreopDone");
 
@@ -286,7 +336,7 @@ vectoru simulator::evolve(
 
 					try {
 						if (!preOps[it]->apply(curPop)) {
-							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " + preOps[it]->description() +
+							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " + preOps[it]->describe() +
 								" stops at replicate " + toStr(curRep) << endl);
 
 							if (activeReps[curRep]) {
@@ -299,7 +349,7 @@ vectoru simulator::evolve(
 							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Pre-mating Operator " + preOps[it]->description() +
+							                       << "Pre-mating Operator " + preOps[it]->describe() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
@@ -307,7 +357,7 @@ vectoru simulator::evolve(
 						numStopped = activeReps.size();
 						break;
 					}
-					ElapsedTime("PreMatingOp: " + preOps[it]->description());
+					ElapsedTime("PreMatingOp: " + preOps[it]->describe());
 				}
 			}
 
@@ -355,7 +405,7 @@ vectoru simulator::evolve(
 
 					try {
 						if (!postOps[it]->apply(curPop)) {
-							DBG_DO(DBG_SIMULATOR, cerr << "Post-mating Operator " + postOps[it]->description() +
+							DBG_DO(DBG_SIMULATOR, cerr << "Post-mating Operator " + postOps[it]->describe() +
 								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
 							activeReps[curRep] = false;
@@ -366,7 +416,7 @@ vectoru simulator::evolve(
 							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Post-mating Operator " + postOps[it]->description() +
+							                       << "Post-mating Operator " + postOps[it]->describe() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
@@ -375,7 +425,7 @@ vectoru simulator::evolve(
 						// does not run the rest of the post-mating operators.
 						break;
 					}
-					ElapsedTime("PostMatingOp: " + postOps[it]->description());
+					ElapsedTime("PostMatingOp: " + postOps[it]->describe());
 				}
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
@@ -401,7 +451,7 @@ vectoru simulator::evolve(
 	}                                                                                         // the big loop
 
 	if (!finalOps.empty())
-		apply(finalOps, false);
+		apply(finalOps);
 
 	// close every opened file (including append-cross-evolution ones)
 	ostreamManager().closeAll();
@@ -409,30 +459,21 @@ vectoru simulator::evolve(
 }
 
 
-bool simulator::apply(const opList & ops, bool dryrun)
+bool simulator::apply(const opList & ops)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
 		// check compatibility of operators
 		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + ops[i]->description() + " is not compatible.");
+			"Operator " + ops[i]->describe() + " is not compatible.");
 	}
 
 	// really apply
 	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-		if (dryrun)
-			cerr << "  Replicate " << curRep << endl;
-
 		population & curPop = *m_ptrRep[curRep];
 		size_t it;
 
 		// apply pre-mating ops to current gen
 		for (it = 0; it < ops.size(); ++it) {
-
-			if (dryrun) {
-				cerr << "      - " << ops[it]->description() << ops[it]->atRepr() << endl;
-				continue;
-			}
-
 			vector<bool> activeReps(m_numRep);
 			fill(activeReps.begin(), activeReps.end(), true);
 			if (!ops[it]->isActive(curRep, 0, 0, activeReps, true))

@@ -9607,6 +9607,289 @@ lstparams "caption={Clone, save and load a simulator},label={simuFunc}"
 \end_layout
 
 \begin_layout Subsection
+Evolve populations in a simulator
+\end_layout
+
+\begin_layout Standard
+There are a number of rules about when and how operators are applied during
+ the evolution of a population.
+ In summary, in the order at which operators are processed and applied,
+\end_layout
+
+\begin_layout Itemize
+Operators specified in parameter 
+\family typewriter
+initOps
+\family default
+ of function 
+\family typewriter
+simulator.evolve
+\family default
+ will be applied to the initial population before evolution, subject to
+ replicate applicability restraint specified by parameter 
+\family typewriter
+reps
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Operators specified in parameter 
+\family typewriter
+preOps
+\family default
+ of function 
+\family typewriter
+simulator.evolve
+\family default
+ will be applied to the parental population at each generation, subject
+ to replicate and generation applicability restraint specified by parameters
+ 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+During-mating operators specified in the 
+\family typewriter
+ops
+\family default
+ parameter of a mating scheme will be called during mating to transmit genotype
+ (and possibly information fields etc) from parental to offspring, subject
+ to replicate and generation applicability restraint specified by parameters
+ 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+During-mating operators specified in the 
+\family typewriter
+duringOps
+\family default
+ of function 
+\family typewriter
+simulator.evolve
+\family default
+ parameter of simulator.evolve will be applied after an offspring is produced,
+ subject to replicate and generation applicability restraint specified by
+ parameters 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Operators specified in parameter postOps of function 
+\family typewriter
+simulator.evolve
+\family default
+ will be applied to the offspring population at each generation, subject
+ to replicate and generation applicability restraint specified by parameters
+ 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Operators specified in parameter 
+\family typewriter
+finalOps
+\family default
+ of function 
+\family typewriter
+simulator.evolve
+\family default
+ will be applied to the final population after evolution, subject to replicate
+ applicability restraint specified by parameter 
+\family typewriter
+reps
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:operator-orders"
+
+\end_inset
+
+ illustrated how operators are applied to an evolutionary process.
+ It worth noting that a default during-mating operator is defined for each
+ mating scheme.
+ User-specfied operators will 
+\series bold
+replace
+\series default
+ the default operator so you need to explicitly specify the default operator
+ if you intent to add another one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:operator-orders"
+
+\end_inset
+
+Orders at which operators are applied during an evolutionary process
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figures/operators.png
+	lyxscale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you suspect that your simulation is not running as expected, you can
+ have a close look at your evolutionary process using function 
+\family typewriter
+simulator.describe()
+\family default
+.
+ This function takes the same set of parameters as 
+\family typewriter
+simulator.evolve()
+\family default
+ and returns a description of the evolution process, which can help you
+ identify misuse of operators that cause, for example, duplicated (if you
+ use a 
+\family typewriter
+recombinator
+\family default
+ in parameter 
+\family typewriter
+duringOps
+\family default
+ of 
+\family typewriter
+simulator.evolve
+\family default
+), or missing (if you replace 
+\family typewriter
+medelianGenoTransmitter
+\family default
+ of 
+\family typewriter
+randomMating
+\family default
+ using 
+\family typewriter
+ops=idTagger()
+\family default
+) genotype transmission to offspring.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/describe.log"
+lstparams "caption={Describe an evolutionary process},label={describe}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Modifying populations and mating scheme *
 \end_layout
 

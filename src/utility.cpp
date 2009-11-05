@@ -280,12 +280,13 @@ int simuPOP_getch(void)
 	return getch();
 }
 
+
 /*
-BOOL WINAPI InterruptHandler(DWORD CEvent)
-{
-	throw RuntimeError("KeyboardInterruption");
-}
-*/
+   BOOL WINAPI InterruptHandler(DWORD CEvent)
+   {
+    throw RuntimeError("KeyboardInterruption");
+   }
+ */
 
 #else
 
@@ -2614,16 +2615,16 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
 		if (count[i] + 0.5 < prop[i] * N) {
 			count[i] += 1;
-            ++tot;
-        }
+			++tot;
+		}
 	}
-    if (N == tot)
-        return;
+	if (N == tot)
+		return;
 	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
 		if (count[i] < prop[i] * N) {
 			count[i] += 1;
-            ++tot;
-        }
+			++tot;
+		}
 	}
 	DBG_FAILIF(N != tot, SystemError, "Proportion to count failed.");
 
@@ -2739,6 +2740,7 @@ void weightedSampler::set(const vectorf & weight, ULONG N)
 	}
 	// sum of weight
 	double w = accumulate(weight.begin(), weight.end(), 0.0);
+	(void)w;  // fix compiler warning.
 
 	DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
 
@@ -3611,12 +3613,12 @@ bool initialize()
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);
 
-/* Ctrl-C under windows still does not work... :-(
-#if  defined (_WIN32) || defined (__WIN32__)
-	if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)(InterruptHandler), TRUE) == FALSE)
-		cerr << "Warning: Unable to install keyboard interruption handler" << endl;
-#endif
-*/
+    /* Ctrl-C under windows still does not work... :-(
+	 #if  defined (_WIN32) || defined (__WIN32__)
+	    if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)(InterruptHandler), TRUE) == FALSE)
+	        cerr << "Warning: Unable to install keyboard interruption handler" << endl;
+	 #endif
+	 */
 #if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
