@@ -89,7 +89,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.initSex>";
 	}
@@ -151,7 +151,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.initInfo>";
 	}
@@ -208,7 +208,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.initByFreq>";
 	}
@@ -272,7 +272,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.initByValue>";
 	}

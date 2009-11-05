@@ -832,6 +832,12 @@ public:
 		return NULL;
 	}
 
+	/// describe
+	virtual string describe() const
+	{
+		return "A general mating scheme";
+	}
+
 
 	/** CPPONLY
 	 */
@@ -1013,7 +1019,6 @@ public:
 	{
 		return m_weight;
 	}
-
 
 	/// CPPONLY
 	virtual bool mateSubPop(population & pop, SubPopID subPop,

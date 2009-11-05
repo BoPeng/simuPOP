@@ -1886,6 +1886,47 @@ simu.evolve(
 simu.gen()
 #end_file
 
+#begin_file log/describe.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+pop = sim.population(10000, loci=100, infoFields=['ind_id', 'age'])
+pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[20, 50, 75]))
+
+def outputStat(pop):
+    'Calculate and output statistics, ignored'
+    return True
+
+simu = sim.simulator(pop,
+    sim.heteroMating([
+        sim.cloneMating(subPops=[(0,0), (0,1), (0,2)], weight=-1),
+        sim.randomMating(ops=[
+            sim.idTagger(),
+            sim.recombinator(intensity=1e-4)
+        ], subPops=[(0,1)]),
+    ])
+)
+# describe this evolutionary process
+print simu.describe(
+    initOps = [
+        sim.initSex(),
+        sim.initInfo(lambda: random.randint(0, 75), infoFields='age'),
+        sim.initByFreq([0.5, 0.5]),
+        sim.idTagger(),
+        sim.pyOutput('Prevalence of disease in each age group:\n'),
+    ],
+    preOps = sim.infoExec('age += 1'),
+    duringOps = sim.pedigreeTagger(),
+    postOps = [
+        sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.3]),
+        sim.pyOperator(func=outputStat)
+    ],
+    gen = 100
+)     
+#end_file
+
 #begin_file log/twoStage.py
 #begin_ignore
 import simuOpt

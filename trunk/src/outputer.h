@@ -79,7 +79,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		string reprStr;
 
@@ -144,7 +144,7 @@ public:
 	};
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.dumper>" ;
 	}
@@ -218,7 +218,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.save population>" ;
 	}

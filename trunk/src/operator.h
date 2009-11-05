@@ -432,7 +432,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string description()
+	virtual string describe()
 	{
 		return "<simuPOP.operator>" ;
 	}
@@ -643,7 +643,7 @@ public:
 	bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.pause>" ;
 	}
@@ -703,7 +703,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.None>" ;
 	}
@@ -759,7 +759,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.if else operator >";
 	}
@@ -811,7 +811,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.tic toc performance monitor>" ;
 	}
@@ -866,7 +866,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.setAncestralDepth>";
 	}
@@ -922,7 +922,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.turnOnDebug>";
 	}
@@ -973,7 +973,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.turnOffDebug>";
 	}
@@ -1047,7 +1047,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.pyOperator>";
 	}

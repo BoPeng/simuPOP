@@ -162,7 +162,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.migrator>" ;
 	}
@@ -263,7 +263,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.split subpopulation>" ;
 	}
@@ -331,7 +331,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.merge subpopulations>" ;
 	}
@@ -404,7 +404,7 @@ public:
 
 
 	/// HIDDEN
-	string description()
+	string describe()
 	{
 		return "<simuPOP.resize subpopulations>" ;
 	}
