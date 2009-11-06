@@ -27,6 +27,22 @@
 
 namespace simuPOP {
 
+string initSex::describe()
+{
+	string desc = "<simuPOP.initSex> initialize sex ";
+
+	if (!m_sex.empty())
+		desc += "using a list";
+	else if (m_maleProp < 0) {
+		desc += "randomly";
+		if (m_maleFreq != 0.5)
+			desc += " with probability " + toStr(m_maleFreq) + " being a male";
+	} else
+		desc += "randomly with " + toStr(m_maleProp * 100) + " percent of males";
+	return desc;
+}
+
+
 bool initSex::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
@@ -34,7 +50,7 @@ bool initSex::apply(population & pop)
 	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
-    size_t idx = 0;
+	size_t idx = 0;
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
 	for (; sp != sp_end; ++sp) {
@@ -59,6 +75,28 @@ bool initSex::apply(population & pop)
 				ind->setSex(ws.get() == 0 ? Male : Female);
 	}
 	return true;
+}
+
+
+string initInfo::describe()
+{
+	string desc = "<simuPOP.initInfo> initialize information field";
+
+	if (infoSize() > 1)
+		desc += "s";
+	for (size_t i = 0; i < infoSize(); ++i) {
+		desc += i == 0 ? " " : ", ";
+		desc += infoField(i);
+	}
+	if (m_values.empty()) {
+		PyObject * name = PyObject_GetAttrString(m_values.func().func(), "__name__");
+		if (name == NULL)
+			desc += " using an unnamed Python function.";
+		else
+			desc += " using a Python function " + string(PyString_AsString(name));
+	} else
+		desc += " using a list of values";
+	return desc;
 }
 
 
@@ -119,6 +157,12 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 		if (fcmp_ne(accumulate(m_alleleFreq[i].begin(), m_alleleFreq[i].end(), 0.), 1.0))
 			throw ValueError("Allele frequencies should add up to one.");
 	}
+}
+
+
+string initByFreq::describe()
+{
+	return "<simuPOP.initByFreq> initialize individual genotype using a list of allele frequencies";
 }
 
 

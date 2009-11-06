@@ -187,7 +187,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: baseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
-	          at, reps, subPops, infoFields)
+	              at, reps, subPops, infoFields)
 {
 	matrix rateMatrix = rate;
 	// step 0, determine mu

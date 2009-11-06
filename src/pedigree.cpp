@@ -961,6 +961,7 @@ void pedigree::locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & 
 	IndInfoIterator ptrEnd = infoEnd(spouseIdx);
 
 	vectori offspringIdx(maxOffspring);
+
 	// clear all fields
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);

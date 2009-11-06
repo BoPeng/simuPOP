@@ -36,6 +36,19 @@ bool pyOutput::apply(population & pop)
 }
 
 
+string pyOutput::describe()
+{
+	string reprStr;
+
+	for (size_t i = 0; i < 40 && i < m_string.size(); ++i)
+		if (m_string[i] != '\n')
+			reprStr += m_string[i];
+	if (m_string.size() > 40)
+		reprStr += "... ";
+	return "<simuPOP.pyOutput> write '" + reprStr + "' to output";
+}
+
+
 void dumper::displayStructure(const population & pop, ostream & out)
 {
 	out << "Ploidy: " << pop.ploidy()

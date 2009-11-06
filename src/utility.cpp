@@ -1632,6 +1632,8 @@ void Expression::compileExpr(const string & expr)
 		m_expr = NULL;
 	}
 
+	m_exprString = expr;
+
 	if (expr.empty())
 		return;
 
@@ -1650,6 +1652,8 @@ void Expression::compileStmts(const string & stmts)
 		Py_XDECREF(m_stmts);
 		m_stmts = NULL;
 	}
+
+	m_stmtsString = stmts;
 
 	if (stmts.empty())
 		return;

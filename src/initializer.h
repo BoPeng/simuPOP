@@ -39,7 +39,7 @@ using std::accumulate;
 namespace simuPOP {
 
 /** This operator initialize sex of individuals, either randomly or use a list
- *  of sexes. 
+ *  of sexes.
  *  <funcForm>InitSex</funcForm>
  */
 class initSex : public baseOperator
@@ -89,10 +89,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.initSex>";
-	}
+	string describe();
 
 
 	/// apply this operator to population \e pop
@@ -151,11 +148,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.initInfo>";
-	}
-
+	string describe();
 
 	/// apply this operator to population \e pop
 	bool apply(population & pop);
@@ -208,10 +201,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.initByFreq>";
-	}
+	string describe();
 
 
 	/// apply this operator to population \e pop

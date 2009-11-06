@@ -136,7 +136,7 @@ string offspringGenerator::describe() const
 	opList::const_iterator iopEnd = m_transmitters.end();
 
 	for (; iop != iopEnd; ++iop)
-		desc += "        - " + (*iop)->describe() + (*iop)->atRepr() + "\n";
+		desc += "        - " + (*iop)->describe() + " " + (*iop)->applicability() + "\n";
 	return desc;
 }
 
@@ -237,7 +237,7 @@ string controlledOffspringGenerator::describe() const
 	opList::const_iterator iopEnd = m_transmitters.end();
 
 	for (; iop != iopEnd; ++iop)
-		desc += "        - " + (*iop)->describe() + (*iop)->atRepr() + "\n";
+		desc += "        - " + (*iop)->describe() + " " + (*iop)->applicability() + "\n";
 	desc += " while controlling allele frequency";
 	return desc;
 }

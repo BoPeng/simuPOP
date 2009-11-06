@@ -266,7 +266,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
-		          reps, subPops, infoFields), m_k(k)
+		              reps, subPops, infoFields), m_k(k)
 	{
 #ifndef BINARYALLELE
 		if (m_k > 1 && static_cast<ULONG>(m_k - 1) > ModuleMaxAllele)

@@ -248,11 +248,7 @@ public:
 	virtual double penet(individual * ind, ULONG gen);
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.penetrance::multiple-alleles penetrance>" ;
-	}
-
+	string describe();
 
 private:
 	/// one locus
