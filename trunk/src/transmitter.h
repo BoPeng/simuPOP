@@ -150,10 +150,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.cloneGenoTransmitter>" ;
-	}
+	string describe();
 
 
 	/// CPPONLY
@@ -526,10 +523,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.recombination>" ;
-	}
+	string describe();
 
 
 	/** Initialize a recombinator for the genotypic structure of population

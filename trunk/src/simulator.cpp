@@ -189,7 +189,7 @@ string simulator::describe(const opList & initOps,
 		else {
 			desc << "Apply pre-evolution operators to the initial population (initOps)." << endl;
 			for (size_t it = 0; it < initOps.size(); ++it)
-				desc << "    - " << initOps[it]->describe() << endl;
+				desc << "    - " << initOps[it]->describe() << " " << initOps[it]->applicability(true, false) << endl;
 		}
 		if (gen < 0)
 			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
@@ -203,14 +203,14 @@ string simulator::describe(const opList & initOps,
 			desc << "    Apply pre-mating operators to the parental generation (preOps)" << endl;
 			for (size_t it = 0; it < preOps.size(); ++it)
 				if (preOps[it]->isActive(curRep, 0, 0, activeReps, true))
-					desc << "    - " << preOps[it]->describe() << preOps[it]->atRepr() << endl;
+					desc << "    - " << preOps[it]->describe() << " " << preOps[it]->applicability() << endl;
 		}
 		desc << "\n    Populate an offspring populaton from the parental population." << endl
 		     << "    " << m_matingScheme->describe() << endl;
 		if (!duringOps.empty()) {
 			desc << "    with additional during mating operators" << endl;
 			for (size_t it = 0; it < duringOps.size(); ++it)
-				desc << "        - " << duringOps[it]->describe() << duringOps[it]->atRepr() << endl;
+				desc << "        - " << duringOps[it]->describe() << " " << duringOps[it]->applicability() << endl;
 		}
 		//
 		if (postOps.empty())
@@ -219,14 +219,14 @@ string simulator::describe(const opList & initOps,
 			desc << "\n    Apply post-mating operators to the offspring population (postOps)." << endl;
 			for (size_t it = 0; it < postOps.size(); ++it)
 				if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
-					desc << "    - " << postOps[it]->describe() << postOps[it]->atRepr() << endl;
+					desc << "    - " << postOps[it]->describe() << " " << postOps[it]->applicability() << endl;
 		}
 		if (finalOps.empty() )
 			desc << "\nNo operator is applied to the final population (finalOps)." << endl;
 		else {
 			desc << "\nApply post-evolution operators (finalOps)" << endl;
 			for (size_t it = 0; it < finalOps.size(); ++it)
-				desc << "      - " << finalOps[it]->describe() << endl;
+				desc << "      - " << finalOps[it]->describe() << " " << finalOps[it]->applicability(true, false) << endl;
 		}
 		allDesc[curRep] = desc.str();
 	}
@@ -253,7 +253,52 @@ string simulator::describe(const opList & initOps,
 	for (size_t i = 0; i < reps.size(); ++i)
 		desc << " " << i;
 	desc << ":\n" << allDesc.back() << "\n";
-	return desc.str();
+	// wrap the text .....
+	string text = desc.str();
+	string newtext;
+	size_t newline = 0;
+	size_t j = 0;
+	int start = 0;
+	int blank = 0;
+	int lastblank = 0;
+	bool continuation = false;
+	while (true) {
+nextline:
+		lastblank = 0;
+		if (!continuation) {
+			for (j = 0; newline + j < text.size() && text[newline + j] == ' '; ++j) ;
+			start = j;
+			for (++j; newline + j < text.size() && text[newline + j] != ' '; ++j) ;
+			blank = j + 1;
+		}
+		for (j = 0; newline + j < text.size() && text[newline + j] != '\n'; ++j) {
+			if (j == 78) {
+				for (size_t i = newline; i < newline + lastblank; ++i)
+					newtext += text[i];
+				newtext += "\n";
+				if (start != 0)
+					for (int i = 0; i < blank; ++i)
+						newtext += " ";
+				continuation = true;
+				newline += lastblank + 1;
+				goto nextline;
+			}
+			if (text[newline + j] == ' ')
+				lastblank = j;
+		}
+		if (text[newline + j] == '\n' || newline + j >= text.size()) {
+			for (int i = newline; i <= newline + j; ++i)
+				newtext += text[i];
+			continuation = false;
+			if (newline + j >= text.size())
+				break;
+			else {
+				newline += j + 1;
+				goto nextline;
+			}
+		}
+	}
+	return newtext;
 }
 
 

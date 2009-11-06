@@ -248,6 +248,60 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
+string baseOperator::applicability(bool subPops, bool gen)
+{
+	string desc;
+
+	if (gen) {
+		if (ISSETFLAG(m_flags, m_flagAtAllGen))
+			desc += "";
+		else if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+			desc += "at generation 0";
+		else if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) )
+			desc += "at ending generation";
+		else if (!m_atGen.empty() ) {
+			if (m_atGen.size() == 1)
+				desc += "at generation";
+			else
+				desc += "at generations";
+			for (size_t i = 0; i < m_atGen.size(); ++i) {
+				if (i == 0)
+					desc += ", ";
+				desc += " " + toStr(m_atGen[i]);
+			}
+		} else {
+			if (m_beginGen != 0)
+				desc += "begin at " + toStr(m_beginGen) + " ";
+			if (m_endGen != -1)
+				desc += "end at " + toStr(m_endGen) + " ";
+			if (m_stepGen != 1)
+				desc += "at interval " + toStr(m_stepGen);
+		}
+	}
+	if (subPops) {
+		if (m_subPops.allAvail())
+			desc += "";
+		else {
+			if (desc.size() != 1)
+				desc += ", ";
+			desc += "to subpopulations ";
+			for (size_t i = 0; i < m_subPops.size(); ++i) {
+				vspID sp = m_subPops[i];
+				if (i != 0)
+					desc += ", ";
+				if (sp.isVirtual())
+					desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
+				else
+					desc += toStr(sp.subPop());
+			}
+		}
+	}
+	if (desc.empty())
+		return desc;
+	return "(" + desc + ")";
+}
+
+
 opList::opList(const vectorop & ops) : m_elems(0)
 {
 	vectorop::const_iterator it = ops.begin();
@@ -476,6 +530,17 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 {
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
+}
+
+
+string pyOperator::describe()
+{
+	PyObject * name = PyObject_GetAttrString(m_func.func(), "__name__");
+
+	if (name == NULL)
+		return "<simuPOP.pyOperator> calling an unnamed Python function.";
+	else
+		return "<simuPOP.pyOperator> calling a Python function " + string(PyString_AsString(name));
 }
 
 

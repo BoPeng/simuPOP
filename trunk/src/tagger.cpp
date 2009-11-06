@@ -37,6 +37,12 @@ void idTagger::reset(ULONG startID)
 }
 
 
+string idTagger::describe()
+{
+	return "<simuPOP.idTagger> assign an unique ID to individuals" ;
+}
+
+
 bool idTagger::apply(population & pop)
 {
 	DBG_DO(DBG_TAGGER, cerr << "Applying idTagger with current ID " << g_indID << endl);
@@ -196,6 +202,19 @@ bool summaryTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
+string parentsTagger::describe()
+{
+	if (infoSize() == 1)
+		return "<simuPOP.parentsTagger> record index of parent in the parental generation "
+		       " to information field " + infoField(0) + " of each offspring.";
+	else
+		return "<simuPOP.parentsTagger> record indexes of parents in the parental generation "
+		       " to information fields " + infoField(0) + " and " + infoField(1) + " of each offspring.";
+	// avoid warning
+	return "";
+}
+
+
 bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
@@ -214,6 +233,13 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 		offspring->setInfo(mom == NULL ? -1 : mom - & * pop.indIterator(), infoField(1));
 	}
 	return true;
+}
+
+
+string pedigreeTagger::describe()
+{
+	return "<simuPOP.pedigreeTagger> record parental IDs (" + infoField(0) + " and "
+	       + infoField(1) + ") to field " + m_idField + " of each offspring.";
 }
 
 

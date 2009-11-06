@@ -79,18 +79,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		string reprStr;
-
-		for (size_t i = 0; i < 10 && i < m_string.size(); ++i)
-			if (m_string[i] != '\n')
-				reprStr += m_string[i];
-		if (m_string.size() > 10)
-			reprStr += "... ";
-		return "<simuPOP.output " + reprStr + "> " ;
-	}
-
+	string describe();
 
 private:
 	string m_string;

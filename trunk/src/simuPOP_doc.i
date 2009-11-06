@@ -422,7 +422,7 @@ Details:
 
 %ignore simuPOP::baseOperator::closeOstream();
 
-%ignore simuPOP::baseOperator::atRepr();
+%ignore simuPOP::baseOperator::applicability(bool subPops=true, bool gen=true);
 
 %feature("docstring") simuPOP::baseOperator::describe "Obsolete or undocumented function."
 
@@ -1350,6 +1350,10 @@ Usage:
 "; 
 
 %ignore simuPOP::Expression::Expression(const Expression &rhs);
+
+%ignore simuPOP::Expression::expr() const;
+
+%ignore simuPOP::Expression::stmts() const;
 
 %ignore simuPOP::Expression::setLocalDict(PyObject *dict);
 

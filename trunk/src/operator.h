@@ -401,34 +401,8 @@ public:
 	}
 
 
-	/// CPPONLY say something about active states
-	string atRepr()
-	{
-		if (ISSETFLAG(m_flags, m_flagAtAllGen))
-			return " at all generations";
-
-		if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
-			return " at generation 0";
-
-		if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) )
-			return " at ending generation";
-
-		if (!m_atGen.empty() ) {
-			string atStr = " at generation(s)";
-			for (size_t i = 0; i < m_atGen.size(); ++i)
-				atStr += " " + toStr(m_atGen[i]);
-			return atStr;
-		}
-
-		string repr = " ";
-		if (m_beginGen != 0)
-			repr += "begin at " + toStr(m_beginGen) + " ";
-		if (m_endGen != -1)
-			repr += "end at " + toStr(m_endGen) + " ";
-		if (m_stepGen != 1)
-			repr += "at interval " + toStr(m_stepGen);
-		return repr;
-	}
+	/// CPPONLY say something about the applicability of this operator.
+	string applicability(bool subPops = true, bool gen = true);
 
 
 	/// HIDDEN
@@ -1047,11 +1021,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.pyOperator>";
-	}
-
+	string describe();
 
 private:
 	/// the function

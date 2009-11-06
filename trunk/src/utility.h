@@ -952,6 +952,20 @@ public:
 	/// CPPONLY
 	Expression(const Expression & rhs);
 
+	/// CPPONLY
+	string expr() const
+	{
+		return m_exprString;
+	}
+
+
+	/// CPPONLY
+	string stmts() const
+	{
+		return m_stmtsString;
+	}
+
+
 	/** CPPONLY
 	 * set local dictionary
 	 */
@@ -1006,6 +1020,9 @@ private:
 
 	/// compile statements into byte code
 	void compileStmts(const string & stmts);
+
+	string m_exprString;
+	string m_stmtsString;
 
 	/// compiled code
 	PyObject * m_expr, * m_stmts;

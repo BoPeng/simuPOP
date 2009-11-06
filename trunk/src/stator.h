@@ -246,11 +246,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.infoEval>";
-	}
-
+	string describe();
 
 protected:
 	string evalInfo(individual *, bool update);
@@ -340,11 +336,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.infoExec>";
-	}
-
+	string describe();
 
 private:
 	simpleStmt m_simpleStmt;

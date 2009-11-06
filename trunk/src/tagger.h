@@ -80,10 +80,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.id tagger>" ;
-	}
+	string describe();
 
 
 	/** Reset the global individual ID number so that idTaggers will start
@@ -278,10 +275,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.parents tagger>" ;
-	}
+	string describe();
 
 
 	/** CPPONLY
@@ -342,11 +336,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
-	{
-		return "<simuPOP.pedigree tagger>" ;
-	}
-
+	string describe();
 
 	/** CPPONLY
 	 * apply the \c pedigreeTagger

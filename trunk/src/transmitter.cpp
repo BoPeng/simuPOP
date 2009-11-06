@@ -101,6 +101,12 @@ void genoTransmitter::copyChromosomes(const individual & parent,
 }
 
 
+string cloneGenoTransmitter::describe()
+{
+	return "<simuPOP.cloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
+}
+
+
 bool cloneGenoTransmitter::applyDuringMating(population & pop,
                                              RawIndIterator offspring,
                                              individual * dad,
@@ -391,6 +397,14 @@ recombinator::recombinator(const floatList & rates, double intensity,
 	DBG_FAILIF(mode != NoConversion && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
 		ValueError, "Conversion probability should be between 0 and 1");
 };
+
+
+string recombinator::describe()
+{
+	string desc = "<simuPOP.recombinator> genetic recombination.";
+
+	return desc;
+}
 
 
 int recombinator::markersConverted(size_t index, const individual & ind)

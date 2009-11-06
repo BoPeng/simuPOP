@@ -188,6 +188,12 @@ double mapPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
+string maPenetrance::describe()
+{
+	return "<simuPOP.maPenetrance> multiple-alleles penetrance" ;
+}
+
+
 // this function is the same as maSelector.
 double maPenetrance::penet(individual * ind, ULONG gen)
 {
