@@ -1982,7 +1982,9 @@ PyObject * population::vars(vspID vsp)
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
 	DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
-		"subPop statistics does not exist yet.");
+		"Population local namespace does not have key 'subPop'. "
+		"You may forgot to call the stat operator, or use the 'vars' parameter "
+		"to generate subpopulation-specific statistics.");
 
 	PyObject * spObj = m_vars.getVar("subPop");
 	// vsp? A tube with (sp, vsp)
