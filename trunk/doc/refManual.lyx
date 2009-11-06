@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.7 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.8 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -752,7 +752,7 @@ GetRNGRef
 \end_layout
 
 \begin_layout Chapter
-Operator References (under revision)
+Operator References
 \end_layout
 
 \begin_layout Section
@@ -1523,21 +1523,21 @@ simuPOPMigrateRef
 
 
 \backslash
-simuPOPReiszeSubPops
+simuPOPResizeSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPMergeSubPops
+simuPOPMergeSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPSplitSubPops
+simuPOPSplitSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout

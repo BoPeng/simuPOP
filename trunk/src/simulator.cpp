@@ -252,7 +252,7 @@ string simulator::describe(const opList & initOps,
 	desc << "Replicate";
 	for (size_t i = 0; i < reps.size(); ++i)
 		desc << " " << i;
-	desc << ":\n" << allDesc.back() << "\n";
+	desc << ":\n" << allDesc.back();
 	// wrap the text .....
 	string text = desc.str();
 	string newtext;
@@ -273,9 +273,7 @@ nextline:
 		}
 		for (j = 0; newline + j < text.size() && text[newline + j] != '\n'; ++j) {
 			if (j == 78) {
-				for (size_t i = newline; i < newline + lastblank; ++i)
-					newtext += text[i];
-				newtext += "\n";
+				newtext += text.substr(newline, lastblank) + "\n";
 				if (start != 0)
 					for (int i = 0; i < blank; ++i)
 						newtext += " ";
@@ -287,8 +285,7 @@ nextline:
 				lastblank = j;
 		}
 		if (text[newline + j] == '\n' || newline + j >= text.size()) {
-			for (int i = newline; i <= newline + j; ++i)
-				newtext += text[i];
+			newtext += text.substr(newline, j + 1);
 			continuation = false;
 			if (newline + j >= text.size())
 				break;
