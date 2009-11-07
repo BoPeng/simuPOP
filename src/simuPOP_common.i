@@ -67,7 +67,10 @@ extern "C"
 %pythoncode %{
 #redefine __repr__ to make it shorter.
 def _swig_repr(self):
-    return "<%s.%s>" % (self.__class__.__module__.split('.')[-1].split('_')[0], self.__class__.__name__)
+    if hasattr(self, 'describe'):
+        return self.describe()
+    else:
+        return "<%s.%s>" % (self.__class__.__module__.split('.')[-1].split('_')[0], self.__class__.__name__)
 %}
 
 
