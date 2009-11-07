@@ -73,7 +73,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.terminateIf>";
 	}

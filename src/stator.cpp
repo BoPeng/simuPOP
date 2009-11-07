@@ -46,7 +46,7 @@ string pyEval::evaluate(population & pop)
 }
 
 
-string infoEval::describe()
+string infoEval::describe(bool format)
 {
 	return "<simuPOP.infoEval> evaluate expression " + m_expr.expr() + " using information fields as variables.";
 }
@@ -178,7 +178,7 @@ bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-string infoExec::describe()
+string infoExec::describe(bool format)
 {
 	return "<simuPOP.infoExec> execute statement " + m_expr.stmts() + " using information fields as variables.";
 }

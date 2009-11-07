@@ -36,7 +36,7 @@ bool pyOutput::apply(population & pop)
 }
 
 
-string pyOutput::describe()
+string pyOutput::describe(bool format)
 {
 	string reprStr;
 

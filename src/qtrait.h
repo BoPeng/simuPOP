@@ -107,7 +107,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.qtrait::quantitative trait>" ;
 	}
@@ -199,7 +199,7 @@ public:
 	virtual void qtrait(individual * ind, ULONG gen, vectorf & traits);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.qtrait::python qtrait>" ;
 	}

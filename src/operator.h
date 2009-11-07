@@ -406,7 +406,7 @@ public:
 
 
 	/// HIDDEN
-	virtual string describe()
+	virtual string describe(bool format = true)
 	{
 		return "<simuPOP.operator>" ;
 	}
@@ -617,7 +617,7 @@ public:
 	bool apply(population & pop);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.pause>" ;
 	}
@@ -677,7 +677,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.None>" ;
 	}
@@ -733,7 +733,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.if else operator >";
 	}
@@ -785,7 +785,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.tic toc performance monitor>" ;
 	}
@@ -840,7 +840,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.setAncestralDepth>";
 	}
@@ -896,7 +896,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.turnOnDebug>";
 	}
@@ -947,7 +947,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.turnOffDebug>";
 	}
@@ -1021,7 +1021,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 private:
 	/// the function

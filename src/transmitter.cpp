@@ -101,7 +101,7 @@ void genoTransmitter::copyChromosomes(const individual & parent,
 }
 
 
-string cloneGenoTransmitter::describe()
+string cloneGenoTransmitter::describe(bool format)
 {
 	return "<simuPOP.cloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
 }
@@ -399,7 +399,7 @@ recombinator::recombinator(const floatList & rates, double intensity,
 };
 
 
-string recombinator::describe()
+string recombinator::describe(bool format)
 {
 	string desc = "<simuPOP.recombinator> genetic recombination.";
 

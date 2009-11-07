@@ -129,15 +129,16 @@ void offspringGenerator::initialize(const population & pop, SubPopID subPop, vec
 }
 
 
-string offspringGenerator::describe() const
+string offspringGenerator::describe(bool format) const
 {
-	string desc = "produces offspring using\n";
+	string desc = "<simuPOP.offspringGenerator> produces offspring using operators\n<ul>\n";
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
 
 	for (; iop != iopEnd; ++iop)
-		desc += "        - " + (*iop)->describe() + " " + (*iop)->applicability() + "\n";
-	return desc;
+		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
+	desc += "</ul>\n";
+	return format ? formatText(desc) : desc;
 }
 
 
@@ -230,16 +231,16 @@ controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffsp
 }
 
 
-string controlledOffspringGenerator::describe() const
+string controlledOffspringGenerator::describe(bool format) const
 {
-	string desc = "produces offspring using ";
+	string desc = "<simuPOP.controlledOffspringGenerator> produces offspring using operators\n<ul>\n";
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
 
 	for (; iop != iopEnd; ++iop)
-		desc += "        - " + (*iop)->describe() + " " + (*iop)->applicability() + "\n";
-	desc += " while controlling allele frequency";
-	return desc;
+		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
+	desc += "</ul>\nwhile controlling allele frequency";
+	return format ? formatText(desc) : desc;
 }
 
 
@@ -1398,6 +1399,16 @@ homoMating::homoMating(parentChooser & chooser,
 }
 
 
+string homoMating::describe(bool format) const
+{
+	string desc = "<simuPOP.homoMating> a homogeneous mating scheme that uses\n<ul>\n<li>"
+	              + m_parentChooser->describe(false) + "\n<li>"
+	              + m_offspringGenerator->describe(false) + "</ul>\n";
+
+	return format ? formatText(desc) : desc;
+}
+
+
 bool homoMating::mateSubPop(population & pop, SubPopID subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd,
                             vector<baseOperator * > & ops)
@@ -1445,20 +1456,21 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 }
 
 
-string heteroMating::describe() const
+string heteroMating::describe(bool format) const
 {
-	string desc = "A heterogeneous mating scheme with " +
-	              toStr(m_matingSchemes.size()) + " homogeneous mating schemes:\n";
+	string desc = "<simuPOP.heteroMating> a heterogeneous mating scheme with " +
+	              toStr(m_matingSchemes.size()) + " homogeneous mating schemes:\n<ul>\n";
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 
 	for (; it != it_end; ++it) {
-		desc += "    ** " + dynamic_cast<homoMating *>(*it)->describe() + "       in ";
+		desc += "<li>" + dynamic_cast<homoMating *>(*it)->describe(false) +
+		        "<indent>in ";
 		subPopList subPops = (*it)->subPops();
 		if (subPops.allAvail())
-			desc += " all subpopulations.\n";
+			desc += "all subpopulations.\n";
 		else {
-			desc += " subpopulations ";
+			desc += "subpopulations ";
 			for (size_t i = 0; i < subPops.size(); ++i) {
 				vspID sp = subPops[i];
 				if (i != 0)
@@ -1471,7 +1483,8 @@ string heteroMating::describe() const
 			desc += ".\n";
 		}
 	}
-	return desc;
+	desc += "</ul>\n";
+	return format ? formatText(desc) : desc;
 }
 
 

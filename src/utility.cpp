@@ -2635,6 +2635,70 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 }
 
 
+string formatText(const string & text)
+{
+	cerr << text << endl;
+	vectorstr lines;
+	// break from newline
+	size_t pos = 0;
+	size_t nextpos = 0;
+	while ((nextpos = text.find('\n', pos)) != string::npos) {
+		lines.push_back(text.substr(pos, nextpos - pos + 1));
+		pos = nextpos + 1;
+	}
+	lines.push_back(text.substr(pos));
+	// newtext
+	string output;
+	int indent = 0;
+	for (size_t it = 0; it < lines.size(); ++it) {
+		string line = lines[it];
+		// remove leading blanks
+		nextpos = line.find_first_not_of(' ');
+		if (nextpos == string::npos)
+			continue;
+		line = line.substr(nextpos);
+		string start = line.substr(0, 4);
+		if (start == "<ul>") {
+			++indent;
+			continue;
+		} else if (start == "</ul") {
+			--indent;
+			continue;
+		} else if (start == "<li>") {
+			string indent_char("*#-.");
+			string leading;
+			if (indent >= 1 && indent <= indent_char.size())
+				leading = string(1, indent_char[indent - 1]) + " ";
+			else if (indent > indent_char.size())
+				leading = ". ";
+			line = leading + line.substr(4);
+		} else if (start == "<ind") {
+			line = "  " + line.substr(8);
+		}
+		// add blanks
+		line = string(indent * 3, ' ') + line;
+		// break lines
+		if (line.size() > 78) {
+			int lastblank = 0;
+			pos = 0;
+			for (size_t i = 0; i < line.size(); ++i) {
+				if (line[i] == ' ')
+					lastblank = i;
+				if (i > 0 && i % 78 == 0) {
+					output += line.substr(pos, lastblank - pos) + "\n" +
+					          string(indent * 3 + (indent > 0 ? 2 : 0), ' ');
+					pos = lastblank + 1;
+				}
+			}
+			output += line.substr(pos);
+		} else
+			// last line (or the only line)
+			output += line;
+	}
+	return output;
+}
+
+
 void weightedSampler::set(const vectorf & weight)
 {
 	m_N = weight.size();
