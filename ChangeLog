@@ -1,5 +1,15 @@
 ChangeLog of simuPOP
 
+TODO:
+  - Improve the describe() function of all operators.
+  - Make sure (test) that AllAvail and [] work as expected.
+  - Implement a event driven demographic class.
+  - Use a more consistent initializeIfNeeded mechanism.
+
+Known Bugs:
+  - BUG: simuPOP does not responde to Ctrl-C under windows.
+  
+
 version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: Allow controlledRandomMating to fall back to random mating if there is
 		no locus to control.
