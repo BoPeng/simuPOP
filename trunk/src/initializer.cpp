@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-string initSex::describe()
+string initSex::describe(bool format)
 {
 	string desc = "<simuPOP.initSex> initialize sex ";
 
@@ -78,7 +78,7 @@ bool initSex::apply(population & pop)
 }
 
 
-string initInfo::describe()
+string initInfo::describe(bool format)
 {
 	string desc = "<simuPOP.initInfo> initialize information field";
 
@@ -160,7 +160,7 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 }
 
 
-string initByFreq::describe()
+string initByFreq::describe(bool format)
 {
 	return "<simuPOP.initByFreq> initialize individual genotype using a list of allele frequencies";
 }

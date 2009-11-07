@@ -86,7 +86,7 @@ public:
 		individual & offspring, int ploidy);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.genoTransmitter>" ;
 	}
@@ -150,7 +150,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/// CPPONLY
@@ -193,7 +193,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.mendelianGenoTransmitter>" ;
 	}
@@ -259,7 +259,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.selfingGenoTransmitter>" ;
 	}
@@ -307,7 +307,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.haplodiploidGenoTransmitter>" ;
 	}
@@ -361,7 +361,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.mitochondrialGenoTransmitter>" ;
 	}
@@ -523,7 +523,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/** Initialize a recombinator for the genotypic structure of population

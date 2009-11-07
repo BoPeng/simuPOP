@@ -80,7 +80,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/** Reset the global individual ID number so that idTaggers will start
@@ -148,7 +148,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.inheritTagger>" ;
 	}
@@ -208,7 +208,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.summaryTagger>" ;
 	}
@@ -275,7 +275,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/** CPPONLY
@@ -336,7 +336,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 	/** CPPONLY
 	 * apply the \c pedigreeTagger
@@ -390,7 +390,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.pyTagger>" ;
 	}

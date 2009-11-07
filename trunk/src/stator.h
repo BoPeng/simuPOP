@@ -107,7 +107,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.pyEval>";
 	}
@@ -160,7 +160,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.pyExec>";
 	}
@@ -246,7 +246,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 protected:
 	string evalInfo(individual *, bool update);
@@ -336,7 +336,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 private:
 	simpleStmt m_simpleStmt;
@@ -1193,7 +1193,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.statistics>";
 	}

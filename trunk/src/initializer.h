@@ -89,7 +89,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/// apply this operator to population \e pop
@@ -148,7 +148,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 	/// apply this operator to population \e pop
 	bool apply(population & pop);
@@ -201,7 +201,7 @@ public:
 
 
 	/// HIDDEN
-	string describe();
+	string describe(bool format = true);
 
 
 	/// apply this operator to population \e pop
@@ -262,7 +262,7 @@ public:
 
 
 	/// HIDDEN
-	string describe()
+	string describe(bool format = true)
 	{
 		return "<simuPOP.initByValue>";
 	}

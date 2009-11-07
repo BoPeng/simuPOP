@@ -533,7 +533,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 }
 
 
-string pyOperator::describe()
+string pyOperator::describe(bool format)
 {
 	PyObject * name = PyObject_GetAttrString(m_func.func(), "__name__");
 

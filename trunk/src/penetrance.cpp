@@ -188,7 +188,7 @@ double mapPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
-string maPenetrance::describe()
+string maPenetrance::describe(bool format)
 {
 	return "<simuPOP.maPenetrance> multiple-alleles penetrance" ;
 }

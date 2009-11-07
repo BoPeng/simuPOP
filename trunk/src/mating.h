@@ -137,7 +137,7 @@ public:
 
 
 	/// describe an offspring generator
-	virtual string describe() const;
+	virtual string describe(bool format = true) const;
 
 	/// CPPONLY
 	bool initialized()
@@ -238,7 +238,7 @@ public:
 
 
 	/// describe a controlled offspring generator
-	virtual string describe() const;
+	virtual string describe(bool format = true) const;
 
 private:
 	void getExpectedAlleles(const population & pop, vectorf & expFreq);
@@ -300,9 +300,9 @@ public:
 
 
 	/// describe a general parent chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses parents (UNDEFINED)";
+		return "<simuPOP.parentChooser> (base class)";
 	}
 
 
@@ -354,9 +354,9 @@ public:
 
 
 	/// describe a sequential parent chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses a parent sequentially";
+		return "<simuPOP.sequentialParentChooser> chooses a parent sequentially";
 	}
 
 
@@ -403,9 +403,9 @@ public:
 
 
 	/// describe a sequential parents chooser.
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses two parents sequentially";
+		return "<simuPOP.sequentialParentsChooser> chooses two parents sequentially";
 	}
 
 
@@ -463,9 +463,9 @@ public:
 
 
 	/// describe a random parent chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses one parent randomly";
+		return "<simuPOP.randomParentChooser> chooses one parent randomly";
 	}
 
 
@@ -528,9 +528,9 @@ public:
 
 
 	/// describe a random parents chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses two parents randomly";
+		return "<simuPOP.randomParentsChooser> chooses two parents randomly";
 	}
 
 
@@ -601,9 +601,9 @@ public:
 
 
 	/// describe a polygenic parents chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses parents with several spouses";
+		return "<simuPOP.polyParentsChooser> chooses parents with several spouses";
 	}
 
 
@@ -680,9 +680,9 @@ public:
 
 
 	/// describe an alpha parents chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses alpha individuals and their spouses";
+		return "<simuPOP.alphaParentsChooser> chooses alpha individuals and their spouses";
 	}
 
 
@@ -763,9 +763,9 @@ public:
 
 
 	/// describe a parents chooser using information fields
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses parents from specified information fields";
+		return "<simuPOP.infoParentsChooser> chooses parents from specified information fields";
 	}
 
 
@@ -831,9 +831,9 @@ public:
 
 
 	/// describe a hybrid parent chooser
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "chooses parents according to a user-provided Python function";
+		return "<simuPOP.pyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
 
@@ -903,9 +903,9 @@ public:
 
 
 	/// describe a general mating scheme.
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "A general mating scheme";
+		return "<simuPOP.mating> A general mating scheme";
 	}
 
 
@@ -993,9 +993,9 @@ public:
 
 
 	/// describe a pedigree mating scheme.
-	virtual string describe() const
+	virtual string describe(bool format = true) const
 	{
-		return "A pedigree mating scheme";
+		return "<simuPOP.pedigreeMating> A pedigree mating scheme";
 	}
 
 
@@ -1085,11 +1085,7 @@ public:
 
 
 	/// describe a homogeneous mating scheme.
-	virtual string describe() const
-	{
-		return "A homogeneous mating scheme that " + m_parentChooser->describe()
-		       + " and " + m_offspringGenerator->describe();
-	}
+	virtual string describe(bool format = true) const;
 
 
 	/// CPPONLY
@@ -1182,7 +1178,7 @@ public:
 
 
 	/// describe a heterogeneous mating scheme.
-	virtual string describe() const;
+	virtual string describe(bool format = true) const;
 
 	/** CPPONLY Call each homogeneous mating scheme to populate offspring
 	 *  generation.
