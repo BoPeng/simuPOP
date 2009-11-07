@@ -2637,7 +2637,6 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 
 string formatText(const string & text)
 {
-	cerr << text << endl;
 	vectorstr lines;
 	// break from newline
 	size_t pos = 0;
