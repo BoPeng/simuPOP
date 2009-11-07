@@ -112,7 +112,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -1214,7 +1214,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -2205,7 +2205,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -2293,7 +2293,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -3082,7 +3082,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -3955,7 +3955,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -4698,7 +4698,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -4806,7 +4806,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -5207,7 +5207,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -5411,7 +5411,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -7040,7 +7040,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -7422,7 +7422,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -7485,7 +7485,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -8212,7 +8212,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -8265,7 +8265,7 @@ Description:
 
 Usage:
 
-    x.describe()
+    x.describe(format=True)
 
 "; 
 
@@ -10477,6 +10477,8 @@ Details:
 %ignore simuPOP::hweTest(const vectoru &cnt);
 
 %ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
+
+%ignore simuPOP::formatText(const string &text);
 
 %feature("docstring") simuPOP::GetRNG "
 

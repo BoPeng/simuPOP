@@ -176,6 +176,9 @@ string simulator::describe(const opList & initOps,
                            const opList & finalOps,
                            int gen)
 {
+	if (initOps.empty() && preOps.empty() && duringOps.empty() && postOps.empty() && finalOps.empty() && gen == -1)
+		return "<simuPOP.simulator> a simulator with " + toStr(m_numRep) + " population" + (m_numRep == 1 ? "." : "s.");
+	
 	vectorstr allDesc(m_numRep, "");
 
 	// assuming all active replicates.
@@ -197,7 +200,8 @@ string simulator::describe(const opList & initOps,
 		else
 			desc << "\nEvolve a population for " << gen << " generations. "
 			     << "(generations " << m_gen << " - " << m_gen + gen - 1
-			     << ", stops at generation " << m_gen + gen << ")\n<ul>\n";
+			     << ", stops at generation " << m_gen + gen << ")\n";
+		desc << "<ul>\n";
 		if (preOps.empty())
 			desc << "<li>No operator is applied to the parental generation (preOps)." << endl;
 		else {

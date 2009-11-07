@@ -2661,7 +2661,9 @@ string formatText(const string & text)
 			++indent;
 			continue;
 		} else if (start == "</ul") {
-			--indent;
+			DBG_WARNING(indent < 0, "Wrong description text caused by incorrect indent");
+			if (indent != 0)
+				--indent;
 			continue;
 		} else if (start == "<li>") {
 			string indent_char("*#-.");
