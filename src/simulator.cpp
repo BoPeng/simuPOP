@@ -221,9 +221,9 @@ string simulator::describe(const opList & initOps,
 		}
 		//
 		if (postOps.empty())
-			desc << "<li>No operator is applied to the offspring population (postOps)." << endl;
+			desc << "\n<li>No operator is applied to the offspring population (postOps)." << endl;
 		else {
-			desc << "<li>Apply post-mating operators to the offspring population (postOps).\n<ul>\n";
+			desc << "\n<li>Apply post-mating operators to the offspring population (postOps).\n<ul>\n";
 			for (size_t it = 0; it < postOps.size(); ++it)
 				if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
 					desc << "<li>" << postOps[it]->describe(false) << " " << postOps[it]->applicability() << endl;
