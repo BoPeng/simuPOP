@@ -90,10 +90,8 @@ string initInfo::describe(bool format)
 	}
 	if (m_values.empty()) {
 		PyObject * name = PyObject_GetAttrString(m_values.func().func(), "__name__");
-		if (name == NULL)
-			desc += " using an unnamed Python function.";
-		else
-			desc += " using a Python function " + string(PyString_AsString(name));
+		DBG_FAILIF(name == NULL, RuntimeError, "Passwd object does not have attribute __name__");
+		desc += " using a Python function " + string(PyString_AsString(name));
 	} else
 		desc += " using a list of values";
 	return desc;

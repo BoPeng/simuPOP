@@ -536,11 +536,8 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 string pyOperator::describe(bool format)
 {
 	PyObject * name = PyObject_GetAttrString(m_func.func(), "__name__");
-
-	if (name == NULL)
-		return "<simuPOP.pyOperator> calling an unnamed Python function.";
-	else
-		return "<simuPOP.pyOperator> calling a Python function " + string(PyString_AsString(name));
+	DBG_FAILIF(name == NULL, RuntimeError, "Passwd object does not have attribute __name__.");
+	return "<simuPOP.pyOperator> calling a Python function " + string(PyString_AsString(name));
 }
 
 
