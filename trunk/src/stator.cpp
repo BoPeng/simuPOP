@@ -27,6 +27,16 @@
 
 namespace simuPOP {
 
+string pyEval::describe(bool format)
+{
+	string desc = m_expr.expr();
+
+	if (desc.size() > 50)
+		desc = desc.substr(0, 50) + "... ";
+	return "<simuPOP.pyEval> evalulate expression \"" + desc + "\"";
+}
+
+
 string pyEval::evaluate(population & pop)
 {
 	if (!m_exposePop.empty()) {
@@ -43,6 +53,16 @@ string pyEval::evaluate(population & pop)
 	if (!m_exposePop.empty())
 		pop.getVars().removeVar(m_exposePop);
 	return res;
+}
+
+
+string pyExec::describe(bool format)
+{
+	string desc = m_expr.stmts();
+
+	if (desc.size() > 50)
+		desc = desc.substr(0, 50) + "... ";
+	return "<simuPOP.pyExec> execute statements " + desc;
 }
 
 

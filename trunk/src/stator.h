@@ -107,13 +107,9 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.pyEval>";
-	}
+	string describe(bool format = true);
 
-
-private:
+protected:
 	/// expression to evaluate
 	Expression m_expr;
 
@@ -160,10 +156,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.pyExec>";
-	}
+	string describe(bool format = true);
 
 
 };
