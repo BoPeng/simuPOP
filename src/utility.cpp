@@ -1609,7 +1609,8 @@ void * pyIndPointer(PyObject * obj)
 // because of ref count, need to define copier
 
 Expression::Expression(const Expression & rhs)
-	: m_expr(rhs.m_expr), m_stmts(rhs.m_stmts), m_locals(rhs.m_locals)
+	: m_exprString(rhs.m_exprString), m_stmtsString(rhs.m_stmtsString),
+		m_expr(rhs.m_expr), m_stmts(rhs.m_stmts), m_locals(rhs.m_locals)
 {
 	Py_XINCREF(m_expr);
 	Py_XINCREF(m_stmts);

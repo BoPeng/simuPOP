@@ -340,6 +340,17 @@ opList::~opList()
 
 vectori pause::s_cachedKeys = vectori();
 
+string pause::describe(bool format)
+{
+	string desc = "<simuPOP.pause> pause an evolutionary process";
+
+	if (m_stopOnKeyStroke)
+		desc += m_stopOnKeyStroke == static_cast<char>(true) ?
+		        string(" with any key stroke") : " with key " + string(1, m_stopOnKeyStroke);
+	return desc;
+}
+
+
 bool pause::apply(population & pop)
 {
 	// call initialize if needed.
@@ -424,6 +435,37 @@ ifElse::ifElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 		PyObj_As_Bool(cond, c);
 		m_fixedCond = c ? 1 : 0;
 	}
+}
+
+
+string ifElse::describe(bool format)
+{
+	string desc = "<simuPOP.ifElse>";
+	string ifDesc;
+	string elseDesc;
+
+	if (!m_ifOps.empty()) {
+		ifDesc = "<ul>\n";
+		opList::const_iterator it = m_ifOps.begin();
+		opList::const_iterator itEnd = m_ifOps.end();
+		for (; it != itEnd; ++it)
+			ifDesc += "<li>" + (*it)->describe(false) + " " + (*it)->applicability() + "\n";
+		ifDesc += "</ul>\n";
+	}
+	if (!m_elseOps.empty()) {
+		elseDesc = "<ul>\n";
+		opList::const_iterator it = m_elseOps.begin();
+		opList::const_iterator itEnd = m_elseOps.end();
+		for (; it != itEnd; ++it)
+			elseDesc += "<li>" + (*it)->describe(false) + " " + (*it)->applicability() + "\n";
+		elseDesc += "</ul>\n";
+	}
+	if (m_fixedCond != -1)
+		desc += " always apply opertors\n" + (m_fixedCond == 1 ? ifDesc : elseDesc);
+	else
+		desc += " apply operators \n" + ifDesc + "\n<indent>if " + m_cond.expr()
+		        + ", and otherwise apply operators \n" + elseDesc;
+	return format ? formatText(desc) : desc;
 }
 
 
@@ -536,6 +578,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 string pyOperator::describe(bool format)
 {
 	PyObject * name = PyObject_GetAttrString(m_func.func(), "__name__");
+
 	DBG_FAILIF(name == NULL, RuntimeError, "Passwd object does not have attribute __name__.");
 	return "<simuPOP.pyOperator> calling a Python function " + string(PyString_AsString(name));
 }

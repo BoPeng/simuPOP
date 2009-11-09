@@ -408,7 +408,7 @@ public:
 	/// HIDDEN
 	virtual string describe(bool format = true)
 	{
-		return "<simuPOP.operator>" ;
+		return "<simuPOP.operator> a based operator that should not be used directly." ;
 	}
 
 
@@ -617,11 +617,7 @@ public:
 	bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.pause>" ;
-	}
-
+	string describe(bool format = true);
 
 private:
 	bool m_prompt;
@@ -679,7 +675,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.None>" ;
+		return "<simuPOP.None> an operator that does nothing" ;
 	}
 
 
@@ -733,11 +729,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.if else operator >";
-	}
-
+	string describe(bool format = true);
 
 private:
 	Expression m_cond;
