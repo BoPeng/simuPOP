@@ -739,6 +739,68 @@ private:
 	opList m_elseOps;
 };
 
+
+/** This operator evaluates an expression in a population's local namespace
+ *  and terminate the evolution of this population, or the whole simulator,
+ *  if the return value of this expression is \c True. Termination caused by
+ *  an operator will stop the execution of all operators after it. The
+ *  generation at which the population is terminated will be counted in the
+ *  <em>evolved generations</em> (return value from <tt>simulator::evolve</tt>)
+ *  if termination happens after mating.
+ */
+class terminateIf : public baseOperator
+{
+
+public:
+	/** Create a terminator with an expression \e condition, which will be evalulated
+	 *  in a population's local namespace when the operator is applied to this
+	 *  population. If the return value of \e condition is \c True, the evolution
+	 *  of the population will be terminated. If \e stopAll is set to \c True, the
+	 *  evolution of all replicates of the simulator will be terminated. If this
+	 *  operator is allowed to write to an \e output (default to ""), the generation
+	 *  number, proceeded with an optional \e message.
+	 */
+	terminateIf(string condition = string(), bool stopAll = false, string message = string(),
+		const stringFunc & output = "", int begin = 0, int end = -1,
+		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		m_expr(condition), m_stopAll(stopAll), m_message(message)
+	{
+	}
+
+
+	/// deep copy of a \c terminateIf terminator
+	virtual baseOperator * clone() const
+	{
+		return new terminateIf(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true);
+
+
+	// check all alleles in vector allele if they are fixed.
+	virtual bool apply(population & pop);
+
+	virtual ~terminateIf()
+	{
+	}
+
+
+private:
+	/// alleles to check. If empty, check all alleles.
+	Expression m_expr;
+
+	///
+	bool m_stopAll;
+
+	/// message to print when terminated
+	string m_message;
+};
+
+
 /** This operator, when called, output the difference between current and the
  *  last called clock time. This can be used to estimate execution time of
  *  each generation. Similar information can also be obtained from
