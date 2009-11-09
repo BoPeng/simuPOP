@@ -450,7 +450,7 @@ string ifElse::describe(bool format)
 		opList::const_iterator itEnd = m_ifOps.end();
 		for (; it != itEnd; ++it)
 			ifDesc += "<li>" + (*it)->describe(false) + " " + (*it)->applicability() + "\n";
-		ifDesc += "</ul>\n";
+		ifDesc += "</ul>";
 	}
 	if (!m_elseOps.empty()) {
 		elseDesc = "<ul>\n";
@@ -458,13 +458,15 @@ string ifElse::describe(bool format)
 		opList::const_iterator itEnd = m_elseOps.end();
 		for (; it != itEnd; ++it)
 			elseDesc += "<li>" + (*it)->describe(false) + " " + (*it)->applicability() + "\n";
-		elseDesc += "</ul>\n";
+		elseDesc += "</ul>";
 	}
 	if (m_fixedCond != -1)
 		desc += " always apply opertors\n" + (m_fixedCond == 1 ? ifDesc : elseDesc);
-	else
-		desc += " apply operators \n" + ifDesc + "\n<indent>if " + m_cond.expr()
-		        + ", and otherwise apply operators \n" + elseDesc;
+	else {
+		desc += " apply operators \n" + ifDesc + "\n<indent>if " + m_cond.expr();
+		if (!m_elseOps.empty())
+			desc += ", and otherwise apply operators \n" + elseDesc;
+	}
 	return format ? formatText(desc) : desc;
 }
 

@@ -350,6 +350,8 @@ public:
 
 	bool apply(population & pop);
 
+	string describe(bool format = true);
+
 private:
 	bool m_isActive;
 
@@ -378,6 +380,8 @@ public:
 
 	bool apply(population & pop);
 
+	string describe(bool format = true);
+
 private:
 	/// whether or not to apply number of male/female
 	bool m_isActive;
@@ -402,6 +406,8 @@ private:
 public:
 	statNumOfAffected(bool numOfAffected, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true);
 
 	bool apply(population & pop);
 
@@ -430,6 +436,8 @@ private:
 public:
 	statAlleleFreq(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true);
 
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq()
@@ -466,6 +474,8 @@ public:
 	statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
 		const subPopList & subPops, const stringList & vars, const string & suffix);
 
+	string describe(bool format = true);
+
 	bool apply(population & pop);
 
 private:
@@ -491,6 +501,8 @@ public:
 	statGenoFreq(const vectoru & genoFreq,  const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
+	string describe(bool format = true);
+
 	bool apply(population & pop);
 
 private:
@@ -515,6 +527,8 @@ private:
 public:
 	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true);
 
 	~statHaploFreq()
 	{
@@ -557,6 +571,9 @@ public:
 		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
 		const vectorstr & minOfInfo, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+
+	string describe(bool format = true);
 
 	~statInfo()
 	{
@@ -608,6 +625,8 @@ public:
 	// haplotype frequencies locally and in a more readable way.
 	statLD(const intMatrix & LD, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true);
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -661,6 +680,9 @@ public:
 	statAssociation(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
+
+	string describe(bool format = true);
+
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
@@ -696,6 +718,8 @@ public:
 	statNeutrality(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
+	string describe(bool format = true);
+
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
@@ -730,6 +754,8 @@ private:
 public:
 	statStructure(const vectoru & Fst, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true);
 
 	bool apply(population & pop);
 
@@ -771,6 +797,9 @@ private:
 public:
 	statHWE(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
+
+
+	string describe(bool format = true);
 
 	bool apply(population & pop);
 
@@ -1172,6 +1201,10 @@ public:
 	}
 
 
+	/// HIDDEN
+	string describe(bool format = true);
+
+
 	/// deep copy of a \c stat operator
 	virtual baseOperator * clone() const
 	{
@@ -1184,13 +1217,6 @@ public:
 	// resize all these variables.
 	/// apply the \c stat operator
 	virtual bool apply(population & pop);
-
-	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.statistics>";
-	}
-
 
 private:
 	statPopSize m_popSize;

@@ -25,6 +25,9 @@
 
 #include "stator.h"
 
+#include <sstream>
+using std::ostringstream;
+
 namespace simuPOP {
 
 string pyEval::describe(bool format)
@@ -347,6 +350,33 @@ stat::stat(
 }
 
 
+string stat::describe(bool format)
+{
+	string desc = "<simuPOP.stat> Calculate statistics\n<ul>\n";
+	vectorstr descs;
+
+	descs.push_back(m_popSize.describe(false));
+	descs.push_back(m_numOfMale.describe(false));
+	descs.push_back(m_numOfAffected.describe(false));
+	descs.push_back(m_alleleFreq.describe(false));
+	descs.push_back(m_heteroFreq.describe(false));
+	descs.push_back(m_genoFreq.describe(false));
+	descs.push_back(m_haploFreq.describe(false));
+	descs.push_back(m_info.describe(false));
+	descs.push_back(m_LD.describe(false));
+	descs.push_back(m_association.describe(false));
+	descs.push_back(m_neutrality.describe(false));
+	descs.push_back(m_structure.describe(false));
+	descs.push_back(m_HWE.describe(false));
+	for (size_t i = 0; i < descs.size(); ++i) {
+		if (!descs[i].empty())
+			desc += "<li>" + descs[i] + "\n";
+	}
+	desc += "</ul>";
+	return desc;
+}
+
+
 bool stat::apply(population & pop)
 {
 	return m_popSize.apply(pop) &&
@@ -374,6 +404,12 @@ statPopSize::statPopSize(bool popSize, const subPopList & subPops,
 	const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statPopSize::describe(bool format)
+{
+	return m_isActive ? "calculate population size" : "";
 }
 
 
@@ -420,6 +456,12 @@ statNumOfMale::statNumOfMale(bool numOfMale, const subPopList & subPops, const s
 	const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statNumOfMale::describe(bool format)
+{
+	return m_isActive ? "count number of male individuals" : "";
 }
 
 
@@ -501,6 +543,12 @@ statNumOfAffected::statNumOfAffected(bool numOfAffected, const subPopList & subP
 }
 
 
+string statNumOfAffected::describe(bool format)
+{
+	return m_isActive ? "count number of affected individuals" : "";
+}
+
+
 bool statNumOfAffected::apply(population & pop)
 {
 	if (!m_isActive)
@@ -577,6 +625,16 @@ statAlleleFreq::statAlleleFreq(const vectoru & loci, const subPopList & subPops,
 	const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statAlleleFreq::describe(bool format)
+{
+	ostringstream desc;
+
+	if (!m_loci.empty())
+		desc << "calculate allele frequency at " << (m_loci.size() == 1 ? "locus " : "loci ") << m_loci;
+	return desc.str();
 }
 
 
@@ -725,6 +783,16 @@ statHeteroFreq::statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoF
 }
 
 
+string statHeteroFreq::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "calculate heterozygotes frequency";
+	return desc;
+}
+
+
 bool statHeteroFreq::apply(population & pop)
 {
 	if (m_loci.empty())
@@ -842,6 +910,16 @@ statGenoFreq::statGenoFreq(const vectoru & genoFreq, const subPopList & subPops,
 	const char * defaultVars[] = { GenotypeFreq_String, GenotypeNum_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statGenoFreq::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "calculate genotype frequency";
+	return desc;
 }
 
 
@@ -972,6 +1050,16 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statHaploFreq::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "calculate haplotype frequency";
+	return desc;
 }
 
 
@@ -1135,6 +1223,63 @@ statInfo::statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
 		if (!m_minOfInfo.empty())
 			m_vars.push_back(MinOfInfo_String);
 	}
+}
+
+
+string statInfo::describe(bool format)
+{
+	if (m_sumOfInfo.empty() && m_meanOfInfo.empty() && m_varOfInfo.empty()
+	    && m_maxOfInfo.empty() && m_minOfInfo.empty())
+		return "";
+
+	string desc = "calculate\n<ul>/n";
+	if (!m_sumOfInfo.empty()) {
+		desc += "<li>Sum of information fields ";
+		for (size_t i = 0; i < m_sumOfInfo.size(); ++i) {
+			if (i != 0)
+				desc += ", ";
+			desc += m_sumOfInfo[i];
+		}
+		desc += "\n";
+	}
+	if (!m_meanOfInfo.empty()) {
+		desc += "<li>Mean of information fields ";
+		for (size_t i = 0; i < m_meanOfInfo.size(); ++i) {
+			if (i != 0)
+				desc += ", ";
+			desc += m_meanOfInfo[i];
+		}
+		desc += "\n";
+	}
+	if (!m_varOfInfo.empty()) {
+		desc += "<li>Variance of information fields ";
+		for (size_t i = 0; i < m_varOfInfo.size(); ++i) {
+			if (i != 0)
+				desc += ", ";
+			desc += m_varOfInfo[i];
+		}
+		desc += "\n";
+	}
+	if (!m_maxOfInfo.empty()) {
+		desc += "<li>Maximum of information fields ";
+		for (size_t i = 0; i < m_maxOfInfo.size(); ++i) {
+			if (i != 0)
+				desc += ", ";
+			desc += m_maxOfInfo[i];
+		}
+		desc += "\n";
+	}
+	if (!m_minOfInfo.empty()) {
+		desc += "<li>Minimal of information fields ";
+		for (size_t i = 0; i < m_minOfInfo.size(); ++i) {
+			if (i != 0)
+				desc += ", ";
+			desc += m_minOfInfo[i];
+		}
+		desc += "\n";
+	}
+	desc += "</ul>";
+	return desc;
 }
 
 
@@ -1345,6 +1490,16 @@ statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 		DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4, ValueError,
 			"Parameter LD should be a list of loci pairs with optional primary alleles.");
 	}
+}
+
+
+string statLD::describe(bool format)
+{
+	string desc;
+
+	if (!m_LD.empty())
+		desc += "calculate Linkage disequilibrium";
+	return desc;
 }
 
 
@@ -1744,6 +1899,16 @@ statAssociation::statAssociation(const vectoru & loci,
 }
 
 
+string statAssociation::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "perform association tests";
+	return desc;
+}
+
+
 void statAssociation::alleleChiSqTest(const ALLELECNT & caseCnt,
                                       const ALLELECNT & controlCnt, double & chisq,
                                       double & chisq_p)
@@ -2068,6 +2233,16 @@ statNeutrality::statNeutrality(const vectoru & loci, const subPopList & subPops,
 }
 
 
+string statNeutrality::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "perform neutrality tests";
+	return desc;
+}
+
+
 double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end)
 {
 	double diffCnt = 0;
@@ -2160,6 +2335,16 @@ statStructure::statStructure(const vectoru & Fst, const subPopList & subPops, co
 	const char * defaultVars[] = { Fst_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statStructure::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "evaluate population structure";
+	return desc;
 }
 
 
@@ -2417,6 +2602,16 @@ statHWE::statHWE(const vectoru & loci,  const subPopList & subPops,
 	const char * defaultVars[] = { HWE_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statHWE::describe(bool format)
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "perform Hardy Weinberg tests";
+	return desc;
 }
 
 
