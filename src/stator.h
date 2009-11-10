@@ -671,9 +671,9 @@ private:
 #define Armitage_p_sp_String     "Armitage_p_sp"
 
 private:
-	typedef map<UINT, ULONG>  ALLELECNT;
+	typedef map<Allele, ULONG>  ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
-	typedef map<std::pair<UINT, UINT>, ULONG>  GENOCNT;
+	typedef map<std::pair<Allele, Allele>, ULONG>  GENOCNT;
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
