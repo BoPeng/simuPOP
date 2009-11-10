@@ -232,7 +232,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 
 void matrixMutator::mutate(AlleleRef allele, UINT)
 {
-	DBG_FAILIF(allele >= m_sampler.size(), IndexError,
+	DBG_FAILIF(static_cast<size_t>(allele) >= m_sampler.size(), IndexError,
 		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
 		+ " (determined by the size of the mutation rate matrix).");
 	allele = ToAllele(m_sampler[allele].get());
