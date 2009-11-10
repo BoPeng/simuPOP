@@ -5809,7 +5809,8 @@ Details:
 
     Return a refernce to individual idx in the population (if
     subPop=[], default) or a subpopulation (if subPop=sp). Virtual
-    subpopulation is not supported.
+    subpopulation is not supported. Note that a float idx is
+    acceptable as long as it rounds closely to an integer.
 
 "; 
 
@@ -5829,11 +5830,12 @@ Details:
     generation, and so on). This function will search this generation
     first but will search the whole population if an individual with
     id is not found. If no individual with id is found, an IndexError
-    will be raised.
+    will be raised. Note that a float id is acceptable as long as it
+    rounds closely to an integer.
 
 "; 
 
-%ignore simuPOP::population::ind(ULONG idx, vspID subPop=vspID()) const;
+%ignore simuPOP::population::ind(double idx, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::population::ancestor "
 
@@ -5847,11 +5849,12 @@ Details:
     The correct individual will be returned even if the current
     generation is not the present one (see also useAncestralGen). If a
     valid subPop is specified, index is relative to that subPop.
-    Virtual subpopulation is not supported.
+    Virtual subpopulation is not supported. Note that a float idx is
+    acceptable as long as it rounds closely to an integer.
 
 "; 
 
-%ignore simuPOP::population::ancestor(ULONG idx, UINT gen, vspID subPop=vspID()) const;
+%ignore simuPOP::population::ancestor(double idx, UINT gen, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::population::individuals "
 
@@ -9324,6 +9327,8 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::stat::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::stat::clone "
 
 Description:
@@ -9348,8 +9353,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::stat::describe "Obsolete or undocumented function."
-
 %ignore simuPOP::statAlleleFreq;
 
 %feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
@@ -9357,6 +9360,14 @@ Usage:
 Usage:
 
     statAlleleFreq(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 
@@ -9390,6 +9401,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statAssociation::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %feature("docstring") simuPOP::statAssociation::apply "
 
 Usage:
@@ -9408,6 +9427,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statGenoFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %feature("docstring") simuPOP::statGenoFreq::apply "
 
 Usage:
@@ -9423,6 +9450,14 @@ Usage:
 Usage:
 
     statHaploFreq(haploFreq, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 
@@ -9452,6 +9487,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statHeteroFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %feature("docstring") simuPOP::statHeteroFreq::apply "
 
 Usage:
@@ -9467,6 +9510,14 @@ Usage:
 Usage:
 
     statHWE(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statHWE::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 
@@ -9486,6 +9537,14 @@ Usage:
 
     statInfo(sumOfInfo, meanOfInfo, varOfInfo, maxOfInfo, minOfInfo,
       subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 
@@ -9515,6 +9574,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statLD::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %feature("docstring") simuPOP::statLD::apply "
 
 Usage:
@@ -9533,6 +9600,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statNeutrality::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %feature("docstring") simuPOP::statNeutrality::apply "
 
 Usage:
@@ -9548,6 +9623,14 @@ Usage:
 Usage:
 
     statNumOfAffected(numOfAffected, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfAffected::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 
@@ -9577,6 +9660,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statNumOfMale::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %ignore simuPOP::statPopSize;
 
 %feature("docstring") simuPOP::statPopSize::statPopSize "
@@ -9595,6 +9686,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statPopSize::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
 %ignore simuPOP::statStructure;
 
 %feature("docstring") simuPOP::statStructure::statStructure "
@@ -9602,6 +9701,14 @@ Usage:
 Usage:
 
     statStructure(Fst, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statStructure::describe "
+
+Usage:
+
+    x.describe(format=True)
 
 "; 
 

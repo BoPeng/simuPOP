@@ -446,22 +446,27 @@ public:
 
 	/** Return a refernce to individual \e idx in the population
 	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
-	 * <tt>subPop=sp</tt>). Virtual subpopulation is not supported.
+	 * <tt>subPop=sp</tt>). Virtual subpopulation is not supported. Note that a
+	 * float \e idx is acceptable as long as it rounds closely to an integer.
 	 * <group>4-ind</group>
 	 */
-	individual & ind(ULONG idx, vspID subPop = vspID())
+	individual & ind(double idx, vspID subPop = vspID())
 	{
+		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
+
+		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+			"Individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"Function individual currently does not support virtual subpopulation");
 
 		if (!subPop.valid()) {
-			CHECKRANGEIND(idx);
+			CHECKRANGEIND(intIdx);
 		} else {
-			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+			CHECKRANGESUBPOPMEMBER(intIdx, subPop.subPop());
 		}
 #endif
-		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + intIdx] : m_inds[intIdx];
 	}
 
 
@@ -473,26 +478,31 @@ public:
 	 *  for parental generation, and so on). This function will search this
 	 *  generation first but will search the whole population if an
 	 *  individual with \e id is not found. If no individual with \e id is
-	 *  found, an \c IndexError will be raised.
+	 *  found, an \c IndexError will be raised. Note that a float \e id
+	 *  is acceptable as long as it rounds closely to an integer.
 	 *  <group>4-ind</group>
 	 */
-	individual & indByID(ULONG id, int ancGen = -1, const string & idField = "ind_id");
+	individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
-	const individual & ind(ULONG idx, vspID subPop = vspID()) const
+	const individual & ind(double idx, vspID subPop = vspID()) const
 	{
+		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
+
+		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+			"Individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"Function individual currently does not support virtual subpopulation");
 
 		if (!subPop.valid()) {
-			CHECKRANGEIND(idx);
+			CHECKRANGEIND(intIdx);
 		} else {
-			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+			CHECKRANGESUBPOPMEMBER(intIdx, subPop.subPop());
 		}
 #endif
-		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + intIdx] : m_inds[intIdx];
 	}
 
 
@@ -500,15 +510,16 @@ public:
 	 *  The correct individual will be returned even if the current generation
 	 *  is not the present one (see also \c useAncestralGen). If a valid
 	 *  \e subPop is specified, \e index is relative to that \e subPop.
-	 *  Virtual subpopulation is not supported.
+	 *  Virtual subpopulation is not supported. Note that a float \e idx is
+	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-	individual & ancestor(ULONG idx, UINT gen, vspID subPop = vspID());
+	individual & ancestor(double idx, UINT gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-	const individual & ancestor(ULONG idx, UINT gen, vspID subPop = vspID()) const;
+	const individual & ancestor(double idx, UINT gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
