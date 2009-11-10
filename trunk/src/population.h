@@ -1329,36 +1329,15 @@ private:
 #ifdef BINARYALLELE
 		size_t size = m_genotype.size();
 		ar & size;
-		WORDTYPE * ptr = BITPTR(m_genotype.begin());
-		size_t blks = size / WORDBIT;
-		size_t rest = size - blks * WORDBIT;
-		DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-
-		WORDTYPE tmp = 0;
-		for (size_t i = 0; i < blks; ++i) {
-			tmp = *ptr++;
-#  if __WORDSIZE == 32
-			ar & tmp;
-#  else
-			for (size_t j = 0; j < WORDBIT / 32; ++j) {
-				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
-				tmp = tmp >> 32;
-				ar & tmp1;
+		ConstGenoIterator ptr = m_genotype.begin();
+		WORDTYPE data = 0;
+		for (size_t i = 0; i < size; ++i) {
+			data &= (*ptr++) << (i % 32);
+			// end of block of end of data
+			if (i % 32 == 31 || i == size - 1) {
+				ar & data;
+				data = 0;
 			}
-#  endif
-		}
-		// last block
-		if (rest > 0) {
-			tmp = *ptr;
-#  if __WORDSIZE == 32
-			ar & tmp;
-#  else
-			for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
-				tmp = tmp >> 32;
-				ar & tmp1;
-			}
-#  endif
 		}
 #else
 		ar & m_genotype;
@@ -1380,38 +1359,15 @@ private:
 #ifdef BINARYALLELE
 			size_t size = m_genotype.size();
 			ar & size;
-			WORDTYPE * ptr = BITPTR(m_genotype.begin());
-			size_t blks = size / WORDBIT;
-			size_t rest = size - blks * WORDBIT;
-			DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-
-			WORDTYPE tmp = 0;
-			for (size_t i = 0; i < blks; ++i) {
-				tmp = *ptr++;
-#  if __WORDSIZE == 32
-				ar & tmp;
-#  else
-				for (size_t j = 0; j < WORDBIT / 32; ++j) {
-					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
-					tmp = tmp >> 32;
-					ar & tmp1;
+			ptr = m_genotype.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				data &= (*ptr++) << (i % 32);
+				// end of block of end of data
+				if (i % 32 == 31 || i == size - 1) {
+					ar & data;
+					data = 0;
 				}
-#  endif
-			}
-			// last block
-			if (rest > 0) {
-				tmp = *ptr;
-				// rest = 1-31: (rest-1)/32=0, j <= rest/32 = 0
-				// rest = 32; j <= (rest-1)/32 = 0
-#  if __WORDSIZE == 32
-				ar & tmp;
-#  else
-				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
-					tmp = tmp >> 32;
-					ar & tmp1;
-				}
-#  endif
 			}
 #else
 			ar & m_genotype;
@@ -1452,34 +1408,19 @@ private:
 		if (ma == 1) {
 			size_t size;
 			ar & size;
-			size_t blks = size / WORDBIT;
-			size_t rest = size - blks * WORDBIT;
-
 			m_genotype.resize(size);
-			WORDTYPE tmp, tmp1;
-			WORDTYPE * ptr = BITPTR(m_genotype.begin());
-			for (size_t i = 0; i < blks; ++i) {
-				tmp = 0;
-				for (size_t j = 0; j < WORDBIT / 32; ++j) {
-					ar & tmp1;
-					tmp |= tmp1 << (j * 32);
-				}
-				*ptr++ = tmp;
-			}
-			// last block
-			if (rest > 0) {
-				tmp = 0;
-				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-					ar & tmp1;
-					tmp |= tmp1 << (j * 32);
-				}
-				*ptr = tmp;
+			GenoIterator ptr = m_genotype.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*ptr++ = (data & (1UL << i % 32)) != 0;
 			}
 		}
 		// binary from others (long types)
 		else {
 			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-			vector<unsigned char> tmpgeno;
+			vectoru tmpgeno;
 			ar & tmpgeno;
 			m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 		}
@@ -1490,27 +1431,12 @@ private:
 			size_t size;
 			ar & size;
 			m_genotype.resize(size);
-			size_t blks = size / 32;
-			size_t rest = size - blks * 32;
-			DBG_DO(DBG_POPULATION, cerr << "Load long from bin. " << size << " rest " << rest << endl);
-			DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-
 			GenoIterator ptr = m_genotype.begin();
-			WORDTYPE tmp;
-			for (size_t i = 0; i < blks; ++i) {
-				ar & tmp;
-				for (size_t j = 0; j < 32; ++j) {
-					*ptr++ = (tmp & 1UL) != 0;
-					tmp = tmp >> 1;
-				}
-			}
-			// last block
-			if (rest > 0) {
-				ar & tmp;
-				for (size_t j = 0; j < rest; ++j) {
-					*ptr++ = (tmp & 1UL) != 0;
-					tmp = tmp >> 1;
-				}
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*ptr++ = (data & (1UL << i % 32)) != 0;
 			}
 		}                                                                               // if ma == 1
 		else {                                                                          // for non-binary types, ...
@@ -1573,28 +1499,13 @@ private:
 				DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
 				size_t size;
 				ar & size;
-				size_t blks = size / WORDBIT;
-				size_t rest = size - blks * WORDBIT;
-
 				pd.m_genotype.resize(size);
-				WORDTYPE * ptr = BITPTR(pd.m_genotype.begin());
-				WORDTYPE tmp, tmp1;
-				for (size_t i = 0; i < blks; ++i) {
-					tmp = 0;
-					for (size_t j = 0; j < WORDBIT / 32; ++j) {
-						ar & tmp1;
-						tmp |= tmp1 << (j * 32);
-					}
-					*ptr++ = tmp;
-				}
-				// last block
-				if (rest > 0) {
-					tmp = 0;
-					for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-						ar & tmp1;
-						tmp |= tmp1 << (j * 32);
-					}
-					*ptr = tmp;
+				ptr = pd.m_genotype.begin();
+				WORDTYPE data = 0;
+				for (size_t i = 0; i < size; ++i) {
+					if (i % 32 == 0)
+						ar & data;
+					*ptr++ = (data & (1UL << i % 32)) != 0;
 				}
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
@@ -1609,26 +1520,12 @@ private:
 				size_t size;
 				ar & size;
 				pd.m_genotype.resize(size);
-				size_t blks = size / 32;
-				size_t rest = size - blks * 32;
-				DBG_DO(DBG_POPULATION, cerr << "Load long from bin. " << size << " rest " << rest << endl);
-
 				ptr = pd.m_genotype.begin();
-				WORDTYPE tmp;
-				for (size_t i = 0; i < blks; ++i) {
-					ar & tmp;
-					for (size_t j = 0; j < 32; ++j) {
-						*ptr++ = (tmp & 1UL) != 0;
-						tmp = tmp >> 1;
-					}
-				}
-				// last block
-				if (rest > 0) {
-					ar & tmp;
-					for (size_t i = 0; i < rest; ++i) {
-						*ptr++ = (tmp & 1UL) != 0;
-						tmp = tmp >> 1;
-					}
+				WORDTYPE data = 0;
+				for (size_t i = 0; i < size; ++i) {
+					if (i % 32 == 0)
+						ar & data;
+					*ptr++ = (data & (1UL << i % 32)) != 0;
 				}
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
