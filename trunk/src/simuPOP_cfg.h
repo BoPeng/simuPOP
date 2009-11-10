@@ -106,7 +106,7 @@ typedef uint32_t & AlleleRef;
 #  define AlleleAdd(a, b) (a) += (b)
 #  define AlleleMinus(a, b) (a) -= (b)
 #  define AlleleUnsigned(a) (a)
-#  define ToAllele(a)    (a)
+#  define ToAllele(a)    static_cast<Allele>(a)
 
 #else
 
@@ -132,7 +132,7 @@ typedef unsigned char & AlleleRef;
 #    define AlleleAdd(a, b) (a) += (b)
 #    define AlleleMinus(a, b) (a) -= (b)
 #    define AlleleUnsigned(a) (a)
-#    define ToAllele(a)   (a)
+#    define ToAllele(a)   static_cast<Allele>(a)
 #  endif
 #endif
 
