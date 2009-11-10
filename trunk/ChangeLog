@@ -21,8 +21,9 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 		allowedTypes in parameter specification dictionaries.
   - CHG: Remove parameter dryrun from simulator.describe() and add simulator.describe()
 		to describe an evolutionary process, including complex mating schemes.
-  - NEW: Allow double index for population.individual and population.ancestor.
-		This makes it easier to use indexes stored in information fields.
+  - NEW: Allow double index for population.individual, population.ancestor and
+		population.indByID. This makes it easier to locate individuals using index
+		or ID stored in information fields.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
