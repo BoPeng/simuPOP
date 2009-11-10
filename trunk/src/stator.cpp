@@ -1987,7 +1987,7 @@ double statAssociation::armitageTest(const GENOCNT & caseCnt,
                                      const GENOCNT & ctrlCnt)
 {
 	// figure out alleles and their frequencies
-	map<UINT, int> alleles;
+	map<Allele, int> alleles;
 	GENOCNT::const_iterator cnt = caseCnt.begin();
 	GENOCNT::const_iterator cntEnd = caseCnt.end();
 	for (; cnt != cntEnd; ++cnt) {
@@ -2005,11 +2005,11 @@ double statAssociation::armitageTest(const GENOCNT & caseCnt,
 		"Armitage trend test can only be applied to diallelic markers.");
 	if (alleles.size() != 2)
 		return 1.;
-	map<UINT, int>::const_iterator first = alleles.begin();
-	map<UINT, int>::const_iterator second = first;
+	map<Allele, int>::const_iterator first = alleles.begin();
+	map<Allele, int>::const_iterator second = first;
 	++second;
-	UINT major = 0;
-	UINT minor = 0;
+	Allele major = 0;
+	Allele minor = 0;
 	if (first->second > second->second) {
 		major = first->first;
 		minor = second->first;
@@ -2306,7 +2306,7 @@ bool statNeutrality::apply(population & pop)
 				     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
 					continue;
 				for (size_t idx = 0; idx < nLoci; ++idx)
-					haplotype[idx] = ind->allele(m_loci[idx], p);
+					haplotype[idx] = ToAllele(ind->allele(m_loci[idx], p));
 				allHaplotypes.push_back(haplotype);
 			}
 		}
