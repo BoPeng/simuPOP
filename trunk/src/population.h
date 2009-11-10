@@ -1422,7 +1422,9 @@ private:
 			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
 			vectoru tmpgeno;
 			ar & tmpgeno;
-			m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+			m_genotype.resize(tmpgeno.size());
+			for (size_t i = 0; i < tmpgeno.size(); ++i)
+				m_genotype[i] = ToAllele(tmpgeno[i]);
 		}
 #else
 		// long from binary
@@ -1512,7 +1514,9 @@ private:
 				// binary from long types
 				vector<unsigned char> tmpgeno;
 				ar & tmpgeno;
-				pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+				pd.m_genotype.resize(tmpgeno.size());
+				for (size_t i = 0; i < tmpgeno.size(); ++i)
+					pd.m_genotype[i] = ToAllele(tmpgeno[i]);
 			}
 #else
 			if (ma == 1) {
