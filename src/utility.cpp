@@ -2611,28 +2611,26 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 	count.resize(prop.size());
 	size_t tot = 0;
 	for (size_t i = 0; i < prop.size(); ++i) {
-		count[i] = static_cast<ULONG>(N * prop[i]);
+		count[i] = static_cast<ULONG>(N * prop[i] + 0.5);
 		tot += count[i];
-	}
-	if (N == tot)
-		return;
-	// if tot < N, spead the round offs to the first several counts
-	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
-		if (count[i] + 0.5 < prop[i] * N) {
-			count[i] += 1;
-			++tot;
+		if (tot > N) {
+			count[i] -= tot - N;
+			for (size_t j = i + 1; j < prop.size(); ++j)
+				count[j] = 0;
+			return;
 		}
 	}
 	if (N == tot)
 		return;
+	// if tot < N, spead the round offs to the first several counts
 	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
 		if (count[i] < prop[i] * N) {
 			count[i] += 1;
 			++tot;
 		}
 	}
-	DBG_FAILIF(N != tot, SystemError, "Proportion to count failed.");
-
+	if (N != tot)
+		count.back() += N - tot;
 }
 
 
@@ -2649,7 +2647,7 @@ string formatText(const string & text)
 	lines.push_back(text.substr(pos));
 	// newtext
 	string output;
-	int indent = 0;
+	size_t indent = 0;
 	for (size_t it = 0; it < lines.size(); ++it) {
 		string line = lines[it];
 		// remove leading blanks
