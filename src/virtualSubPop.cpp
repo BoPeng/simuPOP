@@ -85,8 +85,8 @@ combinedSplitter::combinedSplitter(const vectorsplitter & splitters,
 			vspList list;
 			for (size_t j = 0; j < vspMap[i].size(); ++j) {
 				// find out which splitter and which vsp
-				UINT lower = 0;
-				UINT higher = 0;
+				int lower = 0;
+				int higher = 0;
 				bool done = false;
 				for (size_t s = 0; s < splitters.size(); ++s) {
 					higher += splitters[s]->numVirtualSubPop();
