@@ -843,10 +843,16 @@ class TestPopulation(unittest.TestCase):
 
     def testSave(self):
         'Testing population::save(filename)'
-        pop = self.getPop()
+        pop = self.getPop(ancGen=5, infoFields=['a', 'b'])
+        for gen in range(pop.ancestralGens(), -1, -1):
+            InitByFreq(pop, [0.3, 0.7])
+            InitSex(pop)
+            InitInfo(pop, lambda:random.randint(0, 40), infoFields=['a', 'b'])
         pop.save("popout")
         pop1 = LoadPopulation("popout")
         self.assertEqual(pop, pop1)
+        self.assertEqual(pop.indInfo('a'), pop1.indInfo('a'))
+        self.assertEqual(pop.indInfo('b'), pop1.indInfo('b'))
         #
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         a = pop.dvars().alleleFreq[0][1]
@@ -854,7 +860,6 @@ class TestPopulation(unittest.TestCase):
         pop1 = LoadPopulation("popout")
         self.assertEqual(a, pop1.dvars().alleleFreq[0][1])
         self.assertEqual(pop, pop1)
-        #
         os.remove('popout')
 
     def testVars(self):

@@ -24,6 +24,7 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow double index for population.individual, population.ancestor and
 		population.indByID. This makes it easier to locate individuals using index
 		or ID stored in information fields.
+  - CHG: Change the way binary genotypes are saved to make the archive more portable.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
