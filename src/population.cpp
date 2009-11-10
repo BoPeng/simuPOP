@@ -344,8 +344,13 @@ int population::__cmp__(const population & rhs) const
 }
 
 
-individual & population::indByID(ULONG id, int ancGen, const string & idField)
+individual & population::indByID(double fid, int ancGen, const string & idField)
 {
+	ULONG id = static_cast<ULONG>(fid + 0.5);
+
+	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
+		"Individual ID has to be integer (or a double round to full iteger).");
+
 	UINT idx = infoIdx(idField);
 
 	for (UINT gen = 0; gen <= ancestralGens(); ++gen) {
@@ -382,8 +387,13 @@ individual & population::indByID(ULONG id, int ancGen, const string & idField)
 }
 
 
-individual & population::ancestor(ULONG idx, UINT gen, vspID vsp)
+individual & population::ancestor(double fidx, UINT gen, vspID vsp)
 {
+	ULONG idx = static_cast<ULONG>(fidx + 0.5);
+
+	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
+		"Individual index has to be integer (or a double round to full iteger).");
+
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
 
@@ -415,8 +425,12 @@ individual & population::ancestor(ULONG idx, UINT gen, vspID vsp)
 }
 
 
-const individual & population::ancestor(ULONG idx, UINT gen, vspID vsp) const
+const individual & population::ancestor(double fidx, UINT gen, vspID vsp) const
 {
+	ULONG idx = static_cast<ULONG>(fidx + 0.5);
+
+	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
+		"Individual index has to be integer (or a double round to full iteger).");
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
 

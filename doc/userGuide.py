@@ -221,7 +221,7 @@ simu.evolve(
 pop = simu.extract(0)
 pop.indInfo('mother_idx')  # mother of all offspring
 ind = pop.individual(0)
-mom = pop.ancestor(int(ind.mother_idx), 1)
+mom = pop.ancestor(ind.mother_idx, 1)
 print ind.genotype(0)
 print mom.genotype(0)
 print mom.genotype(1)
@@ -1286,7 +1286,7 @@ simu.evolve(
 )
 pop = simu.extract(0)
 ind = pop.individual(0)
-par = pop.ancestor(int(ind.parent_idx), 1)
+par = pop.ancestor(ind.parent_idx, 1)
 print ind.sex(), ind.genotype()
 print par.sex(), par.genotype()
 #end_file
