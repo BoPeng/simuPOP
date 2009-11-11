@@ -339,6 +339,8 @@ int population::__cmp__(const population & rhs) const
 				return 1;
 			}
 	}
+	const_cast<population *>(this)->useAncestralGen(curGen);
+	const_cast<population &>(rhs).useAncestralGen(rhsCurGen);
 
 	return 0;
 }
