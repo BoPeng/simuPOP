@@ -812,21 +812,23 @@ class ticToc : public baseOperator
 {
 public:
 	/** Create a \c ticToc operator that outputs the elapsed since the last
-	 *  time it was applied, and the overall time since it was created.
+	 *  time it was applied, and the overall time since the first time this
+	 *  operator is applied.
 	 */
 	ticToc(const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator(">", begin, end, step, at, reps, subPops, infoFields)
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr()) :
+		baseOperator(">", begin, end, step, at, reps, subPops, infoFields), m_startTime(0), m_lastTime(0)
 	{
-		time(&m_startTime);
-		m_lastTime = m_startTime;
-	};
+	}
+
 
 	/// destructor
 	virtual ~ticToc()
 	{
-	};
+	}
+
 
 	/// HIDDEN
 	virtual baseOperator * clone() const
@@ -839,14 +841,14 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.tic toc performance monitor>" ;
-	}
-
+	string describe(bool format = true);
 
 private:
-	time_t m_startTime, m_lastTime;
+	ostream & outputTimeDiff(ostream & out, long timeDiff);
+
+private:
+	clock_t m_startTime;
+	clock_t m_lastTime;
 };
 
 /** This operator sets the number of ancestral generations to keep during the

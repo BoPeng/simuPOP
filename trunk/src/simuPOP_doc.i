@@ -10070,7 +10070,8 @@ Usage:
 Details:
 
     Create a ticToc operator that outputs the elapsed since the last
-    time it was applied, and the overall time since it was created.
+    time it was applied, and the overall time since the first time
+    this operator is applied.
 
 "; 
 
