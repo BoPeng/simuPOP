@@ -537,12 +537,12 @@ bool ifElse::apply(population & pop)
 	return true;
 }
 
-	
+
 string terminateIf::describe(bool format)
 {
 	return string("<simuPOP.terminateIf> terminate the evolution of ") +
-		(m_stopAll ? "all populations" : "the current population") +
-		" if expression \"" + m_expr.expr() + "\" is evalated to be True";
+	       (m_stopAll ? "all populations" : "the current population") +
+	       " if expression \"" + m_expr.expr() + "\" is evalated to be True";
 }
 
 
@@ -565,28 +565,51 @@ bool terminateIf::apply(population & pop)
 }
 
 
+string ticToc::describe(bool format)
+{
+	return "<simuPOP.ticToc> output performance monitor>" ;
+}
+
+
+ostream & ticToc::outputTimeDiff(ostream & out, long timeDiff)
+{
+	int h = timeDiff / 3600 / CLOCKS_PER_SEC;
+	int m = (timeDiff / CLOCKS_PER_SEC - h * 3600) / 60;
+	int s = timeDiff / CLOCKS_PER_SEC - h * 3600 - m * 60;
+
+	out << std::setw(2) << std::setfill('0') << h << ":"
+	    << std::setw(2) << std::setfill('0') << m << ":"
+	    << std::setw(2) << std::setfill('0') << s
+	    << " (" << std::fixed << std::setprecision(2)
+	    << static_cast<double>(timeDiff) / CLOCKS_PER_SEC
+	    << "s)";
+	return out;
+}
+
+
 bool ticToc::apply(population & pop)
 {
-	time_t tmpTime;
+	if (m_startTime == 0)
+		m_startTime = clock();
+
+	clock_t lastTime = m_lastTime;
+	m_lastTime = clock();
 
 	// this may not be correct but wrap is a possible problem.
-	if (!this->noOutput() ) {
+	if (!this->noOutput()) {
 		ostream & out = this->getOstream(pop.dict());
-		// since last time
-		double timeDiff = difftime(time(&tmpTime), m_lastTime);
-		out << "Elapsed Time: " << int(timeDiff * 100) / 100. ;
-		// since beginning
-		timeDiff = difftime(time(&tmpTime), m_startTime);
-		int h = int(timeDiff / 3600);
-		int m = int((timeDiff - h * 3600) / 60);
-		int s = int(timeDiff - h * 3600 - m * 60);
-		out << "s  Overall Time: " << std::setw(2) << std::setfill('0') << h
-		    << ":" << std::setw(2) << std::setfill('0') << m << ":" << std::setw(2)
-		    << std::setfill('0') << s << endl;
+		if (lastTime == 0)
+			out << "Start stopwatch." << endl;
+		else {
+			// since last time
+			out << "Elapsed time: ";
+			outputTimeDiff(out, m_lastTime - lastTime);
+			out << "\t Overall time: ";
+			outputTimeDiff(out, m_lastTime - m_startTime);
+			out << endl;
+		}
 		this->closeOstream();
 	}
-
-	time(&m_lastTime);
 	return true;
 }
 
