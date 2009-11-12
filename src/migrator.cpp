@@ -42,6 +42,12 @@ migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 }
 
 
+string migrator::describe(bool format)
+{
+	return "<simuPOP.migrator>";
+}
+
+
 void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
 {
 	if (mode == ByIndInfo)

@@ -162,10 +162,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.migrator>" ;
-	}
+	string describe(bool format = true);
 
 
 protected:
