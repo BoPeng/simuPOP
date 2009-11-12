@@ -8117,12 +8117,12 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        selfMating(subPop=(0, 0)),
+        selfMating(subPops=[(0, 0)]),
 \end_layout
 
 \begin_layout Plain Layout
 
-        randomMating(subPop=0)
+        randomMating(subPops=0)
 \end_layout
 
 \begin_layout Plain Layout
@@ -8156,12 +8156,12 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        selfMating(subPop=0),
+        selfMating(subPops=0),
 \end_layout
 
 \begin_layout Plain Layout
 
-        randomMating(subPop=0)
+        randomMating(subPops=0)
 \end_layout
 
 \begin_layout Plain Layout
@@ -8501,9 +8501,9 @@ subPopSize
 \family default
  (parameter to control offspring subpopulation sizes), 
 \family typewriter
-subPop
+subPops
 \family default
- (applicable subpopulation or virtual subpopulation), and 
+ (applicable subpopulatiosn or virtual subpopulations), and 
 \family typewriter
 weight
 \family default
@@ -8522,7 +8522,7 @@ reference "sub:offspring-size"
 
  for details), parameters 
 \family typewriter
-subPop
+subPops
 \family default
  and 
 \family typewriter
@@ -8531,7 +8531,6 @@ weight
  are ignored.
  Otherwise, the number of offspring this mating scheme will produce is determine
 d by the heterogeneous mating scheme.
- Figure 
 \end_layout
 
 \begin_layout Standard
@@ -8541,7 +8540,7 @@ subPopSize
 \family default
 , 
 \family typewriter
-subPop
+subPops
 \family default
  and 
 \family typewriter
@@ -8662,10 +8661,13 @@ reference "randomMating"
 \family typewriter
 randomMating
 \family default
-.
- If you add some operators to a mating scheme, please do not forget to specify
- the genotype transmitter.
- (see Example 
+).
+ Note that you need to specify all needed operators if you use parameter
+ 
+\family typewriter
+ops
+\family default
+ to change the operators used in a mating scheme (see Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "heteroMatingWeight"
@@ -8673,6 +8675,19 @@ reference "heteroMatingWeight"
 \end_inset
 
 ).
+ That is to say, you can use 
+\family typewriter
+ops=recombinator()
+\family default
+ to replace a default 
+\family typewriter
+mendelianGenoTransmitter()
+\family default
+, but you have to use 
+\family typewriter
+ops=[idTagger(), mendelianGenoTransmitter()]
+\family default
+ if you would like to add a during-mating operator to the default one.
 \end_layout
 
 \begin_layout Standard
