@@ -235,7 +235,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.matrix mutator";
+		return "<simuPOP.matrixMutator>";
 	}
 
 
@@ -293,8 +293,8 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.k-allele model mutator K=" +
-		       toStr(m_k) + ">" ;
+		return "<simuPOP.kamMutator> A k-allele mutation model with K=" +
+		       toStr(m_k);
 	}
 
 
@@ -366,7 +366,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.step-wise mutation model mutator>" ;
+		return "<simuPOP.smmMutator> a step-wise mutation model mutator";
 	}
 
 
@@ -428,7 +428,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.python mutator>" ;
+		return "<simuPOP.pyMutator>" ;
 	}
 
 
@@ -493,7 +493,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.mixed mutator>" ;
+		return "<simuPOP.mixedMutator>" ;
 	}
 
 
@@ -572,7 +572,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.context-dependent mutator>" ;
+		return "<simuPOP.contextMutator> context-dependent mutator>" ;
 	}
 
 
@@ -632,7 +632,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.point mutator>" ;
+		return "<simuPOP.pointMutator>" ;
 	}
 
 

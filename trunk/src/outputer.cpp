@@ -38,14 +38,9 @@ bool pyOutput::apply(population & pop)
 
 string pyOutput::describe(bool format)
 {
-	string reprStr;
-
-	for (size_t i = 0; i < 40 && i < m_string.size(); ++i)
-		if (m_string[i] != '\n')
-			reprStr += m_string[i];
-	if (m_string.size() > 40)
-		reprStr += "... ";
-	return "<simuPOP.pyOutput> write '" + reprStr + "' to output";
+	return "<simuPOP.pyOutput> write '" + \
+		(m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
+		"' to output";
 }
 
 
@@ -166,6 +161,12 @@ bool dumper::apply(population & pop)
 	}
 	this->closeOstream();
 	return true;
+}
+
+
+string savePopulation::describe(bool format)
+{
+	return "<simuPOP.savePopulation> save population to file " + m_filename;
 }
 
 

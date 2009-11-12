@@ -207,11 +207,7 @@ public:
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.save population>" ;
-	}
-
+	string describe(bool format = true);
 
 private:
 	/// filename,
