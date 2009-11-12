@@ -844,9 +844,6 @@ public:
 	string describe(bool format = true);
 
 private:
-	ostream & outputTimeDiff(ostream & out, long timeDiff);
-
-private:
 	clock_t m_startTime;
 	clock_t m_lastTime;
 };

@@ -571,22 +571,6 @@ string ticToc::describe(bool format)
 }
 
 
-ostream & ticToc::outputTimeDiff(ostream & out, long timeDiff)
-{
-	int h = timeDiff / 3600 / CLOCKS_PER_SEC;
-	int m = (timeDiff / CLOCKS_PER_SEC - h * 3600) / 60;
-	int s = timeDiff / CLOCKS_PER_SEC - h * 3600 - m * 60;
-
-	out << std::setw(2) << std::setfill('0') << h << ":"
-	    << std::setw(2) << std::setfill('0') << m << ":"
-	    << std::setw(2) << std::setfill('0') << s
-	    << " (" << std::fixed << std::setprecision(2)
-	    << static_cast<double>(timeDiff) / CLOCKS_PER_SEC
-	    << "s)";
-	return out;
-}
-
-
 bool ticToc::apply(population & pop)
 {
 	if (m_startTime == 0)
@@ -600,14 +584,13 @@ bool ticToc::apply(population & pop)
 		ostream & out = this->getOstream(pop.dict());
 		if (lastTime == 0)
 			out << "Start stopwatch." << endl;
-		else {
+		else
 			// since last time
-			out << "Elapsed time: ";
-			outputTimeDiff(out, m_lastTime - lastTime);
-			out << "\t Overall time: ";
-			outputTimeDiff(out, m_lastTime - m_startTime);
-			out << endl;
-		}
+			out << "Elapsed time: " << std::fixed << std::setprecision(2)
+				<< static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
+				<< "s\t Overall time: "
+				<< static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC
+				<< "s" << endl;
 		this->closeOstream();
 	}
 	return true;
