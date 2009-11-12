@@ -109,7 +109,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.qtrait::quantitative trait>" ;
+		return "<simuPOP.baseQuanTrait> quantitative trait>" ;
 	}
 
 
@@ -201,7 +201,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.qtrait::python qtrait>" ;
+		return "<simuPOP.pyQuanTrait> a hybrid quantitative trait model";
 	}
 
 

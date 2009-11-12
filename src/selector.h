@@ -214,7 +214,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.selector::map selector>" ;
+		return "<simuPOP.mapSelector>" ;
 	}
 
 
@@ -284,7 +284,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.selector::multiple-alleles selector>" ;
+		return "<simuPOP.maSelector>" ;
 	}
 
 
@@ -351,7 +351,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.selector::multiple-loci selector>" ;
+		return "<simuPOP.mlSelector>" ;
 	}
 
 
@@ -439,7 +439,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.selector::python selector>" ;
+		return "<simuPOP.pySelector>" ;
 	}
 
 

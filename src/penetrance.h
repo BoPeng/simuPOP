@@ -176,7 +176,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.penetrance::map penetrance>" ;
+		return "<simuPOP.mapPenetrance> map penetrance";
 	}
 
 
@@ -318,7 +318,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.penetrance::multiple-loci penetrance>" ;
+		return "<simuPOP.mlPenetrance> multiple-loci penetrance>" ;
 	}
 
 
@@ -408,7 +408,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.penetrance::python penetrance>" ;
+		return "<simuPOP.pyPenetrance> python penetrance>" ;
 	}
 
 
