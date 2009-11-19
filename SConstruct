@@ -147,7 +147,7 @@ else:
 
 # for swig 1.3.30, but do not use -outdir src, use -outdir . instead
 # because the scons/swig module requires .py in the current directory (a bug, I would say).
-env['SWIGFLAGS'] = SWIG_FLAGS # .replace('-outdir src', '-outdir .')
+env['SWIGFLAGS'] = SWIG_CPP_FLAGS # .replace('-outdir src', '-outdir .')
 env['SWIGOUTDIR'] = '$build_dir'
 env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
 
@@ -214,6 +214,25 @@ for mod in targets:
     env.Depends(dp1, dp2)
     Alias('install', dp1)
 
+gsl_env = env.Clone()
+gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS # .replace('-outdir src', '-outdir .')
+gsl = gsl_env.SharedLibrary(
+    target = '$build_dir/_gsl%s' % so_ext,
+    source = GSL_FILES + ['$build_dir/gsl.i'],
+    SHLIBPREFIX = "",
+    SHLIBSUFFIX = so_ext,
+    SHLINKFLAGS = comp.ldflags_shared,
+    LIBPATH = extra_lib_path,
+    CPPPATH = [python_inc_dir, '.', 'src'],
+    CCFLAGS = comp.compile_options,
+    CPPFLAGS = ' '.join([basicflags, ccshared, opt])
+)
+Alias('all', gsl)
+Alias('gsl', gsl)
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext),
+    gsl))
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'),
+    '$build_dir/gsl.py'))
 
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)

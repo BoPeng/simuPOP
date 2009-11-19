@@ -300,6 +300,36 @@ LIB_FILES = [
 ]
 
 
+GSL_FILES = [
+    'gsl/error.c', 
+    'gsl/sys/fdiv.c',
+    'gsl/sys/infnan.c',
+    'gsl/sys/log1p.c',
+    'gsl/sys/pow_int.c',
+    'gsl/complex/math.c',
+    'gsl/specfunc/elementary.c',
+    'gsl/specfunc/erfc.c',
+    'gsl/specfunc/exp.c',
+    'gsl/specfunc/expint.c',
+    'gsl/specfunc/log.c',
+    'gsl/specfunc/psi.c',
+    'gsl/specfunc/gamma.c',
+    'gsl/specfunc/gamma_inc.c',
+    'gsl/specfunc/trig.c',
+    'gsl/specfunc/zeta.c',
+    'gsl/cdf/gauss.c',
+    'gsl/cdf/gaussinv.c',
+    'gsl/cdf/exponential.c',
+    'gsl/cdf/exponentialinv.c',
+    # function gsl_ran_gamma_pdf is copied to gsl.i to avoid subsequent
+    # inclusion of RNG related functions.
+    #'gsl/randist/gamma.c',
+    'gsl/cdf/gamma.c',
+    'gsl/cdf/gammainv.c',
+    'gsl/cdf/chisq.c',
+    'gsl/cdf/chisqinv.c',
+]
+
 # build zlib from source for windows system to avoid distributing zlib1.dll
 # along with simuPOP.
 if os.name == 'nt':
@@ -321,7 +351,8 @@ if os.name == 'nt':
 
 
 
-SWIG_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+SWIG_CC_FLAGS = '-python -keyword'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
 # etc to this directory.
@@ -461,10 +492,14 @@ if __name__ == '__main__':
         # try the first option set with the first library
         for lib in MODULES:
             print "Generating wrapper file " + WRAP_INFO[lib][0]
-            if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_FLAGS, \
+            if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CPP_FLAGS, \
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
+        if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
+            SWIG_OUTDIR, '', 'src/gsl_wrap.cpp', 'src/gsl.i')) != 0:
+            print "Calling swig failed. Please check your swig version."
+            sys.exit(1)
         print
         print "All wrap files are generated successfully."
         print
@@ -495,7 +530,14 @@ if __name__ == '__main__':
                 undef_macros = info['undef_macros'],
             )
         )
-    #
+    # For module simuPOP.gsl
+    EXT_MODULES.append(
+        Extension('simuPOP.gsl',
+            sources = GSL_FILES,
+            extra_compile_args = info['extra_compile_args'],
+            include_dirs = info['include_dirs'],
+        )
+    )
     setup(
         name = "simuPOP",
         version = SIMUPOP_VER,

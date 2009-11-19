@@ -1,4 +1,4 @@
-/* cdf/cdf_chisq.c
+/* cdf/chisqinv.c
  * 
  * Copyright (C) 2003, 2007 Brian Gough
  * 
@@ -22,13 +22,13 @@
 #include <gsl/gsl_sf_gamma.h>
 
 double
-gsl_cdf_chisq_P (const double x, const double nu)
+gsl_cdf_chisq_Pinv (const double P, const double nu)
 {
-  return gsl_cdf_gamma_P (x, nu / 2, 2.0);
+  return gsl_cdf_gamma_Pinv (P, nu / 2, 2.0);
 }
 
 double
-gsl_cdf_chisq_Q (const double x, const double nu)
+gsl_cdf_chisq_Qinv (const double Q, const double nu)
 {
-  return gsl_cdf_gamma_Q (x, nu / 2, 2.0);
+  return gsl_cdf_gamma_Qinv (Q, nu / 2, 2.0);
 }
