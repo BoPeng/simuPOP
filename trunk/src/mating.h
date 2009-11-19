@@ -936,6 +936,16 @@ public:
 	 */
 	bool prepareScratchPop(population & pop, population & scratch);
 
+	/** CPPONLY
+	 *  Use to generate a warning when subPopSize is specified in a homogeneous
+	 *  mating scheme called in a heterogeneous mating scheme.
+	 */
+	bool subPopSizeSpecified()
+	{
+		return !m_subPopSize.empty() || m_subPopSize.func().isValid();
+	}
+
+
 protected:
 	/** Specify subpopulation size of the offspring generation. Can be a
 	 *  list of subpopulation sizes or a function.
