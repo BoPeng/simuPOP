@@ -147,12 +147,10 @@ bool migrator::apply(population & pop)
 		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError,
 			"Subpopulation index " + toStr(spFrom) + " out of range");
 
+		ULONG spSize = pop.subPopSize(fromSubPops[from]);
+
 		if (fromSubPops[from].isVirtual())
 			pop.activateVirtualSubPop(fromSubPops[from]);
-
-		// if subpopulation spFrom is activated, subPopSize can
-		// get the correct size.
-		ULONG spSize = pop.subPopSize(spFrom);
 
 		if (m_mode == ByIndInfo) {
 			// restore information fields set by user so that other individuals
