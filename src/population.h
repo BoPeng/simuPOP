@@ -319,7 +319,7 @@ public:
 			return m_popSize;
 		CHECKRANGESUBPOP(subPop.subPop());
 		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-		if (hasActivatedVirtualSubPop() || subPop.isVirtual())
+		if (subPop.isVirtual())
 			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
 		else
 			return m_subPopSize[subPop.subPop()];
