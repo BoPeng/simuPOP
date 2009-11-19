@@ -3967,6 +3967,8 @@ Usage:
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
+%ignore simuPOP::mating::subPopSizeSpecified();
+
 %feature("docstring") simuPOP::matrixMutator "
 
 Function form:
