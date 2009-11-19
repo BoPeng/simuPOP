@@ -306,6 +306,7 @@ GSL_FILES = [
     'gsl/sys/infnan.c',
     'gsl/sys/log1p.c',
     'gsl/sys/pow_int.c',
+    'gsl/sys/expm1.c',
     'gsl/complex/math.c',
     'gsl/specfunc/elementary.c',
     'gsl/specfunc/erfc.c',
