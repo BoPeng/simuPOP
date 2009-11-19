@@ -1504,8 +1504,12 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
-	for (; it != it_end; ++it)
+	for (; it != it_end; ++it) {
 		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
+		DBG_WARNING(dynamic_cast<homoMating *>(*it)->subPopSizeSpecified(),
+			"Parameter subPopSize of a homoMating is ignored when this mating"
+			" scheme is used in a heterogeneous mating scheme.");
+	}
 }
 
 
