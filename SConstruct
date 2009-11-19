@@ -164,7 +164,7 @@ targets = []
 for key in all_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
-if targets == []:
+if targets == [] and 'gsl' not in BUILD_TARGETS:
     targets = all_modu
 if 'all' in BUILD_TARGETS:
     targets = all_modu
@@ -184,8 +184,8 @@ def convert_def(defines):
 for mod in targets:
     info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
     for file in SOURCE_FILES:
-        env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
-	module_source = [mod_src(x, mod) for x in SOURCE_FILES]
+    	env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
+    module_source = [mod_src(x, mod) for x in SOURCE_FILES]
     lib = env.SharedLibrary(
         target = '$build_dir/_simuPOP_%s%s' % (mod, so_ext),
         source = module_source + ['$build_dir/simuPOP_%s.i' % mod],
@@ -215,24 +215,28 @@ for mod in targets:
     Alias('install', dp1)
 
 gsl_env = env.Clone()
-gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS # .replace('-outdir src', '-outdir .')
+gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS 
+def gsl_src(file):
+    return file.replace('gsl', '$build_dir').replace('.c', '.c')
+
+for file in GSL_FILES:
+    env.Command(gsl_src(file), file, [Copy('$TARGET', '$SOURCE')])
+
 gsl = gsl_env.SharedLibrary(
     target = '$build_dir/_gsl%s' % so_ext,
-    source = GSL_FILES + ['$build_dir/gsl.i'],
+    source = [gsl_src(x) for x in GSL_FILES] + ['$build_dir/gsl.i'],
     SHLIBPREFIX = "",
     SHLIBSUFFIX = so_ext,
     SHLINKFLAGS = comp.ldflags_shared,
     LIBPATH = extra_lib_path,
-    CPPPATH = [python_inc_dir, '.', 'src'],
+    CPPPATH = ['.', 'gsl', 'gsl/cdf', 'gsl/specfunc', python_inc_dir],
     CCFLAGS = comp.compile_options,
     CPPFLAGS = ' '.join([basicflags, ccshared, opt])
 )
 Alias('all', gsl)
 Alias('gsl', gsl)
-Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext),
-    gsl))
-Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'),
-    '$build_dir/gsl.py'))
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext), gsl[0]))
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), '$build_dir/gsl.py'))
 
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)
