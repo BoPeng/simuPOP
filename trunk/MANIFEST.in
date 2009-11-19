@@ -194,8 +194,15 @@ include gsl/rng/knuthran2.c
 include gsl/rng/ranmar.c
 include gsl/rng/ranlux.c
 include gsl/rng/knuthran2002.c
+include gsl/cdf/gauss.c
+include gsl/cdf/gaussinv.c
+include gsl/cdf/exponential.c
+include gsl/cdf/exponentialinv.c
 include gsl/cdf/chisq.c
+include gsl/cdf/chisqinv.c
 include gsl/cdf/gamma.c
+include gsl/cdf/gammainv.c
+include gsl/cdf/rat_eval.h
 
 
 # tests

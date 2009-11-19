@@ -15,6 +15,7 @@ simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 from simuPOP.utils import *
+from simuPOP.gsl import *
 
 import unittest, os, sys, exceptions
 import random
@@ -628,7 +629,32 @@ class TestUtility(unittest.TestCase):
             beginFreq = [0.5, 0.6, 0.7, 0.8, 0.9],
             endFreq = [[0,1]]*5)
         #traj1.plot()
-            
+    
+    def testGSL(self):
+        'Testing GSL functions'
+        gsl_cdf_gaussian_P(0.5, 1)
+        gsl_cdf_gaussian_Q(0.5, 1)
+        gsl_cdf_gaussian_Pinv(0.5, 1)
+        gsl_cdf_gaussian_Qinv(0.5, 1)
+        gsl_cdf_ugaussian_P(0.5)
+        gsl_cdf_ugaussian_Q(0.5)
+        gsl_cdf_ugaussian_Pinv(0.5)
+        gsl_cdf_ugaussian_Qinv(0.5)
+        #
+        gsl_cdf_exponential_P(0.5, 0.1)
+        gsl_cdf_exponential_Q(0.5, 0.1)
+        gsl_cdf_exponential_Pinv(0.5, 0.1)
+        gsl_cdf_exponential_Qinv(0.5, 0.1)
+        #
+        gsl_cdf_chisq_P(0.5, 0.1)
+        gsl_cdf_chisq_Q(0.5, 0.1)
+        gsl_cdf_chisq_Pinv(0.5, 0.1)
+        gsl_cdf_chisq_Qinv(0.5, 0.1)
+        #
+        gsl_cdf_gamma_P(0.5, 0.1, 0.2)
+        gsl_cdf_gamma_Q(0.5, 0.1, 0.2)
+        gsl_cdf_gamma_Pinv(0.5, 0.1, 0.2)
+        gsl_cdf_gamma_Qinv(0.5, 0.1, 0.2)
 
 if __name__ == '__main__':
     unittest.main()
