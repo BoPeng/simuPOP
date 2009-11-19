@@ -83,12 +83,7 @@ if os.name == 'nt':
         r.windows_options(buffered=False)
 
 
-# avoid duplicated banner message
-from simuOpt import simuOptions
-q = simuOptions['Quiet']
-simuOptions['Quiet'] = True
 from simuPOP import pyOperator, subPopList, AllAvail
-simuOptions['Quiet'] = q
 
 def newDevice():
     '''Create a new graphics window and return its device number in R. This
