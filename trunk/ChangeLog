@@ -26,6 +26,7 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 		or ID stored in information fields.
   - CHG: Change the way binary genotypes are saved to make the archive more portable.
   - NEW: Improve the precision of the ticToc operator (0.01s now).
+  - NEW: Add utility module simuPOP.gsl.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.

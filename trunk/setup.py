@@ -496,6 +496,7 @@ if __name__ == '__main__':
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
+        print "Generating wrapper file src/gsl_wrap.cpp"
         if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
             SWIG_OUTDIR, '', 'src/gsl_wrap.cpp', 'src/gsl.i')) != 0:
             print "Calling swig failed. Please check your swig version."
