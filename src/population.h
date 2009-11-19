@@ -1332,7 +1332,7 @@ private:
 		ConstGenoIterator ptr = m_genotype.begin();
 		WORDTYPE data = 0;
 		for (size_t i = 0; i < size; ++i) {
-			data &= (*ptr++) << (i % 32);
+			data |= (*ptr++) << (i % 32);
 			// end of block of end of data
 			if (i % 32 == 31 || i == size - 1) {
 				ar & data;
@@ -1362,7 +1362,7 @@ private:
 			ptr = m_genotype.begin();
 			WORDTYPE data = 0;
 			for (size_t i = 0; i < size; ++i) {
-				data &= (*ptr++) << (i % 32);
+				data |= (*ptr++) << (i % 32);
 				// end of block of end of data
 				if (i % 32 == 31 || i == size - 1) {
 					ar & data;
@@ -1414,7 +1414,7 @@ private:
 			for (size_t i = 0; i < size; ++i) {
 				if (i % 32 == 0)
 					ar & data;
-				*ptr++ = (data & (1UL << i % 32)) != 0;
+				*ptr++ = (data & (1UL << (i % 32))) != 0;
 			}
 		}
 		// binary from others (long types)
@@ -1438,7 +1438,7 @@ private:
 			for (size_t i = 0; i < size; ++i) {
 				if (i % 32 == 0)
 					ar & data;
-				*ptr++ = (data & (1UL << i % 32)) != 0;
+				*ptr++ = (data & (1UL << (i % 32))) != 0;
 			}
 		}                                                                               // if ma == 1
 		else {                                                                          // for non-binary types, ...
