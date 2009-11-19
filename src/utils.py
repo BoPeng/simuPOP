@@ -51,11 +51,7 @@ import exceptions, operator, types, os, sys, re
 
 from simuOpt import simuOptions
 
-# avoid duplicated banner message
-q = simuOptions['Quiet']
-simuOptions['Quiet'] = True
 from simuPOP import Male, Female, pointMutator, GetRNG
-simuOptions['Quiet'] = q
 
 def ViewVars(var, gui=None):
     '''

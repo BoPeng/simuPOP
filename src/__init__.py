@@ -322,6 +322,8 @@ if not simuOptions['Quiet']:
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
     TurnOnDebug('DBG_GENERAL')
+    # only display banner once
+    simuOptions['Quiet'] = True
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
