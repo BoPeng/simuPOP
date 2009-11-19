@@ -302,10 +302,13 @@ LIB_FILES = [
 
 GSL_FILES = [
     'gsl/error.c', 
-    'gsl/sys/fdiv.c',
     'gsl/sys/infnan.c',
-    'gsl/sys/log1p.c',
+    'gsl/sys/coerce.c',
+    'gsl/sys/fdiv.c',
     'gsl/sys/pow_int.c',
+    'gsl/sys/fcmp.c',
+    'gsl/sys/log1p.c',
+    'gsl/sys/invhyp.c',
     'gsl/sys/expm1.c',
     'gsl/complex/math.c',
     'gsl/specfunc/elementary.c',
