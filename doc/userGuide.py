@@ -365,8 +365,7 @@ import random
 pop = sim.population(10, loci=[2, 3], infoFields='Sex')
 sim.InitSex(pop)
 pop.setVirtualSplitter(sim.sexSplitter())
-# initialize male and females with different genotypes. Set sim.initSex
-# to False because this operator will by default also initialize sex.
+# initialize male and females with different genotypes. 
 sim.InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]))
 # set Sex information field to 0 for all males, and 1 for all females
 pop.setIndInfo([sim.Male], 'Sex', [0, 0])
@@ -418,7 +417,7 @@ pop.setVirtualSplitter(sim.combinedSplitter([
         sim.sexSplitter(),
         sim.infoSplitter(field='x', values=[0, 1, 2, 3])])],
     vspMap = [[0,1,2], [4,5,6], [7]],
-    names = ['sim.Male x<=3', 'sim.Female x<=3', 'sim.Female x=4']))
+    names = ['Male x<=3', 'Female x<=3', 'Female x=4']))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 0])    # sim.Male with value 0, 1, 2 at field x
