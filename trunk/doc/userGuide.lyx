@@ -4090,7 +4090,7 @@ infoSplitter(field='x', values=[1, 2, 4])
 x
 \family default
 , respectively.
- This operator also allows the use of cutoff values and ranges to define
+ This splitter also allows the use of cutoff values and ranges to define
  VSPs.
  If different types of VSPs are needed, a combined splitter can be used
  to combine VSPs defined by several splitters.
@@ -4143,7 +4143,7 @@ s at different stages of a disease.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "batchAccess"
+reference "virtualSubPop"
 
 \end_inset
 
@@ -4257,7 +4257,7 @@ combinedSplitter(splitters=[sexSplitter(), affectionSplitter()])
 
 \end_inset
 
-This splitter simply stack VSPs defined in 
+This splitter simply stacks VSPs defined in 
 \family typewriter
 affectionSplitter()
 \family default
@@ -4302,11 +4302,11 @@ sexSplitter()
 \end_layout
 
 \begin_layout Standard
-If you view 
+If you consider 
 \family typewriter
 productSplitter
 \family default
- as an interaction splitter that defines new VSPs as intersections of existing
+ as an intersection splitter that defines new VSPs as intersections of existing
  VSPs, you may wonder how to define unions of VSPs.
  For example, you can make a case where you want to consider individuals
  with information field a < 0 or a > 100 together.
