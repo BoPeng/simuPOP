@@ -66,6 +66,16 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 	m_idIdx = m_idField.empty() ? -1 : static_cast<int>(infoIdx(idField));
 	m_fatherIdx = m_fatherField.empty() ? -1 : static_cast<int>(infoIdx(fatherField));
 	m_motherIdx = m_motherField.empty() ? -1 : static_cast<int>(infoIdx(motherField));
+
+	if (m_idIdx == -1)
+		return;
+
+	// build an ID map
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		for (IndIterator it = indIterator(); it.valid(); ++it)
+			m_idMap[static_cast<ULONG>(it->info(m_idIdx))] = &*it;
+	}
 }
 
 
@@ -104,6 +114,26 @@ int pedigree::mother(ULONG idx, SubPopID subPop)
 		return -1;
 
 	return ind(idx, subPop).intInfo(m_motherIdx);
+}
+
+
+individual & pedigree::indByID(double fid, int ancGen, const string & idField)
+{
+	DBG_WARNING(!idField.empty(), "Parameter idField of pedigree.indByID is ignored.");
+
+	// essentially m_idMap(static_cast<ULONG>(fid))
+	//
+	ULONG id = static_cast<ULONG>(fid + 0.5);
+
+	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
+		"Individual ID has to be integer (or a double round to full iteger).");
+
+	std::map<ULONG, individual *>::iterator it = m_idMap.find(id);
+	// if still cannot be found, raise an IndexError.
+	if (it == m_idMap.end())
+		throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+
+	return *it->second;
 }
 
 

@@ -91,6 +91,23 @@ public:
 	 */
 	int mother(ULONG idx, SubPopID subPop);
 
+	
+	/** Return a reference to individual with \e id stored in information
+	 *  field \e idField (this parameter is ignored because idField is
+	 *  specified when the pedigree is constructed). This function by default
+	 *  search the present and all ancestral generations (\c ancGen=-1),
+	 *  but you can suggest a specific generation if you know which
+	 *  generation to search (\c ancGen=0 for present generation, \c ancGen=1
+	 *  for parental generation, and so on). This function will search this
+	 *  generation first but will search the whole population if an
+	 *  individual with \e id is not found. If no individual with \e id is
+	 *  found, an \c IndexError will be raised. Note that a float \e id
+	 *  is acceptable as long as it rounds closely to an integer.
+	 *  <group>4-ind</group>
+	 */
+	individual & indByID(double id, int ancGen = -1, const string & idField = "");
+
+
 	/** Return the number of parents each individual has. This function returns
 	 *  the number of information fields used to store parental indexes, even
 	 *  if one of the fields are unused.
@@ -200,6 +217,8 @@ private:
 	int m_idIdx;
 	int m_fatherIdx;
 	int m_motherIdx;
+
+	std::map<ULONG, individual*> m_idMap;
 };
 
 // /// A pedigree manipulation class
