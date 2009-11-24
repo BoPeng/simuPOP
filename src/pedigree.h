@@ -91,7 +91,7 @@ public:
 	 */
 	int mother(ULONG idx, SubPopID subPop);
 
-	
+
 	/** Return a reference to individual with \e id stored in information
 	 *  field \e idField (this parameter is ignored because idField is
 	 *  specified when the pedigree is constructed). This function by default
@@ -122,14 +122,22 @@ public:
 	 *  have.
 	 *
 	 *  Parameter \e relType specifies what type of relative to locate. It can
-	 *  be \c Self, \c Spouse (having at least one common offspring),
-	 *  \c Offspring, \c FullSibling (having common father and mother),
-	 *  \c Sibling (having at least one common parent) or \c SpouseAndOffspring
-	 *  (One spouse and their common offspring). Optionally, you can specify
-	 *  the sex of relatives you would like to locate, in the form of
-	 *  <tt>relType=(type, sexChoice)</tt>. sexChoice can be \c AnySex
-	 *  (default), \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex.
-	 *  \c sexChoice for \c SpouseAndOffspring only refer to sex of offspring.
+	 *  be
+	 *  \li \c Self set individual index or ID to a specified information field
+	 *  \li \c Spouse locate spouses with whom an individual has at least one
+	 *       common offspring.
+	 *  \li \c OutbredSpouse locate non-slibling spouses, namely spouses with
+	 *       no shared parent.
+	 *  \li \c Offspring all offspring of each individual.
+	 *  \li \c CommonOffspring common offspring between each individual and its
+	 *       spouse (located by Spouse or OutbredSpouse).
+	 *  \li \c FullSibling siblings with common father and mother,
+	 *  \li \c Sibling siblings with at least one common parent.
+	 *
+	 *  Optionally, you can specify the sex of relatives you would like to
+	 *  locate, in the form of <tt>relType=(type, sexChoice)</tt>. \e sexChoice
+	 *  can be \c AnySex (default), \c MaleOnly, \c FemaleOnly, \c SameSex or
+	 *  \c OppositeSex.
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting
@@ -189,9 +197,9 @@ private:
 
 	void locateSelfByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
-	void locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred);
 
-	void locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred);
 
 	void locateSiblingByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
@@ -205,9 +213,9 @@ private:
 
 	void locateOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
-	void locateSpouseAndOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateCommonOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
-	void locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateCommonOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
 private:
 	string m_idField;
@@ -218,7 +226,7 @@ private:
 	int m_fatherIdx;
 	int m_motherIdx;
 
-	std::map<ULONG, individual*> m_idMap;
+	std::map<ULONG, individual *> m_idMap;
 };
 
 // /// A pedigree manipulation class

@@ -30,6 +30,8 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug in the activation of VSP defined by combinedSplitter.
   - NEW: Produce a warning when parameter subPopSize is used in a homogeneous mating
 		scheme in a heterogeneous mating scheme.
+  - NEW: Add relationship OutbredSpouse to pedigree.locateRelatives. Replace relationship
+		SpouseAndOffspring with CommonOffspring.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
