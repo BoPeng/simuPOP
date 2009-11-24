@@ -5046,6 +5046,28 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::pedigree::indByID "
+
+Usage:
+
+    x.indByID(id, ancGen=-1, idField=\"\")
+
+Details:
+
+    Return a reference to individual with id stored in information
+    field idField (this parameter is ignored because idField is
+    specified when the pedigree is constructed). This function by
+    default search the present and all ancestral generations
+    (ancGen=-1), but you can suggest a specific generation if you know
+    which generation to search (ancGen=0 for present generation,
+    ancGen=1 for parental generation, and so on). This function will
+    search this generation first but will search the whole population
+    if an individual with id is not found. If no individual with id is
+    found, an IndexError will be raised. Note that a float id is
+    acceptable as long as it rounds closely to an integer.
+
+"; 
+
 %feature("docstring") simuPOP::pedigree::numParents "
 
 Usage:
@@ -5073,16 +5095,23 @@ Details:
     (if idField is not specified) in information fields relFields. The
     length of relFields determines how many relatives an individual
     can have.  Parameter relType specifies what type of relative to
-    locate. It can be Self, Spouse (having at least one common
-    offspring), Offspring, FullSibling (having common father and
-    mother), Sibling (having at least one common parent) or
-    SpouseAndOffspring (One spouse and their common offspring).
-    Optionally, you can specify the sex of relatives you would like to
-    locate, in the form of relType=(type, sexChoice). sexChoice can be
-    AnySex (default), MaleOnly, FemaleOnly, SameSex or OppositeSex.
-    sexChoice for SpouseAndOffspring only refer to sex of offspring.
-    This function will by default go through all ancestral generations
-    and locate relatives for all individuals. This can be changed by
+    locate. It can be
+    *   Self set individual index or ID to a specified information
+    field
+    *   Spouse locate spouses with whom an individual has at least one
+    common offspring.
+    *   OutbredSpouse locate non-slibling spouses, namely spouses with
+    no shared parent.
+    *   Offspring all offspring of each individual.
+    *   CommonOffspring common offspring between each individual and
+    its spouse (located by Spouse or OutbredSpouse).
+    *   FullSibling siblings with common father and mother,
+    *   Sibling siblings with at least one common parent. Optionally,
+    you can specify the sex of relatives you would like to locate, in
+    the form of relType=(type, sexChoice). sexChoice can be AnySex
+    (default), MaleOnly, FemaleOnly, SameSex or OppositeSex.  This
+    function will by default go through all ancestral generations and
+    locate relatives for all individuals. This can be changed by
     setting parameter ancGen to the greatest ancestral generation you
     would like to process.
 

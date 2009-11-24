@@ -74,7 +74,7 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it)
-			m_idMap[static_cast<ULONG>(it->info(m_idIdx))] = &*it;
+			m_idMap[static_cast<ULONG>(it->info(m_idIdx))] = & * it;
 	}
 }
 
@@ -169,14 +169,27 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			"This relative only exists when there are two parents for each indidivual");
 
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
-			"Please provide at least one information field to store Self individuals");
+			"Please provide at least one information field to store Spouse individuals");
 
 		DBG_FAILIF(relSex == SameSex, ValueError, "Can not locate spouses with the same sex");
 
 		if (m_idIdx == -1)
-			locateSpouseByIdx(relSex, relFields, topGen);
+			locateSpouseByIdx(relSex, relFields, topGen, false);
 		else
-			locateSpouseByID(relSex, relFields, topGen);
+			locateSpouseByID(relSex, relFields, topGen, false);
+	} else if (relType == OutbredSpouse) {
+		DBG_ASSERT(numParents() == 2, ValueError,
+			"This relative only exists when there are two parents for each indidivual");
+
+		DBG_ASSERT(relFields.size() >= 1, ValueError,
+			"Please provide at least one information field to store Spouse individuals");
+
+		DBG_FAILIF(relSex == SameSex, ValueError, "Can not locate spouses with the same sex");
+
+		if (m_idIdx == -1)
+			locateSpouseByIdx(relSex, relFields, topGen, true);
+		else
+			locateSpouseByID(relSex, relFields, topGen, true);
 	} else if (relType == Offspring) {
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store offspring");
@@ -204,7 +217,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			locateFullSiblingByIdx(relSex, relFields, topGen);
 		else
 			locateFullSiblingByID(relSex, relFields, topGen);
-	} else if (relType == SpouseAndOffspring) {
+	} else if (relType == CommonOffspring) {
 		DBG_ASSERT(numParents() == 2, ValueError,
 			"This relative only exists when there are two parents for each indidivual");
 
@@ -214,9 +227,9 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 		DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
 
 		if (m_idIdx == -1)
-			locateSpouseAndOffspringByIdx(relSex, relFields, topGen);
+			locateCommonOffspringByIdx(relSex, relFields, topGen);
 		else
-			locateSpouseAndOffspringByID(relSex, relFields, topGen);
+			locateCommonOffspringByID(relSex, relFields, topGen);
 	} else {
 		throw ValueError("Unrecognized relative type");
 	}
@@ -249,7 +262,7 @@ void pedigree::locateSelfByID(SexChoice relSex, const vectorstr & relFields, UIN
 }
 
 
-void pedigree::locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen)
+void pedigree::locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred)
 {
 	DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
 
@@ -302,6 +315,15 @@ void pedigree::locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, 
 							break;
 						}
 				}
+				if (valid and excludeOutbred) {
+					// if they share a father or a mother.
+					double f1 = ind(m).info(m_fatherIdx);
+					double m1 = ind(m).info(m_motherIdx);
+					double f2 = ind(p).info(m_fatherIdx);
+					double m2 = ind(p).info(m_motherIdx);
+					if ((fcmp_ne(f1, -1) && fcmp_eq(f1, f2)) || (fcmp_ne(m1, -1) && fcmp_eq(m1, m2)))
+						valid = false;
+				}
 				if (valid) {
 					ind(p).setInfo(m, spouseIdx[numSpouse[p]]);
 					++numSpouse[p];
@@ -336,7 +358,7 @@ void pedigree::locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, 
 }
 
 
-void pedigree::locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen)
+void pedigree::locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred)
 {
 	// if we are using individual ID, the algorithm is slower, but it can handle
 	// overlapping generations.
@@ -366,8 +388,23 @@ void pedigree::locateSpouseByID(SexChoice relSex, const vectorstr & relFields, U
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = ind(i).info(m_fatherIdx);
 			double m = ind(i).info(m_motherIdx);
-			if (f >= 0 && m >= 0)
+			if (f >= 0 && m >= 0) {
+				if (excludeOutbred) {
+					// if they share a father or a mother.
+					try {
+						double f1 = indByID(m).info(m_fatherIdx);
+						double m1 = indByID(m).info(m_motherIdx);
+						double f2 = indByID(f).info(m_fatherIdx);
+						double m2 = indByID(f).info(m_motherIdx);
+						if ((fcmp_ne(f1, -1) && fcmp_eq(f1, f2)) || (fcmp_ne(m1, -1) && fcmp_eq(m1, m2)))
+							continue;
+					} catch (IndexError & e) {
+						// if parent not found, does not matter.
+						// pass
+					}
+				}
 				couples.push_back(couple(static_cast<ULONG>(f), static_cast<ULONG>(m)));
+			}
 		}
 	}
 	// now, look for each pair and assign spouse
@@ -893,23 +930,19 @@ void pedigree::locateFullSiblingByID(SexChoice relSex, const vectorstr & relFiel
 }
 
 
-void pedigree::locateSpouseAndOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen)
+void pedigree::locateCommonOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen)
 {
 	UINT maxOffspring = relFields.size() - 1;
 
 	int spouseIdx = infoIdx(relFields[0]);
 	// clear these fields for the last generation
-	IndInfoIterator ptr = infoBegin(spouseIdx);
-	IndInfoIterator ptrEnd = infoEnd(spouseIdx);
-
-	for (; ptr != ptrEnd; ++ptr)
-		*ptr = static_cast<InfoType>(-1);
 	vectori offspringIdx(maxOffspring);
+
 	for (size_t i = 0; i < maxOffspring; ++i) {
 		offspringIdx[i] = infoIdx(relFields[i + 1]);
 		// clear these fields for the last generation
-		ptr = infoBegin(offspringIdx[i]);
-		ptrEnd = infoEnd(offspringIdx[i]);
+		IndInfoIterator ptr = infoBegin(offspringIdx[i]);
+		IndInfoIterator ptrEnd = infoEnd(offspringIdx[i]);
 		for (; ptr != ptrEnd; ++ptr)
 			*ptr = static_cast<InfoType>(-1);
 	}
@@ -935,41 +968,29 @@ void pedigree::locateSpouseAndOffspringByIdx(SexChoice relSex, const vectorstr &
 			ULONG m = static_cast<ULONG>(mother[idx]);
 			DBG_ASSERT(p < popSize() && m < popSize(), IndexError,
 				"Parental index out of range of 0 ~ " + toStr(popSize() - 1));
-			// if new parents
-			if (numOffspring[p] == 0 && numOffspring[m] == 0) {
-				if (relSex != AnySex) {
-					Sex offSex = ancestor(idx, ans - 1).sex();
-					if ((offSex == Male && relSex == FemaleOnly) ||
-					    (offSex == Female && relSex == MaleOnly))
-						continue;
-				}
-				ind(p).setInfo(m, spouseIdx);
-				ind(m).setInfo(p, spouseIdx);
-				ind(p).setInfo(idx, offspringIdx[0]);
-				ind(m).setInfo(idx, offspringIdx[0]);
-				++numOffspring[p];
-				++numOffspring[m];
-			} else if (numOffspring[p] == numOffspring[m]) {
-				// not the original spouse
-				if (ind(p).intInfo(spouseIdx) != static_cast<int>(m))
-					continue;
-				// no room for another offspring
-				if (numOffspring[p] >= maxOffspring)
-					continue;
-				// sex does not match
-				if (relSex != AnySex) {
-					Sex offSex = ancestor(idx, ans - 1).sex();
-					if ((offSex == Male && relSex == FemaleOnly) ||
-					    (offSex == Female && relSex == MaleOnly))
-						continue;
-				}
-				// great! The same parents
-				ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
-				ind(m).setInfo(idx, offspringIdx[numOffspring[m]]);
-				++numOffspring[p];
-				++numOffspring[m];
-			} else
+
+			DBG_FAILIF(numOffspring[p] != numOffspring[m], RuntimeError,
+				"Cannot find common offspring for a parent in two different families");
+			// spouse
+			double fa_spouse = ind(p).info(spouseIdx);
+			double ma_spouse = ind(m).info(spouseIdx);
+			bool valid_fa = fa_spouse != -1 && static_cast<ULONG>(fa_spouse) == m;
+			bool valid_ma = ma_spouse != -1 && static_cast<ULONG>(ma_spouse) == p;
+			if (!valid_fa || !valid_ma)
 				continue;
+			// no room for another offspring
+			if (numOffspring[p] >= maxOffspring)
+				continue;
+			if (relSex != AnySex) {
+				Sex offSex = ancestor(idx, ans - 1).sex();
+				if ((offSex == Male && relSex == FemaleOnly) ||
+				    (offSex == Female && relSex == MaleOnly))
+					continue;
+			}
+			ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
+			ind(m).setInfo(idx, offspringIdx[numOffspring[m]]);
+			++numOffspring[p];
+			++numOffspring[m];
 		}                                                                                                   // ancestal generations
 		// set the rest of the field to -1
 		for (size_t idx = 0; idx < popSize(); ++idx) {
@@ -981,27 +1002,21 @@ void pedigree::locateSpouseAndOffspringByIdx(SexChoice relSex, const vectorstr &
 }
 
 
-void pedigree::locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen)
+void pedigree::locateCommonOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen)
 {
 	UINT maxOffspring = relFields.size() - 1;
 
-	int spouseIdx = infoIdx(relFields[0]);
-	// clear these fields for the last generation
-	IndInfoIterator ptr = infoBegin(spouseIdx);
-	IndInfoIterator ptrEnd = infoEnd(spouseIdx);
-
 	vectori offspringIdx(maxOffspring);
+	int spouseIdx = infoIdx(relFields[0]);
 
 	// clear all fields
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
-		for (; ptr != ptrEnd; ++ptr)
-			*ptr = static_cast<InfoType>(-1);
 		for (size_t i = 0; i < maxOffspring; ++i) {
 			offspringIdx[i] = infoIdx(relFields[i + 1]);
 			// clear these fields for the last generation
-			ptr = infoBegin(offspringIdx[i]);
-			ptrEnd = infoEnd(offspringIdx[i]);
+			IndInfoIterator ptr = infoBegin(offspringIdx[i]);
+			IndInfoIterator ptrEnd = infoEnd(offspringIdx[i]);
 			for (; ptr != ptrEnd; ++ptr)
 				*ptr = static_cast<InfoType>(-1);
 		}
@@ -1020,10 +1035,8 @@ void pedigree::locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & 
 		}
 	}
 	// look in each family
-	std::map<ULONG, UINT> numSibling;
 	map<couple, vectoru>::iterator it = families.begin();
 	map<couple, vectoru>::iterator itEnd = families.end();
-	std::map<ULONG, UINT> numSpouse;
 	std::map<ULONG, UINT> numOffspring;
 	for (; it != itEnd; ++it) {
 		ULONG p = it->first.first;
@@ -1031,20 +1044,17 @@ void pedigree::locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & 
 		// these guys share two parents
 		const vectoru & offspring = it->second;
 		try {
-			// someone has kids with someone else
-			if (numSpouse[p] == 1 || numSpouse[m] == 1)
-				continue;
 			individual & fa = indByID(p);
 			individual & ma = indByID(m);
 			// spouse
-			fa.setInfo(m, spouseIdx);
-			ma.setInfo(p, spouseIdx);
-			++numSpouse[p];
-			++numSpouse[m];
+			double fa_spouse = fa.info(spouseIdx);
+			double ma_spouse = ma.info(spouseIdx);
+			bool valid_fa = fa_spouse != -1 && static_cast<ULONG>(fa_spouse) == m;
+			bool valid_ma = ma_spouse != -1 && static_cast<ULONG>(ma_spouse) == p;
+			if (!valid_fa && !valid_ma)
+				continue;
 			// offspring
 			for (size_t j = 0; j < offspring.size(); ++j) {
-				if (numOffspring[p] >= maxOffspring || numOffspring[m] >= maxOffspring)
-					continue;
 				try {
 					individual & child = indByID(offspring[j]);
 					bool valid = true;
@@ -1061,10 +1071,14 @@ void pedigree::locateSpouseAndOffspringByID(SexChoice relSex, const vectorstr & 
 							}
 					}
 					if (valid) {
-						fa.setInfo(offspring[j], offspringIdx[numOffspring[p]]);
-						ma.setInfo(offspring[j], offspringIdx[numOffspring[m]]);
-						++numOffspring[p];
-						++numOffspring[m];
+						if (valid_fa && numOffspring[p] < maxOffspring) {
+							fa.setInfo(offspring[j], offspringIdx[numOffspring[p]]);
+							++numOffspring[p];
+						}
+						if (valid_ma && numOffspring[m] < maxOffspring) {
+							ma.setInfo(offspring[j], offspringIdx[numOffspring[m]]);
+							++numOffspring[m];
+						}
 					}
 				} catch (...) {
 					// if does not found, ignore this offspring
