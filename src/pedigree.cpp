@@ -315,7 +315,7 @@ void pedigree::locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, 
 							break;
 						}
 				}
-				if (valid and excludeOutbred) {
+				if (valid && excludeOutbred) {
 					// if they share a father or a mother.
 					double f1 = ind(m).info(m_fatherIdx);
 					double m1 = ind(m).info(m_motherIdx);
@@ -398,7 +398,7 @@ void pedigree::locateSpouseByID(SexChoice relSex, const vectorstr & relFields, U
 						double m2 = indByID(f).info(m_motherIdx);
 						if ((fcmp_ne(f1, -1) && fcmp_eq(f1, f2)) || (fcmp_ne(m1, -1) && fcmp_eq(m1, m2)))
 							continue;
-					} catch (IndexError & e) {
+					} catch (IndexError &) {
 						// if parent not found, does not matter.
 						// pass
 					}
