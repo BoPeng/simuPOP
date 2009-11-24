@@ -58,11 +58,12 @@ __all__ = [
     'TractLength',
     #
     'Self',
-    'Offspring',
     'Spouse',
+    'OutbredSpouse',
     'FullSibling',
     'Sibling',
-    'SpouseAndOffspring',
+    'Offspring',
+    'CommonOffspring',
     #
     'AnySex',
     'MaleOnly',
