@@ -43,15 +43,29 @@ import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
-boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0']
+boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0']
+invalid_boost_versions = ['1_41_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
-unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x)]
+invalid_version = [x for x in invalid_boost_versions if os.path.isdir('boost_' + x)]
+unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x) and x[6:] not in invalid_version]
+
+boost_dir = ''
 if len(included_version) > 0:
     boost_dir = 'boost_' + included_version[-1]  # use the latest version
-elif len(unsupported_version) > 0:
-    print 'This version of boost is not tested. It may or may not work: %s' % unsupported_version[-1]
+elif len(invalid_version) > 0:
+    print 'This version of boost is known to cause problems to simuPOP: ' + ', '.join(invalid_version)
+
+if boost_dir == '' and len(unsupported_version) > 0:
+    print 'This version of boost is not tested. It may or may not work: ' + ', '.join(unsupported_version)
     boost_dir = unsupported_version[-1]  # use the latest version
+
+if boost_dir == '':
+    print 'Cannot find an useful version of boost header files.'
+    print 'Please download boost from http://www.boost.org and unpack it under the simuPOP directory'
+    sys.exit(1)
+elif len(included_version + unsupported_version) > 1:
+    print 'Using boost version: %s' % boost_dir
 
 boost_include_dir = boost_dir
 boost_serialization_dir = os.path.join(boost_dir, 'libs', 'serialization', 'src')
@@ -252,52 +266,9 @@ LIB_FILES = [
     'gsl/cdf/chisq.c',
     'gsl/cdf/gamma.c',
     'gsl/error.c' 
-] + [os.path.join(boost_serialization_dir, x) for x in [
-    'basic_archive.cpp',
-    'basic_iarchive.cpp',
-    'basic_oarchive.cpp',
-    'basic_serializer_map.cpp',
-    'basic_text_iprimitive.cpp',
-    'basic_text_oprimitive.cpp',
-    'extended_type_info.cpp',
-    'extended_type_info_no_rtti.cpp',
-    'extended_type_info_typeid.cpp',
-    'text_iarchive.cpp',
-    'text_oarchive.cpp',
-    'void_cast.cpp',
-    'polymorphic_iarchive.cpp',
-    'polymorphic_oarchive.cpp',
-    'stl_port.cpp',
-    'basic_pointer_iserializer.cpp',
-    'basic_iserializer.cpp',
-    'basic_oserializer.cpp',
-    'basic_pointer_oserializer.cpp',
-    ]
-] + [os.path.join(boost_iostreams_dir, x) for x in [
-    'mapped_file.cpp',
-    'file_descriptor.cpp',
-    'zlib.cpp'
-    ]
-] + [os.path.join(boost_regex_dir, x) for x in [
-    'cpp_regex_traits.cpp',
-    'fileiter.cpp',
-    'posix_api.cpp',
-    'regex_raw_buffer.cpp',
-    'usinstances.cpp',
-    'wide_posix_api.cpp',
-    'cregex.cpp',
-    'icu.cpp',
-    'regex.cpp',
-    'regex_traits_defaults.cpp',
-    'w32_regex_traits.cpp',
-    'winstances.cpp',
-    'c_regex_traits.cpp',
-    'instances.cpp',
-    'regex_debug.cpp',
-    'static_mutex.cpp',
-    'wc_regex_traits.cpp',
-    ]
-]
+] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
+  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
+  + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
 
 GSL_FILES = [
