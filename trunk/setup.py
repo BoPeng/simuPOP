@@ -48,7 +48,8 @@ invalid_boost_versions = ['1_41_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
 invalid_version = [x for x in invalid_boost_versions if os.path.isdir('boost_' + x)]
-unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x) and x[6:] not in invalid_version]
+unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x) \
+    and x[6:] not in invalid_version + included_version]
 
 boost_dir = ''
 if len(included_version) > 0:
