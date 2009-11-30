@@ -18,7 +18,7 @@ from simuPOP.utils import *
 from simuPOP.sampling import *
 import unittest, os, sys, exceptions
 
-class TestAscertainment(unittest.TestCase):
+class TestSampling(unittest.TestCase):
 
     def setUp(self):
         simu = simulator(
