@@ -90,6 +90,7 @@ class _sample:
         return True
 
     def drawSamples(self, pop, times):
+        self.prepareSample(pop)
         if times < 0:
             raise ValueError("Negative number of samples are unacceptable")
         if not self.prepareSample(pop):
@@ -155,9 +156,9 @@ class randomSample(_sample):
         return pop.extract(field='sample', ped=self.pedigree)
 
 
-def RandomSample(pop, *args, **kwargs):
+def RandomSample(pop, size, times=1, *args, **kwargs):
     'Draw random sample'
-    return randomSample(*args, **kwargs).drawSample(pop)
+    return randomSample(size=size, *args, **kwargs).drawSamples(pop, times=times)
  
 class caseControlSample(_sample):
     '''
