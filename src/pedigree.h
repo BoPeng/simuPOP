@@ -130,7 +130,9 @@ public:
 	 *       no shared parent.
 	 *  \li \c Offspring all offspring of each individual.
 	 *  \li \c CommonOffspring common offspring between each individual and its
-	 *       spouse (located by Spouse or OutbredSpouse).
+	 *       spouse (located by Spouse or OutbredSpouse). \e relFields should
+     *       consist of an information field for spouse and \n m-1 fields for
+     *       offspring where \n m is the number of fields.
 	 *  \li \c FullSibling siblings with common father and mother,
 	 *  \li \c Sibling siblings with at least one common parent.
 	 *
