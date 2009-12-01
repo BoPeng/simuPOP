@@ -1100,7 +1100,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 
 	const matrixstr & pathFields = pathFieldsMatrix.elems();
 
-	DBG_ASSERT(m_idIdx == -1 && pathGen.size() == pathFields.size() + 1, ValueError,
+	DBG_ASSERT(m_idIdx != -1 || pathGen.size() == pathFields.size() + 1, ValueError,
 		"Parameter pathGen should be one element longer than pathFields");
 	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
 		ValueError,
