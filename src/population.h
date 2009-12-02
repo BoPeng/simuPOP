@@ -964,16 +964,14 @@ public:
 	 *  ancestral generations will be extracted. As an advanced feature,
 	 *  \e field can be information field of a pedigree object \e ped. This
 	 *  allows extraction of individuals according to pedigrees identified
-	 *  in a pedigree object. Additional information fields from \e pedFields
-	 *  can be copied to the extracted population. This pedigree should have
-	 *  the same number of individuals in all generations.
+	 *  in a pedigree object. This pedigree should have the same number of
+	 *  individuals in all generations.
 	 *  <group>7-manipulate</group>
 	 */
 	population & extract(const string & field = string(),
 		const uintList & loci = uintList(),
 		const stringList & infoFields = stringList(),
-		int ancGen = -1, pedigree * ped = NULL,
-		const vectorstr & pedFields = vectorstr()) const;
+		int ancGen = -1, pedigree * ped = NULL) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
