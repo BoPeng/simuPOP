@@ -35,10 +35,12 @@
 namespace simuPOP {
 
 /** The pedigree class is derived from the population class. Unlike a
- *  population class that emphasizes on individual properties, the
- *  pedigree class emphasizes on relationship between individuals.
+ *  population class that emphasizes on individual properties, the pedigree
+ *  class emphasizes on relationship between individuals. An unique ID for
+ *  all individuals is needed to create a pedigree object from a population
+ *  object.
  *
- *  A pedigree class can be created from a population, or loaded from
+ *  A pedigree object can be created from a population, or loaded from
  *  a disk file, which is usually saved by an operator during a previous
  *  evolutionary process. Depending on how a pedigree is saved, sex and
  *  affection status information may be missing.
@@ -49,18 +51,18 @@ public:
 	/** Create a pedigree object from a population, using a subset of loci
 	 *  (parameter \e loci, default to no loci), information fields
 	 *  (parameter \e infoFields, default to no information field except for
-	 *  \e parentFields), and ancestral generations (parameter \e ancGen,
-	 *  default to all ancestral generations). By default, information field
-	 *  \c father_id (parameter \e fatherField) and \c mother_id (parameter
-	 *  \e motherField) are used to locate parents with \c ind_id (parameter
-	 *  \e idField) as an ID field storing an unique ID for every individual.
-	 *  If \e idField is not specified, field \c fatherField and \c motherField
-	 *  are handled as indexes of parents in the parental generation. Please
-	 *  refer to operator \c idTagger, \c pedigreeTagger (use unique ID) and
-	 *  \c parentsTagger (use indexes in parental generation) for how to track
-	 *  pedigree structure using these information fields. This pedigree object
-	 *  works with one or no parents but certain functions such as relative
-	 *  tracking will not be available for such cases.
+	 *  \e idField, \e fatherField and \e motherField), and ancestral
+	 *  generations (parameter \e ancGen, default to all ancestral generations).
+	 *  By default, information field \c father_id (parameter \e fatherField)
+	 *  and \c mother_id (parameter \e motherField) are used to locate parents
+	 *  with \c ind_id (parameter \e idField) as an ID field storing an unique
+	 *  ID for every individual. Operators \c idTagger and  \c pedigreeTagger
+	 *  are usually used to assign such IDs, although function
+	 *  \c sampling.indexToID could be used to assign unique IDs and construct
+	 *  parental IDs from index based relationship recorded by operator
+	 *  \c parentsTagger. This pedigree object works with one or no parents
+	 *  but certain functions such as relative tracking will not be available
+	 *  for such cases.
 	 */
 	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
@@ -75,37 +77,23 @@ public:
 	 */
 	pedigree * clone() const;
 
-	/** Return the index of the father of individual \e idx in subpopulation
-	 *  \e subPop in the parental generation. Return \c -1 if this individual
-	 *  has no father (\c fatherField is empty or the value of information
-	 *  field is negative).
+	/** Return the ID of the father of individual \e ID.
 	 *  <group>3-rel</group>
 	 */
-	int father(ULONG idx, SubPopID subPop);
+	ULONG father(ULONG ID);
 
-	/** Return the index of the mother of individual \e idx in subpopulation
-	 *  \e subPop in the parental generation. Return \c -1 if this individual
-	 *  has no mother (\c motherField is empty or the value of information
-	 *  field is negative).
+	/** Return the ID of the mather of individual \e ID.
 	 *  <group>3-rel</group>
 	 */
-	int mother(ULONG idx, SubPopID subPop);
+	ULONG mother(ULONG ID);
 
 
-	/** Return a reference to individual with \e id stored in information
-	 *  field \e idField (this parameter is ignored because idField is
-	 *  specified when the pedigree is constructed). This function by default
-	 *  search the present and all ancestral generations (\c ancGen=-1),
-	 *  but you can suggest a specific generation if you know which
-	 *  generation to search (\c ancGen=0 for present generation, \c ancGen=1
-	 *  for parental generation, and so on). This function will search this
-	 *  generation first but will search the whole population if an
-	 *  individual with \e id is not found. If no individual with \e id is
-	 *  found, an \c IndexError will be raised. Note that a float \e id
+	/** Return a reference to individual with \e id. An \c IndexError will be
+	 *  raised if no individual with \e id is found. Note that a float \e id
 	 *  is acceptable as long as it rounds closely to an integer.
 	 *  <group>4-ind</group>
 	 */
-	individual & indByID(double id, int ancGen = -1, const string & idField = "");
+	individual & indByID(double id);
 
 
 	/** Return the number of parents each individual has. This function returns
@@ -123,7 +111,6 @@ public:
 	 *
 	 *  Parameter \e relType specifies what type of relative to locate. It can
 	 *  be
-	 *  \li \c Self set individual index or ID to a specified information field
 	 *  \li \c Spouse locate spouses with whom an individual has at least one
 	 *       common offspring.
 	 *  \li \c OutbredSpouse locate non-slibling spouses, namely spouses with
@@ -131,8 +118,8 @@ public:
 	 *  \li \c Offspring all offspring of each individual.
 	 *  \li \c CommonOffspring common offspring between each individual and its
 	 *       spouse (located by Spouse or OutbredSpouse). \e relFields should
-     *       consist of an information field for spouse and \n m-1 fields for
-     *       offspring where \n m is the number of fields.
+	 *       consist of an information field for spouse and \n m-1 fields for
+	 *       offspring where \n m is the number of fields.
 	 *  \li \c FullSibling siblings with common father and mother,
 	 *  \li \c Sibling siblings with at least one common parent.
 	 *
@@ -158,66 +145,47 @@ public:
 	 *  offspring using a <em>relative path</em>, and save their indexes
 	 *  in each individuals information fields \e resultFields.
 	 *
-	 *  A <em>relative path</em> consits of three pieces of information
-	 *  specified by three parameters. Parameter \e pathGen specifies starting,
-	 *  intermediate and ending generations. \e pathFields specifies which
-	 *  information fields to look for at each step, and \e pathSex specifies
-	 *  sex choices at each generation, which should be a list of \c AnySex,
-	 *  \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex. The default
-	 *  value for this paramter is \c AnySex at all steps. The length of
-	 *  \e pathGen should be one more than \e pathFields, and \e pathSex if
-	 *  \e pathSex is given. If individual ID is used, \e pathGen could be
-	 *  ignored, although they could help the location of relatives in the
-	 *  population.
+	 *  A <em>relative path</em> consits of a \e pathFields that specifies
+	 *  which information fields to look for at each step, and a \e pathSex
+	 *  specifies sex choices at each generation, which should be a list of
+	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex.
+	 *  The default value for this paramter is \c AnySex at all steps.
 	 *
-	 *  For example, if <tt>pathGen=[0, 1, 1, 0]</tt>, <tt>pathFields =
-	 *  [['father_idx', 'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']]</tt>,
-	 *  and <tt>pathSex = [AnySex, MaleOnly, FemaleOnly]</tt>, this function
-	 *  will locate \c father_idx and \c mother_idx for each individual at
-	 *  generation 0, find all individuals referred by \c father_idx and
-	 *  \c mother_idx at generation 1, find informaton fields \c sib1 and
+	 *  For example, if <tt>pathFields = [['father_ID', 'mother_ID'],
+	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>pathSex = [AnySex,
+	 *  MaleOnly, FemaleOnly]</tt>, this function will locate \c father_ID
+	 *  and \c mother_ID for each individual, find all individuals referred
+	 *  by \c father_ID and \c mother_ID, find informaton fields \c sib1 and
 	 *  \c sib2 from these parents and locate male individuals referred by
 	 *  these two information fields. Finally, the information fields \c off1
 	 *  and \c off2 from these siblings are located and are used to locate
 	 *  their female offspring at the present geneartion. The results are
 	 *  father or mother's brother's daughters. Their indexes will be saved in
-	 *  each individuals information fields \e resultFields. Note that this
-	 *  function will locate and set relatives for individuals only at the
-	 *  starting generation specified at <tt>pathGen[0]</tt>.
+	 *  each individuals information fields \e resultFields. If a non-negative
+	 *  \e ancGen is given, only individuals in these ancestral generations
+	 *  will be processed.
 	 *  <group>4-locate</group>
 	 */
-	bool traceRelatives(const vectoru & pathGen,
-		const stringMatrix & pathFields,
+	bool traceRelatives(const stringMatrix & pathFields,
 		const vectori & pathSex = vectori(),
-		const vectorstr & resultFields = vectorstr());
+		const vectorstr & resultFields = vectorstr(), int ancGen = -1);
 
 private:
 	// a list of functions that will be used in locateRelatives.
 	// they are called only once. The reason this is separated is because
 	// they are too long when putting in one function.
-	void locateSelfByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
 
-	void locateSelfByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateSelf(SexChoice relSex, const vectorstr & relFields, int ancGen);
 
-	void locateSpouseByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred);
+	void locateSpouse(SexChoice relSex, const vectorstr & relFields, int ancGen, bool excludeOutbred);
 
-	void locateSpouseByID(SexChoice relSex, const vectorstr & relFields, UINT topGen, bool excludeOutbred);
+	void locateSibling(SexChoice relSex, const vectorstr & relFields, int ancGen);
 
-	void locateSiblingByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateFullSibling(SexChoice relSex, const vectorstr & relFields, int ancGen);
 
-	void locateSiblingByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateOffspring(SexChoice relSex, const vectorstr & relFields, int ancGen);
 
-	void locateFullSiblingByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
-
-	void locateFullSiblingByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
-
-	void locateOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
-
-	void locateOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
-
-	void locateCommonOffspringByIdx(SexChoice relSex, const vectorstr & relFields, UINT topGen);
-
-	void locateCommonOffspringByID(SexChoice relSex, const vectorstr & relFields, UINT topGen);
+	void locateCommonOffspring(SexChoice relSex, const vectorstr & relFields, int ancGen);
 
 private:
 	string m_idField;

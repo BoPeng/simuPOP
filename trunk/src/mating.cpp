@@ -1351,13 +1351,13 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 		RawIndIterator it = scratch.rawIndBegin(sp);
 		RawIndIterator itEnd;
 		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
-			int father_idx = m_ped.father(i, sp);
+			int father_idx = m_ped.father(i);
 			DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
 				"Parental index " + toStr(father_idx) + " out of range of 0 - "
 				+ toStr(m_parentalPopSize - 1));
 			individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
 
-			int mother_idx = m_ped.mother(i, sp);
+			int mother_idx = m_ped.mother(i);
 			DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
 				"Parental index " + toStr(mother_idx) + " out of range of 0 - "
 				+ toStr(m_parentalPopSize - 1));
