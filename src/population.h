@@ -1152,6 +1152,12 @@ public:
 	 */
 	void setInfoFields(const stringList & fields, double init = 0);
 
+	/** Remove information fields \e fields from a population.
+	 *  <group>8-info</group>
+	 */
+	void removeInfoFields(const stringList & fields);
+
+
 	/** Update information fields \e fields from \e fromFields of another
 	 *  population (or pedigree) \e pop. Two populations should have the same
 	 *  number of individuals. If \e fromFields is not specified, it is assumed
@@ -1390,9 +1396,9 @@ private:
 		ar & ma;
 
 		if (ma > ModuleMaxAllele)
-			cerr << "Warning: The population is saved in library with more allele states. \n"
-			     << "Unless all alleles are less than " << ModuleMaxAllele
-			     << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
+			cerr	<< "Warning: The population is saved in library with more allele states. \n"
+			        << "Unless all alleles are less than " << ModuleMaxAllele
+			        << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 		GenoStructure stru;
 		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);

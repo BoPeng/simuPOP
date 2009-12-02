@@ -77,13 +77,13 @@ population::population(const uintList & size,
 		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
 		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
-	DBG_DO(DBG_DEVEL, cerr << "individual size is " << sizeof(individual) << '+'
-		                   << sizeof(Allele) << '*' << genoSize() << endl
-		                   << ", infoPtr: " << sizeof(double *)
-		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
-		                   << ", plus genoStru"
-		                   << "\ngenoSize " << genoSize()
-		                   << endl);
+	DBG_DO(DBG_DEVEL, cerr	<< "individual size is " << sizeof(individual) << '+'
+		                    << sizeof(Allele) << '*' << genoSize() << endl
+		                    << ", infoPtr: " << sizeof(double *)
+		                    << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
+		                    << ", plus genoStru"
+		                    << "\ngenoSize " << genoSize()
+		                    << endl);
 
 	// m_popSize will be defined in fitSubPopStru
 	if (m_subPopSize.empty())
@@ -179,9 +179,9 @@ population::population(const population & rhs) :
 			}
 		}
 	} catch (...) {
-		cerr << "Unable to copy ancestral populations. "
-		     << "The popolation size may be too big." << endl
-		     << "The population will still be usable but without any ancestral population stored." << endl;
+		cerr	<< "Unable to copy ancestral populations. "
+		        << "The popolation size may be too big." << endl
+		        << "The population will still be usable but without any ancestral population stored." << endl;
 		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 	}
@@ -704,7 +704,7 @@ void population::setSubPopByIndInfo(const string & field)
 		// popsize etc will be changed.
 		ULONG newPopSize = m_popSize;
 		IndIterator it = indIterator();
-		for (; it.valid();  ++it) {
+		for (; it.valid(); ++it) {
 			if (it->info(info) < 0)
 				newPopSize-- ;
 			else
@@ -751,7 +751,7 @@ void population::setSubPopByIndInfo(const string & field)
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
-		for (IndIterator it = indIterator(); it.valid();  ++it)
+		for (IndIterator it = indIterator(); it.valid(); ++it)
 			m_subPopSize[ static_cast<UINT>(it->info(info)) ]++;
 	}
 	// rebuild index
@@ -1815,6 +1815,49 @@ void population::setInfoFields(const stringList & fieldList, double init)
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ptr += is) {
 			ind->setInfoPtr(ptr);
 			ind->setGenoStruIdx(genoStruIdx());
+		}
+		m_info.swap(newInfo);
+	}
+	useAncestralGen(oldAncPop);
+}
+
+
+void population::removeInfoFields(const stringList & fieldList)
+{
+	const vectorstr & fields = fieldList.elems();
+
+	if (fields.size() == 0)
+		return;
+
+	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
+		"Info size is wrong");
+
+	vectorstr newfields;
+	vectori oldIdx;
+	for (UINT idx = 0; idx < infoSize(); ++idx) {
+		string field = infoField(idx);
+		if (find(fields.begin(), fields.end(), field) == fields.end()) {
+			oldIdx.push_back(idx);
+			newfields.push_back(field);
+		}
+	}
+
+	setGenoStructure(gsSetInfoFields(newfields));
+
+	int oldAncPop = m_curAncestralGen;
+	size_t sz = infoSize();
+	for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
+		useAncestralGen(anc);
+		vectorinfo newInfo(sz * popSize(), 0.);
+		// copy the old stuff in
+		InfoIterator ptr = newInfo.begin();
+
+		for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
+			InfoIterator oldptr = ind->infoPtr();
+			ind->setInfoPtr(ptr);
+			ind->setGenoStruIdx(genoStruIdx());
+			for (size_t i = 0; i < sz; ++i)
+				*(ptr++) = *(oldptr + oldIdx[i]);
 		}
 		m_info.swap(newInfo);
 	}

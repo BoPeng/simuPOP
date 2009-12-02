@@ -57,7 +57,6 @@ __all__ = [
     'NumMarkers',
     'TractLength',
     #
-    'Self',
     'Spouse',
     'OutbredSpouse',
     'FullSibling',
