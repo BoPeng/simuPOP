@@ -1341,7 +1341,7 @@ void population::resize(const uintList & sizeList, bool propagate)
 population & population::extract(const string & field,
                                  const uintList & extractedLoci,
                                  const stringList & infoFieldList,
-                                 int ancGen, pedigree * ped, const vectorstr & pedFields) const
+                                 int ancGen, pedigree * ped) const
 {
 	population & pop = *new population();
 	bool removeInd = !field.empty();
@@ -1358,17 +1358,15 @@ population & population::extract(const string & field,
 	vectoru new_loci = loci;
 
 	vectorstr keptInfoFields = removeLoci ? infoFields : this->infoFields();
-	vectorstr allInfoFields(keptInfoFields.begin(), keptInfoFields.end());
-	allInfoFields.insert(allInfoFields.end(), pedFields.begin(), pedFields.end());
 
 	// population strcture.
-	if (!removeLoci && !removeInfo && pedFields.empty()) {
+	if (!removeLoci && !removeInfo) {
 		pop.setGenoStruIdx(genoStruIdx());
 		incGenoStruRef();
 	} else if (!removeLoci) {
 		// only change information fields
 		pop.setGenoStructure(ploidy(), numLoci(), chromTypes(), isHaplodiploid(),
-			lociPos(), chromNames(), allAlleleNames(), lociNames(), allInfoFields);
+			lociPos(), chromNames(), allAlleleNames(), lociNames(), keptInfoFields);
 	} else {
 		// figure out number of loci.
 		vectoru new_numLoci;
@@ -1409,10 +1407,10 @@ population & population::extract(const string & field,
 			                        << "\nlociPos: " << new_lociPos
 			                        << "\nchromNames: " << new_chromNames
 			                        << "\nlociNames: " << new_lociNames
-			                        << "\ninfoFields: " << allInfoFields
+			                        << "\ninfoFields: " << keptInfoFields
 			                        << endl);
 		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
-			new_lociPos, new_chromNames, new_alleleNames, new_lociNames, allInfoFields);
+			new_lociPos, new_chromNames, new_alleleNames, new_lociNames, keptInfoFields);
 	}
 	UINT step = pop.genoSize();
 	UINT infoStep = pop.infoSize();
@@ -1428,17 +1426,8 @@ population & population::extract(const string & field,
 	vectorstr::const_iterator iit_end = keptInfoFields.end();
 	for (; iit != iit_end; ++iit)
 		infoList.push_back(infoIdx(*iit));
-	vectoru pedInfoList;
-	if (ped != NULL && !pedFields.empty()) {
-		iit = pedFields.begin();
-		iit_end = pedFields.end();
-		for (; iit != iit_end; ++iit)
-			pedInfoList.push_back(ped->infoIdx(*iit));
-	}
 	vectoru::iterator infoPtr = infoList.begin();
 	vectoru::iterator infoEnd = infoList.end();
-	vectoru::iterator pedInfoPtr = pedInfoList.begin();
-	vectoru::iterator pedInfoEnd = pedInfoList.end();
 	//
 	// copy individuals, from ancestor to current.
 	int depth = ancestralGens();
@@ -1501,22 +1490,9 @@ population & population::extract(const string & field,
 				}
 			}
 			// handle information fields
-			if (!removeInfo && pedFields.empty())
+			if (!removeInfo)
 				new_info.insert(new_info.end(), m_info.begin(), m_info.end());
-			else if (ped != NULL && !pedFields.empty()) {
-				// copy information fields from pop as well as pedigree
-				ConstRawIndIterator it = rawIndBegin();
-				ConstRawIndIterator it_end = rawIndEnd();
-				ConstRawIndIterator pedIt = ped->rawIndBegin();
-				for (; it != it_end; ++it, ++pedIt) {
-					InfoIterator iPtr = it->infoBegin();
-					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
-						new_info.push_back(*(iPtr + *infoPtr));
-					iPtr = pedIt->infoBegin();
-					for (pedInfoPtr = pedInfoList.begin(); pedInfoPtr != pedInfoEnd; ++pedInfoPtr)
-						new_info.push_back(*(iPtr + *pedInfoPtr));
-				}
-			} else {
+			else {
 				ConstRawIndIterator it = rawIndBegin();
 				ConstRawIndIterator it_end = rawIndEnd();
 				for (; it != it_end; ++it) {
@@ -1545,17 +1521,10 @@ population & population::extract(const string & field,
 								new_genotype.push_back(*(ptr + *lociPtr + p));
 						}
 					}
-					if (!removeInfo && pedFields.empty())
+					if (!removeInfo)
 						new_info.insert(new_info.end(), m_inds[*it].infoBegin(),
 							m_inds[*it].infoEnd());
-					else if (ped != NULL && !pedFields.empty()) {
-						InfoIterator iPtr = m_inds[*it].infoBegin();
-						for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
-							new_info.push_back(*(iPtr + *infoPtr));
-						iPtr = ped->m_inds[*it].infoBegin();
-						for (pedInfoPtr = pedInfoList.begin(); pedInfoPtr != pedInfoEnd; ++pedInfoPtr)
-							new_info.push_back(*(iPtr + *pedInfoPtr));
-					} else {
+					else {
 						InfoIterator iPtr = m_inds[*it].infoBegin();
 						for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
 							new_info.push_back(*(iPtr + *infoPtr));
