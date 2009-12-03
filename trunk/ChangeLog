@@ -34,6 +34,7 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 		SpouseAndOffspring with CommonOffspring.
   - CHG: Adjust the pedigree class. All function interfaces have been changed.
   - CHG: Add function population.removeInfoFields.
+  - NEW: Allow nested use of vsp in population.individuals().
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.

@@ -64,7 +64,87 @@ using std::deque;
 
 namespace simuPOP {
 
+
+/** CPPONLY
+ *  this class implements a Python itertor class that can be used to iterate
+ *  through individuals in a (sub)population. If allInds are true,
+ *  visiblility of individuals will not be checked. Otherwise, a functor
+ *  will be used to check if indiviudals belong to a specified virtual
+ *  subpopulation.
+ *
+ *  An instance of this class is returned by
+ *  population::individuals() and population::individuals(subPop)
+ */
+class pyIndIterator
+{
+public:
+	pyIndIterator(vector<individual>::iterator const begin,
+		vector<individual>::iterator const end,
+		bool allInds, vspFunctor func) :
+		m_begin(begin),
+		m_index(begin),
+		m_end(end),
+		m_allInds(allInds),
+		m_isIteratable(func)
+	{
+		// m_index does not have to be pointed to the first
+		// valid individual. the next() function will return
+		// so.
+	}
+
+
+	~pyIndIterator()
+	{
+	}
+
+
+	pyIndIterator __iter__()
+	{
+		return *this;
+	}
+
+
+	individual & next()
+	{
+		// this is the easy (and faster) case
+		if (m_allInds) {
+			if (m_index == m_end)
+				throw StopIteration("");
+			else
+				return *m_index++;
+		}
+		// check the visibility of individuals
+		do {
+			if (m_index == m_end)
+				throw StopIteration("");
+			else if (m_isIteratable(m_index - m_begin)) {
+				return *m_index++;
+			} else
+				++m_index;
+		} while (true);
+	}
+
+
+private:
+	// current (initial individual)
+	vector<individual>::iterator m_begin;
+
+	// current (initial individual)
+	vector<individual>::iterator m_index;
+
+	// ending idx
+	vector<individual>::iterator m_end;
+
+	//
+	bool m_allInds;
+	//
+	vspFunctor m_isIteratable;
+};
+
+
 class pedigree;
+
+
 
 /**
  *  A simuPOP population consists of individuals of the same genotypic
@@ -528,13 +608,14 @@ public:
 	 */
 	pyIndIterator individuals(vspID subPop = vspID())
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
+			"Can not call individuals when there is activated virtual subpopulation");
 		if (!subPop.valid())
 			// if a virtual subpopulation is activated, this will
 			// iterate through virtual subpopulation. However,
 			// users are not supposed to manually activate subpopulation
 			// so this feature is CPPONLY
-			return pyIndIterator(m_inds.begin(), m_inds.end(),
-				!hasActivatedVirtualSubPop(), true);
+			return pyIndIterator(m_inds.begin(), m_inds.end(), true, vspFunctor());
 
 		SubPopID spID = subPop.subPop();
 
@@ -542,28 +623,14 @@ public:
 		CHECKRANGESUBPOP(spID);
 		SubPopID vspID = subPop.virtualSubPop();
 		CHECKRANGEVIRTUALSUBPOP(vspID);
-		DBG_FAILIF(hasActivatedVirtualSubPop(spID), ValueError,
-			"This operation is not allowed for an activated subpopulation");
 #endif
-		if (subPop.isVirtual()) {
-			// this does not need to be deactivated...
-			activateVirtualSubPop(subPop, IteratableInds);
-			// if there is no virtual subpop
+		if (subPop.isVirtual())
 			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
-				m_inds.begin() + subPopEnd(spID),
-				// allInds will not work at all, because there will be
-				// virtual subpopulation
-				false,
-				// and we count visible, and iteratable individuals.
-				false);
-		} else
+				m_inds.begin() + subPopEnd(spID), false,
+				vspFunctor(*this, m_vspSplitter, subPop));
+		else
 			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
-				m_inds.begin() + subPopEnd(spID),
-				// if there is no activated virtual subpopualtions
-				// iterate through all individuals.
-				!hasActivatedVirtualSubPop(spID),
-				// otherwise, iterate through all visible individuals.
-				true);
+				m_inds.begin() + subPopEnd(spID), true, vspFunctor());
 	}
 
 

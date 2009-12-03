@@ -338,7 +338,7 @@ public:
 	 *  mark (default) or unmark (if \e mark=false) an individual.
 	 *  <group>5-mark</group>
 	 */
-	void mark(bool mark=true) const
+	void mark(bool mark=true)
 	{
 		if (mark)
 			SETFLAG(m_flags, m_flagMarked);
@@ -584,60 +584,6 @@ private:
 	UINT m_field;
 };
 
-
-/**
-    this class implements a Python itertor class that can be used to iterate
-    through individuals in a (sub)population. If allInds are true,
-    visiblility of individuals will not be checked. Note that
-    individualIterator *will* iterate through only visible individuals, and
-    allInds is only provided when we know in advance that all individuals are
-    visible. This is a way to obtain better performance in simple cases.
-
-    An instance of this class is returned by
-    population::individuals() and population::individuals(subPop)
- */
-class pyIndIterator
-{
-public:
-	pyIndIterator(vector<individual>::iterator const begin,
-		vector<individual>::iterator const end,
-		bool allInds, bool allVisibles) :
-		m_index(begin),
-		m_end(end),
-		m_allInds(allInds),
-		m_allVisibles(allVisibles)
-	{
-		// m_index does not have to be pointed to the first
-		// valid individual. the next() function will return
-		// so.
-	}
-
-
-	~pyIndIterator()
-	{
-	}
-
-
-	pyIndIterator __iter__()
-	{
-		return *this;
-	}
-
-
-	individual & next();
-
-private:
-	// current (initial individual)
-	vector<individual>::iterator m_index;
-
-	// ending idx
-	vector<individual>::iterator m_end;
-
-	//
-	bool m_allInds;
-	//
-	bool m_allVisibles;
-};
 
 /**
     this class implements a C++ iterator class that iterate through
