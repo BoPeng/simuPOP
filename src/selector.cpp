@@ -43,7 +43,7 @@ bool baseSelector::apply(population & pop)
 			pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind)
-			ind->setInfo(indFitness(& * ind, pop.gen()), fit_id);
+			ind->setInfo(indFitness(&*ind, pop.gen()), fit_id);
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 	}

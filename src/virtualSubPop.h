@@ -146,8 +146,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type) = 0;
+	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop) = 0;
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -180,16 +179,18 @@ class vspFunctor
 public:
 	vspFunctor() : m_pop(NULL), m_splitter(NULL), m_vsp()
 	{}
-	
+
 	vspFunctor(const population & pop, const vspSplitter * splitter, vspID vsp)
-	: m_pop(&pop), m_splitter(splitter), m_vsp(vsp)
+		: m_pop(&pop), m_splitter(splitter), m_vsp(vsp)
 	{
 	}
+
 
 	bool operator()(ULONG ind)
 	{
 		return m_splitter->contains(*m_pop, ind, m_vsp);
 	}
+
 
 private:
 	const population * m_pop;
@@ -252,8 +253,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -323,8 +323,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -391,8 +390,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -449,8 +447,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -515,8 +512,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -578,8 +574,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -637,8 +632,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -719,8 +713,7 @@ public:
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		IterationType type);
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY

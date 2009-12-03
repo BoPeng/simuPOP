@@ -286,7 +286,7 @@ UINT GenoStruTrait::lociLeft(UINT loc) const
 {
 	CHECKRANGEABSLOCUS(loc);
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
+	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
 			return s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - loc;
 	DBG_ASSERT(false, SystemError, "This should not be reached.");
@@ -298,7 +298,7 @@ double GenoStruTrait::distLeft(UINT loc) const
 {
 	CHECKRANGEABSLOCUS(loc);
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
+	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
 			return locusPos(s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - 1) - locusPos(loc);
 	DBG_ASSERT(false, SystemError, "This should not be reached.");
@@ -826,7 +826,7 @@ std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
 
 	pair<UINT, UINT> loc;
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i) {
+	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i) {
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus) {
 			loc.first = i - 1;
 			loc.second = locus - s_genoStruRepository[m_genoStruIdx].m_chromIndex[i - 1];

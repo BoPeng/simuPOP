@@ -286,16 +286,14 @@ UINT population::numVirtualSubPop() const
 }
 
 
-void population::activateVirtualSubPop(vspID subPop,
-                                       IterationType type)
+void population::activateVirtualSubPop(vspID subPop)
 {
 	CHECKRANGESUBPOP(subPop.subPop());
-	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");
-	DBG_ASSERT(hasVirtualSubPop(), ValueError,
-		"Population has no virtual subpopulations");
-	m_vspSplitter->activate(*this, subPop.subPop(), subPop.virtualSubPop(), type);
-	DBG_ASSERT(type != VisibleInds ||
-		m_vspSplitter->activatedSubPop() == subPop.subPop(), SystemError,
+	if (!subPop.isVirtual())
+		return;
+	DBG_ASSERT(hasVirtualSubPop(), ValueError, "Population has no virtual subpopulations");
+	m_vspSplitter->activate(*this, subPop.subPop(), subPop.virtualSubPop());
+	DBG_ASSERT(m_vspSplitter->activatedSubPop() == subPop.subPop(), SystemError,
 		"Failed to activate virtual subpopulation");
 }
 
@@ -549,12 +547,13 @@ void population::setGenotype(const vectora & geno, vspID subPop)
 		for (ULONG i = 0; i < subPopSize(sp) * genoSize(); ++i)
 			*(ptr++) = geno[i % sz];
 	} else {
-		activateVirtualSubPop(subPop, IteratableInds);
-		IndIterator it = indIterator(sp, IteratableInds);
+		activateVirtualSubPop(subPop);
+		IndIterator it = indIterator(sp);
 		ULONG i = 0;
 		for (; it.valid(); ++it)
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
 				*git = geno[i % sz];
+		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
 
@@ -1901,9 +1900,11 @@ void population::setIndInfo(const floatList & valueList, const uintString & fiel
 	const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
 	if (subPop.valid()) {
+		activateVirtualSubPop(subPop);
 		IndInfoIterator ptr = infoBegin(idx, subPop);
 		for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
 			*ptr = static_cast<InfoType>(values[i % valueSize]);
+		deactivateVirtualSubPop(subPop.subPop());
 	} else {
 		IndInfoIterator ptr = infoBegin(idx);
 		for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)

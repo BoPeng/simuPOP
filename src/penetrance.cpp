@@ -62,7 +62,7 @@ bool basePenetrance::apply(population & pop)
 
 			IndIterator ind = pop.indIterator(sp->subPop());
 			for (; ind.valid(); ++ind) {
-				double p = penet(& * ind, pop.gen());
+				double p = penet(&*ind, pop.gen());
 
 				if (savePene)
 					ind->setInfo(p, infoIdx);
@@ -85,7 +85,7 @@ bool basePenetrance::apply(population & pop)
 bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
-	double p = penet(& * offspring, pop.gen());
+	double p = penet(&*offspring, pop.gen());
 
 	if (infoSize() > 0)
 		offspring->setInfo(p, infoField(0));

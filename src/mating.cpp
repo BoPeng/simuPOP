@@ -174,8 +174,8 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "One of the transmitters " << (*iop)->describe()
-				     << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr	<< "One of the transmitters " << (*iop)->describe()
+				        << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -194,9 +194,9 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "DuringMating operator " << (*iop)->describe()
-				     << " throws an exception.\n"
-				     << e.message() << "\n" << endl;
+				cerr	<< "DuringMating operator " << (*iop)->describe()
+				        << " throws an exception.\n"
+				        << e.message() << "\n" << endl;
 				throw e;
 			}
 		}                                                                         // all during-mating operators
@@ -495,7 +495,7 @@ parentChooser::individualPair sequentialParentChooser::chooseParents(RawIndItera
 {
 	if (!m_ind.valid())
 		m_ind = m_begin;
-	return parentChooser::individualPair(& * m_ind++, NULL);
+	return parentChooser::individualPair(&*m_ind++, NULL);
 }
 
 
@@ -537,14 +537,14 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIter
 
 	// using weighted sampler.
 	if (m_numMale != 0)
-		dad = & * (m_maleIndex[m_curMale++]);
+		dad = &*(m_maleIndex[m_curMale++]);
 	else
-		dad = & * (m_femaleIndex[m_curFemale++]);
+		dad = &*(m_femaleIndex[m_curFemale++]);
 
 	if (m_numFemale != 0)
-		mom = & * (m_femaleIndex[m_curFemale++]);
+		mom = &*(m_femaleIndex[m_curFemale++]);
 	else
-		mom = & * (m_maleIndex[m_curMale++]);
+		mom = &*(m_maleIndex[m_curMale++]);
 	return std::make_pair(dad, mom);
 }
 
@@ -589,7 +589,7 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 	// choose a parent
 	if (!m_replacement) {
 		DBG_FAILIF(m_index.empty(), RuntimeError, "All parents have been chosen.");
-		individual * ind = & * m_index.back();
+		individual * ind = &*m_index.back();
 		m_index.pop_back();
 		return individualPair(ind, NULL);
 	}
@@ -597,14 +597,14 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 	if (m_index.empty()) {
 		if (m_selection)
 			// basePtr points to the beginning of the population, not subpopulation
-			ind = & * (basePtr + m_shift + m_sampler.get());
+			ind = &*(basePtr + m_shift + m_sampler.get());
 		else
-			ind = & * (basePtr + m_shift + GetRNG().randInt(m_size));
+			ind = &*(basePtr + m_shift + GetRNG().randInt(m_size));
 	} else {
 		if (m_selection)
-			ind = & * (m_index[m_sampler.get()]);
+			ind = &*(m_index[m_sampler.get()]);
 		else
-			ind = & * (m_index[GetRNG().randInt(m_size)]);
+			ind = &*(m_index[GetRNG().randInt(m_size)]);
 	}
 	return individualPair(ind, NULL);
 }
@@ -685,12 +685,12 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 	if (!m_replacement) {
 		DBG_FAILIF(m_femaleIndex.empty(), ValueError,
 			"All females have been chosen.");
-		mom = & * m_femaleIndex.back();
+		mom = &*m_femaleIndex.back();
 		m_femaleIndex.pop_back();
 
 		DBG_FAILIF(m_maleIndex.empty(), ValueError,
 			"All males have been chosen.");
-		dad = & * m_maleIndex.back();
+		dad = &*m_maleIndex.back();
 		m_maleIndex.pop_back();
 		return std::make_pair(dad, mom);
 	}
@@ -704,11 +704,11 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 
 	if (m_selection) {
 		// using weighted sampler.
-		dad = & * (m_maleIndex[m_malesampler.get()]);
-		mom = & * (m_femaleIndex[m_femalesampler.get()]);
+		dad = &*(m_maleIndex[m_malesampler.get()]);
+		mom = &*(m_femaleIndex[m_femalesampler.get()]);
 	} else {
-		dad = & * (m_maleIndex[GetRNG().randInt(m_numMale)]);
-		mom = & * (m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+		dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
+		mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
 	}
 	return std::make_pair(dad, mom);
 }
@@ -792,9 +792,9 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 			throw RuntimeError("polyParentsChooser fails because there is no male individual in a subpopulation.");
 
 		if (m_selection)
-			dad = & * (m_maleIndex[m_malesampler.get()]);
+			dad = &*(m_maleIndex[m_malesampler.get()]);
 		else
-			dad = & * (m_maleIndex[GetRNG().randInt(m_numMale)]);
+			dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
 
 		if (m_polySex == Male && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -807,9 +807,9 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 			throw RuntimeError("polyParentsChooser fails because there is no female individual in a subpopulation.");
 
 		if (m_selection)
-			mom = & * (m_femaleIndex[m_femalesampler.get()]);
+			mom = &*(m_femaleIndex[m_femalesampler.get()]);
 		else
-			mom = & * (m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+			mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
 
 		if (m_polySex == Female && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -941,11 +941,11 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 
 	// using weidhted sampler.
 	if (m_selection) {                                    // with selection
-		dad = & * (m_maleIndex[m_malesampler.get()]);
-		mom = & * (m_femaleIndex[m_femalesampler.get()]);
+		dad = &*(m_maleIndex[m_malesampler.get()]);
+		mom = &*(m_femaleIndex[m_femalesampler.get()]);
 	} else {
-		dad = & * (m_maleIndex[GetRNG().randInt(m_numMale)]);
-		mom = & * (m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+		dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
+		mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
 	}
 
 	return std::make_pair(dad, mom);
@@ -1053,12 +1053,12 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 			continue;
 		RawIndIterator par2 = basePtr + info;
 		if (par2->sex() != sex1)
-			validInds.push_back(& * par2);
+			validInds.push_back(&*par2);
 	}
 	DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
 	individual * par2 = validInds[GetRNG().randInt(validInds.size())];
-	DBG_DO(DBG_DEVEL, cerr << "infoParentsChooser: par1: " << par1 - & * basePtr
-		                   << " par2: " << par2 - & * basePtr << endl);
+	DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
+		                    << " par2: " << par2 - &*basePtr << endl);
 	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 }
 
@@ -1133,7 +1133,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
-		return parentChooser::individualPair(& * (m_begin + parent), NULL);
+		return parentChooser::individualPair(&*(m_begin + parent), NULL);
 	} else if (PySequence_Check(item)) {
 		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
 			"Parents should be returned in the form of a sequence of two elements");
@@ -1145,7 +1145,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 				ULONG idx = static_cast<ULONG>(PyInt_AS_LONG(v));
 				DBG_ASSERT(idx < m_size, ValueError, "Returned parent index (" + toStr(idx) +
 					") is greater than subpopulation size " + toStr(m_size));
-				parents[i] = & * (m_begin + idx);
+				parents[i] = &*(m_begin + idx);
 			} else {
 				void * ind = pyIndPointer(v);
 				if (ind)
@@ -1581,8 +1581,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(sps[i]);
 		}
-		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
-			                   << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
+			                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1628,8 +1628,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
-			                   << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cerr	<< "VSP sizes in subpop " << sp << " is "
+			                    << vspSize << endl);
 
 		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
 			SystemError, "Failed to determine subpopulation size");

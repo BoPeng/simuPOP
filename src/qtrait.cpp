@@ -62,7 +62,7 @@ bool baseQuanTrait::apply(population & pop)
 
 			IndIterator ind = pop.indIterator(sp->subPop());
 			for (; ind.valid(); ++ind) {
-				qtrait(& * ind, pop.gen(), traits);
+				qtrait(&*ind, pop.gen(), traits);
 				for (size_t i = 0; i < infoSize(); ++i)
 					ind->setInfo(traits[i], infoIdx[i]);
 			}
@@ -82,7 +82,7 @@ bool baseQuanTrait::applyDuringMating(population & pop, RawIndIterator offspring
 {
 	vectorf traits(infoSize());
 
-	qtrait(& * offspring, pop.gen(), traits);
+	qtrait(&*offspring, pop.gen(), traits);
 	for (size_t i = 0; i < traits.size(); ++i)
 		offspring->setInfo(traits[i], infoField(i));
 	return true;

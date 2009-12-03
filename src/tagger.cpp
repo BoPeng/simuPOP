@@ -225,12 +225,12 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	size_t is = infoSize();
 	if (is == 1) {
 		if (dad != NULL)
-			offspring->setInfo(dad - & * pop.indIterator(), infoField(0));
+			offspring->setInfo(dad - &*pop.indIterator(), infoField(0));
 		else if (mom != NULL)
-			offspring->setInfo(mom - & * pop.indIterator(), infoField(0));
+			offspring->setInfo(mom - &*pop.indIterator(), infoField(0));
 	} else if (is == 2) {
-		offspring->setInfo(dad == NULL ? -1 : dad - & * pop.indIterator(), infoField(0));
-		offspring->setInfo(mom == NULL ? -1 : mom - & * pop.indIterator(), infoField(1));
+		offspring->setInfo(dad == NULL ? -1 : dad - &*pop.indIterator(), infoField(0));
+		offspring->setInfo(mom == NULL ? -1 : mom - &*pop.indIterator(), infoField(1));
 	}
 	return true;
 }

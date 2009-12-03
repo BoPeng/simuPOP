@@ -534,8 +534,8 @@ void recombinator::initialize(const population & pop)
 		m_recBeforeLoci.push_back(chEnd);
 		vecP.push_back(0.5);
 	}
-	DBG_DO(DBG_TRANSMITTER, cerr << "Specify after Loci. With m_ratess "
-		                         << vecP << " before " << m_recBeforeLoci << endl);
+	DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
+		                            << vecP << " before " << m_recBeforeLoci << endl);
 
 	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
 

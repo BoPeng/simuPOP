@@ -169,17 +169,17 @@ bool infoEval::apply(population & pop)
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		pop.activateVirtualSubPop(*sp);
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
-			string res = evalInfo(& * ind, false) ;
+			string res = evalInfo(&*ind, false) ;
 			if (!this->noOutput() ) {
 				ostream & out = this->getOstream(pop.dict());
 				out << res;
 				this->closeOstream();
 			}
 		}
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }
@@ -190,7 +190,7 @@ bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	string res = evalInfo(& * offspring, false);
+	string res = evalInfo(&*offspring, false);
 
 	if (!this->noOutput() ) {
 		ostream & out = this->getOstream(pop.dict());
@@ -225,13 +225,12 @@ bool infoExec::apply(population & pop)
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		pop.activateVirtualSubPop(*sp);
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case simpleStmt::NoOperation:
-				evalInfo(& * ind, true);
+				evalInfo(&*ind, true);
 				break;
 			case simpleStmt::Assignment:
 				ind->setInfo(oValue, oVarIdx);
@@ -258,6 +257,7 @@ bool infoExec::apply(population & pop)
 				throw RuntimeError("Incorrect operation type");
 			}
 		}
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }
@@ -268,7 +268,7 @@ bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	evalInfo(& * offspring, true);
+	evalInfo(&*offspring, true);
 	return true;
 }
 
@@ -399,7 +399,7 @@ statPopSize::statPopSize(bool popSize, const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_isActive(popSize), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
-	const char * allowedVars[] = { popSize_String,    popSize_sp_String,
+	const char * allowedVars[] = { popSize_String,	  popSize_sp_String,
 		                           subPopSize_String, "" };
 	const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
 
@@ -448,8 +448,8 @@ statNumOfMale::statNumOfMale(bool numOfMale, const subPopList & subPops, const s
 	: m_isActive(numOfMale), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfMale_String,      propOfMale_String,
-		numOfFemale_String,    propOfFemale_String,
+		numOfMale_String,	   propOfMale_String,
+		numOfFemale_String,	   propOfFemale_String,
 		numOfMale_sp_String,   propOfMale_sp_String,
 		numOfFemale_sp_String, propOfFemale_sp_String,""
 	};
@@ -483,8 +483,7 @@ bool statNumOfMale::apply(population & pop)
 		ULONG maleCnt = 0;
 		ULONG femaleCnt = 0;
 		ULONG totalCnt = 0;
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp);
+		pop.activateVirtualSubPop(*sp);
 
 		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it)
@@ -493,8 +492,7 @@ bool statNumOfMale::apply(population & pop)
 			else
 				femaleCnt++;
 
-		if (sp->isVirtual())
-			pop.deactivateVirtualSubPop(sp->subPop());
+		pop.deactivateVirtualSubPop(sp->subPop());
 
 		totalCnt = maleCnt + femaleCnt;
 
@@ -532,8 +530,8 @@ statNumOfAffected::statNumOfAffected(bool numOfAffected, const subPopList & subP
 	: m_isActive(numOfAffected), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfAffected_String,      propOfAffected_String,
-		numOfUnaffected_String,    propOfUnaffected_String,
+		numOfAffected_String,	   propOfAffected_String,
+		numOfUnaffected_String,	   propOfUnaffected_String,
 		numOfAffected_sp_String,   propOfAffected_sp_String,
 		numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
 	};
@@ -567,8 +565,7 @@ bool statNumOfAffected::apply(population & pop)
 		ULONG affectedCnt = 0;
 		ULONG unaffectedCnt = 0;
 		ULONG totalCnt = 0;
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp);
+		pop.activateVirtualSubPop(*sp);
 
 		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it)
@@ -577,8 +574,7 @@ bool statNumOfAffected::apply(population & pop)
 			else
 				unaffectedCnt++;
 
-		if (sp->isVirtual())
-			pop.deactivateVirtualSubPop(sp->subPop());
+		pop.deactivateVirtualSubPop(sp->subPop());
 
 		totalCnt = affectedCnt + unaffectedCnt;
 
@@ -619,7 +615,7 @@ statAlleleFreq::statAlleleFreq(const vectoru & loci, const subPopList & subPops,
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		AlleleNum_String,    AlleleFreq_String,
+		AlleleNum_String,	 AlleleFreq_String,
 		AlleleNum_sp_String, AlleleFreq_sp_String,""
 	};
 	const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
@@ -660,8 +656,7 @@ bool statAlleleFreq::apply(population & pop)
 		if (m_vars.contains(AlleleFreq_sp_String))
 			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			UINT loc = m_loci[idx];
@@ -727,8 +722,7 @@ bool statAlleleFreq::apply(population & pop)
 			}
 #endif
 		}
-		if (it->isVirtual())
-			pop.deactivateVirtualSubPop(it->subPop());
+		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
 	if (m_vars.contains(AlleleNum_String)) {
@@ -764,10 +758,10 @@ statHeteroFreq::statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoF
 			m_loci.push_back(homoFreq[i]);
 	//
 	const char * allowedVars[] = {
-		HeteroNum_String,    HeteroFreq_String,
+		HeteroNum_String,	 HeteroFreq_String,
 		HeteroNum_sp_String, HeteroFreq_sp_String,
-		HomoNum_String,      HomoFreq_String,
-		HomoNum_sp_String,   HomoFreq_sp_String,
+		HomoNum_String,		 HomoFreq_String,
+		HomoNum_sp_String,	 HomoFreq_sp_String,
 		""
 	};
 
@@ -814,8 +808,7 @@ bool statHeteroFreq::apply(population & pop)
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		intDict heteroCnt;
 		intDict homoCnt;
@@ -845,8 +838,7 @@ bool statHeteroFreq::apply(population & pop)
 			allHeteroCnt[loc] += heteroCnt[loc];
 			allHomoCnt[loc] += homoCnt[loc];
 		}
-		if (it->isVirtual())
-			pop.deactivateVirtualSubPop(it->subPop());
+		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
 		if (m_vars.contains(HeteroNum_sp_String))
 			pop.getVars().setIntDictVar(subPopVar_String(*it, HeteroNum_String) + m_suffix, heteroCnt);
@@ -904,7 +896,7 @@ statGenoFreq::statGenoFreq(const vectoru & genoFreq, const subPopList & subPops,
 	: m_loci(genoFreq), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		GenotypeNum_String,    GenotypeFreq_String,
+		GenotypeNum_String,	   GenotypeFreq_String,
 		GenotypeNum_sp_String, GenotypeFreq_sp_String,""
 	};
 	const char * defaultVars[] = { GenotypeFreq_String, GenotypeNum_String, "" };
@@ -950,8 +942,7 @@ bool statGenoFreq::apply(population & pop)
 		if (m_vars.contains(GenotypeFreq_sp_String))
 			pop.getVars().removeVar(subPopVar_String(*it, GenotypeFreq_String) + m_suffix);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			UINT loc = m_loci[idx];
@@ -1009,8 +1000,7 @@ bool statGenoFreq::apply(population & pop)
 					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
 			}
 		}
-		if (it->isVirtual())
-			pop.deactivateVirtualSubPop(it->subPop());
+		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
 	if (m_vars.contains(GenotypeNum_String)) {
@@ -1100,8 +1090,7 @@ bool statHaploFreq::apply(population & pop)
 		if (m_vars.contains(HaplotypeFreq_sp_String))
 			pop.getVars().removeVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			const vectori & loci = m_loci[idx];
@@ -1161,8 +1150,7 @@ bool statHaploFreq::apply(population & pop)
 					+ key + "}", haplotypes);
 			}
 		}
-		if (it->isVirtual())
-			pop.deactivateVirtualSubPop(it->subPop());
+		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
 	if (m_vars.contains(HaplotypeNum_String)) {
@@ -1202,8 +1190,8 @@ statInfo::statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
 	m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,
-		MaxOfInfo_String,    MinOfInfo_String,
+		SumOfInfo_String,	 MeanOfInfo_String,	   VarOfInfo_String,
+		MaxOfInfo_String,	 MinOfInfo_String,
 		SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String,
 		MaxOfInfo_sp_String, MinOfInfo_sp_String,
 		""
@@ -1336,8 +1324,7 @@ bool statInfo::apply(population & pop)
 		vectorf maxVal(0);
 		vectorf minVal(0);
 
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp);
+		pop.activateVirtualSubPop(*sp);
 
 		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it) {
@@ -1373,8 +1360,7 @@ bool statInfo::apply(population & pop)
 			}
 		}
 
-		if (sp->isVirtual())
-			pop.deactivateVirtualSubPop(sp->subPop());
+		pop.deactivateVirtualSubPop(sp->subPop());
 
 		for (size_t i = 0; i < numSumFld; ++i)
 			allSumVal[i] += sumVal[i];
@@ -1476,9 +1462,9 @@ statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 	: m_LD(LD), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		LD_String,       LD_prime_String,		R2_String,
-		ChiSq_String,    ChiSq_p_String,		CramerV_String,
-		LD_sp_String,    LD_prime_sp_String,	R2_sp_String,
+		LD_String,		 LD_prime_String,		R2_String,
+		ChiSq_String,	 ChiSq_p_String,		CramerV_String,
+		LD_sp_String,	 LD_prime_sp_String,	R2_sp_String,
 		ChiSq_sp_String, ChiSq_p_sp_String,		CramerV_sp_String,
 		""
 	};
@@ -1759,7 +1745,7 @@ bool statLD::apply(population & pop)
 	UINT ply = pop.ploidy();
 	for (; it != itEnd; ++it) {
 		const char * spVars[] = {
-			LD_sp_String,    LD_prime_sp_String,	R2_sp_String,
+			LD_sp_String,	 LD_prime_sp_String,	R2_sp_String,
 			ChiSq_sp_String, ChiSq_p_sp_String,		CramerV_sp_String,
 			""
 		};
@@ -1768,8 +1754,7 @@ bool statLD::apply(population & pop)
 				pop.getVars().removeVar(subPopVar_String(*it, spVars[i]));
 		}
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		ALLELECNTLIST alleleCnt(loci.size());
 		HAPLOCNTLIST haploCnt(m_LD.size());
@@ -1802,6 +1787,7 @@ bool statLD::apply(population & pop)
 				}
 			}
 		}
+		pop.deactivateVirtualSubPop(it->subPop());
 		// add to all count
 		for (size_t idx = 0; idx < nLoci; ++idx) {
 			ALLELECNT::iterator cnt = alleleCnt[idx].begin();
@@ -2084,8 +2070,7 @@ bool statAssociation::apply(population & pop)
 		GENOCNTLIST caseGenoCnt(nLoci);
 		GENOCNTLIST ctrlGenoCnt(nLoci);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
@@ -2126,6 +2111,7 @@ bool statAssociation::apply(population & pop)
 				}
 			}
 		}
+		pop.deactivateVirtualSubPop(it->subPop());
 		//
 		// output variable.
 		if (m_vars.contains(Allele_ChiSq_sp_String) || m_vars.contains(Allele_ChiSq_p_sp_String)) {
@@ -2289,8 +2275,7 @@ bool statNeutrality::apply(population & pop)
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
 	for (; it != itEnd; ++it) {
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		UINT spBegin = allHaplotypes.size();
 		// go through all individual
@@ -2314,8 +2299,7 @@ bool statNeutrality::apply(population & pop)
 		if (m_vars.contains(Neutra_Pi_sp_String))
 			pop.getVars().setDoubleVar(subPopVar_String(*it, Neutra_Pi_String) + m_suffix,
 				calcPi(allHaplotypes.begin() + spBegin, allHaplotypes.end()));
-		if (it->isVirtual())
-			pop.deactivateVirtualSubPop(it->subPop());
+		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
 	if (m_vars.contains(Neutra_Pi_String))
@@ -2516,8 +2500,7 @@ bool statStructure::apply(population & pop)
 		if (m_vars.contains(AlleleFreq_sp_String))
 			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		UINT spSize = 0;
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
@@ -2556,6 +2539,7 @@ bool statStructure::apply(population & pop)
 		}
 		// (virtual) subpopulation size
 		n_i.push_back(spSize);
+		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
 	// Nei's Gst
@@ -2663,8 +2647,7 @@ bool statHWE::apply(population & pop)
 	for (; it != itEnd; ++it) {
 		GENOCNTLIST genoCnt(nLoci);
 
-		if (it->isVirtual())
-			pop.activateVirtualSubPop(*it);
+		pop.activateVirtualSubPop(*it);
 
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
@@ -2678,6 +2661,7 @@ bool statHWE::apply(population & pop)
 				genoCnt[idx][GENOCNT::key_type(a1, a2)]++;
 			}
 		}
+		pop.deactivateVirtualSubPop(it->subPop());
 		//
 		// output variable.
 		if (m_vars.contains(HWE_sp_String)) {
