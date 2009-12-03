@@ -104,6 +104,10 @@ protected:
 	/// subpopulation.
 	static const size_t m_flagIteratable = 8;
 
+	/// a temporary mark to mark individuals for deletion
+	/// or extraction.
+	static const size_t m_flagMarked = 16;
+
 public:
 	///  @name constructor, destructor etc
 	//@{
@@ -319,6 +323,28 @@ public:
 			RESETFLAG(m_flags, m_flagVisible);
 	}
 
+	/** CPPONLY
+	 *  check if an individual is marked. This is a temporary flag that is
+	 *  usually used to mark individuals for removal or extraction. It might be
+	 *  be reset with any population operation.
+	 *  <group>5-mark</group>
+	 */
+	bool marked() const
+	{
+		return ISSETFLAG(m_flags, m_flagMarked);
+	}
+
+	/** CPPONLY
+	 *  mark (default) or unmark (if \e mark=false) an individual.
+	 *  <group>5-mark</group>
+	 */
+	void mark(bool mark=true) const
+	{
+		if (mark)
+			SETFLAG(m_flags, m_flagMarked);
+		else
+			RESETFLAG(m_flags, m_flagMarked);
+	}
 
 	/** Return the value of an information field \e filed (by index or name).
 	 *  <tt>ind.info(name)</tt> is equivalent to <tt>ind.name</tt> although the
