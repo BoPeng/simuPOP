@@ -84,6 +84,7 @@ private:
 
 ostream & operator<<(ostream & out, const vspID & vsp);
 
+
 /** This class is the base class of all virtual subpopulation (VSP) splitters,
  *  which provide ways to define groups of individuals in a subpopulation who
  *  share certain properties. A splitter defines a fixed number of named VSPs.
@@ -141,7 +142,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	virtual bool contains(const population & pop, ULONG ind, vspID vsp) = 0;
+	virtual bool contains(const population & pop, ULONG ind, vspID vsp) const = 0;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -169,6 +170,33 @@ protected:
 };
 
 typedef std::vector<vspSplitter *> vectorsplitter;
+
+/** CPPONLY
+ *  A functor that judge if an individual belong to a certain virtual subpopulation.
+ *  Used by pyIndOperator
+ */
+class vspFunctor
+{
+public:
+	vspFunctor() : m_pop(NULL), m_splitter(NULL), m_vsp()
+	{}
+	
+	vspFunctor(const population & pop, const vspSplitter * splitter, vspID vsp)
+	: m_pop(&pop), m_splitter(splitter), m_vsp(vsp)
+	{
+	}
+
+	bool operator()(ULONG ind)
+	{
+		return m_splitter->contains(*m_pop, ind, m_vsp);
+	}
+
+private:
+	const population * m_pop;
+	const vspSplitter * m_splitter;
+	vspID m_vsp;
+};
+
 
 /** This splitter takes several splitters and stacks their VSPs together. For
  *  example, if the first splitter defines \c 3 VSPs and the second splitter
@@ -220,7 +248,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -290,7 +318,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -358,7 +386,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -416,7 +444,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -483,7 +511,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -546,7 +574,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -605,7 +633,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -687,7 +715,7 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp);
+	bool contains(const population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY

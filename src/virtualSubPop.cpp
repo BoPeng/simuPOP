@@ -155,7 +155,7 @@ ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID v
 }
 
 
-bool combinedSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool combinedSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	SubPopID virtualSubPop = vsp.virtualSubPop();
 
@@ -301,7 +301,7 @@ ULONG productSplitter::size(const population & pop, SubPopID subPop, SubPopID vi
 }
 
 
-bool productSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool productSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	vectori idx = getVSPs(vsp.virtualSubPop());
 
@@ -382,7 +382,7 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 }
 
 
-bool sexSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool sexSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	return (vsp.virtualSubPop() == 0 ? Male : Female) == pop.ind(ind, vsp.subPop()).sex();
 }
@@ -443,7 +443,7 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 }
 
 
-bool affectionSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool affectionSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	return (vsp.virtualSubPop() == 0 ? false : true) == pop.ind(ind, vsp.subPop()).affected();
 }
@@ -591,7 +591,7 @@ UINT infoSplitter::numVirtualSubPop()
 }
 
 
-bool infoSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool infoSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	SubPopID virtualSubPop = vsp.virtualSubPop();
 	UINT idx = pop.infoIdx(m_info);
@@ -773,7 +773,7 @@ UINT proportionSplitter::numVirtualSubPop()
 }
 
 
-bool proportionSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool proportionSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	DBG_FAILIF(static_cast<UINT>(vsp.virtualSubPop()) >= m_proportions.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -884,7 +884,7 @@ UINT rangeSplitter::numVirtualSubPop()
 }
 
 
-bool rangeSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool rangeSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	SubPopID virtualSubPop = vsp.virtualSubPop();
 
@@ -968,7 +968,7 @@ UINT genotypeSplitter::numVirtualSubPop()
 }
 
 
-bool genotypeSplitter::contains(const population & pop, ULONG ind, vspID vsp)
+bool genotypeSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
 	SubPopID virtualSubPop = vsp.virtualSubPop();
 
