@@ -611,10 +611,11 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = sim.population(size=[10, 10], loci=[5, 5], infoFields=['x', 'y'])
+pop = sim.population(size=[20, 20], loci=[5, 5], infoFields=['x', 'y'])
 sim.InitByValue(pop, range(10))
-pop.setIndInfo([-1]*4 + [0]*3 + [-1]*3 + [2]*4 + [-1]*3 + [1]*4, 'x')
-pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields='x')
+sim.InitInfo(pop, lambda: random.randint(0,5), infoFields='x')
+pop.setVirtualSplitter(sim.infoSplitter(field='x', values=[0, 1, 2, 3, 4, 5]))
+pop1 = pop.extract(loci=[1, 2, 3, 6, 7], subPops=[(0,1), (0,3)], infoFields='x')
 sim.Dump(pop1, structure=False)
 #end_file
 

@@ -286,7 +286,7 @@ UINT population::numVirtualSubPop() const
 }
 
 
-void population::activateVirtualSubPop(vspID subPop)
+void population::activateVirtualSubPop(vspID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.subPop());
 	if (!subPop.isVirtual())
@@ -298,7 +298,7 @@ void population::activateVirtualSubPop(vspID subPop)
 }
 
 
-void population::deactivateVirtualSubPop(SubPopID subPop)
+void population::deactivateVirtualSubPop(SubPopID subPop) const
 {
 	CHECKRANGESUBPOP(subPop);
 	if (!hasActivatedVirtualSubPop(subPop))
@@ -694,7 +694,7 @@ void population::setSubPopByIndInfo(const string & field)
 
 	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
 	// sort individuals first
-	std::sort(indIterator(), IndIterator(m_inds.end(), m_inds.end(), AllInds), indCompare(info));
+	std::sort(indIterator(), IndIterator(m_inds.end(), m_inds.end(), true), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first
@@ -1337,13 +1337,17 @@ void population::resize(const uintList & sizeList, bool propagate)
 }
 
 
-population & population::extract(const string & field,
-                                 const uintList & extractedLoci,
-                                 const stringList & infoFieldList,
-                                 int ancGen, pedigree * ped) const
+population & population::extract(const uintList & extractedLoci, const stringList & infoFieldList,
+								 const subPopList & _subPops, int ancGen) const
 {
 	population & pop = *new population();
-	bool removeInd = !field.empty();
+
+	// the usual whole population, easy case.
+	subPopList subPops = _subPops;
+	if (subPops.allAvail())
+		subPops.useSubPopsFrom(*this);
+	
+	bool removeInd = !subPops.allAvail();
 	bool removeLoci = !extractedLoci.allAvail();
 	const vectoru & loci = extractedLoci.elems();
 	bool removeInfo = !infoFieldList.allAvail();
@@ -1419,7 +1423,6 @@ population & population::extract(const string & field,
 	vectoru::iterator lociPtr = new_loci.begin();
 	vectoru::iterator lociEnd = new_loci.end();
 	//
-	UINT info = removeInd ? (ped ? ped->infoIdx(field) : infoIdx(field)) : 0;
 	vectoru infoList;
 	vectorstr::const_iterator iit = keptInfoFields.begin();
 	vectorstr::const_iterator iit_end = keptInfoFields.end();
@@ -1437,28 +1440,28 @@ population & population::extract(const string & field,
 	for (; depth >= 0; --depth) {
 		const_cast<population *>(this)->useAncestralGen(depth);
 		sortIndividuals();
-		if (ped) {
-			ped->useAncestralGen(depth);
-			ped->sortIndividuals();
-		}
 		// determine the number of individuals
-		vectoru spSizes;
-		vector<vectoru> indIdx;
+		vectoru spSizes(numSubPop());
+		vector<vectoru> indIdx(numSubPop());
 		ULONG size;
 		if (!removeInd) {
 			spSizes = subPopSizes();
 			size = popSize();
 		} else {
-			for (ULONG i = 0; i < popSize(); ++i) {
-				int sp = ped ? ped->ind(i).intInfo(info) : m_inds[i].intInfo(info);
-				if (sp < 0)
-					continue;
-				if (spSizes.size() <= static_cast<UINT>(sp)) {
-					spSizes.resize(sp + 1);
-					indIdx.resize(sp + 1);
+			// mark individuals for extraction
+			// unmark all
+			markIndividuals(vspID(), false);
+			for (size_t i = 0; i < subPops.size(); ++i)
+				markIndividuals(subPops[i], true);
+			// select individuals
+			for (ULONG sp = 0; sp < numSubPop(); ++sp) {
+				ULONG spBegin = subPopBegin(sp);
+				for (size_t i = 0; i < subPopSize(sp); ++i) {
+					if (!ind(i, sp).marked())
+						continue;
+					++spSizes[sp];
+					indIdx[sp].push_back(spBegin + i);
 				}
-				++spSizes[sp];
-				indIdx[sp].push_back(i);
 			}
 			size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
 			DBG_DO(DBG_POPULATION, cerr << "New subpopulation size " << spSizes << endl);
@@ -1566,7 +1569,13 @@ population & population::extract(const string & field,
 		}
 	}
 	pop.m_curAncestralGen = 0;
-	//
+	// remove empty subpopulations
+	vectoru emptySubPops;
+	for (size_t i = 0; i < pop.numSubPop(); ++i)
+		if (pop.subPopSize(i) == 0)
+			emptySubPops.push_back(i);
+	if (!emptySubPops.empty())
+		pop.removeSubPops(emptySubPops);
 	return pop;
 }
 
@@ -1912,6 +1921,21 @@ void population::setIndInfo(const floatList & valueList, const uintString & fiel
 	}
 }
 
+
+void population::markIndividuals(vspID subPop, bool mark) const
+{
+	if (subPop.valid()) {
+		activateVirtualSubPop(subPop);
+		ConstIndIterator it = indIterator(subPop.subPop());
+		for (; it.valid(); ++it)
+			it->setMarked(mark);
+		deactivateVirtualSubPop(subPop.subPop());
+	} else {
+		ConstIndIterator it = indIterator();
+		for (; it.valid(); ++it)
+			it->setMarked(mark);
+	}
+}
 
 // set ancestral depth, can be -1
 void population::setAncestralDepth(int depth)

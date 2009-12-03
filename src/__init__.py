@@ -723,12 +723,9 @@ def PyEval(pop, *args, **kwargs):
     '''Evaluate statements *stmts* (optional) and expression *expr* in
     population *pop*\ 's local namespace and return the result of *expr*.
     If *exposePop* is given, population *pop* will be exposed in its local
-    namespace as a variable with a name specified by *exposePop*.
-
-    .. note::
-
-       Unlike its operator counterpart, this function returns the result of
-       *expr* rather than writting it to an output.
+    namespace as a variable with a name specified by *exposePop*. Unlike its
+    operator counterpart, this function returns the result of *expr* rather
+    than writting it to an output.
     '''
     return pyEval(*args, **kwargs).evaluate(pop)
 

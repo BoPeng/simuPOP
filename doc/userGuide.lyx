@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4798,13 +4798,13 @@ Population extraction
 \begin_layout Standard
 Another import population member function is 
 \family typewriter
-population.extract(field=None, loci=None, info=None, ancGen=-1, ped=None)
+population.extract(loci=AllAvail, info=AllAvail, subPops=AllAvail, ancGen=-1)
 \family default
 .
  It is a powerful function that can extract subset of individuals, loci,
  information fields and ancestral generations from an existing population.
- This function is widely used in ascertainment operators where individuals
- or pedigrees are extracted from an existing population and form a sample.
+ This function can be used to draw certain individuals from an existing
+ population and form a sample.
  This function works as follows:
 \end_layout
 
@@ -4856,19 +4856,16 @@ ancGen
 \end_layout
 
 \begin_layout Itemize
-Subset of individuals is specified differently.
- Instead of a list of individuals that will be extracted, an information
- field is expected.
- This information field should hold the new subpopulation ID to which each
- individual will belong in the extracted population.
- Individuals with negative values (invalid subpopulation ID) at this information
- field will not be extracted.
- If another population (or pedigree, parameter 
+Subset of individuals is specified using a list of (virtual) subpopulations.
+ For example, if you define virtual subpopulations by sex using a 
 \family typewriter
-ped
+sexSplitter
 \family default
-) with the same number of individuals is given, the information field from
- that population is used.
+, you can draw all male individuals from a population using 
+\family typewriter
+subPops=[(0, 0)]
+\family default
+.
 \end_layout
 
 \begin_layout Standard

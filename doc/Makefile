@@ -5,11 +5,8 @@
 
 # You can set these variables from the command line.
 
-ifeq ($(HOSTNAME), bp8)
-PYTHON       = $(HOME)/Python26/bin/python
-else
 PYTHON       = python
-endif
+LYX          = lyx
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
 PAPER        =
@@ -67,11 +64,11 @@ build: checkout
 	@echo
 
 build/userGuide.tex: userGuide.lyx
-	/usr/local/bin/lyx --export pdflatex userGuide.lyx
+	$(LYX) --export pdflatex userGuide.lyx
 	mv userGuide.tex build/
 
 build/refManual.tex: refManual.lyx
-	/usr/local/bin/lyx --export pdflatex refManual.lyx
+	$(LYX) --export pdflatex refManual.lyx
 	mv refManual.tex build/
 
 rst: build/userGuide.tex build/refManual.tex
@@ -152,5 +149,5 @@ dist_release: html
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_release
 
 pdf: userGuide.lyx refManual.lyx
-	/usr/local/bin/lyx --export pdf2 userGuide.lyx
-	/usr/local/bin/lyx --export pdf2 refManual.lyx
+	$(LYX) --export pdf2 userGuide.lyx
+	$(LYX) --export pdf2 refManual.lyx

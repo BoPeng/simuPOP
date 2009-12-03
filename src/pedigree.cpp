@@ -52,7 +52,7 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 	if (!m_motherField.empty() && find(extractFields.begin(), extractFields.end(), motherField) == extractFields.end())
 		extractFields.push_back(motherField);
 	//
-	population & ped = pop.extract(string(), loci, extractFields, ancGen, NULL);
+	population & ped = pop.extract(loci, extractFields);
 
 	swap(ped);
 

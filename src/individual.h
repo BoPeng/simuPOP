@@ -288,7 +288,7 @@ public:
 
 
 	/// CPPONLY
-	void setVisible(bool visible)
+	void setVisible(bool visible) const
 	{
 		if (visible)
 			SETFLAG(m_flags, m_flagVisible);
@@ -313,7 +313,7 @@ public:
 	 *  mark (default) or unmark (if \e mark=false) an individual.
 	 *  <group>5-mark</group>
 	 */
-	void mark(bool mark = true)
+	void setMarked(bool mark = true) const
 	{
 		if (mark)
 			SETFLAG(m_flags, m_flagMarked);
@@ -530,7 +530,7 @@ private:
 protected:
 	// internal flag. Can be used to perform many things.
 	// bitset<3> was previously used but that will take 4 bytes.
-	unsigned char m_flags;
+	mutable unsigned char m_flags;
 
 	/// pointer to genotype.
 	GenoIterator m_genoPtr;

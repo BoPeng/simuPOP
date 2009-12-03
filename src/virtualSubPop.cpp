@@ -29,6 +29,16 @@
 
 namespace simuPOP {
 
+	void subPopList::useSubPopsFrom(const population & pop)
+	{
+		DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
+			"Only when no subpopulation is specified can this function be called."
+			"This is likely caused by the use of persistent subPops for different populations.");
+		DBG_ASSERT(m_allAvail, SystemError, "Cannot use all subpopulations in non-allAvail mode");
+		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+			m_subPops.push_back(vspID(sp));
+	}
+
 ostream & operator<<(ostream & out, const vspID & vsp)
 {
 	out << vsp.subPop();
@@ -38,7 +48,7 @@ ostream & operator<<(ostream & out, const vspID & vsp)
 }
 
 
-void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
+void vspSplitter::resetSubPop(const population & pop, SubPopID subPop)
 {
 	DBG_ASSERT(m_activated == InvalidSubPopID || m_activated == subPop,
 		ValueError, "Subpopulation " + toStr(subPop) + " is not activated.");
@@ -46,8 +56,8 @@ void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
 	if (m_activated == InvalidSubPopID)
 		return;
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
 		it->setVisible(true);
 	m_activated = InvalidSubPopID;
@@ -170,7 +180,7 @@ bool combinedSplitter::contains(const population & pop, ULONG ind, vspID vsp) co
 }
 
 
-void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void combinedSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	const vspList & list = m_vspMap[virtualSubPop];
 
@@ -196,7 +206,7 @@ void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 }
 
 
-void combinedSplitter::deactivate(population & pop, SubPopID sp)
+void combinedSplitter::deactivate(const population & pop, SubPopID sp)
 {
 	resetSubPop(pop, sp);
 	m_activated = InvalidSubPopID;
@@ -307,7 +317,7 @@ bool productSplitter::contains(const population & pop, ULONG ind, vspID vsp) con
 }
 
 
-void productSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void productSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	vectori idx = getVSPs(virtualSubPop);
 
@@ -325,7 +335,7 @@ void productSplitter::activate(population & pop, SubPopID subPop, SubPopID virtu
 }
 
 
-void productSplitter::deactivate(population & pop, SubPopID sp)
+void productSplitter::deactivate(const population & pop, SubPopID sp)
 {
 	resetSubPop(pop, sp);
 	m_activated = InvalidSubPopID;
@@ -377,12 +387,12 @@ bool sexSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 }
 
 
-void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void sexSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	Sex s = virtualSubPop == 0 ? Male : Female;
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
 		it->setVisible(it->sex() == s);
@@ -404,7 +414,7 @@ string sexSplitter::name(SubPopID vsp)
 }
 
 
-void sexSplitter::deactivate(population & pop, SubPopID subPop)
+void sexSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
@@ -433,12 +443,12 @@ bool affectionSplitter::contains(const population & pop, ULONG ind, vspID vsp) c
 }
 
 
-void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void affectionSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	bool aff = virtualSubPop == 0 ? false : true;
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
 		it->setVisible(it->affected() == aff);
@@ -460,7 +470,7 @@ string affectionSplitter::name(SubPopID vsp)
 }
 
 
-void affectionSplitter::deactivate(population & pop, SubPopID subPop)
+void affectionSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
@@ -608,12 +618,12 @@ bool infoSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 }
 
 
-void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void infoSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	UINT idx = pop.infoIdx(m_info);
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
@@ -658,7 +668,7 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 }
 
 
-void infoSplitter::deactivate(population & pop, SubPopID subPop)
+void infoSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
@@ -756,7 +766,7 @@ bool proportionSplitter::contains(const population & pop, ULONG ind, vspID vsp) 
 }
 
 
-void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void proportionSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -767,8 +777,8 @@ void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID vi
 	SubPopID sp = 0;
 	SubPopID visibleSP = virtualSubPop;
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it, ++spCount) {
 		if (spCount == spSize) {
 			++sp;
@@ -787,7 +797,7 @@ void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID vi
 }
 
 
-void proportionSplitter::deactivate(population & pop, SubPopID subPop)
+void proportionSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
@@ -850,7 +860,7 @@ bool rangeSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 }
 
 
-void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void rangeSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -859,15 +869,15 @@ void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtual
 	ULONG high = m_ranges[virtualSubPop][1];
 	ULONG idx = 0;
 
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it, ++idx)
 		it->setVisible(idx >= low && idx < high);
 	m_activated = subPop;
 }
 
 
-void rangeSplitter::deactivate(population & pop, SubPopID subPop)
+void rangeSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
@@ -933,21 +943,21 @@ bool genotypeSplitter::contains(const population & pop, ULONG ind, vspID vsp) co
 }
 
 
-void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void genotypeSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
 
 	const vectori & alleles = m_alleles[virtualSubPop];
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	ConstRawIndIterator it = pop.rawIndBegin(subPop);
+	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
 		it->setVisible(match(&*it, alleles));
 	m_activated = subPop;
 }
 
 
-void genotypeSplitter::deactivate(population & pop, SubPopID subPop)
+void genotypeSplitter::deactivate(const population & pop, SubPopID subPop)
 {
 	resetSubPop(pop, subPop);
 }
