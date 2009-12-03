@@ -145,7 +145,6 @@ private:
 class pedigree;
 
 
-
 /**
  *  A simuPOP population consists of individuals of the same genotypic
  *  structure, organized by generations, subpopulations and virtual
@@ -346,11 +345,7 @@ public:
 	UINT numVirtualSubPop() const;
 
 	/// HIDDEN activate a virtual subpopulation.
-	/**
-	   \param id subpopulation id
-	   \param vid virtual subpopulation id
-	 */
-	void activateVirtualSubPop(vspID subPop, IterationType type = VisibleInds);
+	void activateVirtualSubPop(vspID subPop);
 
 	/** HIDDEN
 	 *  deactivate virtual subpopulations in a given
@@ -649,48 +644,42 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indIterator(IterationType type = VisibleInds)
+	IndIterator indIterator()
 	{
-		return IndIterator(m_inds.begin(), m_inds.end(),
-			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
+		return IndIterator(m_inds.begin(), m_inds.end(), !hasActivatedVirtualSubPop());
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	IndIterator indIterator(UINT subPop, IterationType type = VisibleInds)
+	IndIterator indIterator(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == IteratableInds,
-			ValueError, "Can not iterate through an VSP with iteratable iterator");
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
+			m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
 
 
 	/** CPPONLY individual iterator: without subPop info
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indIterator(IterationType type = VisibleInds) const
+	ConstIndIterator indIterator() const
 	{
-		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
+		return ConstIndIterator(m_inds.begin(), m_inds.end(), !hasActivatedVirtualSubPop());
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indIterator(UINT subPop, IterationType type = VisibleInds) const
+	ConstIndIterator indIterator(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
+			m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -1140,7 +1129,7 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 		if (hasActivatedVirtualSubPop() || !indOrdered())
-			return IndInfoIterator(idx, IndIterator(m_inds.end(), m_inds.end(), VisibleInds));
+			return IndInfoIterator(idx, IndIterator(m_inds.end(), m_inds.end(), false));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
 	}
@@ -1155,14 +1144,13 @@ public:
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && vsp.isVirtual(),
-			ValueError, "Can not iterate through an activated subpopulation");
+		DBG_FAILIF(!vsp.isVirtual() && hasActivatedVirtualSubPop(subPop), RuntimeError,
+			"vsp is not virtual but infoBegin iterates through a virtual subpopulations.");
 
-		// has to adjust order because of parameter subPop
-		if (vsp.isVirtual()) {
-			activateVirtualSubPop(vsp, IteratableInds);
-			return IndInfoIterator(idx, indIterator(subPop, IteratableInds));
-		} else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
+		DBG_FAILIF(vsp.isVirtual() && !hasActivatedVirtualSubPop(subPop), RuntimeError,
+			"Virtual subpopulation is not activated.");
+		//
+		if (vsp.isVirtual() || !indOrdered())
 			return IndInfoIterator(idx, indIterator(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
@@ -1178,11 +1166,8 @@ public:
 		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
 		// has to adjust order because of parameter subPop
-		if (vsp.isVirtual())
-			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop),
-					IteratableInds));
-		else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
-			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop), VisibleInds));
+		if (vsp.isVirtual() || hasActivatedVirtualSubPop(subPop) || !indOrdered())
+			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop), true));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}
@@ -1199,9 +1184,12 @@ public:
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This operation is not allowed when there is an activated virtual subpopulation");
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
-		if (subPop.valid())
-			return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
-		else
+		if (subPop.valid()) {
+			activateVirtualSubPop(subPop);
+			vectorinfo ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
+			deactivateVirtualSubPop(subPop.subPop());
+			return ret;
+		} else
 			return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 

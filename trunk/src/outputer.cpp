@@ -39,8 +39,8 @@ bool pyOutput::apply(population & pop)
 string pyOutput::describe(bool format)
 {
 	return "<simuPOP.pyOutput> write '" + \
-		(m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
-		"' to output";
+	       (m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
+	       "' to output";
 }
 
 
@@ -86,7 +86,7 @@ void dumper::displayStructure(const population & pop, ostream & out)
 	}
 	out << "population size: " << pop.popSize();
 	out << " (" << pop.numSubPop() << " subpopulations with ";
-	for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
+	for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd; ++i) {
 		out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
 		if (pop.subPopName(i) != UnnamedSubPop)
 			out << " (" << pop.subPopName(i) << ")";
@@ -107,16 +107,16 @@ UINT dumper::displayGenotype(const population & pop, const subPopList & subPops,
 		out << "Subpopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
 		    << toStr(spSize) << " individuals:" << endl;
 
-		if (sp->isVirtual())
-			const_cast<population &>(pop).activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		const_cast<population &>(pop).activateVirtualSubPop(*sp);
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
 		for ( ; ind.valid(); ++ind, ++count) {
-			out << setw(4) << (& * ind - & * pop.rawIndBegin()) << ": ";
+			out << setw(4) << (&*ind - &*pop.rawIndBegin()) << ": ";
 			ind->display(out, m_width, m_loci);
 			out << endl;
 			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
 				return count;
 		}
+		const_cast<population &>(pop).deactivateVirtualSubPop(sp->subPop());
 	}
 	return count;
 }

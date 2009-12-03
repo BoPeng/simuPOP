@@ -69,11 +69,11 @@ bool individual::operator==(const individual & rhs) const
 		return false;
 	}
 
-	for (UINT i = 0, iEnd = genoSize(); i < iEnd;  ++i)
+	for (UINT i = 0, iEnd = genoSize(); i < iEnd; ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) )
 			return false;
 
-	for (UINT i = 0, iEnd = infoSize(); i < iEnd;  ++i)
+	for (UINT i = 0, iEnd = infoSize(); i < iEnd; ++i)
 		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i) ) {
 			DBG_DO(DBG_POPULATION, cerr << "Information field " << infoField(i) << " differ" << endl);
 			return false;
@@ -240,7 +240,7 @@ void individual::swap(individual & ind, bool swapContent)
 
 	if (swapContent) {
 		Allele tmp;
-		for (UINT i = 0, iEnd = genoSize(); i < iEnd;  i++) {
+		for (UINT i = 0, iEnd = genoSize(); i < iEnd; i++) {
 			tmp = m_genoPtr[i];
 			m_genoPtr[i] = ind.m_genoPtr[i];
 			ind.m_genoPtr[i] = tmp;
@@ -255,10 +255,10 @@ void individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << sexChar() << affectedChar() << " ";
 	UINT pEnd = ploidy();
-	for (UINT p = 0; p < pEnd;  ++p) {
+	for (UINT p = 0; p < pEnd; ++p) {
 		if (loci.empty()) {
 			for (UINT ch = 0, chEnd = numChrom(); ch < chEnd; ++ch) {
-				for (UINT j = 0, jEnd = numLoci(ch); j < jEnd;  ++j)
+				for (UINT j = 0, jEnd = numLoci(ch); j < jEnd; ++j)
 					out << setw(width) << alleleChar(j, p, ch);
 				out << " ";
 			}

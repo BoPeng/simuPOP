@@ -95,7 +95,7 @@ bool baseOperator::isActive(UINT rep, long gen)
 	// at gen has higher priority.
 	if (!m_atGen.empty() ) {
 		// chech atGen.
-		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd;  ++i) {
+		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd; ++i) {
 			int atGen = m_atGen[i];
 			DBG_FAILIF(atGen < 0, ValueError,
 				"During-mating operator used in a mating scheme does not support negative generation index.");
@@ -149,7 +149,7 @@ bool baseOperator::isActive(UINT rep, long gen, long end,
 	// at Gen has higher priority.
 	if (!m_atGen.empty() ) {
 		// chech atGen.
-		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd;  ++i) {
+		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd; ++i) {
 			int atGen = m_atGen[i];
 
 			if (atGen >= 0) {
@@ -384,13 +384,13 @@ bool pause::apply(population & pop)
 
 	string popName = "pop_" + toStr(pop.gen()) + "_" + toStr(pop.rep());
 	if (m_prompt) {
-		cerr << "Simulation paused for population " << pop.rep() << "\n"
-		     << "Press\n"
-		     << "   's' to (s)top the evolution of this population,\n"
-		     << "   'q' to quit (stop the evolution of all populations),\n"
-		     << "   'p' to start an interative (P)ython shell, (current population will be exported as "
-		     << popName << ")\n"
-		     << "   'r' or any other key to (r)esume evolution...." << endl;
+		cerr	<< "Simulation paused for population " << pop.rep() << "\n"
+		        << "Press\n"
+		        << "   's' to (s)top the evolution of this population,\n"
+		        << "   'q' to quit (stop the evolution of all populations),\n"
+		        << "   'p' to start an interative (P)ython shell, (current population will be exported as "
+		        << popName << ")\n"
+		        << "   'r' or any other key to (r)esume evolution...." << endl;
 	}
 	a = simuPOP_getch();
 
@@ -587,10 +587,10 @@ bool ticToc::apply(population & pop)
 		else
 			// since last time
 			out << "Elapsed time: " << std::fixed << std::setprecision(2)
-				<< static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
-				<< "s\t Overall time: "
-				<< static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC
-				<< "s" << endl;
+			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
+			    << "s\t Overall time: "
+			    << static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC
+			    << "s" << endl;
 		this->closeOstream();
 	}
 	return true;

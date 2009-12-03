@@ -60,9 +60,8 @@ bool initSex::apply(population & pop)
 			prop[1] = 1 - prop[0];
 			ws.set(prop, pop.subPopSize(*sp));
 		}
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		pop.activateVirtualSubPop(*sp);
+		IndIterator ind = pop.indIterator(sp->subPop());
 		size_t sexSz = m_sex.size();
 		if (!m_sex.empty())
 			for (; ind.valid(); ++ind, ++idx)
@@ -73,6 +72,7 @@ bool initSex::apply(population & pop)
 		else
 			for (; ind.valid(); ++ind)
 				ind->setSex(ws.get() == 0 ? Male : Female);
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }
@@ -119,9 +119,8 @@ bool initInfo::apply(population & pop)
 	const vectorf & values = m_values.elems();
 
 	for (; sp != sp_end; ++sp) {
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		pop.activateVirtualSubPop(*sp);
+		IndIterator ind = pop.indIterator(sp->subPop());
 		size_t numValues = m_values.size();
 		for (; ind.valid(); ++ind, ++idx) {
 			for (size_t i = 0; i < infoIdx.size(); ++i) {
@@ -131,6 +130,7 @@ bool initInfo::apply(population & pop)
 					ind->setInfo(values[idx % numValues], infoIdx[i]);
 			}
 		}
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }
@@ -199,10 +199,9 @@ bool initByFreq::apply(population & pop)
 			SystemError, "Allele frequecies should add up to one.");
 
 		// will go through virtual subpopulation if sp is virtual
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator left = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		pop.activateVirtualSubPop(*sp);
+		IndIterator left = pop.indIterator(sp->subPop());
+		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it) {
 			if (!m_identicalInds || it == left) {
 				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
@@ -215,6 +214,7 @@ bool initByFreq::apply(population & pop)
 						it->setAllele(ToAllele(left->allele(*loc, *p)), *loc, *p);
 			}
 		}
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }
@@ -291,10 +291,9 @@ bool initByValue::apply(population & pop)
 		if (!m_frequencies.empty())
 			ws.set(m_frequencies);
 
-		if (sp->isVirtual())
-			pop.activateVirtualSubPop(*sp, IteratableInds);
+		pop.activateVirtualSubPop(*sp);
 		// will go through virtual subpopulation if sp is virtual
-		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it) {
 			if (m_value[0].size() == loci.size()) { // for each ploidy
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
@@ -313,6 +312,7 @@ bool initByValue::apply(population & pop)
 						it->setAllele(ToAllele(value[i]), *loc, *p);
 			}
 		}
+		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
 }

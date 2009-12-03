@@ -164,7 +164,6 @@ public:
 	/// HIDDEN
 	string describe(bool format = true);
 
-
 protected:
 	/// migration rate. its meaning is controled by m_mode
 	matrix m_rate;

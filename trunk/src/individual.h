@@ -94,19 +94,9 @@ protected:
 	/// to implement virtual subpopulations
 	static const size_t m_flagVisible = 4;
 
-	/// if this individual is iteratable. This will
-	/// not affect how activated virtual subpoulations
-	/// behave, but will affect how pyIndIterator
-	/// iterate through the population.
-	///
-	/// In short, this is supposed to be a temporary, light
-	/// weight flag that help iterators go through virtual
-	/// subpopulation.
-	static const size_t m_flagIteratable = 8;
-
 	/// a temporary mark to mark individuals for deletion
 	/// or extraction.
-	static const size_t m_flagMarked = 16;
+	static const size_t m_flagMarked = 8;
 
 public:
 	///  @name constructor, destructor etc
@@ -291,23 +281,6 @@ public:
 
 
 	/// CPPONLY
-	bool iteratable() const
-	{
-		return ISSETFLAG(m_flags, m_flagIteratable);
-	}
-
-
-	/// CPPONLY
-	void setIteratable(bool iteratable)
-	{
-		if (iteratable)
-			SETFLAG(m_flags, m_flagIteratable);
-		else
-			RESETFLAG(m_flags, m_flagIteratable);
-	}
-
-
-	/// CPPONLY
 	bool visible() const
 	{
 		return ISSETFLAG(m_flags, m_flagVisible);
@@ -323,6 +296,7 @@ public:
 			RESETFLAG(m_flags, m_flagVisible);
 	}
 
+
 	/** CPPONLY
 	 *  check if an individual is marked. This is a temporary flag that is
 	 *  usually used to mark individuals for removal or extraction. It might be
@@ -334,17 +308,19 @@ public:
 		return ISSETFLAG(m_flags, m_flagMarked);
 	}
 
+
 	/** CPPONLY
 	 *  mark (default) or unmark (if \e mark=false) an individual.
 	 *  <group>5-mark</group>
 	 */
-	void mark(bool mark=true)
+	void mark(bool mark = true)
 	{
 		if (mark)
 			SETFLAG(m_flags, m_flagMarked);
 		else
 			RESETFLAG(m_flags, m_flagMarked);
 	}
+
 
 	/** Return the value of an information field \e filed (by index or name).
 	 *  <tt>ind.info(name)</tt> is equivalent to <tt>ind.name</tt> although the
@@ -546,7 +522,6 @@ private:
 		ar & b;
 		if (b) SETFLAG(m_flags, m_flagAffected);
 		SETFLAG(m_flags, m_flagVisible);
-		SETFLAG(m_flags, m_flagIteratable);
 	}
 
 
@@ -603,21 +578,18 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	IndividualIterator() : m_it(), m_end(), m_iterType(AllInds)
+	IndividualIterator() : m_it(), m_end(), m_allInds(true)
 	{
 	}
 
 
-	IndividualIterator(T it, T end, IterationType iterType)
-		: m_it(it), m_end(end), m_iterType(iterType)
+	IndividualIterator(T it, T end, bool allInds)
+		: m_it(it), m_end(end), m_allInds(allInds)
 	{
 		// m_it need to point to the first valid
 		// individual. otherwise *it will fail.
-		if (m_iterType == VisibleInds)
+		if (!allInds)
 			while (m_it < m_end && !m_it->visible())
-				++m_it;
-		else if (m_iterType == IteratableInds)
-			while (m_it < m_end && !m_it->iteratable())
 				++m_it;
 	}
 
@@ -642,7 +614,7 @@ public:
 
 	pointer operator->() const
 	{
-		return & * m_it;
+		return &*m_it;
 	}
 
 
@@ -652,21 +624,14 @@ public:
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 
-		if (m_iterType == AllInds)
-			return IndividualIterator(m_it++, m_end, m_iterType);
+		if (m_allInds)
+			return IndividualIterator(m_it++, m_end, m_allInds);
 
 		// save current state
 		IndividualIterator tmp(*this);
-		// move forward
-		if (m_iterType == VisibleInds) {
-			while (m_it < m_end)
-				if ((++m_it)->visible())
-					break;
-		} else {
-			while (m_it < m_end)
-				if ((++m_it)->iteratable())
-					break;
-		}
+		while (m_it < m_end)
+			if ((++m_it)->visible())
+				break;
 		// return the original one
 		return tmp;
 	}
@@ -676,20 +641,14 @@ public:
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
-		if (m_iterType == AllInds) {
+		if (m_allInds) {
 			++m_it;
 			return *this;
 		}
 
-		if (m_iterType == VisibleInds) {
-			while (m_it < m_end)
-				if ((++m_it)->visible())
-					return *this;
-		} else {
-			while (m_it < m_end)
-				if ((++m_it)->iteratable())
-					return *this;
-		}
+		while (m_it < m_end)
+			if ((++m_it)->visible())
+				return *this;
 		DBG_ASSERT(m_it == m_end, IndexError,
 			"Something wrong with operator++ here");
 		return *this;
@@ -702,21 +661,15 @@ public:
 	//
 	IndividualIterator operator+(difference_type diff)
 	{
-		if (m_iterType == AllInds)
-			return IndividualIterator(m_it + diff, m_end, m_iterType);
+		if (m_allInds)
+			return IndividualIterator(m_it + diff, m_end, m_allInds);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_iterType == VisibleInds) {
-			while (i < diff && tmp.m_it < tmp.m_end)
-				if ((++tmp.m_it)->visible())
-					++i;
-		} else {
-			while (i < diff && tmp.m_it < tmp.m_end)
-				if ((++tmp.m_it)->iteratable())
-					++i;
-		}
+		while (i < diff && tmp.m_it < tmp.m_end)
+			if ((++tmp.m_it)->visible())
+				++i;
 		DBG_FAILIF(i != diff, ValueError,
 			"Can not add to IndIterator");
 		return tmp;
@@ -725,22 +678,16 @@ public:
 
 	IndividualIterator operator+=(difference_type diff)
 	{
-		if (m_iterType == AllInds) {
+		if (m_allInds) {
 			m_it += diff;
 			return *this;
 		}
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_iterType == VisibleInds) {
-			while (i < diff && m_it < m_end)
-				if ((++m_it)->visible())
-					++i;
-		} else {
-			while (i < diff && m_it < m_end)
-				if ((++m_it)->iteratable())
-					++i;
-		}
+		while (i < diff && m_it < m_end)
+			if ((++m_it)->visible())
+				++i;
 		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
 		return *this;
 	}
@@ -748,64 +695,44 @@ public:
 
 	IndividualIterator operator-(difference_type diff)
 	{
-		if (m_iterType == AllInds)
-			return IndividualIterator(m_it - diff, m_end, m_iterType);
-		else {
-			IndividualIterator tmp(*this);
-			// can not check. Possible problem
-			if (m_iterType == VisibleInds) {
-				for (difference_type i = 0; i < diff; ++i)
-					while (!(--tmp.m_it)->visible()) ;
-			} else {
-				for (difference_type i = 0; i < diff; ++i)
-					while (!(--tmp.m_it)->iteratable()) ;
-			}
-			return tmp;
-		}
+		if (m_allInds)
+			return IndividualIterator(m_it - diff, m_end, m_allInds);
+		IndividualIterator tmp(*this);
+		// can not check. Possible problem
+		for (difference_type i = 0; i < diff; ++i)
+			while (!(--tmp.m_it)->visible()) ;
+		return tmp;
 	}
 
 
 	difference_type operator-(IndividualIterator rhs)
 	{
-		if (m_iterType == AllInds)
+		if (m_allInds)
 			return m_it - rhs.m_it;
-		else {
-			difference_type i = 0;
-			if (m_iterType == VisibleInds) {
-				for (T it = rhs.m_it; it != m_it; ++it)
-					if (it->visible())
-						++i;
-			} else {
-				for (T it = rhs.m_it; it != m_it; ++it)
-					if (it->iteratable())
-						++i;
-			}
-			return i;
-		}
+		difference_type i = 0;
+		for (T it = rhs.m_it; it != m_it; ++it)
+			if (it->visible())
+				++i;
+		return i;
 	}
 
 
 	IndividualIterator operator--(int)
 	{
-		if (m_iterType == AllInds)
-			return IndividualIterator(m_it--, m_end, m_iterType);
+		if (m_allInds)
+			return IndividualIterator(m_it--, m_end, m_allInds);
 		IndividualIterator tmp(*this);
-		if (m_iterType == VisibleInds)
-			while (!(--tmp.m_it)->visible()) ;
-		else
-			while (!(--tmp.m_it)->iteratable()) ;
+		while (!(--tmp.m_it)->visible()) ;
 		return tmp;
 	}
 
 
 	IndividualIterator operator--()
 	{
-		if (m_iterType == AllInds)
+		if (m_allInds)
 			--m_it;
-		else if (m_iterType == VisibleInds)
-			while (!(--m_it)->visible()) ;
 		else
-			while (!(--m_it)->iteratable()) ;
+			while (!(--m_it)->visible()) ;
 		return *this;
 	}
 
@@ -843,7 +770,7 @@ private:
 	T m_end;
 
 	//
-	IterationType m_iterType;
+	bool m_allInds;
 };
 
 //
@@ -879,7 +806,7 @@ public:
 
 	InformationIterator(UINT info, InfoIterator ptr, UINT size)
 		: m_info(info), m_useGappedIterator(true),
-		m_it(), m_ptr(& * ptr), m_step(size)
+		m_it(), m_ptr(&*ptr), m_step(size)
 	{
 	}
 

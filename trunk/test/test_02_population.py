@@ -796,8 +796,8 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.indInfo('x', [1, 0]), tuple(([1, 2]*pop.subPopSize(1))[:pop.subPopSize([1, 0])]))
             self.assertEqual(pop.indInfo(0, [1, 1]), tuple([3]*pop.subPopSize([1, 1])))
         #
-        self.assertRaises(exceptions.IndexError, testVSPSetAndRead, self.getPop())
-        testVSPSetAndRead(self.getPop(True))
+        self.assertRaises(exceptions.ValueError, testVSPSetAndRead, self.getPop())
+        testVSPSetAndRead(self.getPop(VSP=True))
 
     def testSetInfoFields(self):
         'Testing population::setInfoFields(fields, init=0)'

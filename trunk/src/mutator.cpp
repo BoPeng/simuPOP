@@ -425,7 +425,7 @@ bool pointMutator::apply(population & pop)
 		vectoru::iterator it = m_inds.begin();
 		vectoru::iterator itEnd = m_inds.end();
 		for (; it != itEnd; ++it) {
-			IndIterator ind = pop.indIterator(sp->subPop(), VisibleInds) + *it;
+			IndIterator ind = pop.indIterator(sp->subPop()) + *it;
 			if (!ind.valid())
 				continue;
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
@@ -434,17 +434,17 @@ bool pointMutator::apply(population & pop)
 						ind->setAllele(m_allele, i, m_ploidy[p]);
 						DBG_DO(DBG_MUTATOR,
 							cerr << "Mutate locus " << i << " at ploidy " << m_ploidy[p]
-							     << " to allele " << int(m_allele) << " at generation "
-							     << pop.gen() << endl);
+							<< " to allele " << int(m_allele) << " at generation "
+							<< pop.gen() << endl);
 					}
 				} else {
 					const vectoru & loci = m_loci.elems();
 					for (size_t i = 0; i < loci.size(); ++i) {
 						ind->setAllele(m_allele, loci[i], m_ploidy[p]);
 						DBG_DO(DBG_MUTATOR,
-							cerr << "Mutate locus " << loci[i] << " at ploidy " << m_ploidy[p]
-							     << " to allele " << int(m_allele) << " at generation "
-							     << pop.gen() << endl);
+							cerr << "Mutate locus " << loci[i]	<< " at ploidy " << m_ploidy[p]
+							                                    << " to allele " << int(m_allele) << " at generation "
+							                                    << pop.gen() << endl);
 					}
 				}
 			}   // ploidy

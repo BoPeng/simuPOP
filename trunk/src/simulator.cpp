@@ -56,7 +56,7 @@ simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 
 	if (!m_matingScheme->isCompatible(pop))
 		throw ValueError
-			    ("mating type is not compatible with current population settings.");
+			("mating type is not compatible with current population settings.");
 
 	// create replicates of given population
 	m_ptrRep = vector<population *>(m_numRep);
@@ -178,7 +178,7 @@ string simulator::describe(const opList & initOps,
 {
 	if (initOps.empty() && preOps.empty() && duringOps.empty() && postOps.empty() && finalOps.empty() && gen == -1)
 		return "<simuPOP.simulator> a simulator with " + toStr(m_numRep) + " population" + (m_numRep == 1 ? "." : "s.");
-	
+
 	vectorstr allDesc(m_numRep, "");
 
 	// assuming all active replicates.
@@ -198,9 +198,9 @@ string simulator::describe(const opList & initOps,
 		if (gen < 0)
 			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
 		else
-			desc << "\nEvolve a population for " << gen << " generations. "
-			     << "(generations " << m_gen << " - " << m_gen + gen - 1
-			     << ", stops at generation " << m_gen + gen << ")\n";
+			desc	<< "\nEvolve a population for " << gen << " generations. "
+			        << "(generations " << m_gen << " - " << m_gen + gen - 1
+			        << ", stops at generation " << m_gen + gen << ")\n";
 		desc << "<ul>\n";
 		if (preOps.empty())
 			desc << "<li>No operator is applied to the parental generation (preOps)." << endl;
@@ -211,8 +211,8 @@ string simulator::describe(const opList & initOps,
 					desc << "<li>" << preOps[it]->describe(false) << " " << preOps[it]->applicability() << endl;
 			desc << "</ul>\n";
 		}
-		desc << "\n<li>Populate an offspring populaton from the parental population using mating scheme "
-		     << m_matingScheme->describe(false) << endl;
+		desc	<< "\n<li>Populate an offspring populaton from the parental population using mating scheme "
+		        << m_matingScheme->describe(false) << endl;
 		if (!duringOps.empty()) {
 			desc << "<ul>\nWith additional during mating operators\n<ul>\n";
 			for (size_t it = 0; it < duringOps.size(); ++it)
@@ -361,8 +361,8 @@ vectoru simulator::evolve(
 						if (PyErr_CheckSignals())
 							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
-						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Pre-mating Operator " + preOps[it]->describe() +
+						DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
+							                        << "Pre-mating Operator " + preOps[it]->describe() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
@@ -398,8 +398,8 @@ vectoru simulator::evolve(
 				if (PyErr_CheckSignals())
 					throw StopEvolution("Evolution stopped due to keyboard interruption.");
 			} catch (StopEvolution e) {
-				DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
+				DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
+					                        << "During-mating Operator at replicate " + toStr(curRep) << endl);
 				if (e.message()[0] != '\0')
 					cerr << e.message() << endl;
 				fill(activeReps.begin(), activeReps.end(), false);
@@ -428,8 +428,8 @@ vectoru simulator::evolve(
 						if (PyErr_CheckSignals())
 							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
-						DBG_DO(DBG_SIMULATOR, cerr << "All replicates are stopped due to a StopEvolution exception raised by "
-							                       << "Post-mating Operator " + postOps[it]->describe() +
+						DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
+							                        << "Post-mating Operator " + postOps[it]->describe() +
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;

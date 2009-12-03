@@ -324,8 +324,8 @@ private:
 		ar & l_gen;
 		ar & m_numRep;
 
-		DBG_DO(DBG_SIMULATOR, cerr << "Saving a simulator with "
-			                       << m_numRep << " populations." << endl);
+		DBG_DO(DBG_SIMULATOR, cerr	<< "Saving a simulator with "
+			                        << m_numRep << " populations." << endl);
 
 		// ignore scratch population
 		for (UINT i = 0; i < m_numRep; i++)
@@ -341,8 +341,8 @@ private:
 
 		ar & m_numRep;
 
-		DBG_DO(DBG_SIMULATOR, cerr << "Loading a simulator with "
-			                       << m_numRep << " populations." << endl);
+		DBG_DO(DBG_SIMULATOR, cerr	<< "Loading a simulator with "
+			                        << m_numRep << " populations." << endl);
 
 		m_ptrRep = vector<population *>(m_numRep);
 

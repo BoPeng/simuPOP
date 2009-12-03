@@ -68,7 +68,7 @@ using std::string;
 
 /// This is not the most effecient method, but it is convenient to use.
 #include "boost/lexical_cast.hpp"
-#define toStr(val) (boost::lexical_cast<string>(val))
+#define toStr(val) (boost::lexical_cast < string > (val))
 
 /// needed by the following typedefs
 #include <vector>
@@ -217,22 +217,6 @@ enum MigrMode {
 	ByProbability = 82,
 	ByProportion = 83,
 	ByCounts = 84
-};
-
-// iteratable and visible are two different concepts.
-// When a population is activated by setting the visible flag
-// All operations that work on this subpopulation will be limited
-// to visible individuals. To be exact, IndIterator would skip
-// invisible individuals.
-//
-// When a population is activated by setting the iteratable flag,
-// only operations that respect this flag would check it and
-// respond to it.
-//
-enum IterationType {
-	AllInds = 91,
-	IteratableInds = 92,
-	VisibleInds = 93
 };
 
 
