@@ -453,37 +453,10 @@ class TestPopulation(unittest.TestCase):
             
         # for idx, ind in enumerate(inds):
         #    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
-
-        
-               
-    def newtestExtract(self):
-        pop1 = self.getPop(size=[200, 400, 200], loci=[20, 40, 20], ancGen=3, infoFields=['x'])
-        for i in pop1.individuals():
-            n = random.choice([-1, -3, -5, 0, 1, 2, 3, 4, 5])
-            i.setInfo(n, 'x')
-        pop2 = pop1.extract(field='x')
-        for gen in range(4):
-            pop1.useAncestralGen(gen)
-            pop2.useAncestralGen(gen)
-            inds = []
-            for j in range(0,6):
-                for n in range(pop1.popSize()):
-                    ind = pop1.individual(n)
-                    if ind.info('x') == j:
-                        inds.append(n)
-            self.comparePop(pop1, pop2, inds, infoFields=['x'], gen=gen)
-        #if ancGen == -1:
-        #    self.assertEqual(pop1.ancestralGens(), pop2.ancestralGens())
-        #    topGen = pop1.ancestralGens()
-        #else:
-        #    self.assertEqual(pop2.ancestralGens(), ancGen)
-        #    topGen = ancGen
-        #for gen in range(topGen):
-        #    self.compare(pop1, pop2, gen=gen)
         
 
     def testExtract(self):
-        'Testing population::Extract(field=None, loci=None, infoFields=None, ancGen =-1)'
+        'Testing population::Extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail, ancGen =-1)'
         # If subpoulation size is too small, the last subpopulation
         # may not have any individual.
         pop = population(size=[30, 50], loci=[2, 3], infoFields=['x', 'y'])
@@ -492,33 +465,12 @@ class TestPopulation(unittest.TestCase):
             ind.setInfo(n, 'x')
             ind.setInfo(n + 10, 'y')
             ind.setGenotype([n+1])
-        pop1 = pop.extract(field='x')
-        for sp in range(5):
+        pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2]))
+        pop1 = pop.extract(subPops=([0,0], [1,1]))
+        for sp in range(2):
             for ind in pop1.individuals(sp):
                 self.assertEqual(ind.info('x'), sp)
                 self.assertEqual(ind.info('y'), sp + 10)
-                if ModuleInfo()['alleleType'] == 'binary':
-                    self.assertEqual(ind.genotype(), [1]*(pop.totNumLoci()*pop.ploidy()))
-                else:
-                    self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
-        # test pedFields
-        pop = population(size=[30, 50], loci=[2, 3], infoFields=['x','y'])
-        pop.setIndInfo([0], 'x')
-        pop.setIndInfo([1], 'y')
-        ###  FIXME
-        return
-        ped = pedigree(pop, infoFields=['x'], fatherField='', motherField='' )
-        ped.addInfoFields('z')
-        ped.setIndInfo([2], 'z')
-        sample = pop.extract(ped=ped)
-        self.assertEqual(sample.indInfo('x'), tuple([0]*80))
-        self.assertEqual(sample.indInfo('y'), tuple([1]*80))
-        self.assertEqual('z' in sample.infoFields(), False)
-        sample = pop.extract(ped=ped, pedFields='z')
-        self.assertEqual(sample.indInfo('x'), tuple([0]*80))
-        self.assertEqual(sample.indInfo('y'), tuple([1]*80))
-        self.assertEqual(sample.indInfo('z'), tuple([2.0]*80))
-        # FIXME: test extraction of loci and ancestral generations
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'

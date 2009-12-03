@@ -65,8 +65,7 @@ using std::deque;
 namespace simuPOP {
 
 
-/** CPPONLY
- *  this class implements a Python itertor class that can be used to iterate
+/** this class implements a Python itertor class that can be used to iterate
  *  through individuals in a (sub)population. If allInds are true,
  *  visiblility of individuals will not be checked. Otherwise, a functor
  *  will be used to check if indiviudals belong to a specified virtual
@@ -345,14 +344,14 @@ public:
 	UINT numVirtualSubPop() const;
 
 	/// HIDDEN activate a virtual subpopulation.
-	void activateVirtualSubPop(vspID subPop);
+	void activateVirtualSubPop(vspID subPop) const;
 
 	/** HIDDEN
 	 *  deactivate virtual subpopulations in a given
 	 *  subpopulation. In another word, all individuals
 	 *  will become visible.
 	 */
-	void deactivateVirtualSubPop(SubPopID subPop);
+	void deactivateVirtualSubPop(SubPopID subPop) const;
 
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
@@ -1008,26 +1007,23 @@ public:
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all
 	 *  genotypes and information fields for all individuals in all ancestral
-	 *  generations are extracted. If an valid (non-empty) information field
-	 *  (\e field) is given, individuals with negative values at this field
-	 *  will be removed and others are put into subpopulations specified by
-	 *  this field. The extracted population will keep the original
-	 *  subpopulation names if two populations have the same number of
-	 *  subpopulations. If a list of loci is specified, only genotypes at
-	 *  specified loci are extracted. If a list of \e infoFields is specified,
-	 *  only these information fields are extracted. If \e ancGen is not
-	 *  \c -1 (default, meaing all ancestral generations), only \e ancGen
-	 *  ancestral generations will be extracted. As an advanced feature,
-	 *  \e field can be information field of a pedigree object \e ped. This
-	 *  allows extraction of individuals according to pedigrees identified
-	 *  in a pedigree object. This pedigree should have the same number of
-	 *  individuals in all generations.
+	 *  generations are extracted. If a list of (virtual) subpopulations are
+	 *  given, only individuals in these subpopulations are extracted.
+	 *  Structure and names of extracted subpopulations will be kept although
+	 *  extracted subpopulations can have fewer individuals if they are created
+	 *  from extracted virtual subpopulations. (e.g. it is possible to extract
+	 *  all male individuals from a subpopulation using a \c sexSplitter()).
+	 *  If a list of loci is specified, only genotypes at specified loci are
+	 *  extracted. If a list of \e infoFields is specified, only these
+	 *  information fields are extracted. If \e ancGen is not \c -1 (default,
+	 *  meaing all ancestral generations), only \e ancGen ancestral generations
+	 *  will be extracted. 
 	 *  <group>7-manipulate</group>
 	 */
-	population & extract(const string & field = string(),
-		const uintList & loci = uintList(),
+	population & extract(const uintList & loci = uintList(),
 		const stringList & infoFields = stringList(),
-		int ancGen = -1, pedigree * ped = NULL) const;
+		const subPopList & subPops = subPopList(),
+		int ancGen = -1) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
@@ -1095,6 +1091,11 @@ public:
 		std::fill(m_info.begin(), m_info.end(), 0.0);
 	}
 
+
+	/** CPPONLY
+	 *  Mark subpopulation
+	 */
+	void markIndividuals(vspID subPop, bool mark) const;
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in

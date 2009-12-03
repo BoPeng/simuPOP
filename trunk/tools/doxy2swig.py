@@ -62,10 +62,10 @@ class myLaTeXTranslator(LaTeXTranslator):
         # \leavevmode results in a line break if the term is followed by a item list.
         self.body.append(': } ')
 
-    def visit_document(self, node):
-        self.body_prefix.append('\\begin{document}\n')
-        # REMOVE THIS FROM THE INITIAL IMPLEMENTAION
-        #self.body.append('\n\\setlength{\\locallinewidth}{\\linewidth}\n')
+    #def visit_document(self, node):
+    #    self.body_prefix.append('\\begin{document}\n')
+    #    # REMOVE THIS FROM THE INITIAL IMPLEMENTAION
+    #    #self.body.append('\n\\setlength{\\locallinewidth}{\\linewidth}\n')
 
     def visit_enumerated_list(self, node):
         # STOP USING SELF-DEFINED ENUMERATION LIST
@@ -1443,7 +1443,6 @@ if __name__ == '__main__':
     sys.path = [os.path.join(src_path, 'src')] + sys.path
     p.scan_module('simuPOP')
     p.scan_module('simuOpt')
-    p.scan_module('simuPOP.params')
     p.scan_module('simuPOP.utils')
     p.scan_module('simuPOP.plotter')
     p.scan_module('simuPOP.sampling')

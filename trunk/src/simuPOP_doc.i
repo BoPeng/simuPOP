@@ -38,11 +38,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::affectionSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::affectionSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::affectionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::affectionSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::affectionSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::affectionSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::affectionSplitter::name "
 
@@ -220,18 +220,7 @@ Usage:
 
 %ignore simuPOP::baseMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::baseMutator::fillContext "
-
-Description:
-
-    a rarely used feature, performance should be a secondary
-    consideration.
-
-Usage:
-
-    x.fillContext(pop, ptr, locus)
-
-"; 
+%ignore simuPOP::baseMutator::fillContext(const population &pop, IndAlleleIterator ptr, UINT locus);
 
 %ignore simuPOP::baseMutator::setContext(int context);
 
@@ -411,7 +400,7 @@ Usage:
 
 Details:
 
-    Apply an operator to population pop directly, without checking its
+    Apply an operator to populationpop directly, without checking its
     applicability.
 
 "; 
@@ -949,10 +938,11 @@ Usage:
 Details:
 
     This class implements a C++ iterator class that iterate through
-    all alleles in a (virtual) (sub)population using 1. an IndIterator
-    that will skip invisible individuals and invalid alleles, or 2. a
-    gapped iterator that will run faster, in the case that a): no
-    virtual subpopulation b): not sex chromosomes c): not haplodiploid
+    all alleles in a (virtual) (sub) population using 1. an
+    IndIterator that will skip invisible individuals and invalid
+    alleles, or 2. a gapped iterator that will run faster, in the case
+    that a): no virtual subpopulation b): not sex chromosomes c): not
+    haplodiploid
 
 "; 
 
@@ -1052,11 +1042,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::combinedSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::combinedSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::combinedSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::combinedSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::combinedSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::combinedSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::combinedSplitter::name "
 
@@ -1150,7 +1140,7 @@ Details:
     only families with wide type alleles are accepted to populate the
     rest of the offspring generation. This method is described in
     detail in \"Peng et al, (2007) Forward-time simulations of
-    populations with complex human diseases, PLoS Genetics\".
+    populations with  complex human diseases, PLoS Genetics\".
 
 "; 
 
@@ -1269,7 +1259,7 @@ Usage:
 
 Description:
 
-    Apply a dumper operator to population pop.
+    Apply a dumper operator to populationpop.
 
 Usage:
 
@@ -1300,6 +1290,10 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::Exception::Exception "
+
+Description:
+
+    constructor
 
 Usage:
 
@@ -1938,7 +1932,7 @@ Usage:
 Details:
 
     Clear (set alleles to zero) chromosome chrom on the ploidy-th
-    homologous set of chromosomes of individual ind. It is equivalent
+    homologous set of chromosomes of individualind. It is equivalent
     to ind.setGenotype([0], ploidy, chrom).
 
 "; 
@@ -2053,11 +2047,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::genotypeSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::genotypeSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::genotypeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::genotypeSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::genotypeSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::genotypeSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::genotypeSplitter::name "
 
@@ -2453,7 +2447,7 @@ Usage:
 
 Description:
 
-    apply the ifElse operator to population pop.
+    apply the ifElse operator to populationpop.
 
 Usage:
 
@@ -2691,13 +2685,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::iteratable() const;
-
-%ignore simuPOP::individual::setIteratable(bool iteratable);
-
 %ignore simuPOP::individual::visible() const;
 
-%ignore simuPOP::individual::setVisible(bool visible);
+%ignore simuPOP::individual::setVisible(bool visible) const;
+
+%ignore simuPOP::individual::marked() const;
+
+%ignore simuPOP::individual::setMarked(bool mark=true) const;
 
 %feature("docstring") simuPOP::individual::info "
 
@@ -2789,7 +2783,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    individuals in a (sub)population. If allInds are true, the
+    individuals in a (sub) population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
     individualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
@@ -3095,7 +3089,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using 1. an IndIterator
+    infomation fields in a (sub) population using 1. an IndIterator
     that will skip invisible individuals, or 2. a gapped iterator that
     will run faster. Note that 1, 2 should yield identical result, and
     2 should be used when there is no virtual subpopulation.q
@@ -3171,11 +3165,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::infoSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::infoSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::infoSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::infoSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::infoSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::infoSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::infoSplitter::name "
 
@@ -3324,7 +3318,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3397,7 +3391,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3470,7 +3464,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3545,7 +3539,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3892,17 +3886,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::indFitness "
-
-Description:
-
-    calculate/return the fitness value, currently assuming diploid
-
-Usage:
-
-    x.indFitness(ind, gen)
-
-"; 
+%ignore simuPOP::maSelector::indFitness(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::maSelector::describe "Obsolete or undocumented function."
 
@@ -4438,7 +4422,8 @@ Details:
     them and assign affection status accordingly. Additive,
     multiplicative, and a heterogeneour multi-locus model are
     supported. Please refer to Neil Rish (1989) \"Linkage Strategies
-    for Genetically Complex Traits\" for some analysis of these models.
+    for  Genetically Complex Traits\" for some analysis of these
+    models.
 
 "; 
 
@@ -4967,11 +4952,13 @@ Details:
 
     The pedigree class is derived from the population class. Unlike a
     population class that emphasizes on individual properties, the
-    pedigree class emphasizes on relationship between individuals.  A
-    pedigree class can be created from a population, or loaded from a
-    disk file, which is usually saved by an operator during a previous
-    evolutionary process. Depending on how a pedigree is saved, sex
-    and affection status information may be missing.
+    pedigree class emphasizes on relationship between individuals. An
+    unique ID for all individuals is needed to create a pedigree
+    object from a population object.  A pedigree object can be created
+    from a population, or loaded from a disk file, which is usually
+    saved by an operator during a previous evolutionary process.
+    Depending on how a pedigree is saved, sex and affection status
+    information may be missing.
 
 "; 
 
@@ -4987,18 +4974,18 @@ Details:
     Create a pedigree object from a population, using a subset of loci
     (parameter loci, default to no loci), information fields
     (parameter infoFields, default to no information field except for
-    parentFields), and ancestral generations (parameter ancGen,
-    default to all ancestral generations). By default, information
-    field father_id (parameter fatherField) and mother_id (parameter
-    motherField) are used to locate parents with ind_id (parameter
-    idField) as an ID field storing an unique ID for every individual.
-    If idField is not specified, field fatherField and motherField are
-    handled as indexes of parents in the parental generation. Please
-    refer to operator idTagger, pedigreeTagger (use unique ID) and
-    parentsTagger (use indexes in parental generation) for how to
-    track pedigree structure using these information fields. This
-    pedigree object works with one or no parents but certain functions
-    such as relative tracking will not be available for such cases.
+    idField, fatherField and motherField), and ancestral generations
+    (parameter ancGen, default to all ancestral generations). By
+    default, information field father_id (parameter fatherField) and
+    mother_id (parameter motherField) are used to locate parents with
+    ind_id (parameter idField) as an ID field storing an unique ID for
+    every individual. Operators idTagger and pedigreeTagger are
+    usually used to assign such IDs, although function
+    sampling.indexToID could be used to assign unique IDs and
+    construct parental IDs from index based relationship recorded by
+    operator parentsTagger. This pedigree object works with one or no
+    parents but certain functions such as relative tracking will not
+    be available for such cases.
 
 "; 
 
@@ -5020,14 +5007,11 @@ Details:
 
 Usage:
 
-    x.father(idx, subPop)
+    x.father(ID)
 
 Details:
 
-    Return the index of the father of individual idx in subpopulation
-    subPop in the parental generation. Return -1 if this individual
-    has no father (fatherField is empty or the value of information
-    field is negative).
+    Return the ID of the father of individualID.
 
 "; 
 
@@ -5035,14 +5019,11 @@ Details:
 
 Usage:
 
-    x.mother(idx, subPop)
+    x.mother(ID)
 
 Details:
 
-    Return the index of the mother of individual idx in subpopulation
-    subPop in the parental generation. Return -1 if this individual
-    has no mother (motherField is empty or the value of information
-    field is negative).
+    Return the ID of the mather of individualID.
 
 "; 
 
@@ -5050,20 +5031,12 @@ Details:
 
 Usage:
 
-    x.indByID(id, ancGen=-1, idField=\"\")
+    x.indByID(id)
 
 Details:
 
-    Return a reference to individual with id stored in information
-    field idField (this parameter is ignored because idField is
-    specified when the pedigree is constructed). This function by
-    default search the present and all ancestral generations
-    (ancGen=-1), but you can suggest a specific generation if you know
-    which generation to search (ancGen=0 for present generation,
-    ancGen=1 for parental generation, and so on). This function will
-    search this generation first but will search the whole population
-    if an individual with id is not found. If no individual with id is
-    found, an IndexError will be raised. Note that a float id is
+    Return a reference to individual with id. An IndexError will be
+    raised if no individual with id is found. Note that a float id is
     acceptable as long as it rounds closely to an integer.
 
 "; 
@@ -5096,15 +5069,16 @@ Details:
     length of relFields determines how many relatives an individual
     can have.  Parameter relType specifies what type of relative to
     locate. It can be
-    *   Self set individual index or ID to a specified information
-    field
     *   Spouse locate spouses with whom an individual has at least one
     common offspring.
     *   OutbredSpouse locate non-slibling spouses, namely spouses with
     no shared parent.
     *   Offspring all offspring of each individual.
     *   CommonOffspring common offspring between each individual and
-    its spouse (located by Spouse or OutbredSpouse).
+    its spouse (located by Spouse or OutbredSpouse). relFields should
+    consist of an information field for spouse and
+    m-1 fields for offspring where
+    m is the number of fields.
     *   FullSibling siblings with common father and mother,
     *   Sibling siblings with at least one common parent. Optionally,
     you can specify the sex of relatives you would like to locate, in
@@ -5121,8 +5095,8 @@ Details:
 
 Usage:
 
-    x.traceRelatives(pathGen, pathFields, pathSex=[],
-      resultFields=[])
+    x.traceRelatives(pathFields, pathSex=[], resultFields=[],
+      ancGen=-1)
 
 Details:
 
@@ -5133,30 +5107,24 @@ Details:
     offspring of all individuals are located, you can locate mother's
     sibling's offspring using a relative path, and save their indexes
     in each individuals information fields resultFields.  A relative
-    path consits of three pieces of information specified by three
-    parameters. Parameter pathGen specifies starting, intermediate and
-    ending generations. pathFields specifies which information fields
-    to look for at each step, and pathSex specifies sex choices at
-    each generation, which should be a list of AnySex, MaleOnly,
-    FemaleOnly, SameSex and OppsiteSex. The default value for this
-    paramter is AnySex at all steps. The length of pathGen should be
-    one more than pathFields, and pathSex if pathSex is given. If
-    individual ID is used, pathGen could be ignored, although they
-    could help the location of relatives in the population.  For
-    example, if pathGen=[0, 1, 1, 0], pathFields = [['father_idx',
-    'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']], and pathSex =
-    [AnySex, MaleOnly, FemaleOnly], this function will locate
-    father_idx and mother_idx for each individual at generation 0,
-    find all individuals referred by father_idx and mother_idx at
-    generation 1, find informaton fields sib1 and sib2 from these
-    parents and locate male individuals referred by these two
-    information fields. Finally, the information fields off1 and off2
-    from these siblings are located and are used to locate their
-    female offspring at the present geneartion. The results are father
-    or mother's brother's daughters. Their indexes will be saved in
-    each individuals information fields resultFields. Note that this
-    function will locate and set relatives for individuals only at the
-    starting generation specified at pathGen[0].
+    path consits of a pathFields that specifies which information
+    fields to look for at each step, and a pathSex specifies sex
+    choices at each generation, which should be a list of AnySex,
+    MaleOnly, FemaleOnly, SameSex and OppsiteSex. The default value
+    for this paramter is AnySex at all steps.  For example, if
+    pathFields = [['father_ID', 'mother_ID'], ['sib1', 'sib2'],
+    ['off1', 'off2']], and pathSex = [AnySex, MaleOnly, FemaleOnly],
+    this function will locate father_ID and mother_ID for each
+    individual, find all individuals referred by father_ID and
+    mother_ID, find informaton fields sib1 and sib2 from these parents
+    and locate male individuals referred by these two information
+    fields. Finally, the information fields off1 and off2 from these
+    siblings are located and are used to locate their female offspring
+    at the present geneartion. The results are father or mother's
+    brother's daughters. Their indexes will be saved in each
+    individuals information fields resultFields. If a non-negative
+    ancGen is given, only individuals in these ancestral generations
+    will be processed.
 
 "; 
 
@@ -5189,7 +5157,7 @@ Details:
     gen >= N), or gen generations if gen < N. During the evolution, an
     offspring generator generator is used to produce one offspring at
     a time, regardless of the numOffspring setting of this offspring
-    generator. If individuals in pedigree ped has only one parent, the
+    generator. If individuals in pedigreeped has only one parent, the
     offspring generator should be compatible.  By default, the
     pedigree mating scheme does not set offspring sex and affection
     status using sex and affection status of corresponding individuals
@@ -5588,7 +5556,7 @@ Usage:
 Details:
 
     Create a cloned copy of a population. Note that Python statement
-    pop1 = pop only creates a reference to an existing population pop.
+    pop1 = pop only creates a reference to an existing populationpop.
 
 "; 
 
@@ -5784,7 +5752,7 @@ Usage:
 
 Details:
 
-    return the absolute index of an individual idx in subpopulation
+    return the absolute index of an individualidx in subpopulation
     subPop.
 
 "; 
@@ -5838,7 +5806,7 @@ Usage:
 
 Details:
 
-    Return a refernce to individual idx in the population (if
+    Return a refernce to individualidx in the population (if
     subPop=[], default) or a subpopulation (if subPop=sp). Virtual
     subpopulation is not supported. Note that a float idx is
     acceptable as long as it rounds closely to an integer.
@@ -5876,7 +5844,7 @@ Usage:
 
 Details:
 
-    Return a reference to individual idx in ancestral generation gen.
+    Return a reference to individualidx in ancestral generation gen.
     The correct individual will be returned even if the current
     generation is not the present one (see also useAncestralGen). If a
     valid subPop is specified, index is relative to that subPop.
@@ -5905,11 +5873,11 @@ Details:
 
 %ignore simuPOP::population::setIndOrdered(bool s) const;
 
-%ignore simuPOP::population::indIterator(IterationType type=VisibleInds);
+%ignore simuPOP::population::indIterator();
 
-%ignore simuPOP::population::indIterator(UINT subPop, IterationType type=VisibleInds);
+%ignore simuPOP::population::indIterator(UINT subPop);
 
-%ignore simuPOP::population::indIterator(IterationType type=VisibleInds) const;
+%ignore simuPOP::population::indIterator() const;
 
 %ignore simuPOP::population::rawIndBegin();
 
@@ -5976,9 +5944,9 @@ Details:
 
     Rearrange individuals to their new subpopulations according to
     their integer values at information field field (value returned by
-    individual::indInfo(field)). Individuals with negative values at
-    this field will be removed. Existing subpopulation names are kept.
-    New subpopulations will have empty names.
+    individual::info(field)). Individuals with negative values at this
+    field will be removed. Existing subpopulation names are kept. New
+    subpopulations will have empty names.
 
 "; 
 
@@ -6058,7 +6026,7 @@ Details:
     Add all individuals, including ancestors, in pop to the current
     population. Two populations should have the same genotypic
     structures and number of ancestral generations. Subpopulations in
-    population pop are kept.
+    populationpop are kept.
 
 "; 
 
@@ -6070,11 +6038,11 @@ Usage:
 
 Details:
 
-    Add chromosomes in population pop to the current population.
+    Add chromosomes in populationpop to the current population.
     Population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
     This function merges genotypes on the new chromosomes from
-    population pop individual by individual.
+    populationpop individual by individual.
 
 "; 
 
@@ -6086,7 +6054,7 @@ Usage:
 
 Details:
 
-    Add loci from population pop, chromosome by chromosome. Added loci
+    Add loci from populationpop, chromosome by chromosome. Added loci
     will be inserted according to their position. Their position and
     names should not overlap with any locus in the current population.
     Population pop should have the same number of individuals as the
@@ -6149,7 +6117,7 @@ Details:
     larger. Their genotypes will be set to zero (default), or be
     copied from existing individuals if propagate is set to True. More
     specifically, if a subpopulation with 3 individuals is expanded to
-    7, the added individuals will copy genotypes from individual 1, 2,
+    7, the added individuals will copy genotypes from individual1, 2,
     3, and 1 respectively. Note that this function only resizes the
     current generation.
 
@@ -6159,30 +6127,26 @@ Details:
 
 Usage:
 
-    x.extract(field=\"\", loci=AllAvail, infoFields=AllAvail,
-      ancGen=-1, ped=None, pedFields=[])
+    x.extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail,
+      ancGen=-1)
 
 Details:
 
     Extract subsets of individuals, loci and/or information fields
     from the current population and create a new population. By
     default, all genotypes and information fields for all individuals
-    in all ancestral generations are extracted. If an valid (non-
-    empty) information field (field) is given, individuals with
-    negative values at this field will be removed and others are put
-    into subpopulations specified by this field. The extracted
-    population will keep the original subpopulation names if two
-    populations have the same number of subpopulations. If a list of
-    loci is specified, only genotypes at specified loci are extracted.
-    If a list of infoFields is specified, only these information
-    fields are extracted. If ancGen is not -1 (default, meaing all
-    ancestral generations), only ancGen ancestral generations will be
-    extracted. As an advanced feature, field can be information field
-    of a pedigree object ped. This allows extraction of individuals
-    according to pedigrees identified in a pedigree object. Additional
-    information fields from pedFields can be copied to the extracted
-    population. This pedigree should have the same number of
-    individuals in all generations.
+    in all ancestral generations are extracted. If a list of (virtual)
+    subpopulations are given, only individuals in these subpopulations
+    are extracted. Structure and names of extracted subpopulations
+    will be kept although extracted subpopulations can have fewer
+    individuals if they are created from extracted virtual
+    subpopulations. (e.g. it is possible to extract all male
+    individuals from a subpopulation using a sexSplitter()). If a list
+    of loci is specified, only genotypes at specified loci are
+    extracted. If a list of infoFields is specified, only these
+    information fields are extracted. If ancGen is not -1 (default,
+    meaing all ancestral generations), only ancGen ancestral
+    generations will be extracted.
 
 "; 
 
@@ -6229,7 +6193,7 @@ Usage:
 
 Details:
 
-    Push population pop into the current population. Both populations
+    Push populationpop into the current population. Both populations
     should have the same genotypic structure. The current population
     is discarded if ancestralDepth (maximum number of ancestral
     generations to hold) is zero so no ancestral generation can be
@@ -6238,7 +6202,7 @@ Details:
     generations by one. If ancestralDepth is positive and there are
     already ancestralDepth ancestral generations (see also:
     ancestralGens()), the greatest ancestral generation will be
-    discarded. In any case, population pop becomes invalid as all its
+    discarded. In any case, populationpop becomes invalid as all its
     individuals are absorbed by the current population.
 
 "; 
@@ -6260,6 +6224,8 @@ Details:
 "; 
 
 %ignore simuPOP::population::clearInfo();
+
+%ignore simuPOP::population::markIndividuals(vspID subPop, bool mark) const;
 
 %feature("docstring") simuPOP::population::setIndInfo "
 
@@ -6320,6 +6286,18 @@ Details:
 
     Set information fields fields to a population and initialize them
     with value init. All existing information fields will be removed.
+
+"; 
+
+%feature("docstring") simuPOP::population::removeInfoFields "
+
+Usage:
+
+    x.removeInfoFields(fields)
+
+Details:
+
+    Remove information fields fields from a population.
 
 "; 
 
@@ -6483,11 +6461,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::productSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::productSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::productSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::productSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::productSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::productSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::productSplitter::name "
 
@@ -6544,11 +6522,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::proportionSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::proportionSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::proportionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::proportionSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::proportionSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::proportionSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::proportionSplitter::name "
 
@@ -6640,7 +6618,7 @@ Usage:
 Details:
 
     Evaluate the expression and optional statements in the local
-    namespace of population pop and return its result as a string.
+    namespace of populationpop and return its result as a string.
 
 "; 
 
@@ -6648,7 +6626,7 @@ Details:
 
 Description:
 
-    Apply the pyEval operator to population pop.
+    Apply the pyEval operator to populationpop.
 
 Usage:
 
@@ -6744,14 +6722,11 @@ Usage:
 Details:
 
     this class implements a Python itertor class that can be used to
-    iterate through individuals in a (sub)population. If allInds are
-    true, visiblility of individuals will not be checked. Note that
-    individualIterator *will* iterate through only visible
-    individuals, and allInds is only provided when we know in advance
-    that all individuals are visible. This is a way to obtain better
-    performance in simple cases.  An instance of this class is
-    returned by population::individuals() and
-    population::individuals(subPop)
+    iterate through individuals in a (sub) population. If allInds are
+    true, visiblility of individuals will not be checked. Otherwise, a
+    functor will be used to check if indiviudals belong to a specified
+    virtual subpopulation.  An instance of this class is returned by
+    population::individuals() and population::individuals(subPop)
 
 "; 
 
@@ -6759,7 +6734,7 @@ Details:
 
 Usage:
 
-    pyIndIterator(begin, end, allInds, allVisibles)
+    pyIndIterator(begin, end, allInds, func)
 
 "; 
 
@@ -6942,7 +6917,7 @@ Usage:
 
 Details:
 
-    Apply the pyOperator operator to population pop. Calling this
+    Apply the pyOperator operator to populationpop. Calling this
     function is equivalent to call func with parameter pop and
     optional parameter param.
 
@@ -7571,11 +7546,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::rangeSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::rangeSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::rangeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::rangeSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::rangeSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::rangeSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::rangeSplitter::name "
 
@@ -7744,7 +7719,7 @@ Usage:
 Details:
 
     Initialize a recombinator for the genotypic structure of
-    population pop. This function should be called before a
+    populationpop. This function should be called before a
     recombinator is explicitly applied to a population.
 
 "; 
@@ -8148,7 +8123,7 @@ Usage:
 
 Description:
 
-    Apply operator to population pop.
+    Apply operator to populationpop.
 
 Usage:
 
@@ -8353,7 +8328,7 @@ Usage:
 
 Description:
 
-    apply the setAncestralDepth operator to population pop.
+    apply the setAncestralDepth operator to populationpop.
 
 Usage:
 
@@ -8403,11 +8378,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::sexSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::sexSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::sexSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::sexSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::sexSplitter::deactivate(population &pop, SubPopID sp);
+%ignore simuPOP::sexSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::sexSplitter::name "
 
@@ -8434,7 +8409,8 @@ Details:
 
 Description:
 
-    hence call this destructore.
+    destructor I can not clear dict here since a resize of g_vars will
+    copy this object and hence call this destructore.
 
 Usage:
 
@@ -8578,7 +8554,7 @@ Usage:
 
 Details:
 
-    Create a simulator with rep replicates of population pop.
+    Create a simulator with rep replicates of populationpop.
     Population pop will be copied rep times (default to 1), while
     keeping the passed population intact. A mating scheme matingScheme
     will be used to evolve these populations.
@@ -8677,7 +8653,7 @@ Usage:
 
 Details:
 
-    Add a population pop to the end of an existing simulator. This
+    Add a populationpop to the end of an existing simulator. This
     creates an cloned copy of pop in the simulator so the evolution of
     the simulator will not change pop.
 
@@ -8810,7 +8786,8 @@ Details:
 
 Description:
 
-    Note that mating schemes are not tested.
+    a Pyton function used to compare the simulator objects Note that
+    mating schemes are not tested.
 
 Usage:
 
@@ -9048,7 +9025,7 @@ Details:
     namespace of the population being applied. Other operators can
     retrieve these variables or evalulate expression directly in this
     local namespace. Please refer to operator baseOperator for a
-    detailed explanation of these common operator parameters.  stat
+    detailed explanation of these common operator parameters.   stat
     supports parameter subPops. It usually calculate the same set of
     statistics for all subpopulations (subPops=subPopList()). If a
     list of (virtual) subpopulations are specified, statistics for
@@ -9755,7 +9732,7 @@ Usage:
 
 Description:
 
-    all replicates.
+    exception, throw if an operator would like to stop all replicates.
 
 "; 
 
@@ -10065,7 +10042,7 @@ Usage:
 
 Details:
 
-    Apply an operator to population pop directly, without checking its
+    Apply an operator to populationpop directly, without checking its
     applicability.
 
 "; 
@@ -10287,6 +10264,16 @@ Usage:
 
 "; 
 
+%ignore simuPOP::vspFunctor;
+
+%feature("docstring") simuPOP::vspFunctor::vspFunctor "
+
+Usage:
+
+    vspFunctor()
+
+"; 
+
 %feature("docstring") simuPOP::vspID "
 
 Details:
@@ -10405,11 +10392,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::vspSplitter::contains(const population &pop, ULONG ind, vspID vsp);
+%ignore simuPOP::vspSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
-%ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
+%ignore simuPOP::vspSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::vspSplitter::deactivate(population &pop, SubPopID subPop);
+%ignore simuPOP::vspSplitter::deactivate(const population &pop, SubPopID subPop);
 
 %feature("docstring") simuPOP::vspSplitter::name "
 

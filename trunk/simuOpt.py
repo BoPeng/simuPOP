@@ -1575,11 +1575,9 @@ class simuParam:
         ``Tkinter``. If none of the toolkits are available, this function will
         raise an ``ImportError``.
 
-        .. note::
-        
-           If ``simuParam.valueValidFile`` or ``simuParam.valueValidDir`` is used
-           to validate a parameter, double click the text input box of this
-           parameter will open a file or directory browse dialog.
+        If ``simuParam.valueValidFile`` or ``simuParam.valueValidDir`` is used
+        to validate a parameter, double click the text input box of this
+        parameter will open a file or directory browse dialog.
         '''
         title = os.path.split(sys.argv[0])[-1]
         if gui != 'Tkinter':
