@@ -839,7 +839,7 @@ public:
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
-	 *  <tt>individual::indInfo(field)</tt>). Individuals with negative values
+	 *  <tt>individual::info(field)</tt>). Individuals with negative values
 	 *  at this \e field will be removed. Existing subpopulation names are
 	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
