@@ -303,7 +303,7 @@ void population::deactivateVirtualSubPop(SubPopID subPop) const
 	CHECKRANGESUBPOP(subPop);
 	if (!hasActivatedVirtualSubPop(subPop))
 		return;
-	m_vspSplitter->deactivate(*this, subPop);
+	m_vspSplitter->deactivate(subPop);
 }
 
 
@@ -2077,6 +2077,8 @@ void population::setAncestralDepth(int depth)
 
 void population::useAncestralGen(UINT idx)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError, "Can not switch ancestral generation with an activated virtual subpopulation");
+
 	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 		return;
 

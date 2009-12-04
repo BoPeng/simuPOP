@@ -48,22 +48,6 @@ ostream & operator<<(ostream & out, const vspID & vsp)
 }
 
 
-void vspSplitter::resetSubPop(const population & pop, SubPopID subPop)
-{
-	DBG_ASSERT(m_activated == InvalidSubPopID || m_activated == subPop,
-		ValueError, "Subpopulation " + toStr(subPop) + " is not activated.");
-
-	if (m_activated == InvalidSubPopID)
-		return;
-
-	ConstRawIndIterator it = pop.rawIndBegin(subPop);
-	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
-	for (; it != it_end; ++it)
-		it->setVisible(true);
-	m_activated = InvalidSubPopID;
-}
-
-
 ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) const
 {
 	if (activatedSubPop() != subPop)
@@ -206,13 +190,6 @@ void combinedSplitter::activate(const population & pop, SubPopID subPop, SubPopI
 }
 
 
-void combinedSplitter::deactivate(const population & pop, SubPopID sp)
-{
-	resetSubPop(pop, sp);
-	m_activated = InvalidSubPopID;
-}
-
-
 string combinedSplitter::name(SubPopID sp)
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
@@ -335,13 +312,6 @@ void productSplitter::activate(const population & pop, SubPopID subPop, SubPopID
 }
 
 
-void productSplitter::deactivate(const population & pop, SubPopID sp)
-{
-	resetSubPop(pop, sp);
-	m_activated = InvalidSubPopID;
-}
-
-
 string productSplitter::name(SubPopID sp)
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
@@ -414,12 +384,6 @@ string sexSplitter::name(SubPopID vsp)
 }
 
 
-void sexSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
-}
-
-
 ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
@@ -467,12 +431,6 @@ string affectionSplitter::name(SubPopID vsp)
 		return m_names[vsp];
 
 	return vsp == 0 ? "Unaffected" : "Affected";
-}
-
-
-void affectionSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
 }
 
 
@@ -668,12 +626,6 @@ void infoSplitter::activate(const population & pop, SubPopID subPop, SubPopID vi
 }
 
 
-void infoSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
-}
-
-
 string infoSplitter::name(SubPopID sp)
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
@@ -797,12 +749,6 @@ void proportionSplitter::activate(const population & pop, SubPopID subPop, SubPo
 }
 
 
-void proportionSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
-}
-
-
 string proportionSplitter::name(SubPopID subPop)
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
@@ -877,12 +823,6 @@ void rangeSplitter::activate(const population & pop, SubPopID subPop, SubPopID v
 }
 
 
-void rangeSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
-}
-
-
 string rangeSplitter::name(SubPopID subPop)
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
@@ -954,12 +894,6 @@ void genotypeSplitter::activate(const population & pop, SubPopID subPop, SubPopI
 	for (; it != it_end; ++it)
 		it->setVisible(match(&*it, alleles));
 	m_activated = subPop;
-}
-
-
-void genotypeSplitter::deactivate(const population & pop, SubPopID subPop)
-{
-	resetSubPop(pop, subPop);
 }
 
 

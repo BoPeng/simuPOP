@@ -1932,8 +1932,8 @@ simu.evolve(
 # Sample affected sibpairs
 pop = simu.extract(0)
 from simuPOP.sampling import AffectedSibpairSample
-sample = AffectedSibpairSample(pop, size=5)[0]
-[int(ind.father_idx) for ind in sample.individuals()]
+#sample = AffectedSibpairSample(pop, size=5)[0]
+#[int(ind.father_idx) for ind in sample.individuals()]
 #end_file
 
 #begin_file log/changeStru.py
