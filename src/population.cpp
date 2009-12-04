@@ -1580,6 +1580,126 @@ population & population::extract(const uintList & extractedLoci, const stringLis
 }
 
 
+population & population::extractByID(const vectorf & IDs, const string & idField) const
+{
+	// first, build a map
+	std::map<ULONG, const individual *> idMap;
+	UINT idIdx = infoIdx(idField);
+	
+	int curGen = m_curAncestralGen;
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		const_cast<population*>(this)->useAncestralGen(depth);
+		markIndividuals(vspID(), false);
+		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
+			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
+			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
+				"Individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
+			idMap[id] = &*it;
+		}
+	}
+	// mark those guys
+	for (size_t i = 0; i < IDs.size(); ++i) {
+		ULONG id = static_cast<ULONG>(IDs[i] + 0.5);
+		DBG_FAILIF(idMap.find(id) == idMap.end(), IndexError,
+			"No individuals with ID " + toStr(id) + " is found.");
+		idMap[id]->setMarked(true);
+	}
+	//
+	// extract
+	population & pop = *new population();
+	pop.setGenoStruIdx(genoStruIdx());
+	UINT step = pop.genoSize();
+	UINT infoStep = pop.infoSize();
+	pop.setAncestralDepth(m_ancestralGens);
+	int depth = ancestralGens();
+	for (; depth >= 0; --depth) {
+		const_cast<population *>(this)->useAncestralGen(depth);
+		// determine the number of individuals
+		vectoru spSizes(numSubPop());
+		vector<vectoru> indIdx(numSubPop());
+		ULONG size;
+		// select individuals
+		for (ULONG sp = 0; sp < numSubPop(); ++sp) {
+			ULONG spBegin = subPopBegin(sp);
+			for (size_t i = 0; i < subPopSize(sp); ++i) {
+				if (!ind(i, sp).marked())
+					continue;
+				++spSizes[sp];
+				indIdx[sp].push_back(spBegin + i);
+			}
+		}
+		size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
+		DBG_DO(DBG_POPULATION, cerr << "New subpopulation size " << spSizes << endl);
+
+		vector<individual> new_inds;
+		vectora new_genotype;
+		vectorinfo new_info;
+
+		new_inds.reserve(size);
+		new_genotype.reserve(size * step);
+		new_info.reserve(size * infoStep);
+		// copy genotype and info...
+		for (size_t sp = 0; sp < indIdx.size(); ++sp) {
+			vectoru & idx = indIdx[sp];
+			if (idx.empty())
+				continue;
+			vectoru::iterator it = idx.begin();
+			vectoru::iterator it_end = idx.end();
+			for (; it != it_end; ++it) {
+				new_inds.push_back(m_inds[*it]);
+				new_genotype.insert(new_genotype.end(),
+					indGenoBegin(*it), indGenoEnd(*it));
+				new_info.insert(new_info.end(), m_inds[*it].infoBegin(),
+					m_inds[*it].infoEnd());
+			}
+		}
+		pop.m_popSize = size;
+		if (m_subPopNames.empty() || m_subPopNames.size() != spSizes.size())
+			pop.setSubPopStru(spSizes, vectorstr());
+		else
+			pop.setSubPopStru(spSizes, m_subPopNames);
+		// set pointer
+		vectora::iterator ptr = new_genotype.begin();
+		vectorinfo::iterator infoPtr = new_info.begin();
+		for (size_t i = 0; i < size; ++i, ptr += step, infoPtr += infoStep) {
+			new_inds[i].setGenoStruIdx(pop.genoStruIdx());
+			new_inds[i].setGenoPtr(ptr);
+			new_inds[i].setInfoPtr(infoPtr);
+		}
+		// the arrays are ready, are they?
+		DBG_ASSERT(new_inds.size() == size && (new_genotype.size() == size * step)
+			&& (new_info.size() == size * infoStep), SystemError,
+			"Failed to copy genotype:"
+			"\ninds: " + toStr(new_inds.size()) + ", " + toStr(size) +
+			"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) +
+			"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
+		// now put them to use
+		if (depth == 0) { // current generation
+			pop.m_inds.swap(new_inds);
+			pop.m_genotype.swap(new_genotype);
+			pop.m_info.swap(new_info);
+		} else {
+			pop.m_ancestralPops.push_front(popData());
+			popData & pd = pop.m_ancestralPops.front();
+			pd.m_subPopSize.swap(spSizes);
+			pd.m_genotype.swap(new_genotype);
+			pd.m_info.swap(new_info);
+			pd.m_inds.swap(new_inds);
+		}
+	}
+	const_cast<population*>(this)->useAncestralGen(curGen);
+	pop.m_curAncestralGen = 0;
+	// remove empty subpopulations
+	vectoru emptySubPops;
+	for (size_t i = 0; i < pop.numSubPop(); ++i)
+		if (pop.subPopSize(i) == 0)
+			emptySubPops.push_back(i);
+	if (!emptySubPops.empty())
+		pop.removeSubPops(emptySubPops);
+	return pop;
+}
+
+
 void population::removeLoci(const uintList & lociList, const uintList & keepList)
 {
 	const vectoru & loci = lociList.elems();
