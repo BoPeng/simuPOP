@@ -912,18 +912,34 @@ public:
 	 */
 	vectoru splitSubPop(UINT subPop, const vectoru & sizes, const vectorstr & names = vectorstr());
 
-	/** Remove subpopulation(s) \e subPop and all their individuals. Indexes of
-	 *  subpopulations after removed subpopulations will be shifted.
-	 *  <group>7-manipulate</group>
-	 */
-	void removeSubPops(const uintList & subPops);
 
-	/** remove individual(s) \e inds (absolute indexes) from the current
-	 *  population. A subpopulation will be kept even if all individuals from
-	 *  it are removed. This function only affects the current generation.
+	/** Remove (virtual) subpopulation(s) \e subPops and all their individuals.
+	 *  This function can be used to remove complete subpopulations (with
+	 *  shifted subpopulation indexes) or individuals belonging to virtual
+	 *  subpopulations of a subpopulation. In the latter case, the
+	 *  subpopulations are kept even if all individuals have been removed.
+	 *  This function only handles the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeIndividuals(const uintList & inds);
+	void removeSubPops(const subPopList & subPops);
+
+	/// CPPONLY
+	void removeMarkedIndividuals();
+
+	/** remove individual(s) either by absolute indexes (parameter \e index) or
+	 *  their IDs (parameter \e IDs). In the latter form, an unique ID for all
+	 *  individual should be saved in an information field \e idField (default
+	 *  to \c "ind_id"). If indexes are used, individuals can only be removed
+	 *  from the current generation. If IDs are used, individuals from all
+	 *  ancestral generations could be removed. An \c IndexError will be raised
+	 *  if an index is out of bound, or if no individual is found for a given
+	 *  ID. This function does not affect subpopulation structure in the sense
+	 *  that a subpopulation will be kept even if all individuals from it are
+	 *  removed.
+	 *  <group>7-manipulate</group>
+	 */
+	void removeIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idFiled = "ind_id");
 
 	/** Merge subpopulations \e subPops. If \e subPops is \c AllAvail (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
@@ -1004,6 +1020,36 @@ public:
 	 */
 	void resize(const uintList & sizes, bool propagate = false);
 
+
+	/** Extract a list of (virtual) subpopulations from a population and create
+	 *  a new population. Structure and names of extracted subpopulations are
+	 *  kept although extracted subpopulations can have fewer individuals if
+	 *  they are created from extracted virtual subpopulations. (e.g. it is
+	 *  possible to extract all male individuals from a subpopulation using a
+	 *  \c sexSplitter()). This function only works with the present generation.
+	 *  <group>7-manipulate</group>
+	 */
+	population & extractSubPops(const subPopList & subPops = subPopList()) const;
+
+
+	/// CPPONLY
+	population & extractMarkedIndividuals() const;
+
+	/** Extract individuals with given absolute indexes (parameter \e indexes),
+	 *  or IDs (\e IDs, stored in information field \e idField, default to
+	 *  \c ind_id). If a list of absolute indexes are specified, the present
+	 *  generation will be extracted and form a one-generational population.
+	 *  If a list of IDs are specified, this function will look through all
+	 *  ancestral generations and extract individuals with given ID. Extracted
+	 *  individuals will be in their original ancestral generations
+	 *  and subpopulations, even if some subpopulations even generations are
+	 *  empty. An \c IndexError will be raised if an index is out of bound or
+	 *  if an invalid ID is encountered.
+	 *  <group>7-manipulate</group>
+	 */
+	population & extractIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idField = "ind_id") const;
+
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all
 	 *  genotypes and information fields for all individuals in all ancestral
@@ -1018,23 +1064,11 @@ public:
 	 *  information fields are extracted. If \e ancGen is not \c -1 (default,
 	 *  meaing all ancestral generations), only \e ancGen ancestral generations
 	 *  will be extracted. 
+	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-	population & extract(const uintList & loci = uintList(),
-		const stringList & infoFields = stringList(),
-		const subPopList & subPops = subPopList(),
-		int ancGen = -1) const;
-
-
-	/** Extract individuals with given IDs (\e IDs, stored in information field
-	 *  \e idField, default to \c ind_id). Individuals will be in their
-	 *  original ancestral generations and subpopulations, but empty topmost
-	 *  ancestral generations and subpopulations will be removed. An
-	 *  \c IndexError will be raised if an invalid ID is encountered.
-	 *  <group>7-manipulate</group>
-	 */
-	population & extractByID(const vectorf & IDs = vectorf(), 
-		const string & idField = "ind_id") const;
+	population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
+		const subPopList & subPops = subPopList(), int ancGen = -1) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
@@ -1225,15 +1259,15 @@ public:
 	void removeInfoFields(const stringList & fields);
 
 
-	/** Update information fields \e fields from \e fromFields of another
+	/* Update information fields \e fields from \e fromFields of another
 	 *  population (or pedigree) \e pop. Two populations should have the same
 	 *  number of individuals. If \e fromFields is not specified, it is assumed
 	 *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
 	 *  recent \e ancGen generations are updated.
 	 *  <group>8-info</group>
+	   void updateInfoFieldsFrom(const stringList & fields, const population & pop,
+	    const stringList & fromFields = vectorstr(), int ancGen = -1);
 	 */
-	void updateInfoFieldsFrom(const stringList & fields, const population & pop,
-		const stringList & fromFields = vectorstr(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
@@ -1463,9 +1497,9 @@ private:
 		ar & ma;
 
 		if (ma > ModuleMaxAllele)
-			cerr	<< "Warning: The population is saved in library with more allele states. \n"
-			        << "Unless all alleles are less than " << ModuleMaxAllele
-			        << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
+			cerr << "Warning: The population is saved in library with more allele states. \n"
+			     << "Unless all alleles are less than " << ModuleMaxAllele
+			     << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 		GenoStructure stru;
 		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);

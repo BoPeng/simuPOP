@@ -156,6 +156,17 @@ public:
 
 
 	/// CPPONLY
+	bool overlap(const SubPopID subPop) const
+	{
+		const_iterator it = m_subPops.begin();
+		const_iterator itEnd = m_subPops.end();
+		for (; it != itEnd; ++it)
+			if (it->subPop() == subPop)
+				return true;
+		return false;
+	}
+
+	/// CPPONLY
 	const_iterator begin() const
 	{
 		return m_subPops.begin();
