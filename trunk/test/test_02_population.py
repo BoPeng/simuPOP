@@ -427,50 +427,50 @@ class TestPopulation(unittest.TestCase):
         self.assertNotEqual(pop, pop1)
 
 
-    def comparePop(self, pop1, pop2, inds, loci=None, infoFields=None, gen=0):
-        #inds should be original pop1 index of individuals in pop2
-        pop1.useAncestralGen(gen)
-        pop2.useAncestralGen(gen)
-        if loci is None:
-            for idx, ind in enumerate(inds):
-                if infoFields is None:
-                    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
-                else:
-                    self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
-                    for info in infoFields:
-                        self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
-        else:
-            for idx, ind in enumerate(inds):
-                if infoField is None:
-                    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
-                else:
-                    self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
-                    for info in infoFields:
-                        self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
-                for idx1, loc in enumerate(loci):
-                    for p in range(pop1.ploidy()):
-                        self.assertEqual(pop1.individual(ind).allele(loc, p), pop2.individual(idx).allele(idx1, p))
-            
-        # for idx, ind in enumerate(inds):
-        #    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
-        
-
-    def testExtract(self):
-        'Testing population::Extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail, ancGen =-1)'
-        # If subpoulation size is too small, the last subpopulation
-        # may not have any individual.
-        pop = population(size=[30, 50], loci=[2, 3], infoFields=['x', 'y'])
-        for ind in pop.individuals():
-            n = random.randint(-1, 5)
-            ind.setInfo(n, 'x')
-            ind.setInfo(n + 10, 'y')
-            ind.setGenotype([n+1])
-        pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2]))
-        pop1 = pop.extract(subPops=([0,0], [1,1]))
-        for sp in range(2):
-            for ind in pop1.individuals(sp):
-                self.assertEqual(ind.info('x'), sp)
-                self.assertEqual(ind.info('y'), sp + 10)
+    ##     def comparePop(self, pop1, pop2, inds, loci=None, infoFields=None, gen=0):
+    ##         #inds should be original pop1 index of individuals in pop2
+    ##         pop1.useAncestralGen(gen)
+    ##         pop2.useAncestralGen(gen)
+    ##         if loci is None:
+    ##             for idx, ind in enumerate(inds):
+    ##                 if infoFields is None:
+    ##                     self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+    ##                 else:
+    ##                     self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
+    ##                     for info in infoFields:
+    ##                         self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
+    ##         else:
+    ##             for idx, ind in enumerate(inds):
+    ##                 if infoField is None:
+    ##                     self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+    ##                 else:
+    ##                     self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
+    ##                     for info in infoFields:
+    ##                         self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
+    ##                 for idx1, loc in enumerate(loci):
+    ##                     for p in range(pop1.ploidy()):
+    ##                         self.assertEqual(pop1.individual(ind).allele(loc, p), pop2.individual(idx).allele(idx1, p))
+    ##             
+    ##         # for idx, ind in enumerate(inds):
+    ##         #    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+    ##         
+    ## 
+    ##     def testExtract(self):
+    ##         'Testing population::Extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail, ancGen =-1)'
+    ##         # If subpoulation size is too small, the last subpopulation
+    ##         # may not have any individual.
+    ##         pop = population(size=[30, 50], loci=[2, 3], infoFields=['x', 'y'])
+    ##         for ind in pop.individuals():
+    ##             n = random.randint(-1, 5)
+    ##             ind.setInfo(n, 'x')
+    ##             ind.setInfo(n + 10, 'y')
+    ##             ind.setGenotype([n+1])
+    ##         pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2]))
+    ##         pop1 = pop.extract(subPops=([0,0], [1,1]))
+    ##         for sp in range(2):
+    ##             for ind in pop1.individuals(sp):
+    ##                 self.assertEqual(ind.info('x'), sp)
+    ##                 self.assertEqual(ind.info('y'), sp + 10)
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'
@@ -492,8 +492,10 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize(1), pop1.subPopSize(1)+pop1.subPopSize(2)+pop1.subPopSize(4))
 
     def testRemoveSubPops(self):
-        'Testing population::removeEmptySubPops(), removeSubPops()'
+        'Testing population::removeSubPops()'
         pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50], subPopNames=['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+        InitSex(pop)
+        InitByFreq(pop, [0.5, 0.5])
         pop1 = pop.clone()
         self.assertEqual(pop.numSubPop(), 7)
         pop.removeSubPops([x for x in range(7) if pop.subPopSize(x) == 0])
@@ -516,6 +518,22 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, pop.removeSubPops, [8])
         # accept single input
         pop.removeSubPops(0)
+        # 
+        # now  for virtual subpopulation
+        pop = self.getPop(size=[0, 100, 0, 20], subPopNames=['A', 'B', 'C', 'D'])
+        InitByFreq(pop, [0.5, 0.5])
+        InitSex(pop)
+        pop.setVirtualSplitter(sexSplitter())
+        numFemale = pop.subPopSize([1,1])
+        pop.removeSubPops([(1,0), 2])
+        self.assertEqual(pop.numSubPop(), 3)
+        self.assertEqual(pop.subPopSizes(), (0, numFemale, 20))
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Female)
+        # continue...
+        pop.removeSubPops([(1,1), 2])
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.subPopSizes(), (0, 0))
         
     def testRemoveIndividuals(self):
         'Testing population::removeIndividuals(inds)'
@@ -577,6 +595,117 @@ class TestPopulation(unittest.TestCase):
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (0, 0, 0))
         self.assertEqual(pop.subPopNames(), pop1.subPopNames())
+        #
+        #
+        # by ID?
+        pop = self.getPop(size=[100, 200], loci=[2, 3, 1], ancGen=5,
+            infoFields=['ind_id'])
+        for gen in range(6):
+            pop.useAncestralGen(gen)
+            InitByFreq(pop, [0.5, 0.5])
+        pop.useAncestralGen(0)
+        idTagger().reset()
+        TagID(pop)
+        exclude = set([random.randint(0, 1799) for x in range(600)])
+        pop1 = pop.clone()
+        pop1.removeIndividuals(IDs=list(exclude))
+        sz = []
+        sz1 = []
+        for gen in range(6):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            sz.append(pop.popSize())
+            sz1.append(pop1.popSize())
+            id = set(pop.indInfo('ind_id'))
+            id1 = set(pop1.indInfo('ind_id'))
+            for e in exclude:
+                self.assertEqual(e in id1, False)
+            for ind in pop1.individuals():
+                self.assertEqual(ind, pop.indByID(ind.ind_id), gen)
+        self.assertEqual(sum(sz), sum(sz1) + len(exclude))
+
+    def testExtractSubPops(self):
+        'Testing population::removeSubPops()'
+        pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50], subPopNames=['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+        InitSex(pop)
+        InitByFreq(pop, [0.5, 0.5])
+        self.assertEqual(pop.numSubPop(), 7)
+        pop1 = pop.extractSubPops([x for x in range(7) if pop.subPopSize(x) != 0])
+        self.assertEqual(pop1.numSubPop(), 4)
+        self.assertEqual(pop1.subPopSizes(), (100, 20, 30, 50))
+        for (oldsp, newsp) in [(1, 0), (3, 1), (4, 2), (6, 3)]:  # map of old and new id.
+            self.assertEqual(pop.subPopSize(oldsp), pop1.subPopSize(newsp))
+            self.assertEqual(pop.subPopName(oldsp), pop1.subPopName(newsp))
+            for idx in range(pop.subPopSize(oldsp)):
+                self.assertEqual(pop.individual(idx, oldsp), pop1.individual(idx, newsp))
+        # extract subpop
+        pop2 = pop1.extractSubPops([1, 2])
+        self.assertEqual(pop2.subPopSizes(), (20, 30))
+        for (oldsp, newsp) in [(1, 0), (2, 1)]:  # map of old and new id.
+            self.assertEqual(pop1.subPopSize(oldsp), pop2.subPopSize(newsp))
+            self.assertEqual(pop1.subPopName(oldsp), pop2.subPopName(newsp))
+            for idx in range(pop1.subPopSize(oldsp)):
+                self.assertEqual(pop1.individual(idx, oldsp), pop2.individual(idx, newsp))
+        self.assertRaises(exceptions.IndexError, pop.extractSubPops, [8])
+        # accept single input
+        pop.removeSubPops(0)
+        # 
+        # now  for virtual subpopulation
+        pop = self.getPop(size=[0, 100, 0, 20], subPopNames=['A', 'B', 'C', 'D'])
+        InitByFreq(pop, [0.5, 0.5])
+        InitSex(pop)
+        pop.setVirtualSplitter(sexSplitter())
+        numMale = pop.subPopSize([1,0])
+        pop = pop.extractSubPops([(1,0), 3])
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.subPopSizes(), (numMale, 20))
+        for ind in pop.individuals(0):
+            self.assertEqual(ind.sex(), Male)
+        # continue...
+        pop1 = pop.extractSubPops([(0,1), 1])
+        self.assertEqual(pop1.numSubPop(), 2)
+        self.assertEqual(pop1.subPopSizes(), (0, 20))
+        
+    def testExtractIndividuals(self):
+        'Testing population::removeIndividuals(inds)'
+        pop = self.getPop(size =[20, 100, 30], subPopNames=['sp1', 'sp2', 'sp3'])
+        InitSex(pop)
+        InitByFreq(pop, [0.4, 0.6])
+        pop1 = pop.extractIndividuals()
+        self.assertEqual(pop1.subPopSizes(), (0, 0, 0))
+        self.assertEqual(pop1.subPopNames(), ('sp1', 'sp2', 'sp3'))
+        pop1 = pop.extractIndividuals([15, 110, 120, 121])
+        self.assertEqual(pop1.subPopSizes(), (1, 1, 2))
+        for idx,oldidx in enumerate([15, 110, 120, 121]):
+            self.assertEqual(pop1.individual(idx), pop.individual(oldidx))
+        # accept single input
+        pop.extractIndividuals(2)
+        # 1) pop.extractIndividuals([500]) should yield an exception.
+        self.assertRaises(exceptions.IndexError, pop.extractIndividuals, 500)
+        #
+        # FIXME: Needs more tests
+        #
+        # by ID?
+        pop = self.getPop(size=[100, 200], loci=[2, 3, 1], ancGen=5,
+            infoFields=['ind_id'])
+        for gen in range(6):
+            pop.useAncestralGen(gen)
+            InitByFreq(pop, [0.5, 0.5])
+        pop.useAncestralGen(0)
+        TagID(pop)
+        include = set([random.randint(0, 1799) for x in range(600)])
+        pop1 = pop.extractIndividuals(IDs=list(include))
+        sz1 = []
+        for gen in range(6):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            sz1.append(pop1.popSize())
+            id1 = set(pop1.indInfo('ind_id'))
+            for e in id1:
+                self.assertEqual(e in include, True)
+            for ind in pop1.individuals():
+                self.assertEqual(ind, pop.indByID(ind.ind_id), gen)
+        self.assertEqual(sum(sz1), len(include))
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
@@ -760,31 +889,31 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('fitness'), tuple([3]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([3]*pop.popSize()))
 
-    def testUpdateInfoFieldsFrom(self):
-        'Testing population::updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)'
-        pop = self.getPop(size = 100, ancGen = 5)
-        pop1 = self.getPop(size = 100, ancGen = 5)
-        for gen in range(0, 6):
-            pop.useAncestralGen(gen)
-            pop1.useAncestralGen(gen)
-            self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
-        pop.updateInfoFieldsFrom('x', pop1)
-        for gen in range(0, 6):
-            pop.useAncestralGen(gen)
-            pop1.useAncestralGen(gen)
-            self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
-        # do not update all ancestral generations
-        pop1 = self.getPop(size = 100, ancGen = 5)
-        pop.updateInfoFieldsFrom('x', pop1, ancGen=2)
-        for gen in range(0, 6):
-            pop.useAncestralGen(gen)
-            pop1.useAncestralGen(gen)
-            if gen <= 2:
-                self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
-            else:
-                self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
-        pop3 = self.getPop(size = 200)
-        self.assertRaises(exceptions.ValueError, pop.updateInfoFieldsFrom, 'x', pop3)
+    ##     def testUpdateInfoFieldsFrom(self):
+    ##         'Testing population::updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)'
+    ##         pop = self.getPop(size = 100, ancGen = 5)
+    ##         pop1 = self.getPop(size = 100, ancGen = 5)
+    ##         for gen in range(0, 6):
+    ##             pop.useAncestralGen(gen)
+    ##             pop1.useAncestralGen(gen)
+    ##             self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
+    ##         pop.updateInfoFieldsFrom('x', pop1)
+    ##         for gen in range(0, 6):
+    ##             pop.useAncestralGen(gen)
+    ##             pop1.useAncestralGen(gen)
+    ##             self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
+    ##         # do not update all ancestral generations
+    ##         pop1 = self.getPop(size = 100, ancGen = 5)
+    ##         pop.updateInfoFieldsFrom('x', pop1, ancGen=2)
+    ##         for gen in range(0, 6):
+    ##             pop.useAncestralGen(gen)
+    ##             pop1.useAncestralGen(gen)
+    ##             if gen <= 2:
+    ##                 self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
+    ##             else:
+    ##                 self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
+    ##         pop3 = self.getPop(size = 200)
+    ##         self.assertRaises(exceptions.ValueError, pop.updateInfoFieldsFrom, 'x', pop3)
 
     def testClone(self):
         'Testing population::clone()'
@@ -1112,11 +1241,12 @@ class TestPopulation(unittest.TestCase):
     def testIndByID(self):
         'Testing population::indByID()'
         pop = self.getPop(size=[200]*4, ancGen=3, infoFields=['ind_id'])
+        idTagger().reset(0)
         TagID(pop)
         for i in range(400):
             id = random.randint(0, 800*4-1)
             ind = pop.indByID(id)
-            self.assertEqual(ind.info('ind_id'), id)
+            self.assertEqual(ind.ind_id, id)
         self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
  
 

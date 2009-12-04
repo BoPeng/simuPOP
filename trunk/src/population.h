@@ -1063,7 +1063,7 @@ public:
 	 *  extracted. If a list of \e infoFields is specified, only these
 	 *  information fields are extracted. If \e ancGen is not \c -1 (default,
 	 *  meaing all ancestral generations), only \e ancGen ancestral generations
-	 *  will be extracted. 
+	 *  will be extracted.
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
