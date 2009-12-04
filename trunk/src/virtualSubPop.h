@@ -258,7 +258,11 @@ public:
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
-	virtual void deactivate(const population & pop, SubPopID subPop) = 0;
+	void deactivate(SubPopID subPop) 
+	{
+		DBG_FAILIF(subPop != m_activated, RuntimeError, "Deactivate non-activated virtual subpopulation.");
+		m_activated = InvalidSubPopID;
+	}
 
 	/** Return the name of VSP \e vsp (an index between \c 0 and
 	 *  <tt>numVirtualSubPop()</tt>).
@@ -267,9 +271,6 @@ public:
 
 protected:
 	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
-
-
-	void resetSubPop(const population & pop, SubPopID subPop);
 
 	vectorstr m_names;
 
@@ -363,10 +364,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
-
 	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
 	 *  of the combined splitters unless a new set of names is specified.
 	 */
@@ -433,10 +430,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
-
 	/** Return the name of a VSP \e vsp, which is the names of indivdual VSPs
 	 *  separated by a comma, unless a new set of names is specified for each
 	 *  VSP.
@@ -500,9 +493,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
 
 	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
 	 *  set of names are specified.
@@ -557,9 +547,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
 
 	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
 	 *  unless a new set of names are specified.
@@ -622,9 +609,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
 
 	/** Return the name of a VSP \e vsp, which is <tt>field = value</tt> if VSPs
 	 *  are defined by values in parameter \e values, or <tt>field < value</tt>
@@ -684,10 +668,6 @@ public:
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
-
 	/** Return the name of VSP \e vsp, which is <tt>"Prop p"</tt> where
 	 *  <tt>p=propotions[vsp]</tt>. A user specified name will be returned if
 	 *  specified.
@@ -741,10 +721,6 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
-
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
 
 	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b]"</tt> where
 	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>. A user specified name
@@ -822,10 +798,6 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
-
-	/// deactivate. Namely make all individuals visible again.
-	/// CPPONLY
-	void deactivate(const population & pop, SubPopID sp);
 
 	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
 	 *  as defined by parameters \e loci and \e alleles. A user provided name

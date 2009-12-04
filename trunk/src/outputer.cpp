@@ -114,7 +114,7 @@ UINT dumper::displayGenotype(const population & pop, const subPopList & subPops,
 			ind->display(out, m_width, m_loci);
 			out << endl;
 			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
-				return count;
+				break;
 		}
 		const_cast<population &>(pop).deactivateVirtualSubPop(sp->subPop());
 	}
@@ -136,6 +136,7 @@ bool dumper::apply(population & pop)
 			subPops.useSubPopsFrom(pop);
 
 		UINT cnt = displayGenotype(pop, subPops, out);
+
 		if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
 			out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
 
