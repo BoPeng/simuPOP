@@ -239,7 +239,9 @@ namespace std
 %newobject LoadPopulation;
 %newobject LoadSimulator;
 
-%newobject simuPOP::population::extract;
+// %newobject simuPOP::population::extract;
+%newobject simuPOP::population::extractSubPops;
+%newobject simuPOP::population::extractIndividuals;
 %newobject simuPOP::population::clone;
 %newobject simuPOP::simulator::extract;
 %newobject simuPOP::simulator::clone;

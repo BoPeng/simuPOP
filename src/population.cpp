@@ -811,13 +811,21 @@ void population::removeSubPops(const subPopList & subPops)
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
-	vector<individual>::iterator oldInd = m_inds.begin();
-	vector<individual>::iterator newInd = m_inds.begin();
+	RawIndIterator oldInd = m_inds.begin();
+	RawIndIterator newInd = m_inds.begin();
 	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
 
+#ifndef OPTIMIZED
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		CHECKRANGESUBPOP(it->subPop());
+		CHECKRANGEVIRTUALSUBPOP(it->virtualSubPop());
+	}
+#endif
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
 		ULONG spSize = subPopSize(sp);
 		if (subPops.contains(sp)) {
@@ -865,7 +873,7 @@ void population::removeSubPops(const subPopList & subPops)
 				new_spNames.push_back(m_subPopNames[sp]);
 			// do not remove.
 			if (oldPtr != newPtr) {
-				*newInd = *oldInd;
+				copy(oldInd, oldInd + spSize, newInd);
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 			}
@@ -896,12 +904,12 @@ void population::removeSubPops(const subPopList & subPops)
 void population::removeMarkedIndividuals()
 {
 	sortIndividuals();
-	vectoru new_size = m_subPopSize;
+	vectoru new_size(numSubPop(), 0);
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
-	vector<individual>::iterator oldInd = m_inds.begin();
-	vector<individual>::iterator newInd = m_inds.begin();
+	RawIndIterator oldInd = m_inds.begin();
+	RawIndIterator newInd = m_inds.begin();
 	GenoIterator oldPtr = m_genotype.begin();
 	InfoIterator oldInfoPtr = m_info.begin();
 	GenoIterator newPtr = m_genotype.begin();
@@ -927,6 +935,7 @@ void population::removeMarkedIndividuals()
 			oldPtr += step;
 			oldInfoPtr += infoStep;
 		}
+		new_size[sp] = newSize;
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
@@ -975,7 +984,9 @@ void population::removeIndividuals(const uintList & indexList, const floatList &
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		markIndividuals(vspID(), false);
-		for (IndIterator it = indIterator(); it.valid(); ++it) {
+		RawIndIterator it = rawIndBegin();
+		RawIndIterator itEnd = rawIndEnd();
+		for (; it != itEnd; ++it) {
 			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
 			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
 				"Individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
@@ -1412,9 +1423,19 @@ void population::resize(const uintList & sizeList, bool propagate)
 
 population & population::extractSubPops(const subPopList & subPops) const
 {
+#ifndef OPTIMIZED
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		CHECKRANGESUBPOP(it->subPop());
+		CHECKRANGEVIRTUALSUBPOP(it->virtualSubPop());
+	}
+#endif
 	population & pop = *new population();
 
 	pop.setGenoStruIdx(genoStruIdx());
+	incGenoStruRef();
+	pop.setVirtualSplitter(virtualSplitter());
 
 	sortIndividuals();
 	vectoru new_size;
@@ -1429,9 +1450,6 @@ population & population::extractSubPops(const subPopList & subPops) const
 	vector<individual> new_inds;
 	vectora new_genotype;
 	vectorinfo new_info;
-	RawIndIterator newInd = new_inds.begin();
-	GenoIterator newPtr = new_genotype.begin();
-	InfoIterator newInfoPtr = new_info.begin();
 
 	ULONG sz = 0;
 	// there is overestimate here
@@ -1442,6 +1460,10 @@ population & population::extractSubPops(const subPopList & subPops) const
 	new_inds.resize(sz);
 	new_genotype.resize(sz * step);
 	new_info.resize(sz * infoStep);
+	//
+	RawIndIterator newInd = new_inds.begin();
+	GenoIterator newPtr = new_genotype.begin();
+	InfoIterator newInfoPtr = new_info.begin();
 
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
 		ULONG spSize = subPopSize(sp);
@@ -1471,7 +1493,7 @@ population & population::extractSubPops(const subPopList & subPops) const
 			for (; it != itEnd; ++it)
 				if (it->subPop() == static_cast<SubPopID>(sp))
 					markIndividuals(*it, true);
-			// remove individuals, but not subpopulation
+			//
 			ULONG newSize = 0;
 			for (size_t i = 0; i < spSize; ++i) {
 				// will be kept
@@ -1483,10 +1505,10 @@ population & population::extractSubPops(const subPopList & subPops) const
 					++newInd;
 					newPtr += step;
 					newInfoPtr += infoStep;
-					++oldInd;
-					oldPtr += step;
-					oldInfoPtr += infoStep;
 				}
+				++oldInd;
+				oldPtr += step;
+				oldInfoPtr += infoStep;
 			}
 			//
 			new_size.push_back(newSize);
@@ -1526,9 +1548,11 @@ population & population::extractMarkedIndividuals() const
 	population & pop = *new population();
 
 	pop.setGenoStruIdx(genoStruIdx());
+	incGenoStruRef();
+	pop.setVirtualSplitter(virtualSplitter());
 
 	sortIndividuals();
-	vectoru new_size = m_subPopSize;
+	vectoru new_size;
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
@@ -1543,12 +1567,9 @@ population & population::extractMarkedIndividuals() const
 		if (it->marked())
 			++sz;
 
-	vector<individual> new_inds;
-	vectora new_genotype;
-	vectorinfo new_info;
-	new_inds.resize(sz);
-	new_genotype.resize(sz * step);
-	new_info.resize(sz * infoStep);
+	vector<individual> new_inds(sz);
+	vectora new_genotype(sz * step);
+	vectorinfo new_info(sz * infoStep);
 
 	RawIndIterator newInd = new_inds.begin();
 	GenoIterator newPtr = new_genotype.begin();
@@ -1559,7 +1580,7 @@ population & population::extractMarkedIndividuals() const
 		ULONG spSize = subPopSize(sp);
 		for (size_t i = 0; i < spSize; ++i) {
 			// will be kept
-			if (!oldInd->marked()) {
+			if (oldInd->marked()) {
 				++newSize;
 				if (oldPtr != newPtr) {
 					*newInd = *oldInd;
@@ -1574,6 +1595,7 @@ population & population::extractMarkedIndividuals() const
 			oldPtr += step;
 			oldInfoPtr += infoStep;
 		}
+		new_size.push_back(newSize);
 	}
 	//
 	pop.m_inds.swap(new_inds);
@@ -1598,12 +1620,15 @@ population & population::extractIndividuals(const uintList & indexList,
 	const vectoru & indexes = indexList.elems();
 	const vectorf & IDs = IDList.elems();
 
-	// extract these individuals
-	population & allPop = *new population();
-
-	allPop.setGenoStruIdx(genoStruIdx());
-	if (IDs.empty() && indexes.empty())
-		return allPop;
+	if (IDs.empty() && indexes.empty()) {
+		// extract these individuals
+		population & pop = *new population();
+		pop.setGenoStruIdx(genoStruIdx());
+		incGenoStruRef();
+		pop.setVirtualSplitter(virtualSplitter());
+		pop.setSubPopStru(vectoru(numSubPop(), 0), m_subPopNames);
+		return pop;
+	}
 
 	DBG_FAILIF(!IDs.empty() && !indexes.empty(), ValueError,
 		"Please specify only one of parameters indexes and IDs");
@@ -1640,16 +1665,18 @@ population & population::extractIndividuals(const uintList & indexList,
 			"No individuals with ID " + toStr(id) + " is found.");
 		idMap[id]->setMarked(true);
 	}
-	for (UINT depth = ancestralGens(); depth >= 0; --depth) {
+	population * allPop = NULL;
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		const_cast<population *>(this)->useAncestralGen(depth);
-		population pop = extractMarkedIndividuals();
-		if (depth == ancestralGens())
-			allPop = pop;
-		else
-			allPop.push(pop);
+		population & pop = extractMarkedIndividuals();
+		if (allPop == NULL) {
+			allPop = &pop;
+			allPop->setAncestralDepth(ancestralGens());
+		} else
+			allPop->push(pop);
 	}
 	const_cast<population *>(this)->useAncestralGen(curGen);
-	return allPop;
+	return *allPop;
 }
 
 
