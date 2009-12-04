@@ -6150,6 +6150,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::population::extractByID "
+
+Usage:
+
+    x.extractByID(IDs=[], idField=\"ind_id\")
+
+Details:
+
+    Extract individuals with given IDs (IDs, stored in information
+    field idField, default to ind_id). Individuals will be in their
+    original ancestral generations and subpopulations, but empty
+    topmost ancestral generations and subpopulations will be removed.
+    An IndexError will be raised if an invalid ID is encountered.
+
+"; 
+
 %feature("docstring") simuPOP::population::removeLoci "
 
 Usage:

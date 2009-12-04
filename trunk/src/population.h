@@ -1025,6 +1025,17 @@ public:
 		const subPopList & subPops = subPopList(),
 		int ancGen = -1) const;
 
+
+	/** Extract individuals with given IDs (\e IDs, stored in information field
+	 *  \e idField, default to \c ind_id). Individuals will be in their
+	 *  original ancestral generations and subpopulations, but empty topmost
+	 *  ancestral generations and subpopulations will be removed. An
+	 *  \c IndexError will be raised if an invalid ID is encountered.
+	 *  <group>7-manipulate</group>
+	 */
+	population & extractByID(const vectorf & IDs = vectorf(), 
+		const string & idField = "ind_id") const;
+
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
 	 *  specify loci that will not be removed.
