@@ -49,13 +49,7 @@ __all__ = [
 
 import exceptions, operator, types
 
-from simuOpt import simuOptions
-
-# avoid duplicated banner message
-q = simuOptions['Quiet']
-simuOptions['Quiet'] = True
 from simuPOP import pyOperator, pedigree, Offspring, Spouse, affectionSplitter, Stat
-simuOptions['Quiet'] = q
 
 # Ascertainment operators and functions
 
@@ -98,12 +92,6 @@ class _sample:
         # 
         return [self.drawSample(pop) for x in range(times)]
 
-    def parent(self, idx, gen):
-        if self.idField == '':
-            return self.pedigree.ancestor(idx, gen)
-        else:
-            return self.pedigree.indByID(idx, gen)
-
     def clone(self):
         return copy.copy(self)
 
@@ -129,8 +117,8 @@ class randomSample(_sample):
         self.size = size
 
     def prepareSample(self, pop):
-        self.pedigree = pedigree(pop, idField='', fatherField='', motherField='')
-        self.pedigree.addInfoFields('sample', -1)
+        '''Prepare population for sampling'''
+        # we do not need to do anything.
         return True
 
     def drawSample(self, pop):
