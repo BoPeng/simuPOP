@@ -42,8 +42,6 @@ Usage:
 
 %ignore simuPOP::affectionSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::affectionSplitter::deactivate(const population &pop, SubPopID sp);
-
 %feature("docstring") simuPOP::affectionSplitter::name "
 
 Usage:
@@ -1045,8 +1043,6 @@ Details:
 %ignore simuPOP::combinedSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
 %ignore simuPOP::combinedSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::combinedSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::combinedSplitter::name "
 
@@ -2050,8 +2046,6 @@ Usage:
 %ignore simuPOP::genotypeSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
 %ignore simuPOP::genotypeSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::genotypeSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::genotypeSplitter::name "
 
@@ -3168,8 +3162,6 @@ Details:
 %ignore simuPOP::infoSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
 %ignore simuPOP::infoSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::infoSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::infoSplitter::name "
 
@@ -5976,23 +5968,36 @@ Usage:
 
 Details:
 
-    Remove subpopulation(s) subPop and all their individuals. Indexes
-    of subpopulations after removed subpopulations will be shifted.
+    Remove (virtual) subpopulation(s) subPops and all their
+    individuals. This function can be used to remove complete
+    subpopulations (with shifted subpopulation indexes) or individuals
+    belonging to virtual subpopulations of a subpopulation. In the
+    latter case, the subpopulations are kept even if all individuals
+    have been removed. This function only handles the present
+    generation.
 
 "; 
+
+%ignore simuPOP::population::removeMarkedIndividuals();
 
 %feature("docstring") simuPOP::population::removeIndividuals "
 
 Usage:
 
-    x.removeIndividuals(inds)
+    x.removeIndividuals(indexes=[], IDs=[], idFiled=\"ind_id\")
 
 Details:
 
-    remove individual(s) inds (absolute indexes) from the current
-    population. A subpopulation will be kept even if all individuals
-    from it are removed. This function only affects the current
-    generation.
+    remove individual(s) either by absolute indexes (parameter index)
+    or their IDs (parameter IDs). In the latter form, an unique ID for
+    all individual should be saved in an information field idField
+    (default to \"ind_id\"). If indexes are used, individuals can only
+    be removed from the current generation. If IDs are used,
+    individuals from all ancestral generations could be removed. An
+    IndexError will be raised if an index is out of bound, or if no
+    individual is found for a given ID. This function does not affect
+    subpopulation structure in the sense that a subpopulation will be
+    kept even if all individuals from it are removed.
 
 "; 
 
@@ -6123,48 +6128,49 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::extract "
+%feature("docstring") simuPOP::population::extractSubPops "
 
 Usage:
 
-    x.extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail,
-      ancGen=-1)
+    x.extractSubPops(subPops=AllAvail)
 
 Details:
 
-    Extract subsets of individuals, loci and/or information fields
-    from the current population and create a new population. By
-    default, all genotypes and information fields for all individuals
-    in all ancestral generations are extracted. If a list of (virtual)
-    subpopulations are given, only individuals in these subpopulations
-    are extracted. Structure and names of extracted subpopulations
-    will be kept although extracted subpopulations can have fewer
-    individuals if they are created from extracted virtual
+    Extract a list of (virtual) subpopulations from a population and
+    create a new population. Structure and names of extracted
+    subpopulations are kept although extracted subpopulations can have
+    fewer individuals if they are created from extracted virtual
     subpopulations. (e.g. it is possible to extract all male
-    individuals from a subpopulation using a sexSplitter()). If a list
-    of loci is specified, only genotypes at specified loci are
-    extracted. If a list of infoFields is specified, only these
-    information fields are extracted. If ancGen is not -1 (default,
-    meaing all ancestral generations), only ancGen ancestral
-    generations will be extracted.
+    individuals from a subpopulation using a sexSplitter()). This
+    function only works with the present generation.
 
 "; 
 
-%feature("docstring") simuPOP::population::extractByID "
+%ignore simuPOP::population::extractMarkedIndividuals() const;
+
+%feature("docstring") simuPOP::population::extractIndividuals "
 
 Usage:
 
-    x.extractByID(IDs=[], idField=\"ind_id\")
+    x.extractIndividuals(indexes=[], IDs=[], idField=\"ind_id\")
 
 Details:
 
-    Extract individuals with given IDs (IDs, stored in information
-    field idField, default to ind_id). Individuals will be in their
-    original ancestral generations and subpopulations, but empty
-    topmost ancestral generations and subpopulations will be removed.
-    An IndexError will be raised if an invalid ID is encountered.
+    Extract individuals with given absolute indexes (parameter
+    indexes), or IDs (IDs, stored in information field idField,
+    default to ind_id). If a list of absolute indexes are specified,
+    the present generation will be extracted and form a one-
+    generational population. If a list of IDs are specified, this
+    function will look through all ancestral generations and extract
+    individuals with given ID. Extracted individuals will be in their
+    original ancestral generations and subpopulations, even if some
+    subpopulations even generations are empty. An IndexError will be
+    raised if an index is out of bound or if an invalid ID is
+    encountered.
 
 "; 
+
+%ignore simuPOP::population::extract(const uintList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), int ancGen=-1) const;
 
 %feature("docstring") simuPOP::population::removeLoci "
 
@@ -6317,22 +6323,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::updateInfoFieldsFrom "
-
-Usage:
-
-    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
-
-Details:
-
-    Update information fields fields from fromFields of another
-    population (or pedigree) pop. Two populations should have the same
-    number of individuals. If fromFields is not specified, it is
-    assumed to be the same as fields. If ancGen is not -1, only the
-    most recent ancGen generations are updated.
-
-"; 
-
 %feature("docstring") simuPOP::population::setAncestralDepth "
 
 Usage:
@@ -6481,8 +6471,6 @@ Details:
 
 %ignore simuPOP::productSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::productSplitter::deactivate(const population &pop, SubPopID sp);
-
 %feature("docstring") simuPOP::productSplitter::name "
 
 Usage:
@@ -6541,8 +6529,6 @@ Details:
 %ignore simuPOP::proportionSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
 %ignore simuPOP::proportionSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::proportionSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::proportionSplitter::name "
 
@@ -7566,8 +7552,6 @@ Details:
 
 %ignore simuPOP::rangeSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::rangeSplitter::deactivate(const population &pop, SubPopID sp);
-
 %feature("docstring") simuPOP::rangeSplitter::name "
 
 Usage:
@@ -8397,8 +8381,6 @@ Usage:
 %ignore simuPOP::sexSplitter::contains(const population &pop, ULONG ind, vspID vsp) const;
 
 %ignore simuPOP::sexSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::sexSplitter::deactivate(const population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::sexSplitter::name "
 
@@ -9922,6 +9904,8 @@ Usage:
 
 %ignore simuPOP::subPopList::contains(const vspID subPop) const;
 
+%ignore simuPOP::subPopList::overlap(const SubPopID subPop) const;
+
 %ignore simuPOP::subPopList::begin() const;
 
 %ignore simuPOP::subPopList::end() const;
@@ -10412,7 +10396,7 @@ Details:
 
 %ignore simuPOP::vspSplitter::activate(const population &pop, SubPopID subPop, SubPopID virtualSubPop);
 
-%ignore simuPOP::vspSplitter::deactivate(const population &pop, SubPopID subPop);
+%ignore simuPOP::vspSplitter::deactivate(SubPopID subPop);
 
 %feature("docstring") simuPOP::vspSplitter::name "
 
