@@ -44,7 +44,9 @@
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
+#ifndef HAVE_DECL_ISFINITE
 #define HAVE_DECL_ISFINITE 0
+#endif
 
 /* Define to 1 if you have the declaration of `isinf', and to 0 if you don't.
  */
