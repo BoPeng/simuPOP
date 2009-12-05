@@ -159,7 +159,7 @@ class randomSample(_sample):
                 if size > self.pop.subPopSize(sp):
                     print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
                         % (size, sp, self.pop.subPopSize(sp))
-                values = range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)]
+                values = range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp))
                 random.shuffle(values)
                 samples.extend(values[:size])
         return self.pop.extractIndividuals(indexes = samples)

@@ -6132,17 +6132,23 @@ Details:
 
 Usage:
 
-    x.extractSubPops(subPops=AllAvail)
+    x.extractSubPops(subPops=AllAvail, rearrange=False)
 
 Details:
 
     Extract a list of (virtual) subpopulations from a population and
-    create a new population. Structure and names of extracted
-    subpopulations are kept although extracted subpopulations can have
-    fewer individuals if they are created from extracted virtual
-    subpopulations. (e.g. it is possible to extract all male
-    individuals from a subpopulation using a sexSplitter()). This
-    function only works with the present generation.
+    create a new population. If rearrange is False (default),
+    structure and names of extracted subpopulations are kept although
+    extracted subpopulations can have fewer individuals if they are
+    created from extracted virtual subpopulations. (e.g. it is
+    possible to extract all male individuals from a subpopulation
+    using a sexSplitter()). If rearrange is True, each (virtual)
+    subpopulation in subPops becomes a new subpopulation in the
+    extracted population in the order at which they are specified.
+    Because each virtual subpopulation becomes a subpopulation, this
+    function could be used, for example, to separate male and female
+    individuals to two subpopulations ( subPops=[(0,0), (0,1)]). This
+    function only extract individuals from the present generation.
 
 "; 
 
