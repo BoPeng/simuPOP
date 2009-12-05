@@ -1421,7 +1421,7 @@ void population::resize(const uintList & sizeList, bool propagate)
 }
 
 
-population & population::extractSubPops(const subPopList & subPops) const
+population & population::extractSubPops(const subPopList & subPops, bool rearrange) const
 {
 #ifndef OPTIMIZED
 	subPopList::const_iterator it = subPops.begin();
@@ -1443,85 +1443,121 @@ population & population::extractSubPops(const subPopList & subPops) const
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
-	ConstRawIndIterator oldInd = m_inds.begin();
-	ConstGenoIterator oldPtr = m_genotype.begin();
-	ConstInfoIterator oldInfoPtr = m_info.begin();
 
 	vector<individual> new_inds;
 	vectora new_genotype;
 	vectorinfo new_info;
 
-	ULONG sz = 0;
-	// there is overestimate here
-	for (size_t sp = 0; sp < numSubPop(); ++sp) {
-		if (subPops.contains(sp) || subPops.overlap(sp))
-			sz += subPopSize(sp);
-	}
-	new_inds.resize(sz);
-	new_genotype.resize(sz * step);
-	new_info.resize(sz * infoStep);
-	//
-	RawIndIterator newInd = new_inds.begin();
-	GenoIterator newPtr = new_genotype.begin();
-	InfoIterator newInfoPtr = new_info.begin();
-
-	for (UINT sp = 0; sp < numSubPop(); ++sp) {
-		ULONG spSize = subPopSize(sp);
-		if (subPops.contains(sp)) {
-			// complete copy
-			new_size.push_back(spSize);
+	if (rearrange) {
+		ULONG sz = 0;
+		subPopList::const_iterator it = subPops.begin();
+		subPopList::const_iterator itEnd = subPops.end();
+		for (; it != itEnd; ++it) {
+			new_size.push_back(subPopSize(*it));
+			sz += new_size.back();
 			if (!m_subPopNames.empty())
-				new_spNames.push_back(m_subPopNames[sp]);
-			//
-			copy(oldInd, oldInd + spSize, newInd);
-			copy(oldPtr, oldPtr + step * spSize, newPtr);
-			copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+				new_spNames.push_back(m_subPopNames[it->subPop()]);
+		}
+		//
+		new_inds.resize(sz);
+		new_genotype.resize(sz * step);
+		new_info.resize(sz * infoStep);
+		//
+		RawIndIterator newInd = new_inds.begin();
+		GenoIterator newPtr = new_genotype.begin();
+		InfoIterator newInfoPtr = new_info.begin();
 
-			oldInd += spSize;
-			oldPtr += step * spSize;
-			oldInfoPtr += infoStep * spSize;
-			newInd += spSize;
-			newPtr += step * spSize;
-			newInfoPtr += infoStep * spSize;
-		} else if (subPops.overlap(sp)) {
-			// partial copy
-			//
-			// mark for copy
-			markIndividuals(sp, false);
-			subPopList::const_iterator it = subPops.begin();
-			subPopList::const_iterator itEnd = subPops.end();
-			for (; it != itEnd; ++it)
-				if (it->subPop() == static_cast<SubPopID>(sp))
-					markIndividuals(*it, true);
-			//
-			ULONG newSize = 0;
-			for (size_t i = 0; i < spSize; ++i) {
-				// will be kept
-				if (oldInd->marked()) {
-					++newSize;
-					*newInd = *oldInd;
-					copy(oldPtr, oldPtr + step, newPtr);
-					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
-					++newInd;
-					newPtr += step;
-					newInfoPtr += infoStep;
-				}
-				++oldInd;
-				oldPtr += step;
-				oldInfoPtr += infoStep;
+		it = subPops.begin();
+		for (; it != itEnd; ++it) {
+			activateVirtualSubPop(*it);
+			ConstIndIterator oldInd = indIterator(it->subPop());
+			for (; oldInd.valid(); ++oldInd) {
+				*newInd = *oldInd;
+				copy(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
+				copy(oldInd->infoBegin(), oldInd->infoEnd(), newInfoPtr);
+				++newInd;
+				newPtr += step;
+				newInfoPtr += infoStep;
 			}
-			//
-			new_size.push_back(newSize);
-			if (!m_subPopNames.empty())
-				new_spNames.push_back(m_subPopNames[sp]);
-		} else {
-			// do not copy
-			oldInd += spSize;
-			oldPtr += step * spSize;
-			oldInfoPtr += infoStep * spSize;
+			deactivateVirtualSubPop(it->subPop());
+		}
+	} else {
+		ULONG sz = 0;
+		// there is overestimate here
+		for (size_t sp = 0; sp < numSubPop(); ++sp) {
+			if (subPops.contains(sp) || subPops.overlap(sp))
+				sz += subPopSize(sp);
+		}
+		new_inds.resize(sz);
+		new_genotype.resize(sz * step);
+		new_info.resize(sz * infoStep);
+		//
+		RawIndIterator newInd = new_inds.begin();
+		GenoIterator newPtr = new_genotype.begin();
+		InfoIterator newInfoPtr = new_info.begin();
+
+		//
+		ConstRawIndIterator oldInd = m_inds.begin();
+		ConstGenoIterator oldPtr = m_genotype.begin();
+		ConstInfoIterator oldInfoPtr = m_info.begin();
+		for (UINT sp = 0; sp < numSubPop(); ++sp) {
+			ULONG spSize = subPopSize(sp);
+			if (subPops.contains(sp)) {
+				// complete copy
+				new_size.push_back(spSize);
+				if (!m_subPopNames.empty())
+					new_spNames.push_back(m_subPopNames[sp]);
+				//
+				copy(oldInd, oldInd + spSize, newInd);
+				copy(oldPtr, oldPtr + step * spSize, newPtr);
+				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+
+				oldInd += spSize;
+				oldPtr += step * spSize;
+				oldInfoPtr += infoStep * spSize;
+				newInd += spSize;
+				newPtr += step * spSize;
+				newInfoPtr += infoStep * spSize;
+			} else if (subPops.overlap(sp)) {
+				// partial copy
+				//
+				// mark for copy
+				markIndividuals(sp, false);
+				subPopList::const_iterator it = subPops.begin();
+				subPopList::const_iterator itEnd = subPops.end();
+				for (; it != itEnd; ++it)
+					if (it->subPop() == static_cast<SubPopID>(sp))
+						markIndividuals(*it, true);
+				//
+				ULONG newSize = 0;
+				for (size_t i = 0; i < spSize; ++i) {
+					// will be kept
+					if (oldInd->marked()) {
+						++newSize;
+						*newInd = *oldInd;
+						copy(oldPtr, oldPtr + step, newPtr);
+						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+						++newInd;
+						newPtr += step;
+						newInfoPtr += infoStep;
+					}
+					++oldInd;
+					oldPtr += step;
+					oldInfoPtr += infoStep;
+				}
+				//
+				new_size.push_back(newSize);
+				if (!m_subPopNames.empty())
+					new_spNames.push_back(m_subPopNames[sp]);
+			} else {
+				// do not copy
+				oldInd += spSize;
+				oldPtr += step * spSize;
+				oldInfoPtr += infoStep * spSize;
+			}
 		}
 	}
-	sz = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	ULONG sz = std::accumulate(new_size.begin(), new_size.end(), 0UL);
 	new_inds.resize(sz);
 	new_genotype.resize(sz * step);
 	new_info.resize(sz * infoStep);
