@@ -72,7 +72,7 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
 			ULONG id = static_cast<ULONG>(it->info(m_idIdx) + 0.5);
-			DBG_FAILIF(m_idMap.find(id) != m_idMap.end(), IndexError,
+			DBG_WARNING(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
 			m_idMap[id] = &*it;
 		}

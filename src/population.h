@@ -1032,8 +1032,9 @@ public:
 	 *  at which they are specified. Because each virtual subpopulation becomes
 	 *  a subpopulation, this function could be used, for example, to separate
 	 *  male and female individuals to two subpopulations (
-	 *  <tt>subPops=[(0,0), (0,1)]</tt>). This function only extract
-	 *  individuals from the present generation.
+	 *  <tt>subPops=[(0,0), (0,1)]</tt>). If overlapping (virtual)
+	 *  subpopulations are specified, individuals will be copied multiple times.
+	 *  This function only extract individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
 	population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
