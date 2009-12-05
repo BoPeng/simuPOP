@@ -27,11 +27,36 @@
 
 
 """
-simuPOP sampling.
+This module provides classes and functions that could be used to draw samples
+from a simuPOP population. These functions accept a list of parameters such
+as ``subPops`` ((virtual) subpopulations from which samples will be drawn) and
+``times`` (number of samples to draw) and return a list of populations. Both
+independent individuals and dependent individuals (pedigrees) are supported.
 
-This module provides functions and operators to draw samples
-from a (multi-generational) simuPOP population.
+Independent individuals could be drawn from any population. Pedigree
+information is not necessary and is usually ignored. Unique IDs are not needed
+either although such IDs could help you identify samples in the parent
+population.
 
+Pedigrees could be drawn from multi-generational populations or age-structured
+populations. All individuals are required to have a unique ID (usually tracked
+by operator ``idTagger`` and are stored in information field ``ind_id``).
+Parents of individuals are usually tracked by operator ``pedigreeTagger`` and
+are stored in information fields ``father_id`` and ``mother_id``. If parental
+information is tracked using operator ``parentsTagger`` and information fields
+``father_idx`` and ``mother_idx``, a function ``sampling.indexToID`` can be
+used to convert index based pedigree to ID based pedigree. Note that
+``parentsTagger`` can not be used to track pedigrees in age-structured
+populations because they require parents of each individual resides in a
+parental generation.
+
+All sampling functions support virtual subpopulations through parameter
+``subPops``, although sample size specification might vary. This feature
+allows you to draw samples with specified properties. For example, you
+could select only female individuals for cases of a female-only disease,
+or select individuals within certain age-range. If you specify a list
+of (virtual) subpopulations, you are usually allowed to draw certain
+number of individuals from each subpopulation.
 """
 
 __all__ = [
@@ -49,7 +74,7 @@ __all__ = [
 
 import exceptions, operator, types
 
-from simuPOP import pyOperator, pedigree, Offspring, Spouse, affectionSplitter, Stat
+from simuPOP import pedigree, AllAvail
 
 # Ascertainment operators and functions
 
@@ -97,75 +122,62 @@ class _sample:
 
 
 class randomSample(_sample):
-    '''This operator draws random individuals from a population repeatedly and
-    forms a number of random samples. These samples can be put in the
-    population's local namespace, or save to disk files. The function form
-    of this operator returns a list of samples directly.
-    '''
-    def __init__(self, size, *args, **kwargs):
-        '''Draw *size* random samples from a population *times* times. *size* can
-        be a number or a list of numbers. In the former case, individuals are
-        drawn from the whole population and the samples has only one
-        subpopulation. In the latter case, a given number of individuals are
-        drawn from each subpopulation and the result sample has the same number
-        of subpopulation as the population from which samples are drawn. The
-        samples are saved in the population's local namespace if *name* or
-        *nameExpr* is given, and are saved as diskfiles if *saveAs* or
-        *saveAsExpr* is given.
-        '''
-        _sample.__init__(self, *args, **kwargs)
+    def __init__(self, size, subPops):
         self.size = size
+        self.subPops = subPops
 
     def prepareSample(self, pop):
-        '''Prepare population for sampling'''
-        # we do not need to do anything.
+        '''Prepare population for sampling. If a list of subpopulations are
+        specified, trim the given population to these subpopulations.'''
+        if self.subPops == AllAvail:
+            self.pop = pop
+        elif type(self.size) not in [type(()), type([])]:
+            # from all all population
+            self.pop = pop.extractSubPops(self.subPops);
+        else:
+            if len(self.size) != len(self.subPops):
+                raise ValueError("If a list of size and subpopulations are specified, they should have the same length")
+            # rearrange population according to self.subPops
+            self.pop = pop.extractSubPops(self.subPops, True)
         return True
 
-    def drawSample(self, pop):
+    def drawSample(self):
         import random
         if type(self.size) not in [type(()), type([])]:
             size = self.size
-            if size > pop.popSize():
-                print 'Warning: sample size %d is greater than population size %d.' % (size, pop.popSize())
+            if size > self.pop.popSize():
+                print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
                 size = pop.popSize()
-            # randomly choose self.size individuals
-            values = [0] * size + [-1] * (pop.popSize() - size)
+            # randomly choose size individuals
+            values = [0] * size + [-1] * (self.pop.popSize() - size)
             random.shuffle(values)
-            self.pedigree.setIndInfo(values, 'sample')
+            samples = values[:size]
         else:
-            for sp in range(pop.numSubPop()):
+            samples = []
+            for sp in range(self.pop.numSubPop()):
                 size = self.size[sp]
-                if size > pop.subPopSize(sp):
+                if size > self.pop.subPopSize(sp):
                     print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
-                        % (size, sp, pop.subPopSize(sp))
-                values = [sp] * size + [-1] * (pop.subPopSize(sp) - size)
+                        % (size, sp, self.pop.subPopSize(sp))
+                values = range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)]
                 random.shuffle(values)
-                self.pedigree.setIndInfo(values, 'sample', sp)
-        return pop.extract(field='sample', ped=self.pedigree)
+                samples.extend(values[:size])
+        return self.pop.extractIndividuals(indexes = samples)
 
-
-def RandomSample(pop, size, times=1, *args, **kwargs):
-    'Draw random sample'
-    return randomSample(size=size, *args, **kwargs).drawSamples(pop, times=times)
+def RandomSample(pop, size, times=1, subPops=AllAvail):
+    '''Draw ``times`` random samples from a population. If a single ``size``
+    is given, individuals are drawn randomly from the whole population or
+    from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
+    a list of numbers should be used to specify number of samples from each
+    subpopulation, which can be all subpopulations if ``subPops=AllAvail``
+    (default), or from each of the specified (virtual) subpopulations. The
+    return value of this function is a list of populations.
+    '''
+    return randomSample(size=size, subPops=subPops).drawSamples(pop, times=times)
  
 class caseControlSample(_sample):
-    '''
-    This operator chooses random cases and controls from a population
-    repeatedly. These samples can be put in the population's local namespace,
-    or save to disk files. The function form of this operator returns a list
-    of samples directly.
-    '''
     def __init__(self, cases, controls, *args, **kwargs):
         '''
-        Draw *cases* affected and *controls* unaffected individuals from a
-        population repeatedly. *cases* can be a number or a list of numbers.
-        In the former case, affected individuals are drawn from the whole
-        population. In the latter case, a given number of individuals are
-        drawn from each subpopulation. The same hold for *controls*. The
-        resulting samples have two subpopulations that hold cases and controls
-        respectively. The samples are saved in the population's local namespace
-        if *name* or *nameExpr* is given, and are saved as diskfiles if
-        *saveAs* or *saveAsExpr* is given.
         '''
         _sample.__init__(self, *args, **kwargs)
         self.cases = cases
@@ -239,43 +251,25 @@ class caseControlSample(_sample):
         return pop.extract(field='sample', ped=self.pedigree)
 
 
-def CaseControlSample(pop, times=1, *args, **kwargs):
-    'Draw case controls ample'
-    s = caseControlSample(*args, **kwargs)
-    return s.drawSamples(pop, times)
- 
+def CaseControlSample(pop, cases, controls, times=1, subPops=AllAvail):
+    '''Draw ``times`` case-control samples from a population with ``cases``
+    affected and ``controls`` unaffected individuals. If single ``cases`` and
+    ``controls`` are given, individuals are drawn randomly from the whole
+    population or from specified (virtual) subpopulations (parameter
+    ``subPops``). Otherwise, a list of numbers should be used to specify
+    number of cases and controls from each subpopulation, which can be all
+    subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    specified (virtual) subpopulations. The return value of this function is a
+    list of populations.
+    '''
+    return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
 
 
 class affectedSibpairSample(_sample):
     '''
-    This operator chooses affected sibpairs and their parents from a population
-    repeatedly. These samples can be put in the population's local namespace,
-    or save to disk files. The function form of this operator returns a list
-    of samples directly.\n
-    
-    The population to be sampled needs to have at least one ancestral
-    generation. In addition, parents of each offspring is needed so information
-    fields, most likely *father_idx* and *mother_idx* should be used to track
-    parents in the parental generation. An during mating operator
-    *parentsTagger* is designed for such a purpose. In addition, because it is
-    very unlikely for two random offspring to share parents, affected sibpairs
-    can only be ascertained from populations that are generated using a mating
-    scheme that produes more than one offspring at each mating event.
     '''
     def __init__(self, size, idField='', fatherField='father_idx', motherField='mother_idx', *args, **kwargs):
         '''
-        Draw *size* families, including two affected siblings and their parents
-        from a population repeatedly. The population to be sampled must have
-        at least one ancestral generation. It should also have two information
-        fields specified by parameter *infoFields* (Default to ``['father_idx',
-        'mother_idx']``. Parameter *size* can be a number or a list of numbers.
-        In the former case, affected sibpairs are drawn from the whole
-        population. In the latter case, a given number of affected sibpairs are
-        drawn from each subpopulation. In both cases, affected sibpairs in the
-        resulting sample form their own subpopulations (of size two). The
-        samples are saved in the population's local namespace if *name* or
-        *nameExpr* is given, and are saved as diskfiles if *saveAs* or
-        *saveAsExpr* is given.
         '''
         _sample.__init__(self, *args, **kwargs)
         self.size = size
@@ -409,8 +403,17 @@ class affectedSibpairSample(_sample):
         return sample
 
 
-def AffectedSibpairSample(pop, size, times=1, *args, **kwargs):
-    'Draw affected sibpair sample from ...'
+def AffectedSibpairSample(pop, families, times=1, subPops=AllAvail, 
+    idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    '''Draw ``times`` affected sibpair samples from a population. If a single
+    ``families`` is given, affected sibpairs and their parents are drawn
+    randomly from the whole population or from specified (virtual)
+    subpopulations (parameter ``subPops``). Otherwise, a list of numbers should
+    be used to specify number of families from each subpopulation, which can be
+    all subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    specified (virtual) subpopulations. The return value of this function is
+    a list of populations.
+    '''
     s = affectedSibpairSample(size, *args, **kwargs)
     return s.drawSamples(pop, times)
  

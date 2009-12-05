@@ -1022,14 +1022,21 @@ public:
 
 
 	/** Extract a list of (virtual) subpopulations from a population and create
-	 *  a new population. Structure and names of extracted subpopulations are
-	 *  kept although extracted subpopulations can have fewer individuals if
-	 *  they are created from extracted virtual subpopulations. (e.g. it is
-	 *  possible to extract all male individuals from a subpopulation using a
-	 *  \c sexSplitter()). This function only works with the present generation.
+	 *  a new population. If \e rearrange is \c False (default), structure and
+	 *  names of extracted subpopulations are kept although extracted
+	 *  subpopulations can have fewer individuals if they are created from
+	 *  extracted virtual subpopulations. (e.g. it is possible to extract all
+	 *  male individuals from a subpopulation using a \c sexSplitter()). If
+	 *  \e rearrange is \c True, each (virtual) subpopulation in \e subPops
+	 *  becomes a new subpopulation in the extracted population in the order
+	 *  at which they are specified. Because each virtual subpopulation becomes
+	 *  a subpopulation, this function could be used, for example, to separate
+	 *  male and female individuals to two subpopulations (
+	 *  <tt>subPops=[(0,0), (0,1)]</tt>). This function only extract
+	 *  individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-	population & extractSubPops(const subPopList & subPops = subPopList()) const;
+	population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
 
 
 	/// CPPONLY

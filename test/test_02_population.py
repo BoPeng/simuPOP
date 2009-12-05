@@ -625,7 +625,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(sum(sz), sum(sz1) + len(exclude))
 
     def testExtractSubPops(self):
-        'Testing population::removeSubPops()'
+        'Testing population::extractSubPops()'
         pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50], subPopNames=['A', 'B', 'C', 'D', 'E', 'F', 'G'])
         InitSex(pop)
         InitByFreq(pop, [0.5, 0.5])
@@ -648,7 +648,7 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(pop1.individual(idx, oldsp), pop2.individual(idx, newsp))
         self.assertRaises(exceptions.IndexError, pop.extractSubPops, [8])
         # accept single input
-        pop.removeSubPops(0)
+        pop.extractSubPops(0)
         # 
         # now  for virtual subpopulation
         pop = self.getPop(size=[0, 100, 0, 20], subPopNames=['A', 'B', 'C', 'D'])
@@ -665,7 +665,52 @@ class TestPopulation(unittest.TestCase):
         pop1 = pop.extractSubPops([(0,1), 1])
         self.assertEqual(pop1.numSubPop(), 2)
         self.assertEqual(pop1.subPopSizes(), (0, 20))
-        
+    
+    def testRearrangedExtractSubPops(self):
+        'Testing population::extractSubPops(subPops, true)'
+        pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50], subPopNames=['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+        InitSex(pop)
+        InitByFreq(pop, [0.5, 0.5])
+        self.assertEqual(pop.numSubPop(), 7)
+        pop1 = pop.extractSubPops([x for x in range(6, 0, -1) if pop.subPopSize(x) != 0], True)
+        self.assertEqual(pop1.numSubPop(), 4)
+        self.assertEqual(pop1.subPopSizes(), (50, 30, 20, 100))
+        for (oldsp, newsp) in [(6, 0), (4, 1), (3, 2), (1, 3)]:  # map of old and new id.
+            self.assertEqual(pop.subPopSize(oldsp), pop1.subPopSize(newsp))
+            self.assertEqual(pop.subPopName(oldsp), pop1.subPopName(newsp))
+            for idx in range(pop.subPopSize(oldsp)):
+                self.assertEqual(pop.individual(idx, oldsp), pop1.individual(idx, newsp))
+        # extract subpop
+        pop2 = pop1.extractSubPops([2, 1], True)
+        self.assertEqual(pop2.subPopSizes(), (20, 30))
+        for (oldsp, newsp) in [(2, 0), (1, 1)]:  # map of old and new id.
+            self.assertEqual(pop1.subPopSize(oldsp), pop2.subPopSize(newsp))
+            self.assertEqual(pop1.subPopName(oldsp), pop2.subPopName(newsp))
+            for idx in range(pop1.subPopSize(oldsp)):
+                self.assertEqual(pop1.individual(idx, oldsp), pop2.individual(idx, newsp))
+        self.assertRaises(exceptions.IndexError, pop.extractSubPops, [8])
+        # accept single input
+        pop.extractSubPops(0, True)
+        # 
+        # now for virtual subpopulation
+        pop = self.getPop(size=[0, 100, 0, 20], subPopNames=['A', 'B', 'C', 'D'])
+        InitByFreq(pop, [0.5, 0.5])
+        InitSex(pop)
+        pop.setVirtualSplitter(sexSplitter())
+        numMale = pop.subPopSize([1,0])
+        pop = pop.extractSubPops([3, (1,0), (1,1)], True)
+        self.assertEqual(pop.numSubPop(), 3)
+        self.assertEqual(pop.subPopSizes(), (20, numMale, 100-numMale))
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Male)
+        for ind in pop.individuals(2):
+            self.assertEqual(ind.sex(), Female)
+        # continue...
+        pop1 = pop.extractSubPops([(0,1), 1], True)
+        self.assertEqual(pop1.numSubPop(), 2)
+        self.assertEqual(pop1.subPopSize(1), numMale)
+
+
     def testExtractIndividuals(self):
         'Testing population::removeIndividuals(inds)'
         pop = self.getPop(size =[20, 100, 30], subPopNames=['sp1', 'sp2', 'sp3'])
