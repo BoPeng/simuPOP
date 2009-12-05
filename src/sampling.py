@@ -95,12 +95,13 @@ class _sample:
     def prepareSample(self, pop):
         '''
         This function is usually used to prepare a pedigree object so that
-        samples can be drawn.
+        samples can be drawn. A population or pedigree object self.pop
+        should be created here.
         '''
         raise SystemError('Please re-implement this prepareSample function in the derived class.')
         return True
 
-    def drawSample(self, pop):
+    def drawSample(self):
         '''
         Draw and return a sample, using population *pop*, and *self.pedigree*
         prepared in prepareSample.
@@ -109,13 +110,12 @@ class _sample:
         return True
 
     def drawSamples(self, pop, times):
-        self.prepareSample(pop)
         if times < 0:
             raise ValueError("Negative number of samples are unacceptable")
         if not self.prepareSample(pop):
             raise RuntimeError("Failed to prepare population for sampleing")
         # 
-        return [self.drawSample(pop) for x in range(times)]
+        return [self.drawSample() for x in range(times)]
 
     def clone(self):
         return copy.copy(self)
@@ -149,7 +149,7 @@ class randomSample(_sample):
                 print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
                 size = pop.popSize()
             # randomly choose size individuals
-            values = [0] * size + [-1] * (self.pop.popSize() - size)
+            values = range(self.pop.popSize())
             random.shuffle(values)
             samples = values[:size]
         else:

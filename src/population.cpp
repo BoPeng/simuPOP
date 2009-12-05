@@ -1673,7 +1673,7 @@ population & population::extractIndividuals(const uintList & indexList,
 		markIndividuals(vspID(), false);
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
-				"Individual index out of range.");
+				"Individual index " + toStr(indexes[i]) + " out of range of 0 ~ " + toStr(m_popSize) + ".");
 			ind(indexes[i]).setMarked(true);
 		}
 		return extractMarkedIndividuals();
