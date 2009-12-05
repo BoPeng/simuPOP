@@ -56,13 +56,15 @@ public:
 	 *  By default, information field \c father_id (parameter \e fatherField)
 	 *  and \c mother_id (parameter \e motherField) are used to locate parents
 	 *  with \c ind_id (parameter \e idField) as an ID field storing an unique
-	 *  ID for every individual. Operators \c idTagger and  \c pedigreeTagger
-	 *  are usually used to assign such IDs, although function
-	 *  \c sampling.indexToID could be used to assign unique IDs and construct
-	 *  parental IDs from index based relationship recorded by operator
-	 *  \c parentsTagger. This pedigree object works with one or no parents
-	 *  but certain functions such as relative tracking will not be available
-	 *  for such cases.
+	 *  ID for every individual. Multiple individuls with the same ID are
+	 *  allowed and will be considered as the same individual, but a warning
+	 *  will be given if they actually differ in genotype or information fields.
+	 *  Operators \c idTagger and  \c pedigreeTagger are usually used to assign
+	 *  such IDs, although function \c sampling.indexToID could be used to
+	 *  assign unique IDs and construct parental IDs from index based
+	 *  relationship recorded by operator \c parentsTagger. This pedigree
+	 *  object works with one or no parents but certain functions such as
+	 *  relative tracking will not be available for such pedigrees.
 	 */
 	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
