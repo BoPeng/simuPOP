@@ -4958,8 +4958,9 @@ Details:
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1, idField=\"\",
-      fatherField=\"\", motherField=\"\")
+    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+      idField=\"ind_id\", fatherField=\"father_id\",
+      motherField=\"mother_id\")
 
 Details:
 
@@ -4971,13 +4972,16 @@ Details:
     default, information field father_id (parameter fatherField) and
     mother_id (parameter motherField) are used to locate parents with
     ind_id (parameter idField) as an ID field storing an unique ID for
-    every individual. Operators idTagger and pedigreeTagger are
-    usually used to assign such IDs, although function
-    sampling.indexToID could be used to assign unique IDs and
-    construct parental IDs from index based relationship recorded by
-    operator parentsTagger. This pedigree object works with one or no
-    parents but certain functions such as relative tracking will not
-    be available for such cases.
+    every individual. Multiple individuls with the same ID are allowed
+    and will be considered as the same individual, but a warning will
+    be given if they actually differ in genotype or information
+    fields. Operators idTagger and pedigreeTagger are usually used to
+    assign such IDs, although function sampling.indexToID could be
+    used to assign unique IDs and construct parental IDs from index
+    based relationship recorded by operator parentsTagger. This
+    pedigree object works with one or no parents but certain functions
+    such as relative tracking will not be available for such
+    pedigrees.
 
 "; 
 
@@ -5051,7 +5055,8 @@ Details:
 
 Usage:
 
-    x.locateRelatives(relType=[], relFields=[], ancGen=-1)
+    x.locateRelatives(relType, resultFields=[], sexChoice=AnySex,
+      affectionChoice=AnyAffectionStatus, ancGen=-1)
 
 Details:
 
@@ -5073,9 +5078,12 @@ Details:
     m is the number of fields.
     *   FullSibling siblings with common father and mother,
     *   Sibling siblings with at least one common parent. Optionally,
-    you can specify the sex of relatives you would like to locate, in
-    the form of relType=(type, sexChoice). sexChoice can be AnySex
-    (default), MaleOnly, FemaleOnly, SameSex or OppositeSex.  This
+    you can specify the sex and affection status of relatives you
+    would like to locate, using parameters sexChoice and
+    affectionChoice. sexChoice can be AnySex (default), MaleOnly,
+    FemaleOnly, SameSex or OppositeSex, and affectionChoice can be
+    Affected, Unaffected or AnyAffectionStatus (default). Only
+    relatives with specified properties will be located.  This
     function will by default go through all ancestral generations and
     locate relatives for all individuals. This can be changed by
     setting parameter ancGen to the greatest ancestral generation you
@@ -5087,8 +5095,8 @@ Details:
 
 Usage:
 
-    x.traceRelatives(pathFields, pathSex=[], resultFields=[],
-      ancGen=-1)
+    x.traceRelatives(fieldPath, sexChoice=[], affectionChoice=[],
+      resultFields=[], ancGen=-1)
 
 Details:
 
@@ -5099,24 +5107,47 @@ Details:
     offspring of all individuals are located, you can locate mother's
     sibling's offspring using a relative path, and save their indexes
     in each individuals information fields resultFields.  A relative
-    path consits of a pathFields that specifies which information
-    fields to look for at each step, and a pathSex specifies sex
-    choices at each generation, which should be a list of AnySex,
-    MaleOnly, FemaleOnly, SameSex and OppsiteSex. The default value
-    for this paramter is AnySex at all steps.  For example, if
-    pathFields = [['father_ID', 'mother_ID'], ['sib1', 'sib2'],
-    ['off1', 'off2']], and pathSex = [AnySex, MaleOnly, FemaleOnly],
-    this function will locate father_ID and mother_ID for each
-    individual, find all individuals referred by father_ID and
-    mother_ID, find informaton fields sib1 and sib2 from these parents
-    and locate male individuals referred by these two information
-    fields. Finally, the information fields off1 and off2 from these
-    siblings are located and are used to locate their female offspring
-    at the present geneartion. The results are father or mother's
+    path consits of a fieldPath that specifies which information
+    fields to look for at each step, a sexChoice specifies sex choices
+    at each generation, and a affectionChoice that specifies affection
+    status at each generation. fieldPath should be a list of
+    information fields, sexChoice and affectionChoice are optional. If
+    specified, they should be a list of AnySex, MaleOnly, FemaleOnly,
+    SameSex and OppsiteSex for parameter sexChoice, and a list of
+    Unaffected, Affected and AnyAffectionStatus for parameter
+    affectionChoice.  For example, if fieldPath = [['father_id',
+    'mother_id'], ['sib1', 'sib2'], ['off1', 'off2']], and sexChoice =
+    [AnySex, MaleOnly, FemaleOnly], this function will locate
+    father_id and mother_id for each individual, find all individuals
+    referred by father_id and mother_id, find informaton fields sib1
+    and sib2 from these parents and locate male individuals referred
+    by these two information fields. Finally, the information fields
+    off1 and off2 from these siblings are located and are used to
+    locate their female offspring. The results are father or mother's
     brother's daughters. Their indexes will be saved in each
     individuals information fields resultFields. If a non-negative
     ancGen is given, only individuals in these ancestral generations
     will be processed.
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::indWithRelatives "
+
+Usage:
+
+    x.indWithRelatives(infoFields, sexChoice=[], affectionChoice=[],
+      ancGen=-1)
+
+Details:
+
+    Return a list of IDs of individuals who has valid (non-negative)
+    values at information fields infoFields. Additional requirements
+    could be specified by parameters sexChoice and affectionChoice.
+    sexChoice can be AnySex (default), MaleOnly, FemaleOnly, SameSex
+    or OppositeSex, and affectionChoice can be Affected, Unaffected or
+    AnyAffectionStatus (default). This function by default check all
+    individuals in all ancestral generations, but you could limit the
+    search using parameter ancGen.
 
 "; 
 
@@ -6147,8 +6178,10 @@ Details:
     extracted population in the order at which they are specified.
     Because each virtual subpopulation becomes a subpopulation, this
     function could be used, for example, to separate male and female
-    individuals to two subpopulations ( subPops=[(0,0), (0,1)]). This
-    function only extract individuals from the present generation.
+    individuals to two subpopulations ( subPops=[(0,0), (0,1)]). If
+    overlapping (virtual) subpopulations are specified, individuals
+    will be copied multiple times. This function only extract
+    individuals from the present generation.
 
 "; 
 
@@ -6326,6 +6359,22 @@ Usage:
 Details:
 
     Remove information fields fields from a population.
+
+"; 
+
+%feature("docstring") simuPOP::population::updateInfoFieldsFrom "
+
+Usage:
+
+    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
+
+Details:
+
+    Update information fields fields from fromFields of another
+    population (or pedigree) pop. Two populations should have the same
+    number of individuals. If fromFields is not specified, it is
+    assumed to be the same as fields. If ancGen is not -1, only the
+    most recent ancGen generations are updated.
 
 "; 
 

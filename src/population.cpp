@@ -77,13 +77,13 @@ population::population(const uintList & size,
 		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
 		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
-	DBG_DO(DBG_DEVEL, cerr << "individual size is " << sizeof(individual) << '+'
-		                   << sizeof(Allele) << '*' << genoSize() << endl
-		                   << ", infoPtr: " << sizeof(double *)
-		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
-		                   << ", plus genoStru"
-		                   << "\ngenoSize " << genoSize()
-		                   << endl);
+	DBG_DO(DBG_DEVEL, cerr	<< "individual size is " << sizeof(individual) << '+'
+		                    << sizeof(Allele) << '*' << genoSize() << endl
+		                    << ", infoPtr: " << sizeof(double *)
+		                    << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
+		                    << ", plus genoStru"
+		                    << "\ngenoSize " << genoSize()
+		                    << endl);
 
 	// m_popSize will be defined in fitSubPopStru
 	if (m_subPopSize.empty())
@@ -179,9 +179,9 @@ population::population(const population & rhs) :
 			}
 		}
 	} catch (...) {
-		cerr << "Unable to copy ancestral populations. "
-		     << "The popolation size may be too big." << endl
-		     << "The population will still be usable but without any ancestral population stored." << endl;
+		cerr	<< "Unable to copy ancestral populations. "
+		        << "The popolation size may be too big." << endl
+		        << "The population will still be usable but without any ancestral population stored." << endl;
 		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 	}
@@ -2254,7 +2254,7 @@ void population::removeInfoFields(const stringList & fieldList)
 
 
 void population::updateInfoFieldsFrom(const stringList & fieldList, const population & pop,
-								  const stringList & fromFieldList, int ancGen)
+                                      const stringList & fromFieldList, int ancGen)
 {
 	const vectorstr & fields = fieldList.elems();
 	const vectorstr & fromFields = fromFieldList.elems();
@@ -2276,6 +2276,7 @@ void population::updateInfoFieldsFrom(const stringList & fieldList, const popula
 		}
 	}
 }
+
 
 void population::setIndInfo(const floatList & valueList, const uintString & field, vspID subPop)
 {

@@ -126,12 +126,12 @@ public:
 	 *  \li \c Sibling siblings with at least one common parent.
 	 *
 	 *  Optionally, you can specify the sex and affection status of relatives
-     *  you would like to locate, using parameters \e sexChoice and
-     *  \e affectionChoice. \e sexChoice can be \c AnySex (default),
-     *  \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex, and
-     *  \e affectionChoice can be \c Affected, \c Unaffected or
-     *  \c AnyAffectionStatus (default). Only relatives with specified
-     *  properties will be located.
+	 *  you would like to locate, using parameters \e sexChoice and
+	 *  \e affectionChoice. \e sexChoice can be \c AnySex (default),
+	 *  \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex, and
+	 *  \e affectionChoice can be \c Affected, \c Unaffected or
+	 *  \c AnyAffectionStatus (default). Only relatives with specified
+	 *  properties will be located.
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting
@@ -140,7 +140,7 @@ public:
 	 *  <group>4-locate</group>
 	 */
 	void locateRelatives(RelativeType relType, const vectorstr & resultFields = vectorstr(),
-        SexChoice sexChoice = AnySex, AffectionChoice affectionChoice = AnyAffectionStatus,
+		SexChoice sexChoice = AnySex, AffectionChoice affectionChoice = AnyAffectionStatus,
 		int ancGen = -1);
 
 	/** Trace a relative path in a population and record the result in the
@@ -154,12 +154,12 @@ public:
 	 *  A <em>relative path</em> consits of a \e fieldPath that specifies
 	 *  which information fields to look for at each step, a \e sexChoice
 	 *  specifies sex choices at each generation, and a \e affectionChoice
-     *  that specifies affection status at each generation. \e fieldPath
-     *  should be a list of information fields, \e sexChoice and
-     *  \e affectionChoice are optional. If specified, they should be a list of
+	 *  that specifies affection status at each generation. \e fieldPath
+	 *  should be a list of information fields, \e sexChoice and
+	 *  \e affectionChoice are optional. If specified, they should be a list of
 	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex
-     *  for parameter \e sexChoice, and a list of \e Unaffected, \e Affected
-     *  and \e AnyAffectionStatus for parameter \e affectionChoice.
+	 *  for parameter \e sexChoice, and a list of \e Unaffected, \e Affected
+	 *  and \e AnyAffectionStatus for parameter \e affectionChoice.
 	 *
 	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
 	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sexChoice = [AnySex,
@@ -170,32 +170,32 @@ public:
 	 *  these two information fields. Finally, the information fields \c off1
 	 *  and \c off2 from these siblings are located and are used to locate
 	 *  their female offspring. The results are father or mother's brother's
-     *  daughters. Their indexes will be saved in each individuals information
-     *  fields \e resultFields. If a non-negative \e ancGen is given, only
-     *  individuals in these ancestral generations will be processed.
+	 *  daughters. Their indexes will be saved in each individuals information
+	 *  fields \e resultFields. If a non-negative \e ancGen is given, only
+	 *  individuals in these ancestral generations will be processed.
 	 *  <group>4-locate</group>
 	 */
 	bool traceRelatives(const stringMatrix & fieldPath,
 		const uintList & sexChoice = vectoru(),
-        const uintList & affectionChoice = vectoru(),
+		const uintList & affectionChoice = vectoru(),
 		const stringList & resultFields = vectorstr(), int ancGen = -1);
 
-    /** Return a list of IDs of individuals who has valid (non-negative) values
-     *  at information fields \e infoFields. Additional requirements could be
-     *  specified by parameters \e sexChoice and \e affectionChoice.
-     *  \e sexChoice can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
-     *  \c SameSex or \c OppositeSex, and \e affectionChoice can be
-     *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
-     *  function by default check all individuals in all ancestral generations,
-     *  but you could limit the search using parameter \e ancGen.
-     */ 
-    vectoru indWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
-        const uintList & affectionChoice = vectoru(), int ancGen = -1);
+	/** Return a list of IDs of individuals who has valid (non-negative) values
+	 *  at information fields \e infoFields. Additional requirements could be
+	 *  specified by parameters \e sexChoice and \e affectionChoice.
+	 *  \e sexChoice can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
+	 *  \c SameSex or \c OppositeSex, and \e affectionChoice can be
+	 *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
+	 *  function by default check all individuals in all ancestral generations,
+	 *  but you could limit the search using parameter \e ancGen.
+	 */
+	vectoru indWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
+		const uintList & affectionChoice = vectoru(), int ancGen = -1);
 
 private:
-    bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
+	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
 
-    bool acceptableAffectionStatus(bool affected, AffectionChoice choice);
+	bool acceptableAffectionStatus(bool affected, AffectionChoice choice);
 
 	// a list of functions that will be used in locateRelatives.
 	// they are called only once. The reason this is separated is because

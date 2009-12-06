@@ -1274,8 +1274,8 @@ public:
 	 *  recent \e ancGen generations are updated.
 	 *  <group>8-info</group>
 	 */
-   void updateInfoFieldsFrom(const stringList & fields, const population & pop,
-	    const stringList & fromFields = vectorstr(), int ancGen = -1);
+	void updateInfoFieldsFrom(const stringList & fields, const population & pop,
+		const stringList & fromFields = vectorstr(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
@@ -1505,9 +1505,9 @@ private:
 		ar & ma;
 
 		if (ma > ModuleMaxAllele)
-			cerr << "Warning: The population is saved in library with more allele states. \n"
-			     << "Unless all alleles are less than " << ModuleMaxAllele
-			     << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
+			cerr	<< "Warning: The population is saved in library with more allele states. \n"
+			        << "Unless all alleles are less than " << ModuleMaxAllele
+			        << ", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n";
 
 		GenoStructure stru;
 		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
