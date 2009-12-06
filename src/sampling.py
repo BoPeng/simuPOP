@@ -126,7 +126,7 @@ class baseSampler:
         return [self.drawSample(pop) for x in range(times)]
 
 
-class randomSampler(baseSamplerr):
+class randomSampler(baseSampler):
     def __init__(self, size, subPops):
         baseSampler.__init__(self, subPops)
         self.size = size
@@ -159,6 +159,7 @@ class randomSampler(baseSamplerr):
                 samples.extend(values[:size])
         return self.pop.extractIndividuals(indexes = samples)
 
+
 def DrawRandomSample(pop, size, subPops=AllAvail):
     '''Draw ``times`` random samples from a population. If a single ``size``
     is given, individuals are drawn randomly from the whole population or
@@ -176,7 +177,7 @@ def DrawRandomSamples(pop, size, times=1, subPops=AllAvail):
     and ``subPops``.'''
     return randomSampler(size=size, subPops=subPops).drawSamples(pop, times=times)
 
-class caseControlSample(baseSampler):
+class caseControlSampler(baseSampler):
     def __init__(self, cases, controls, *args, **kwargs):
         '''
         '''
@@ -273,7 +274,7 @@ def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
     '''
     return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
 
-class affectedSibpairSample(baseSampler):
+class affectedSibpairSampler(baseSampler):
     '''
     '''
     def __init__(self, size, idField='', fatherField='father_idx', motherField='mother_idx', *args, **kwargs):
