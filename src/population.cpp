@@ -2253,31 +2253,29 @@ void population::removeInfoFields(const stringList & fieldList)
 }
 
 
-/*
-   void population::updateInfoFieldsFrom(const stringList & fieldList, const population & pop,
-                                      const stringList & fromFieldList, int ancGen)
-   {
-    const vectorstr & fields = fieldList.elems();
-    const vectorstr & fromFields = fromFieldList.elems();
+void population::updateInfoFieldsFrom(const stringList & fieldList, const population & pop,
+								  const stringList & fromFieldList, int ancGen)
+{
+	const vectorstr & fields = fieldList.elems();
+	const vectorstr & fromFields = fromFieldList.elems();
 
-    int depth = ancestralGens();
+	int depth = ancestralGens();
 
-    if (ancGen > 0 && ancGen < depth)
-        depth = ancGen;
-    for (; depth >= 0; --depth) {
-        useAncestralGen(depth);
-        const_cast<population &>(pop).useAncestralGen(depth);
-        DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
-            "Two populations should have the same population structure.");
-        for (UINT i = 0; i < fields.size(); ++i) {
-            UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
-            UINT toIdx = pop.infoIdx(fields[i]);
-            // indInfo is supposed to be const, but it is troublesome to change that.
-            setIndInfo(const_cast<population &>(pop).indInfo(fromIdx), toIdx);
-        }
-    }
-   }
- */
+	if (ancGen > 0 && ancGen < depth)
+		depth = ancGen;
+	for (; depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
+			"Two populations should have the same population structure.");
+		for (UINT i = 0; i < fields.size(); ++i) {
+			UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
+			UINT toIdx = pop.infoIdx(fields[i]);
+			// indInfo is supposed to be const, but it is troublesome to change that.
+			setIndInfo(const_cast<population &>(pop).indInfo(fromIdx), toIdx);
+		}
+	}
+}
 
 void population::setIndInfo(const floatList & valueList, const uintString & field, vspID subPop)
 {
