@@ -72,19 +72,41 @@ class TestSampling(unittest.TestCase):
 
     def testRandomSample(self):
         'Testing random sampling (imcomplete)'
-        (s,) = RandomSample(self.pop, 10)
+        #
+        s = DrawRandomSample(self.pop, 10)
         self.assertEqual(s.popSize(), 10)
         for ind in s.individuals():
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
-        #
-        (s,) = RandomSample(self.pop, [2, 8])
+        # 
+        s = DrawRandomSample(self.pop, [2, 8])
         self.assertEqual(s.subPopSize(0), 2)
         self.assertEqual(s.subPopSize(1), 8)
         #
         for ind in s.individuals():
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
+        #
+        self.pop.setVirtualSplitter(sexSplitter())
+        s = DrawRandomSample(self.pop, 10, subPops=[(0,0), (1,0)])
+        # all samples should be Male
+        self.assertEqual(s.popSize(), 10)
+        for ind in s.individuals():
+            self.assertEqual(ind.sex(), Male)
+        #
+        s = DrawRandomSample(self.pop, [2, 8], subPops=[(0,0), (1,0)])
+        # all samples should be Male
+        self.assertEqual(s.subPopSizes(), (2, 8))
+        for ind in s.individuals():
+            self.assertEqual(ind.sex(), Male)
+        #
+        samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], times=10)
+        self.assertEqual(len(samples), 10)
+        for s in samples:
+            # all samples should be Male
+            self.assertEqual(s.subPopSizes(), (2, 8))
+            for ind in s.individuals():
+                self.assertEqual(ind.sex(), Male)
 
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'
@@ -98,7 +120,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(s.subPopSize(1), 9)
         # # old index
         self.assertEqual(s.hasInfoField('oldindex'), True)
-         #
+        #
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
             #old index?
