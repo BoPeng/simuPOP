@@ -111,25 +111,21 @@ class TestSampling(unittest.TestCase):
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'
         # case control sampling.
-        (s,) = CaseControlSample(self.pop, 10, 10)
-        self.assertEqual(s.subPopSize(0), 10)
-        self.assertEqual(s.subPopSize(1), 10)
+        s = DrawCaseControlSample(self.pop, 10, 10)
+        self.assertEqual(s.popSize(), 20)
         #
-        (s,) = CaseControlSample(self.pop, cases=[1,2], controls=[5,4])
-        self.assertEqual(s.subPopSize(0), 3)
-        self.assertEqual(s.subPopSize(1), 9)
+        s = DrawCaseControlSample(self.pop, cases=[1,2], controls=[5,4])
+        self.assertEqual(s.popSize(), 12)
+        self.assertEqual(s.subPopSize(0), 6)
+        self.assertEqual(s.subPopSize(1), 6)
         # # old index
         self.assertEqual(s.hasInfoField('oldindex'), True)
         #
-        for ind in s.individuals(0):
-            self.assertEqual(ind.affected(), True)
-            #old index?
+        for ind in s.individuals():
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
-        for ind in s.individuals(1):
-            self.assertEqual(ind.affected(), False)
-            #old index?
-            inpop = self.pop.individual(int(ind.oldindex))
+        #
+        # draw from vsp?
 
 
     def testAffectedSibpairSample(self):
