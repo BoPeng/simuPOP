@@ -78,8 +78,10 @@ __all__ = [
 
 import exceptions, random
 
-from simuPOP import pedigree, AllAvail
+from simuPOP import AllAvail, Stat, pedigree
 
+def isSequence(obj):
+    return hasattr(obj, '__iter__')
 
 # Sampling classes and functions
 
@@ -131,14 +133,14 @@ class randomSampler(baseSampler):
         baseSampler.__init__(self, subPops)
         self.size = size
 
-    def drawSample(self, pop):
-        '''Draw random samples from passed population.
+    def drawSample(self, input_pop):
+        '''Draw a random sample from passed population.
         '''
         if self.pop is None:
             # this will produce self.pop.
-            self.prepareSample(pop, type(self.size) in [type(()), type([])])
+            self.prepareSample(input_pop, isSequence(self.size))
         #
-        if type(self.size) not in [type(()), type([])]:
+        if not isSequence(self.size):
             size = self.size
             if size > self.pop.popSize():
                 print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
@@ -170,87 +172,83 @@ def DrawRandomSample(pop, size, subPops=AllAvail):
     return value of this function is a list of populations.
     '''
     return randomSampler(size=size, subPops=subPops).drawSample(pop)
- 
+
+
 def DrawRandomSamples(pop, size, times=1, subPops=AllAvail):
     '''Draw ``times`` random samples from a population. Please refer to
     function ``DrawRandomSample for more details about parameters ``size``
     and ``subPops``.'''
     return randomSampler(size=size, subPops=subPops).drawSamples(pop, times=times)
 
+
 class caseControlSampler(baseSampler):
-    def __init__(self, cases, controls, *args, **kwargs):
-        '''
-        '''
-        baseSampler.__init__(self, *args, **kwargs)
+    def __init__(self, cases, controls, subPops):
+        baseSampler.__init__(self, subPops)
         self.cases = cases
         self.controls = controls
+        if type(self.cases) != type(controls):
+            raise exceptions.ValueError("Parameter cases and controls should have the same type.")
+        if isSequence(self.cases) and isSequence(self.controls) and \
+            len(self.cases) != len(self.controls):
+            raise exceptions.ValueError("Cases and controls should have the same type")
 
-    def prepareSample(self, pop):
-        self.pedigree = pedigree(pop, idField='', fatherField='', motherField='')
-        self.pedigree.addInfoFields('sample', -1)
-        self.pedigree.setVirtualSplitter(affectionSplitter())
-        return True
-
-    def drawSample(self, pop):
-        import random
-        if type(self.cases) not in [type(()), type([])] and type(self.controls) not in [type(()), type([])]:
-            Stat(pop, numOfAffected=True)
-            allCases = pop.dvars().numOfAffected
-            allControls = pop.dvars().numOfUnaffected
+    def drawSample(self, input_pop):
+        '''Draw a case control sample
+        '''
+        if self.pop is None:
+            # this will produce self.pop
+            self.prepareSample(input_pop, isSequence(self.cases))
+        #
+        if not isSequence(self.cases):
+            # find affected individuals
+            aff = []
+            unaff = []
+            for idx,ind in enumerate(self.pop.individuals()):
+                if ind.affected():
+                    aff.append(idx)
+                else:
+                    unaff.append(idx)
             #
-            cases = self.cases
-            if cases > allCases:
+            if self.cases > len(aff):
                 print 'Warning: number of cases %d is greater than number of affected individuals %d.' \
-                    % (cases, allCases)
-                cases = allCases
+                    % (self.cases, len(aff))
             #
-            controls = self.controls
-            if controls > allControls:
+            if self.controls > len(unaff):
                 print 'Warning: number of controls %d is greater than number of affected individuals %d.' \
-                    % (controls, allControls)
-                controls = allControls
+                    % (self.controls, len(unaff))
             # caseControlly choose self.size individuals
-            value_cases = [0] * cases + [-1] * (allCases - cases)
-            value_controls = [1] * controls + [-1] * (allControls - controls)
-            random.shuffle(value_cases)
-            random.shuffle(value_controls)
-            # assign information fields
-            idx_cases = 0
-            idx_controls = 0
-            for sp in range(pop.numSubPop()):
-                self.pedigree.setIndInfo(value_cases[idx_cases:], 'sample', (sp, 1))
-                self.pedigree.setIndInfo(value_controls[idx_controls:], 'sample', (sp, 0))
-                idx_cases += self.pedigree.subPopSize((sp, 1))
-                idx_controls += self.pedigree.subPopSize((sp, 0))
+            random.shuffle(aff)
+            random.shuffle(unaff)
+            case_indexes = aff[:self.cases]
+            control_indexes = unaff[:self.controls]
         else:
-            if len(self.cases) != pop.numSubPop():
+            case_indexes = []
+            control_indexes = []
+            if len(self.cases) != self.pop.numSubPop():
                 raise ValueError('If an list of cases is given, it should be specified for all subpopulations')
-            if len(self.controls) != pop.numSubPop():
-                raise ValueError('If an list of controls is given, it should be specified for all subpopulations')
-            for sp in range(pop.numSubPop()):
-                allCases = self.pedigree.subPopSize((sp, 1))
-                allControls = self.pedigree.subPopSize((sp, 0))
+            for sp in range(self.pop.numSubPop()):
+                # find affected individuals
+                aff = []
+                unaff = []
+                for idx in range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)):
+                    if self.pop.individual(idx).affected():
+                        aff.append(idx)
+                    else:
+                        unaff.append(idx)
                 #
-                cases = self.cases[sp]
-                if cases > allCases:
+                if self.cases[sp] > len(aff):
                     print 'Warning: number of cases %d is greater than number of affected individuals %d in subpopulation %d.' \
-                        % (cases, allCases, sp)
-                    cases = allCases
+                        % (self.cases, len(aff), sp)
                 #
-                controls = self.controls[sp]
-                if controls > allControls:
+                if self.controls[sp] > len(unaff):
                     print 'Warning: number of controls %d is greater than number of affected individuals %d in subpopulation %d.' \
-                        % (controls, allControls, sp)
-                    controls = allControls
+                        % (self.controls, len(unaff), sp)
                 # 
-                value_cases = [0] * cases + [-1] * (allCases - cases)
-                value_controls = [1] * controls + [-1] * (allControls - controls)
-                random.shuffle(value_cases)
-                random.shuffle(value_controls)
-                # assign information fields
-                self.pedigree.setIndInfo(value_cases, 'sample', (sp, 1))
-                self.pedigree.setIndInfo(value_controls, 'sample', (sp, 0))
-        return pop.extract(field='sample', ped=self.pedigree)
+                random.shuffle(aff)
+                random.shuffle(unaff)
+                case_indexes.extend(aff[:self.cases[sp]])
+                control_indexes.extend(unaff[:self.controls[sp]])
+        return self.pop.extractIndividuals(indexes = case_indexes + control_indexes)
 
 
 def DrawCaseControlSample(pop, cases, controls, subPops=AllAvail):
@@ -264,7 +262,7 @@ def DrawCaseControlSample(pop, cases, controls, subPops=AllAvail):
     specified (virtual) subpopulations. The return value of this function is a
     list of populations.
     '''
-    return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
+    return caseControlSampler(cases, controls, subPops).drawSample(pop) 
 
 
 def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
@@ -272,7 +270,8 @@ def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
     affected and ``controls`` unaffected individuals. Please refer to function
     ``DrawCaseControlSample`` for a detailed descriptions of parameters.
     '''
-    return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
+    return caseControlSampler(cases, controls, subPops).drawSamples(pop, times) 
+
 
 class affectedSibpairSampler(baseSampler):
     '''
