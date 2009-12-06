@@ -64,8 +64,9 @@ __all__ = [
     # sampling scheme
     'baseSampler',
     'randomSampler',
-    'affectedSibpairSampler',
     'caseControlSampler',
+    'pedigreeSampler',
+    'affectedSibpairSampler',
     # Functions to draw samples
     'DrawRandomSample',
     'DrawRandomSamples',
@@ -192,42 +193,38 @@ class caseControlSampler(baseSampler):
             len(self.cases) != len(self.controls):
             raise exceptions.ValueError("Cases and controls should have the same type")
 
-    def drawSample(self, input_pop):
-        '''Draw a case control sample
+    def prepareSample(self, input_pop):
+        '''Find out indexes all affected and unaffected individuales.
         '''
+        baseSampler.prepareSample(input_pop, isSequence(self.cases))
         if self.pop is None:
-            # this will produce self.pop
-            self.prepareSample(input_pop, isSequence(self.cases))
+            # this will produce self.pop and self.cases and self.controls
+            self.prepareSample(input_pop)
         #
         if not isSequence(self.cases):
             # find affected individuals
-            aff = []
-            unaff = []
+            self.affected = []
+            self.unself.affectedected = []
             for idx,ind in enumerate(self.pop.individuals()):
-                if ind.affected():
-                    aff.append(idx)
+                if ind.self.affectedected():
+                    self.affected.append(idx)
                 else:
-                    unaff.append(idx)
+                    self.unself.affectedected.append(idx)
             #
-            if self.cases > len(aff):
-                print 'Warning: number of cases %d is greater than number of affected individuals %d.' \
-                    % (self.cases, len(aff))
+            if self.cases > len(self.affected):
+                print 'Warning: number of cases %d is greater than number of self.affectedected individuals %d.' \
+                    % (self.cases, len(self.affected))
             #
-            if self.controls > len(unaff):
-                print 'Warning: number of controls %d is greater than number of affected individuals %d.' \
-                    % (self.controls, len(unaff))
-            # caseControlly choose self.size individuals
-            random.shuffle(aff)
-            random.shuffle(unaff)
-            case_indexes = aff[:self.cases]
-            control_indexes = unaff[:self.controls]
+            if self.controls > len(self.unself.affectedected):
+                print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d.' \
+                    % (self.controls, len(self.unself.affectedected))
         else:
-            case_indexes = []
-            control_indexes = []
             if len(self.cases) != self.pop.numSubPop():
                 raise ValueError('If an list of cases is given, it should be specified for all subpopulations')
+            self.affected = []
+            self.unaffected = []
             for sp in range(self.pop.numSubPop()):
-                # find affected individuals
+                # find self.affectedected individuals
                 aff = []
                 unaff = []
                 for idx in range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)):
@@ -237,17 +234,33 @@ class caseControlSampler(baseSampler):
                         unaff.append(idx)
                 #
                 if self.cases[sp] > len(aff):
-                    print 'Warning: number of cases %d is greater than number of affected individuals %d in subpopulation %d.' \
-                        % (self.cases, len(aff), sp)
+                    print 'Warning: number of cases %d is greater than number of self.affectedected individuals %d in subpopulation %d.' \
+                        % (self.cases[sp], len(aff), sp)
                 #
                 if self.controls[sp] > len(unaff):
-                    print 'Warning: number of controls %d is greater than number of affected individuals %d in subpopulation %d.' \
-                        % (self.controls, len(unaff), sp)
-                # 
-                random.shuffle(aff)
-                random.shuffle(unaff)
-                case_indexes.extend(aff[:self.cases[sp]])
-                control_indexes.extend(unaff[:self.controls[sp]])
+                    print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d in subpopulation %d.' \
+                        % (self.controls[sp], len(unaff), sp)
+
+    def drawSample(self, input_pop):
+        '''Draw a case control sample
+        '''
+        if self.pop is None:
+            # this will produce self.pop and self.affected and self.unaffected
+            self.prepareSample(input_pop)
+        #
+        if not isSequence(self.cases):
+            random.shuffle(self.affected)
+            random.shuffle(seld.unaffected)
+            case_indexes = self.affected[:self.cases]
+            control_indexes = self.unaffected[:self.controls]
+        else:
+            case_indexes = []
+            control_indexes = []
+            for sp in range(self.pop.numSubPop()):
+                random.shuffle(self.affected[sp])
+                random.shuffle(self.unaffected[sp])
+                case_indexes.extend(self.affected[:self.cases[sp]])
+                control_indexes.extend(self.unaffected[:self.controls[sp]])
         return self.pop.extractIndividuals(indexes = case_indexes + control_indexes)
 
 
@@ -273,103 +286,52 @@ def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
     return caseControlSampler(cases, controls, subPops).drawSamples(pop, times) 
 
 
-class affectedSibpairSampler(baseSampler):
-    '''
-    '''
-    def __init__(self, size, idField='', fatherField='father_idx', motherField='mother_idx', *args, **kwargs):
-        '''
-        '''
-        baseSampler.__init__(self, *args, **kwargs)
-        self.size = size
-        self.fields = []
-        if fatherField != '':
-            self.fields.append(fatherField)
-        if motherField != '':
-            self.fields.append(motherField)
-        if idField != '':
-            self.fields.append(idField)
-        if len(self.fields) != 2:
-            raise ValueError('Two information fields that indicate indexes of parents in the parental generation is needed')
+class pedigreeSampler(baseSampler):
+    def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+        baseSampler.__init__(self, subPops)
+        self.families = families
+        self.idField = idFiled
+        self.fatherField = fatherField
+        self.motherField = motherField
+        self.pedigree = None
 
-    def prepareSample(self, pop):
-        if pop.ancestralGens() < 1:
-            raise ValueError('No ancestral generation if found.')
-        for field in self.fields:
-            if field not in pop.infoFields():
-                raise ValueError('Information field %s not found in population' % field)
+    def prepareSample(self, pop, loci=[], infoFields=[], ancGen=-1):
+        '''
+        Prepare self.pedigree, some pedigree sampler might need additional loci and
+        information fields for this sampler.
+        '''
+        # create self.pop
+        baseSampler.prepareSample(pop, isSequence(self.families))
+        # get self.pedigree
+        self.pedigree = pedigree(self.pop, loci, infoFields,
+            ancGen, self.idField, self.fatherField, self.motherField)
+
+
+class affectedSibpairSampler(pedigreeSampler):
+    def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+        pedigreeSampler.__init__(families, subPops, idField, fatherField, motherField)
+
+    def prepareSample(self, input_pop):
+        # this will give us self.pop and self.pedigree
+        pedigreeSampler.prepareSample(input_pop, isSequence(self.families))
         #
-        print self.fields
-        self.pedigree = pedigree(pop, fatherField=self.fields[0], motherField=self.fields[1],
-            ancGen=1)
-        self.pedigree.addInfoFields(['sample', 'pedindex', 'offspring0', 'offspring1', 'spouse'], -1)
         # locate all affected siblings
-        self.pedigree.locateRelatives(Offspring, ['offspring0', 'offspring1'])
-        self.pedigree.locateRelatives(Spouse, ['spouse'])
-        # look for affected siblings from the parental generation
-        self.pedigree.useAncestralGen(1)
-        parent0 = self.pedigree.infoIdx(self.fields[0])
-        parent1 = self.pedigree.infoIdx(self.fields[1])
-        pedindex = self.pedigree.infoIdx('pedindex')
-        offspring0 = self.pedigree.infoIdx('offspring0')
-        offspring1 = self.pedigree.infoIdx('offspring1')
-        spouse = self.pedigree.infoIdx('spouse')
-        #
-        pedCount = 0
-        self.validPeds = [[] for x in range(self.pedigree.numSubPop())]
-        for selfIdx, ind in enumerate(self.pedigree.individuals()):
-            # if this individual is used
-            # or if no valid spouse
-            # or if no valid first offspring
-            # or if no valid second offspring
-            if int(ind.info(pedindex)) != -1 \
-                or int(ind.info(spouse)) == -1 \
-                or int(ind.info(offspring0)) == -1 \
-                or int(ind.info(offspring1)) == -1:
-                continue
-            # if spouse has been used
-            spouseIdx = int(ind.info(spouse))
-            spouseInd = self.pedigree.individual(spouseIdx)
-            if int(spouseInd.info(pedindex)) != -1:
-                continue
-            # if the first offspring has been used, or if parents do not match, or if
-            # not affected.
-            offspring0Ind = self.pedigree.ancestor(int(ind.info(offspring0)), 0)
-            if not offspring0Ind.affected() \
-                or int(offspring0Ind.info(pedindex)) != -1 \
-                or int(offspring0Ind.info(parent0)) not in [selfIdx, spouseIdx] \
-                or int(offspring0Ind.info(parent1)) not in [selfIdx, spouseIdx]:
-                continue
-            # if the second offspring has been used, or if parents do not match, or
-            # if not affected
-            offspring1Ind = self.pedigree.ancestor(int(ind.info(offspring1)), 0)
-            if not offspring1Ind.affected() \
-                or int(offspring1Ind.info(pedindex)) != -1 \
-                or int(offspring1Ind.info(parent1)) not in [selfIdx, spouseIdx] \
-                or int(offspring1Ind.info(parent1)) not in [selfIdx, spouseIdx]:
-                continue
-            # good pedigree
-            ind.setInfo(pedCount, pedindex)
-            spouseInd.setInfo(pedCount, pedindex)
-            offspring0Ind.setInfo(pedCount, pedindex)
-            offspring1Ind.setInfo(pedCount, pedindex)
-            # count the number of pedigrees
-            self.validPeds[self.pedigree.subPopIndPair(selfIdx)[0]].append(pedCount)
-            pedCount += 1
-        return True
+        self.pedigree.addInfoFields(['spouse', 'off1', 'off2'])
+        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'])
+        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'])
+        # find all affected siblings
+        if not isSequence(familes):
+            self.families = []
+        else:
+            self.families = []
 
-    def drawSample(self, pop):
+
+    def drawSample(self, input_pop):
+        if self.pedigree is None:
+            # this will give us self.pop, self.pedigree, and self.families
+            self.prepareSample(input_pop)
         #
-        import random
-        pedindex = self.pedigree.infoIdx('pedindex')
-        sample = self.pedigree.infoIdx('sample')
-        #
-        # clear information sample in case this operator is applied twice
-        self.pedigree.setIndInfo([0], sample)
-        #
-        pedCount = sum([len(x) for x in self.validPeds])
-        chosenPeds = [False] * pedCount
-        #
-        if type(self.size) not in [type(()), type([])]:
+        if not isSequence(self.families):
             size = self.size
             if size > pedCount:
                 print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
