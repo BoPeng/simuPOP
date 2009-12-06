@@ -68,8 +68,8 @@ public:
 	 */
 	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
-		const string & idField = "", const string & fatherField = "",
-		const string & motherField = "");
+		const string & idField = "ind_id", const string & fatherField = "father_id",
+		const string & motherField = "mother_id");
 
 	/// CPPONLY copy constructor
 	pedigree(const pedigree & rhs);
@@ -125,10 +125,13 @@ public:
 	 *  \li \c FullSibling siblings with common father and mother,
 	 *  \li \c Sibling siblings with at least one common parent.
 	 *
-	 *  Optionally, you can specify the sex of relatives you would like to
-	 *  locate, in the form of <tt>relType=(type, sexChoice)</tt>. \e sexChoice
-	 *  can be \c AnySex (default), \c MaleOnly, \c FemaleOnly, \c SameSex or
-	 *  \c OppositeSex.
+	 *  Optionally, you can specify the sex and affection status of relatives
+     *  you would like to locate, using parameters \e sexChoice and
+     *  \e affectionChoice. \e sexChoice can be \c AnySex (default),
+     *  \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex, and
+     *  \e affectionChoice can be \c Affected, \c Unaffected or
+     *  \c AnyAffectionStatus (default). Only relatives with specified
+     *  properties will be located.
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting
@@ -136,7 +139,8 @@ public:
 	 *  to process.
 	 *  <group>4-locate</group>
 	 */
-	void locateRelatives(uintList relType = vectoru(), const vectorstr & relFields = vectorstr(),
+	void locateRelatives(RelativeType relType, const vectorstr & resultFields = vectorstr(),
+        SexChoice sexChoice = AnySex, AffectionChoice affectionChoice = AnyAffectionStatus,
 		int ancGen = -1);
 
 	/** Trace a relative path in a population and record the result in the
@@ -147,47 +151,67 @@ public:
 	 *  offspring using a <em>relative path</em>, and save their indexes
 	 *  in each individuals information fields \e resultFields.
 	 *
-	 *  A <em>relative path</em> consits of a \e pathFields that specifies
-	 *  which information fields to look for at each step, and a \e pathSex
-	 *  specifies sex choices at each generation, which should be a list of
-	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex.
-	 *  The default value for this paramter is \c AnySex at all steps.
+	 *  A <em>relative path</em> consits of a \e fieldPath that specifies
+	 *  which information fields to look for at each step, a \e sexChoice
+	 *  specifies sex choices at each generation, and a \e affectionChoice
+     *  that specifies affection status at each generation. \e fieldPath
+     *  should be a list of information fields, \e sexChoice and
+     *  \e affectionChoice are optional. If specified, they should be a list of
+	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex
+     *  for parameter \e sexChoice, and a list of \e Unaffected, \e Affected
+     *  and \e AnyAffectionStatus for parameter \e affectionChoice.
 	 *
-	 *  For example, if <tt>pathFields = [['father_ID', 'mother_ID'],
-	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>pathSex = [AnySex,
-	 *  MaleOnly, FemaleOnly]</tt>, this function will locate \c father_ID
-	 *  and \c mother_ID for each individual, find all individuals referred
-	 *  by \c father_ID and \c mother_ID, find informaton fields \c sib1 and
+	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
+	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sexChoice = [AnySex,
+	 *  MaleOnly, FemaleOnly]</tt>, this function will locate \c father_id
+	 *  and \c mother_id for each individual, find all individuals referred
+	 *  by \c father_id and \c mother_id, find informaton fields \c sib1 and
 	 *  \c sib2 from these parents and locate male individuals referred by
 	 *  these two information fields. Finally, the information fields \c off1
 	 *  and \c off2 from these siblings are located and are used to locate
-	 *  their female offspring at the present geneartion. The results are
-	 *  father or mother's brother's daughters. Their indexes will be saved in
-	 *  each individuals information fields \e resultFields. If a non-negative
-	 *  \e ancGen is given, only individuals in these ancestral generations
-	 *  will be processed.
+	 *  their female offspring. The results are father or mother's brother's
+     *  daughters. Their indexes will be saved in each individuals information
+     *  fields \e resultFields. If a non-negative \e ancGen is given, only
+     *  individuals in these ancestral generations will be processed.
 	 *  <group>4-locate</group>
 	 */
-	bool traceRelatives(const stringMatrix & pathFields,
-		const vectori & pathSex = vectori(),
-		const vectorstr & resultFields = vectorstr(), int ancGen = -1);
+	bool traceRelatives(const stringMatrix & fieldPath,
+		const uintList & sexChoice = vectoru(),
+        const uintList & affectionChoice = vectoru(),
+		const stringList & resultFields = vectorstr(), int ancGen = -1);
+
+    /** Return a list of IDs of individuals who has valid (non-negative) values
+     *  at information fields \e infoFields. Additional requirements could be
+     *  specified by parameters \e sexChoice and \e affectionChoice.
+     *  \e sexChoice can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
+     *  \c SameSex or \c OppositeSex, and \e affectionChoice can be
+     *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
+     *  function by default check all individuals in all ancestral generations,
+     *  but you could limit the search using parameter \e ancGen.
+     */ 
+    vectoru indWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
+        const uintList & affectionChoice = vectoru(), int ancGen = -1);
 
 private:
+    bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
+
+    bool acceptableAffectionStatus(bool affected, AffectionChoice choice);
+
 	// a list of functions that will be used in locateRelatives.
 	// they are called only once. The reason this is separated is because
 	// they are too long when putting in one function.
 
-	void locateSelf(SexChoice relSex, const vectorstr & relFields, int ancGen);
+	void locateSelf(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateSpouse(SexChoice relSex, const vectorstr & relFields, int ancGen, bool excludeOutbred);
+	void locateSpouse(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen, bool excludeOutbred);
 
-	void locateSibling(SexChoice relSex, const vectorstr & relFields, int ancGen);
+	void locateSibling(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateFullSibling(SexChoice relSex, const vectorstr & relFields, int ancGen);
+	void locateFullSibling(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateOffspring(SexChoice relSex, const vectorstr & relFields, int ancGen);
+	void locateOffspring(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateCommonOffspring(SexChoice relSex, const vectorstr & relFields, int ancGen);
+	void locateCommonOffspring(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
 
 private:
 	string m_idField;

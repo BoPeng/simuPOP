@@ -205,18 +205,23 @@ enum SexChoice {
 	OppositeSex = 64
 };
 
+enum AffectionChoice {
+    Unaffected = 70,
+    Affected = 71,
+    AnyAffectionStatus = 72,
+};
 
 enum MultiLociMode {
-	Multiplicative = 71,
-	Additive = 72,
-	Heterogeneity = 73
+	Multiplicative = 81,
+	Additive = 82,
+	Heterogeneity = 83
 };
 
 enum MigrMode {
-	ByIndInfo = 81,
-	ByProbability = 82,
-	ByProportion = 83,
-	ByCounts = 84
+	ByIndInfo = 91,
+	ByProbability = 92,
+	ByProportion = 93,
+	ByCounts = 94
 };
 
 
