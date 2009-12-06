@@ -62,87 +62,82 @@ number of individuals from each subpopulation.
 __all__ = [
     # Classes that can be derived to implement more complicated
     # sampling scheme
-    'randomSample',
-    'affectedSibpairSample',
-    'caseControlSample',
+    'baseSampler',
+    'randomSampler',
+    'affectedSibpairSampler',
+    'caseControlSampler',
     # Functions to draw samples
-    'RandomSample',
-    'AffectedSibpairSample',
-    'CaseControlSample',
+    'DrawRandomSample',
+    'DrawRandomSamples',
+    'DrawAffectedSibpairSample',
+    'DrawAffectedSibpairSamples',
+    'DrawCaseControlSample',
+    'DrawCaseControlSamples',
     #
 ]
 
-import exceptions, operator, types
+import exceptions, random
 
 from simuPOP import pedigree, AllAvail
 
-# Ascertainment operators and functions
 
-class _sample:
+# Sampling classes and functions
+
+class baseSampler:
     '''
-    Ascertainment/sampling refers to ways of selecting individuals from a
-    population. This base class defines the common interface of all
-    ascertainment operators, including how samples are saved and returned.
-    Individual ascertainment operators (derived class) only need to
-    write *prepareSample* and *drawSample* functions.
+    A sampler extracts individuals from a simuPOP population and return them
+    as separate populations. This base class defines the common interface of
+    all sampling classes, including how samples prepared and returned.
     '''
-    def __init__(self, *args, **kwargs):
+    def __init__(self, subPops):
+        '''Create a sampler with parameter ``subPops``, which will be used
+        to prepare population for sampling.
         '''
-        Create an operator that draws a certain type of samples from a
-        population *times* times. '''
-        self.pedigree = None
-
-    def prepareSample(self, pop):
-        '''
-        This function is usually used to prepare a pedigree object so that
-        samples can be drawn. A population or pedigree object self.pop
-        should be created here.
-        '''
-        raise SystemError('Please re-implement this prepareSample function in the derived class.')
-        return True
-
-    def drawSample(self):
-        '''
-        Draw and return a sample, using population *pop*, and *self.pedigree*
-        prepared in prepareSample.
-        '''
-        raise SystemError('Please re-implement this drawSample function in the derived class.')
-        return True
-
-    def drawSamples(self, pop, times):
-        if times < 0:
-            raise ValueError("Negative number of samples are unacceptable")
-        if not self.prepareSample(pop):
-            raise RuntimeError("Failed to prepare population for sampleing")
-        # 
-        return [self.drawSample() for x in range(times)]
-
-    def clone(self):
-        return copy.copy(self)
-
-
-class randomSample(_sample):
-    def __init__(self, size, subPops):
-        self.size = size
         self.subPops = subPops
+        self.pop = None
 
-    def prepareSample(self, pop):
-        '''Prepare population for sampling. If a list of subpopulations are
-        specified, trim the given population to these subpopulations.'''
+    def prepareSample(self, pop, rearrange):
+        '''Prepare passed population object for sampling according to parameter
+        ``subPops``. If samples are drawn from the whole population, a
+        population will be trimmed if only selected (virtual) subpopulations
+        are used. If samples are drawn separately from specified subpopulations,
+        population ``pop`` will be rearranged (if ``rearrange==True``) so that
+        each subpoulation corresponds to one element in parameter ``subPops``.
+        '''
         if self.subPops == AllAvail:
             self.pop = pop
-        elif type(self.size) not in [type(()), type([])]:
-            # from all all population
-            self.pop = pop.extractSubPops(self.subPops);
         else:
-            if len(self.size) != len(self.subPops):
-                raise ValueError("If a list of size and subpopulations are specified, they should have the same length")
-            # rearrange population according to self.subPops
-            self.pop = pop.extractSubPops(self.subPops, True)
+            self.pop = pop.extractSubPops(self.subPops, rearrange);
         return True
 
-    def drawSample(self):
-        import random
+    def drawSample(self, pop):
+        '''
+        Draw and return a sample.
+        '''
+        raise SystemError('Please re-implement this drawSample function in the derived class.')
+
+    def drawSamples(self, pop, times):
+        '''
+        Draw multiple samples and return a list of populations.
+        '''
+        if times < 0:
+            raise ValueError("Negative number of samples are unacceptable")
+        # 
+        return [self.drawSample(pop) for x in range(times)]
+
+
+class randomSampler(baseSamplerr):
+    def __init__(self, size, subPops):
+        baseSampler.__init__(self, subPops)
+        self.size = size
+
+    def drawSample(self, pop):
+        '''Draw random samples from passed population.
+        '''
+        if self.pop is None:
+            # this will produce self.pop.
+            self.prepareSample(pop, type(self.size) in [type(()), type([])])
+        #
         if type(self.size) not in [type(()), type([])]:
             size = self.size
             if size > self.pop.popSize():
@@ -164,7 +159,7 @@ class randomSample(_sample):
                 samples.extend(values[:size])
         return self.pop.extractIndividuals(indexes = samples)
 
-def RandomSample(pop, size, times=1, subPops=AllAvail):
+def DrawRandomSample(pop, size, subPops=AllAvail):
     '''Draw ``times`` random samples from a population. If a single ``size``
     is given, individuals are drawn randomly from the whole population or
     from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
@@ -173,13 +168,19 @@ def RandomSample(pop, size, times=1, subPops=AllAvail):
     (default), or from each of the specified (virtual) subpopulations. The
     return value of this function is a list of populations.
     '''
-    return randomSample(size=size, subPops=subPops).drawSamples(pop, times=times)
+    return randomSampler(size=size, subPops=subPops).drawSample(pop)
  
-class caseControlSample(_sample):
+def DrawRandomSamples(pop, size, times=1, subPops=AllAvail):
+    '''Draw ``times`` random samples from a population. Please refer to
+    function ``DrawRandomSample for more details about parameters ``size``
+    and ``subPops``.'''
+    return randomSampler(size=size, subPops=subPops).drawSamples(pop, times=times)
+
+class caseControlSample(baseSampler):
     def __init__(self, cases, controls, *args, **kwargs):
         '''
         '''
-        _sample.__init__(self, *args, **kwargs)
+        baseSampler.__init__(self, *args, **kwargs)
         self.cases = cases
         self.controls = controls
 
@@ -251,8 +252,8 @@ class caseControlSample(_sample):
         return pop.extract(field='sample', ped=self.pedigree)
 
 
-def CaseControlSample(pop, cases, controls, times=1, subPops=AllAvail):
-    '''Draw ``times`` case-control samples from a population with ``cases``
+def DrawCaseControlSample(pop, cases, controls, subPops=AllAvail):
+    '''Draw a case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals. If single ``cases`` and
     ``controls`` are given, individuals are drawn randomly from the whole
     population or from specified (virtual) subpopulations (parameter
@@ -265,13 +266,20 @@ def CaseControlSample(pop, cases, controls, times=1, subPops=AllAvail):
     return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
 
 
-class affectedSibpairSample(_sample):
+def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
+    '''Draw ``times`` case-control samples from a population with ``cases``
+    affected and ``controls`` unaffected individuals. Please refer to function
+    ``DrawCaseControlSample`` for a detailed descriptions of parameters.
+    '''
+    return caseControlSample(cases, controls, subPops).drawSamples(pop, times) 
+
+class affectedSibpairSample(baseSampler):
     '''
     '''
     def __init__(self, size, idField='', fatherField='father_idx', motherField='mother_idx', *args, **kwargs):
         '''
         '''
-        _sample.__init__(self, *args, **kwargs)
+        baseSampler.__init__(self, *args, **kwargs)
         self.size = size
         self.fields = []
         if fatherField != '':
@@ -403,9 +411,9 @@ class affectedSibpairSample(_sample):
         return sample
 
 
-def AffectedSibpairSample(pop, families, times=1, subPops=AllAvail, 
+def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
-    '''Draw ``times`` affected sibpair samples from a population. If a single
+    '''Draw affected sibpair samples from a population. If a single
     ``families`` is given, affected sibpairs and their parents are drawn
     randomly from the whole population or from specified (virtual)
     subpopulations (parameter ``subPops``). Otherwise, a list of numbers should
@@ -414,8 +422,15 @@ def AffectedSibpairSample(pop, families, times=1, subPops=AllAvail,
     specified (virtual) subpopulations. The return value of this function is
     a list of populations.
     '''
-    s = affectedSibpairSample(size, *args, **kwargs)
-    return s.drawSamples(pop, times)
+    return affectedSibpairSample(families, subPops, idField, fatherField, motherField).drawSample(pop)
  
 
+def DrawAffectedSibpairSamples(pop, families, times=1, subPops=AllAvail, 
+    idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    '''
+    Draw ``times`` affected sibpair samplesa from population ``pop``. Please
+    refer to function ``DrawAffectedSibpairSample`` for a description of
+    other parameters.
+    '''
+    return affectedSibpairSample(families, subPops, idField, fatherField, motherField).drawSamples(pop, times)
 
