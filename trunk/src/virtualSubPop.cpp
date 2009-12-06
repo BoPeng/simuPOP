@@ -29,15 +29,16 @@
 
 namespace simuPOP {
 
-	void subPopList::useSubPopsFrom(const population & pop)
-	{
-		DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
-			"Only when no subpopulation is specified can this function be called."
-			"This is likely caused by the use of persistent subPops for different populations.");
-		DBG_ASSERT(m_allAvail, SystemError, "Cannot use all subpopulations in non-allAvail mode");
-		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-			m_subPops.push_back(vspID(sp));
-	}
+void subPopList::useSubPopsFrom(const population & pop)
+{
+	DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
+		"Only when no subpopulation is specified can this function be called."
+		"This is likely caused by the use of persistent subPops for different populations.");
+	DBG_ASSERT(m_allAvail, SystemError, "Cannot use all subpopulations in non-allAvail mode");
+	for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+		m_subPops.push_back(vspID(sp));
+}
+
 
 ostream & operator<<(ostream & out, const vspID & vsp)
 {

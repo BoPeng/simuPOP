@@ -160,11 +160,13 @@ public:
 	{
 		const_iterator it = m_subPops.begin();
 		const_iterator itEnd = m_subPops.end();
+
 		for (; it != itEnd; ++it)
 			if (it->subPop() == subPop)
 				return true;
 		return false;
 	}
+
 
 	/// CPPONLY
 	const_iterator begin() const
@@ -196,7 +198,6 @@ public:
 
 	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
 	void useSubPopsFrom(const population & pop);
-
 
 private:
 	vectorvsp m_subPops;
@@ -269,11 +270,12 @@ public:
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
-	void deactivate(SubPopID subPop) 
+	void deactivate(SubPopID subPop)
 	{
 		DBG_FAILIF(subPop != m_activated, RuntimeError, "Deactivate non-activated virtual subpopulation.");
 		m_activated = InvalidSubPopID;
 	}
+
 
 	/** Return the name of VSP \e vsp (an index between \c 0 and
 	 *  <tt>numVirtualSubPop()</tt>).

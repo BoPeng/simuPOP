@@ -206,9 +206,9 @@ enum SexChoice {
 };
 
 enum AffectionChoice {
-    Unaffected = 70,
-    Affected = 71,
-    AnyAffectionStatus = 72,
+	Unaffected = 70,
+	Affected = 71,
+	AnyAffectionStatus = 72,
 };
 
 enum MultiLociMode {
