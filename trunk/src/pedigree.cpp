@@ -144,7 +144,7 @@ bool pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
 
 bool pedigree::acceptableAffectionStatus(bool affected, AffectionChoice choice)
 {
-	return choice != AnyAffectionStatus ||
+	return choice == AnyAffectionStatus ||
 	       (choice == Affected && affected) ||
 	       (choice == Unaffected && !affected);
 }
@@ -208,7 +208,6 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionChoice affectionChoice
 
 	// clear all fields
 	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (size_t i = 0; i < maxSpouse; ++i) {
@@ -243,7 +242,7 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionChoice affectionChoice
 						// pass
 					}
 				}
-				couples.push_back(couple(static_cast<ULONG>(f), static_cast<ULONG>(m)));
+				couples.push_back(couple(static_cast<ULONG>(f + 0.5), static_cast<ULONG>(m + 0.5)));
 			}
 		}
 	}
