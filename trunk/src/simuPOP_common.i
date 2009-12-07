@@ -325,6 +325,29 @@ import exceptions, types
 #
 AllAvail = True
 
+def unsupportedPedigreeOperation(*args, **kwargs):
+    'This function is not supported in the pedigree class'
+    raise exceptions.ValueError('Changing pedigree structure using this function is disallowed.')
+
+pedigree.removeIndividuals = unsupportedPedigreeOperation
+pedigree.removeSubPops = unsupportedPedigreeOperation
+pedigree.extractIndividuals = unsupportedPedigreeOperation
+pedigree.extractSubPops = unsupportedPedigreeOperation
+pedigree.push = unsupportedPedigreeOperation
+pedigree.setAncestralDepth = unsupportedPedigreeOperation
+pedigree.addChrom = unsupportedPedigreeOperation
+pedigree.addChromFrom = unsupportedPedigreeOperation
+pedigree.addIndFrom = unsupportedPedigreeOperation
+pedigree.addLoci = unsupportedPedigreeOperation
+pedigree.addLociFrom = unsupportedPedigreeOperation
+pedigree.mergeSubPops = unsupportedPedigreeOperation
+pedigree.recodeAlleles = unsupportedPedigreeOperation
+pedigree.removeLoci = unsupportedPedigreeOperation
+pedigree.resize = unsupportedPedigreeOperation
+pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
+pedigree.splitSubPop = unsupportedPedigreeOperation
+
+
 def _new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate

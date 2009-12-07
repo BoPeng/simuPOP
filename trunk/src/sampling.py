@@ -323,7 +323,7 @@ class affectedSibpairSampler(pedigreeSampler):
         # only look for wife so families will not overlap
         self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
         # look for affected offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionChoice=Affected)
+        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
         # find all affected siblings
         if not isSequence(self.families):
             self.father_IDs = list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2']))
