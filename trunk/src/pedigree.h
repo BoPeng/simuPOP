@@ -40,7 +40,10 @@ namespace simuPOP {
  *  all individuals is needed to create a pedigree object from a population
  *  object. Compared to the \c population class, a \c pedigree object is
  *  optimized for access individuals by their IDs, regardless of population
- *  structure and ancestral generations.
+ *  structure and ancestral generations. Note that although the pedigree class
+ *  is derived from the population class so most of the population member
+ *  functions could be called, functions such as \c removeSubPops that alter
+ *  population structure are disabled.
  *
  *  A pedigree object can be created from a population, or loaded from
  *  a disk file, which is usually saved by an operator during a previous
@@ -129,11 +132,10 @@ public:
 	 *
 	 *  Optionally, you can specify the sex and affection status of relatives
 	 *  you would like to locate, using parameters \e sex and
-	 *  \e affectionStatus. \e sex can be \c AnySex (default),
-	 *  \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex, and
-	 *  \e affectionStatus can be \c Affected, \c Unaffected or
-	 *  \c AnyAffectionStatus (default). Only relatives with specified
-	 *  properties will be located.
+	 *  \e affectionStatus. \e sex can be \c AnySex (default), \c MaleOnly,
+	 *  \c FemaleOnly, \c SameSex or \c OppositeSex, and \e affectionStatus can
+	 *  be \c Affected, \c Unaffected or \c AnyAffectionStatus (default). Only
+	 *  relatives with specified properties will be located.
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting
