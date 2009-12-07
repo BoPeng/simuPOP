@@ -38,6 +38,9 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add function population.extractIndividuals, population.extractSubPops,
 		remove population.extract.
   - NEW: Disable population manipulation functions of an pedigree object.
+  - NEW: Add functions IndexToID, DrawPedigree and samplers nuclearFamilySampler,
+		threeGenFamilySampler, combinedSampler and their sampling functions to
+		the simuPOP.sampling class.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
