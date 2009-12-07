@@ -810,9 +810,17 @@ def Stat(pop, *args, **kwargs):
     using functions ``pop.vars()`` or ``pop.dvars()``'''
     stat(*args, **kwargs).apply(pop)
 
-def TagID(pop, *args, **kwargs):
+def TagID(pop, reset=False, *args, **kwargs):
     '''Apply operator ``idTagger`` to population ``pop`` to assign a unique ID
-    to all individuals in the population.'''
+    to all individuals in the population. Individuals ID will starts from a
+    system wide index. You can reset this start ID using parameter ``reset``
+    which can be ``True`` (reset to 0) or a non-negative number (start from
+    this number).'''
+    if reset == True:
+        idTagger().reset(0)
+    elif type(reset) in [type(0), type(0L)]:
+        idTagger().reset(reset):confirm b1
+
     idTagger(*args, **kwargs).apply(pop)
 
 def MapPenetrance(pop, loci, penetrance, ancGen = -1, *args, **kwargs):
