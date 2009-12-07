@@ -187,10 +187,14 @@ public:
 	 *  \c SameSex or \c OppositeSex, and \e affectionChoice can be
 	 *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
 	 *  function by default check all individuals in all ancestral generations,
-	 *  but you could limit the search using parameter \e ancGen.
+	 *  but you could limit the search using parameter \e subPops (a list of
+     *  (virtual) subpopulations) and (recent ancestral generations) \e ancGen.
+     *  Relatives fall out of specified subpopulations and ancestral generaions
+     *  will be considered invalid.
 	 */
-	vectoru indWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
-		const uintList & affectionChoice = vectoru(), int ancGen = -1);
+	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
+		const uintList & affectionChoice = vectoru(), const subPopList & subPops = subPopList(),
+        int ancGen = -1);
 
 private:
 	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
