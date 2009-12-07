@@ -24,20 +24,25 @@ class TestSampling(unittest.TestCase):
         simu = simulator(
             population(size=[1000,2000], ploidy=2, loci=[5,10],
                 ancGen=2,
-                infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
+                infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
             randomMating(numOffspring=2))
         simu.evolve(
+            initOps = [
+                 initSex(),
+                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.population(0).totNumLoci())),
+                 idTagger(),
+            ],
             preOps = migrator(rate=[[0.1,0.1], [0.1,0.1]]),
-            duringOps = parentsTagger(),
+            duringOps = [
+                idTagger(),
+                pedigreeTagger(),
+                parentsTagger(),
+            ],
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 mapPenetrance(loci=0,
                     penetrance={(0,0):0,(0,1):.7,(1,1):1}),
-            ],
-            initOps = [
-                 initSex(),
-                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.population(0).totNumLoci()))
             ],
             gen = 4
         )
@@ -48,20 +53,25 @@ class TestSampling(unittest.TestCase):
         # more complicated one
         simu1 = simulator(
             population(size=[5000,20000], ploidy=2, loci=[5,10],
-                ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
+                ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
             randomMating(numOffspring=(UniformDistribution, 2, 5)))
         simu1.evolve(
+            initOps=[
+                 initSex(),
+                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci())),
+                 idTagger(),
+            ],
             preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-            duringOps = parentsTagger(),
+            duringOps = [
+                idTagger(),
+                pedigreeTagger(),
+                parentsTagger(),
+            ],
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 mapPenetrance(loci=0,
                     penetrance={(0,0):0,(0,1):.7,(1,1):1}),
-            ],
-            initOps=[
-                 initSex(),
-                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci()))
             ],
             gen = 10
         )
@@ -133,30 +143,25 @@ class TestSampling(unittest.TestCase):
 		# FIXME: testing sharing of parents
 		# (father_idx and mother_idx of original and sample population,
 		# and if the parents are the same.)
-		#
-        # find sibpairs
-        (s,) = AffectedSibpairSample(self.pop, [2, 3])
+        s = DrawAffectedSibpairSample(self.pop, families = [2, 3])
         assert s.subPopSize(0) <= 4
         assert s.subPopSize(1) <= 6
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
-            #old index?
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), True)
-            #old index?
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
         #
-        (s,) = AffectedSibpairSample(self.pop, 2)
+        s = DrawAffectedSibpairSample(self.pop, 2)
         s.useAncestralGen(1)
-        self.assertEqual(s.subPopSizes(), (2, 2))
+        self.assertEqual(s.popSize(), 4)
         s.useAncestralGen(0)
-        self.assertEqual(s.subPopSizes(), (2, 2))
+        self.assertEqual(s.popSize(), 4)
         for ind in s.individuals():
             self.assertEqual(ind.affected(), True)
-            #old index?
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
 

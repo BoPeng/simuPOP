@@ -79,7 +79,8 @@ __all__ = [
 
 import exceptions, random
 
-from simuPOP import AllAvail, Stat, pedigree
+from simuPOP import AllAvail, Stat, pedigree, OutbredSpouse, CommonOffspring, FemaleOnly, \
+    Affected
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -290,7 +291,7 @@ class pedigreeSampler(baseSampler):
     def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
         baseSampler.__init__(self, subPops)
         self.families = families
-        self.idField = idFiled
+        self.idField = idField
         self.fatherField = fatherField
         self.motherField = motherField
         self.pedigree = None
@@ -301,7 +302,7 @@ class pedigreeSampler(baseSampler):
         information fields for this sampler.
         '''
         # create self.pop
-        baseSampler.prepareSample(pop, isSequence(self.families))
+        baseSampler.prepareSample(self, pop, isSequence(self.families))
         # get self.pedigree
         self.pedigree = pedigree(self.pop, loci, infoFields,
             ancGen, self.idField, self.fatherField, self.motherField)
@@ -309,11 +310,11 @@ class pedigreeSampler(baseSampler):
 
 class affectedSibpairSampler(pedigreeSampler):
     def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
-        pedigreeSampler.__init__(families, subPops, idField, fatherField, motherField)
+        pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
-        pedigreeSampler.prepareSample(input_pop, isSequence(self.families))
+        pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
         if isSequence(self.families) and len(self.families) != self.pop.numSubPop():
             raise ValueError('If an list of family counts is given, it should be specified for all subpopulations')
         #
@@ -322,15 +323,14 @@ class affectedSibpairSampler(pedigreeSampler):
         # only look for wife so families will not overlap
         self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
         # look for affected offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'],
-            [AnyAffectionStatus, Affected, Affected])
+        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionChoice=Affected)
         # find all affected siblings
-        if not isSequence(familes):
-            self.father_IDs = self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'])
+        if not isSequence(self.families):
+            self.father_IDs = list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2']))
         else:
             self.father_IDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.father_IDs.append(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp))
+                self.father_IDs.append(list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp)))
 
     def drawSample(self, input_pop):
         if self.pedigree is None:
@@ -346,7 +346,7 @@ class affectedSibpairSampler(pedigreeSampler):
             selected_IDs = self.father_IDs[:self.families]
         else:
             selected_IDs = []
-            for sp in range(pop.numSubPop()):
+            for sp in range(self.pop.numSubPop()):
                 if self.families[sp] > len(self.father_IDs[sp]):
                     print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
                         % (self.families[sp], len(self.father_IDs[sp]), sp)
@@ -356,9 +356,9 @@ class affectedSibpairSampler(pedigreeSampler):
         # get father, spouse and their offspring
         IDs = []
         for id in selected_IDs:
-            ind = indByID(id)
+            ind = self.pedigree.indByID(id)
             IDs.extend([id, ind.spouse, ind.off1, ind.off2])
-        return self.pop.extractIndividuals(IDs = case_indexes + control_indexes, idField = self.idField)
+        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
 
 
 def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 
@@ -372,7 +372,7 @@ def DrawAffectedSibpairSample(pop, families, subPops=AllAvail,
     specified (virtual) subpopulations. The return value of this function is
     a list of populations.
     '''
-    return affectedSibpairSample(families, subPops, idField, fatherField, motherField).drawSample(pop)
+    return affectedSibpairSampler(families, subPops, idField, fatherField, motherField).drawSample(pop)
  
 
 def DrawAffectedSibpairSamples(pop, families, times=1, subPops=AllAvail, 
