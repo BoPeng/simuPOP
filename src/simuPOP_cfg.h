@@ -205,10 +205,12 @@ enum SexChoice {
 	OppositeSex = 64
 };
 
-enum AffectionChoice {
-	Unaffected = 70,
-	Affected = 71,
-	AnyAffectionStatus = 72,
+// this one does not use 71, 72 to allow users to specify affection
+// status using True and False if they accidentally do so.
+enum AffectionStatus {
+	Unaffected = 0,
+	Affected = 1,
+	AnyAffectionStatus = 2,
 };
 
 enum MultiLociMode {

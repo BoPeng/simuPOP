@@ -38,7 +38,9 @@ namespace simuPOP {
  *  population class that emphasizes on individual properties, the pedigree
  *  class emphasizes on relationship between individuals. An unique ID for
  *  all individuals is needed to create a pedigree object from a population
- *  object.
+ *  object. Compared to the \c population class, a \c pedigree object is
+ *  optimized for access individuals by their IDs, regardless of population
+ *  structure and ancestral generations.
  *
  *  A pedigree object can be created from a population, or loaded from
  *  a disk file, which is usually saved by an operator during a previous
@@ -49,22 +51,22 @@ class pedigree : public population
 {
 public:
 	/** Create a pedigree object from a population, using a subset of loci
-	 *  (parameter \e loci, default to no loci), information fields
-	 *  (parameter \e infoFields, default to no information field except for
+	 *  (parameter \e loci, default to no locus), information fields
+	 *  (parameter \e infoFields, default to no information field besides
 	 *  \e idField, \e fatherField and \e motherField), and ancestral
 	 *  generations (parameter \e ancGen, default to all ancestral generations).
 	 *  By default, information field \c father_id (parameter \e fatherField)
 	 *  and \c mother_id (parameter \e motherField) are used to locate parents
-	 *  with \c ind_id (parameter \e idField) as an ID field storing an unique
-	 *  ID for every individual. Multiple individuls with the same ID are
+	 *  identified by \c ind_id (parameter \e idField), which should store an
+	 *  unique ID for all individuals. Multiple individuls with the same ID are
 	 *  allowed and will be considered as the same individual, but a warning
 	 *  will be given if they actually differ in genotype or information fields.
 	 *  Operators \c idTagger and  \c pedigreeTagger are usually used to assign
 	 *  such IDs, although function \c sampling.indexToID could be used to
 	 *  assign unique IDs and construct parental IDs from index based
-	 *  relationship recorded by operator \c parentsTagger. This pedigree
-	 *  object works with one or no parents but certain functions such as
-	 *  relative tracking will not be available for such pedigrees.
+	 *  relationship recorded by operator \c parentsTagger. A pedigree object
+	 *  could be constructed with one or no parent but certain functions such
+	 *  as relative tracking will not be available for such pedigrees.
 	 */
 	pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
@@ -91,8 +93,8 @@ public:
 
 
 	/** Return a reference to individual with \e id. An \c IndexError will be
-	 *  raised if no individual with \e id is found. Note that a float \e id
-	 *  is acceptable as long as it rounds closely to an integer.
+	 *  raised if no individual with \e id is found. An float \e id is
+	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>4-ind</group>
 	 */
 	individual & indByID(double id);
@@ -126,10 +128,10 @@ public:
 	 *  \li \c Sibling siblings with at least one common parent.
 	 *
 	 *  Optionally, you can specify the sex and affection status of relatives
-	 *  you would like to locate, using parameters \e sexChoice and
-	 *  \e affectionChoice. \e sexChoice can be \c AnySex (default),
+	 *  you would like to locate, using parameters \e sex and
+	 *  \e affectionStatus. \e sex can be \c AnySex (default),
 	 *  \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex, and
-	 *  \e affectionChoice can be \c Affected, \c Unaffected or
+	 *  \e affectionStatus can be \c Affected, \c Unaffected or
 	 *  \c AnyAffectionStatus (default). Only relatives with specified
 	 *  properties will be located.
 	 *
@@ -140,7 +142,7 @@ public:
 	 *  <group>4-locate</group>
 	 */
 	void locateRelatives(RelativeType relType, const vectorstr & resultFields = vectorstr(),
-		SexChoice sexChoice = AnySex, AffectionChoice affectionChoice = AnyAffectionStatus,
+		SexChoice sex = AnySex, AffectionStatus affectionStatus = AnyAffectionStatus,
 		int ancGen = -1);
 
 	/** Trace a relative path in a population and record the result in the
@@ -152,17 +154,17 @@ public:
 	 *  in each individuals information fields \e resultFields.
 	 *
 	 *  A <em>relative path</em> consits of a \e fieldPath that specifies
-	 *  which information fields to look for at each step, a \e sexChoice
-	 *  specifies sex choices at each generation, and a \e affectionChoice
+	 *  which information fields to look for at each step, a \e sex
+	 *  specifies sex choices at each generation, and a \e affectionStatus
 	 *  that specifies affection status at each generation. \e fieldPath
-	 *  should be a list of information fields, \e sexChoice and
-	 *  \e affectionChoice are optional. If specified, they should be a list of
+	 *  should be a list of information fields, \e sex and
+	 *  \e affectionStatus are optional. If specified, they should be a list of
 	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex
-	 *  for parameter \e sexChoice, and a list of \e Unaffected, \e Affected
-	 *  and \e AnyAffectionStatus for parameter \e affectionChoice.
+	 *  for parameter \e sex, and a list of \e Unaffected, \e Affected
+	 *  and \e AnyAffectionStatus for parameter \e affectionStatus.
 	 *
 	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
-	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sexChoice = [AnySex,
+	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sex = [AnySex,
 	 *  MaleOnly, FemaleOnly]</tt>, this function will locate \c father_id
 	 *  and \c mother_id for each individual, find all individuals referred
 	 *  by \c father_id and \c mother_id, find informaton fields \c sib1 and
@@ -176,46 +178,47 @@ public:
 	 *  <group>4-locate</group>
 	 */
 	bool traceRelatives(const stringMatrix & fieldPath,
-		const uintList & sexChoice = vectoru(),
-		const uintList & affectionChoice = vectoru(),
+		const uintList & sex = vectoru(),
+		const uintList & affectionStatus = vectoru(),
 		const stringList & resultFields = vectorstr(), int ancGen = -1);
 
-	/** Return a list of IDs of individuals who has valid (non-negative) values
-	 *  at information fields \e infoFields. Additional requirements could be
-	 *  specified by parameters \e sexChoice and \e affectionChoice.
-	 *  \e sexChoice can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
-	 *  \c SameSex or \c OppositeSex, and \e affectionChoice can be
+	/** Return a list of IDs of individuals who have non-negative values at
+	 *  information fields \e infoFields. Additional requirements could be
+	 *  specified by parameters \e sex and \e affectionStatus.
+	 *  \e sex can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
+	 *  \c SameSex or \c OppositeSex, and \e affectionStatus can be
 	 *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
 	 *  function by default check all individuals in all ancestral generations,
 	 *  but you could limit the search using parameter \e subPops (a list of
 	 *  (virtual) subpopulations) and (recent ancestral generations) \e ancGen.
 	 *  Relatives fall out of specified subpopulations and ancestral generaions
 	 *  will be considered invalid.
+	 *  <group>4-locate</group>
 	 */
-	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sexChoice = vectoru(),
-		const uintList & affectionChoice = vectoru(), const subPopList & subPops = subPopList(),
+	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
+		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
 private:
 	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
 
-	bool acceptableAffectionStatus(bool affected, AffectionChoice choice);
+	bool acceptableAffectionStatus(bool affected, AffectionStatus choice);
 
 	// a list of functions that will be used in locateRelatives.
 	// they are called only once. The reason this is separated is because
 	// they are too long when putting in one function.
 
-	void locateSelf(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
+	void locateSelf(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateSpouse(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen, bool excludeOutbred);
+	void locateSpouse(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen, bool excludeOutbred);
 
-	void locateSibling(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
+	void locateSibling(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateFullSibling(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
+	void locateFullSibling(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateOffspring(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
+	void locateOffspring(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
-	void locateCommonOffspring(SexChoice relSex, AffectionChoice relAffection, const vectorstr & relFields, int ancGen);
+	void locateCommonOffspring(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
 private:
 	string m_idField;

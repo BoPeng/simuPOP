@@ -142,7 +142,7 @@ bool pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
 }
 
 
-bool pedigree::acceptableAffectionStatus(bool affected, AffectionChoice choice)
+bool pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
 {
 	return choice == AnyAffectionStatus ||
 	       (choice == Affected && affected) ||
@@ -151,7 +151,7 @@ bool pedigree::acceptableAffectionStatus(bool affected, AffectionChoice choice)
 
 
 void pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFields,
-                               SexChoice sexChoice, AffectionChoice affectionChoice, int ancGen)
+                               SexChoice sexChoice, AffectionStatus affectionChoice, int ancGen)
 {
 	DBG_ASSERT(sexChoice == AnySex || sexChoice == MaleOnly || sexChoice == FemaleOnly
 		|| sexChoice == SameSex || sexChoice == OppositeSex, ValueError,
@@ -188,7 +188,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 }
 
 
-void pedigree::locateSpouse(SexChoice sexChoice, AffectionChoice affectionChoice, const vectorstr & resultFields, int ancGen, bool excludeOutbred)
+void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen, bool excludeOutbred)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -293,7 +293,7 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionChoice affectionChoice
 }
 
 
-void pedigree::locateOffspring(SexChoice sexChoice, AffectionChoice affectionChoice, const vectorstr & resultFields, int ancGen)
+void pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -354,7 +354,7 @@ void pedigree::locateOffspring(SexChoice sexChoice, AffectionChoice affectionCho
 }
 
 
-void pedigree::locateSibling(SexChoice sexChoice, AffectionChoice affectionChoice, const vectorstr & resultFields, int ancGen)
+void pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -447,7 +447,7 @@ void pedigree::locateSibling(SexChoice sexChoice, AffectionChoice affectionChoic
 }
 
 
-void pedigree::locateFullSibling(SexChoice sexChoice, AffectionChoice affectionChoice, const vectorstr & resultFields, int ancGen)
+void pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -537,7 +537,7 @@ void pedigree::locateFullSibling(SexChoice sexChoice, AffectionChoice affectionC
 }
 
 
-void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionChoice affectionChoice, const vectorstr & resultFields, int ancGen)
+void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -679,12 +679,12 @@ bool pedigree::traceRelatives(const stringMatrix & fieldPath,
 		sexes[i] = static_cast<SexChoice>(sexChoice[i]);
 	}
 	// convert affectionChoice to type SexChoices
-	vector<AffectionChoice> affections(pathIdx.size(), AnyAffectionStatus);
+	vector<AffectionStatus> affections(pathIdx.size(), AnyAffectionStatus);
 	for (size_t i = 0; i < affectionChoice.size(); ++i) {
 		DBG_ASSERT(affectionChoice[i] == Affected || affectionChoice[i] == Unaffected
 			|| affectionChoice[i] == AnyAffectionStatus, ValueError,
 			"Relative affection status can only be one of Affected, Unaffected and AnyAffectionStatus.");
-		affections[i] = static_cast<AffectionChoice>(affectionChoice[i]);
+		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
 	ULONG idx = 0;
@@ -699,7 +699,7 @@ bool pedigree::traceRelatives(const stringMatrix & fieldPath,
 					                        << " : " << inds << endl);
 				const vectori & fields = pathIdx[path];
 				SexChoice sex = sexes[path];
-				AffectionChoice affection = affections[path];
+				AffectionStatus affection = affections[path];
 
 				vectoru newInds;
 				// for all individuals
@@ -763,12 +763,12 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 	}
 
 	// convert affectionChoice to type SexChoices
-	vector<AffectionChoice> affections(infoFields.size(), AnyAffectionStatus);
+	vector<AffectionStatus> affections(infoFields.size(), AnyAffectionStatus);
 	for (size_t i = 0; i < affectionChoice.size(); ++i) {
 		DBG_ASSERT(affectionChoice[i] == Affected || affectionChoice[i] == Unaffected
 			|| affectionChoice[i] == AnyAffectionStatus, ValueError,
 			"Relative affection status can only be one of Affected, Unaffected and AnyAffectionStatus.");
-		affections[i] = static_cast<AffectionChoice>(affectionChoice[i]);
+		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
 	// mark eligible individuals

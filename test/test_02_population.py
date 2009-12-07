@@ -1294,6 +1294,27 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.ind_id, id)
         self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
  
+    def testPedigreeFunc(self):
+        'Testing unsupported functions of the pedigree class'
+        pop = population(10, infoFields='ind_id')
+        ped = pedigree(pop, fatherField = '', motherField = '')
+        self.assertRaises(exceptions.ValueError, ped.removeIndividuals, 0)
+        self.assertRaises(exceptions.ValueError, ped.removeSubPops)
+        self.assertRaises(exceptions.ValueError, ped.extractIndividuals)
+        self.assertRaises(exceptions.ValueError, ped.extractSubPops)
+        self.assertRaises(exceptions.ValueError, ped.push)
+        self.assertRaises(exceptions.ValueError, ped.setAncestralDepth)
+        self.assertRaises(exceptions.ValueError, ped.addChrom)
+        self.assertRaises(exceptions.ValueError, ped.addChromFrom)
+        self.assertRaises(exceptions.ValueError, ped.addIndFrom)
+        self.assertRaises(exceptions.ValueError, ped.addLoci)
+        self.assertRaises(exceptions.ValueError, ped.addLociFrom)
+        self.assertRaises(exceptions.ValueError, ped.mergeSubPops)
+        self.assertRaises(exceptions.ValueError, ped.recodeAlleles)
+        self.assertRaises(exceptions.ValueError, ped.removeLoci)
+        self.assertRaises(exceptions.ValueError, ped.resize)
+        self.assertRaises(exceptions.ValueError, ped.setSubPopByIndInfo)
+        self.assertRaises(exceptions.ValueError, ped.splitSubPop)
 
 if __name__ == '__main__':
     unittest.main()
