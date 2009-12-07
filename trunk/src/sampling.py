@@ -197,7 +197,7 @@ class caseControlSampler(baseSampler):
     def prepareSample(self, input_pop):
         '''Find out indexes all affected and unaffected individuales.
         '''
-        baseSampler.prepareSample(input_pop, isSequence(self.cases))
+        baseSampler.prepareSample(self, input_pop, isSequence(self.cases))
         if self.pop is None:
             # this will produce self.pop and self.cases and self.controls
             self.prepareSample(input_pop)
@@ -205,20 +205,20 @@ class caseControlSampler(baseSampler):
         if not isSequence(self.cases):
             # find affected individuals
             self.affected = []
-            self.unself.affectedected = []
+            self.unaffected = []
             for idx,ind in enumerate(self.pop.individuals()):
-                if ind.self.affectedected():
+                if ind.affected():
                     self.affected.append(idx)
                 else:
-                    self.unself.affectedected.append(idx)
+                    self.unaffected.append(idx)
             #
             if self.cases > len(self.affected):
                 print 'Warning: number of cases %d is greater than number of self.affectedected individuals %d.' \
                     % (self.cases, len(self.affected))
             #
-            if self.controls > len(self.unself.affectedected):
+            if self.controls > len(self.unaffected):
                 print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d.' \
-                    % (self.controls, len(self.unself.affectedected))
+                    % (self.controls, len(self.unaffected))
         else:
             if len(self.cases) != self.pop.numSubPop():
                 raise ValueError('If an list of cases is given, it should be specified for all subpopulations')
@@ -251,7 +251,7 @@ class caseControlSampler(baseSampler):
         #
         if not isSequence(self.cases):
             random.shuffle(self.affected)
-            random.shuffle(seld.unaffected)
+            random.shuffle(self.unaffected)
             case_indexes = self.affected[:self.cases]
             control_indexes = self.unaffected[:self.controls]
         else:

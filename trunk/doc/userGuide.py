@@ -615,7 +615,7 @@ pop = sim.population(size=[20, 20], loci=[5, 5], infoFields=['x', 'y'])
 sim.InitByValue(pop, range(10))
 sim.InitInfo(pop, lambda: random.randint(0,5), infoFields='x')
 pop.setVirtualSplitter(sim.infoSplitter(field='x', values=[0, 1, 2, 3, 4, 5]))
-pop1 = pop.extract(loci=[1, 2, 3, 6, 7], subPops=[(0,1), (0,3)], infoFields='x')
+pop1 = pop.extractSubPops(subPops=[(0,1), (0,3)])
 sim.Dump(pop1, structure=False)
 #end_file
 
@@ -1920,20 +1920,24 @@ simu.evolve(
 # Second stage: track parents and produce more offspring per mating
 # event. In preparation for sim.pedigree ascertainment.
 for pop in simu.populations():
-    pop.addInfoFields(['father_idx', 'mother_idx'])
+    pop.addInfoFields(['ind_id', 'father_id', 'mother_id'])
     pop.setAncestralDepth(1)
 
 simu.setMatingScheme(sim.randomMating(numOffspring=2))
 simu.evolve(
-    duringOps = sim.parentsTagger(),
+    initOps = sim.idTagger(),
+    duringOps = [
+        sim.idTagger(),
+        sim.pedigreeTagger(),
+    ],
     postOps = sim.maPenetrance(loci=0, penetrance=(0.2, 0.4, 0.5)),
     gen = 5
 )
 # Sample affected sibpairs
 pop = simu.extract(0)
-from simuPOP.sampling import AffectedSibpairSample
-#sample = AffectedSibpairSample(pop, size=5)[0]
-#[int(ind.father_idx) for ind in sample.individuals()]
+from simuPOP.sampling import DrawAffectedSibpairSample
+sample = DrawAffectedSibpairSample(pop, families=5)
+[int(ind.father_id) for ind in sample.individuals()]
 #end_file
 
 #begin_file log/changeStru.py
@@ -3485,10 +3489,10 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import *
-from simuPOP.sampling import CaseControlSample
+from simuPOP.sampling import DrawCaseControlSample
 def assoTest(pop):
     'Draw case-control sample and apply association tests'
-    sample = CaseControlSample(pop, cases=500, controls=500)[0]
+    sample = DrawCaseControlSample(pop, cases=500, controls=500)
     sim.Stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
     print 'Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
         % (sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
