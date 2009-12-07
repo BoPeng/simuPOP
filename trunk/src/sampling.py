@@ -314,63 +314,51 @@ class affectedSibpairSampler(pedigreeSampler):
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
         pedigreeSampler.prepareSample(input_pop, isSequence(self.families))
+        if isSequence(self.families) and len(self.families) != self.pop.numSubPop():
+            raise ValueError('If an list of family counts is given, it should be specified for all subpopulations')
         #
         # locate all affected siblings
         self.pedigree.addInfoFields(['spouse', 'off1', 'off2'])
-        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'])
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'])
+        # only look for wife so families will not overlap
+        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
+        # look for affected offspring
+        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'],
+            [AnyAffectionStatus, Affected, Affected])
         # find all affected siblings
         if not isSequence(familes):
-            self.families = []
+            self.father_IDs = self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'])
         else:
-            self.families = []
-
+            self.father_IDs = []
+            for sp in range(self.pedigree.numSubPop()):
+                self.father_IDs.append(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp))
 
     def drawSample(self, input_pop):
         if self.pedigree is None:
-            # this will give us self.pop, self.pedigree, and self.families
+            # this will give us self.pop, self.pedigree, and self.father_IDs
             self.prepareSample(input_pop)
         #
         if not isSequence(self.families):
-            size = self.size
-            if size > pedCount:
+            if self.families > len(self.father_IDs):
                 print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
-                    % (size, pedCount)
-                size = pedCount
+                    % (self.families, len(self.father_IDs))
             #
-            values = range(pedCount)
-            random.shuffle(values)
-            for v in values[:size]:
-                chosenPeds[v] = True
+            random.shuffle(self.father_IDs)
+            selected_IDs = self.father_IDs[:self.families]
         else:
-            if len(self.size) != pop.numSubPop():
-                raise ValueError('If an list of sizes is given, it should be specified for all subpopulations')
+            selected_IDs = []
             for sp in range(pop.numSubPop()):
-                allPeds = len(self.validPeds[sp])
-                #
-                size = self.size[sp]
-                if size > allPeds:
+                if self.families[sp] > len(self.father_IDs[sp]):
                     print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
-                        % (size, allPeds, sp)
-                    size = allPeds
+                        % (self.families[sp], len(self.father_IDs[sp]), sp)
                 #
-                random.shuffle(self.validPeds[sp])
-                for v in self.validPeds[sp][:size]:
-                    chosenPeds[v] = True
-        # assign genotype
-        for gen in range(1, -1, -1):
-            self.pedigree.useAncestralGen(gen)
-            for ind in self.pedigree.individuals():
-                ped = int(ind.info(pedindex))
-                if ped != -1 and chosenPeds[ped]:
-                    ind.setInfo(ped, sample)
-                else:
-                    ind.setInfo(-1, sample)
-        sample = pop.extract(field='sample', ancGen=1, ped=self.pedigree)
-        for gen in range(1, -1, -1):
-            sample.useAncestralGen(gen)
-            sample.removeSubPops([x for x in range(sample.numSubPop()) if sample.subPopSize(x) == 0])
-        return sample
+                random.shuffle(self.father_IDs[sp])
+                selected_IDs.extend(self.father_IDs[sp][:self.families[sp]])
+        # get father, spouse and their offspring
+        IDs = []
+        for id in selected_IDs:
+            ind = indByID(id)
+            IDs.extend([id, ind.spouse, ind.off1, ind.off2])
+        return self.pop.extractIndividuals(IDs = case_indexes + control_indexes, idField = self.idField)
 
 
 def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 

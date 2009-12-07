@@ -106,7 +106,7 @@ public:
 	subPopList(const vectorvsp & subPops);
 
 	/// CPPONLY
-	bool allAvail()
+	bool allAvail() const
 	{
 		return m_allAvail;
 	}
