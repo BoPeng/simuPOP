@@ -5131,12 +5131,12 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::indWithRelatives "
+%feature("docstring") simuPOP::pedigree::individualsWithRelatives "
 
 Usage:
 
-    x.indWithRelatives(infoFields, sexChoice=[], affectionChoice=[],
-      ancGen=-1)
+    x.individualsWithRelatives(infoFields, sexChoice=[],
+      affectionChoice=[], subPops=AllAvail, ancGen=-1)
 
 Details:
 
@@ -5147,7 +5147,10 @@ Details:
     or OppositeSex, and affectionChoice can be Affected, Unaffected or
     AnyAffectionStatus (default). This function by default check all
     individuals in all ancestral generations, but you could limit the
-    search using parameter ancGen.
+    search using parameter subPops (a list of (virtual)
+    subpopulations) and (recent ancestral generations) ancGen.
+    Relatives fall out of specified subpopulations and ancestral
+    generaions will be considered invalid.
 
 "; 
 
@@ -9941,7 +9944,7 @@ Usage:
 
 %ignore simuPOP::subPopList::subPopList(const vectorvsp &subPops);
 
-%ignore simuPOP::subPopList::allAvail();
+%ignore simuPOP::subPopList::allAvail() const;
 
 %ignore simuPOP::subPopList::empty() const;
 
