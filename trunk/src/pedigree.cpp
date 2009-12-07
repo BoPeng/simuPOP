@@ -734,8 +734,8 @@ bool pedigree::traceRelatives(const stringMatrix & fieldPath,
 
 
 vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
-                                   const uintList & affectionChoiceList, 
-                                   const subPopList & subPops, int ancGen)
+                                           const uintList & affectionChoiceList,
+                                           const subPopList & subPops, int ancGen)
 {
 	const vectoru & sexChoice = sexChoiceList.elems();
 	const vectoru & affectionChoice = affectionChoiceList.elems();
@@ -771,29 +771,29 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 		affections[i] = static_cast<AffectionChoice>(affectionChoice[i]);
 	}
 
-    // mark eligible individuals
+	// mark eligible individuals
 	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
 	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
-        useAncestralGen(ans);
-        if (ans > topGen) {
-            markIndividuals(vspID(), false);
-            continue;
-        }
-        if (subPops.allAvail())
-            markIndividuals(vspID(), true);
-        else {
-            subPopList::const_iterator it = subPops.begin();
-            subPopList::const_iterator itEnd = subPops.end();
-            markIndividuals(*it, true);
-        }
-    }
+		useAncestralGen(ans);
+		if (ans > topGen) {
+			markIndividuals(vspID(), false);
+			continue;
+		}
+		if (subPops.allAvail())
+			markIndividuals(vspID(), true);
+		else {
+			subPopList::const_iterator it = subPops.begin();
+			subPopList::const_iterator itEnd = subPops.end();
+			markIndividuals(*it, true);
+		}
+	}
 
 	vectoru IDs;
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
-            if (!ind->marked())
-                continue;
+			if (!ind->marked())
+				continue;
 			bool valid = true;
 			for (size_t i = 0; i < fieldIdx.size(); ++i) {
 				double rel = ind->info(fieldIdx[i]);
@@ -805,12 +805,12 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 					// valid?
 					individual & rind = indByID(rel);
 					if (!rind.marked() ||
-                        !acceptableSex(ind->sex(), rind.sex(), sexes[i]) ||
+					    !acceptableSex(ind->sex(), rind.sex(), sexes[i]) ||
 					    !acceptableAffectionStatus(ind->affected(), affections[i])) {
 						valid = false;
 						break;
 					}
-				} catch (IndexError & ) {
+				} catch (IndexError &) {
 					valid = false;
 					break;
 				}
