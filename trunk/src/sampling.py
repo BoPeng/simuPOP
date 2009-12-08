@@ -438,6 +438,42 @@ class pedigreeSampler(baseSampler):
         # get self.pedigree
         self.pedigree = pedigree(self.pop, loci, infoFields,
             ancGen, self.idField, self.fatherField, self.motherField)
+        # Your prepareSample should define selected_IDs, which should be the
+        # anchor individuals of each pedigree, typically father or grandfather.
+        # Other family members will be looked up through function self.family.
+        self.selected_IDs = []
+
+    def family(self, id):
+        'Get the family of individual with id.'
+        return [id]
+
+    def drawSample(self, input_pop):
+        'Randomly select pedigrees'
+        if self.pedigree is None:
+            # this will give us self.pop, self.pedigree, and self.selectedIDs
+            self.prepareSample(input_pop)
+        #
+        if not isSequence(self.families):
+            if self.families > len(self.selectedIDs):
+                print 'Warning: number of requested pedigrees %d is greater than what exists (%d).' \
+                    % (self.families, len(self.selectedIDs))
+            #
+            random.shuffle(self.selectedIDs)
+            selected_IDs = self.selectedIDs[:self.families]
+        else:
+            selected_IDs = []
+            for sp in range(self.pop.numSubPop()):
+                if self.families[sp] > len(self.selectedIDs[sp]):
+                    print 'Warning: number of requested pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
+                        % (self.families[sp], len(self.selectedIDs[sp]), sp)
+                #
+                random.shuffle(self.selectedIDs[sp])
+                selected_IDs.extend(self.selectedIDs[sp][:self.families[sp]])
+        # get family members
+        IDs = []
+        for id in selected_IDs:
+            IDs.extend(self.family(id))
+        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
 
 
 class affectedSibpairSampler(pedigreeSampler):
@@ -447,6 +483,11 @@ class affectedSibpairSampler(pedigreeSampler):
         '''
         '''
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
+
+    def family(self, id):
+        'Return id, its spouse and their children'
+        ind = self.pedigree.indByID(id)
+        return id, ind.spouse, ind.off1, ind.off2
 
     def prepareSample(self, input_pop):
         'Find the father or all affected sibpair families'
@@ -463,39 +504,12 @@ class affectedSibpairSampler(pedigreeSampler):
         self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
         # find qualified families
         if not isSequence(self.families):
-            self.father_IDs = list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2']))
+            self.selectedIDs = list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2']))
         else:
-            self.father_IDs = []
+            self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.father_IDs.append(list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp)))
+                self.selectedIDs.append(list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp)))
 
-    def drawSample(self, input_pop):
-        if self.pedigree is None:
-            # this will give us self.pop, self.pedigree, and self.father_IDs
-            self.prepareSample(input_pop)
-        #
-        if not isSequence(self.families):
-            if self.families > len(self.father_IDs):
-                print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
-                    % (self.families, len(self.father_IDs))
-            #
-            random.shuffle(self.father_IDs)
-            selected_IDs = self.father_IDs[:self.families]
-        else:
-            selected_IDs = []
-            for sp in range(self.pop.numSubPop()):
-                if self.families[sp] > len(self.father_IDs[sp]):
-                    print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
-                        % (self.families[sp], len(self.father_IDs[sp]), sp)
-                #
-                random.shuffle(self.father_IDs[sp])
-                selected_IDs.extend(self.father_IDs[sp][:self.families[sp]])
-        # get father, spouse and their offspring
-        IDs = []
-        for id in selected_IDs:
-            ind = self.pedigree.indByID(id)
-            IDs.extend([id, ind.spouse, ind.off1, ind.off2])
-        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
 
 
 def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 
@@ -521,6 +535,7 @@ def DrawAffectedSibpairSamples(pop, families, times=1, subPops=AllAvail,
     '''
     return affectedSibpairSample(families, subPops, idField, fatherField,
         motherField).drawSamples(pop, times)
+
 
 class nuclearFamilySampler(pedigreeSampler):
     '''A sampler that draws nuclear families with specified number of affected
@@ -589,6 +604,12 @@ class nuclearFamilySampler(pedigreeSampler):
         #
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
+    def family(self, id):
+        'Return id, its spouse and their children'
+        ind = self.pedigree.indByID(id)
+        offIDs = [ind.info('off%d' % x) for x in range(self.numOffspring[1])]
+        return [id, ind.spouse] + [x for x in offIDs if x >= 0]
+
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
         pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
@@ -617,40 +638,11 @@ class nuclearFamilySampler(pedigreeSampler):
             return True
         # find all families with at least minOffFields...
         if not isSequence(self.families):
-            self.father_IDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields))
+            self.selectedIDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields))
         else:
-            self.father_IDs = []
+            self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.father_IDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
-
-    def drawSample(self, input_pop):
-        if self.pedigree is None:
-            # this will give us self.pop, self.pedigree, and self.father_IDs
-            self.prepareSample(input_pop)
-        #
-        if not isSequence(self.families):
-            if self.families > len(self.father_IDs):
-                print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
-                    % (self.families, len(self.father_IDs))
-            #
-            random.shuffle(self.father_IDs)
-            selected_IDs = self.father_IDs[:self.families]
-        else:
-            selected_IDs = []
-            for sp in range(self.pop.numSubPop()):
-                if self.families[sp] > len(self.father_IDs[sp]):
-                    print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
-                        % (self.families[sp], len(self.father_IDs[sp]), sp)
-                #
-                random.shuffle(self.father_IDs[sp])
-                selected_IDs.extend(self.father_IDs[sp][:self.families[sp]])
-        # get father, spouse and their offspring
-        IDs = []
-        for id in selected_IDs:
-            ind = self.pedigree.indByID(id)
-            offIDs = [ind.info('off%d' % x) for x in range(self.numOffspring[1])]
-            IDs.extend([id, ind.spouse] + [x for x in offIDs if x >= 0])
-        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
+                self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
 
 
 def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
@@ -748,6 +740,17 @@ class threeGenFamilySampler(pedigreeSampler):
         #
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
+    def family(self, id):
+        '''Return id, its spouse, their children, children's spouse and grandchildren'''
+        father = self.pedigree.indByID(id)
+        spouseID = father.spouse
+        offID = [father.info('off%d' % x) for x in range(self.numOffspring[1])]
+        offID = [x for x in offID if x >= 0]
+        offSpouseID = [self.pedigree.indByID(id).spouse for x in offID]
+        grandOffID = [father.info('goff%d' % x) for x in range(self.numOffspring[1]**2)]
+        grandOffID = [x for x in grandOffID if x >= 0]
+        return [id, spouseID] + offID + offSpouseID + grandOffID
+
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
         pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
@@ -785,45 +788,11 @@ class threeGenFamilySampler(pedigreeSampler):
             return True
         # find all families with at least minOffFields...
         if not isSequence(self.families):
-            self.father_IDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields))
+            self.selectedIDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields))
         else:
-            self.father_IDs = []
+            self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.father_IDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
-
-    def drawSample(self, input_pop):
-        if self.pedigree is None:
-            # this will give us self.pop, self.pedigree, and self.father_IDs
-            self.prepareSample(input_pop)
-        #
-        if not isSequence(self.families):
-            if self.families > len(self.father_IDs):
-                print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
-                    % (self.families, len(self.father_IDs))
-            #
-            random.shuffle(self.father_IDs)
-            selected_IDs = self.father_IDs[:self.families]
-        else:
-            selected_IDs = []
-            for sp in range(self.pop.numSubPop()):
-                if self.families[sp] > len(self.father_IDs[sp]):
-                    print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
-                        % (self.families[sp], len(self.father_IDs[sp]), sp)
-                #
-                random.shuffle(self.father_IDs[sp])
-                selected_IDs.extend(self.father_IDs[sp][:self.families[sp]])
-        # get father, spouse, offspring, spouse of offspring and grandchildren
-        IDs = []
-        for id in selected_IDs:
-            father = self.pedigree.indByID(id)
-            spouseID = father.spouse
-            offID = [father.info('off%d' % x) for x in range(self.numOffspring[1])]
-            offID = [x for x in offID if x >= 0]
-            offSpouseID = [self.pedigree.indByID(id).spouse for x in offID]
-            grandOffID = [father.info('goff%d' % x) for x in range(self.numOffspring[1]**2)]
-            grandOffID = [x for x in grandOffID if x >= 0]
-            IDs.extend([id, spouseID] + offID + offSpouseID + grandOffID)
-        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
+                self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
 
 
 def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numAffected,
