@@ -4644,6 +4644,57 @@ print pars.usage()
 #end_ignore
 #end_file
 
+#begin_file log/samplingVSP.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+# create an age-structured population with a disease
+import random
+pop = sim.population(10000, loci=10, infoFields='age')
+sim.InitByFreq(pop, [0.3, 0.7])
+sim.InitInfo(pop, lambda: random.randint(0, 70), infoFields='age')
+pop.setVirtualSplitter(sim.infoSplitter(cutoff=(40, 60), field='age'))
+sim.MaPenetrance(pop, loci=5, penetrance=(0.1, 0.2, 0.3))
+#
+from simuPOP.sampling import DrawCaseControlSample
+sample = DrawCaseControlSample(pop, cases=500, controls=500, subPops=[(0,1)])
+ageInSample = sample.indInfo('age')
+print min(ageInSample), max(ageInSample)
+#end_file
+
+#begin_file log/samplingSeparateVSPs.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+# create an age-structured population with a disease
+import random
+pop = sim.population(10000, loci=10, infoFields='age')
+sim.InitByFreq(pop, [0.3, 0.7])
+sim.InitInfo(pop, lambda: random.randint(0, 70), infoFields='age')
+pop.setVirtualSplitter(sim.infoSplitter(cutoff=(20, 40), field='age'))
+# different age group has different penetrance
+sim.MaPenetrance(pop, loci=5, penetrance=(0.1, 0.2, 0.3), subPops=[(0,1)])
+sim.MaPenetrance(pop, loci=5, penetrance=(0.2, 0.4, 0.6), subPops=[(0,2)])
+# count the number of affected individuals in each group
+sim.Stat(pop, numOfAffected=True, subPops=[(0,1), (0,2)], vars='numOfAffected_sp')
+print pop.dvars((0,1)).numOfAffected, pop.dvars((0,2)).numOfAffected
+#
+from simuPOP.sampling import DrawRandomSample
+sample = DrawRandomSample(pop, size=[500, 500], subPops=[(0,1), (0,2)])
+# virtual subpopulations are rearranged to different subpopulations.
+print sample.subPopSizes()
+#end_file
+
 
 #begin_file log/reichDemo.py
 #begin_ignore
@@ -4830,10 +4881,6 @@ simulate('instant', 1000, 10000, 500, 500, [0.9]+[0.02]*5, 0.01, 1e-4, 200)
 import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
 #!/usr/bin/env python
 #
 # Author:  Bo Peng
@@ -5015,7 +5062,7 @@ if __name__ == '__main__':
 
 #begin_ignore
 import os
-if os.path.file('log/simuCDCV.py'):
+if os.path.isfile('log/simuCDCV.py'):
     out = os.popen('python log/simuCDCV.py -h')
     hlp = open('log/simuCDCV.hlp', 'w')
     print >> hlp, out.read()

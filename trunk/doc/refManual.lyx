@@ -1,4 +1,4 @@
-#LyX 1.6.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2109,42 +2109,140 @@ simuPOPsamplingRef
 
 
 \backslash
-simuPOPsamplingrandomSampleRef
+simuPOPsamplingbaseSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingRandomSampleRef
+simuPOPsamplingrandomSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingcaseControlSampleRef
+simuPOPsamplingDrawRandomSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingCaseControlSampleRef
+simuPOPsamplingDrawRandomSamplesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingaffectedSibpairSampleRef
+simuPOPsamplingcaseControlSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingAffectedSibpairSampleRef
+simuPOPsamplingDrawCaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawCaseControlSamplesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingpedigreeSamplerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingaffectedSibpairSamplerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawAffectedSibpairSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawAffectedSibpairSamplesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingnuclearFamilySamplerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawNuclearFamilySampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawNuclearFamilySamplesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingthreeGenFamilySamplerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawThreeGenFamilySampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawThreeGenFamilySamplesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingcombinedSamplerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawCombinedSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingDrawCombinedSamplesRef
 \end_layout
 
 \end_inset

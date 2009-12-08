@@ -4946,11 +4946,17 @@ Details:
     population class that emphasizes on individual properties, the
     pedigree class emphasizes on relationship between individuals. An
     unique ID for all individuals is needed to create a pedigree
-    object from a population object.  A pedigree object can be created
-    from a population, or loaded from a disk file, which is usually
-    saved by an operator during a previous evolutionary process.
-    Depending on how a pedigree is saved, sex and affection status
-    information may be missing.
+    object from a population object. Compared to the population class,
+    a pedigree object is optimized for access individuals by their
+    IDs, regardless of population structure and ancestral generations.
+    Note that although the pedigree class is derived from the
+    population class so most of the population member functions could
+    be called, functions such as removeSubPops that alter population
+    structure are disabled.  A pedigree object can be created from a
+    population, or loaded from a disk file, which is usually saved by
+    an operator during a previous evolutionary process. Depending on
+    how a pedigree is saved, sex and affection status information may
+    be missing.
 
 "; 
 
@@ -4965,23 +4971,23 @@ Usage:
 Details:
 
     Create a pedigree object from a population, using a subset of loci
-    (parameter loci, default to no loci), information fields
-    (parameter infoFields, default to no information field except for
+    (parameter loci, default to no locus), information fields
+    (parameter infoFields, default to no information field besides
     idField, fatherField and motherField), and ancestral generations
     (parameter ancGen, default to all ancestral generations). By
     default, information field father_id (parameter fatherField) and
-    mother_id (parameter motherField) are used to locate parents with
-    ind_id (parameter idField) as an ID field storing an unique ID for
-    every individual. Multiple individuls with the same ID are allowed
-    and will be considered as the same individual, but a warning will
-    be given if they actually differ in genotype or information
-    fields. Operators idTagger and pedigreeTagger are usually used to
-    assign such IDs, although function sampling.indexToID could be
-    used to assign unique IDs and construct parental IDs from index
-    based relationship recorded by operator parentsTagger. This
-    pedigree object works with one or no parents but certain functions
-    such as relative tracking will not be available for such
-    pedigrees.
+    mother_id (parameter motherField) are used to locate parents
+    identified by ind_id (parameter idField), which should store an
+    unique ID for all individuals. Multiple individuls with the same
+    ID are allowed and will be considered as the same individual, but
+    a warning will be given if they actually differ in genotype or
+    information fields. Operators idTagger and pedigreeTagger are
+    usually used to assign such IDs, although function
+    sampling.indexToID could be used to assign unique IDs and
+    construct parental IDs from index based relationship recorded by
+    operator parentsTagger. A pedigree object could be constructed
+    with one or no parent but certain functions such as relative
+    tracking will not be available for such pedigrees.
 
 "; 
 
@@ -5032,7 +5038,7 @@ Usage:
 Details:
 
     Return a reference to individual with id. An IndexError will be
-    raised if no individual with id is found. Note that a float id is
+    raised if no individual with id is found. An float id is
     acceptable as long as it rounds closely to an integer.
 
 "; 
@@ -5055,8 +5061,8 @@ Details:
 
 Usage:
 
-    x.locateRelatives(relType, resultFields=[], sexChoice=AnySex,
-      affectionChoice=AnyAffectionStatus, ancGen=-1)
+    x.locateRelatives(relType, resultFields=[], sex=AnySex,
+      affectionStatus=AnyAffectionStatus, ancGen=-1)
 
 Details:
 
@@ -5079,15 +5085,14 @@ Details:
     *   FullSibling siblings with common father and mother,
     *   Sibling siblings with at least one common parent. Optionally,
     you can specify the sex and affection status of relatives you
-    would like to locate, using parameters sexChoice and
-    affectionChoice. sexChoice can be AnySex (default), MaleOnly,
-    FemaleOnly, SameSex or OppositeSex, and affectionChoice can be
-    Affected, Unaffected or AnyAffectionStatus (default). Only
-    relatives with specified properties will be located.  This
-    function will by default go through all ancestral generations and
-    locate relatives for all individuals. This can be changed by
-    setting parameter ancGen to the greatest ancestral generation you
-    would like to process.
+    would like to locate, using parameters sex and affectionStatus.
+    sex can be AnySex (default), MaleOnly, FemaleOnly, SameSex or
+    OppositeSex, and affectionStatus can be Affected, Unaffected or
+    AnyAffectionStatus (default). Only relatives with specified
+    properties will be located.  This function will by default go
+    through all ancestral generations and locate relatives for all
+    individuals. This can be changed by setting parameter ancGen to
+    the greatest ancestral generation you would like to process.
 
 "; 
 
@@ -5095,7 +5100,7 @@ Details:
 
 Usage:
 
-    x.traceRelatives(fieldPath, sexChoice=[], affectionChoice=[],
+    x.traceRelatives(fieldPath, sex=[], affectionStatus=[],
       resultFields=[], ancGen=-1)
 
 Details:
@@ -5108,15 +5113,15 @@ Details:
     sibling's offspring using a relative path, and save their indexes
     in each individuals information fields resultFields.  A relative
     path consits of a fieldPath that specifies which information
-    fields to look for at each step, a sexChoice specifies sex choices
-    at each generation, and a affectionChoice that specifies affection
+    fields to look for at each step, a sex specifies sex choices at
+    each generation, and a affectionStatus that specifies affection
     status at each generation. fieldPath should be a list of
-    information fields, sexChoice and affectionChoice are optional. If
+    information fields, sex and affectionStatus are optional. If
     specified, they should be a list of AnySex, MaleOnly, FemaleOnly,
-    SameSex and OppsiteSex for parameter sexChoice, and a list of
+    SameSex and OppsiteSex for parameter sex, and a list of
     Unaffected, Affected and AnyAffectionStatus for parameter
-    affectionChoice.  For example, if fieldPath = [['father_id',
-    'mother_id'], ['sib1', 'sib2'], ['off1', 'off2']], and sexChoice =
+    affectionStatus.  For example, if fieldPath = [['father_id',
+    'mother_id'], ['sib1', 'sib2'], ['off1', 'off2']], and sex =
     [AnySex, MaleOnly, FemaleOnly], this function will locate
     father_id and mother_id for each individual, find all individuals
     referred by father_id and mother_id, find informaton fields sib1
@@ -5135,22 +5140,22 @@ Details:
 
 Usage:
 
-    x.individualsWithRelatives(infoFields, sexChoice=[],
-      affectionChoice=[], subPops=AllAvail, ancGen=-1)
+    x.individualsWithRelatives(infoFields, sex=[],
+      affectionStatus=[], subPops=AllAvail, ancGen=-1)
 
 Details:
 
-    Return a list of IDs of individuals who has valid (non-negative)
-    values at information fields infoFields. Additional requirements
-    could be specified by parameters sexChoice and affectionChoice.
-    sexChoice can be AnySex (default), MaleOnly, FemaleOnly, SameSex
-    or OppositeSex, and affectionChoice can be Affected, Unaffected or
-    AnyAffectionStatus (default). This function by default check all
-    individuals in all ancestral generations, but you could limit the
-    search using parameter subPops (a list of (virtual)
-    subpopulations) and (recent ancestral generations) ancGen.
-    Relatives fall out of specified subpopulations and ancestral
-    generaions will be considered invalid.
+    Return a list of IDs of individuals who have non-negative values
+    at information fields infoFields. Additional requirements could be
+    specified by parameters sex and affectionStatus. sex can be AnySex
+    (default), MaleOnly, FemaleOnly, SameSex or OppositeSex, and
+    affectionStatus can be Affected, Unaffected or AnyAffectionStatus
+    (default). This function by default check all individuals in all
+    ancestral generations, but you could limit the search using
+    parameter subPops (a list of (virtual) subpopulations) and (recent
+    ancestral generations) ancGen. Relatives fall out of specified
+    subpopulations and ancestral generaions will be considered
+    invalid.
 
 "; 
 

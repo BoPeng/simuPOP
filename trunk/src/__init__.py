@@ -819,8 +819,7 @@ def TagID(pop, reset=False, *args, **kwargs):
     if reset == True:
         idTagger().reset(0)
     elif type(reset) in [type(0), type(0L)]:
-        idTagger().reset(reset):confirm b1
-
+        idTagger().reset(reset)
     idTagger(*args, **kwargs).apply(pop)
 
 def MapPenetrance(pop, loci, penetrance, ancGen = -1, *args, **kwargs):
