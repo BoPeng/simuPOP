@@ -27,12 +27,14 @@
 
 namespace simuPOP {
 
-
-ULONG g_indID = 0;
+// ID starts from 0 to avoid trouble with other programs that
+// treats 0 as missing.
+ULONG g_indID = 1;
 
 
 void idTagger::reset(ULONG startID)
 {
+	DBG_FAILIF(startID == 0, ValueError, "Individual ID must start from 1.");
 	g_indID = startID;
 }
 

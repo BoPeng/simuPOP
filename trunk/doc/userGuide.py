@@ -3606,7 +3606,7 @@ simuOpt.setOptions(quiet=True)
 import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
-sim.idTagger().reset(0)
+sim.idTagger().reset(1)
 #end_ignore
 simu = sim.simulator(
     sim.population(1000, loci=1, infoFields=['fitness', 'avgFitness']),
@@ -3636,7 +3636,7 @@ simuOpt.setOptions(quiet=True)
 import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
-sim.idTagger().reset(0)
+sim.idTagger().reset(1)
 #end_ignore
 simu = sim.simulator(
     sim.population(10, infoFields='ind_id', ancGen=1),
@@ -3662,7 +3662,7 @@ simuOpt.setOptions(quiet=True)
 import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
-sim.idTagger().reset(0)
+sim.idTagger().reset(1)
 #end_ignore
 simu = sim.simulator(
     sim.population(100, infoFields=['ind_id', 'father_id', 'mother_id']),
@@ -4643,6 +4643,150 @@ pars = simuOpt.simuParam(options, 'A demo simulation')
 print pars.usage()
 #end_ignore
 #end_file
+
+
+#begin_file log/randomSample.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from simuPOP.sampling import DrawRandomSample
+pop = sim.population([2000]*5, loci=1)
+# sample from the whole population
+sample = DrawRandomSample(pop, size=500)
+print sample.subPopSizes()
+# sample from each subpopulation
+sample = DrawRandomSample(pop, size=[100]*5)
+print sample.subPopSizes()
+#end_file
+
+
+#begin_file log/caseControlSample.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from simuPOP.sampling import DrawCaseControlSamples
+pop = sim.population([10000], loci=5)
+sim.InitByFreq(pop, [0.2, 0.8])
+sim.MaPenetrance(pop, loci=2, penetrance=[0.11, 0.15, 0.20])
+# draw multiple case control sample
+samples = DrawCaseControlSamples(pop, cases=500, controls=500, numSamples=5)
+for sample in samples:
+    sim.Stat(sample, association=range(5))
+    print ', '.join(['%.6f' % sample.dvars().Allele_ChiSq_p[x] for x in range(5)])
+
+#end_file
+
+#begin_file log/plotPedigree.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12347)
+#end_ignore
+from simuPOP.sampling import IndexToID, PlotPedigree
+pop = sim.population(size=15, loci=5, infoFields=['father_idx', 'mother_idx'], ancGen=2)
+simu = sim.simulator(pop, sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 4)))
+simu.evolve(
+    preOps = [
+        sim.initSex(),
+        sim.initByFreq([0.7, 0.3]),
+    ],
+    duringOps = sim.parentsTagger(),
+    postOps = sim.maPenetrance(loci=3, penetrance=(0.1, 0.4, 0.7)),
+    gen = 5
+)
+pop = simu.extract(0)
+IndexToID(pop, reset=True)
+# three information fields were added
+print pop.infoFields()
+# save this population for future use
+pop.save('log/pedigree.pop')
+# draw pedigree
+PlotPedigree(pop, filename='log/pedigree.png')
+#end_file
+
+
+#begin_file log/sampleAffectedSibpair.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12347)
+#end_ignore
+from simuPOP.sampling import DrawAffectedSibpairSample, PlotPedigree
+pop = sim.LoadPopulation('log/pedigree.pop')
+sample = DrawAffectedSibpairSample(pop, families=2)
+PlotPedigree(sample, filename='log/affectedSibpair.png')
+#end_file
+
+
+#begin_file log/sampleNuclearFamily.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12347)
+#end_ignore
+from simuPOP.sampling import DrawNuclearFamilySample, PlotPedigree
+pop = sim.LoadPopulation('log/pedigree.pop')
+sample = DrawNuclearFamilySample(pop, families=2, numOffspring=(2,4),
+    affectedParents=(1,2), affectedOffspring=(1, 3))
+PlotPedigree(sample, filename='log/nuclerFamily.png')
+#end_file
+
+
+
+#begin_file log/sampleThreeGenFamily.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12347)
+#end_ignore
+from simuPOP.sampling import DrawThreeGenFamilySample, PlotPedigree
+pop = sim.LoadPopulation('log/pedigree.pop')
+sample = DrawThreeGenFamilySample(pop, families=2, numOffspring=(1, 3),
+    pedSize=(8, 15), numAffected=(2, 5))
+PlotPedigree(sample, filename='log/threeGenFamily.png')
+#end_file
+
+
+#begin_file log/combinedSampling.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12347)
+#end_ignore
+from simuPOP.sampling import DrawCombinedSample, affectedSibpairSampler, nuclearFamilySampler, PlotPedigree
+pop = sim.LoadPopulation('log/pedigree.pop')
+sample = DrawCombinedSample(pop, samplers = [
+    affectedSibpairSampler(families=1),
+    nuclearFamilySampler(families=1, numOffspring=(2,4), affectedParents=(1,2), affectedOffspring=(1,3))
+    ])
+PlotPedigree(sample, filename='log/combinedSampling.png')
+#end_file
+
 
 #begin_file log/samplingVSP.py
 #begin_ignore

@@ -939,7 +939,7 @@ public:
 	 *  <group>7-manipulate</group>
 	 */
 	void removeIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idFiled = "ind_id");
+		const floatList & IDs = vectorf(), const string & idField = "ind_id");
 
 	/** Merge subpopulations \e subPops. If \e subPops is \c AllAvail (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent

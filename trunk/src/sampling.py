@@ -30,7 +30,7 @@
 This module provides classes and functions that could be used to draw samples
 from a simuPOP population. These functions accept a list of parameters such
 as ``subPops`` ((virtual) subpopulations from which samples will be drawn) and
-``times`` (number of samples to draw) and return a list of populations. Both
+``numSamples`` (number of samples to draw) and return a list of populations. Both
 independent individuals and dependent individuals (pedigrees) are supported.
 
 Independent individuals could be drawn from any population. Pedigree
@@ -62,7 +62,7 @@ number of individuals from each subpopulation.
 __all__ = [
     #
     'IndexToID',
-    'DrawPedigree',
+    'PlotPedigree',
     # Classes that can be derived to implement more complicated
     # sampling scheme
     'baseSampler',
@@ -92,7 +92,7 @@ __all__ = [
 import exceptions, random
 
 from simuPOP import AllAvail, Stat, pedigree, OutbredSpouse, CommonOffspring, FemaleOnly, \
-    Affected
+    Male, Affected, TagID
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -129,12 +129,14 @@ def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
 
 
 # Pedigree drawing
-def DrawPedigree(pedigree, filename=None, *args, **kwargs):
+def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_id',
+    motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
-    pedigree to a format that is recognizable by R 'kinship' library. Aliased
-    arguments could be used to pass parameters to functions ``pedigree``,
-    ``plot`` and ``par``. Please refer to module ``simuPOP.plotter`` for
-    details about aliased arguments.
+    pedigree to a format that is recognizable by R's ``'kinship'`` library.
+    Aliased arguments could be used to pass parameters to functions
+    ``pedigree``, ``plot`` and ``par``. Please refer to module
+    ``simuPOP.plotter`` for details about aliased arguments. This function
+    returns silently if rpy is not properly installed.
     '''
     try:
         import plotter
@@ -150,46 +152,46 @@ def DrawPedigree(pedigree, filename=None, *args, **kwargs):
     # device
     plotter.newDevice()
     #
-    r.library('kinship')
-    set_default_mode(NO_CONVERSION)
-    totalNum = 0
+    plotter.r.library('kinship')
     id = []
     dadid = []
     momid = []
     sex = []
-    affected = []
-    pedid = []
+    aff = []
     for gen in range(pedigree.ancestralGens(), -1, -1):
         pedigree.useAncestralGen(gen)
-        if gen == pedigree.ancestralGens():
-            NumTopGenInds = pedigree.popSize()
-        # count total number of individuals in the pedigree from all generations
-        totalNum += pedigree.popSize()
-        id = range(1, totalNum+1)
-        # set id, dadid, momid, sex and affected vectors for function r.pedigree
-        # and set vector pedid for function r.plot(r.pedigree, id, ...)
-        for idx, ind in enumerate(pedigree.individuals()):
-            if pedigree.ancestralGens() == 2 and gen == 0 and ind.info('father_idx') != -1:
-                dad = ind.info('father_idx') + 1 + NumTopGenInds
-                mom = ind.info('mother_idx') + 1 + NumTopGenInds
+        for ind in pedigree.individuals():
+            id.append(int(ind.info(idField)))
+            #
+            fid = int(ind.info(fatherField))
+            if fid >= 1:
+                dadid.append(fid)
             else:
-                dad = ind.info('father_idx') + 1
-                mom = ind.info('mother_idx') + 1
-            dadid.append(dad)
-            momid.append(mom)
-            sex.append(ind.sex())
+                # father does not exist
+                dadid.append(0)
+            #
+            mid = int(ind.info(motherField))
+            if mid >= 1:
+                momid.append(mid)
+            else:
+                momid.append(0)
+            #
+            if ind.sex() == Male:
+                sex.append(1)
+            else:
+                sex.append(2)
+            #
             if ind.affected():
-                affected.append(2)
+                aff.append(2)
             else:
-                affected.append(1)
-            pedid.append('%d-%d' % (gen, idx))
+                aff.append(1)
     # create an object of pedigree structure recognizable by R library
-    ptemp = r.pedigree(id=id, dadid=dadid, momid=momid, sex=sex, affected=affected)
+    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
+        id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
     # plot the pedigree structure
     plotter.r.par(**args.getArgs('par', None))
-    plotter.r.plot(ptemp, id=pedid)
+    plotter.r.plot(ptemp, **args.getArgs('plot', None))
     plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
-    plotter.r.dev_off()
 
 
 # Sampling classes and functions
@@ -230,20 +232,20 @@ class baseSampler:
         '''
         raise SystemError('Please re-implement this drawSample function in the derived class.')
 
-    def drawSamples(self, pop, times):
+    def drawSamples(self, pop, numSamples):
         '''
         Draw multiple samples and return a list of populations.
         '''
-        if times < 0:
+        if numSamples < 0:
             raise ValueError("Negative number of samples are unacceptable")
         # 
-        return [self.drawSample(pop) for x in range(times)]
+        return [self.drawSample(pop) for x in range(numSamples)]
 
 
 class randomSampler(baseSampler):
     '''A sampler that draws individuals randomly.
     '''
-    def __init__(self, size, subPops):
+    def __init__(self, size, subPops = AllAvail):
         '''Creates a random sampler with specified number of individuals.
         '''
         baseSampler.__init__(self, subPops)
@@ -279,7 +281,7 @@ class randomSampler(baseSampler):
 
 
 def DrawRandomSample(pop, size, subPops=AllAvail):
-    '''Draw ``times`` random samples from a population. If a single ``size``
+    '''Draw ``numSamples`` random samples from a population. If a single ``size``
     is given, individuals are drawn randomly from the whole population or
     from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
     a list of numbers should be used to specify number of samples from each
@@ -290,11 +292,11 @@ def DrawRandomSample(pop, size, subPops=AllAvail):
     return randomSampler(size=size, subPops=subPops).drawSample(pop)
 
 
-def DrawRandomSamples(pop, size, times=1, subPops=AllAvail):
-    '''Draw ``times`` random samples from a population and return a list of
+def DrawRandomSamples(pop, size, numSamples=1, subPops=AllAvail):
+    '''Draw ``numSamples`` random samples from a population and return a list of
     populations. Please refer to function ``DrawRandomSample`` for more details
     about parameters ``size`` and ``subPops``.'''
-    return randomSampler(size=size, subPops=subPops).drawSamples(pop, times=times)
+    return randomSampler(size=size, subPops=subPops).drawSamples(pop, numSamples=numSamples)
 
 
 class caseControlSampler(baseSampler):
@@ -396,19 +398,20 @@ def DrawCaseControlSample(pop, cases, controls, subPops=AllAvail):
     return caseControlSampler(cases, controls, subPops).drawSample(pop) 
 
 
-def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
-    '''Draw ``times`` case-control samples from a population with ``cases``
+def DrawCaseControlSamples(pop, cases, controls, numSamples=1, subPops=AllAvail):
+    '''Draw ``numSamples`` case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals and return a list of
     populations. Please refer to function ``DrawCaseControlSample`` for a
     detailed descriptions of parameters.
     '''
-    return caseControlSampler(cases, controls, subPops).drawSamples(pop, times) 
+    return caseControlSampler(cases, controls, subPops).drawSamples(pop, numSamples) 
 
 
 class pedigreeSampler(baseSampler):
     '''The base class of all pedigree based sampler.
     '''
-    def __init__(self, families, subPops=AllAvail, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+    def __init__(self, families, subPops=AllAvail, idField='ind_id',
+        fatherField='father_id', motherField='mother_id'):
         '''Creates a pedigree sampler with parameters
 
         families
@@ -457,7 +460,8 @@ class pedigreeSampler(baseSampler):
             if self.families > len(self.selectedIDs):
                 print 'Warning: number of requested pedigrees %d is greater than what exists (%d).' \
                     % (self.families, len(self.selectedIDs))
-            #
+            # a tuple might be returned
+            self.selectedIDs = list(self.selectedIDs)
             random.shuffle(self.selectedIDs)
             selected_IDs = self.selectedIDs[:self.families]
         else:
@@ -467,6 +471,8 @@ class pedigreeSampler(baseSampler):
                     print 'Warning: number of requested pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
                         % (self.families[sp], len(self.selectedIDs[sp]), sp)
                 #
+                # a tuple might be returned
+                self.selectedIDs[sp] = list(self.selectedIDs[sp])
                 random.shuffle(self.selectedIDs[sp])
                 selected_IDs.extend(self.selectedIDs[sp][:self.families[sp]])
         # get family members
@@ -479,7 +485,8 @@ class pedigreeSampler(baseSampler):
 class affectedSibpairSampler(pedigreeSampler):
     '''A sampler that draws a nuclear family with two affected offspring.
     '''
-    def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+    def __init__(self, families, subPops=AllAvail, idField='ind_id',
+        fatherField='father_id', motherField='mother_id'):
         '''
         '''
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
@@ -504,7 +511,7 @@ class affectedSibpairSampler(pedigreeSampler):
         self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
         # find qualified families
         if not isSequence(self.families):
-            self.selectedIDs = list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2']))
+            self.selectedIDs = self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'])
         else:
             self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
@@ -527,14 +534,14 @@ def DrawAffectedSibpairSample(pop, families, subPops=AllAvail,
         motherField).drawSample(pop)
  
 
-def DrawAffectedSibpairSamples(pop, families, times=1, subPops=AllAvail, 
+def DrawAffectedSibpairSamples(pop, families, numSamples=1, subPops=AllAvail, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
-    '''Draw ``times`` affected sibpair samplesa from population ``pop`` and
+    '''Draw ``numSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
     ``DrawAffectedSibpairSample`` for a description of other parameters.
     '''
     return affectedSibpairSample(families, subPops, idField, fatherField,
-        motherField).drawSamples(pop, times)
+        motherField).drawSamples(pop, numSamples)
 
 
 class nuclearFamilySampler(pedigreeSampler):
@@ -542,7 +549,7 @@ class nuclearFamilySampler(pedigreeSampler):
     parents and offspring.
     '''
     def __init__(self, families, numOffspring, affectedParents, affectedOffspring,
-        subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+        subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''Creates a nuclear family sampler with parameters
 
         families
@@ -665,15 +672,15 @@ def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
  
 
 def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents,
-    affectedOffspring, times=1, subPops=AllAvail, idField='ind_id',
+    affectedOffspring, numSamples=1, subPops=AllAvail, idField='ind_id',
     fatherField='father_id', motherField='mother_id'):
-    '''Draw ``times`` affected sibpair samplesa from population ``pop`` and
+    '''Draw ``numSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
     ``DrawNuclearFamilySample`` for a description of other parameters.
     '''
     return nuclearFamilySample(families, numOffspring, affectedParents,
         affectedOffspring, subPops, idField, fatherField,
-        motherField).drawSamples(pop, times)
+        motherField).drawSamples(pop, numSamples)
 
 
 class threeGenFamilySampler(pedigreeSampler):
@@ -681,7 +688,7 @@ class threeGenFamilySampler(pedigreeSampler):
     size and number of affected individuals.
     '''
     def __init__(self, families, numOffspring, pedSize, numAffected,
-        subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
+        subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''
         families
             number of families. This can be a number or a list of numbers. In the latter
@@ -745,10 +752,11 @@ class threeGenFamilySampler(pedigreeSampler):
         father = self.pedigree.indByID(id)
         spouseID = father.spouse
         offID = [father.info('off%d' % x) for x in range(self.numOffspring[1])]
-        offID = [x for x in offID if x >= 0]
-        offSpouseID = [self.pedigree.indByID(id).spouse for x in offID]
+        offID = [x for x in offID if x >= 1]
+        offSpouseID = [self.pedigree.indByID(x).spouse for x in offID]
+        offSpouseID = [x for x in offSpouseID if x >= 1]
         grandOffID = [father.info('goff%d' % x) for x in range(self.numOffspring[1]**2)]
-        grandOffID = [x for x in grandOffID if x >= 0]
+        grandOffID = [x for x in grandOffID if x >= 1]
         return [id, spouseID] + offID + offSpouseID + grandOffID
 
     def prepareSample(self, input_pop):
@@ -778,7 +786,7 @@ class threeGenFamilySampler(pedigreeSampler):
             offSpouseID = [self.pedigree.indByID(id).spouse for x in offID]
             grandOffID = [father.info('goff%d' % x) for x in range(self.numOffspring[1]**2)]
             grandOffID = [x for x in grandOffID if x >= 0]
-            pedSize = 2 + len(offID) + len(offSpouseID) + grandOffID
+            pedSize = 2 + len(offID) + len(offSpouseID) + len(grandOffID)
             if pedSize < self.pedSize[0] or pedSize > self.pedSize[1]:
                 return False
             # check number of affected individuals
@@ -811,19 +819,19 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numAffected,
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
-    return threeGenFamilySampler(families, numOffspring, affectedParents,
-        affectedOffspring, subPops, idField, fatherField, motherField).drawSample(pop)
+    return threeGenFamilySampler(families, numOffspring, pedSize, numAffected,
+        subPops, idField, fatherField, motherField).drawSample(pop)
  
 
 def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numAffected,
-    times=1, subPops=AllAvail, idField='ind_id', fatherField='father_id',
+    numSamples=1, subPops=AllAvail, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
-    '''Draw ``times`` three-generation pedigree samples from population ``pop``
+    '''Draw ``numSamples`` three-generation pedigree samples from population ``pop``
     and return a list of populations. Please refer to function
     ``DrawThreeGenFamilySample`` for a description of other parameters.
     '''
     return threeGenFamilySampler(families, numOffspring, pedSize, numAffected,
-        subPops, idField, fatherField, motherField).drawSamples(pop, times)
+        subPops, idField, fatherField, motherField).drawSamples(pop, numSamples)
 
 
 class combinedSampler(baseSampler):
@@ -837,24 +845,24 @@ class combinedSampler(baseSampler):
         samplers
             A list of samplers
         '''
-        _sample.__init__(self, *args, **kwargs)
+        baseSampler.__init__(self)
         self.samplers = samplers
         self.idField = idField
 
     def drawSample(self, pop):
+        allIDs = []
+        self.pop = pop.clone()
         for s in self.samplers:
-            if s.pop is None:
-                s.prepareSample(pop)
+            sample = s.drawSample(self.pop)
+            IDs = []
+            for gen in range(sample.ancestralGens() + 1):
+                sample.useAncestralGen(gen)
+                IDs.extend(sample.indInfo(self.idField))
+            allIDs.extend(IDs)
+            self.pop.removeIndividuals(IDs=IDs, idField=self.idField)
         #
-        samples = [s.drawSample(pop) for s in self.samplers]
-        # get IDs
-        IDs = []
-        for s in samples:
-            for gen in range(s.ancestralGens() + 1):
-                s.useAncestralGen(gen)
-                IDs.extend(s.indInfo(self.idField))
-        # extract these guys
-        return pop.extract(IDs = IDs, idField = self.idField)
+        # extract these guys from the original population
+        return pop.extractIndividuals(IDs = allIDs, idField = self.idField)
 
 
 def DrawCombinedSample(pop, samplers, idField='ind_id'):
@@ -862,14 +870,14 @@ def DrawCombinedSample(pop, samplers, idField='ind_id'):
     population consists of all individuals from these samples will
     be returned. An ``idField`` that stores an unique ID for all individuals
     is needed to remove duplicated individuals who are drawn multiple
-    times from these samplers.
+    numSamples from these samplers.
     '''
     return combinedSampler(samplers, idField=idField).drawSample(pop)
 
-def DrawCombinedSamples(pop, samplers, times=1, idField='ind_id'):
-    '''Draw combined samples ``times`` times and return a list of populations.
+def DrawCombinedSamples(pop, samplers, numSamples=1, idField='ind_id'):
+    '''Draw combined samples ``numSamples`` numSamples and return a list of populations.
     Please refer to function ``DrawCombinedSample`` for details about
     parameters ``samplers`` and ``idField``.
     '''
-    return combinedSampler(samplers, idField=idField).drawSamples(pop, times)
+    return combinedSampler(samplers, idField=idField).drawSamples(pop, numSamples)
 

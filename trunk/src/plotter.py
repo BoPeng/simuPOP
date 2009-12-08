@@ -52,7 +52,10 @@ __all__ = [
     'histPlotter',
     'qqPlotter',
     'boxPlotter',
+    # export essential piece of rpy so that other modules could use them
     'r',
+    'with_mode',
+    'NO_CONVERSION'
 ]
     
 from exceptions import RuntimeError, ValueError
@@ -61,7 +64,7 @@ from math import ceil, sqrt
 try:
     import rpy_options
     rpy_options.set_options(VERBOSE = False)
-    from rpy import r
+    from rpy import r, with_mode, NO_CONVERSION
 except ImportError, e:
     print 'Rpy can not be loaded. Please verify your rpy installation.'
     print 'Note that rpy > 0.99 is needed and rpy2 is not supported'
