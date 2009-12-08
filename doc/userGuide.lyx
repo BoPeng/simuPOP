@@ -21723,16 +21723,76 @@ erational population, or a age-structured population with parents and offspring
  in the same generation.
 \end_layout
 
+\begin_layout Standard
+One class and two functions are defined for each sampling type.
+ The sampler class defines member functions 
+\family typewriter
+prepareSample
+\family default
+, 
+\family typewriter
+drawSample
+\family default
+ and 
+\family typewriter
+drawSamples
+\family default
+.
+ Member function 
+\family typewriter
+prepareSample
+\family default
+ examines an input population and identify individuals or pedigrees that
+ could be sampled.
+ Member functions 
+\family typewriter
+drawSample
+\family default
+ and 
+\family typewriter
+drawSamples
+\family default
+ draw one or multiple sets of samples from the input population, respectively.
+ Function 
+\family typewriter
+DrawXSample
+\family default
+ and 
+\family typewriter
+DrawXSamples
+\family default
+ create a sampler object of type 
+\family typewriter
+X
+\family default
+ and call 
+\family typewriter
+drawSample
+\family default
+ and 
+\family typewriter
+drawSamples
+\family default
+, respectively.
+ The former returns a population and the latter returns a list of populations.
+ If you would like to define your own sampling type, you typically only
+ need to extend 
+\family typewriter
+prepareSample
+\family default
+ of an appropriate base class.
+\end_layout
+
 \begin_layout Subsection
 Sampling individuals randomly (class 
 \family typewriter
-RandomSampler
+randomSampler
 \family default
- and function 
+ and functions 
 \family typewriter
 DrawRandomSample
 \family default
-)
+(s))
 \end_layout
 
 \begin_layout Standard
@@ -21755,11 +21815,15 @@ Example
 \end_layout
 
 \begin_layout Subsection
-Sampling cases and controls (function 
+Sampling cases and controls (class 
+\family typewriter
+caseControlSampler
+\family default
+ and functions 
 \family typewriter
 CaseControlSample
 \family default
-)
+(s))
 \end_layout
 
 \begin_layout Standard
