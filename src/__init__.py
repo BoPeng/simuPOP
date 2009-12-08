@@ -814,11 +814,10 @@ def TagID(pop, reset=False, *args, **kwargs):
     '''Apply operator ``idTagger`` to population ``pop`` to assign a unique ID
     to all individuals in the population. Individuals ID will starts from a
     system wide index. You can reset this start ID using parameter ``reset``
-    which can be ``True`` (reset to 0) or a non-negative number (start from
+    which can be ``True`` (reset to 1) or a non-negative number (start from
     this number).'''
-    if reset == True:
-        idTagger().reset(0)
-    elif type(reset) in [type(0), type(0L)]:
+    if reset != False:
+        # True is 1.
         idTagger().reset(reset)
     idTagger(*args, **kwargs).apply(pop)
 
