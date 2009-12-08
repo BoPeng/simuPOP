@@ -859,11 +859,13 @@ class Doxy2SWIG:
     def latex_formatted_text(self, text):
         """format text according to some simple rules"""
         txt = core.publish_parts(source=text, writer = myWriter())['body']
+        # some versions of textutil adds this automatically, which is a pain.
+        txt = txt.replace(r'\setlength{\locallinewidth}{\linewidth}', '')
         if 'unexpected unindent' in txt:
             print text
             return ''
         else:
-            return txt
+            return txt.lstrip()
                 
     def swig_text(self, text, start_pos, indent):
         """ wrap text given current indent """

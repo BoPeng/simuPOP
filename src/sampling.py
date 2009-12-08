@@ -241,7 +241,11 @@ class baseSampler:
 
 
 class randomSampler(baseSampler):
+    '''A sampler that draws individuals randomly.
+    '''
     def __init__(self, size, subPops):
+        '''Creates a random sampler with specified number of individuals.
+        '''
         baseSampler.__init__(self, subPops)
         self.size = size
 
@@ -294,7 +298,12 @@ def DrawRandomSamples(pop, size, times=1, subPops=AllAvail):
 
 
 class caseControlSampler(baseSampler):
+    '''A sampler that draws affected and unaffected individuals randomly.
+    '''
     def __init__(self, cases, controls, subPops = AllAvail):
+        '''Ceates a case-control sampler with specified number of cases
+        and controls.
+        '''
         baseSampler.__init__(self, subPops)
         self.cases = cases
         self.controls = controls
@@ -397,8 +406,11 @@ def DrawCaseControlSamples(pop, cases, controls, times=1, subPops=AllAvail):
 
 
 class pedigreeSampler(baseSampler):
+    '''The base class of all pedigree based sampler.
+    '''
     def __init__(self, families, subPops=AllAvail, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
-        '''
+        '''Creates a pedigree sampler with parameters
+
         families
             number of families. This can be a number or a list of numbers. In
             the latter case, specified families are drawn from each
@@ -429,6 +441,8 @@ class pedigreeSampler(baseSampler):
 
 
 class affectedSibpairSampler(pedigreeSampler):
+    '''A sampler that draws a nuclear family with two affected offspring.
+    '''
     def __init__(self, families, subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
         '''
         '''
@@ -509,9 +523,13 @@ def DrawAffectedSibpairSamples(pop, families, times=1, subPops=AllAvail,
         motherField).drawSamples(pop, times)
 
 class nuclearFamilySampler(pedigreeSampler):
+    '''A sampler that draws nuclear families with specified number of affected
+    parents and offspring.
+    '''
     def __init__(self, families, numOffspring, affectedParents, affectedOffspring,
         subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
-        '''
+        '''Creates a nuclear family sampler with parameters
+
         families
             number of families. This can be a number or a list of numbers. In the latter
             case, specified families are drawn from each subpopulation.
@@ -667,6 +685,9 @@ def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents,
 
 
 class threeGenFamilySampler(pedigreeSampler):
+    '''A sampler that draws three-generation families with specified pedigree
+    size and number of affected individuals.
+    '''
     def __init__(self, families, numOffspring, pedSize, numAffected,
         subPops, idField='ind_id', fatherField='father_idx', motherField='mother_idx'):
         '''

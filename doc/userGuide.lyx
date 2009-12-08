@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -21712,15 +21712,82 @@ sampling
  class.
  For example, you can use 
 \family typewriter
-RandomSample(pop, size=100)
+DrawRandomSample(pop, size=100)
 \family default
  to select 100 random individuals from a population, or use 
 \family typewriter
-AffectedSibpairSample(pop, size=100)
+DrawAffectedSibpairSample(pop, families=100)
 \family default
  to select 100 pairs of affected invididuals with their parents from a multi-gen
 erational population, or a age-structured population with parents and offspring
  in the same generation.
+\end_layout
+
+\begin_layout Subsection
+Sampling individuals randomly (class 
+\family typewriter
+RandomSampler
+\family default
+ and function 
+\family typewriter
+DrawRandomSample
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+This sampling function sample random invidiauls from a given population.
+ If a simple number is given to parameter 
+\family typewriter
+size
+\family default
+, population structure will be ignored so individuals will be drawn from
+ all subpopulations.
+ If a list of numbers are given, this function will draw specified numbers
+ of individuals from each subpopulation.
+ This function does not need parental information.
+ If your population does not have an ID field, you will not be able to locate
+ extracted individuals in the original population.
+\end_layout
+
+\begin_layout Standard
+Example 
+\end_layout
+
+\begin_layout Subsection
+Sampling cases and controls (function 
+\family typewriter
+CaseControlSample
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+This sampling function sample cases (affected individuals) and controls
+ (unaffected invidiauls) from a given population.
+ If a simple number is given to parameter 
+\family typewriter
+cases
+\family default
+ and 
+\family typewriter
+controls
+\family default
+, population structure will be ignored so individuals will be drawn from
+ all subpopulations.
+ If a list of numbers are given, this function will draw specified number
+ of cases and controls from each subpopulation.
+ This function does not need parental information.
+ If your population does not have an ID field, you will not be able to locate
+ extracted individuals in the original population.
+\end_layout
+
+\begin_layout Subsection
+Sampling pedigrees (function 
+\family typewriter
+PedigreeSample
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -21816,74 +21883,85 @@ mother_ID
 \end_layout
 
 \begin_layout Subsection
-Sampling individuals randomly (function 
+Sampling different types of samples (class 
 \family typewriter
-RandomSample
+combinedSampler
 \family default
-)
-\end_layout
-
-\begin_layout Standard
-This sampling function sample random invidiauls from a given population.
- If a simple number is given to parameter 
+ and function 
 \family typewriter
-size
+DrawCombinedSample
 \family default
-, population structure will be ignored so individuals will be drawn from
- all subpopulations.
- If a list of numbers are given, this function will draw specified number
- of individuals from each subpopulation.
- This function does not need parental information.
- If your population does not have an ID field, you will not be able to locate
- extracted individuals in the original population.
-\end_layout
-
-\begin_layout Standard
-Example 
+(s))
 \end_layout
 
 \begin_layout Subsection
-Sampling cases and controls (function 
-\family typewriter
-CaseControlSample
-\family default
-)
+Sampling from virtual subpopulations *
 \end_layout
 
 \begin_layout Standard
-This sampling function sample cases (affected individuals) and controls
- (unaffected invidiauls) from a given population.
- If a simple number is given to parameter 
+Virtual subpopulations (VSPs) could be specified in the 
 \family typewriter
-cases
+subPops
 \family default
- and 
+ parameter of sampling classes and functions.
+ This can be used to limit your samples to individuals with certain properties.
+ For example, you may want to match the age of cases and controls in a case-cont
+rol association study by selecting your samples from a certain age group.
+ For examples, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "samplingVSP"
+
+\end_inset
+
+ draws 500 cases and 500 controls from two a VSP with individual ages between
+ 40 and 60.
 \family typewriter
-controls
-\family default
-, population structure will be ignored so individuals will be drawn from
- all subpopulations.
- If a list of numbers are given, this function will draw specified number
- of cases and controls from each subpopulation.
- This function does not need parental information.
- If your population does not have an ID field, you will not be able to locate
- extracted individuals in the original population.
+
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/samplingVSP.log"
+lstparams "caption={Draw samples from a virtual subpopulation.},label={samplingVSP}"
+
+\end_inset
+
+
 \end_layout
 
-\begin_layout Subsection
-Sampling pedigrees (function 
+\begin_layout Standard
+If a list of sample sizes is given, specified number of samples will be
+ drawn from each subpopulation.
+ For example, if you have an age-structured population when individuals
+ with different ages have different risk to a disease, you might want to
+ draw affected individuals from different age groups and perform association
+ analyses.
+ Function 
 \family typewriter
-PedigreeSample
+DrawCaseControlSample
 \family default
-)
-\end_layout
+ cannot be used because both groups are affected, but you can 
+\family typewriter
+DrawRandomSample
+\family default
+ from two VSPs defined by age.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "samplingSeparateVSPs"
 
-\begin_layout Subsection
-Sampling different types of samples (function 
+\end_inset
+
+ demonstrates how to use this method.
 \family typewriter
-MixedSample
-\family default
-)
+
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/samplingSeparateVSPs.log"
+lstparams "caption={Sampling separately from different virtual subpopulations},label={samplingSeparateVSPs}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
