@@ -6023,7 +6023,7 @@ Details:
 
 Usage:
 
-    x.removeIndividuals(indexes=[], IDs=[], idFiled=\"ind_id\")
+    x.removeIndividuals(indexes=[], IDs=[], idField=\"ind_id\")
 
 Details:
 
