@@ -953,120 +953,120 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-void infoParentsChooser::initialize(population & pop, SubPopID sp)
-{
-	if (m_func.isValid()) {
-		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-		// if pop is valid?
-		if (popObj == NULL)
-			throw SystemError("Could not pass population to the provided function. \n"
-				              "Compiled with the wrong version of SWIG?");
+   void infoParentsChooser::initialize(population & pop, SubPopID sp)
+   {
+    if (m_func.isValid()) {
+        PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+        // if pop is valid?
+        if (popObj == NULL)
+            throw SystemError("Could not pass population to the provided function. \n"
+                              "Compiled with the wrong version of SWIG?");
 
-		// parammeter list, ref count increased
-		bool resBool;
-		if (m_param.isValid())
-			resBool = m_func(PyObj_As_Bool, "(OO)", popObj, m_param.object());
-		else
-			resBool = m_func(PyObj_As_Bool, "(O)", popObj);
+        // parammeter list, ref count increased
+        bool resBool;
+        if (m_param.isValid())
+            resBool = m_func(PyObj_As_Bool, "(OO)", popObj, m_param.object());
+        else
+            resBool = m_func(PyObj_As_Bool, "(O)", popObj);
 
-		Py_DECREF(popObj);
-	}
+        Py_DECREF(popObj);
+    }
 
-	// indexes
-	m_infoIdx.resize(m_infoFields.size());
-	for (size_t i = 0; i < m_infoFields.size(); ++i)
-		m_infoIdx[i] = pop.infoIdx(m_infoFields[i]);
-	UINT infoSz = m_infoIdx.size();
+    // indexes
+    m_infoIdx.resize(m_infoFields.size());
+    for (size_t i = 0; i < m_infoFields.size(); ++i)
+        m_infoIdx[i] = pop.infoIdx(m_infoFields[i]);
+    UINT infoSz = m_infoIdx.size();
 
-	m_selection = pop.hasInfoField(m_selectionField);
+    m_selection = pop.hasInfoField(m_selectionField);
 
-	m_index.clear();
+    m_index.clear();
 
-	// In a virtual subpopulation, because m_begin + ... is **really** slow
-	// It is a good idea to cache IndIterators. This is however inefficient
-	// for non-virtual populations
-	IndIterator it = pop.indIterator(sp);
-	vectorf fitness;
-	UINT fit_id = 0;
-	if (m_selection)
-		fit_id = pop.infoIdx(m_selectionField);
-	for (; it.valid(); ++it) {
-		Sex mySex = it->sex();
-		for (size_t i = 0; i < infoSz; ++i)
-			// we only choose individual with an valid information field
-			// and is of opposite sex
-			if (it->info(m_infoIdx[i]) >= 0 && pop.ind(it->intInfo(m_infoIdx[i])).sex() != mySex) {
-				m_index.push_back(it.rawIter());
-				if (m_selection)
-					fitness.push_back(it->info(fit_id));
-				break;
-			}
-	}
-	//
-	m_degenerate = m_index.empty();
-	DBG_WARNING(m_degenerate, "Parents are chosen randomly because there is no valid index.");
-	if (m_degenerate) {
-		for (it = pop.indIterator(sp); it.valid(); ++it) {
-			m_index.push_back(it.rawIter());
-			if (m_selection)
-				fitness.push_back(it->info(fit_id));
-		}
-	}
+    // In a virtual subpopulation, because m_begin + ... is **really** slow
+    // It is a good idea to cache IndIterators. This is however inefficient
+    // for non-virtual populations
+    IndIterator it = pop.indIterator(sp);
+    vectorf fitness;
+    UINT fit_id = 0;
+    if (m_selection)
+        fit_id = pop.infoIdx(m_selectionField);
+    for (; it.valid(); ++it) {
+        Sex mySex = it->sex();
+        for (size_t i = 0; i < infoSz; ++i)
+            // we only choose individual with an valid information field
+            // and is of opposite sex
+            if (it->info(m_infoIdx[i]) >= 0 && pop.ind(it->intInfo(m_infoIdx[i])).sex() != mySex) {
+                m_index.push_back(it.rawIter());
+                if (m_selection)
+                    fitness.push_back(it->info(fit_id));
+                break;
+            }
+    }
+    //
+    m_degenerate = m_index.empty();
+    DBG_WARNING(m_degenerate, "Parents are chosen randomly because there is no valid index.");
+    if (m_degenerate) {
+        for (it = pop.indIterator(sp); it.valid(); ++it) {
+            m_index.push_back(it.rawIter());
+            if (m_selection)
+                fitness.push_back(it->info(fit_id));
+        }
+    }
 
-	if (m_selection)
-		m_sampler.set(fitness);
-	else
-		m_size = m_index.size();
+    if (m_selection)
+        m_sampler.set(fitness);
+    else
+        m_size = m_index.size();
 
-	if (!m_replacement)
-		GetRNG().randomShuffle(m_index.begin(), m_index.end());
+    if (!m_replacement)
+        GetRNG().randomShuffle(m_index.begin(), m_index.end());
 
-	DBG_FAILIF(!m_replacement && m_selection, ValueError,
-		"Selection is not allowed in random sample without replacement");
+    DBG_FAILIF(!m_replacement && m_selection, ValueError,
+        "Selection is not allowed in random sample without replacement");
 
-	m_shift = pop.subPopBegin(sp);
-	m_initialized = true;
-}
-*/
+    m_shift = pop.subPopBegin(sp);
+    m_initialized = true;
+   }
+ */
 
 
 /*
-parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
-{
-	DBG_ASSERT(initialized(), SystemError,
-		"Please initialize this parent chooser before using it");
-	individual * par1 = randomParentChooser::chooseParents(basePtr).first;
-	Sex sex1 = par1->sex();
-	// there is no valid information field value
-	if (m_degenerate) {
-		int attempt = 0;
-		while (++attempt < 1000) {
-			individual * par2 = randomParentChooser::chooseParents(basePtr).first;
-			if (par2->sex() != sex1)
-				return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
-		}
-		throw RuntimeError("Can not locate any individual of opposite sex");
-	}
-	// the way this parent chooser is initialized guranttees that
-	// theres is at lest one valid field.
-	vector<individual *> validInds;
-	for (size_t i = 0; i < m_infoIdx.size(); ++i) {
-		int info = par1->intInfo(m_infoIdx[i]);
-		if (info < 0)
-			continue;
-		if (m_idIdx < 0) {
-			RawIndIterator par2 = basePtr + info;
-			if (par2->sex() != sex1)
-				validInds.push_back(&*par2);
-		}
-	}
-	DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
-	individual * par2 = validInds[GetRNG().randInt(validInds.size())];
-	DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
-		                    << " par2: " << par2 - &*basePtr << endl);
-	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
-}
-*/
+   parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
+   {
+    DBG_ASSERT(initialized(), SystemError,
+        "Please initialize this parent chooser before using it");
+    individual * par1 = randomParentChooser::chooseParents(basePtr).first;
+    Sex sex1 = par1->sex();
+    // there is no valid information field value
+    if (m_degenerate) {
+        int attempt = 0;
+        while (++attempt < 1000) {
+            individual * par2 = randomParentChooser::chooseParents(basePtr).first;
+            if (par2->sex() != sex1)
+                return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+        }
+        throw RuntimeError("Can not locate any individual of opposite sex");
+    }
+    // the way this parent chooser is initialized guranttees that
+    // theres is at lest one valid field.
+    vector<individual *> validInds;
+    for (size_t i = 0; i < m_infoIdx.size(); ++i) {
+        int info = par1->intInfo(m_infoIdx[i]);
+        if (info < 0)
+            continue;
+        if (m_idIdx < 0) {
+            RawIndIterator par2 = basePtr + info;
+            if (par2->sex() != sex1)
+                validInds.push_back(&*par2);
+        }
+    }
+    DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
+    individual * par2 = validInds[GetRNG().randInt(validInds.size())];
+    DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
+                            << " par2: " << par2 - &*basePtr << endl);
+    return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+   }
+ */
 
 pyParentsChooser::pyParentsChooser(PyObject * pc)
 	: parentChooser(), m_func(pc), m_popObj(NULL),
@@ -1263,136 +1263,136 @@ void mating::submitScratch(population & pop, population & scratch)
 
 
 /*
-pedigreeMating::pedigreeMating(const pedigree & ped,
-	const offspringGenerator & generator, bool setSex, bool setAffection,
-	const vectorstr & copyFields)
-	: mating(uintListFunc()), m_ped(ped),
-	m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
-{
-	m_generator = generator.clone();
-}
+   pedigreeMating::pedigreeMating(const pedigree & ped,
+    const offspringGenerator & generator, bool setSex, bool setAffection,
+    const vectorstr & copyFields)
+    : mating(uintListFunc()), m_ped(ped),
+    m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
+   {
+    m_generator = generator.clone();
+   }
 
 
-pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
-	: mating(rhs), m_ped(rhs.m_ped), m_setSex(rhs.m_setSex),
-	m_setAffection(rhs.m_setAffection), m_copyFields(rhs.m_copyFields)
-{
-	m_generator = rhs.m_generator->clone();
-	DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
-		"Passed pedigree has no ancestral generation.");
-	// scroll to the greatest generation, but this generation
-	// should have no parental generation.
-	m_ped.useAncestralGen(m_ped.ancestralGens());
-}
+   pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
+    : mating(rhs), m_ped(rhs.m_ped), m_setSex(rhs.m_setSex),
+    m_setAffection(rhs.m_setAffection), m_copyFields(rhs.m_copyFields)
+   {
+    m_generator = rhs.m_generator->clone();
+    DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
+        "Passed pedigree has no ancestral generation.");
+    // scroll to the greatest generation, but this generation
+    // should have no parental generation.
+    m_ped.useAncestralGen(m_ped.ancestralGens());
+   }
 
 
-pedigreeMating::~pedigreeMating()
-{
-	delete m_generator;
-}
+   pedigreeMating::~pedigreeMating()
+   {
+    delete m_generator;
+   }
 
 
-bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
-{
-	if (scratch.genoStruIdx() != pop.genoStruIdx())
-		scratch.fitGenoStru(pop.genoStruIdx());
+   bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
+   {
+    if (scratch.genoStruIdx() != pop.genoStruIdx())
+        scratch.fitGenoStru(pop.genoStruIdx());
 
-	DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
-		"Evolving generation does not have the same number of subpopulation as the pedigree.");
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		DBG_WARNING(pop.subPopSize(sp) > m_ped.subPopSize(sp),
-			"Giving population has more individuals than the pedigree."
-			"Some of the parents will be ignored");
-		DBG_FAILIF(pop.subPopSize(sp) < m_ped.subPopSize(sp), ValueError,
-			"Given population has less individuals in subpopulation " + toStr(sp)
-			+ " than the pedigree. PedigreeMating cannot continue.");
-	}
-	if (m_ped.curAncestralGen() == 0)
-		return false;
+    DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
+        "Evolving generation does not have the same number of subpopulation as the pedigree.");
+    for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+        DBG_WARNING(pop.subPopSize(sp) > m_ped.subPopSize(sp),
+            "Giving population has more individuals than the pedigree."
+            "Some of the parents will be ignored");
+        DBG_FAILIF(pop.subPopSize(sp) < m_ped.subPopSize(sp), ValueError,
+            "Given population has less individuals in subpopulation " + toStr(sp)
+ + " than the pedigree. PedigreeMating cannot continue.");
+    }
+    if (m_ped.curAncestralGen() == 0)
+        return false;
 
-	// copy information to the greatest ancestral generation
-	if (m_ped.curAncestralGen() == m_ped.ancestralGens() &&
-	    (m_setSex || m_setAffection || !m_copyFields.empty())) {
-		vectoru infoIdx;
-		vectoru pedInfoIdx;
-		for (size_t i = 0; i < m_copyFields.size(); ++i) {
-			infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
-			pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
-		}
-		for (size_t it = 0; it < pop.popSize(); ++it) {
-			individual & ind = pop.ind(it);
-			individual & pedInd = m_ped.ind(it);
-			if (m_setSex)
-				ind.setSex(pedInd.sex());
-			if (m_setAffection)
-				ind.setAffected(pedInd.affected());
-			for (size_t i = 0; i < m_copyFields.size(); ++i)
-				ind.setInfo(pedInd.info(pedInfoIdx[i]), infoIdx[i]);
-		}
-	}
-	m_parentalPopSize = m_ped.popSize();
-	m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
-	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
-	return true;
-}
+    // copy information to the greatest ancestral generation
+    if (m_ped.curAncestralGen() == m_ped.ancestralGens() &&
+        (m_setSex || m_setAffection || !m_copyFields.empty())) {
+        vectoru infoIdx;
+        vectoru pedInfoIdx;
+        for (size_t i = 0; i < m_copyFields.size(); ++i) {
+            infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
+            pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
+        }
+        for (size_t it = 0; it < pop.popSize(); ++it) {
+            individual & ind = pop.ind(it);
+            individual & pedInd = m_ped.ind(it);
+            if (m_setSex)
+                ind.setSex(pedInd.sex());
+            if (m_setAffection)
+                ind.setAffected(pedInd.affected());
+            for (size_t i = 0; i < m_copyFields.size(); ++i)
+                ind.setInfo(pedInd.info(pedInfoIdx[i]), infoIdx[i]);
+        }
+    }
+    m_parentalPopSize = m_ped.popSize();
+    m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
+    scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
+    return true;
+   }
 
 
-bool pedigreeMating::mate(population & pop, population & scratch,
+   bool pedigreeMating::mate(population & pop, population & scratch,
                           vector<baseOperator * > & ops)
-{
-	// scrtach will have the right structure.
-	if (!prepareScratchPop(pop, scratch))
-		return false;
-	vectoru infoIdx;
-	vectoru pedInfoIdx;
-	for (size_t i = 0; i < m_copyFields.size(); ++i) {
-		infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
-		pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
-	}
+   {
+    // scrtach will have the right structure.
+    if (!prepareScratchPop(pop, scratch))
+        return false;
+    vectoru infoIdx;
+    vectoru pedInfoIdx;
+    for (size_t i = 0; i < m_copyFields.size(); ++i) {
+        infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
+        pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
+    }
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
-		if (!m_generator->initialized())
-			m_generator->initialize(pop, sp, ops);
+    for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
+        if (!m_generator->initialized())
+            m_generator->initialize(pop, sp, ops);
 
-		RawIndIterator it = scratch.rawIndBegin(sp);
-		RawIndIterator itEnd;
-		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
-			int father_idx = m_ped.father(i);
-			DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
-				"Parental index " + toStr(father_idx) + " out of range of 0 - "
-				+ toStr(m_parentalPopSize - 1));
-			individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
+        RawIndIterator it = scratch.rawIndBegin(sp);
+        RawIndIterator itEnd;
+        for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
+            int father_idx = m_ped.father(i);
+            DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
+                "Parental index " + toStr(father_idx) + " out of range of 0 - "
+ + toStr(m_parentalPopSize - 1));
+            individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
 
-			int mother_idx = m_ped.mother(i);
-			DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
-				"Parental index " + toStr(mother_idx) + " out of range of 0 - "
-				+ toStr(m_parentalPopSize - 1));
-			individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
+            int mother_idx = m_ped.mother(i);
+            DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
+                "Parental index " + toStr(mother_idx) + " out of range of 0 - "
+ + toStr(m_parentalPopSize - 1));
+            individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
 
-			if (m_setSex)
-				it->setSex(m_ped.ind(i, sp).sex());
-			if (m_setAffection)
-				it->setAffected(m_ped.ind(i, sp).affected());
-			for (size_t i = 0; i < m_copyFields.size(); ++i)
-				it->setInfo(m_ped.ind(i, sp).info(pedInfoIdx[i]), infoIdx[i]);
+            if (m_setSex)
+                it->setSex(m_ped.ind(i, sp).sex());
+            if (m_setAffection)
+                it->setAffected(m_ped.ind(i, sp).affected());
+            for (size_t i = 0; i < m_copyFields.size(); ++i)
+                it->setInfo(m_ped.ind(i, sp).info(pedInfoIdx[i]), infoIdx[i]);
 
-			//
-			itEnd = it + 1;
-			// whatever the numOffspring function returns for this
-			// offspring generator, only generate one offspring.
-			UINT numOff = m_generator->generateOffspring(pop, dad, mom,
-				it, itEnd, ops);
-			(void)numOff;
-			DBG_FAILIF(numOff != 1, RuntimeError,
-				"Generation of offspring must succeed in pedigreeMating");
-		}
-		m_generator->finalize(pop);
-	}
+            //
+            itEnd = it + 1;
+            // whatever the numOffspring function returns for this
+            // offspring generator, only generate one offspring.
+            UINT numOff = m_generator->generateOffspring(pop, dad, mom,
+                it, itEnd, ops);
+            (void)numOff;
+            DBG_FAILIF(numOff != 1, RuntimeError,
+                "Generation of offspring must succeed in pedigreeMating");
+        }
+        m_generator->finalize(pop);
+    }
 
-	submitScratch(pop, scratch);
-	return true;
-}
-*/
+    submitScratch(pop, scratch);
+    return true;
+   }
+ */
 
 homoMating::homoMating(parentChooser & chooser,
 	offspringGenerator & generator,

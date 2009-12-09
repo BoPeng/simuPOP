@@ -773,8 +773,8 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 			markIndividuals(vspID(), false);
 			subPopList::const_iterator it = subPops.begin();
 			subPopList::const_iterator itEnd = subPops.end();
-            for (; it != itEnd; ++it)
-    			markIndividuals(*it, true);
+			for (; it != itEnd; ++it)
+				markIndividuals(*it, true);
 		}
 	}
 

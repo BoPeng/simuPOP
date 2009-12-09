@@ -2304,14 +2304,15 @@ Details:
     multi-generational population and be used to reliably reconstruct
     a pedigree.  To ensure uniqueness across populations, a single
     source of ID is used for this operator. Individual IDs are
-    assigned consecutively starting from 0. If you would like to reset
-    the sequence or start from a different number, you can call the
-    reset(startID) function of any idTagger.  An idTagger is usually
-    used during-mating to assign ID to each offspring. However, if it
-    is applied directly to a population, it will assign unique IDs to
-    all individuals in this population. This property is usually used
-    in the preOps parameter of function simulator.evolve to assign
-    initial ID to a population.
+    assigned consecutively starting from 1. Value 1 instead of 0 is
+    used because most software applications use 0 as missing values
+    for parentship. If you would like to reset the sequence or start
+    from a different number, you can call the reset(startID) function
+    of any idTagger.  An idTagger is usually used during-mating to
+    assign ID to each offspring. However, if it is applied directly to
+    a population, it will assign unique IDs to all individuals in this
+    population. This property is usually used in the preOps parameter
+    of function simulator.evolve to assign initial ID to a population.
 
 "; 
 
@@ -2351,12 +2352,12 @@ Usage:
 
 Usage:
 
-    x.reset(startID=0)
+    x.reset(startID=1)
 
 Details:
 
     Reset the global individual ID number so that idTaggers will start
-    from id (default to 0) again.
+    from id (default to 1) again.
 
 "; 
 
