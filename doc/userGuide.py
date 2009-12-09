@@ -1945,7 +1945,72 @@ simu.evolve(
 )
 for pop in simu.populations():
     print pop.totNumLoci(), pop.lociPos()
+
 #end_file
+
+
+#begin_file log/locateRelative.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+simu = sim.simulator(
+    sim.population(1000, ancGen=2, infoFields=['ind_id', 'father_id', 'mother_id']),
+    sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 4)))
+simu.evolve(
+    initOps = [
+        sim.initSex(),
+        sim.idTagger(),
+    ],
+    duringOps = [
+        sim.idTagger(),
+        sim.pedigreeTagger()
+    ],
+    gen = 5
+)
+ped = sim.pedigree(simu.extract(0))
+offFields = ['off%d' % x for x in range(4)]
+grandOffFields = ['grandOff%d' % x for x in range(5)]
+ped.addInfoFields(['spouse'] + offFields + grandOffFields)
+# only look spouse for fathers...
+ped.locateRelatives(sim.OutbredSpouse, ['spouse'], sex=sim.FemaleOnly)
+ped.locateRelatives(sim.CommonOffspring, ['spouse'] + offFields)
+# trace offspring of offspring
+ped.traceRelatives([offFields, offFields], resultFields=grandOffFields)
+# 
+IDs = ped.individualsWithRelatives(grandOffFields)
+# check on ID.
+grandFather = IDs[0]
+grandMother = ped.indByID(grandFather).spouse
+# some ID might be invalid.
+children = [ped.indByID(grandFather).info(x) for x in offFields]
+childrenSpouse = [ped.indByID(x).spouse for x in children if x >= 1]
+childrenParents = [ped.indByID(x).father_id for x in children if x >= 1] \
+    + [ped.indByID(x).mother_id for x in children if x >= 1]
+grandChildren = [ped.indByID(grandFather).info(x) for x in grandOffFields]
+grandChildrenParents = [ped.indByID(x).father_id for x in grandChildren if x >= 1] \
+    + [ped.indByID(x).mother_id for x in grandChildren if x >= 1]
+
+def idString(IDs):
+    uniqueIDs = list(set(IDs))
+    uniqueIDs.sort()
+    return ', '.join(['%d' % x for x in uniqueIDs if x >= 1])
+
+print '''GrandParents: %d, %d
+Children: %s
+Children's spouses: %s
+Children's parents: %s
+GrandChildren: %s
+GrandChildren's parents: %s ''' % \
+(grandFather, grandMother, idString(children), idString(childrenSpouse),
+    idString(childrenParents), idString(grandChildren), idString(grandChildrenParents))
+
+#end_file
+
 
 #begin_file log/simuFunc.py
 #begin_ignore
