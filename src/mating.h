@@ -715,10 +715,12 @@ private:
 };
 
 
-/** This parent chooser chooses an individual randomly, and then his/her spouse
+/*  This parent chooser chooses an individual randomly, and then his/her spouse
  *  his/her spouse from a given set of information fields, which stores indexes
- *  of individuals in the same generation. An information field will be ignored
- *  if its value is negative, or if sex is incompatible.
+ *  or IDs (if an idField is given) of individuals in the parental population.
+ *  If the parental population has multiple ancestral generations and IDs are
+ *  used, this parents chooser allows cross-generational mating. An information
+ *  field will be ignored if its value is negative, or if sex is incompatible.
  *
  *  Depending on what indexes are stored in these information fields, this
  *  parent chooser can be used to implement different types of mating schemes
@@ -732,22 +734,27 @@ private:
  *  potentially uneven distribution of valid information fields, the overall
  *  process may not be as random as expected.
  */
+ /*
 class infoParentsChooser : public randomParentChooser
 {
 public:
-	/** Create a information parent chooser a parent randomly (with replacement,
+ */
+	/*  Create a information parent chooser a parent randomly (with replacement,
 	 *  and with selection if natural selection is enabled), and then his/her
-	 *  spouse from indexes stored in \e infoFields. If a Python function
-	 *  \e func is specified, it will be called before parents are chosen. This
-	 *  function accepts the parental population and an optional parameter
-	 *  \e param and is usually used to locate qualified spouse for each parent.
-	 *  The return value of this function is ignored.
+	 *  spouse from indexes or IDs (if \e idFiels is not empty) stored in
+	 *  \e infoFields. If a Python function \e func is specified, it will be
+	 *  called before parents are chosen. This function accepts the parental
+	 *  population and an optional parameter \e param and is usually used to
+	 *  locate qualified spouse for each parent. The return value of this
+	 *  function is ignored.
 	 */
+	 /*
 	infoParentsChooser(const stringList & infoFields = vectorstr(),
 		PyObject * func = NULL, PyObject * param = NULL,
+		const string & idField = '',
 		const string & selectionField = "fitness") :
 		randomParentChooser(true, selectionField),
-		m_infoFields(infoFields.elems()), m_func(func), m_param(param),
+		m_infoFields(infoFields.elems()), m_idField(idField), m_func(func), m_param(param),
 		m_infoIdx(0), m_degenerate(false)
 	{
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
@@ -777,6 +784,7 @@ public:
 
 private:
 	vectorstr m_infoFields;
+	string m_idField;
 
 	pyFunc m_func;
 	pyObject m_param;
@@ -785,7 +793,7 @@ private:
 	// if there is no valid individual, this mating schemes
 	// works like a double parentChooser.
 	bool m_degenerate;
-};
+}; */
 
 
 /** This parents chooser accept a Python generator function that repeatedly
@@ -953,13 +961,15 @@ protected:
 	uintListFunc m_subPopSize;
 };
 
-/** A pedigree mating scheme that evolves a population following a
+/*  A pedigree mating scheme that evolves a population following a
  *  pedigree object.
  */
+ /*
 class pedigreeMating : public mating
 {
 public:
-	/** Creates a mating scheme that evolve a population following a pedigree
+*/
+	/*  Creates a mating scheme that evolve a population following a pedigree
 	 *  object \e ped. Considering this pedigree as a population with \c N
 	 *  ancestral generations, the starting population is the greatest ancestral
 	 *  generation of \e ped. The mating scheme creates an offspring generation
@@ -984,6 +994,7 @@ public:
 	 *  information will be copied also to the starting population (from the
 	 *  greatest ancestral generation in \e ped).
 	 */
+	 /*
 	pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
 		bool setSex = false, bool setAffection = false,
 		const vectorstr & copyFields = vectorstr());
@@ -1027,7 +1038,7 @@ private:
 
 	vectorstr m_copyFields;
 };
-
+*/
 
 /** A homogeneous mating scheme that uses a parent chooser to choose parents
  *  from a prental generation, and an offspring generator to generate offspring

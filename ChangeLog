@@ -41,6 +41,8 @@ version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add functions IndexToID, DrawPedigree and samplers nuclearFamilySampler,
 		threeGenFamilySampler, combinedSampler and their sampling functions to
 		the simuPOP.sampling class.
+  - CHG: temporarily remove infoParentsChooser, consanguineousMating and pedigreeMating.
+		There is not enough time to implement these features nicely.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.

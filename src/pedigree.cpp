@@ -102,18 +102,6 @@ UINT pedigree::numParents()
 }
 
 
-ULONG pedigree::father(ULONG ID)
-{
-	return static_cast<ULONG>(indByID(ID).info(m_fatherIdx));
-}
-
-
-ULONG pedigree::mother(ULONG ID)
-{
-	return static_cast<ULONG>(indByID(ID).info(m_motherIdx));
-}
-
-
 individual & pedigree::indByID(double fid)
 {
 	// essentially m_idMap(static_cast<ULONG>(fid))

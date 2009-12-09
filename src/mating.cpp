@@ -952,6 +952,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 }
 
 
+/*
 void infoParentsChooser::initialize(population & pop, SubPopID sp)
 {
 	if (m_func.isValid()) {
@@ -1026,8 +1027,10 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	m_shift = pop.subPopBegin(sp);
 	m_initialized = true;
 }
+*/
 
 
+/*
 parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
@@ -1051,9 +1054,11 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 		int info = par1->intInfo(m_infoIdx[i]);
 		if (info < 0)
 			continue;
-		RawIndIterator par2 = basePtr + info;
-		if (par2->sex() != sex1)
-			validInds.push_back(&*par2);
+		if (m_idIdx < 0) {
+			RawIndIterator par2 = basePtr + info;
+			if (par2->sex() != sex1)
+				validInds.push_back(&*par2);
+		}
 	}
 	DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
 	individual * par2 = validInds[GetRNG().randInt(validInds.size())];
@@ -1061,7 +1066,7 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 		                    << " par2: " << par2 - &*basePtr << endl);
 	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 }
-
+*/
 
 pyParentsChooser::pyParentsChooser(PyObject * pc)
 	: parentChooser(), m_func(pc), m_popObj(NULL),
@@ -1257,6 +1262,7 @@ void mating::submitScratch(population & pop, population & scratch)
 }
 
 
+/*
 pedigreeMating::pedigreeMating(const pedigree & ped,
 	const offspringGenerator & generator, bool setSex, bool setAffection,
 	const vectorstr & copyFields)
@@ -1386,7 +1392,7 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 	submitScratch(pop, scratch);
 	return true;
 }
-
+*/
 
 homoMating::homoMating(parentChooser & chooser,
 	offspringGenerator & generator,
