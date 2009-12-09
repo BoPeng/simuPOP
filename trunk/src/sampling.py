@@ -362,6 +362,8 @@ class caseControlSampler(baseSampler):
                 if self.controls[sp] > len(unaff):
                     print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d in subpopulation %d.' \
                         % (self.controls[sp], len(unaff), sp)
+                self.affected.append(aff)
+                self.unaffected.append(unaff)
 
     def drawSample(self, input_pop):
         '''Draw a case control sample
@@ -379,8 +381,8 @@ class caseControlSampler(baseSampler):
             for sp in range(self.pop.numSubPop()):
                 random.shuffle(self.affected[sp])
                 random.shuffle(self.unaffected[sp])
-                indexes.extend(self.affected[:self.cases[sp]])
-                indexes.extend(self.unaffected[:self.controls[sp]])
+                indexes.extend(self.affected[sp][:self.cases[sp]])
+                indexes.extend(self.unaffected[sp][:self.controls[sp]])
         return self.pop.extractIndividuals(indexes = indexes)
 
 
@@ -507,8 +509,7 @@ class affectedSibpairSampler(pedigreeSampler):
     '''
     def __init__(self, families, subPops=AllAvail, idField='ind_id',
         fatherField='father_id', motherField='mother_id'):
-        '''
-        '''
+        '''Initialize an affected sibpair sampler.'''
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
     def family(self, id):
@@ -535,8 +536,8 @@ class affectedSibpairSampler(pedigreeSampler):
         else:
             self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.selectedIDs.append(list(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'], subPops=sp)))
-
+                self.selectedIDs.append(self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'],
+                    subPops=sp))
 
 
 def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 
@@ -669,7 +670,7 @@ class nuclearFamilySampler(pedigreeSampler):
         else:
             self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
+                self.selectedIDs.append(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
 
 
 def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,

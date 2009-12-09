@@ -604,9 +604,9 @@ class TestPopulation(unittest.TestCase):
             pop.useAncestralGen(gen)
             InitByFreq(pop, [0.5, 0.5])
         pop.useAncestralGen(0)
-        idTagger().reset()
+        idTagger().reset(1)
         TagID(pop)
-        exclude = set([random.randint(0, 1799) for x in range(600)])
+        exclude = set([random.randint(1, 1800) for x in range(600)])
         pop1 = pop.clone()
         pop1.removeIndividuals(IDs=list(exclude))
         sz = []
@@ -738,7 +738,7 @@ class TestPopulation(unittest.TestCase):
             InitByFreq(pop, [0.5, 0.5])
         pop.useAncestralGen(0)
         TagID(pop)
-        include = set([random.randint(0, 1799) for x in range(600)])
+        include = set([random.randint(1, 1800) for x in range(600)])
         pop1 = pop.extractIndividuals(IDs=list(include))
         sz1 = []
         for gen in range(6):
@@ -1286,7 +1286,7 @@ class TestPopulation(unittest.TestCase):
     def testIndByID(self):
         'Testing population::indByID()'
         pop = self.getPop(size=[200]*4, ancGen=3, infoFields=['ind_id'])
-        idTagger().reset(0)
+        idTagger().reset(1)
         TagID(pop)
         for i in range(400):
             id = random.randint(0, 800*4-1)

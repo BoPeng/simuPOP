@@ -39,9 +39,11 @@ namespace simuPOP {
  *  population and be used to reliably reconstruct a pedigree.
  *
  *  To ensure uniqueness across populations, a single source of ID is used for
- *  this operator. Individual IDs are assigned consecutively starting from 0.
- *  If you would like to reset the sequence or start from a different number,
- *  you can call the \c reset(startID) function of any \c idTagger.
+ *  this operator. Individual IDs are assigned consecutively starting from 1.
+ *  Value 1 instead of 0 is used because most software applications use 0 as
+ *  missing values for parentship. If you would like to reset the sequence or
+ *  start from a different number, you can call the \c reset(startID) function
+ *  of any \c idTagger.
  *
  *  An \c idTagger is usually used during-mating to assign ID to each offspring.
  *  However, if it is applied directly to a population, it will assign unique
@@ -84,9 +86,9 @@ public:
 
 
 	/** Reset the global individual ID number so that idTaggers will start
-	 *  from id (default to 0) again.
+	 *  from id (default to 1) again.
 	 */
-	void reset(ULONG startID = 0);
+	void reset(ULONG startID = 1);
 
 	/** Set an unique ID to all individuals with zero ID. */
 	virtual bool apply(population & pop);
