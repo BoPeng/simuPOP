@@ -4985,9 +4985,8 @@ Details:
     *   Offspring all offspring of each individual.
     *   CommonOffspring common offspring between each individual and
     its spouse (located by Spouse or OutbredSpouse). relFields should
-    consist of an information field for spouse and
-    m-1 fields for offspring where
-    m is the number of fields.
+    consist of an information field for spouse and m-1 fields for
+    offspring where m is the number of fields.
     *   FullSibling siblings with common father and mother,
     *   Sibling siblings with at least one common parent. Optionally,
     you can specify the sex and affection status of relatives you

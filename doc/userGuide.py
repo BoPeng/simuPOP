@@ -4691,10 +4691,10 @@ sim.GetRNG().setSeed(12345)
 from simuPOP.sampling import DrawRandomSample
 pop = sim.population([2000]*5, loci=1)
 # sample from the whole population
-sample = DrawRandomSample(pop, size=500)
+sample = DrawRandomSample(pop, sizes=500)
 print sample.subPopSizes()
 # sample from each subpopulation
-sample = DrawRandomSample(pop, size=[100]*5)
+sample = DrawRandomSample(pop, sizes=[100]*5)
 print sample.subPopSizes()
 #end_file
 
@@ -4868,7 +4868,7 @@ sim.Stat(pop, numOfAffected=True, subPops=[(0,1), (0,2)], vars='numOfAffected_sp
 print pop.dvars((0,1)).numOfAffected, pop.dvars((0,2)).numOfAffected
 #
 from simuPOP.sampling import DrawRandomSample
-sample = DrawRandomSample(pop, size=[500, 500], subPops=[(0,1), (0,2)])
+sample = DrawRandomSample(pop, sizes=[500, 500], subPops=[(0,1), (0,2)])
 # virtual subpopulations are rearranged to different subpopulations.
 print sample.subPopSizes()
 #end_file
