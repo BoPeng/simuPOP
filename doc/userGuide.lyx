@@ -21823,8 +21823,6 @@ sample.subPopSizes()
 \family default
  to check how many individuals are sampled from each subpopulation.
  
-\family typewriter
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/randomSample.log"
@@ -21887,8 +21885,6 @@ Stat
 \family default
  function.
  
-\family typewriter
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/caseControlSample.log"
@@ -22015,8 +22011,6 @@ reference "plotPedigree"
  demonstrates how to use function sampling.IndexToID to prepare a pedigree
  and how to use sampling.DrawPedigree to plot it.
  
-\family typewriter
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/plotPedigree.log"
@@ -22136,8 +22130,6 @@ reference "fig:affectedSibpair"
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/sampleAffectedSibpair.log"
@@ -22241,8 +22233,6 @@ reference "fig:nuclearFamily"
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/sampleNuclearFamily.log"
@@ -22362,8 +22352,6 @@ reference "fig:nuclearFamily"
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/sampleThreeGenFamily.log"
@@ -22471,8 +22459,6 @@ reference "combinedSampling"
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/combinedSampling.log"
@@ -22546,8 +22532,6 @@ reference "samplingVSP"
 
  draws 500 cases and 500 controls from two a VSP with individual ages between
  40 and 60.
-\family typewriter
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/samplingVSP.log"
@@ -22582,8 +22566,6 @@ reference "samplingSeparateVSPs"
 \end_inset
 
  demonstrates how to use this method.
-\family typewriter
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/samplingSeparateVSPs.log"
