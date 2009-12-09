@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.8 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.9 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -21882,11 +21882,15 @@ Sampling individuals randomly (class
 \family typewriter
 randomSampler
 \family default
- and functions 
+, functions 
 \family typewriter
 DrawRandomSample
 \family default
-(s))
+ and 
+\family typewriter
+DrawRandomSamples
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -21948,11 +21952,15 @@ Sampling cases and controls (class
 \family typewriter
 caseControlSampler
 \family default
- and functions 
+, functions 
 \family typewriter
 CaseControlSample
 \family default
-(s))
+ and 
+\family typewriter
+CaseControlSamples
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -22191,7 +22199,7 @@ Sampling affected sibpairs (class
 \family typewriter
 affectedSibpairSampler
 \family default
- and functions 
+, functions 
 \family typewriter
 DrawAffectedSibpairSample(s)
 \family default
@@ -22296,11 +22304,15 @@ Sampling nuclear families (class
 \family typewriter
 nuclearFamilySampler
 \family default
- and functions 
+, functions 
 \family typewriter
-DrawNuclearFamilySample(s)
+DrawNuclearFamilySample
 \family default
-)
+ and 
+\family typewriter
+DrawNuclearFamilySample
+\family default
+s)
 \end_layout
 
 \begin_layout Standard
@@ -22399,9 +22411,9 @@ Sampling three-generation families (class
 \family typewriter
 threeGenFamilySampler
 \family default
- and functions 
+, functions 
 \family typewriter
-DrawThreeGenFamilySample(s)
+DrawThreeGenFamilySample and DrawThreeGenFamilySamples
 \family default
 )
 \end_layout
@@ -22518,11 +22530,15 @@ Sampling different types of samples (class
 \family typewriter
 combinedSampler
 \family default
- and functions 
+, functions 
 \family typewriter
 DrawCombinedSample
 \family default
-(s))
+ and 
+\family typewriter
+DrawCombinedSamples
+\family default
+)
 \end_layout
 
 \begin_layout Standard
