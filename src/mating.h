@@ -734,66 +734,66 @@ private:
  *  potentially uneven distribution of valid information fields, the overall
  *  process may not be as random as expected.
  */
- /*
-class infoParentsChooser : public randomParentChooser
-{
-public:
+/*
+   class infoParentsChooser : public randomParentChooser
+   {
+   public:
  */
-	/*  Create a information parent chooser a parent randomly (with replacement,
-	 *  and with selection if natural selection is enabled), and then his/her
-	 *  spouse from indexes or IDs (if \e idFiels is not empty) stored in
-	 *  \e infoFields. If a Python function \e func is specified, it will be
-	 *  called before parents are chosen. This function accepts the parental
-	 *  population and an optional parameter \e param and is usually used to
-	 *  locate qualified spouse for each parent. The return value of this
-	 *  function is ignored.
-	 */
-	 /*
-	infoParentsChooser(const stringList & infoFields = vectorstr(),
-		PyObject * func = NULL, PyObject * param = NULL,
-		const string & idField = '',
-		const string & selectionField = "fitness") :
-		randomParentChooser(true, selectionField),
-		m_infoFields(infoFields.elems()), m_idField(idField), m_func(func), m_param(param),
-		m_infoIdx(0), m_degenerate(false)
-	{
-		DBG_FAILIF(m_infoFields.empty(), ValueError,
-			"At least one information field should be provided for this infoParentsChooser");
-	}
+/*  Create a information parent chooser a parent randomly (with replacement,
+ *  and with selection if natural selection is enabled), and then his/her
+ *  spouse from indexes or IDs (if \e idFiels is not empty) stored in
+ *  \e infoFields. If a Python function \e func is specified, it will be
+ *  called before parents are chosen. This function accepts the parental
+ *  population and an optional parameter \e param and is usually used to
+ *  locate qualified spouse for each parent. The return value of this
+ *  function is ignored.
+ */
+/*
+   infoParentsChooser(const stringList & infoFields = vectorstr(),
+   PyObject * func = NULL, PyObject * param = NULL,
+   const string & idField = '',
+   const string & selectionField = "fitness") :
+   randomParentChooser(true, selectionField),
+   m_infoFields(infoFields.elems()), m_idField(idField), m_func(func), m_param(param),
+   m_infoIdx(0), m_degenerate(false)
+   {
+   DBG_FAILIF(m_infoFields.empty(), ValueError,
+       "At least one information field should be provided for this infoParentsChooser");
+   }
 
 
-	/// Deep copy of a infomation parent chooser.
-	parentChooser * clone() const
-	{
-		return new infoParentsChooser(*this);
-	}
+   /// Deep copy of a infomation parent chooser.
+   parentChooser * clone() const
+   {
+   return new infoParentsChooser(*this);
+   }
 
 
-	/// describe a parents chooser using information fields
-	virtual string describe(bool format = true) const
-	{
-		return "<simuPOP.infoParentsChooser> chooses parents from specified information fields";
-	}
+   /// describe a parents chooser using information fields
+   virtual string describe(bool format = true) const
+   {
+   return "<simuPOP.infoParentsChooser> chooses parents from specified information fields";
+   }
 
 
-	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+   /// CPPONLY
+   void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+   /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
+   individualPair chooseParents(RawIndIterator basePtr);
 
-private:
-	vectorstr m_infoFields;
-	string m_idField;
+   private:
+   vectorstr m_infoFields;
+   string m_idField;
 
-	pyFunc m_func;
-	pyObject m_param;
+   pyFunc m_func;
+   pyObject m_param;
 
-	vectori m_infoIdx;
-	// if there is no valid individual, this mating schemes
-	// works like a double parentChooser.
-	bool m_degenerate;
-}; */
+   vectori m_infoIdx;
+   // if there is no valid individual, this mating schemes
+   // works like a double parentChooser.
+   bool m_degenerate;
+   }; */
 
 
 /** This parents chooser accept a Python generator function that repeatedly
@@ -964,81 +964,81 @@ protected:
 /*  A pedigree mating scheme that evolves a population following a
  *  pedigree object.
  */
- /*
-class pedigreeMating : public mating
-{
-public:
-*/
-	/*  Creates a mating scheme that evolve a population following a pedigree
-	 *  object \e ped. Considering this pedigree as a population with \c N
-	 *  ancestral generations, the starting population is the greatest ancestral
-	 *  generation of \e ped. The mating scheme creates an offspring generation
-	 *  that match the size of generation \c N-1 and chooses parents according
-	 *  to the parents of individuals at this generation. Depending on the \e gen
-	 *  parameter of the simulator, the process continues generation by
-	 *  generation for \c N generations if \c gen >= N), or \c gen generations
-	 *  if \c gen < \c N. During the evolution, an offspring generator
-	 *  \e generator is used to produce one offspring at a time, regardless of
-	 *  the \e numOffspring setting of this offspring generator. If individuals
-	 *  in pedigree \e ped has only one parent, the offspring generator should
-	 *  be compatible.
-	 *
-	 *  By default, the pedigree mating scheme does not set offspring sex and
-	 *  affection status using sex and affection status of corresponding
-	 *  individuals in the pedigree. However, if such information is valid
-	 *  in the pedigree object \e ped, you can set parameters \e setSex and/or
-	 *  \e setAffection to \c True to set sex and/of affection status to
-	 *  offspring during the evolutionary process. Similarly, you can specify
-	 *  some information fields in \e copyFields to copy some information
-	 *  fields from pedigree to the evolving population. Note that these
-	 *  information will be copied also to the starting population (from the
-	 *  greatest ancestral generation in \e ped).
-	 */
-	 /*
-	pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
-		bool setSex = false, bool setAffection = false,
-		const vectorstr & copyFields = vectorstr());
+/*
+   class pedigreeMating : public mating
+   {
+   public:
+ */
+/*  Creates a mating scheme that evolve a population following a pedigree
+ *  object \e ped. Considering this pedigree as a population with \c N
+ *  ancestral generations, the starting population is the greatest ancestral
+ *  generation of \e ped. The mating scheme creates an offspring generation
+ *  that match the size of generation \c N-1 and chooses parents according
+ *  to the parents of individuals at this generation. Depending on the \e gen
+ *  parameter of the simulator, the process continues generation by
+ *  generation for \c N generations if \c gen >= N), or \c gen generations
+ *  if \c gen < \c N. During the evolution, an offspring generator
+ *  \e generator is used to produce one offspring at a time, regardless of
+ *  the \e numOffspring setting of this offspring generator. If individuals
+ *  in pedigree \e ped has only one parent, the offspring generator should
+ *  be compatible.
+ *
+ *  By default, the pedigree mating scheme does not set offspring sex and
+ *  affection status using sex and affection status of corresponding
+ *  individuals in the pedigree. However, if such information is valid
+ *  in the pedigree object \e ped, you can set parameters \e setSex and/or
+ *  \e setAffection to \c True to set sex and/of affection status to
+ *  offspring during the evolutionary process. Similarly, you can specify
+ *  some information fields in \e copyFields to copy some information
+ *  fields from pedigree to the evolving population. Note that these
+ *  information will be copied also to the starting population (from the
+ *  greatest ancestral generation in \e ped).
+ */
+/*
+   pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
+   bool setSex = false, bool setAffection = false,
+   const vectorstr & copyFields = vectorstr());
 
-	/// destructor
-	~pedigreeMating();
+   /// destructor
+   ~pedigreeMating();
 
-	/// CPPONLY
-	pedigreeMating(const pedigreeMating & rhs);
-
-
-	/// deep copy of a Python mating scheme
-	virtual mating * clone() const
-	{
-		return new pedigreeMating(*this);
-	}
+   /// CPPONLY
+   pedigreeMating(const pedigreeMating & rhs);
 
 
-	/// describe a pedigree mating scheme.
-	virtual string describe(bool format = true) const
-	{
-		return "<simuPOP.pedigreeMating> A pedigree mating scheme";
-	}
+   /// deep copy of a Python mating scheme
+   virtual mating * clone() const
+   {
+   return new pedigreeMating(*this);
+   }
 
 
-	/// CPPONLY
-	bool prepareScratchPop(population & pop, population & scratch);
+   /// describe a pedigree mating scheme.
+   virtual string describe(bool format = true) const
+   {
+   return "<simuPOP.pedigreeMating> A pedigree mating scheme";
+   }
 
-	/// CPPONLY
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
-private:
-	pedigree m_ped;
+   /// CPPONLY
+   bool prepareScratchPop(population & pop, population & scratch);
 
-	offspringGenerator * m_generator;
+   /// CPPONLY
+   virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
-	int m_parentalPopSize;
+   private:
+   pedigree m_ped;
 
-	bool m_setSex;
-	bool m_setAffection;
+   offspringGenerator * m_generator;
 
-	vectorstr m_copyFields;
-};
-*/
+   int m_parentalPopSize;
+
+   bool m_setSex;
+   bool m_setAffection;
+
+   vectorstr m_copyFields;
+   };
+ */
 
 /** A homogeneous mating scheme that uses a parent chooser to choose parents
  *  from a prental generation, and an offspring generator to generate offspring
