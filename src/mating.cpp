@@ -59,12 +59,12 @@ offspringGenerator::offspringGenerator(const opList & ops,
 			ValueError, "Max number of offspring should be greater than 1.");
 	}
 	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
-	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMale ||
-		        static_cast<int>(m_sexMode[0]) == NumOfMale ||
-		        static_cast<int>(m_sexMode[0]) == NumOfFemale) && m_sexMode.size() < 2,
-		ValueError, "A parameter is required for sex mode ProbOfMale, NumOfMale and NumOfFemale");
+	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMales ||
+		        static_cast<int>(m_sexMode[0]) == NumOfMales ||
+		        static_cast<int>(m_sexMode[0]) == NumOfFemales) && m_sexMode.size() < 2,
+		ValueError, "A parameter is required for sex mode ProbOfMales, NumOfMales and NumOfFemales");
 
-	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMale &&
+	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMales &&
 		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
 }
@@ -112,11 +112,11 @@ Sex offspringGenerator::getSex(int count)
 		return Male;
 	else if (mode == RandomSex)
 		return GetRNG().randBit() ? Male : Female;
-	else if (mode == ProbOfMale)
+	else if (mode == ProbOfMales)
 		return GetRNG().randUniform() < m_sexMode[1] ? Male : Female;
-	else if (mode == NumOfMale)
+	else if (mode == NumOfMales)
 		return count < static_cast<int>(m_sexMode[1]) ? Male : Female;
-	else if (mode == NumOfFemale)
+	else if (mode == NumOfFemales)
 		return count < static_cast<int>(m_sexMode[1]) ? Female : Male;
 	DBG_ASSERT(false, SystemError, "This line should not be reached.");
 	return Male;

@@ -49,9 +49,9 @@ __all__ = [
     #
     'NoSex',
     'RandomSex',
-    'ProbOfMale',
-    'NumOfMale',
-    'NumOfFemale',
+    'ProbOfMales',
+    'NumOfMales',
+    'NumOfFemales',
     #
     'NoConversion',
     'NumMarkers',

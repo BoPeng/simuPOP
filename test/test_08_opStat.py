@@ -50,7 +50,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().popSize, 1000)
 
 
-    def testNumOfMale(self):
+    def testNumOfMales(self):
         'Testing counting number of male'
         pop = population(size=[200, 800])
         for i in range(100):
@@ -60,25 +60,25 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setSex(Female)
         for i in range(100,800):
             pop.individual(i,1).setSex(Female)
-        Stat(pop, numOfMale=True, vars=['numOfMale', 'numOfFemale'])
-        self.assertEqual(pop.dvars().numOfMale, 200)
-        self.assertEqual(pop.dvars().numOfFemale, 800)
+        Stat(pop, numOfMales=True, vars=['numOfMales', 'numOfFemales'])
+        self.assertEqual(pop.dvars().numOfMales, 200)
+        self.assertEqual(pop.dvars().numOfFemales, 800)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         # all subpopulations
-        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp', 'propOfMale_sp', 'propOfFemale_sp'])
-        self.assertEqual(pop.dvars(0).numOfMale, 100)
-        self.assertEqual(pop.dvars(0).numOfFemale, 100)
-        self.assertEqual(pop.dvars(1).numOfMale, 100)
-        self.assertEqual(pop.dvars(1).numOfFemale, 700)
-        self.assertEqual(pop.dvars(1).propOfMale, 1./8)
-        self.assertEqual(pop.dvars(1).propOfFemale, 7./8)
+        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfMales_sp', 'propOfFemales_sp'])
+        self.assertEqual(pop.dvars(0).numOfMales, 100)
+        self.assertEqual(pop.dvars(0).numOfFemales, 100)
+        self.assertEqual(pop.dvars(1).numOfMales, 100)
+        self.assertEqual(pop.dvars(1).numOfFemales, 700)
+        self.assertEqual(pop.dvars(1).propOfMales, 1./8)
+        self.assertEqual(pop.dvars(1).propOfFemales, 7./8)
         # test virtual subpopulations
         pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]))
-        Stat(pop, numOfMale=True, subPops=[(0, 0), (1, 1)], vars=['numOfMale_sp', 'numOfFemale_sp', 'propOfFemale_sp'])
+        Stat(pop, numOfMales=True, subPops=[(0, 0), (1, 1)], vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfFemales_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
-        self.assertEqual(pop.dvars([0, 0]).numOfMale, 80)
-        self.assertEqual(pop.dvars([0, 0]).propOfFemale, 0)
-        self.assertEqual(pop.dvars([1, 1]).numOfFemale, 480)
+        self.assertEqual(pop.dvars([0, 0]).numOfMales, 80)
+        self.assertEqual(pop.dvars([0, 0]).propOfFemales, 0)
+        self.assertEqual(pop.dvars([1, 1]).numOfFemales, 480)
 
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'

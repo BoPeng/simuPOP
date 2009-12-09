@@ -7411,7 +7411,7 @@ sexMode=NoSex
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(ProbOfMale, prob)
+sexMode=(ProbOfMales, prob)
 \family default
 : Produce males with given probability.
 \end_layout
@@ -7419,7 +7419,7 @@ sexMode=(ProbOfMale, prob)
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(NumOfMale, n)
+sexMode=(NumOfMales, n)
 \family default
 : The first 
 \family typewriter
@@ -7441,7 +7441,7 @@ n
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(NumOfFemale, n)
+sexMode=(NumOfFemales, n)
 \family default
 : The first 
 \family typewriter
@@ -7457,11 +7457,11 @@ Female
 \begin_layout Standard
 
 \family typewriter
-NumOfMale
+NumOfMales
 \family default
  and 
 \family typewriter
-NumOfFemale
+NumOfFemales
 \family default
  are useful in theoretical studies where the sex ratio of a population needs
  to be controlled strictly, or in special mating schemes, usually for animal
@@ -7560,7 +7560,7 @@ initSex
  assigns exactly 10 males and 10 females to the initial population.
  Because of the use of 
 \family typewriter
-numOffspring=2, sexMode=(NumOfMale, 1)
+numOffspring=2, sexMode=(NumOfMales, 1)
 \family default
 , each mating event will produce exactly one male and one female.
  Unlike a random mating scheme that only about 80% of parents are involved
@@ -17150,7 +17150,7 @@ popSize
 \emph default
 , 
 \emph on
-numOfMale
+numOfMales
 \emph default
  and 
 \emph on
@@ -17165,11 +17165,11 @@ popSize
 \family default
 , 
 \family typewriter
-numOfMale
+numOfMales
 \family default
 , 
 \family typewriter
-numOfFemale
+numOfFemales
 \family default
 , 
 \family typewriter
@@ -17183,7 +17183,7 @@ numOfUnaffected
  Proportions and statistics for  subpopulations are available if variables
  such as 
 \family typewriter
-propOfMale
+propOfMales
 \family default
 , 
 \family typewriter
