@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -9869,7 +9869,193 @@ Pedigrees
 \end_layout
 
 \begin_layout Standard
-This feature is still under major revision.
+A 
+\family typewriter
+pedigree
+\family default
+ object is basically a static population object that is used to track relationsh
+ip between individuals.
+ It is currently used in the 
+\family typewriter
+simuPOP.sampling
+\family default
+ module to identify eligible pedigrees but future development will allow
+ a mating scheme to follow a complete pedigree constructed manually or saved
+ from a previous evolutionary process.
+ This will allow, for example, to repeat the same evolutionary process for
+ different chromosomes when a large number of loci are simulated.
+\end_layout
+
+\begin_layout Standard
+A pedigree is created from a population object with an ID field (default
+ to 
+\family typewriter
+ind_id
+\family default
+), and two parental ID fields (default to 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+).
+ Genotype information and additional information fields can be copied to
+ a pedigree object if needed.
+ The ID field should have a unique ID for each individual and the parental
+ ID fields should record the ID of his or her parents.
+\end_layout
+
+\begin_layout Standard
+A pedigree object provides several functions for you to identify spouse,
+ sibling and more distant relatives of each individual.
+ The results are stored to additional information fields of each individual.
+ For example, if you would like to know the offspring of all individuals,
+ you can call function 
+\family typewriter
+pedigree.locateRelatives
+\family default
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+offFields = ['off1', 'off2', 'off3']
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.addInfoFields(offFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(Offspring, resultFields=offFields)
+\end_layout
+
+\end_inset
+
+This function will locate up to 3 (determined by the length of 
+\family typewriter
+resultFields
+\family default
+) offspring of each individual and put their IDs in specified informaton
+ fields.
+ This function allows you to identify spouses (it is common to have multiple
+ spouses when random mating is used), outbred spouse (exclude spouses who
+ share at least one of the parents), offspring (all offspring) and common
+ offspring with a specified spouse, siblings (share at least one parent)
+ and full siblings (share two parents).
+ It also allows you to limit the result by sex and affection status (e.g.
+ find only affected female offspring).
+\end_layout
+
+\begin_layout Standard
+More distant relationship can be derived from these relationship using function
+ 
+\family typewriter
+pedigree.traceRelatives
+\family default
+.
+ This function accepts a path of information fields and follows the path
+ to identify relatives.
+ For example 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sibFields = ['sib1', 'sib2']
+\end_layout
+
+\begin_layout Plain Layout
+
+offFields = ['off1', 'off2', 'off3']
+\end_layout
+
+\begin_layout Plain Layout
+
+cousinFields = ['cousin1', 'cousin2', 'cousin3']
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.addInfoFields(sibFields + offFields + cousinFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(FullSibling, resultFields=sibFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(Offspring, resultFields=offFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.traceRelatives([['father_id', 'mother_id'], sibFields, offFields],
+\end_layout
+
+\begin_layout Plain Layout
+
+    sex=[AnySex, MaleOnly, FemaleOnly],
+\end_layout
+
+\begin_layout Plain Layout
+
+    resultField=cousinFields)
+\end_layout
+
+\end_inset
+
+would first identify full siblings and offspring of all individuals and
+ then locate father or mother's male sibling's daughters.
+ As you can imagine, this function can be used to track very complicated
+ relationships.
+\end_layout
+
+\begin_layout Standard
+This function also provides a function for you to identify individuals with
+ specified relatives.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "locateRelative"
+
+\end_inset
+
+ gives an example how to locate a grandfather with at least five grandchildren.
+ With such information, functions such as 
+\family typewriter
+population.extractIndividuals()
+\family default
+ could be used to extract pedigrees from a population.
+ This is basically how 
+\family typewriter
+simuPOP.sampling
+\family default
+ module works.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/locateRelative.log"
+lstparams "caption={Locate close and distant relatives of individuals},label={locateRelative}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
