@@ -362,20 +362,20 @@ private:
 };
 
 /// CPPONLY
-class statNumOfMale
+class statNumOfMales
 {
 private:
-#define  numOfMale_String         "numOfMale"
-#define  propOfMale_String        "propOfMale"
-#define  numOfFemale_String       "numOfFemale"
-#define  propOfFemale_String      "propOfFemale"
-#define  numOfMale_sp_String      "numOfMale_sp"
-#define  propOfMale_sp_String     "propOfMale_sp"
-#define  numOfFemale_sp_String    "numOfFemale_sp"
-#define  propOfFemale_sp_String   "propOfFemale_sp"
+#define  numOfMales_String         "numOfMales"
+#define  propOfMales_String        "propOfMales"
+#define  numOfFemales_String       "numOfFemales"
+#define  propOfFemales_String      "propOfFemales"
+#define  numOfMales_sp_String      "numOfMales_sp"
+#define  propOfMales_sp_String     "propOfMales_sp"
+#define  numOfFemales_sp_String    "numOfFemales_sp"
+#define  propOfFemales_sp_String   "propOfFemales_sp"
 
 public:
-	statNumOfMale(bool numOfMale, const subPopList & subPops,
+	statNumOfMales(bool numOfMales, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	bool apply(population & pop);
@@ -884,22 +884,22 @@ public:
 	 *      This variable is easier to use than accessing popSize from each
 	 *      (virtual) subpopulation.
 	 *
-	 *  <b>numOfMale</b>: If \e numOfMale=True, number of male individuals in
+	 *  <b>numOfMales</b>: If \e numOfMales=True, number of male individuals in
 	 *  all or specified (virtual) subpopulations will be set to the following
 	 *  variables:
-	 *  \li \c numOfMale (default): Total number of male individuals in all
+	 *  \li \c numOfMales (default): Total number of male individuals in all
 	 *       or specified (virtual) subpopulations.
-	 *  \li \c numOfMale (default): Total number of female individuals in all
+	 *  \li \c numOfMales (default): Total number of female individuals in all
 	 *       or specified (virtual) subpopulations.
-	 *  \li \c propOfMale: Proportion of male individuals.
-	 *  \li \c propOfFemale: Proportion of female individuals.
-	 *  \li \c numOfMale_sp: Number of male individuals in each (virtual)
+	 *  \li \c propOfMales: Proportion of male individuals.
+	 *  \li \c propOfFemales: Proportion of female individuals.
+	 *  \li \c numOfMales_sp: Number of male individuals in each (virtual)
 	 *       subpopulation.
-	 *  \li \c numOfFemale_sp: Number of female individuals in each (virtual)
+	 *  \li \c numOfFemales_sp: Number of female individuals in each (virtual)
 	 *       subpopulation.
-	 *  \li \c propOfMale_sp: Proportion of male individuals in each (virtual)
+	 *  \li \c propOfMales_sp: Proportion of male individuals in each (virtual)
 	 *       subpopulation.
-	 *  \li \c propOfFemale_sp: Proportion of female individuals in each
+	 *  \li \c propOfFemales_sp: Proportion of female individuals in each
 	 *       (virtual) subpopulation.
 	 *
 	 *  <b>numOfAffected</b>: If \e numOfAffected=True, number of affected
@@ -1159,7 +1159,7 @@ public:
 	 **/
 	stat(bool popSize = false,
 		//
-		bool numOfMale = false,
+		bool numOfMales = false,
 		//
 		bool numOfAffected = false,
 		//
@@ -1220,7 +1220,7 @@ public:
 
 private:
 	statPopSize m_popSize;
-	statNumOfMale m_numOfMale;
+	statNumOfMales m_numOfMales;
 	statNumOfAffected m_numOfAffected;
 	statAlleleFreq m_alleleFreq;
 	statHeteroFreq m_heteroFreq;

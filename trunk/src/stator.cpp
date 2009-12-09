@@ -296,7 +296,7 @@ string haploKey(const vectori & seq)
 stat::stat(
 	bool popSize,
 	//
-	bool numOfMale,
+	bool numOfMales,
 	//
 	bool numOfAffected,
 	//
@@ -334,7 +334,7 @@ stat::stat(
 	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize, subPops, vars, suffix),
-	m_numOfMale(numOfMale, subPops, vars, suffix),
+	m_numOfMales(numOfMales, subPops, vars, suffix),
 	m_numOfAffected(numOfAffected, subPops, vars, suffix),
 	m_alleleFreq(alleleFreq.elems(), subPops, vars, suffix),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars, suffix),
@@ -356,7 +356,7 @@ string stat::describe(bool format)
 	vectorstr descs;
 
 	descs.push_back(m_popSize.describe(false));
-	descs.push_back(m_numOfMale.describe(false));
+	descs.push_back(m_numOfMales.describe(false));
 	descs.push_back(m_numOfAffected.describe(false));
 	descs.push_back(m_alleleFreq.describe(false));
 	descs.push_back(m_heteroFreq.describe(false));
@@ -380,7 +380,7 @@ string stat::describe(bool format)
 bool stat::apply(population & pop)
 {
 	return m_popSize.apply(pop) &&
-	       m_numOfMale.apply(pop) &&
+	       m_numOfMales.apply(pop) &&
 	       m_numOfAffected.apply(pop) &&
 	       m_alleleFreq.apply(pop) &&
 	       m_heteroFreq.apply(pop) &&
@@ -444,28 +444,28 @@ bool statPopSize::apply(population & pop)
 }
 
 
-statNumOfMale::statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars, const string & suffix)
-	: m_isActive(numOfMale), m_subPops(subPops), m_vars(), m_suffix(suffix)
+statNumOfMales::statNumOfMales(bool numOfMales, const subPopList & subPops, const stringList & vars, const string & suffix)
+	: m_isActive(numOfMales), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfMale_String,	   propOfMale_String,
-		numOfFemale_String,	   propOfFemale_String,
-		numOfMale_sp_String,   propOfMale_sp_String,
-		numOfFemale_sp_String, propOfFemale_sp_String,""
+		numOfMales_String,	   propOfMales_String,
+		numOfFemales_String,	   propOfFemales_String,
+		numOfMales_sp_String,   propOfMales_sp_String,
+		numOfFemales_sp_String, propOfFemales_sp_String,""
 	};
-	const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
+	const char * defaultVars[] = { numOfMales_String, numOfFemales_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
-string statNumOfMale::describe(bool format)
+string statNumOfMales::describe(bool format)
 {
 	return m_isActive ? "count number of male individuals" : "";
 }
 
 
-bool statNumOfMale::apply(population & pop)
+bool statNumOfMales::apply(population & pop)
 {
 	if (!m_isActive)
 		return true;
@@ -496,15 +496,15 @@ bool statNumOfMale::apply(population & pop)
 
 		totalCnt = maleCnt + femaleCnt;
 
-		if (m_vars.contains(numOfMale_sp_String))
-			pop.getVars().setIntVar(subPopVar_String(*sp, numOfMale_String) + m_suffix, maleCnt);
-		if (m_vars.contains(propOfMale_sp_String))
-			pop.getVars().setDoubleVar(subPopVar_String(*sp, propOfMale_String) + m_suffix,
+		if (m_vars.contains(numOfMales_sp_String))
+			pop.getVars().setIntVar(subPopVar_String(*sp, numOfMales_String) + m_suffix, maleCnt);
+		if (m_vars.contains(propOfMales_sp_String))
+			pop.getVars().setDoubleVar(subPopVar_String(*sp, propOfMales_String) + m_suffix,
 				totalCnt == 0 ? 0 : static_cast<double>(maleCnt) / totalCnt);
-		if (m_vars.contains(numOfFemale_sp_String))
-			pop.getVars().setIntVar(subPopVar_String(*sp, numOfFemale_String) + m_suffix, femaleCnt);
-		if (m_vars.contains(propOfFemale_sp_String))
-			pop.getVars().setDoubleVar(subPopVar_String(*sp, propOfFemale_String) + m_suffix,
+		if (m_vars.contains(numOfFemales_sp_String))
+			pop.getVars().setIntVar(subPopVar_String(*sp, numOfFemales_String) + m_suffix, femaleCnt);
+		if (m_vars.contains(propOfFemales_sp_String))
+			pop.getVars().setDoubleVar(subPopVar_String(*sp, propOfFemales_String) + m_suffix,
 				totalCnt == 0 ? 0 : static_cast<double>(femaleCnt) / totalCnt);
 
 		allMaleCnt += maleCnt;
@@ -513,14 +513,14 @@ bool statNumOfMale::apply(population & pop)
 	}
 
 	// output whole population
-	if (m_vars.contains(numOfMale_String))
-		pop.getVars().setIntVar(numOfMale_String + m_suffix, allMaleCnt);
-	if (m_vars.contains(propOfMale_String))
-		pop.getVars().setDoubleVar(propOfMale_String + m_suffix, allTotalCnt == 0 ? 0. : static_cast<double>(allMaleCnt) / allTotalCnt);
-	if (m_vars.contains(numOfFemale_String))
-		pop.getVars().setIntVar(numOfFemale_String + m_suffix, allFemaleCnt);
-	if (m_vars.contains(propOfFemale_String))
-		pop.getVars().setDoubleVar(propOfFemale_String + m_suffix, allTotalCnt == 0 ? 0 : static_cast<double>(allFemaleCnt) / allTotalCnt);
+	if (m_vars.contains(numOfMales_String))
+		pop.getVars().setIntVar(numOfMales_String + m_suffix, allMaleCnt);
+	if (m_vars.contains(propOfMales_String))
+		pop.getVars().setDoubleVar(propOfMales_String + m_suffix, allTotalCnt == 0 ? 0. : static_cast<double>(allMaleCnt) / allTotalCnt);
+	if (m_vars.contains(numOfFemales_String))
+		pop.getVars().setIntVar(numOfFemales_String + m_suffix, allFemaleCnt);
+	if (m_vars.contains(propOfFemales_String))
+		pop.getVars().setDoubleVar(propOfFemales_String + m_suffix, allTotalCnt == 0 ? 0 : static_cast<double>(allFemaleCnt) / allTotalCnt);
 	return true;
 }
 

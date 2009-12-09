@@ -56,10 +56,10 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSizes(), (20, 80) )
         self.assertEqual(pop.subPopIndPair(21), (1, 1) )
         self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
-        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
+        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
         pop.setVirtualSplitter(sexSplitter())
-        self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMale)
-        self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemale)
+        self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
+        self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
 
     def testVirtualSubPop(self):
         'Testing population::numVirtualSubPop(), setVirtualSplitter(splitter), subPopName(subPop)'
@@ -1017,10 +1017,10 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[20, 80])
         InitSex(pop)
         InitByFreq(pop, [0.4, 0.6])
-        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
+        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
         pop.setVirtualSplitter(sexSplitter())
-        self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMale)
-        self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemale)
+        self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
+        self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
         self.assertEqual(pop.subPopName([1, 0]), 'Male')
         self.assertEqual(pop.subPopName([1, 1]), 'Female')
         for ind in pop.individuals([0, 0]):
@@ -1214,8 +1214,8 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.sex(), Male)
         for ind in pop.individuals([0, 3]):
             self.assertEqual(ind.sex(), Female)
-        Stat(pop, numOfMale=True, vars='numOfFemale_sp')
-        self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemale)
+        Stat(pop, numOfMales=True, vars='numOfFemales_sp')
+        self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemales)
         #
         # combined splitter with vspMap
         #
@@ -1277,11 +1277,11 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
             self.assertEqual(ind.sex(), Female)
-        Stat(pop, numOfMale=True)
+        Stat(pop, numOfMales=True)
         for x in range(8):
             self.assertTrue(pop.subPopSize([0,x]) > 0)
-        self.assertEqual(sum([pop.subPopSize([0,x]) for x in range(0, 8, 2)]), pop.dvars().numOfMale)
-        self.assertEqual(sum([pop.subPopSize([0,x]) for x in range(1, 8, 2)]), pop.dvars().numOfFemale)
+        self.assertEqual(sum([pop.subPopSize([0,x]) for x in range(0, 8, 2)]), pop.dvars().numOfMales)
+        self.assertEqual(sum([pop.subPopSize([0,x]) for x in range(1, 8, 2)]), pop.dvars().numOfFemales)
 
     def testIndByID(self):
         'Testing population::indByID()'

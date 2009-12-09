@@ -134,25 +134,25 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(
             self.checkSexMode(randomMating(sexMode=NoSex)),
             'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
-        # NumOfMale
+        # NumOfMales
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=3,
-            sexMode=(NumOfMale, 1))),
+            sexMode=(NumOfMales, 1))),
             'MFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFM')
-        # NumOfFemale
+        # NumOfFemales
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=4,
-            sexMode=(NumOfFemale, 2))),
+            sexMode=(NumOfFemales, 2))),
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
-        # ProbOfMale
+        # ProbOfMales
         pop = population(10000)
-        simu = simulator(pop, randomMating(sexMode=(ProbOfMale, 0.3)))
+        simu = simulator(pop, randomMating(sexMode=(ProbOfMales, 0.3)))
         simu.evolve(
             initOps = [initSex(), initByFreq([0.5, 0.5])],
             postOps = [
-                stat(numOfMale=True),
+                stat(numOfMales=True),
                 # number of male should be variable, but not too much
-                terminateIf('numOfMale < 2500 or numOfMale > 3500'),
+                terminateIf('numOfMales < 2500 or numOfMales > 3500'),
             ],
             gen = 10
         )
@@ -162,7 +162,7 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing monogemous mating scheme'
         pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
         InitByFreq(pop, [0.2, 0.3, 0.5])
-        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NumOfMale, 1)))
+        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NumOfMales, 1)))
         simu.evolve(
             initOps = initSex(sex=(Male, Female)), 
             duringOps = parentsTagger(),

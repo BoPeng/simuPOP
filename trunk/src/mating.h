@@ -95,8 +95,8 @@ public:
 	 *  default value is usually \e RandomSex which assign \c Male or \c Female
 	 *  to each individual randomly, with equal probabilities. If \c NoSex is
 	 *  given, all individuals will be \c Male. \e sexMode can also be one of
-	 *  <tt>(ProbOfMale, p)</tt>, <tt>(NumOfMale, n)</tt>, and
-	 *  <tt>(NumOfFemale, n)</tt>. The first case specifies the probability
+	 *  <tt>(ProbOfMales, p)</tt>, <tt>(NumOfMales, n)</tt>, and
+	 *  <tt>(NumOfFemales, n)</tt>. The first case specifies the probability
 	 *  of male for each offspring. The next two cases specifies the number of
 	 *  male or female individuals in each family, respectively. If \c n is
 	 *  greater than or equal to the number of offspring in this family, all

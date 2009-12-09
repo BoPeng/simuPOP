@@ -174,9 +174,9 @@ enum Distribution {
 enum SexMode {
 	NoSex = 30,
 	RandomSex = 31,
-	ProbOfMale = 32,
-	NumOfMale = 33,
-	NumOfFemale = 34
+	ProbOfMales = 32,
+	NumOfMales = 33,
+	NumOfFemales = 34
 };
 
 // For gene conversion

@@ -183,13 +183,13 @@ class TestMigrator(unittest.TestCase):
         # 3900 male
         # 3900 male
         self.assertEqual(pop.subPopSizes(), (2200, 3900, 3900))
-        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
-        self.assertEqual(pop.dvars(0).numOfMale, 200)
-        self.assertEqual(pop.dvars(0).numOfFemale, 2000)
-        self.assertEqual(pop.dvars(1).numOfMale, 3900)
-        self.assertEqual(pop.dvars(1).numOfFemale, 0)
-        self.assertEqual(pop.dvars(2).numOfMale, 3900)
-        self.assertEqual(pop.dvars(2).numOfFemale, 0)
+        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
+        self.assertEqual(pop.dvars(0).numOfMales, 200)
+        self.assertEqual(pop.dvars(0).numOfFemales, 2000)
+        self.assertEqual(pop.dvars(1).numOfMales, 3900)
+        self.assertEqual(pop.dvars(1).numOfFemales, 0)
+        self.assertEqual(pop.dvars(2).numOfMales, 3900)
+        self.assertEqual(pop.dvars(2).numOfFemales, 0)
         # (200M, 2000F), (3900M, 0F), (3900M, 0F),
         # 20M, 200F ==> 1, 2
         # 390F, 1 => 0

@@ -1210,14 +1210,14 @@ def checkSexMode(ms):
 checkSexMode(sim.randomMating(sexMode=sim.NoSex))
 # Case 2: sim.RandomSex (sim.Male/Female with probability 0.5)
 checkSexMode(sim.randomMating(sexMode=sim.RandomSex))
-# Case 3: sim.ProbOfMale (Specify probability of male)
-checkSexMode(sim.randomMating(sexMode=(sim.ProbOfMale, 0.8)))
-# Case 4: sim.NumOfMale (Specify number of male in each family)
-checkSexMode(sim.randomMating(numOffspring=3, sexMode=(sim.NumOfMale, 1)))
-# Case 5: sim.NumOfFemale (Specify number of female in each family)
+# Case 3: sim.ProbOfMales (Specify probability of male)
+checkSexMode(sim.randomMating(sexMode=(sim.ProbOfMales, 0.8)))
+# Case 4: sim.NumOfMales (Specify number of male in each family)
+checkSexMode(sim.randomMating(numOffspring=3, sexMode=(sim.NumOfMales, 1)))
+# Case 5: sim.NumOfFemales (Specify number of female in each family)
 checkSexMode(sim.randomMating(
     numOffspring=(sim.UniformDistribution, 4, 6),
-    sexMode=(sim.NumOfFemale, 2))
+    sexMode=(sim.NumOfFemales, 2))
 )
 #end_file
 
@@ -1231,7 +1231,7 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(sim.population(20, infoFields=['father_idx', 'mother_idx']),
-    sim.monogamousMating(numOffspring=2, sexMode=(sim.NumOfMale, 1)))
+    sim.monogamousMating(numOffspring=2, sexMode=(sim.NumOfMales, 1)))
 simu.evolve(
     initOps = sim.initSex(sex=(sim.Male, sim.Female)),
     duringOps = sim.parentsTagger(),
@@ -2062,9 +2062,9 @@ sim.GetRNG().setSeed(12345)
 pop = sim.population(size=[1000, 1000])
 sim.InitSex(pop, maleFreq=0.3, subPops=0)
 sim.InitSex(pop, sex=[sim.Male, sim.Female, sim.Female], subPops=1)
-sim.Stat(pop, numOfMale=True, vars='numOfMale_sp')
-print pop.dvars(0).numOfMale
-print pop.dvars(1).numOfMale
+sim.Stat(pop, numOfMales=True, vars='numOfMales_sp')
+print pop.dvars(0).numOfMales
+print pop.dvars(1).numOfMales
 #end_file
 
 #begin_file log/initByFreq.py
@@ -2578,14 +2578,14 @@ simu.evolve(
             ],
             mode = sim.ByProportion,
             subPops=[(0, 0), (0, 1)]),
-        sim.stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
-        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
-            "subPop[1]['numOfMale'], subPopSize[1])"),
+        sim.stat(popSize=True, numOfMales=True, vars='numOfMales_sp'),
+        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMales'], subPopSize[0], "
+            "subPop[1]['numOfMales'], subPopSize[1])"),
     ],
     postOps = [
-        sim.stat(popSize=True, numOfMale=True, vars='numOfMale_sp'),
-        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
-            "subPop[1]['numOfMale'], subPopSize[1])"),
+        sim.stat(popSize=True, numOfMales=True, vars='numOfMales_sp'),
+        sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMales'], subPopSize[0], "
+            "subPop[1]['numOfMales'], subPopSize[1])"),
     ],
     gen = 2
 )   
@@ -3353,11 +3353,11 @@ sim.Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)], vars='popSize_sp')
 # Note the two ways to access variable in (virtual) subpopulations.
 print pop.dvars((0,0)).popSize, pop.dvars().subPop[(0,2)]['popSize']
 # Count number of male (should be the same as the size of VSP (0,0).
-sim.Stat(pop, numOfMale=True)
-print pop.dvars().numOfMale
+sim.Stat(pop, numOfMales=True)
+print pop.dvars().numOfMales
 # Count the number of affected and unaffected male individual
-sim.Stat(pop, numOfMale=True, subPops=[(0, 2), (0, 3)], vars='numOfMale_sp')
-print pop.dvars((0,2)).numOfMale, pop.dvars((0,3)).numOfMale
+sim.Stat(pop, numOfMales=True, subPops=[(0, 2), (0, 3)], vars='numOfMales_sp')
+print pop.dvars((0,2)).numOfMales, pop.dvars((0,3)).numOfMales
 # or number of affected male and females
 sim.Stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
 print pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected
@@ -3767,7 +3767,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(1000, loci=[1], infoFields=['aff', 'numAff'])
+pop = sim.population(1000, loci=[1], infoFields=['aff', 'numOfAff'])
 # define virtual subpopulations by affection sim.status
 pop.setVirtualSplitter(sim.affectionSplitter())
 simu = sim.simulator(pop, sim.randomMating())
@@ -3782,16 +3782,16 @@ simu.evolve(
         # set 'aff' of parents
         sim.infoExec('aff = ind.affected()', exposeInd='ind'),
     ],
-        # get number of affected parents for each offspring and store in numAff
-    duringOps = sim.summaryTagger(mode=sim.Summation, infoFields=['aff', 'numAff']),
+        # get number of affected parents for each offspring and store in numOfAff
+    duringOps = sim.summaryTagger(mode=sim.Summation, infoFields=['aff', 'numOfAff']),
     postOps = [
         # get affection sim.status for offspring
         sim.maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
-        # calculate mean 'numAff' of offspring, for unaffected and affected subpopulations.
-        sim.stat(meanOfInfo='numAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
+        # calculate mean 'numOfAff' of offspring, for unaffected and affected subpopulations.
+        sim.stat(meanOfInfo='numOfAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
         # print mean number of affected parents for unaffected and affected offspring.
         sim.pyEval(r"'sim.Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
-            "(subPop[(0,0)]['meanOfInfo']['numAff'], subPop[(0,1)]['meanOfInfo']['numAff'])")
+            "(subPop[(0,0)]['meanOfInfo']['numOfAff'], subPop[(0,1)]['meanOfInfo']['numOfAff'])")
     ],
     gen = 5
 )
@@ -4713,7 +4713,7 @@ pop = sim.population([10000], loci=5)
 sim.InitByFreq(pop, [0.2, 0.8])
 sim.MaPenetrance(pop, loci=2, penetrance=[0.11, 0.15, 0.20])
 # draw multiple case control sample
-samples = DrawCaseControlSamples(pop, cases=500, controls=500, numSamples=5)
+samples = DrawCaseControlSamples(pop, cases=500, controls=500, numOfSamples=5)
 for sample in samples:
     sim.Stat(sample, association=range(5))
     print ', '.join(['%.6f' % sample.dvars().Allele_ChiSq_p[x] for x in range(5)])
@@ -4798,7 +4798,7 @@ sim.GetRNG().setSeed(12347)
 from simuPOP.sampling import DrawThreeGenFamilySample, PlotPedigree
 pop = sim.LoadPopulation('log/pedigree.pop')
 sample = DrawThreeGenFamilySample(pop, families=2, numOffspring=(1, 3),
-    pedSize=(8, 15), numAffected=(2, 5))
+    pedSize=(8, 15), numOfAffected=(2, 5))
 PlotPedigree(sample, filename='log/threeGenFamily.png')
 #end_file
 
