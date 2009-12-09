@@ -84,17 +84,6 @@ public:
 	 */
 	pedigree * clone() const;
 
-	/** Return the ID of the father of individual \e ID.
-	 *  <group>3-rel</group>
-	 */
-	ULONG father(ULONG ID);
-
-	/** Return the ID of the mather of individual \e ID.
-	 *  <group>3-rel</group>
-	 */
-	ULONG mother(ULONG ID);
-
-
 	/** Return a reference to individual with \e id. An \c IndexError will be
 	 *  raised if no individual with \e id is found. An float \e id is
 	 *  acceptable as long as it rounds closely to an integer.

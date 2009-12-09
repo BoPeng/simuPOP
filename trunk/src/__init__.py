@@ -107,7 +107,7 @@ __all__ = [
     # mating schemes
     'heteroMating',
     'homoMating',
-    'pedigreeMating',
+    #'pedigreeMating',
     'offspringGenerator',
     'controlledOffspringGenerator',
     'randomParentChooser',
@@ -116,7 +116,7 @@ __all__ = [
     'randomParentsChooser',
     'sequentialParentsChooser',
     'alphaParentsChooser',
-    'infoParentsChooser',
+    #'infoParentsChooser',
     'parentChooser',
     'polyParentsChooser',
     #
@@ -127,7 +127,7 @@ __all__ = [
     'alphaMating',
     'cloneMating',
     'haplodiploidMating',
-    'consanguineousMating',
+    #'consanguineousMating',
     'controlledRandomMating',
     'polygamousMating',
     #
@@ -515,29 +515,29 @@ def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
         subPops = subPops,
         weight = weight)
 
-
-def consanguineousMating(infoFields = [], func = None, param = None,
-        replacement = False, numOffspring = 1.,	sexMode = RandomSex,
-        ops = mendelianGenoTransmitter(), subPopSize = [],
-		subPops = AllAvail, weight = 0, selectionField = 'fitness'):
-    '''A homogeneous mating scheme that uses an information parents chooser and
-    a Mendelian offspring generator. A function *func* should be defined to
-    locate certain types of relative to each individual and save their indexes
-    to information fields *infoFields*. This mating scheme will then choose a
-    parent randomly and then another parent from his/her relatives using their
-    saved indexes. Please refer to class ``infoParentsChooser`` for parameters
-    *infoFields*, *func*, *param* and  *selectionField*, to class
-    ``offspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-    and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
-    *weight*.
-    '''
-    return homoMating(
-        chooser = infoParentsChooser(infoFields, func, param, selectionField),
-        generator = offspringGenerator(ops, numOffspring, sexMode),
-        subPopSize = subPopSize,
-        subPops = subPops,
-        weight = weight)
-
+## 
+## def consanguineousMating(infoFields = [], func = None, param = None,
+##         replacement = False, numOffspring = 1.,	sexMode = RandomSex,
+##         ops = mendelianGenoTransmitter(), subPopSize = [],
+## 		subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+##     '''A homogeneous mating scheme that uses an information parents chooser and
+##     a Mendelian offspring generator. A function *func* should be defined to
+##     locate certain types of relative to each individual and save their indexes
+##     to information fields *infoFields*. This mating scheme will then choose a
+##     parent randomly and then another parent from his/her relatives using their
+##     saved indexes. Please refer to class ``infoParentsChooser`` for parameters
+##     *infoFields*, *func*, *param* and  *selectionField*, to class
+##     ``offspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
+##     and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
+##     *weight*.
+##     '''
+##     return homoMating(
+##         chooser = infoParentsChooser(infoFields, func, param, selectionField),
+##         generator = offspringGenerator(ops, numOffspring, sexMode),
+##         subPopSize = subPopSize,
+##         subPops = subPops,
+##         weight = weight)
+## 
 
 def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
         numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoTransmitter(),

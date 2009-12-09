@@ -1609,37 +1609,6 @@ simu.evolve(
 )
 #end_file
 
-#begin_file log/infoChooser.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(100, loci=[10],
-    infoFields=['father_idx', 'mother_idx', 'sibling'])
-pop.setVirtualSplitter(sim.sexSplitter())
-def locate_sibling(pop):
-    '''The sim.population is arranged as MFMFMFMF... where MF are siblings, so the
-    sibling of males are 1, 3, 5, .. and the slibling of females are 0, 2, 4, ...
-    '''
-    pop.setIndInfo([2*x+1 for x in range(pop.popSize()/2)], 'sibling', (0, 0))
-    pop.setIndInfo([2*x for x in range(pop.popSize()/2)], 'sibling', (0, 1))
-
-simu = sim.simulator(pop, sim.consanguineousMating(func=locate_sibling, infoFields='sibling',
-    numOffspring=2, sexMode=(sim.NumOfMale, 1)))
-simu.evolve(
-    initOps = [
-        sim.initSex(),
-        sim.initByFreq([0.2, 0.8])
-    ],
-    duringOps = sim.parentsTagger(),
-    postOps = sim.dumper(structure=False, max=6, at=[-1]),
-    gen = 2
-)
-#end_file
 
 #begin_file log/generator.py
 #begin_ignore

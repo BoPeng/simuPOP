@@ -6863,7 +6863,7 @@ mating scheme
 \begin_layout Standard
 Mating schemes are responsible for populating an offspring generation from
  the parental generation.
- There are currently three types of mating schemes
+ There are currently two types of mating schemes
 \end_layout
 
 \begin_layout Itemize
@@ -6904,17 +6904,6 @@ heterogeneous mating scheme
  Because the division of virtual subpopulations can be arbitrary, this mating
  scheme can be used to simulate mating in heterogeneous populations such
  as populations with age structure.
-\end_layout
-
-\begin_layout Itemize
-A 
-\series bold
-pedigree mating scheme
-\series default
- that follows a recorded evolutionary scenario.
- The selection of parents and the production of offspring are controlled
- by a pedigree.
- This mating scheme does not support virtual subpopulation.
 \end_layout
 
 \begin_layout Standard
@@ -8895,7 +8884,7 @@ lstparams "caption={A customized genotype transmitter for sex-specific recombina
 \end_layout
 
 \begin_layout Subsection
-Pre-define parent choosers *
+A Python parent chooser *
 \end_layout
 
 \begin_layout Standard
@@ -8904,11 +8893,7 @@ Parent choosers are responsible for choosing one or two parents from a parental
  simuPOP defines a few parent choosers that choose parent(s) sequentially,
  randomly (with or without replacement), or with additional conditions.
  Some of these parent choosers support natual selection.
- Please refer to the simuPOP reference manual for details about these objects.
-\end_layout
-
-\begin_layout Standard
-We have seen sequential and random parent choosers in Examples 
+ We have seen sequential and random parent choosers in Examples 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sequentialSelfing"
@@ -8923,60 +8908,7 @@ reference "controlledOffGenerator"
 \end_inset
 
 .
- A less-used parent chooser is 
-\family typewriter
-infoParentsChooser
-\family default
-, which chooses a parent randomly, and his/her spouse from indexes stored
- in his/her information fields.
- This parent chooser is usually used in a consanguineous mating scheme where
- certain types of relatives of each individual are stored in his/her information
- fields, and used during the selection of spouses.
- For example, a 
-\family typewriter
-consanguineousMating
-\family default
- mating scheme in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "infoChooser"
-
-\end_inset
-
- produces a male and a female offspring at each mating event.
- Before mating, a function is called to record every individual's sibling
- in his/her information field 
-\family typewriter
-sibling
-\family default
-.
- During mating, a parent is chosen randomly, and mates with his/her sibling.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/infoChooser.log"
-lstparams "caption={A consanguineous mating scheme.},label={infoChooser}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This example does not make such sense because consanguineous mating usually
- happens between first and second degree relatives, and represents only
- a small fraction of total parents in a population.
- 
-\family typewriter
-doc/cook/Mating_consanguineous.py
-\family default
- gives a more realistic example in which certain proportion of offspring
- are produced by random mating, and others are results of marriages between
- first-degree cousins.
-\end_layout
-
-\begin_layout Subsection
-A Python parent chooser *
+ Please refer to the simuPOP reference manual for details about these objects.
 \end_layout
 
 \begin_layout Standard
@@ -9353,14 +9285,6 @@ lstparams "caption={Implement a parent chooser in C++},label={cppParentChooser}"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-The pedigree mating scheme *
-\end_layout
-
-\begin_layout Standard
-This feature is still under major revision.
 \end_layout
 
 \begin_layout Section

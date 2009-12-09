@@ -3007,77 +3007,6 @@ Usage:
 
 %feature("docstring") simuPOP::infoExec::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::infoParentsChooser "
-
-Details:
-
-    This parent chooser chooses an individual randomly, and then
-    his/her spouse his/her spouse from a given set of information
-    fields, which stores indexes of individuals in the same
-    generation. An information field will be ignored if its value is
-    negative, or if sex is incompatible.  Depending on what indexes
-    are stored in these information fields, this parent chooser can be
-    used to implement different types of mating schemes where
-    selection of spouse is limited. For example, a consanguineous
-    mating scheme can be implemeneted using this mating scheme if
-    certain type of relatives are located for each individual, and are
-    used for mating.  This parent chooser uses randomParentChooser to
-    choose one parent and randomly choose another one from the
-    information fields. Natural selection is supported during the
-    selection of the first parent. Because of potentially uneven
-    distribution of valid information fields, the overall process may
-    not be as random as expected.
-
-"; 
-
-%feature("docstring") simuPOP::infoParentsChooser::infoParentsChooser "
-
-Usage:
-
-    infoParentsChooser(infoFields=[], func=None, param=None,
-      selectionField=\"fitness\")
-
-Details:
-
-    Create a information parent chooser a parent randomly (with
-    replacement, and with selection if natural selection is enabled),
-    and then his/her spouse from indexes stored in infoFields. If a
-    Python function func is specified, it will be called before
-    parents are chosen. This function accepts the parental population
-    and an optional parameter param and is usually used to locate
-    qualified spouse for each parent. The return value of this
-    function is ignored.
-
-"; 
-
-%feature("docstring") simuPOP::infoParentsChooser::clone "
-
-Description:
-
-    Deep copy of a infomation parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::infoParentsChooser::describe "
-
-Description:
-
-    describe a parents chooser using information fields
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%ignore simuPOP::infoParentsChooser::initialize(population &pop, SubPopID sp);
-
-%ignore simuPOP::infoParentsChooser::chooseParents(RawIndIterator basePtr);
-
 %feature("docstring") simuPOP::InformationIterator "
 
 Details:
@@ -5005,30 +4934,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::father "
-
-Usage:
-
-    x.father(ID)
-
-Details:
-
-    Return the ID of the father of individualID.
-
-"; 
-
-%feature("docstring") simuPOP::pedigree::mother "
-
-Usage:
-
-    x.mother(ID)
-
-Details:
-
-    Return the ID of the mather of individualID.
-
-"; 
-
 %feature("docstring") simuPOP::pedigree::indByID "
 
 Usage:
@@ -5158,92 +5063,6 @@ Details:
     invalid.
 
 "; 
-
-%feature("docstring") simuPOP::pedigreeMating "
-
-Details:
-
-    A pedigree mating scheme that evolves a population following a
-    pedigree object.
-
-"; 
-
-%feature("docstring") simuPOP::pedigreeMating::pedigreeMating "
-
-Usage:
-
-    pedigreeMating(ped, generator, setSex=False, setAffection=False,
-      copyFields=[])
-
-Details:
-
-    Creates a mating scheme that evolve a population following a
-    pedigree object ped. Considering this pedigree as a population
-    with N ancestral generations, the starting population is the
-    greatest ancestral generation of ped. The mating scheme creates an
-    offspring generation that match the size of generation N-1 and
-    chooses parents according to the parents of individuals at this
-    generation. Depending on the gen parameter of the simulator, the
-    process continues generation by generation for N generations if
-    gen >= N), or gen generations if gen < N. During the evolution, an
-    offspring generator generator is used to produce one offspring at
-    a time, regardless of the numOffspring setting of this offspring
-    generator. If individuals in pedigreeped has only one parent, the
-    offspring generator should be compatible.  By default, the
-    pedigree mating scheme does not set offspring sex and affection
-    status using sex and affection status of corresponding individuals
-    in the pedigree. However, if such information is valid in the
-    pedigree object ped, you can set parameters setSex and/or
-    setAffection to True to set sex and/of affection status to
-    offspring during the evolutionary process. Similarly, you can
-    specify some information fields in copyFields to copy some
-    information fields from pedigree to the evolving population. Note
-    that these information will be copied also to the starting
-    population (from the greatest ancestral generation in ped).
-
-"; 
-
-%feature("docstring") simuPOP::pedigreeMating::~pedigreeMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pedigreeMating()
-
-"; 
-
-%ignore simuPOP::pedigreeMating::pedigreeMating(const pedigreeMating &rhs);
-
-%feature("docstring") simuPOP::pedigreeMating::clone "
-
-Description:
-
-    deep copy of a Python mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pedigreeMating::describe "
-
-Description:
-
-    describe a pedigree mating scheme.
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%ignore simuPOP::pedigreeMating::prepareScratchPop(population &pop, population &scratch);
-
-%ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::pedigreeTagger "
 

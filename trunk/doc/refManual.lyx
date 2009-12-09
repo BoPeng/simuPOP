@@ -485,7 +485,7 @@ heteroMatingRef
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 pedigreeMatingRef
 \end_layout
@@ -530,13 +530,6 @@ polyParentsChooserRef
 
 \backslash
 alphaParentsChooserRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-infoParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -627,13 +620,6 @@ simuPOPhaplodiploidMatingRef
 
 \backslash
 simuPOPselfMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPconsanguineousMatingRef
 \end_layout
 
 \begin_layout Plain Layout
