@@ -89,9 +89,10 @@ __all__ = [
     #
 ]
 
-import exceptions, random
+import exceptions
+import random
 
-from simuPOP import AllAvail, Stat, pedigree, OutbredSpouse, CommonOffspring, FemaleOnly, \
+from simuPOP import AllAvail, pedigree, OutbredSpouse, CommonumOffspring, FemaleOnly, \
     Male, Affected, TagID
 
 def isSequence(obj):
@@ -202,14 +203,14 @@ class baseSampler:
     as separate populations. This base class defines the common interface of
     all sampling classes, including how samples prepared and returned.
     '''
-    def __init__(self, subPops = AllAvail):
+    def __init__(self, subPops=AllAvail):
         '''Create a sampler with parameter ``subPops``, which will be used
         to prepare population for sampling. ``subPops`` should be a list of
         (virtual) subpopulations from which samples are drawn. The default
         value is AllAvail, which means all available subpopulations of a
         population.
         '''
-        self.subPops = subPops
+        self.subPops=subPops
         self.pop = None
 
     def prepareSample(self, pop, rearrange):
@@ -245,21 +246,21 @@ class baseSampler:
 class randomSampler(baseSampler):
     '''A sampler that draws individuals randomly.
     '''
-    def __init__(self, size, subPops = AllAvail):
+    def __init__(self, sizes, subPops=AllAvail):
         '''Creates a random sampler with specified number of individuals.
         '''
         baseSampler.__init__(self, subPops)
-        self.size = size
+        self.sizes = sizes
 
     def drawSample(self, input_pop):
         '''Draw a random sample from passed population.
         '''
         if self.pop is None:
             # this will produce self.pop.
-            self.prepareSample(input_pop, isSequence(self.size))
+            self.prepareSample(input_pop, isSequence(self.sizes))
         #
-        if not isSequence(self.size):
-            size = self.size
+        if not isSequence(self.sizes):
+            size = self.sizes
             if size > self.pop.popSize():
                 print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
                 size = pop.popSize()
@@ -270,7 +271,7 @@ class randomSampler(baseSampler):
         else:
             indexes = []
             for sp in range(self.pop.numSubPop()):
-                size = self.size[sp]
+                size = self.sizes[sp]
                 if size > self.pop.subPopSize(sp):
                     print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
                         % (size, sp, self.pop.subPopSize(sp))
@@ -280,8 +281,8 @@ class randomSampler(baseSampler):
         return self.pop.extractIndividuals(indexes = indexes)
 
 
-def DrawRandomSample(pop, size, subPops=AllAvail):
-    '''Draw ``numSamples`` random samples from a population. If a single ``size``
+def DrawRandomSample(pop, sizes, subPops=AllAvail):
+    '''Draw ``sizes`` random individuals from a population. If a single ``sizes``
     is given, individuals are drawn randomly from the whole population or
     from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
     a list of numbers should be used to specify number of samples from each
@@ -289,20 +290,20 @@ def DrawRandomSample(pop, size, subPops=AllAvail):
     (default), or from each of the specified (virtual) subpopulations. This
     function returns a population with all extracted individuals.
     '''
-    return randomSampler(size=size, subPops=subPops).drawSample(pop)
+    return randomSampler(sizes=sizes, subPops=subPops).drawSample(pop)
 
 
-def DrawRandomSamples(pop, size, numSamples=1, subPops=AllAvail):
+def DrawRandomSamples(pop, sizes, numSamples=1, subPops=AllAvail):
     '''Draw ``numSamples`` random samples from a population and return a list of
     populations. Please refer to function ``DrawRandomSample`` for more details
-    about parameters ``size`` and ``subPops``.'''
-    return randomSampler(size=size, subPops=subPops).drawSamples(pop, numSamples=numSamples)
+    about parameters ``sizes`` and ``subPops``.'''
+    return randomSampler(sizes=sizes, subPops=subPops).drawSamples(pop, numSamples=numSamples)
 
 
 class caseControlSampler(baseSampler):
     '''A sampler that draws affected and unaffected individuals randomly.
     '''
-    def __init__(self, cases, controls, subPops = AllAvail):
+    def __init__(self, cases, controls, subPops=AllAvail):
         '''Ceates a case-control sampler with specified number of cases
         and controls.
         '''
@@ -529,7 +530,7 @@ class affectedSibpairSampler(pedigreeSampler):
         # only look for wife so families will not overlap
         self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
         # look for affected offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
+        self.pedigree.locateRelatives(CommonumOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
         # find qualified families
         if not isSequence(self.families):
             self.selectedIDs = self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'])
@@ -651,7 +652,7 @@ class nuclearFamilySampler(pedigreeSampler):
         # only look for wife so families will not overlap
         self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
         # look for offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse'] + offFields)
+        self.pedigree.locateRelatives(CommonumOffspring, ['spouse'] + offFields)
         # check number of affected individuals and filter them out.
         def qualify(id):
             father = self.pedigree.indByID(id)
@@ -708,7 +709,7 @@ class threeGenFamilySampler(pedigreeSampler):
     '''A sampler that draws three-generation families with specified pedigree
     size and number of affected individuals.
     '''
-    def __init__(self, families, numOffspring, pedSize, numAffected,
+    def __init__(self, families, numOffspring, pedSize, numOfAffected,
         subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''
         families
@@ -753,16 +754,16 @@ class threeGenFamilySampler(pedigreeSampler):
         else:
             raise ValueError('Number of affected parents should be an integer number (<= 1) or a range of allowed values.')
         #
-        if isNumber(numAffected):
-            if numAffected > self.pedSize[1]:
+        if isNumber(numOfAffected):
+            if numOfAffected > self.pedSize[1]:
                 raise ValueError('Number of affected individuals cannot be larger than pedigree size.')
-            self.numAffected = numAffected, numAffected
-        elif isSequence(numAffected):
-            if len(numAffected) != 2:
+            self.numOfAffected = numOfAffected, numOfAffected
+        elif isSequence(numOfAffected):
+            if len(numOfAffected) != 2:
                 raise ValueError('Two boundary numbers are needed for the range of number of affected individuals.')
-            if numAffected[0] > self.pedSize[1]:
+            if numOfAffected[0] > self.pedSize[1]:
                 raise ValueError('Minimum number of affected offsprings cannot be larger than number of individuals in a pedigree.')
-            self.numAffected = numAffected
+            self.numOfAffected = numOfAffected
         else:
             raise ValueError('Number of affected offsprings should be a proper integer nubmer or a range of allowed values.')
         #
@@ -795,7 +796,7 @@ class threeGenFamilySampler(pedigreeSampler):
         # only look for wife so families will not overlap
         self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
         # look for offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse'] + offFields)
+        self.pedigree.locateRelatives(CommonumOffspring, ['spouse'] + offFields)
         # look for grand children
         self.pedigree.traceRelatives(fieldPath = [offFields, offFields], resultFields = grandOffFields)
         # check number of affected individuals and filter them out.
@@ -812,7 +813,7 @@ class threeGenFamilySampler(pedigreeSampler):
                 return False
             # check number of affected individuals
             numAff = sum([self.pedigree.indByID(id).affected() for id in offID + offSpouseID + grandOffID]) + father.affected() + mother.affected()
-            if numAff < self.numAffected[0] or numAff > self.numAffected[1]:
+            if numAff < self.numOfAffected[0] or numAff > self.numOfAffected[1]:
                 return False
             return True
         # find all families with at least minOffFields...
@@ -824,13 +825,13 @@ class threeGenFamilySampler(pedigreeSampler):
                 self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
 
 
-def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numAffected,
+def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected,
     subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw three-generation families from a population. Such families consist
     of grant parents, their children, spouse of these children, and grand
     children. Number of offspring, total number of individuals, and total
     number of affected individuals in a pedigree should be specified using
-    parameters ``numOffspring``, ``pedSize`` and ``numAffected``, which can all
+    parameters ``numOffspring``, ``pedSize`` and ``numOfAffected``, which can all
     be a single number, or a range ``[a, b]`` (``b`` is incldued). If a single
     ``families`` is given, pedigrees are drawn randomly from the whole
     population or from specified (virtual) subpopulations (parameter
@@ -840,18 +841,18 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numAffected,
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
-    return threeGenFamilySampler(families, numOffspring, pedSize, numAffected,
+    return threeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSample(pop)
  
 
-def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numAffected,
+def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected,
     numSamples=1, subPops=AllAvail, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw ``numSamples`` three-generation pedigree samples from population ``pop``
     and return a list of populations. Please refer to function
     ``DrawThreeGenFamilySample`` for a description of other parameters.
     '''
-    return threeGenFamilySampler(families, numOffspring, pedSize, numAffected,
+    return threeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSamples(pop, numSamples)
 
 

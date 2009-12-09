@@ -144,7 +144,7 @@ class TestUtility(unittest.TestCase):
                 prop = bt.probSuccRate()
                 # binomial, mean p, variance = p(1-p)/n
                 std = math.sqrt(pi*(1.-pi)/N)
-                self.assertTrue(prop > pi - 3*std and prop < pi + 3*std)
+                self.assertTrue(prop > pi - 3*std and prop < pi + 3*std, "We are testing if the proportion falls within three standard deviation of SD. This test may fail from time to time.")
 
         # test find_first and find_next
         bt = BernulliTrials(rg, p, N)

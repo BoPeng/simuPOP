@@ -733,7 +733,7 @@ class trajectory:
             return
         #
         args = plotter.derivedArgs(
-            defaultFuncs = ['plot', 'lines'],
+            defaultFuncs=['plot', 'lines'],
             allFuncs = ['par', 'plot', 'lines', 'dev_print'],
             suffixes = ['loc', 'sp'],
             defaultParams = {
@@ -1244,7 +1244,7 @@ class trajectorySimulator:
                     self.logger.info('Backward failed - trajectory too long. gen = %d' % gen)
                 return None
             
-    def simuForward(self, beginGen, endGen, beginFreq, endFreq, maxAttempts = 10000):
+    def simuForward(self, beginGen, endGen, beginFreq, endFreq, maxAttempts=10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. This function accepts allele frequencies of
         alleles of multiple unlinked loci at the beginning generation (``freq``)
@@ -1326,7 +1326,7 @@ class trajectorySimulator:
             self.logger.info('Simulation failed after %d attempts' % failedCount)
         return None
     
-    def simuBackward(self, endGen, endFreq, minMutAge = None, maxMutAge = None,
+    def simuBackward(self, endGen, endFreq, minMutAge=None, maxMutAge=None,
         maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using
         a forward time approach. This function accepts allele frequencies of
@@ -1395,8 +1395,8 @@ class trajectorySimulator:
         return None
 
 
-def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci = 1,
-        fitness = None, maxAttempts = 10000, logger=None):
+def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1,
+        fitness=None, maxAttempts=10000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more
     unlinked loci (*nLoci*) from allele frequency *freq* at generation
@@ -1411,7 +1411,7 @@ def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci = 1,
         beginGen, endGen, beginFreq, endFreq, maxAttempts)
     
 def BackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
-        minMutAge = None, maxMutAge = None, maxAttempts = 1000, logger=None):
+        minMutAge=None, maxMutAge=None, maxAttempts=1000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more
     unlinked loci (*nLoci*) from allele frequency *freq* at generation *endGen*
