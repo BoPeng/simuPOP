@@ -22,27 +22,24 @@ class TestSampling(unittest.TestCase):
 
     def setUp(self):
         simu = simulator(
-            population(size=[1000,2000], ploidy=2, loci=[5,10],
-                ancGen=2,
-                infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
-            randomMating(numOffspring=2))
+            population(size=[1000,2000], loci=[5,10],
+                ancGen=1,
+                infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex']),
+            randomMating(numOffspring=(UniformDistribution, 2, 4)))
         simu.evolve(
             initOps = [
                  initSex(),
-                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.population(0).totNumLoci())),
+                 initByFreq(alleleFreq=[.2, .8]),
                  idTagger(),
             ],
-            preOps = migrator(rate=[[0.1,0.1], [0.1,0.1]]),
             duringOps = [
                 idTagger(),
                 pedigreeTagger(),
                 parentsTagger(),
             ],
             postOps = [
-                stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 mapPenetrance(loci=0,
-                    penetrance={(0,0):0,(0,1):.7,(1,1):1}),
+                    penetrance={(0,0):0.1,(0,1):.7,(1,1):1}),
             ],
             gen = 4
         )
@@ -52,7 +49,7 @@ class TestSampling(unittest.TestCase):
             self.pop.setIndInfo(range(self.pop.popSize()), 'oldindex')
         # more complicated one
         simu1 = simulator(
-            population(size=[5000,20000], ploidy=2, loci=[5,10],
+            population(size=[5000, 20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
             randomMating(numOffspring=(UniformDistribution, 2, 5)))
         simu1.evolve(
@@ -62,7 +59,7 @@ class TestSampling(unittest.TestCase):
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci())),
                  idTagger(),
             ],
-            preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+            #preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
             duringOps = [
                 idTagger(),
                 pedigreeTagger(),
@@ -71,7 +68,7 @@ class TestSampling(unittest.TestCase):
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 mapPenetrance(loci=0,
-                    penetrance={(0,0):0,(0,1):.7,(1,1):1}),
+                    penetrance={(0,0):0.1, (0,1):.7, (1,1):1}),
             ],
             gen = 10
         )
@@ -110,7 +107,7 @@ class TestSampling(unittest.TestCase):
         for ind in s.individuals():
             self.assertEqual(ind.sex(), Male)
         #
-        samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], times=10)
+        samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], numSamples=10)
         self.assertEqual(len(samples), 10)
         for s in samples:
             # all samples should be Male
@@ -144,8 +141,8 @@ class TestSampling(unittest.TestCase):
 		# (father_idx and mother_idx of original and sample population,
 		# and if the parents are the same.)
         s = DrawAffectedSibpairSample(self.pop, families = [2, 3])
-        assert s.subPopSize(0) <= 4
-        assert s.subPopSize(1) <= 6
+        self.assertEqual(s.subPopSize(0), 4)
+        self.assertEqual(s.subPopSize(1), 6)
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
             inpop = self.pop.individual(int(ind.oldindex))
@@ -166,38 +163,33 @@ class TestSampling(unittest.TestCase):
             self.assertEqual(ind, inpop)
 
 
-    def TestLargePedigreeSample(self):
+    def testThreeGenFamilySample(self):
         'Testing large pedigree sampling (FIXME)'
-        (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5,
-            minPedSize=3, minAffected=0)
-        assert s.ancGen() == 2
+        s = DrawThreeGenFamilySample(self.largepop, families=10, pedSize=(3, 20),
+            numOffspring=(1,5), numAffected=(0, 5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
-        (s,) = LargePedigreeSample(self.largepop, 50, minTotalSize=5, maxOffspring=5,
-            minPedSize=3, minAffected=0)
+        s = DrawThreeGenFamilySample(self.largepop, families=50, pedSize=(3, 20),
+            numOffspring=(1, 5), numAffected=(0, 5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
-        #
 
 
-    def TestNuclearFamilySample(self):
+    def testNuclearFamilySample(self):
         'Testing nuclear family sampling (imcomplete)'
-        (s,) = NuclearFamilySample(self.largepop, 50, minTotalSize=50, maxOffspring=5,
-            minPedSize=5, minAffected=0)
-        #print s.subPopSizes()
-        assert s.subPopSize(0) <= 5
-        assert s.subPopSize(1) <= 5
+        s = DrawNuclearFamilySample(self.largepop, families=50, numOffspring=(1,5),
+            affectedParents=(0, 2), affectedOffspring=(1,5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(ind.oldindex)
             self.assertEqual(ind, inpop)
         #
-        (s,) = NuclearFamilySample(self.largepop, size=[2, 3], maxOffspring=5)
-        assert s.subPopSize(0) <= 5
+        s = DrawNuclearFamilySample(self.largepop, families=[2, 3],
+            numOffspring=(1,5), affectedParents=(0,2), affectedOffspring=(1,5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.oldindex))
