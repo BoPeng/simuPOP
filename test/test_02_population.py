@@ -1289,7 +1289,7 @@ class TestPopulation(unittest.TestCase):
         idTagger().reset(1)
         TagID(pop)
         for i in range(400):
-            id = random.randint(0, 800*4-1)
+            id = random.randint(1, 800*4)
             ind = pop.indByID(id)
             self.assertEqual(ind.ind_id, id)
         self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
