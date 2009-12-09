@@ -463,9 +463,21 @@ class pedigreeSampler(baseSampler):
             # a tuple might be returned
             self.selectedIDs = list(self.selectedIDs)
             random.shuffle(self.selectedIDs)
-            selected_IDs = self.selectedIDs[:self.families]
+            # we select families one by one to exclude overlapping families.
+            IDs = set()
+            cnt = 0
+            for id in self.selectedIDs:
+                fam = set(self.family(id))
+                if len(IDs & fam) == 0:
+                    IDs.update(fam)
+                    cnt += 1
+                if cnt == self.families:
+                    break
+            if cnt != self.families:
+                print 'Warning: not enough non-overlapping pedigrees are found (requested %d, found %d).' \
+                    % (self.families, cnt)
         else:
-            selected_IDs = []
+            IDs = set()
             for sp in range(self.pop.numSubPop()):
                 if self.families[sp] > len(self.selectedIDs[sp]):
                     print 'Warning: number of requested pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
@@ -474,12 +486,20 @@ class pedigreeSampler(baseSampler):
                 # a tuple might be returned
                 self.selectedIDs[sp] = list(self.selectedIDs[sp])
                 random.shuffle(self.selectedIDs[sp])
-                selected_IDs.extend(self.selectedIDs[sp][:self.families[sp]])
+                # we select families one by one to exclude overlapping families.
+                cnt = 0
+                for id in self.selectedIDs[sp]:
+                    fam = set(self.family(id))
+                    if len(IDs & fam) == 0:
+                        IDs.update(fam)
+                        cnt += 1
+                    if cnt == self.families[sp]:
+                        break
+                if cnt != self.families[sp]:
+                    print 'Warning: not enough non-overlapping pedigrees are found (requested %d, found %d).' \
+                        % (self.families, cnt)
         # get family members
-        IDs = []
-        for id in selected_IDs:
-            IDs.extend(self.family(id))
-        return self.pop.extractIndividuals(IDs = IDs, idField = self.idField)
+        return self.pop.extractIndividuals(IDs = list(IDs), idField = self.idField)
 
 
 class affectedSibpairSampler(pedigreeSampler):
