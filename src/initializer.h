@@ -51,7 +51,7 @@ public:
 	 *  be adjusted through parameter \e maleFreq or be made to exact
 	 *  proportions by specifying parameter \e maleProp. Alternatively, a fixed
 	 *  sequence of sexes can be assigned. For example, if
-	 *  <tt>sex=[Male, Female]</tt>, individuals will be assigned \c Male and
+	 *  <tt>sex=[MALE, FEMALE]</tt>, individuals will be assigned \c Male and
 	 *  \c Female successively. Parameter \e maleFreq or \e maleProp are
 	 *  ignored if \e sex is given. If a list of (virtual) subpopulation is
 	 *  specified in parameter \e subPop, only individuals in these
@@ -68,7 +68,7 @@ public:
 	{
 		if (!m_sex.empty()) {
 			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
-				DBG_ASSERT(*it == int(Male) || *it == int(Female),
+				DBG_ASSERT(*it == int(MALE) || *it == int(FEMALE),
 					ValueError, "Parameter sex must be an array of Male or Female. ");
 			}
 		}

@@ -25,7 +25,7 @@ class TestSampling(unittest.TestCase):
             population(size=[1000,2000], loci=[5,10],
                 ancGen=1,
                 infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex']),
-            randomMating(numOffspring=(UniformDistribution, 2, 4)))
+            randomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 4)))
         simu.evolve(
             initOps = [
                  initSex(),
@@ -51,7 +51,7 @@ class TestSampling(unittest.TestCase):
         simu1 = simulator(
             population(size=[5000, 20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
-            randomMating(numOffspring=(UniformDistribution, 2, 5)))
+            randomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 5)))
         simu1.evolve(
             initOps=[
                  initSex(),
@@ -99,21 +99,21 @@ class TestSampling(unittest.TestCase):
         # all samples should be Male
         self.assertEqual(s.popSize(), 10)
         for ind in s.individuals():
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         #
         s = DrawRandomSample(self.pop, [2, 8], subPops=[(0,0), (1,0)])
         # all samples should be Male
         self.assertEqual(s.subPopSizes(), (2, 8))
         for ind in s.individuals():
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         #
-        samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], numSamples=10)
+        samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], numOfSamples=10)
         self.assertEqual(len(samples), 10)
         for s in samples:
             # all samples should be Male
             self.assertEqual(s.subPopSizes(), (2, 8))
             for ind in s.individuals():
-                self.assertEqual(ind.sex(), Male)
+                self.assertEqual(ind.sex(), MALE)
 
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'
@@ -166,13 +166,13 @@ class TestSampling(unittest.TestCase):
     def testThreeGenFamilySample(self):
         'Testing large pedigree sampling (FIXME)'
         s = DrawThreeGenFamilySample(self.largepop, families=10, pedSize=(3, 20),
-            numOffspring=(1,5), numAffected=(0, 5))
+            numOffspring=(1,5), numOfAffected=(0, 5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
         s = DrawThreeGenFamilySample(self.largepop, families=50, pedSize=(3, 20),
-            numOffspring=(1, 5), numAffected=(0, 5))
+            numOffspring=(1, 5), numOfAffected=(0, 5))
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.oldindex))

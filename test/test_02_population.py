@@ -456,7 +456,7 @@ class TestPopulation(unittest.TestCase):
     ##         
     ## 
     ##     def testExtract(self):
-    ##         'Testing population::Extract(loci=AllAvail, infoFields=AllAvail, subPops=AllAvail, ancGen =-1)'
+    ##         'Testing population::Extract(loci=ALL_AVAIL, infoFields=ALL_AVAIL, subPops=ALL_AVAIL, ancGen =-1)'
     ##         # If subpoulation size is too small, the last subpopulation
     ##         # may not have any individual.
     ##         pop = population(size=[30, 50], loci=[2, 3], infoFields=['x', 'y'])
@@ -529,7 +529,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numSubPop(), 3)
         self.assertEqual(pop.subPopSizes(), (0, numFemale, 20))
         for ind in pop.individuals(1):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         # continue...
         pop.removeSubPops([(1,1), 2])
         self.assertEqual(pop.numSubPop(), 2)
@@ -660,7 +660,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numSubPop(), 2)
         self.assertEqual(pop.subPopSizes(), (numMale, 20))
         for ind in pop.individuals(0):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         # continue...
         pop1 = pop.extractSubPops([(0,1), 1])
         self.assertEqual(pop1.numSubPop(), 2)
@@ -702,9 +702,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numSubPop(), 3)
         self.assertEqual(pop.subPopSizes(), (20, numMale, 100-numMale))
         for ind in pop.individuals(1):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals(2):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         # continue...
         pop1 = pop.extractSubPops([(0,1), 1], True)
         self.assertEqual(pop1.numSubPop(), 2)
@@ -910,13 +910,13 @@ class TestPopulation(unittest.TestCase):
             pop.setIndInfo([1, 2], 'x', [1, 0])
             pop.setIndInfo([3], 0, [1, 1])
             for idx, ind in enumerate(pop.individuals([1, 0])):
-                self.assertEqual(ind.sex(), Male)
+                self.assertEqual(ind.sex(), MALE)
                 if idx % 2 == 0:
                     self.assertEqual(ind.info('x'), 1)
                 else:
                     self.assertEqual(ind.info('x'), 2)
             for idx, ind in enumerate(pop.individuals([1, 1])):
-                self.assertEqual(ind.sex(), Female)
+                self.assertEqual(ind.sex(), FEMALE)
                 self.assertEqual(ind.info('x'), 3)
 
             self.assertEqual(pop.indInfo('x', [1, 0]), tuple(([1, 2]*pop.subPopSize(1))[:pop.subPopSize([1, 0])]))
@@ -1021,21 +1021,21 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(sexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
-        self.assertEqual(pop.subPopName([1, 0]), 'Male')
-        self.assertEqual(pop.subPopName([1, 1]), 'Female')
+        self.assertEqual(pop.subPopName([1, 0]), 'MALE')
+        self.assertEqual(pop.subPopName([1, 1]), 'FEMALE')
         for ind in pop.individuals([0, 0]):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 1]):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         # test nested virtual subpopulation
         for ind in pop.individuals([0, 0]):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
             for ind1 in pop.individuals([0, 1]):
-                self.assertEqual(ind1.sex(), Female)
+                self.assertEqual(ind1.sex(), FEMALE)
         numMale = 0
         numFemale = 0
         for ind in pop.individuals(1):
-            if ind.sex() == Male:
+            if ind.sex() == MALE:
                 numMale += 1
             else:
                 numFemale += 1
@@ -1053,8 +1053,8 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(affectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfUnaffected)
-        self.assertEqual(pop.subPopName([1, 0]), 'Unaffected')
-        self.assertEqual(pop.subPopName([1, 1]), 'Affected')
+        self.assertEqual(pop.subPopName([1, 0]), 'UNAFFECTED')
+        self.assertEqual(pop.subPopName([1, 1]), 'AFFECTED')
         for ind in pop.individuals([1, 1]):
             self.assertEqual(ind.affected(), True)
         for ind in pop.individuals([1, 0]):
@@ -1202,8 +1202,8 @@ class TestPopulation(unittest.TestCase):
             sexSplitter()]))
         self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0")
         self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
-        self.assertEqual(pop.subPopName([0, 2]), "Male")
-        self.assertEqual(pop.subPopName([0, 3]), "Female")
+        self.assertEqual(pop.subPopName([0, 2]), "MALE")
+        self.assertEqual(pop.subPopName([0, 3]), "FEMALE")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
@@ -1211,9 +1211,9 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
         for ind in pop.individuals([0, 2]):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 3]):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         Stat(pop, numOfMales=True, vars='numOfFemales_sp')
         self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemales)
         #
@@ -1228,14 +1228,14 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.numVirtualSubPop(), 3)
         self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0 or Male")
         self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
-        self.assertEqual(pop.subPopName([0, 2]), "Female")
+        self.assertEqual(pop.subPopName([0, 2]), "FEMALE")
         for ind in pop.individuals([0, 0]):
-            self.assertTrue((ind.allele(1, 0) == 0 and ind.allele(1, 1) == 0) or ind.sex() == Male)
+            self.assertTrue((ind.allele(1, 0) == 0 and ind.allele(1, 1) == 0) or ind.sex() == MALE)
         for ind in pop.individuals([0, 1]):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
         for ind in pop.individuals([0, 2]):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         #
         pop = population(1000, loci=[2], infoFields='a')
         InitInfo(pop, random.randint(0, 3), infoFields='a')
@@ -1264,19 +1264,19 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 1]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         for ind in pop.individuals([0, 2]):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 3]):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         Stat(pop, numOfMales=True)
         for x in range(8):
             self.assertTrue(pop.subPopSize([0,x]) > 0)

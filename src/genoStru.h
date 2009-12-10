@@ -638,8 +638,8 @@ public:
 	}
 
 
-	/** return the type of a chromosome \e chrom (\c Customized, \c Autosome,
-	 *  \c ChromosomeX, or \c ChromosomeY).
+	/** return the type of a chromosome \e chrom (\c CUSTOMIZED, \c AUTOSOME,
+	 *  \c CHROMOSOME_X, or \c CHROMOSOME_Y).
 	 *  <group>2-chromosome</group>
 	 */
 	int chromType(const UINT chrom) const
@@ -652,8 +652,8 @@ public:
 	}
 
 
-	/** return the type of all chromosomes (\c Customized, \c Autosome,
-	 *  \c ChromosomeX or \c ChromosomeY).
+	/** return the type of all chromosomes (\c CUSTOMIZED, \c AUTOSOME,
+	 *  \c ChromosomeX or \c CHROMOSOME_Y).
 	 *  <group>2-chromosome</group>
 	 */
 	vectoru chromTypes() const

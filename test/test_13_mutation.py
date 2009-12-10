@@ -147,7 +147,7 @@ class TestMutator(unittest.TestCase):
             for loc in [0, 2, 3]:
                 self.assertEqual(ind.allele(loc, 0), 0)
                 self.assertEqual(ind.allele(loc, 1), 0)
-            if ind.sex() == Female:
+            if ind.sex() == FEMALE:
                 self.assertEqual(ind.genotype(), [0]*10)
 
     def testUntouchedLoci(self):
@@ -358,23 +358,23 @@ class TestMutator(unittest.TestCase):
         'Testing mutation on chromosome X'
         cnt = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1, 1], chromTypes=[ChromosomeX, ChromosomeY])
-            InitSex(pop, sex=[Male, Female])
+            pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+            InitSex(pop, sex=[MALE, FEMALE])
             # Mutate X chromosomes
             SnpMutate(pop, u=0.01, loci=0)
             Stat(pop, alleleFreq=[0])
-            # Male: 5000 x 0.01, Female: 5000 x 2 x 0.01 = 50 + 100
+            # MALE: 5000 x 0.01, FEMALE: 5000 x 2 x 0.01 = 50 + 100
             cnt += pop.dvars().alleleNum[0][1]
         self.assertEqual( abs(cnt/50. - (5000*0.01*2 + 5000*0.01)) < 5, True)
         #
         # Mutate Y chromosomes
         cnt = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1, 1], chromTypes=[ChromosomeX, ChromosomeY])
-            InitSex(pop, sex=[Male, Female])
+            pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+            InitSex(pop, sex=[MALE, FEMALE])
             SnpMutate(pop, u=0.01, loci=1)
             Stat(pop, alleleFreq=[1])
-            # Male: 5000 x 0.01 = 50
+            # MALE: 5000 x 0.01 = 50
             cnt += pop.dvars().alleleNum[1][1]
         self.assertEqual( abs(cnt/50. - 5000*0.01) < 2, True)
 

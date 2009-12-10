@@ -88,7 +88,7 @@ class TestMatingSchemes(unittest.TestCase):
         # GeometricDistribution
         p = 0.33
         cnt = self.getFamSize(randomMating(
-            numOffspring=(GeometricDistribution, p)), N=10000)
+            numOffspring=(GEOMETRIC_DISTRIBUTION, p)), N=10000)
         # mean should be 1/p, variance (1-p)/(p*p)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
@@ -97,7 +97,7 @@ class TestMatingSchemes(unittest.TestCase):
         # PoissonDistribution
         p = 3
         cnt = self.getFamSize(randomMating(
-            numOffspring=(PoissonDistribution, p)), N=100000)
+            numOffspring=(POISSON_DISTRIBUTION, p)), N=100000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (p+1)) < 0.1, True)
@@ -106,7 +106,7 @@ class TestMatingSchemes(unittest.TestCase):
         p = 0.3
         n = 10
         cnt = self.getFamSize(randomMating(
-            numOffspring=(BinomialDistribution, p, n)), N=10000)
+            numOffspring=(BINOMIAL_DISTRIBUTION, p, n)), N=10000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - ((n-1)*p+1)) < 0.1, True)
@@ -115,7 +115,7 @@ class TestMatingSchemes(unittest.TestCase):
         a = 3
         b = 6
         cnt = self.getFamSize(randomMating(
-            numOffspring=(UniformDistribution, a, b)), N=10000)
+            numOffspring=(UNIFORM_DISTRIBUTION, a, b)), N=10000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (a + b)/2.) < 0.1, True)
@@ -132,21 +132,21 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing parameter sexMode of mating schemes'
         # noSex
         self.assertEqual(
-            self.checkSexMode(randomMating(sexMode=NoSex)),
+            self.checkSexMode(randomMating(sexMode=NO_SEX)),
             'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
         # NumOfMales
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=3,
-            sexMode=(NumOfMales, 1))),
+            sexMode=(NUM_OF_MALES, 1))),
             'MFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFM')
         # NumOfFemales
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=4,
-            sexMode=(NumOfFemales, 2))),
+            sexMode=(NUM_OF_FEMALES, 2))),
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
         # ProbOfMales
         pop = population(10000)
-        simu = simulator(pop, randomMating(sexMode=(ProbOfMales, 0.3)))
+        simu = simulator(pop, randomMating(sexMode=(PROB_OF_MALES, 0.3)))
         simu.evolve(
             initOps = [initSex(), initByFreq([0.5, 0.5])],
             postOps = [
@@ -162,9 +162,9 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing monogemous mating scheme'
         pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
         InitByFreq(pop, [0.2, 0.3, 0.5])
-        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NumOfMales, 1)))
+        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1)))
         simu.evolve(
-            initOps = initSex(sex=(Male, Female)), 
+            initOps = initSex(sex=(MALE, FEMALE)), 
             duringOps = parentsTagger(),
             gen = 5)
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
@@ -230,9 +230,9 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [0.2, 0.3, 0.5])
         # exactly 100 males and 100 females
         for i in range(100):
-            pop.individual(i).setSex(Male)
-            pop.individual(100+i).setSex(Female)
-        simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2))
+            pop.individual(i).setSex(MALE)
+            pop.individual(100+i).setSex(FEMALE)
+        simu = simulator(pop, polygamousMating(polySex=MALE, polyNum=3, numOffspring=2))
         simu.evolve(
             initOps = [],
             duringOps = parentsTagger(),
@@ -347,7 +347,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testHaploidRandomMating(self):
         'Testing random mating in haploid populations'
         pop = population(size=[50, 100], loci=[5]*5, ploidy=1,
-            chromTypes=[Customized]*5)
+            chromTypes=[CUSTOMIZED]*5)
         pop.setVirtualSplitter(sexSplitter())
         simu = simulator(pop, 
             randomMating(ops=[mitochondrialGenoTransmitter()]))

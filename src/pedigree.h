@@ -113,7 +113,7 @@ public:
 	 *       no shared parent.
 	 *  \li \c Offspring all offspring of each individual.
 	 *  \li \c CommonOffspring common offspring between each individual and its
-	 *       spouse (located by Spouse or OutbredSpouse). \e relFields should
+	 *       spouse (located by Spouse or OUTBRED_SPOUSE). \e relFields should
 	 *       consist of an information field for spouse and \c m-1 fields for
 	 *       offspring where \c m is the number of fields.
 	 *  \li \c FullSibling siblings with common father and mother,
@@ -121,9 +121,9 @@ public:
 	 *
 	 *  Optionally, you can specify the sex and affection status of relatives
 	 *  you would like to locate, using parameters \e sex and
-	 *  \e affectionStatus. \e sex can be \c AnySex (default), \c MaleOnly,
-	 *  \c FemaleOnly, \c SameSex or \c OppositeSex, and \e affectionStatus can
-	 *  be \c Affected, \c Unaffected or \c AnyAffectionStatus (default). Only
+	 *  \e affectionStatus. \e sex can be \c AnySex (default), \c MALE_ONLY,
+	 *  \c FEMALE_ONLY, \c SameSex or \c OPPOSITE_SEX, and \e affectionStatus can
+	 *  be \c AFFECTED, \c Unaffected or \c AnyAffectionStatus (default). Only
 	 *  relatives with specified properties will be located.
 	 *
 	 *  This function will by default go through all ancestral generations and
@@ -133,7 +133,7 @@ public:
 	 *  <group>4-locate</group>
 	 */
 	void locateRelatives(RelativeType relType, const vectorstr & resultFields = vectorstr(),
-		SexChoice sex = AnySex, AffectionStatus affectionStatus = AnyAffectionStatus,
+		SexChoice sex = ANY_SEX, AffectionStatus affectionStatus = ANY_AFFECTION_STATUS,
 		int ancGen = -1);
 
 	/** Trace a relative path in a population and record the result in the
@@ -150,13 +150,13 @@ public:
 	 *  that specifies affection status at each generation. \e fieldPath
 	 *  should be a list of information fields, \e sex and
 	 *  \e affectionStatus are optional. If specified, they should be a list of
-	 *  \c AnySex, \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex
-	 *  for parameter \e sex, and a list of \e Unaffected, \e Affected
+	 *  \c ANY_SEX, \c MALE_ONLY, \c FEMALE_ONLY, \c SameSex and \c OppsiteSex
+	 *  for parameter \e sex, and a list of \e UNAFFECTED, \e Affected
 	 *  and \e AnyAffectionStatus for parameter \e affectionStatus.
 	 *
 	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
-	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sex = [AnySex,
-	 *  MaleOnly, FemaleOnly]</tt>, this function will locate \c father_id
+	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sex = [ANY_SEX,
+	 *  MALE_ONLY, FEMALE_ONLY]</tt>, this function will locate \c father_id
 	 *  and \c mother_id for each individual, find all individuals referred
 	 *  by \c father_id and \c mother_id, find informaton fields \c sib1 and
 	 *  \c sib2 from these parents and locate male individuals referred by
@@ -176,9 +176,9 @@ public:
 	/** Return a list of IDs of individuals who have non-negative values at
 	 *  information fields \e infoFields. Additional requirements could be
 	 *  specified by parameters \e sex and \e affectionStatus.
-	 *  \e sex can be \c AnySex (default), \c MaleOnly, \c FemaleOnly,
-	 *  \c SameSex or \c OppositeSex, and \e affectionStatus can be
-	 *  \c Affected, \c Unaffected or \c AnyAffectionStatus (default). This
+	 *  \e sex can be \c AnySex (default), \c MALE_ONLY, \c FEMALE_ONLY,
+	 *  \c SameSex or \c OPPOSITE_SEX, and \e affectionStatus can be
+	 *  \c AFFECTED, \c Unaffected or \c AnyAffectionStatus (default). This
 	 *  function by default check all individuals in all ancestral generations,
 	 *  but you could limit the search using parameter \e subPops (a list of
 	 *  (virtual) subpopulations) and (recent ancestral generations) \e ancGen.

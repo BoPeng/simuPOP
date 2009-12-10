@@ -47,10 +47,10 @@ class TestTagger(unittest.TestCase):
         pop.individual(0).setInfo(1, 'paternal_tag')
         pop.individual(50).setInfo(2, 'paternal_tag')
         simu = simulator(pop, randomMating())
-        # other mode include mode=Maternal, TAG_Both
+        # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[inheritTagger(mode=Paternal)],
+            duringOps =[inheritTagger(mode=PATERNAL)],
             gen = 1)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
@@ -70,10 +70,10 @@ class TestTagger(unittest.TestCase):
         for ind in pop.individuals(1):
             ind.setInfo(2, 'paternal_tag')
         simu = simulator( pop, randomMating())
-        # other mode include mode=Maternal, TAG_Both
+        # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[inheritTagger(mode=Paternal)],
+            duringOps =[inheritTagger(mode=PATERNAL)],
             gen = 1
         )
         # we only know subpopulation 0 can not have tag 2

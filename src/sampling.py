@@ -92,8 +92,8 @@ __all__ = [
 import exceptions
 import random
 
-from simuPOP import AllAvail, pedigree, OutbredSpouse, CommonOffspring, FemaleOnly, \
-    Male, Affected, TagID
+from simuPOP import ALL_AVAIL, pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
+    MALE, AFFECTED, TagID
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -177,7 +177,7 @@ def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_
             else:
                 momid.append(0)
             #
-            if ind.sex() == Male:
+            if ind.sex() == MALE:
                 sex.append(1)
             else:
                 sex.append(2)
@@ -203,11 +203,11 @@ class baseSampler:
     as separate populations. This base class defines the common interface of
     all sampling classes, including how samples prepared and returned.
     '''
-    def __init__(self, subPops=AllAvail):
+    def __init__(self, subPops=ALL_AVAIL):
         '''Create a sampler with parameter ``subPops``, which will be used
         to prepare population for sampling. ``subPops`` should be a list of
         (virtual) subpopulations from which samples are drawn. The default
-        value is AllAvail, which means all available subpopulations of a
+        value is ALL_AVAIL, which means all available subpopulations of a
         population.
         '''
         self.subPops=subPops
@@ -221,7 +221,7 @@ class baseSampler:
         population ``pop`` will be rearranged (if ``rearrange==True``) so that
         each subpoulation corresponds to one element in parameter ``subPops``.
         '''
-        if self.subPops == AllAvail:
+        if self.subPops == ALL_AVAIL:
             self.pop = pop
         else:
             self.pop = pop.extractSubPops(self.subPops, rearrange);
@@ -246,7 +246,7 @@ class baseSampler:
 class randomSampler(baseSampler):
     '''A sampler that draws individuals randomly.
     '''
-    def __init__(self, sizes, subPops=AllAvail):
+    def __init__(self, sizes, subPops=ALL_AVAIL):
         '''Creates a random sampler with specified number of individuals.
         '''
         baseSampler.__init__(self, subPops)
@@ -281,19 +281,19 @@ class randomSampler(baseSampler):
         return self.pop.extractIndividuals(indexes = indexes)
 
 
-def DrawRandomSample(pop, sizes, subPops=AllAvail):
+def DrawRandomSample(pop, sizes, subPops=ALL_AVAIL):
     '''Draw ``sizes`` random individuals from a population. If a single ``sizes``
     is given, individuals are drawn randomly from the whole population or
     from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
     a list of numbers should be used to specify number of samples from each
-    subpopulation, which can be all subpopulations if ``subPops=AllAvail``
+    subpopulation, which can be all subpopulations if ``subPops=ALL_AVAIL``
     (default), or from each of the specified (virtual) subpopulations. This
     function returns a population with all extracted individuals.
     '''
     return randomSampler(sizes=sizes, subPops=subPops).drawSample(pop)
 
 
-def DrawRandomSamples(pop, sizes, numOfSamples=1, subPops=AllAvail):
+def DrawRandomSamples(pop, sizes, numOfSamples=1, subPops=ALL_AVAIL):
     '''Draw ``numOfSamples`` random samples from a population and return a list of
     populations. Please refer to function ``DrawRandomSample`` for more details
     about parameters ``sizes`` and ``subPops``.'''
@@ -303,7 +303,7 @@ def DrawRandomSamples(pop, sizes, numOfSamples=1, subPops=AllAvail):
 class caseControlSampler(baseSampler):
     '''A sampler that draws affected and unaffected individuals randomly.
     '''
-    def __init__(self, cases, controls, subPops=AllAvail):
+    def __init__(self, cases, controls, subPops=ALL_AVAIL):
         '''Ceates a case-control sampler with specified number of cases
         and controls.
         '''
@@ -387,21 +387,21 @@ class caseControlSampler(baseSampler):
         return self.pop.extractIndividuals(indexes = indexes)
 
 
-def DrawCaseControlSample(pop, cases, controls, subPops=AllAvail):
+def DrawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     '''Draw a case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals. If single ``cases`` and
     ``controls`` are given, individuals are drawn randomly from the whole
     population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     number of cases and controls from each subpopulation, which can be all
-    subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
     specified (virtual) subpopulations. This function returns a population with
     all extracted individuals.
     '''
     return caseControlSampler(cases, controls, subPops).drawSample(pop) 
 
 
-def DrawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=AllAvail):
+def DrawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL):
     '''Draw ``numOfSamples`` case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals and return a list of
     populations. Please refer to function ``DrawCaseControlSample`` for a
@@ -413,7 +413,7 @@ def DrawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=AllAvai
 class pedigreeSampler(baseSampler):
     '''The base class of all pedigree based sampler.
     '''
-    def __init__(self, families, subPops=AllAvail, idField='ind_id',
+    def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
         fatherField='father_id', motherField='mother_id'):
         '''Creates a pedigree sampler with parameters
 
@@ -424,7 +424,7 @@ class pedigreeSampler(baseSampler):
 
         subPops
             A list of (virtual) subpopulations from which samples are drawn.
-            The default value is AllAvail, which means all available
+            The default value is ALL_AVAIL, which means all available
             subpopulations of a population.
         '''
         baseSampler.__init__(self, subPops)
@@ -508,7 +508,7 @@ class pedigreeSampler(baseSampler):
 class affectedSibpairSampler(pedigreeSampler):
     '''A sampler that draws a nuclear family with two affected offspring.
     '''
-    def __init__(self, families, subPops=AllAvail, idField='ind_id',
+    def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
         fatherField='father_id', motherField='mother_id'):
         '''Initialize an affected sibpair sampler.'''
         pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
@@ -528,9 +528,9 @@ class affectedSibpairSampler(pedigreeSampler):
         # locate all affected siblings
         self.pedigree.addInfoFields(['spouse', 'off1', 'off2'])
         # only look for wife so families will not overlap
-        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
+        self.pedigree.locateRelatives(OUTBRED_SPOUSE, ['spouse'], FEMALE_ONLY)
         # look for affected offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse', 'off1', 'off2'], affectionStatus=Affected)
+        self.pedigree.locateRelatives(COMMON_OFFSPRING, ['spouse', 'off1', 'off2'], affectionStatus=AFFECTED)
         # find qualified families
         if not isSequence(self.families):
             self.selectedIDs = self.pedigree.individualsWithRelatives(['spouse', 'off1', 'off2'])
@@ -541,14 +541,14 @@ class affectedSibpairSampler(pedigreeSampler):
                     subPops=sp))
 
 
-def DrawAffectedSibpairSample(pop, families, subPops=AllAvail, 
+def DrawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw affected sibpair samples from a population. If a single
     ``families`` is given, affected sibpairs and their parents are drawn
     randomly from the whole population or from specified (virtual)
     subpopulations (parameter ``subPops``). Otherwise, a list of numbers should
     be used to specify number of families from each subpopulation, which can be
-    all subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    all subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
@@ -556,7 +556,7 @@ def DrawAffectedSibpairSample(pop, families, subPops=AllAvail,
         motherField).drawSample(pop)
  
 
-def DrawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=AllAvail, 
+def DrawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
@@ -571,7 +571,7 @@ class nuclearFamilySampler(pedigreeSampler):
     parents and offspring.
     '''
     def __init__(self, families, numOffspring, affectedParents, affectedOffspring,
-        subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+        subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''Creates a nuclear family sampler with parameters
 
         families
@@ -589,7 +589,7 @@ class nuclearFamilySampler(pedigreeSampler):
 
         subPops
             A list of (virtual) subpopulations from which samples are drawn.
-            The default value is AllAvail, which means all available
+            The default value is ALL_AVAIL, which means all available
             subpopulations of a population.
         '''
         if isNumber(numOffspring):
@@ -650,9 +650,9 @@ class nuclearFamilySampler(pedigreeSampler):
         offFields = ['off%d' % x for x in range(self.numOffspring[1])]
         self.pedigree.addInfoFields(['spouse'] + offFields)
         # only look for wife so families will not overlap
-        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
+        self.pedigree.locateRelatives(OUTBRED_SPOUSE, ['spouse'], FEMALE_ONLY)
         # look for offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse'] + offFields)
+        self.pedigree.locateRelatives(COMMON_OFFSPRING, ['spouse'] + offFields)
         # check number of affected individuals and filter them out.
         def qualify(id):
             father = self.pedigree.indByID(id)
@@ -675,7 +675,7 @@ class nuclearFamilySampler(pedigreeSampler):
 
 
 def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
-    affectedOffspring, subPops=AllAvail, idField='ind_id', fatherField='father_id',
+    affectedOffspring, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw nuclear families from a population. Number of offspring, number of
     affected parents and number of affected offspring should be specified using
@@ -685,7 +685,7 @@ def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
     whole population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     numbers of families from each subpopulation, which can be all
-    subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
@@ -694,7 +694,7 @@ def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
  
 
 def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents,
-    affectedOffspring, numOfSamples=1, subPops=AllAvail, idField='ind_id',
+    affectedOffspring, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id',
     fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
@@ -710,7 +710,7 @@ class threeGenFamilySampler(pedigreeSampler):
     size and number of affected individuals.
     '''
     def __init__(self, families, numOffspring, pedSize, numOfAffected,
-        subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+        subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''
         families
             number of families. This can be a number or a list of numbers. In the latter
@@ -729,7 +729,7 @@ class threeGenFamilySampler(pedigreeSampler):
 
         subPops
             A list of (virtual) subpopulations from which samples are drawn.
-            The default value is AllAvail, which means all available
+            The default value is ALL_AVAIL, which means all available
             subpopulations of a population.
         '''
         if isNumber(numOffspring):
@@ -794,9 +794,9 @@ class threeGenFamilySampler(pedigreeSampler):
         grandOffFields = ['goff%d' % x for x in range(self.numOffspring[1]**2)]
         self.pedigree.addInfoFields(['spouse'] + offFields + grandOffFields)
         # only look for wife so families will not overlap
-        self.pedigree.locateRelatives(OutbredSpouse, ['spouse'], FemaleOnly)
+        self.pedigree.locateRelatives(OUTBRED_SPOUSE, ['spouse'], FEMALE_ONLY)
         # look for offspring
-        self.pedigree.locateRelatives(CommonOffspring, ['spouse'] + offFields)
+        self.pedigree.locateRelatives(COMMON_OFFSPRING, ['spouse'] + offFields)
         # look for grand children
         self.pedigree.traceRelatives(fieldPath = [offFields, offFields], resultFields = grandOffFields)
         # check number of affected individuals and filter them out.
@@ -826,7 +826,7 @@ class threeGenFamilySampler(pedigreeSampler):
 
 
 def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected,
-    subPops=AllAvail, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw three-generation families from a population. Such families consist
     of grant parents, their children, spouse of these children, and grand
     children. Number of offspring, total number of individuals, and total
@@ -837,7 +837,7 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
     population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     numbers of families from each subpopulation, which can be all
-    subpopulations if ``subPops=AllAvail`` (default), or from each of the
+    subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
@@ -846,7 +846,7 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
  
 
 def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected,
-    numOfSamples=1, subPops=AllAvail, idField='ind_id', fatherField='father_id',
+    numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw ``numOfSamples`` three-generation pedigree samples from population ``pop``
     and return a list of populations. Please refer to function

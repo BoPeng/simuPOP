@@ -88,7 +88,7 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
-        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=ByProbability)
+        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = initSex(),
@@ -108,7 +108,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -131,7 +131,7 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(
             population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
-        migr = migrator(rate=[[0,.2],[.25,0]], mode=ByProbability)
+        migr = migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -155,7 +155,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=5)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -176,7 +176,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -200,7 +200,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
             randomMating(), rep=2)
         migr = migrator(rate=[[0, .2],[.25, 0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -224,7 +224,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -251,7 +251,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=2)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
@@ -274,7 +274,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+            mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         def setPar(r):
             r.par(mar=[2]*4)
@@ -311,8 +311,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
             gen = 5,
@@ -332,8 +332,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 scatterPlotter(['x', 'y'],
@@ -357,15 +357,15 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     xlim = [0, 1],
                     main='Twoo colors, 100 points xlim=[0, 1]',
-                    legend = ['Male', 'Female']),
+                    legend = ['MALE', 'FEMALE']),
                 #pause(),
             ],
             gen = 5,
@@ -381,7 +381,7 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         simu = simulator(pop, randomMating())
         simu.evolve(
-            duringOps = inheritTagger(Paternal, infoFields='x'),
+            duringOps = inheritTagger(PATERNAL, infoFields='x'),
             postOps = histPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2),
                 #pause(),
@@ -402,8 +402,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 histPlotter(infoFields=['x', 'y'],
@@ -434,8 +434,8 @@ class TestPlotter(unittest.TestCase):
             r.qqline(data)
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 qqPlotter(infoFields=['x', 'y'],
@@ -468,8 +468,8 @@ class TestPlotter(unittest.TestCase):
             r.qqline(data)
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 infoPlotter(infoFields=['x', 'y'],
@@ -492,7 +492,7 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         simu = simulator(pop, randomMating())
         simu.evolve(
-            duringOps = inheritTagger(Paternal, infoFields='x'),
+            duringOps = inheritTagger(PATERNAL, infoFields='x'),
             postOps = [
                 boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
@@ -515,8 +515,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = boxPlotter(infoFields=['x', 'y'], step=2),
                 #pause(),
@@ -538,8 +538,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = [
                 boxPlotter(infoFields=['x', 'y'], 
@@ -567,8 +567,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = boxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
@@ -592,8 +592,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
@@ -617,8 +617,8 @@ class TestPlotter(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             duringOps = [
-                inheritTagger(Paternal, infoFields='x'),
-                inheritTagger(Maternal, infoFields='y'),
+                inheritTagger(PATERNAL, infoFields='x'),
+                inheritTagger(MATERNAL, infoFields='y'),
             ],
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,

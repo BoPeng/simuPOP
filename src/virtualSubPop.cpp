@@ -343,7 +343,7 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	ULONG count = 0;
-	Sex s = virtualSubPop == 0 ? Male : Female;
+	Sex s = virtualSubPop == 0 ? MALE : FEMALE;
 
 	for (; it != it_end; ++it)
 		if (it->sex() == s)
@@ -354,13 +354,13 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 
 bool sexSplitter::contains(const population & pop, ULONG ind, vspID vsp) const
 {
-	return (vsp.virtualSubPop() == 0 ? Male : Female) == pop.ind(ind, vsp.subPop()).sex();
+	return (vsp.virtualSubPop() == 0 ? MALE : FEMALE) == pop.ind(ind, vsp.subPop()).sex();
 }
 
 
 void sexSplitter::activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
-	Sex s = virtualSubPop == 0 ? Male : Female;
+	Sex s = virtualSubPop == 0 ? MALE : FEMALE;
 
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
@@ -381,7 +381,7 @@ string sexSplitter::name(SubPopID vsp)
 	if (!m_names.empty())
 		return m_names[vsp];
 
-	return vsp == 0 ? "Male" : "Female";
+	return vsp == 0 ? "MALE" : "FEMALE";
 }
 
 
@@ -431,7 +431,7 @@ string affectionSplitter::name(SubPopID vsp)
 	if (!m_names.empty())
 		return m_names[vsp];
 
-	return vsp == 0 ? "Unaffected" : "Affected";
+	return vsp == 0 ? "UNAFFECTED" : "AFFECTED";
 }
 
 

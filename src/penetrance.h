@@ -265,7 +265,7 @@ private:
  *  it is applied to an individual, it applies these penetrance operators to
  *  the individual, obtain a list of penetrance values, and compute a combined
  *  penetrance value from them and assign affection status accordingly.
- *  Additive, multiplicative, and a heterogeneour multi-locus model are
+ *  ADDITIVE, multiplicative, and a heterogeneour multi-locus model are
  *  supported. Please refer to Neil Rish (1989) "Linkage Strategies for
  *  Genetically Complex Traits" for some analysis of these models.
  *
@@ -281,14 +281,14 @@ public:
 	 *  single-locus) penetrance values. These penetrance values are combined to a
 	 *  single penetrance value using
 	 *  \li <em>Prod(f_i)</em>, namely the product of individual penetrance if
-	 *       \e mode = \c Multiplicative,
-	 *  \li <em>sum(f_i)</em> if \e mode = \c Additive, and
+	 *       \e mode = \c MULTIPLICATIVE,
+	 *  \li <em>sum(f_i)</em> if \e mode = \c ADDITIVE, and
 	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c Heterogeneity
 	 *
 	 *  0 or 1 will be returned if the combined penetrance value is less than
 	 *  zero or greater than 1.
 	 */
-	mlPenetrance(const opList & ops, int mode = Multiplicative,
+	mlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :

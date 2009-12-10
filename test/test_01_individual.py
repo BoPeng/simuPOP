@@ -168,10 +168,10 @@ class TestIndividual(unittest.TestCase):
         'Testing individual::sex(), setSex(sex), sexChar()'
         pop = self.getPop()
         ind = pop.individual(0)
-        self.assertEqual(ind.sex(), Male)
+        self.assertEqual(ind.sex(), MALE)
         self.assertEqual(ind.sexChar(), 'M')
-        ind.setSex(Female)
-        self.assertEqual(ind.sex(), Female)
+        ind.setSex(FEMALE)
+        self.assertEqual(ind.sex(), FEMALE)
         self.assertEqual(ind.sexChar(), 'F')
 
     def testAffected(self):

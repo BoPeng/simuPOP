@@ -290,7 +290,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 	if (m_mutStep.size() == 1)
 		step = static_cast<UINT>(m_mutStep[0]);
 	else if (m_mutStep.size() == 2) {
-		DBG_ASSERT(static_cast<int>(m_mutStep[0]) == GeometricDistribution, ValueError,
+		DBG_ASSERT(static_cast<int>(m_mutStep[0]) == GEOMETRIC_DISTRIBUTION, ValueError,
 			"Incorrect mode for generating mutation step.");
 		step = GetRNG().randGeometric(m_mutStep[1]);
 	} else {

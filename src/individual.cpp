@@ -109,14 +109,14 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 	if (ploidy() != 2)
 		return true;
 
-	if (p == 1 && isHaplodiploid() && sex() == Male)
+	if (p == 1 && isHaplodiploid() && sex() == MALE)
 		return false;
 
 	Sex s = sex();
 	UINT t = chromType(ch);
-	if ((s == Female && t == ChromosomeY) ||    // female chromsome Y
-	    (s == Male &&                           // second copy of chromosome X and first copy of chromosome Y
-	     ((p == 1 && t == ChromosomeX) || (p == 0 && t == ChromosomeY))))
+	if ((s == FEMALE && t == CHROMOSOME_Y) ||    // female chromsome Y
+	    (s == MALE &&                           // second copy of chromosome X and first copy of chromosome Y
+	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))))
 		return false;
 
 	return true;

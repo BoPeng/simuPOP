@@ -107,7 +107,7 @@ class TestPenetrance(unittest.TestCase):
             mapPenetrance(loci = 1,
                 penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
-            mode=Additive
+            mode=ADDITIVE
         )
         #
         MlPenetrance(pop, [
@@ -116,7 +116,7 @@ class TestPenetrance(unittest.TestCase):
             mapPenetrance(loci = 4,
                 penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
-            mode=Multiplicative
+            mode=MULTIPLICATIVE
         )
 
     def testPyPenetrance(self):

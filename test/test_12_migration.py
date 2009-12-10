@@ -19,12 +19,12 @@ class TestMigrator(unittest.TestCase):
     def testMigrateByCounts(self):
         'Testing migrate by counts'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        Migrate(pop, mode=ByCounts,
+        Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ])
         assert pop.subPopSizes() == (1900, 4050, 4050)
-        Migrate(pop, mode=ByCounts,
+        Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [50, 0, 0],
                              [50, 0, 0] ])
@@ -33,18 +33,18 @@ class TestMigrator(unittest.TestCase):
         self.assertRaises(exceptions.ValueError,
             Migrate, pop, [ [0, 50],
                              [50, 0, 0],
-                             [50, 0, 0] ], ByCounts)
+                             [50, 0, 0] ], BY_COUNTS)
 
     def testMigrateByProportion(self):
         'Testing migrate by proportion'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=ByProportion,
+        Migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
         self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
-        Migrate(pop, mode=ByProportion,
+        Migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
@@ -55,31 +55,31 @@ class TestMigrator(unittest.TestCase):
         pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
         for sp in range(3):
             pop.setIndInfo([sp], 'migrate_to', sp)
-        Migrate(pop, mode=ByIndInfo)
+        Migrate(pop, mode=BY_IND_INFO)
         self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
         # migrate a few individuals?
         for i in range(10):
             pop.individual(i, 0).setInfo(1, 'migrate_to')
             pop.individual(i, 1).setInfo(2, 'migrate_to')
-        Migrate(pop, mode=ByIndInfo)
+        Migrate(pop, mode=BY_IND_INFO)
         self.assertEqual(pop.subPopSizes(), (1990, 4000, 4010))
         # virtual subpopulations?
         pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
-        InitSex(pop, sex=[Male, Female])
+        InitSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(sexSplitter())
         # only get male out of the second subpopulation
-        Migrate(pop, mode=ByIndInfo, subPops=[(1, 0)])
+        Migrate(pop, mode=BY_IND_INFO, subPops=[(1, 0)])
         self.assertEqual(pop.subPopSizes(), (4000, 2000, 4000))
         for ind in pop.individuals(1):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         pop.setIndInfo([1], 'migrate_to', [0])
         # only 1000 females will go
-        Migrate(pop, mode=ByIndInfo, subPops=[(0, 1)])
+        Migrate(pop, mode=BY_IND_INFO, subPops=[(0, 1)])
         self.assertEqual(pop.subPopSizes(), (3000, 3000, 4000))
         for ind in pop.individuals(1):
-            self.assertEqual(ind.sex(), Female)
+            self.assertEqual(ind.sex(), FEMALE)
         for ind in pop.individuals(0):
-            self.assertEqual(ind.sex(), Male)
+            self.assertEqual(ind.sex(), MALE)
 
 
 
@@ -87,7 +87,7 @@ class TestMigrator(unittest.TestCase):
         'Testing migrate by probability'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
@@ -95,7 +95,7 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(0) - 2000) < 100
         assert abs(pop.subPopSize(1) - 4000) < 100
         assert abs(pop.subPopSize(2) - 4000) < 100
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
@@ -108,7 +108,7 @@ class TestMigrator(unittest.TestCase):
         'Testing parameter from and to of migrators'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             subPops = [0], toSubPops = [1,2],
             rate = [.05, .05] )
         # print pop.subPopSizes()
@@ -117,7 +117,7 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(2) - 4100) < 50
         # other parameter form can be used as well
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             subPops = 0, toSubPops = [1,2],
             rate = [[.05, .05]] )
         assert abs(pop.subPopSize(0) - 1800) < 50
@@ -133,13 +133,13 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=1, subPops=[1])
         InitSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(sexSplitter())
-        Migrate(pop, mode=ByCounts,
+        Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ],
             subPops = [(0, 0), 1, 2])
         self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
-        Migrate(pop, mode=ByCounts,
+        Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ],
@@ -151,7 +151,7 @@ class TestMigrator(unittest.TestCase):
         self.assertEqual(pop.subPopSize([1, 1]), 50)
         self.assertEqual(pop.subPopSize([2, 0]), 4000)
         self.assertEqual(pop.subPopSize([2, 1]), 50)
-        Migrate(pop, mode=ByCounts,
+        Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 25, 25],
                      [0, 25, 25],
                              [50, 0, 0],
@@ -173,7 +173,7 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(sexSplitter())
         # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=ByProportion,
+        Migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ],
@@ -194,7 +194,7 @@ class TestMigrator(unittest.TestCase):
         # 20M, 200F ==> 1, 2
         # 390F, 1 => 0
         # 390F, 2 => 1
-        Migrate(pop, mode=ByProportion,
+        Migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .1, .1],
                      [0, .1, .1],
                              [0.1, 0, 0],
@@ -214,7 +214,7 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(sexSplitter())
         # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .1, .1],
                              [0.1, 0, 0],
                              [0.1, 0, 0]],
@@ -228,7 +228,7 @@ class TestMigrator(unittest.TestCase):
         v = pop.subPopSizes()
         vf = pop.subPopSize([0, 1])
         vm = pop.subPopSize([0, 0])
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, 0.1, 0.1],
                              [0.1, 0, 0],
                              [0, 0.1, 0] ],
@@ -248,17 +248,17 @@ class TestMigrator(unittest.TestCase):
         Stat(pop, alleleFreq=[0])
         af = pop.dvars().alleleFreq[0][1]    # ~.2
         # migrate and check if allele frequency changes
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             subPops = [0], toSubPops = [1,2],
             rate = [.05, .05] )
         Stat(pop, alleleFreq=[0])
         assert pop.dvars().alleleFreq[0][1] == af
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
         assert pop.dvars().alleleFreq[0][1] == af
-        Migrate(pop, mode=ByProbability,
+        Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])

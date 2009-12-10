@@ -65,13 +65,13 @@ bool initSex::apply(population & pop)
 		size_t sexSz = m_sex.size();
 		if (!m_sex.empty())
 			for (; ind.valid(); ++ind, ++idx)
-				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
+				ind->setSex(m_sex[idx % sexSz] == 1 ? MALE : FEMALE);
 		else if (m_maleProp < 0)
 			for (; ind.valid(); ++ind)
-				ind->setSex(GetRNG().randUniform() < m_maleFreq ? Male : Female);
+				ind->setSex(GetRNG().randUniform() < m_maleFreq ? MALE : FEMALE);
 		else
 			for (; ind.valid(); ++ind)
-				ind->setSex(ws.get() == 0 ? Male : Female);
+				ind->setSex(ws.get() == 0 ? MALE : FEMALE);
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;

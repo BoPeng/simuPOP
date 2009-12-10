@@ -136,7 +136,7 @@ class TestGenoStru(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.ploidyName(), 'diploid')
-        pop = population(size=100, ploidy=Haplodiploid, loci=[5, 7])
+        pop = population(size=100, ploidy=HAPLODIPLOID, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'haplodiploid')
         pop = population(size=100, ploidy=1, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'haploid')
@@ -175,13 +175,13 @@ class TestGenoStru(unittest.TestCase):
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
         pop = population(size=100, ploidy=2, loci=[2, 3, 2, 4],
-        chromTypes=[Autosome, ChromosomeX, ChromosomeY, Customized])
-        self.assertEqual(pop.chromType(0), Autosome)
-        self.assertEqual(pop.chromType(1), ChromosomeX)
-        self.assertEqual(pop.chromType(2), ChromosomeY)
-        self.assertEqual(pop.chromType(3), Customized)
+        chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
+        self.assertEqual(pop.chromType(0), AUTOSOME)
+        self.assertEqual(pop.chromType(1), CHROMOSOME_X)
+        self.assertEqual(pop.chromType(2), CHROMOSOME_Y)
+        self.assertEqual(pop.chromType(3), CUSTOMIZED)
         self.assertRaises(exceptions.ValueError, population, ploidy=4,
-            chromTypes=[Autosome, ChromosomeX, ChromosomeY, Customized])
+            chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
 
     def testNumChrom(self):
         'Testing genoStruTrait::numChrom()'

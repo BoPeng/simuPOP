@@ -487,7 +487,7 @@ bool statNumOfMales::apply(population & pop)
 
 		IndIterator it = pop.indIterator(sp->subPop());
 		for (; it.valid(); ++it)
-			if (it->sex() == Male)
+			if (it->sex() == MALE)
 				maleCnt++;
 			else
 				femaleCnt++;
@@ -818,7 +818,7 @@ bool statHeteroFreq::apply(population & pop)
 
 #ifndef OPTIMIZED
 			int chromType = pop.chromType(pop.chromLocusPair(loc).first);
-			DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY,
+			DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y,
 				ValueError, "Heterozygosity count for sex chromosomes is not supported.");
 #endif
 			size_t hetero = 0;
@@ -953,7 +953,7 @@ bool statGenoFreq::apply(population & pop)
 			// go through all alleles
 			IndIterator ind = pop.indIterator(it->subPop());
 			// the simple case, the speed is potentially faster
-			if (!pop.isHaplodiploid() && (chromTypes[idx] == Autosome || chromTypes[idx] == Customized)) {
+			if (!pop.isHaplodiploid() && (chromTypes[idx] == AUTOSOME || chromTypes[idx] == CUSTOMIZED)) {
 				for (; ind.valid(); ++ind) {
 					vectori genotype(ply);
 					for (size_t p = 0; p < ply; ++p)
@@ -965,12 +965,12 @@ bool statGenoFreq::apply(population & pop)
 				for (; ind.valid(); ++ind) {
 					vectori genotype;
 					for (size_t p = 0; p < ply; ++p) {
-						if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+						if (p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 							continue;
-						if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+						if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 							continue;
-						if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-						     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+						if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+						     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
 						genotype.push_back(ind->allele(loc, p));
 					}
@@ -1115,12 +1115,12 @@ bool statHaploFreq::apply(population & pop)
 			for (; ind.valid(); ++ind) {
 				vectori haplotype(loci.size());
 				for (size_t p = 0; p < ply; ++p) {
-					if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+					if (p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 						continue;
-					if (chromType == ChromosomeY && ind->sex() == Female)
+					if (chromType == CHROMOSOME_Y && ind->sex() == FEMALE)
 						continue;
-					if (((chromType == ChromosomeX && p == 1) ||
-					     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (((chromType == CHROMOSOME_X && p == 1) ||
+					     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
 					for (size_t idx = 0; idx < nLoci; ++idx)
 						haplotype[idx] = ind->allele(loci[idx], p);
@@ -1763,25 +1763,25 @@ bool statLD::apply(population & pop)
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
 			for (size_t p = 0; p < ply; ++p) {
-				if (ply == 2 && p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+				if (ply == 2 && p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 					continue;
 				GenoIterator geno = ind->genoBegin(p);
 				// allele frequency
 				for (size_t idx = 0; idx < nLoci; ++idx) {
-					if (ply == 2 && chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+					if (ply == 2 && chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 						continue;
-					if (ply == 2 && ((chromTypes[idx] == ChromosomeX && p == 1) ||
-					                 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (ply == 2 && ((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+					                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
 					alleleCnt[idx][*(geno + loci[idx])]++;
 				}
 				// haplotype frequency
 				for (size_t idx = 0; idx < nLD; ++idx) {
 					UINT chromType = chromTypes[lociMap[m_LD[idx][0]]];
-					if (chromType == ChromosomeY && ind->sex() == Female)
+					if (chromType == CHROMOSOME_Y && ind->sex() == FEMALE)
 						continue;
-					if (((chromType == ChromosomeX && p == 1) ||
-					     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (((chromType == CHROMOSOME_X && p == 1) ||
+					     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
 					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))]++;
 				}
@@ -2076,15 +2076,15 @@ bool statAssociation::apply(population & pop)
 		for (; ind.valid(); ++ind) {
 			if (hasAlleleTest) {
 				for (UINT p = 0; p < ply; ++p) {
-					if (ply == 2 && p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+					if (ply == 2 && p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 						continue;
 					GenoIterator geno = ind->genoBegin(p);
 					// allele count
 					for (size_t idx = 0; idx < nLoci; ++idx) {
-						if (ply == 2 && chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+						if (ply == 2 && chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 							continue;
-						if (ply == 2 && ((chromTypes[idx] == ChromosomeX && p == 1) ||
-						                 (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+						if (ply == 2 && ((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+						                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
 						if (ind->affected())
 							caseAlleleCnt[idx][*(geno + m_loci[idx])]++;
@@ -2098,7 +2098,7 @@ bool statAssociation::apply(population & pop)
 				GenoIterator geno1 = ind->genoBegin(0);
 				GenoIterator geno2 = ind->genoBegin(1);
 				for (size_t idx = 0; idx < nLoci; ++idx) {
-					if (chromTypes[idx] == ChromosomeX || chromTypes[idx] == ChromosomeY)
+					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y)
 						continue;
 					Allele a1 = *(geno1 + m_loci[idx]);
 					Allele a2 = *(geno2 + m_loci[idx]);
@@ -2283,12 +2283,12 @@ bool statNeutrality::apply(population & pop)
 		for (; ind.valid(); ++ind) {
 			vectora haplotype(nLoci);
 			for (size_t p = 0; p < ply; ++p) {
-				if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+				if (p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 					continue;
-				if (chromType == ChromosomeY && ind->sex() == Female)
+				if (chromType == CHROMOSOME_Y && ind->sex() == FEMALE)
 					continue;
-				if (((chromType == ChromosomeX && p == 1) ||
-				     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+				if (((chromType == CHROMOSOME_X && p == 1) ||
+				     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 					continue;
 				for (size_t idx = 0; idx < nLoci; ++idx)
 					haplotype[idx] = ToAllele(ind->allele(m_loci[idx], p));
@@ -2478,7 +2478,7 @@ bool statStructure::apply(population & pop)
 #ifndef OPTIMIZED
 	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 		int chromType = pop.chromType(pop.chromLocusPair(m_loci[idx]).first);
-		DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY, ValueError,
+		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
 			"Fst can not be esimated from markers on sex chromosomes");
 	}
 #endif
@@ -2631,7 +2631,7 @@ bool statHWE::apply(population & pop)
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < m_loci.size(); ++i) {
 		int chromType = pop.chromType(pop.chromLocusPair(m_loci[i]).first);
-		DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY, ValueError,
+		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
 			"Can not run HWE test on loci on sex chromosomes.");
 	}
 #endif

@@ -507,7 +507,7 @@ public:
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 
-	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
+	/** Return \c "MALE" if \e vsp=0 and \c "FEMALE" otherwise, unless a new
 	 *  set of names are specified.
 	 */
 	string name(SubPopID vsp);
@@ -561,7 +561,7 @@ public:
 	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 
-	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
+	/** Return \c "UNAFFECTED" if \e vsp=0 and \c "AFFECTED" if \e vsp=1,
 	 *  unless a new set of names are specified.
 	 */
 	string name(SubPopID vsp);

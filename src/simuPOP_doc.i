@@ -50,7 +50,7 @@ Usage:
 
 Details:
 
-    Return \"Unaffected\" if vsp=0 and \"Affected\" if vsp=1, unless a new
+    Return \"UNAFFECTED\" if vsp=0 and \"AFFECTED\" if vsp=1, unless a new
     set of names are specified.
 
 "; 
@@ -73,13 +73,13 @@ Details:
 
 Usage:
 
-    alphaParentsChooser(alphaSex=Male, alphaNum=0, alphaField=\"\",
+    alphaParentsChooser(alphaSex=MALE, alphaNum=0, alphaField=\"\",
       selectionField=\"fitness\")
 
 Details:
 
-    Create a parent chooser that chooses father (if alphaSex is Male)
-    or mother (if alphaSex is Female) from a selected group of alpha
+    Create a parent chooser that chooses father (if alphaSex is MALE)
+    or mother (if alphaSex is FEMALE) from a selected group of alpha
     individuals. If alphaNum is given, alpha individuals are chosen
     randomly or according to individual fitness if natural selection
     is enabled. If alphaField is given, individuals with non-zero
@@ -330,7 +330,7 @@ Arguments:
                     such as subPops=[sp1, sp2, (sp2, vsp1)].
                     subPops=[sp1] can be simplied as subPops=sp1.
                     Negative indexes are not supported. A common
-                    default value (AllAvail) of this parameter
+                    default value (ALL_AVAIL) of this parameter
                     reprents all subpopulations of the population
                     being aplied. Suport for this parameter vary from
                     operator to operator and some operators do not
@@ -910,8 +910,8 @@ Details:
     transmission, offspring sex is copied from parental sex even if
     sex has been determined by an offspring generator. All or
     specified information fields (parameter infoFields, default to
-    AllAvail) will also be copied from parent to offspring. Parameters
-    subPops is ignored.
+    ALL_AVAIL) will also be copied from parent to offspring.
+    Parameters subPops is ignored.
 
 "; 
 
@@ -1145,7 +1145,7 @@ Details:
 Usage:
 
     controlledOffspringGenerator(loci, alleles, freqFunc, ops=[],
-      numOffspring=1, sexMode=RandomSex)
+      numOffspring=1, sexMode=RANDOM_SEX)
 
 Details:
 
@@ -1710,8 +1710,8 @@ Usage:
 
 Details:
 
-    return the type of a chromosome chrom (Customized, Autosome,
-    ChromosomeX, or ChromosomeY).
+    return the type of a chromosome chrom (CUSTOMIZED, AUTOSOME,
+    CHROMOSOME_X, or CHROMOSOME_Y).
 
 "; 
 
@@ -1723,8 +1723,8 @@ Usage:
 
 Details:
 
-    return the type of all chromosomes (Customized, Autosome,
-    ChromosomeX or ChromosomeY).
+    return the type of all chromosomes (CUSTOMIZED, AUTOSOME,
+    ChromosomeX or CHROMOSOME_Y).
 
 "; 
 
@@ -2068,9 +2068,9 @@ Details:
     A genotype transmitter (during-mating operator) for haplodiploid
     populations. The female parent is considered as diploid and the
     male parent is considered as haploid (only the first homologous
-    copy is valid). If the offspring is Female, she will get a random
+    copy is valid). If the offspring is FEMALE, she will get a random
     copy of two homologous chromosomes of her mother, and get the only
-    paternal copy from her father. If the offspring is Male, he will
+    paternal copy from her father. If the offspring is MALE, he will
     only get a set of chromosomes from his mother.
 
 "; 
@@ -3125,7 +3125,7 @@ Details:
 
 Usage:
 
-    inheritTagger(mode=Paternal, begin=0, end=-1, step=1, at=[],
+    inheritTagger(mode=PATERNAL, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
@@ -3136,13 +3136,13 @@ Details:
     specified information fields are copied directly. If there are two
     parents, parameter mode specifies how to pass them to an
     offspring. More specifically,
-    *   mode=Maternal Passing the value from mother.
-    *   mode=Paternal Passing the value from father.
-    *   mode=Mean Passing the average of two values.
-    *   mode=Maximum Passing the maximum value of two values.
+    *   mode=MATERNAL Passing the value from mother.
+    *   mode=PATERNAL Passing the value from father.
+    *   mode=MEAN Passing the average of two values.
+    *   mode=MAXIMUM Passing the maximum value of two values.
     *   mode=Minumum Passing the minimum value of two values.
-    *   mode=Summation Passing the summation of two values.
-    *   mode=Multiplication Passing the multiplication of two values.
+    *   mode=SUMMATION Passing the summation of two values.
+    *   mode=MULTIPLICATION Passing the multiplication of two values.
     An RuntimeError will be raised if any of the parents does not
     exist. This operator does not support parameter subPops and does
     not output any information.
@@ -3422,7 +3422,7 @@ Details:
     can be adjusted through parameter maleFreq or be made to exact
     proportions by specifying parameter maleProp. Alternatively, a
     fixed sequence of sexes can be assigned. For example, if
-    sex=[Male, Female], individuals will be assigned Male and Female
+    sex=[MALE, FEMALE], individuals will be assigned Male and Female
     successively. Parameter maleFreq or maleProp are ignored if sex is
     given. If a list of (virtual) subpopulation is specified in
     parameter subPop, only individuals in these subpopulations will be
@@ -4144,7 +4144,7 @@ Details:
 
 Usage:
 
-    migrator(rate=[], mode=ByProbability, toSubPops=AllAvail,
+    migrator(rate=[], mode=BY_PROBABILITY, toSubPops=AllAvail,
       begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=\"migrate_to\")
 
@@ -4160,14 +4160,14 @@ Details:
     Depending on the value of parameter mode, elements in the
     migration matrix (rate) are interpreted as either the
     probabilities to migrate from source to destination subpopulations
-    (mode = ByProbability), proportions of individuals in the source
+    (mode = BY_PROBABILITY), proportions of individuals in the source
     (virtual) subpopulations to the destination subpopulations (mode =
-    ByProportion), numbers of migrants in the source (virtual)
-    subpopulations (mode = ByCounts), or ignored completely (mode =
-    ByIndInfo). In the last case, parameter subPops is respected (only
-    individuals in specified (virtual) subpopulations will migrate)
-    but toSubPops is ignored.  This operator is by default applied
-    pre-mating (parameter stage). Please refer to operator
+    BY_PROPORTION), numbers of migrants in the source (virtual)
+    subpopulations (mode = BY_COUNTS), or ignored completely (mode =
+    BY_IND_INFO). In the last case, parameter subPops is respected
+    (only individuals in specified (virtual) subpopulations will
+    migrate) but toSubPops is ignored.  This operator is by default
+    applied pre-mating (parameter stage). Please refer to operator
     baseOperator for a detailed explanation for all parameters.
 
 "; 
@@ -4341,7 +4341,7 @@ Details:
     operators. When it is applied to an individual, it applies these
     penetrance operators to the individual, obtain a list of
     penetrance values, and compute a combined penetrance value from
-    them and assign affection status accordingly. Additive,
+    them and assign affection status accordingly. ADDITIVE,
     multiplicative, and a heterogeneour multi-locus model are
     supported. Please refer to Neil Rish (1989) \"Linkage Strategies
     for  Genetically Complex Traits\" for some analysis of these
@@ -4353,7 +4353,7 @@ Details:
 
 Usage:
 
-    mlPenetrance(ops, mode=Multiplicative, ancGen=0, begin=0,
+    mlPenetrance(ops, mode=MULTIPLICATIVE, ancGen=0, begin=0,
       end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
@@ -4366,8 +4366,8 @@ Details:
     list of (usually single-locus) penetrance values. These penetrance
     values are combined to a single penetrance value using
     *   Prod(f_i), namely the product of individual penetrance if mode
-    = Multiplicative,
-    *   sum(f_i) if mode = Additive, and
+    = MULTIPLICATIVE,
+    *   sum(f_i) if mode = ADDITIVE, and
     *   1-Prod(1 - f_i) if mode = Heterogeneity 0 or 1 will be
     returned if the combined penetrance value is less than zero or
     greater than 1.
@@ -4405,7 +4405,7 @@ Details:
     This selector is created by a list of selectors. When it is
     applied to an individual, it applies these selectors to the
     individual, obtain a list of fitness values, and compute a
-    combined fitness value from them. Additive, multiplicative, and a
+    combined fitness value from them. ADDITIVE, multiplicative, and a
     heterogeneour multi-locus model are supported.
 
 "; 
@@ -4414,7 +4414,7 @@ Details:
 
 Usage:
 
-    mlSelector(ops, mode=Multiplicative, begin=0, end=-1, step=1,
+    mlSelector(ops, mode=MULTIPLICATIVE, begin=0, end=-1, step=1,
       at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
@@ -4426,8 +4426,8 @@ Details:
     (usually single-locus) fitness values. These fitness values are
     combined to a single fitness value using
     *   Prod(f_i), namely the product of individual fitness if mode =
-    Multiplicative,
-    *   1-sum(1 - f_i) if mode = Additive, and
+    MULTIPLICATIVE,
+    *   1-sum(1 - f_i) if mode = ADDITIVE, and
     *   1-Prod(1 - f_i) if mode = Heterogeneity zero will be returned
     if the combined fitness value is less than zero.
 
@@ -4525,7 +4525,7 @@ Details:
 
 Usage:
 
-    offspringGenerator(ops, numOffspring=1, sexMode=RandomSex)
+    offspringGenerator(ops, numOffspring=1, sexMode=RANDOM_SEX)
 
 Details:
 
@@ -4555,8 +4555,8 @@ Details:
     generation number will be passed to this function, and its return
     value will be considered the number of offspring. In the last
     case, a tuple (or a list) in one of the following forms:
-    (GeometricDistribution, p), (PoissonDistribution, p),
-    (BinomialDistribution, p, N), or (UniformDistribution, a, b) can
+    (GEOMETRIC_DISTRIBUTION, p), (POISSON_DISTRIBUTION, p),
+    (BINOMIAL_DISTRIBUTION, p, N), or (UNIFORM_DISTRIBUTION, a, b) can
     be given. The number of offspring will be determined randomly
     following these statistical distributions. Please refer to the
     simuPOP user's guide for a detailed description of these
@@ -4564,12 +4564,13 @@ Details:
     control the sex of each offspring. Its default value is usually
     RandomSex which assign Male or Female to each individual randomly,
     with equal probabilities. If NoSex is given, all individuals will
-    be Male. sexMode can also be one of (ProbOfMale, p), (NumOfMale,
-    n), and (NumOfFemale, n). The first case specifies the probability
-    of male for each offspring. The next two cases specifies the
-    number of male or female individuals in each family, respectively.
-    If n is greater than or equal to the number of offspring in this
-    family, all offspring in this family will be Male or Female.
+    be Male. sexMode can also be one of (PROB_OF_MALES, p),
+    (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n). The first case
+    specifies the probability of male for each offspring. The next two
+    cases specifies the number of male or female individuals in each
+    family, respectively. If n is greater than or equal to the number
+    of offspring in this family, all offspring in this family will be
+    Male or Female.
 
 "; 
 
@@ -4967,8 +4968,8 @@ Details:
 
 Usage:
 
-    x.locateRelatives(relType, resultFields=[], sex=AnySex,
-      affectionStatus=AnyAffectionStatus, ancGen=-1)
+    x.locateRelatives(relType, resultFields=[], sex=ANY_SEX,
+      affectionStatus=ANY_AFFECTION_STATUS, ancGen=-1)
 
 Details:
 
@@ -4984,15 +4985,15 @@ Details:
     no shared parent.
     *   Offspring all offspring of each individual.
     *   CommonOffspring common offspring between each individual and
-    its spouse (located by Spouse or OutbredSpouse). relFields should
+    its spouse (located by Spouse or OUTBRED_SPOUSE). relFields should
     consist of an information field for spouse and m-1 fields for
     offspring where m is the number of fields.
     *   FullSibling siblings with common father and mother,
     *   Sibling siblings with at least one common parent. Optionally,
     you can specify the sex and affection status of relatives you
     would like to locate, using parameters sex and affectionStatus.
-    sex can be AnySex (default), MaleOnly, FemaleOnly, SameSex or
-    OppositeSex, and affectionStatus can be Affected, Unaffected or
+    sex can be AnySex (default), MALE_ONLY, FEMALE_ONLY, SameSex or
+    OPPOSITE_SEX, and affectionStatus can be AFFECTED, Unaffected or
     AnyAffectionStatus (default). Only relatives with specified
     properties will be located.  This function will by default go
     through all ancestral generations and locate relatives for all
@@ -5022,12 +5023,12 @@ Details:
     each generation, and a affectionStatus that specifies affection
     status at each generation. fieldPath should be a list of
     information fields, sex and affectionStatus are optional. If
-    specified, they should be a list of AnySex, MaleOnly, FemaleOnly,
-    SameSex and OppsiteSex for parameter sex, and a list of
-    Unaffected, Affected and AnyAffectionStatus for parameter
+    specified, they should be a list of ANY_SEX, MALE_ONLY,
+    FEMALE_ONLY, SameSex and OppsiteSex for parameter sex, and a list
+    of UNAFFECTED, Affected and AnyAffectionStatus for parameter
     affectionStatus.  For example, if fieldPath = [['father_id',
     'mother_id'], ['sib1', 'sib2'], ['off1', 'off2']], and sex =
-    [AnySex, MaleOnly, FemaleOnly], this function will locate
+    [ANY_SEX, MALE_ONLY, FEMALE_ONLY], this function will locate
     father_id and mother_id for each individual, find all individuals
     referred by father_id and mother_id, find informaton fields sib1
     and sib2 from these parents and locate male individuals referred
@@ -5053,8 +5054,8 @@ Details:
     Return a list of IDs of individuals who have non-negative values
     at information fields infoFields. Additional requirements could be
     specified by parameters sex and affectionStatus. sex can be AnySex
-    (default), MaleOnly, FemaleOnly, SameSex or OppositeSex, and
-    affectionStatus can be Affected, Unaffected or AnyAffectionStatus
+    (default), MALE_ONLY, FEMALE_ONLY, SameSex or OPPOSITE_SEX, and
+    affectionStatus can be AFFECTED, Unaffected or AnyAffectionStatus
     (default). This function by default check all individuals in all
     ancestral generations, but you could limit the search using
     parameter subPops (a list of (virtual) subpopulations) and (recent
@@ -5224,13 +5225,13 @@ Details:
 
 Usage:
 
-    polyParentsChooser(polySex=Male, polyNum=1,
+    polyParentsChooser(polySex=MALE, polyNum=1,
       selectionField=\"fitness\")
 
 Details:
 
     Create a multi-spouse parents chooser where each father (if
-    polySex is Male) or mother (if polySex is Female) has polyNum
+    polySex is MALE) or mother (if polySex is FEMALE) has polyNum
     spouses. The parents are chosen with replacement. If natural
     selection is enabled, the probability that an individual is chosen
     is proportional to his/her fitness value among all individuals
@@ -5337,20 +5338,20 @@ Arguments:
                     sets. The first case is handled by setting
                     chromTypes of each chromosome. Only the
                     haplodiploid populations are handled for the
-                    second case, for which ploidy=Haplodiploid should
+                    second case, for which ploidy=HAPLODIPLOID should
                     be used.
     loci:           A list of numbers of loci on each chromosome. The
                     length of this parameter determines the number of
                     chromosomes. Default to [1], meaning one
                     chromosome with a single locus.
     chromTypes:     A list that specifies the type of each chromosome,
-                    which can be Autosome, ChromosomeX, ChromosomeY,
+                    which can be AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y,
                     or Customized. All chromosomes are assumed to be
                     autosomes if this parameter is ignored. Sex
                     chromosome can only be specified in a diploid
                     population where the sex of an individual is
                     determined by the existence of these chromosomes
-                    using the XX (Female) and XY (Male) convention.
+                    using the XX (FEMALE) and XY (MALE) convention.
                     Both sex chromosomes have to be available and be
                     specified only once. Because chromosomes X and Y
                     are treated as two chromosomes, recombination on
@@ -5930,7 +5931,7 @@ Details:
 Usage:
 
     x.addChrom(lociPos, lociNames=[], chromName=\"\", alleleNames=[],
-      chromType=Autosome)
+      chromType=AUTOSOME)
 
 Details:
 
@@ -7487,7 +7488,7 @@ Note:
 Usage:
 
     recombinator(rates=[], intensity=-1, loci=AllAvail,
-      convMode=NoConversion, output=\"\", begin=0, end=-1, step=1,
+      convMode=NO_CONVERSION, output=\"\", begin=0, end=-1, step=1,
       at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
@@ -7514,13 +7515,13 @@ Details:
     and recombination intensity.  Gene conversion is controlled using
     parameter convMode, which can be
     *   NoConversion: no gene conversion (default).
-    *   (NumMarkers, prob, n): With probability prob, convert a fixed
+    *   (NUM_MARKERS, prob, n): With probability prob, convert a fixed
     number (n) of markers if a recombination event happens.
-    *   (GeometricDistribution, prob, p): With probability prob,
+    *   (GEOMETRIC_DISTRIBUTION, prob, p): With probability prob,
     convert a random number of markers if a recombination event
     happens. The number of markes converted follows a geometric
     distribution with probability p.
-    *   (TractLength, prob, n): With probability prob, convert a
+    *   (TRACT_LENGTH, prob, n): With probability prob, convert a
     region of fixed tract length (n) if a recombination event happens.
     The actual number of markers converted depends on loci positions
     of surrounding loci. The starting position of this tract is the
@@ -7528,7 +7529,7 @@ Details:
     located at 0, 1, 2, 3 respectively, a conversion event happens
     between 0 and 1, with a tract length 2 will start at 0.5 and end
     at 2.5, covering the second and third loci.
-    *   (ExponentialDistribution, prob, p): With probability prob,
+    *   (EXPONENTIAL_DISTRIBUTION, prob, p): With probability prob,
     convert a region of random tract length if a recombination event
     happens. The distribution of tract length follows a exponential
     distribution with probability p. The actual number of markers
@@ -8272,7 +8273,7 @@ Usage:
 
 Details:
 
-    Return \"Male\" if vsp=0 and \"Female\" otherwise, unless a new set of
+    Return \"MALE\" if vsp=0 and \"FEMALE\" otherwise, unless a new set of
     names are specified.
 
 "; 
@@ -8728,7 +8729,7 @@ Details:
     happens, this operator increases or decreases an allele by mutStep
     steps. Acceptable input of parameter mutStep include
     *   A number: This is the default mode with default value 1.
-    *   (GeometricDistribution, p): The number of steps follows a a
+    *   (GEOMETRIC_DISTRIBUTION, p): The number of steps follows a a
     geometric distribution with parameter p.
     *   A Python function: This user defined function accepts the
     allele being mutated and return the steps to mutate. The mutation
@@ -8885,7 +8886,7 @@ Details:
 
 Usage:
 
-    stat(popSize=False, numOfMale=False, numOfAffected=False,
+    stat(popSize=False, numOfMales=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
@@ -8948,22 +8949,22 @@ Details:
     *   popSize_sp: Size of (virtual) subpopulation sp.
     *   subPopSize (default): A list of (virtual) subpopulation sizes.
     This variable is easier to use than accessing popSize from each
-    (virtual) subpopulation.numOfMale: If numOfMale=True, number of
+    (virtual) subpopulation.numOfMales: If numOfMales=True, number of
     male individuals in all or specified (virtual) subpopulations will
     be set to the following variables:
-    *   numOfMale (default): Total number of male individuals in all
+    *   numOfMales (default): Total number of male individuals in all
     or specified (virtual) subpopulations.
-    *   numOfMale (default): Total number of female individuals in all
-    or specified (virtual) subpopulations.
-    *   propOfMale: Proportion of male individuals.
-    *   propOfFemale: Proportion of female individuals.
-    *   numOfMale_sp: Number of male individuals in each (virtual)
+    *   numOfMales (default): Total number of female individuals in
+    all or specified (virtual) subpopulations.
+    *   propOfMales: Proportion of male individuals.
+    *   propOfFemales: Proportion of female individuals.
+    *   numOfMales_sp: Number of male individuals in each (virtual)
     subpopulation.
-    *   numOfFemale_sp: Number of female individuals in each (virtual)
-    subpopulation.
-    *   propOfMale_sp: Proportion of male individuals in each
+    *   numOfFemales_sp: Number of female individuals in each
     (virtual) subpopulation.
-    *   propOfFemale_sp: Proportion of female individuals in each
+    *   propOfMales_sp: Proportion of male individuals in each
+    (virtual) subpopulation.
+    *   propOfFemales_sp: Proportion of female individuals in each
     (virtual) subpopulation.numOfAffected: If numOfAffected=True,
     number of affected individuals in all or specified (virtual)
     subpopulations will be set to the following variables:
@@ -9530,17 +9531,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::statNumOfMale;
+%ignore simuPOP::statNumOfMales;
 
-%feature("docstring") simuPOP::statNumOfMale::statNumOfMale "
+%feature("docstring") simuPOP::statNumOfMales::statNumOfMales "
 
 Usage:
 
-    statNumOfMale(numOfMale, subPops, vars, suffix)
+    statNumOfMales(numOfMales, subPops, vars, suffix)
 
 "; 
 
-%feature("docstring") simuPOP::statNumOfMale::apply "
+%feature("docstring") simuPOP::statNumOfMales::apply "
 
 Usage:
 
@@ -9548,7 +9549,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::statNumOfMale::describe "
+%feature("docstring") simuPOP::statNumOfMales::describe "
 
 Usage:
 
@@ -9808,7 +9809,7 @@ Details:
 
 Usage:
 
-    summaryTagger(mode=Mean, begin=0, end=-1, step=1, at=[],
+    summaryTagger(mode=MEAN, begin=0, end=-1, step=1, at=[],
       reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
 
 Details:
@@ -9817,11 +9818,11 @@ Details:
     parental information field (infoFields[:-1]) to an offspring
     information field (infoFields[-1]). A parameter mode specifies how
     to pass summarize parental values. More specifically,
-    *   mode=Mean Passing the average of values.
-    *   mode=Maximum Passing the maximum value of values.
+    *   mode=MEAN Passing the average of values.
+    *   mode=MAXIMUM Passing the maximum value of values.
     *   mode=Minumum Passing the minimum value of values.
-    *   mode=Summation Passing the sum of values.
-    *   mode=Multiplication Passing the multiplication of values. This
+    *   mode=SUMMATION Passing the sum of values.
+    *   mode=MULTIPLICATION Passing the multiplication of values. This
     operator does not support parameter subPops and does not output
     any information.
 

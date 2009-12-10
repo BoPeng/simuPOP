@@ -943,7 +943,7 @@ pop = population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-InitSex(pop, sex=[Male, Female])
+InitSex(pop, sex=[MALE, FEMALE])
 \end_layout
 
 \end_inset
@@ -1839,7 +1839,7 @@ recombinator()
 \family default
  or 
 \family typewriter
-recombinator(loci=AllAvail)
+recombinator(loci=ALL_AVAIL)
 \family default
  will recombine at all applicable loci, which will vary from population
  to population.
@@ -4798,7 +4798,7 @@ Population extraction
 \begin_layout Standard
 Another import population member function is 
 \family typewriter
-population.extract(loci=AllAvail, info=AllAvail, subPops=AllAvail, ancGen=-1)
+population.extract(loci=ALL_AVAIL, info=ALL_AVAIL, subPops=ALL_AVAIL, ancGen=-1)
 \family default
 .
  It is a powerful function that can extract subset of individuals, loci,
@@ -7228,7 +7228,7 @@ More specifically,
 \begin_layout Itemize
 
 \family typewriter
-numOffspring=(GeometricDistribution, p)
+numOffspring=(GEOMETRIC_DISTRIBUTION, p)
 \family default
 : The number of offspring for each mating event follows a geometric distribution
  with mean 
@@ -7251,7 +7251,7 @@ numOffspring=(GeometricDistribution, p)
 \begin_layout Itemize
 
 \family typewriter
-numOffspring=(PoissonDistribution, p)
+numOffspring=(POISSON_DISTRIBUTION, p)
 \family default
 : The number of offspring for each mating event follows a shifted Poisson
  distribution with mean 
@@ -7276,7 +7276,7 @@ numOffspring=(PoissonDistribution, p)
 \begin_layout Itemize
 
 \family typewriter
-numOffspring=(BinomialDistribution, p, n): 
+numOffspring=(BINOMIAL_DISTRIBUTION, p, n): 
 \family default
 The number of offspring for each mating event follows a shifted Binomial
  distribution with mean 
@@ -7300,7 +7300,7 @@ The number of offspring for each mating event follows a shifted Binomial
 \begin_layout Itemize
 
 \family typewriter
-numOffspring=(UniformDistribution, a, b):
+numOffspring=(UNIFORM_DISTRIBUTION, a, b):
 \family default
  The number of offspring for each mating event follows a discrete uniform
  distribution with lower bound 
@@ -7401,7 +7401,7 @@ Other sex determination methods are also available:
 \begin_layout Itemize
 
 \family typewriter
-sexMode=NoSex
+sexMode=NO_SEX
 \family default
 : Sex is not simulated so everyone is Male.
  This is the default mode where offspring can be Male or Female with equal
@@ -7411,7 +7411,7 @@ sexMode=NoSex
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(ProbOfMales, prob)
+sexMode=(PROB_OF_MALES, prob)
 \family default
 : Produce males with given probability.
 \end_layout
@@ -7419,7 +7419,7 @@ sexMode=(ProbOfMales, prob)
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(NumOfMales, n)
+sexMode=(NUM_OF_MALES, n)
 \family default
 : The first 
 \family typewriter
@@ -7441,7 +7441,7 @@ n
 \begin_layout Itemize
 
 \family typewriter
-sexMode=(NumOfFemales, n)
+sexMode=(NUM_OF_FEMALES, n)
 \family default
 : The first 
 \family typewriter
@@ -7560,7 +7560,7 @@ initSex
  assigns exactly 10 males and 10 females to the initial population.
  Because of the use of 
 \family typewriter
-numOffspring=2, sexMode=(NumOfMales, 1)
+numOffspring=2, sexMode=(NUM_OF_MALES, 1)
 \family default
 , each mating event will produce exactly one male and one female.
  Unlike a random mating scheme that only about 80% of parents are involved
@@ -8721,7 +8721,7 @@ genotype transmitters
 \end_layout
 
 \begin_layout Standard
-All genotype transmitters only handle known chromosome types such as Autosome,
+All genotype transmitters only handle known chromosome types such as AUTOSOME,
  ChromosomeX and ChromosomeY.
  Customized chromosomes are left untouched because simuPOP does not know
  how they should be transmitted from parents to offspring.
@@ -9936,7 +9936,7 @@ ped.addInfoFields(offFields)
 
 \begin_layout Plain Layout
 
-ped.locateRelatives(Offspring, resultFields=offFields)
+ped.locateRelatives(OFFSPRING, resultFields=offFields)
 \end_layout
 
 \end_inset
@@ -9995,12 +9995,12 @@ ped.addInfoFields(sibFields + offFields + cousinFields)
 
 \begin_layout Plain Layout
 
-ped.locateRelatives(FullSibling, resultFields=sibFields)
+ped.locateRelatives(FULLSIBLING, resultFields=sibFields)
 \end_layout
 
 \begin_layout Plain Layout
 
-ped.locateRelatives(Offspring, resultFields=offFields)
+ped.locateRelatives(OFFSPRING, resultFields=offFields)
 \end_layout
 
 \begin_layout Plain Layout
@@ -10010,7 +10010,7 @@ ped.traceRelatives([['father_id', 'mother_id'], sibFields, offFields],
 
 \begin_layout Plain Layout
 
-    sex=[AnySex, MaleOnly, FemaleOnly],
+    sex=[ANY_SEX, MALE_ONLY, FEMALE_ONLY],
 \end_layout
 
 \begin_layout Plain Layout
@@ -11568,7 +11568,7 @@ migrator
 \family default
  using 
 \family typewriter
-mode=ByIndInfo
+mode=BY_IND_INFO
 \family default
 .
  Example 
@@ -11905,7 +11905,7 @@ any ploidy
 \family typewriter
 mendelianGenoTransmitter
 \family default
-: Copy genotypes from two parents (a Male and a Female) to an offspring
+: Copy genotypes from two parents (a Male and a FEMALE) to an offspring
  following Mendel's laws, used by mating scheme 
 \family typewriter
 randomMating.
@@ -12290,7 +12290,7 @@ NoConversion
 \begin_layout Itemize
 
 \family typewriter
-(NumMarkers, prob, N)
+(NUM_MARKERS, prob, N)
 \family default
  Convert a fixed number 
 \family typewriter
@@ -12306,7 +12306,7 @@ prob
 \begin_layout Itemize
 
 \family typewriter
-(TractLength, prob, N)
+(TRACT_LENGTH, prob, N)
 \family default
  Convert a fixed length 
 \family typewriter
@@ -12323,7 +12323,7 @@ prob
 \begin_layout Itemize
 
 \family typewriter
-(GeometricDistribution, prob, p)
+(GEOMETRIC_DISTRIBUTION, prob, p)
 \family default
  When a conversion event happens at probability 
 \family typewriter
@@ -12340,7 +12340,7 @@ p
 \begin_layout Itemize
 
 \family typewriter
-(ExponentialDistribution, prob, p)
+(EXPONENTIAL_DISTRIBUTION, prob, p)
 \family default
  When a conversion event happens at probability 
 \family typewriter
@@ -14843,7 +14843,7 @@ mode
 
  if 
 \family typewriter
-mode=Multiplicative
+mode=MULTIPLICATIVE
 \family default
 , and
 \end_layout
@@ -14854,7 +14854,7 @@ mode=Multiplicative
 
  if 
 \family typewriter
-mode=Additive
+mode=ADDITIVE
 \family default
 , and
 \end_layout
@@ -14865,7 +14865,7 @@ mode=Additive
 
  if 
 \family typewriter
-mode=Heterogeneity
+mode=HETEROGENEITY
 \end_layout
 
 \begin_layout Standard
@@ -15852,7 +15852,7 @@ mode
 
  if 
 \family typewriter
-mode=Multiplicative
+mode=MULTIPLICATIVE
 \family default
 , and
 \end_layout
@@ -15863,7 +15863,7 @@ mode=Multiplicative
 
  if 
 \family typewriter
-mode=Additive
+mode=ADDITIVE
 \family default
 , and
 \end_layout
@@ -15874,7 +15874,7 @@ mode=Additive
 
  if 
 \family typewriter
-mode=Heterogeneity
+mode=HETEROGENEITY
 \end_layout
 
 \begin_layout Standard
@@ -16300,7 +16300,7 @@ For asexual mating schemes, pass one or more information fields from parent
 \begin_layout Itemize
 Pass one or more information fields from father to offspring (
 \family typewriter
-mode=Paternal
+mode=PATERNAL
 \family default
 ).
 \end_layout
@@ -16308,7 +16308,7 @@ mode=Paternal
 \begin_layout Itemize
 Pass one or more information fields from mother to offspring (
 \family typewriter
-mode=Maternal
+mode=MATERNAL
 \family default
 ).
 \end_layout
@@ -16317,7 +16317,7 @@ mode=Maternal
 Pass the maximal, minimal, sum, multiplcation or average of values of one
  or more information fields of both parents (
 \family typewriter
-mode=Maximum
+mode=MAXIMUM
 \family default
 , 
 \family typewriter
@@ -23176,7 +23176,7 @@ mlSelector([
 
 \begin_layout Plain Layout
 
-    mode=Multiplicative
+    mode=MULTIPLICATIVE
 \end_layout
 
 \begin_layout Plain Layout

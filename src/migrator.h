@@ -115,11 +115,11 @@ public:
 	 *
 	 *  Depending on the value of parameter \e mode, elements in the migration
 	 *  matrix (\e rate) are interpreted as either the probabilities to migrate
-	 *  from source to destination subpopulations (\e mode = \c ByProbability),
+	 *  from source to destination subpopulations (\e mode = \c BY_PROBABILITY),
 	 *  proportions of individuals in the source (virtual) subpopulations to
-	 *  the destination subpopulations (\e mode = \c ByProportion), numbers
+	 *  the destination subpopulations (\e mode = \c BY_PROPORTION), numbers
 	 *  of migrants in the source (virtual) subpopulations (\e mode
-	 *  = \c ByCounts), or ignored completely (\e mode = \c ByIndInfo).
+	 *  = \c BY_COUNTS), or ignored completely (\e mode = \c BY_IND_INFO).
 	 *  In the last case, parameter \e subPops is respected (only individuals
 	 *  in specified (virtual) subpopulations will migrate) but \e toSubPops
 	 *  is ignored.
@@ -128,7 +128,7 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	migrator(const matrix & rate = matrix(), int mode = ByProbability,
+	migrator(const matrix & rate = matrix(), int mode = BY_PROBABILITY,
 		const uintList & toSubPops = uintList(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),

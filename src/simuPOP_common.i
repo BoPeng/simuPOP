@@ -323,7 +323,7 @@ import exceptions, types
 # input a 'all available' case. Although both None and True represents
 # this case, a devoted constant is easier to remember.
 #
-AllAvail = True
+ALL_AVAIL = True
 
 def unsupportedPedigreeOperation(*args, **kwargs):
     'This function is not supported in the pedigree class'

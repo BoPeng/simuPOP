@@ -38,7 +38,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(sexSplitter())
-        InitSex(pop, sex=[Male, Female])
+        InitSex(pop, sex=[MALE, FEMALE])
         Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
         self.assertEqual(pop.dvars().subPopSize, [100, 400, 800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
@@ -54,12 +54,12 @@ class TestStat(unittest.TestCase):
         'Testing counting number of male'
         pop = population(size=[200, 800])
         for i in range(100):
-            pop.individual(i,0).setSex(Male)
-            pop.individual(i,1).setSex(Male)
+            pop.individual(i,0).setSex(MALE)
+            pop.individual(i,1).setSex(MALE)
         for i in range(100,200):
-            pop.individual(i,0).setSex(Female)
+            pop.individual(i,0).setSex(FEMALE)
         for i in range(100,800):
-            pop.individual(i,1).setSex(Female)
+            pop.individual(i,1).setSex(FEMALE)
         Stat(pop, numOfMales=True, vars=['numOfMales', 'numOfFemales'])
         self.assertEqual(pop.dvars().numOfMales, 200)
         self.assertEqual(pop.dvars().numOfFemales, 800)
@@ -83,7 +83,7 @@ class TestStat(unittest.TestCase):
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
         pop = population(size=[200, 800])
-        InitSex(pop, sex=[Male, Female])
+        InitSex(pop, sex=[MALE, FEMALE])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
             pop.individual(i,1).setAffected(True)
@@ -243,7 +243,7 @@ class TestStat(unittest.TestCase):
         'Testing summary statistics of information fields'
         import random
         pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
-        InitSex(pop, sex=[Male, Female])
+        InitSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(sexSplitter())
         pop.setIndInfo([1], field='x', subPop=(0, 0))
         pop.setIndInfo([2], field='x', subPop=(0, 1))
