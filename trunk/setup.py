@@ -455,7 +455,8 @@ if __name__ == '__main__':
     #
     # if any of the wrap files does not exist
     # or if the wrap files are older than any of the source files.
-    if (False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
+    if (not os.path.isfile('src/gsl_wrap.cpp') or \
+        False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
@@ -493,7 +494,12 @@ if __name__ == '__main__':
             shutil.copy(src, mod_src)
             copied_files.append(mod_src)
     # build
-    EXT_MODULES = []
+    # For module simuPOP.gsl
+    EXT_MODULES = [
+        Extension('simuPOP.gsl',
+            sources = GSL_FILES + ['src/gsl_wrap.cpp'],
+        )
+    ]
     for modu in MODULES:
         info = ModuInfo(modu, SIMUPOP_VER=SIMUPOP_VER, SIMUPOP_REV=SIMUPOP_REV)
         EXT_MODULES.append(
@@ -507,14 +513,6 @@ if __name__ == '__main__':
                 undef_macros = info['undef_macros'],
             )
         )
-    # For module simuPOP.gsl
-    EXT_MODULES.append(
-        Extension('simuPOP.gsl',
-            sources = GSL_FILES,
-            extra_compile_args = info['extra_compile_args'],
-            include_dirs = info['include_dirs'],
-        )
-    )
     setup(
         name = "simuPOP",
         version = SIMUPOP_VER,
