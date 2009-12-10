@@ -257,7 +257,7 @@ namespace simuPOP {
  *  consists of
  *
  *  \li Ploidy, namely the number of homologous sets of chromosomes, of a
- *      population. Haplodiploid population is also supported.
+ *      population. HAPLODIPLOID population is also supported.
  *  \li Number of chromosomes and number of loci on each chromosome.
  *  \li Positions of loci, which determine the relative distance between loci
  *      on the same chromosome. No unit is assumed so these positions can be
@@ -653,7 +653,7 @@ public:
 
 
 	/** return the type of all chromosomes (\c CUSTOMIZED, \c AUTOSOME,
-	 *  \c ChromosomeX or \c CHROMOSOME_Y).
+	 *  \c CHROMOSOME_X or \c CHROMOSOME_Y).
 	 *  <group>2-chromosome</group>
 	 */
 	vectoru chromTypes() const
