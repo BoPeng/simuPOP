@@ -107,10 +107,6 @@ include gsl/gsl_sf_result.h
 include gsl/gsl_types.h
 include gsl/gsl_cdf.h
 include gsl/gsl_version.h
-include gsl/specfunc/chebyshev.h
-include gsl/specfunc/eval.h
-include gsl/specfunc/error.h
-include gsl/specfunc/check.h
 include gsl/gsl_nan.h
 include gsl/gsl_precision.h
 include gsl/gsl_randist.h
@@ -121,7 +117,10 @@ include gsl/gsl_sf_zeta.h
 include gsl/gsl_sf_gamma.h
 include gsl/gsl_sf_log.h
 include gsl/gsl_sys.h
-include gsl/gsl_cdf.h
+include gsl/specfunc/chebyshev.h
+include gsl/specfunc/eval.h
+include gsl/specfunc/error.h
+include gsl/specfunc/check.h
 include gsl/complex/math.c
 include gsl/randist/poisson.c
 include gsl/randist/chisq.c
@@ -152,6 +151,7 @@ include gsl/sys/fcmp.c
 include gsl/sys/coerce.c
 include gsl/sys/infnan.c
 include gsl/sys/log1p.c
+include gsl/sys/expm1.c
 include gsl/sys/invhyp.c
 include gsl/rng/ranf.c
 include gsl/rng/rand.c
