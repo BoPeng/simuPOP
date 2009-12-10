@@ -59,7 +59,7 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru 
 	m_mode = mode;
 
 	if (m_mode != BY_PROBABILITY && m_mode != BY_PROPORTION && m_mode != BY_COUNTS)
-		throw ValueError("Migration mode can only be BY_PROBABILITY, ByProportion or ByCounts");
+		throw ValueError("Migration mode can only be BY_PROBABILITY, BY_PROPORTION or BY_COUNTS");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
