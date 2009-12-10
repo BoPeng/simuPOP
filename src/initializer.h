@@ -45,14 +45,14 @@ namespace simuPOP {
 class initSex : public baseOperator
 {
 public:
-	/** Create an operator that initialize individual sex to \c Male or
-	 *  \c Female. By default, it assign sex to individuals randomly, with
+	/** Create an operator that initialize individual sex to \c MALE or
+	 *  \c FEMALE. By default, it assign sex to individuals randomly, with
 	 *  equal probability of having a male or a female. This probabability can
 	 *  be adjusted through parameter \e maleFreq or be made to exact
 	 *  proportions by specifying parameter \e maleProp. Alternatively, a fixed
 	 *  sequence of sexes can be assigned. For example, if
-	 *  <tt>sex=[MALE, FEMALE]</tt>, individuals will be assigned \c Male and
-	 *  \c Female successively. Parameter \e maleFreq or \e maleProp are
+	 *  <tt>sex=[MALE, FEMALE]</tt>, individuals will be assigned \c MALE and
+	 *  \c FEMALE successively. Parameter \e maleFreq or \e maleProp are
 	 *  ignored if \e sex is given. If a list of (virtual) subpopulation is
 	 *  specified in parameter \e subPop, only individuals in these
 	 *  subpopulations will be initialized. Note that the \e sex sequence, if
@@ -69,7 +69,7 @@ public:
 		if (!m_sex.empty()) {
 			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
 				DBG_ASSERT(*it == int(MALE) || *it == int(FEMALE),
-					ValueError, "Parameter sex must be an array of Male or Female. ");
+					ValueError, "Parameter sex must be an array of MALE or FEMALE. ");
 			}
 		}
 	}

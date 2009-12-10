@@ -236,7 +236,7 @@ public:
 	}
 
 
-	/** set individual sex to \c Male or \c Female.
+	/** set individual sex to \c MALE or \c FEMALE.
 	 * <group>3-sex</group>
 	 */
 	void setSex(Sex sex)
@@ -1012,7 +1012,7 @@ public:
 			}
 		} else if (m_chromType == CHROMOSOME_Y) {
 			DBG_ASSERT(it->sex() == MALE, SystemError,
-				"There is no chromosome Y for Female individuals");
+				"There is no chromosome Y for FEMALE individuals");
 			while (it.valid())
 				if ((++it)->sex() == MALE)
 					break;

@@ -92,15 +92,15 @@ public:
 	 *  description of these distributions and their parameters.
 	 *
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
-	 *  default value is usually \e RandomSex which assign \c Male or \c Female
-	 *  to each individual randomly, with equal probabilities. If \c NoSex is
-	 *  given, all individuals will be \c Male. \e sexMode can also be one of
+	 *  default value is usually \e RANDOM_SEX which assign \c MALE or \c FEMALE
+	 *  to each individual randomly, with equal probabilities. If \c NO_SEX is
+	 *  given, all individuals will be \c MALE. \e sexMode can also be one of
 	 *  <tt>(PROB_OF_MALES, p)</tt>, <tt>(NUM_OF_MALES, n)</tt>, and
 	 *  <tt>(NUM_OF_FEMALES, n)</tt>. The first case specifies the probability
 	 *  of male for each offspring. The next two cases specifies the number of
 	 *  male or female individuals in each family, respectively. If \c n is
 	 *  greater than or equal to the number of offspring in this family, all
-	 *  offspring in this family will be \c Male or \c Female.
+	 *  offspring in this family will be \c MALE or \c FEMALE.
 	 */
 	offspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RANDOM_SEX);
