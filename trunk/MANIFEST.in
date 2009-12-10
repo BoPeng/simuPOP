@@ -243,9 +243,9 @@ include doc/cookbook.pdf
 include win32/stdint.h
 recursive-include win32/zlib-1.2.3 *.h *.c
 
-# bundle boost 1.38.0
-recursive-include boost_1_38_0/boost *.hpp *.ipp
-recursive-include boost_1_38_0/libs/iostreams/src *.cpp *.hpp
-recursive-include boost_1_38_0/libs/serialization/src *.cpp *.hpp *.ipp
-recursive-include boost_1_38_0/libs/regex/src *.cpp *.hpp
+# bundle boost 1.40.0
+recursive-include boost_1_40_0/boost *.hpp *.ipp
+recursive-include boost_1_40_0/libs/iostreams/src *.cpp *.hpp
+recursive-include boost_1_40_0/libs/serialization/src *.cpp *.hpp *.ipp
+recursive-include boost_1_40_0/libs/regex/src *.cpp *.hpp
 
