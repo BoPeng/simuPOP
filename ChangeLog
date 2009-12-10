@@ -47,6 +47,7 @@ version 0.9.9 - Rev 3196 (Dec 9, 2009)
 		There is not enough time to implement these features nicely.
   - CHG: Rename ..OfMale to ..OfMales and ..OfFemale to ..OfFemales.
   - CHG: Capitalize all global constant variables.
+  - CHG: Stop loading submodules when simuPOP is imported using 'from simuPOP import *'.
 
 version 0.9.8 - Rev 3074 (Oct 28, 2009)
   - BUG: Fix a memory leak bug in pyParentsChooser.
