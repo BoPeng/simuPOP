@@ -96,13 +96,13 @@ class TestSampling(unittest.TestCase):
         #
         self.pop.setVirtualSplitter(sexSplitter())
         s = DrawRandomSample(self.pop, 10, subPops=[(0,0), (1,0)])
-        # all samples should be Male
+        # all samples should be MALE
         self.assertEqual(s.popSize(), 10)
         for ind in s.individuals():
             self.assertEqual(ind.sex(), MALE)
         #
         s = DrawRandomSample(self.pop, [2, 8], subPops=[(0,0), (1,0)])
-        # all samples should be Male
+        # all samples should be MALE
         self.assertEqual(s.subPopSizes(), (2, 8))
         for ind in s.individuals():
             self.assertEqual(ind.sex(), MALE)
@@ -110,7 +110,7 @@ class TestSampling(unittest.TestCase):
         samples = DrawRandomSamples(self.pop, [2, 8], subPops=[(0,0), (1,0)], numOfSamples=10)
         self.assertEqual(len(samples), 10)
         for s in samples:
-            # all samples should be Male
+            # all samples should be MALE
             self.assertEqual(s.subPopSizes(), (2, 8))
             for ind in s.individuals():
                 self.assertEqual(ind.sex(), MALE)

@@ -85,7 +85,7 @@ class TestMatingSchemes(unittest.TestCase):
         mean = sum(num)/3.
         for i in range(3):
             assert num[i] < mean + 50 and num[i] > mean - 50
-        # GeometricDistribution
+        # GEOMETRIC_DISTRIBUTION
         p = 0.33
         cnt = self.getFamSize(randomMating(
             numOffspring=(GEOMETRIC_DISTRIBUTION, p)), N=10000)
@@ -94,7 +94,7 @@ class TestMatingSchemes(unittest.TestCase):
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - 1./p) < 0.1, True)
         self.assertEqual(abs(var - (1-p)/(p*p)) < 1, True)
-        # PoissonDistribution
+        # POISSON_DISTRIBUTION
         p = 3
         cnt = self.getFamSize(randomMating(
             numOffspring=(POISSON_DISTRIBUTION, p)), N=100000)
@@ -102,7 +102,7 @@ class TestMatingSchemes(unittest.TestCase):
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (p+1)) < 0.1, True)
         self.assertEqual(abs(var - p) < 0.2, True)
-        # BinomialDistribution
+        # BINOMIAL_DISTRIBUTION
         p = 0.3
         n = 10
         cnt = self.getFamSize(randomMating(
@@ -111,7 +111,7 @@ class TestMatingSchemes(unittest.TestCase):
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - ((n-1)*p+1)) < 0.1, True)
         self.assertEqual(abs(var - (n-1)*p*(1-p)) < 0.2, True)
-        # UniformDistribution
+        # UNIFORM_DISTRIBUTION
         a = 3
         b = 6
         cnt = self.getFamSize(randomMating(
@@ -134,17 +134,17 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(
             self.checkSexMode(randomMating(sexMode=NO_SEX)),
             'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
-        # NumOfMales
+        # NUM_OF_MALES
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=3,
             sexMode=(NUM_OF_MALES, 1))),
             'MFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFM')
-        # NumOfFemales
+        # NUM_OF_FEMALES
         self.assertEqual(
             self.checkSexMode(randomMating(numOffspring=4,
             sexMode=(NUM_OF_FEMALES, 2))),
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
-        # ProbOfMales
+        # PROB_OF_MALES
         pop = population(10000)
         simu = simulator(pop, randomMating(sexMode=(PROB_OF_MALES, 0.3)))
         simu.evolve(
@@ -237,7 +237,7 @@ class TestMatingSchemes(unittest.TestCase):
             initOps = [],
             duringOps = parentsTagger(),
             gen = 1)
-        # there is only one Male...
+        # there is only one MALE...
         fi = simu.population(0).indInfo('father_idx')
         self.assertEqual(fi[0], fi[1])
         self.assertEqual(fi[0], fi[5])
