@@ -317,7 +317,7 @@ public:
 	 *  \li <em>Prod(f_i)</em>, namely the product of individual fitness if
 	 *       \e mode = \c MULTIPLICATIVE,
 	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c ADDITIVE, and
-	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c Heterogeneity
+	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c HETEROGENEITY
 	 *
 	 *  zero will be returned if the combined fitness value is less than zero.
 	 */

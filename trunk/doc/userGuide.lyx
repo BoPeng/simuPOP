@@ -7403,8 +7403,8 @@ Other sex determination methods are also available:
 \family typewriter
 sexMode=NO_SEX
 \family default
-: Sex is not simulated so everyone is Male.
- This is the default mode where offspring can be Male or Female with equal
+: Sex is not simulated so everyone is MALE.
+ This is the default mode where offspring can be MALE or FEMALE with equal
  probability.
 \end_layout
 
@@ -8722,7 +8722,7 @@ genotype transmitters
 
 \begin_layout Standard
 All genotype transmitters only handle known chromosome types such as AUTOSOME,
- ChromosomeX and ChromosomeY.
+ CHROMOSOME_X and CHROMOSOME_Y.
  Customized chromosomes are left untouched because simuPOP does not know
  how they should be transmitted from parents to offspring.
  In case that Customized chromosomes are treated as mitochondrial chromosomes,
@@ -11905,7 +11905,7 @@ any ploidy
 \family typewriter
 mendelianGenoTransmitter
 \family default
-: Copy genotypes from two parents (a Male and a FEMALE) to an offspring
+: Copy genotypes from two parents (a MALE and a FEMALE) to an offspring
  following Mendel's laws, used by mating scheme 
 \family typewriter
 randomMating.
@@ -16325,7 +16325,7 @@ Minimum
 \family default
 , 
 \family typewriter
-Addition, Multiplication
+Addition, MULTIPLICATION
 \family default
  or 
 \family typewriter
@@ -16401,7 +16401,7 @@ Miximum
 \family default
 ,
 \family typewriter
- Summation
+ SUMMATION
 \family default
  and 
 \family typewriter
@@ -21399,7 +21399,7 @@ scatterPlotter
  is used to plot the physical location of all individuals.
  Individual ancestries are divided into five regions (0, 0.2, 0.4, 0.6, 0.8,
  1) indicated by small to larger points.
- Male and female individuals are plotted by different symbol.
+ MALE and female individuals are plotted by different symbol.
  This scripts uses the following techniques:
 \end_layout
 

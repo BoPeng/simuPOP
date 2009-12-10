@@ -469,7 +469,7 @@ class sexSplitter : public vspSplitter
 {
 public:
 	/** Create a sex splitter that defines male and female VSPs. These VSPs
-	 *  are named \c Male and \c Female unless a new set of names are specified
+	 *  are named \c MALE and \c FEMALE unless a new set of names are specified
 	 *  by parameter \e names.
 	 */
 	sexSplitter(const stringList & names = vectorstr()) : vspSplitter(names)
@@ -523,7 +523,7 @@ class affectionSplitter : public vspSplitter
 {
 public:
 	/** Create a splitter that defined two VSPs by affection status.These VSPs
-	 *  are named \c Unaffected and \c Affected unless a new set of names are
+	 *  are named \c UNAFFECTED and \c AFFECTED unless a new set of names are
 	 *  specified by parameter \e names.
 	 */
 	affectionSplitter(const stringList & names = vectorstr()) : vspSplitter(names)

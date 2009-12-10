@@ -107,23 +107,23 @@ public:
 	 *
 	 *  Parameter \e relType specifies what type of relative to locate. It can
 	 *  be
-	 *  \li \c Spouse locate spouses with whom an individual has at least one
+	 *  \li \c SPOUSE locate spouses with whom an individual has at least one
 	 *       common offspring.
-	 *  \li \c OutbredSpouse locate non-slibling spouses, namely spouses with
+	 *  \li \c OUTBRED_SPOUSE locate non-slibling spouses, namely spouses with
 	 *       no shared parent.
-	 *  \li \c Offspring all offspring of each individual.
-	 *  \li \c CommonOffspring common offspring between each individual and its
-	 *       spouse (located by Spouse or OUTBRED_SPOUSE). \e relFields should
+	 *  \li \c OFFSPRING all offspring of each individual.
+	 *  \li \c COMMON_OFFSPRING common offspring between each individual and its
+	 *       spouse (located by SPOUSE or OUTBRED_SPOUSE). \e relFields should
 	 *       consist of an information field for spouse and \c m-1 fields for
 	 *       offspring where \c m is the number of fields.
-	 *  \li \c FullSibling siblings with common father and mother,
-	 *  \li \c Sibling siblings with at least one common parent.
+	 *  \li \c FULLSIBLING siblings with common father and mother,
+	 *  \li \c SIBLING siblings with at least one common parent.
 	 *
 	 *  Optionally, you can specify the sex and affection status of relatives
 	 *  you would like to locate, using parameters \e sex and
-	 *  \e affectionStatus. \e sex can be \c AnySex (default), \c MALE_ONLY,
-	 *  \c FEMALE_ONLY, \c SameSex or \c OPPOSITE_SEX, and \e affectionStatus can
-	 *  be \c AFFECTED, \c Unaffected or \c AnyAffectionStatus (default). Only
+	 *  \e affectionStatus. \e sex can be \c ANY_SEX (default), \c MALE_ONLY,
+	 *  \c FEMALE_ONLY, \c SAME_SEX or \c OPPOSITE_SEX, and \e affectionStatus can
+	 *  be \c AFFECTED, \c UNAFFECTED or \c ANY_AFFECTION_STATUS (default). Only
 	 *  relatives with specified properties will be located.
 	 *
 	 *  This function will by default go through all ancestral generations and
@@ -150,9 +150,9 @@ public:
 	 *  that specifies affection status at each generation. \e fieldPath
 	 *  should be a list of information fields, \e sex and
 	 *  \e affectionStatus are optional. If specified, they should be a list of
-	 *  \c ANY_SEX, \c MALE_ONLY, \c FEMALE_ONLY, \c SameSex and \c OppsiteSex
-	 *  for parameter \e sex, and a list of \e UNAFFECTED, \e Affected
-	 *  and \e AnyAffectionStatus for parameter \e affectionStatus.
+	 *  \c ANY_SEX, \c MALE_ONLY, \c FEMALE_ONLY, \c SAME_SEX and \c OppsiteSex
+	 *  for parameter \e sex, and a list of \e UNAFFECTED, \e AFFECTED
+	 *  and \e ANY_AFFECTION_STATUS for parameter \e affectionStatus.
 	 *
 	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
 	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sex = [ANY_SEX,
@@ -176,9 +176,9 @@ public:
 	/** Return a list of IDs of individuals who have non-negative values at
 	 *  information fields \e infoFields. Additional requirements could be
 	 *  specified by parameters \e sex and \e affectionStatus.
-	 *  \e sex can be \c AnySex (default), \c MALE_ONLY, \c FEMALE_ONLY,
-	 *  \c SameSex or \c OPPOSITE_SEX, and \e affectionStatus can be
-	 *  \c AFFECTED, \c Unaffected or \c AnyAffectionStatus (default). This
+	 *  \e sex can be \c ANY_SEX (default), \c MALE_ONLY, \c FEMALE_ONLY,
+	 *  \c SAME_SEX or \c OPPOSITE_SEX, and \e affectionStatus can be
+	 *  \c AFFECTED, \c UNAFFECTED or \c ANY_AFFECTION_STATUS (default). This
 	 *  function by default check all individuals in all ancestral generations,
 	 *  but you could limit the search using parameter \e subPops (a list of
 	 *  (virtual) subpopulations) and (recent ancestral generations) \e ancGen.

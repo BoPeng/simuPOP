@@ -321,7 +321,7 @@ void mitochondrialGenoTransmitter::initialize(const population & pop)
 #ifndef OPTIMIZED
 		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
 			DBG_ASSERT(pop.chromType(ch) == CUSTOMIZED, ValueError,
-				"Chromosome " + toStr(ch) + " is not of Customized type.");
+				"Chromosome " + toStr(ch) + " is not of CUSTOMIZED type.");
 		}
 #endif
 		m_mitoChroms = m_chroms;
