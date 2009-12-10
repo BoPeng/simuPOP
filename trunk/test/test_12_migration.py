@@ -127,7 +127,7 @@ class TestMigrator(unittest.TestCase):
 
     def testMigrateBySexAndCounts(self):
         'Testing migrate by sex and counts'
-        # everyone is Male
+        # everyone is MALE
         pop = population(size=[2000, 4000,4000], loci=[2], infoFields=['migrate_to'])
         InitSex(pop, maleFreq=0, subPops=[0])
         InitSex(pop, maleFreq=1, subPops=[1])

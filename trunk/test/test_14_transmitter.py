@@ -84,7 +84,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p2, True)
-        # Male...
+        # MALE...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(MALE)
@@ -108,7 +108,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p2, True)
-        # Female ...
+        # FEMALE ...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(FEMALE)
@@ -166,7 +166,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p1, True)
-        # Male...
+        # MALE...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(MALE)
@@ -189,7 +189,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p1, True)
-        # Female ...
+        # FEMALE ...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(FEMALE)
@@ -220,7 +220,7 @@ class TestTransmitters(unittest.TestCase):
     def testHaplodiploidGenoTransmitter(self):
         'Testing operator haplodiploidGenoTransmitter()'
         pop = self.getPop(size=100, loci=[20]*5)
-        # Male...
+        # MALE...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*7 + [CUSTOMIZED]*2)
         pop.individual(2).setSex(MALE)
@@ -237,7 +237,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p1, True)
-        # Female ...
+        # FEMALE ...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*7  + [CUSTOMIZED]*2)
         pop.individual(2).setSex(FEMALE)
@@ -307,7 +307,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p2, True)
-        # Male...
+        # MALE...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(MALE)
@@ -331,7 +331,7 @@ class TestTransmitters(unittest.TestCase):
             else:
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p2, True)
-        # Female ...
+        # FEMALE ...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(FEMALE)
@@ -393,7 +393,7 @@ class TestTransmitters(unittest.TestCase):
             #else:
             #    self.assertNotEqual(g1 in p1, True)
             #    self.assertNotEqual(g2 in p2, True)
-        # Male...
+        # MALE...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(MALE)
@@ -418,7 +418,7 @@ class TestTransmitters(unittest.TestCase):
             #else:
                 #self.assertNotEqual(g1 in p1, True)
                 #self.assertNotEqual(g2 in p2, True)
-        # Female ...
+        # FEMALE ...
         pop = self.getPop(size=100, loci=[20]*9,
             chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
         pop.individual(2).setSex(FEMALE)
