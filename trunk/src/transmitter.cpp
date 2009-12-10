@@ -35,7 +35,7 @@ void genoTransmitter::initialize(const population & pop)
 	m_hasCustomizedChroms = !pop.customizedChroms().empty();
 	m_lociToCopy.clear();
 	for (UINT ch = 0; ch < pop.numChrom(); ++ch)
-		if (pop.chromType(ch) == Customized)
+		if (pop.chromType(ch) == CUSTOMIZED)
 			m_lociToCopy.push_back(0);
 		else
 			m_lociToCopy.push_back(pop.numLoci(ch));
@@ -232,8 +232,8 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 			continue;
 		if ((ploidy == 0 && ch == m_chromY) ||   // maternal, Y chromosome
 		    (ploidy == 1 &&
-		     ((ch == m_chromX && offspring.sex() == Male) ||
-		      (ch == m_chromY && offspring.sex() == Female)))) {
+		     ((ch == m_chromX && offspring.sex() == MALE) ||
+		      (ch == m_chromY && offspring.sex() == FEMALE)))) {
 			clearChromosome(offspring, ploidy, ch);
 			continue;
 		}
@@ -304,7 +304,7 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	// mom generate the first...
 	transmitGenotype(*mom, *offspring, 0);
 
-	if (offspring->sex() == Female)
+	if (offspring->sex() == FEMALE)
 		copyChromosomes(*dad, 0, *offspring, 1);
 	return true;
 }
@@ -315,12 +315,12 @@ void mitochondrialGenoTransmitter::initialize(const population & pop)
 	genoTransmitter::initialize(pop);
 	if (m_chroms.empty()) {
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
-			if (pop.chromType(ch) == Customized)
+			if (pop.chromType(ch) == CUSTOMIZED)
 				m_mitoChroms.push_back(ch);
 	} else {
 #ifndef OPTIMIZED
 		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
-			DBG_ASSERT(pop.chromType(ch) == Customized, ValueError,
+			DBG_ASSERT(pop.chromType(ch) == CUSTOMIZED, ValueError,
 				"Chromosome " + toStr(ch) + " is not of Customized type.");
 		}
 #endif
@@ -391,10 +391,10 @@ recombinator::recombinator(const floatList & rates, double intensity,
 
 	int mode = static_cast<int>(m_convMode[0]);
 	(void)mode;  // avoid a warning.
-	DBG_FAILIF(mode != NoConversion && m_convMode.size() != 3,
+	DBG_FAILIF(mode != NO_CONVERSION && m_convMode.size() != 3,
 		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
 
-	DBG_FAILIF(mode != NoConversion && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
+	DBG_FAILIF(mode != NO_CONVERSION && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
 		ValueError, "Conversion probability should be between 0 and 1");
 };
 
@@ -414,9 +414,9 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 	// IMPORTANT: if conversion length reaches end of chromosome
 	// this is an recombination! Otherwise, conversion will
 	// interfere with free crossover between chromosomes
-	if (mode == NumMarkers || mode == GeometricDistribution) {
+	if (mode == NUM_MARKERS || mode == GEOMETRIC_DISTRIBUTION) {
 		UINT num = 0;
-		if (mode == NumMarkers)
+		if (mode == NUM_MARKERS)
 			num = static_cast<int>(m_convMode[2]);
 		else
 			num = GetRNG().randGeometric(m_convMode[2]);
@@ -428,7 +428,7 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 			return num;
 	} else {
 		double len = 0;
-		if (mode == TractLength)
+		if (mode == TRACT_LENGTH)
 			len = m_convMode[2];
 		else
 			len = GetRNG().randExponential(len);
@@ -483,9 +483,9 @@ void recombinator::initialize(const population & pop)
 		if (chBegin == chEnd)
 			continue;
 
-		if (pop.chromType(ch) == Customized) {
+		if (pop.chromType(ch) == CUSTOMIZED) {
 			// recombine before customized chromosome.
-			if (pop.numChrom() != ch + 1 && pop.chromType(ch + 1) != Customized) {
+			if (pop.numChrom() != ch + 1 && pop.chromType(ch + 1) != CUSTOMIZED) {
 				m_recBeforeLoci.push_back(chEnd);
 				vecP.push_back(0.5);
 			}
@@ -542,7 +542,7 @@ void recombinator::initialize(const population & pop)
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
 
-	DBG_FAILIF(pop.chromType(pop.numChrom() - 1) != Customized && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != pop.totNumLoci(),
+	DBG_FAILIF(pop.chromType(pop.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != pop.totNumLoci(),
 		SystemError,
 		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
 
@@ -590,7 +590,7 @@ void recombinator::transmitGenotype(const individual & parent,
 		ignoreBegin = parent.chromBegin(m_chromY);
 		ignoreEnd = parent.chromEnd(m_chromY);
 	} else if (ploidy == 1 && m_chromX > 0) {
-		if (offspring.sex() == Male) {
+		if (offspring.sex() == MALE) {
 			ignoreBegin = parent.chromBegin(m_chromX);
 			ignoreEnd = parent.chromEnd(m_chromX);
 			forceSecondBegin = parent.chromBegin(m_chromY);
@@ -622,7 +622,7 @@ void recombinator::transmitGenotype(const individual & parent,
 	//
 	//  at each locus, check if recombine after it, if so
 	//  recombine.
-	bool withConversion = static_cast<int>(m_convMode[0]) != NoConversion
+	bool withConversion = static_cast<int>(m_convMode[0]) != NO_CONVERSION
 	                      && m_convMode[1] > 0.;
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
@@ -825,7 +825,7 @@ void recombinator::transmitGenotype(const individual & parent,
 		*m_debugOutput << '\n';
 	// handle special chromosomes
 	if (m_chromX > 0) {
-		if (offspring.sex() == Female) {
+		if (offspring.sex() == FEMALE) {
 			clearChromosome(offspring, 0, m_chromY);
 			clearChromosome(offspring, 1, m_chromY);
 		} else {

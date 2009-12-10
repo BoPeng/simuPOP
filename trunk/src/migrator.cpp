@@ -50,7 +50,7 @@ string migrator::describe(bool format)
 
 void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
 {
-	if (mode == ByIndInfo)
+	if (mode == BY_IND_INFO)
 		return;
 
 	UINT szFrom = m_rate.size();
@@ -58,8 +58,8 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru 
 
 	m_mode = mode;
 
-	if (m_mode != ByProbability && m_mode != ByProportion && m_mode != ByCounts)
-		throw ValueError("Migration mode can only be ByProbability, ByProportion or ByCounts");
+	if (m_mode != BY_PROBABILITY && m_mode != BY_PROPORTION && m_mode != BY_COUNTS)
+		throw ValueError("Migration mode can only be BY_PROBABILITY, ByProportion or ByCounts");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
@@ -69,13 +69,13 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru 
 		for (size_t j = 0; j < szTo; ++j) {
 			DBG_FAILIF(fcmp_lt(m_rate[i][j], 0.), ValueError,
 				"Migration rate should be positive.");
-			DBG_FAILIF(m_mode != ByCounts && fcmp_gt(m_rate[i][j], 1.), ValueError,
+			DBG_FAILIF(m_mode != BY_COUNTS && fcmp_gt(m_rate[i][j], 1.), ValueError,
 				"Migration rate should be in the range of [0,1]");
 		}
 	}
 
 	// set r[i][i]--- may need to extend rate (to add i->i)
-	if (m_mode == ByProbability || m_mode == ByProportion) {
+	if (m_mode == BY_PROBABILITY || m_mode == BY_PROPORTION) {
 		for (UINT i = 0; i < szFrom; i++) {               // from
 			// look for from=to cell.
 			UINT spFrom = fromSubPops[i].subPop();
@@ -109,13 +109,13 @@ bool migrator::apply(population & pop)
 
 	vectorinfo oldInfo;
 
-	if (m_mode == ByIndInfo && !fromSubPops.empty()) {
+	if (m_mode == BY_IND_INFO && !fromSubPops.empty()) {
 		oldInfo.resize(pop.popSize());
 		for (size_t i = 0; i < pop.popSize(); ++i)
 			oldInfo[i] = pop.ind(i).info(info);
 	}
 
-	if (m_mode != ByIndInfo || !fromSubPops.empty()) {
+	if (m_mode != BY_IND_INFO || !fromSubPops.empty()) {
 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 			RawIndIterator it = pop.rawIndBegin(sp);
 			RawIndIterator it_end = pop.rawIndEnd(sp);
@@ -152,14 +152,14 @@ bool migrator::apply(population & pop)
 		if (fromSubPops[from].isVirtual())
 			pop.activateVirtualSubPop(fromSubPops[from]);
 
-		if (m_mode == ByIndInfo) {
+		if (m_mode == BY_IND_INFO) {
 			// restore information fields set by user so that other individuals
 			// can stay at their original subpopulation.
 			if (!oldInfo.empty()) {
 				for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind)
 					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
 			}
-		} else if (m_mode == ByProbability) {
+		} else if (m_mode == BY_PROBABILITY) {
 			weightedSampler ws(GetRNG(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
@@ -182,7 +182,7 @@ bool migrator::apply(population & pop)
 			// first find out how many people will move to other subPop
 			// then randomly assign individuals to move
 			vectoru toNum(toSize);
-			if (m_mode == ByProportion) {
+			if (m_mode == BY_PROPORTION) {
 				// in case that to sub is not in from sub, the last added
 				// element is not used. sum of toNum is not spSize.
 				for (UINT i = 0; i < toSize; ++i)

@@ -60,7 +60,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
 	size_t ply = ind->ploidy();
-	if (ind->isHaplodiploid() && ind->sex() == Male)
+	if (ind->isHaplodiploid() && ind->sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
@@ -68,10 +68,10 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 
 	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 		for (size_t p = 0; p < ply; ++p) {
-			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+			if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 				continue;
-			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 				continue;
 			alleles.push_back(ind->allele(m_loci[idx], p));
 		}
@@ -92,12 +92,12 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 			UINT begin_idx = 0;
 			UINT end_idx = 0;
 			for (size_t i = 0; i < m_loci.size(); ++i) {
-				if (chromTypes[i] == ChromosomeY) {
-					if (ind->sex() == Female)
+				if (chromTypes[i] == CHROMOSOME_Y) {
+					if (ind->sex() == FEMALE)
 						continue;
 					else
 						++end_idx;
-				} else if (chromTypes[i] == ChromosomeX && ind->sex() == Male)
+				} else if (chromTypes[i] == CHROMOSOME_X && ind->sex() == MALE)
 					++end_idx;
 				else
 					end_idx += ply;
@@ -189,19 +189,19 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 
 double mlSelector::indFitness(individual * ind, ULONG gen)
 {
-	if (m_mode == Multiplicative) {
+	if (m_mode == MULTIPLICATIVE) {
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= static_cast<baseSelector * >(*s)->indFitness(ind, gen);
 		return fit;
-	} else if (m_mode == Additive) {
+	} else if (m_mode == ADDITIVE) {
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit -= 1 - static_cast<baseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
-	} else if (m_mode == Heterogeneity) {
+	} else if (m_mode == HETEROGENEITY) {
 		double fit = 1;
 		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
@@ -221,7 +221,7 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
 	size_t ply = ind->ploidy();
-	if (ind->isHaplodiploid() && ind->sex() == Male)
+	if (ind->isHaplodiploid() && ind->sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
@@ -229,10 +229,10 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 
 	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 		for (size_t p = 0; p < ply; ++p) {
-			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+			if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 				continue;
-			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 				continue;
 			alleles.push_back(ind->allele(m_loci[idx], p));
 		}

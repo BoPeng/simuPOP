@@ -183,7 +183,7 @@ class pedigree;
 class population : public GenoStruTrait
 {
 public:
-#define Haplodiploid 2.5
+#define HAPLODIPLOID 2.5
 
 	/** @name  constructors and destructor */
 	//@{
@@ -201,17 +201,17 @@ public:
 	 *    population) have different numbers of homologous sets. The first
 	 *    case is handled by setting \e chromTypes of each chromosome. Only
 	 *    the haplodiploid populations are handled for the second case, for
-	 *    which <tt>ploidy=Haplodiploid</tt> should be used.
+	 *    which <tt>ploidy=HAPLODIPLOID</tt> should be used.
 	 *  \param loci A list of numbers of loci on each chromosome. The length of
 	 *    this parameter determines the number of chromosomes. Default to
 	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
 	 *  \param chromTypes A list that specifies the type of each chromosome,
-	 *    which can be \c Autosome, \c ChromosomeX, \c ChromosomeY, or
+	 *    which can be \c AUTOSOME, \c CHROMOSOME_X, \c CHROMOSOME_Y, or
 	 *    \c Customized. All chromosomes are assumed to be autosomes if
 	 *    this parameter is ignored. Sex chromosome can only be specified in a
 	 *    diploid population where the sex of an individual is determined by
-	 *    the existence of these chromosomes using the \c XX (\c Female) and
-	 *    \c XY (\c Male) convention. Both sex chromosomes have to be available
+	 *    the existence of these chromosomes using the \c XX (\c FEMALE) and
+	 *    \c XY (\c MALE) convention. Both sex chromosomes have to be available
 	 *    and be specified only once. Because chromosomes \c X and \c Y are
 	 *    treated as two chromosomes, recombination on the pseudo-autosomal
 	 *    regions of the sex chromsomes is not supported. \c Customized
@@ -989,7 +989,7 @@ public:
 	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
 		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
-		UINT chromType = Autosome);
+		UINT chromType = AUTOSOME);
 
 	/** Insert loci \e lociNames at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although

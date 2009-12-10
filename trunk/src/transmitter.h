@@ -130,7 +130,7 @@ public:
 	 *  specified, genotypes are copied maternally. After genotype
 	 *  transmission, offspring sex is copied from parental sex even if sex
 	 *  has been determined by an offspring generator. All or specified
-	 *  information fields (parameter \e infoFields, default to \c AllAvail)
+	 *  information fields (parameter \e infoFields, default to \c ALL_AVAIL)
 	 *  will also be copied from parent to offspring. Parameters \e subPops
 	 *  is ignored.
 	 */
@@ -277,9 +277,9 @@ public:
 /** A genotype transmitter (during-mating operator) for haplodiploid
  *  populations. The female parent is considered as diploid and the male parent
  *  is considered as haploid (only the first homologous copy is valid). If the
- *  offspring is \c Female, she will get a random copy of two homologous
+ *  offspring is \c FEMALE, she will get a random copy of two homologous
  *  chromosomes of her mother, and get the only paternal copy from her father.
- *  If the offspring is \c Male, he will only get a set of chromosomes from his
+ *  If the offspring is \c MALE, he will only get a set of chromosomes from his
  *  mother.
  */
 class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
@@ -447,13 +447,13 @@ public:
 	 *  Gene conversion is controlled using parameter \e convMode, which can be
 	 *
 	 *  \li <tt>NoConversion</tt>: no gene conversion (default).
-	 *  \li <tt>(NumMarkers, prob, n)</tt>: With probability \e prob, convert
+	 *  \li <tt>(NUM_MARKERS, prob, n)</tt>: With probability \e prob, convert
 	 *      a fixed number (\e n) of markers if a recombination event happens.
-	 *  \li <tt>(GeometricDistribution, prob, p)</tt>: With probability \e prob,
+	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, prob, p)</tt>: With probability \e prob,
 	 *      convert a random number of markers if a recombination event happens.
 	 *      The number of markes converted follows a geometric distribution
 	 *      with probability \e p.
-	 *  \li <tt>(TractLength, prob, n)</tt>: With probability \e prob, convert
+	 *  \li <tt>(TRACT_LENGTH, prob, n)</tt>: With probability \e prob, convert
 	 *      a region of fixed tract length (\e n) if a recombination event
 	 *      happens. The actual number of markers converted depends on loci
 	 *      positions of surrounding loci. The starting position of this
@@ -461,7 +461,7 @@ public:
 	 *      loci are located at <tt>0, 1, 2, 3</tt> respectively, a conversion
 	 *      event happens between \c 0 and \c 1, with a tract length 2 will
 	 *      start at 0.5 and end at 2.5, covering the second and third loci.
-	 *  \li <tt>(ExponentialDistribution, prob, p)</tt>: With probability
+	 *  \li <tt>(EXPONENTIAL_DISTRIBUTION, prob, p)</tt>: With probability
 	 *      \e prob, convert a region of random tract length if a recombination
 	 *      event happens. The distribution of tract length follows a
 	 *      exponential distribution with probability \c p. The actual number
@@ -503,7 +503,7 @@ public:
 	 *      chromosomes.
 	 */
 	recombinator(const floatList & rates = vectorf(), double intensity = -1,
-		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
+		const uintList & loci = uintList(), const floatList & convMode = NO_CONVERSION,
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),

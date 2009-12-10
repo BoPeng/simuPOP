@@ -42,29 +42,29 @@ offspringGenerator::offspringGenerator(const opList & ops,
 		int mode = static_cast<int>(m_numOffspring[0]);
 		(void)mode;  // fix compiler warning.
 
-		DBG_FAILIF(mode == BinomialDistribution
+		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION
 			&& (m_numOffspring.size() < 3 || static_cast<UINT>(m_numOffspring[2]) <= 1.),
-			ValueError, "If mode is BinomialDistribution, the second parameter should be greater than 1");
-		DBG_FAILIF(mode == UniformDistribution &&
+			ValueError, "If mode is BINOMIAL_DISTRIBUTION, the second parameter should be greater than 1");
+		DBG_FAILIF(mode == UNIFORM_DISTRIBUTION &&
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < static_cast<UINT>(m_numOffspring[1])),
-			ValueError, "If mode is UniformDistribution, m_numOffspringParam should be greater than m_numOffspring");
-		DBG_FAILIF(mode == GeometricDistribution &&
+			ValueError, "If mode is UNIFORM_DISTRIBUTION, m_numOffspringParam should be greater than m_numOffspring");
+		DBG_FAILIF(mode == GEOMETRIC_DISTRIBUTION &&
 			(m_numOffspring.size() < 2 || fcmp_lt(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
 			ValueError, "P for a geometric distribution should be within [0,1]");
-		DBG_FAILIF(mode == BinomialDistribution &&
+		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
 			(m_numOffspring.size() < 2 || fcmp_lt(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
 			ValueError, "P for a Bionomial distribution should be within [0,1].");
-		DBG_FAILIF(mode == BinomialDistribution &&
+		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
 			ValueError, "Max number of offspring should be greater than 1.");
 	}
 	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
-	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMales ||
-		        static_cast<int>(m_sexMode[0]) == NumOfMales ||
-		        static_cast<int>(m_sexMode[0]) == NumOfFemales) && m_sexMode.size() < 2,
-		ValueError, "A parameter is required for sex mode ProbOfMales, NumOfMales and NumOfFemales");
+	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
+		        static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
+		        static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2,
+		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NumOfMales and NumOfFemales");
 
-	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMales &&
+	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
 		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
 }
@@ -81,13 +81,13 @@ ULONG offspringGenerator::numOffspring(int gen)
 		return numOff;
 	}
 	switch (static_cast<int>(m_numOffspring[0])) {
-	case GeometricDistribution:
+	case GEOMETRIC_DISTRIBUTION:
 		return GetRNG().randGeometric(m_numOffspring[1]);
-	case PoissonDistribution:
+	case POISSON_DISTRIBUTION:
 		return GetRNG().randPoisson(m_numOffspring[1]) + 1;
-	case BinomialDistribution:
+	case BINOMIAL_DISTRIBUTION:
 		return GetRNG().randBinomial(static_cast<UINT>(m_numOffspring[2]) - 1, m_numOffspring[1]) + 1;
-	case UniformDistribution:
+	case UNIFORM_DISTRIBUTION:
 		// max: 5
 		// num: 2
 		// randint(4)  ==> 0, 1, 2, 3
@@ -108,18 +108,18 @@ Sex offspringGenerator::getSex(int count)
 {
 	int mode = static_cast<int>(m_sexMode[0]);
 
-	if (mode == NoSex)
-		return Male;
-	else if (mode == RandomSex)
-		return GetRNG().randBit() ? Male : Female;
-	else if (mode == ProbOfMales)
-		return GetRNG().randUniform() < m_sexMode[1] ? Male : Female;
-	else if (mode == NumOfMales)
-		return count < static_cast<int>(m_sexMode[1]) ? Male : Female;
-	else if (mode == NumOfFemales)
-		return count < static_cast<int>(m_sexMode[1]) ? Female : Male;
+	if (mode == NO_SEX)
+		return MALE;
+	else if (mode == RANDOM_SEX)
+		return GetRNG().randBit() ? MALE : FEMALE;
+	else if (mode == PROB_OF_MALES)
+		return GetRNG().randUniform() < m_sexMode[1] ? MALE : FEMALE;
+	else if (mode == NUM_OF_MALES)
+		return count < static_cast<int>(m_sexMode[1]) ? MALE : FEMALE;
+	else if (mode == NUM_OF_FEMALES)
+		return count < static_cast<int>(m_sexMode[1]) ? FEMALE : MALE;
 	DBG_ASSERT(false, SystemError, "This line should not be reached.");
-	return Male;
+	return MALE;
 }
 
 
@@ -510,7 +510,7 @@ void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
-		if (it->sex() == Male) {
+		if (it->sex() == MALE) {
 			m_numMale++;
 			m_maleIndex.push_back(it.rawIter());
 		} else {
@@ -617,7 +617,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
-		if (it->sex() == Male)
+		if (it->sex() == MALE)
 			m_numMale++;
 		else
 			m_numFemale++;
@@ -640,7 +640,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
-		if (it->sex() == Male) {
+		if (it->sex() == MALE) {
 			m_maleIndex[m_numMale] = it.rawIter();
 			if (m_selection)
 				m_maleFitness[m_numMale] = it->info(fit_id);
@@ -722,7 +722,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
-		if (it->sex() == Male)
+		if (it->sex() == MALE)
 			m_numMale++;
 		else
 			m_numFemale++;
@@ -746,7 +746,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
-		if (it->sex() == Male) {
+		if (it->sex() == MALE) {
 			m_maleIndex[m_numMale] = it.rawIter();
 			if (m_selection)
 				m_maleFitness[m_numMale] = it->info(fit_id);
@@ -779,7 +779,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 	individual * mom = NULL;
 
 	if (m_polyNum > 1 && m_polyCount > 0) {
-		if (m_polySex == Male)
+		if (m_polySex == MALE)
 			dad = m_lastParent;
 		else
 			mom = m_lastParent;
@@ -796,7 +796,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 		else
 			dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
 
-		if (m_polySex == Male && m_polyNum > 1) {
+		if (m_polySex == MALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = dad;
 		}
@@ -811,7 +811,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 		else
 			mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
 
-		if (m_polySex == Female && m_polyNum > 1) {
+		if (m_polySex == FEMALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = mom;
 		}
@@ -838,7 +838,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
 		    && it->info(info_id) == 0.)
 			continue;
-		if (it->sex() == Male)
+		if (it->sex() == MALE)
 			m_numMale++;
 		else
 			m_numFemale++;
@@ -867,7 +867,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
 		    && it->info(info_id) == 0.)
 			continue;
-		if (it->sex() == Male) {
+		if (it->sex() == MALE) {
 			m_maleIndex[m_numMale] = it.rawIter();
 			if (m_selection)
 				m_maleFitness[m_numMale] = it->info(fit_id);
@@ -888,7 +888,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 	}
 
 	if (!hasAlphaMale || useInfo || m_alphaNum >=
-	    (m_alphaSex == Male ? m_numMale : m_numFemale)) {
+	    (m_alphaSex == MALE ? m_numMale : m_numFemale)) {
 		m_initialized = true;
 		return;
 	}
@@ -901,15 +901,15 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 		if (m_selection) {     // fix me, without replacement!
 			// using weighted sampler.
 			m_newAlphaIndex.push_back(
-				m_alphaSex == Male ? m_maleIndex[m_malesampler.get()]
+				m_alphaSex == MALE ? m_maleIndex[m_malesampler.get()]
 				: m_femaleIndex[m_femalesampler.get()]);
 			m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
 		} else     // fix me, without replacement!
 			m_newAlphaIndex.push_back(
-				m_alphaSex == Male ? m_maleIndex[GetRNG().randInt(m_numMale)]
+				m_alphaSex == MALE ? m_maleIndex[GetRNG().randInt(m_numMale)]
 				: m_femaleIndex[GetRNG().randInt(m_numFemale)]);
 	}
-	if (m_alphaSex == Male) {
+	if (m_alphaSex == MALE) {
 		m_maleIndex.swap(m_newAlphaIndex);
 		if (m_selection)
 			m_malesampler.set(m_newAlphaFitness);
@@ -1043,7 +1043,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
         while (++attempt < 1000) {
             individual * par2 = randomParentChooser::chooseParents(basePtr).first;
             if (par2->sex() != sex1)
-                return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+                return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
         }
         throw RuntimeError("Can not locate any individual of opposite sex");
     }
@@ -1064,7 +1064,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
     individual * par2 = validInds[GetRNG().randInt(validInds.size())];
     DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
                             << " par2: " << par2 - &*basePtr << endl);
-    return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+    return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
    }
  */
 

@@ -84,9 +84,9 @@ public:
 	 *  Current generation number will be passed to this function, and its
 	 *  return value will be considered the number of offspring. In the last
 	 *  case, a tuple (or a list) in one of the following forms:
-	 *  <tt>(GeometricDistribution, p)</tt>, <tt>(PoissonDistribution, p)</tt>,
-	 *  <tt>(BinomialDistribution, p, N)</tt>, or
-	 *  <tt>(UniformDistribution, a, b)</tt> can be given. The number of
+	 *  <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>, <tt>(POISSON_DISTRIBUTION, p)</tt>,
+	 *  <tt>(BINOMIAL_DISTRIBUTION, p, N)</tt>, or
+	 *  <tt>(UNIFORM_DISTRIBUTION, a, b)</tt> can be given. The number of
 	 *  offspring will be determined randomly following these statistical
 	 *  distributions. Please refer to the simuPOP user's guide for a detailed
 	 *  description of these distributions and their parameters.
@@ -95,15 +95,15 @@ public:
 	 *  default value is usually \e RandomSex which assign \c Male or \c Female
 	 *  to each individual randomly, with equal probabilities. If \c NoSex is
 	 *  given, all individuals will be \c Male. \e sexMode can also be one of
-	 *  <tt>(ProbOfMales, p)</tt>, <tt>(NumOfMales, n)</tt>, and
-	 *  <tt>(NumOfFemales, n)</tt>. The first case specifies the probability
+	 *  <tt>(PROB_OF_MALES, p)</tt>, <tt>(NUM_OF_MALES, n)</tt>, and
+	 *  <tt>(NUM_OF_FEMALES, n)</tt>. The first case specifies the probability
 	 *  of male for each offspring. The next two cases specifies the number of
 	 *  male or female individuals in each family, respectively. If \c n is
 	 *  greater than or equal to the number of offspring in this family, all
 	 *  offspring in this family will be \c Male or \c Female.
 	 */
 	offspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
-		const floatList & sexMode = RandomSex);
+		const floatList & sexMode = RANDOM_SEX);
 
 	virtual ~offspringGenerator()
 	{
@@ -215,7 +215,7 @@ public:
 	 */
 	controlledOffspringGenerator(const uintList & loci, const uintList & alleles,
 		PyObject * freqFunc, const opList & ops = vectorop(),
-		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
+		const floatListFunc & numOffspring = 1, const floatList & sexMode = RANDOM_SEX);
 
 
 	/// CPPONLY
@@ -573,14 +573,14 @@ class polyParentsChooser : public parentChooser
 {
 public:
 	/** Create a multi-spouse parents chooser where each father (if \e polySex
-	 *  is Male) or mother (if \e polySex is Female) has \e polyNum spouses.
+	 *  is MALE) or mother (if \e polySex is FEMALE) has \e polyNum spouses.
 	 *  The parents are chosen with replacement. If natural selection
 	 *  is enabled, the probability that an individual is chosen is
 	 *  proportional to his/her fitness value among all individuals with the
 	 *  same sex. Selection will be disabled if specified information field
 	 *  \e selectionField (default to \c "fitness") does not exist.
 	 */
-	polyParentsChooser(Sex polySex = Male, UINT polyNum = 1,
+	polyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
 		const string & selectionField = "fitness") :
 		parentChooser(selectionField),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
@@ -651,8 +651,8 @@ private:
 class alphaParentsChooser : public parentChooser
 {
 public:
-	/** Create a parent chooser that chooses father (if \e alphaSex is \c Male)
-	 *  or mother (if \e alphaSex is \c Female) from a selected group of alpha
+	/** Create a parent chooser that chooses father (if \e alphaSex is \c MALE)
+	 *  or mother (if \e alphaSex is \c FEMALE) from a selected group of alpha
 	 *  individuals. If \e alphaNum is given, alpha individuals are chosen
 	 *  randomly or according to individual fitness if natural selection is
 	 *  enabled. If \e alphaField is given, individuals with non-zero values
@@ -661,7 +661,7 @@ public:
 	 *  from the alpha individuals randomly or according to individual fitness.
 	 *  The other parents are chosen randomly.
 	 */
-	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string(),
+	alphaParentsChooser(Sex alphaSex = MALE, UINT alphaNum = 0, string alphaField = string(),
 		const string & selectionField = "fitness") :
 		parentChooser(selectionField),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),

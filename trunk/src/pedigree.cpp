@@ -122,51 +122,51 @@ individual & pedigree::indByID(double fid)
 
 bool pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
 {
-	return choice == AnySex ||
-	       (choice == MaleOnly && relSex == Male) ||
-	       (choice == FemaleOnly && relSex == Female) ||
-	       (choice == SameSex && relSex == mySex) ||
-	       (choice == OppositeSex && relSex != mySex);
+	return choice == ANY_SEX ||
+	       (choice == MALE_ONLY && relSex == MALE) ||
+	       (choice == FEMALE_ONLY && relSex == FEMALE) ||
+	       (choice == SAME_SEX && relSex == mySex) ||
+	       (choice == OPPOSITE_SEX && relSex != mySex);
 }
 
 
 bool pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
 {
-	return choice == AnyAffectionStatus ||
-	       (choice == Affected && affected) ||
-	       (choice == Unaffected && !affected);
+	return choice == ANY_AFFECTION_STATUS ||
+	       (choice == AFFECTED && affected) ||
+	       (choice == UNAFFECTED && !affected);
 }
 
 
 void pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFields,
                                SexChoice sexChoice, AffectionStatus affectionChoice, int ancGen)
 {
-	DBG_ASSERT(sexChoice == AnySex || sexChoice == MaleOnly || sexChoice == FemaleOnly
-		|| sexChoice == SameSex || sexChoice == OppositeSex, ValueError,
-		"Relative sex can only be one of AnySex, MaleOnly, FemaleOnly, SameSex or OppositeSex.");
+	DBG_ASSERT(sexChoice == ANY_SEX || sexChoice == MALE_ONLY || sexChoice == FEMALE_ONLY
+		|| sexChoice == SAME_SEX || sexChoice == OPPOSITE_SEX, ValueError,
+		"Relative sex can only be one of ANY_SEX, MALE_ONLY, FEMALE_ONLY, SameSex or OppositeSex.");
 
-	DBG_ASSERT(affectionChoice == Affected || affectionChoice == Unaffected
-		|| affectionChoice == AnyAffectionStatus, ValueError,
-		"Relative affection status can only be one of Affected, Unaffected and AnyAffectionStatus.");
+	DBG_ASSERT(affectionChoice == AFFECTED || affectionChoice == UNAFFECTED
+		|| affectionChoice == ANY_AFFECTION_STATUS, ValueError,
+		"Relative affection status can only be one of AFFECTED, Unaffected and AnyAffectionStatus.");
 
 	UINT oldGen = curAncestralGen();
 	switch (relType) {
-	case Spouse:
+	case SPOUSE:
 		locateSpouse(sexChoice, affectionChoice, resultFields, ancGen, false);
 		break;
-	case OutbredSpouse:
+	case OUTBRED_SPOUSE:
 		locateSpouse(sexChoice, affectionChoice, resultFields, ancGen, true);
 		break;
-	case Offspring:
+	case OFFSPRING:
 		locateOffspring(sexChoice, affectionChoice, resultFields, ancGen);
 		break;
-	case Sibling:
+	case SIBLING:
 		locateSibling(sexChoice, affectionChoice, resultFields, ancGen);
 		break;
-	case FullSibling:
+	case FULLSIBLING:
 		locateFullSibling(sexChoice, affectionChoice, resultFields, ancGen);
 		break;
-	case CommonOffspring:
+	case COMMON_OFFSPRING:
 		locateCommonOffspring(sexChoice, affectionChoice, resultFields, ancGen);
 		break;
 	default:
@@ -184,7 +184,7 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store Spouse individuals");
 
-	DBG_FAILIF(sexChoice == SameSex, ValueError, "Can not locate spouses with the same sex");
+	DBG_FAILIF(sexChoice == SAME_SEX, ValueError, "Can not locate spouses with the same sex");
 
 	// if we are using individual ID, the algorithm is slower, but it can handle
 	// overlapping generations.
@@ -244,9 +244,9 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 			// but these guys might not be in the population...
 			individual & fa = indByID(p);
 			individual & ma = indByID(m);
-			DBG_ASSERT(ma.sex() == Female && fa.sex() == Male, RuntimeError,
+			DBG_ASSERT(ma.sex() == FEMALE && fa.sex() == MALE, RuntimeError,
 				"Sex of parents appear to be wrong.");
-			if (numSpouse[p] < maxSpouse && sexChoice != MaleOnly
+			if (numSpouse[p] < maxSpouse && sexChoice != MALE_ONLY
 			    && acceptableAffectionStatus(ma.affected(), affectionChoice)) {
 				bool valid = true;
 				// duplicate spouse
@@ -260,7 +260,7 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 					++numSpouse[p];
 				}
 			}
-			if (numSpouse[m] < maxSpouse && sexChoice != FemaleOnly
+			if (numSpouse[m] < maxSpouse && sexChoice != FEMALE_ONLY
 			    && acceptableAffectionStatus(fa.affected(), affectionChoice)) {
 				bool valid = true;
 				// duplicate spouse
@@ -321,14 +321,14 @@ void pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 				individual & ma = indByID(mm);
 				// add child as father's offspring
 				if (numOffspring[pp] < maxOffspring &&
-				    acceptableSex(Male, ind(i).sex(), sexChoice) &&
+				    acceptableSex(MALE, ind(i).sex(), sexChoice) &&
 				    acceptableAffectionStatus(ind(i).affected(), affectionChoice)) {
 					fa.setInfo(ind(i).info(m_idIdx), offspringIdx[numOffspring[pp]]);
 					++numOffspring[pp];
 				}
 				// add child as mother's offspring
 				if (numOffspring[mm] < maxOffspring &&
-				    acceptableSex(Female, ind(i).sex(), sexChoice) &&
+				    acceptableSex(FEMALE, ind(i).sex(), sexChoice) &&
 				    acceptableAffectionStatus(ind(i).affected(), affectionChoice)) {
 					ma.setInfo(ind(i).info(m_idIdx), offspringIdx[numOffspring[mm]]);
 					++numOffspring[mm];
@@ -589,7 +589,7 @@ void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 			for (size_t j = 0; j < offspring.size(); ++j) {
 				try {
 					individual & child = indByID(offspring[j]);
-					bool valid = acceptableSex(Male, child.sex(), sexChoice) &&
+					bool valid = acceptableSex(MALE, child.sex(), sexChoice) &&
 					             acceptableAffectionStatus(child.affected(), affectionChoice);
 					// duplicate child
 					if (valid) {
@@ -659,19 +659,19 @@ bool pedigree::traceRelatives(const stringMatrix & fieldPath,
 			pathIdx[i][j] = infoIdx(pathFields[i][j]);
 	}
 	// convert sexChoice to type SexChoices
-	vector<SexChoice> sexes(pathIdx.size(), AnySex);
+	vector<SexChoice> sexes(pathIdx.size(), ANY_SEX);
 	for (size_t i = 0; i < sexChoice.size(); ++i) {
-		DBG_ASSERT(sexChoice[i] == AnySex || sexChoice[i] == MaleOnly || sexChoice[i] == FemaleOnly
-			|| sexChoice[i] == SameSex || sexChoice[i] == OppositeSex, ValueError,
-			"Relative sex can only be one of AnySex, MaleOnly, FemaleOnly, SameSex or OppositeSex.");
+		DBG_ASSERT(sexChoice[i] == ANY_SEX || sexChoice[i] == MALE_ONLY || sexChoice[i] == FEMALE_ONLY
+			|| sexChoice[i] == SAME_SEX || sexChoice[i] == OPPOSITE_SEX, ValueError,
+			"Relative sex can only be one of ANY_SEX, MALE_ONLY, FEMALE_ONLY, SameSex or OppositeSex.");
 		sexes[i] = static_cast<SexChoice>(sexChoice[i]);
 	}
 	// convert affectionChoice to type SexChoices
-	vector<AffectionStatus> affections(pathIdx.size(), AnyAffectionStatus);
+	vector<AffectionStatus> affections(pathIdx.size(), ANY_AFFECTION_STATUS);
 	for (size_t i = 0; i < affectionChoice.size(); ++i) {
-		DBG_ASSERT(affectionChoice[i] == Affected || affectionChoice[i] == Unaffected
-			|| affectionChoice[i] == AnyAffectionStatus, ValueError,
-			"Relative affection status can only be one of Affected, Unaffected and AnyAffectionStatus.");
+		DBG_ASSERT(affectionChoice[i] == AFFECTED || affectionChoice[i] == UNAFFECTED
+			|| affectionChoice[i] == ANY_AFFECTION_STATUS, ValueError,
+			"Relative affection status can only be one of AFFECTED, Unaffected and AnyAffectionStatus.");
 		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
@@ -742,20 +742,20 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 		fieldIdx[i] = infoIdx(infoFields[i]);
 
 	// convert sexChoice to type SexChoices
-	vector<SexChoice> sexes(infoFields.size(), AnySex);
+	vector<SexChoice> sexes(infoFields.size(), ANY_SEX);
 	for (size_t i = 0; i < sexChoice.size(); ++i) {
-		DBG_ASSERT(sexChoice[i] == AnySex || sexChoice[i] == MaleOnly || sexChoice[i] == FemaleOnly
-			|| sexChoice[i] == SameSex || sexChoice[i] == OppositeSex, ValueError,
-			"Relative sex can only be one of AnySex, MaleOnly, FemaleOnly, SameSex or OppositeSex.");
+		DBG_ASSERT(sexChoice[i] == ANY_SEX || sexChoice[i] == MALE_ONLY || sexChoice[i] == FEMALE_ONLY
+			|| sexChoice[i] == SAME_SEX || sexChoice[i] == OPPOSITE_SEX, ValueError,
+			"Relative sex can only be one of ANY_SEX, MALE_ONLY, FEMALE_ONLY, SameSex or OppositeSex.");
 		sexes[i] = static_cast<SexChoice>(sexChoice[i]);
 	}
 
 	// convert affectionChoice to type SexChoices
-	vector<AffectionStatus> affections(infoFields.size(), AnyAffectionStatus);
+	vector<AffectionStatus> affections(infoFields.size(), ANY_AFFECTION_STATUS);
 	for (size_t i = 0; i < affectionChoice.size(); ++i) {
-		DBG_ASSERT(affectionChoice[i] == Affected || affectionChoice[i] == Unaffected
-			|| affectionChoice[i] == AnyAffectionStatus, ValueError,
-			"Relative affection status can only be one of Affected, Unaffected and AnyAffectionStatus.");
+		DBG_ASSERT(affectionChoice[i] == AFFECTED || affectionChoice[i] == UNAFFECTED
+			|| affectionChoice[i] == ANY_AFFECTION_STATUS, ValueError,
+			"Relative affection status can only be one of AFFECTED, Unaffected and AnyAffectionStatus.");
 		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 

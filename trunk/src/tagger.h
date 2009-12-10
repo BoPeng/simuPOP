@@ -123,19 +123,19 @@ public:
 	 *  specified information fields are copied directly. If there are two
 	 *  parents, parameter \e mode specifies how to pass them to an offspring.
 	 *  More specifically,
-	 *  \li \c mode=Maternal Passing the value from mother.
-	 *  \li \c mode=Paternal Passing the value from father.
-	 *  \li \c mode=Mean Passing the average of two values.
-	 *  \li \c mode=Maximum Passing the maximum value of two values.
+	 *  \li \c mode=MATERNAL Passing the value from mother.
+	 *  \li \c mode=PATERNAL Passing the value from father.
+	 *  \li \c mode=MEAN Passing the average of two values.
+	 *  \li \c mode=MAXIMUM Passing the maximum value of two values.
 	 *  \li \c mode=Minumum Passing the minimum value of two values.
-	 *  \li \c mode=Summation Passing the summation of two values.
-	 *  \li \c mode=Multiplication Passing the multiplication of two values.
+	 *  \li \c mode=SUMMATION Passing the summation of two values.
+	 *  \li \c mode=MULTIPLICATION Passing the multiplication of two values.
 	 *
 	 *  An \c RuntimeError will be raised if any of the parents does not exist.
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	inheritTagger(InheritanceType mode = Paternal,
+	inheritTagger(InheritanceType mode = PATERNAL,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
@@ -184,16 +184,16 @@ public:
 	 *  information field (\e infoFields[:-1]) to an offspring information
 	 *  field (\e infoFields[-1]). A parameter \e mode specifies how to pass
 	 *  summarize parental values. More specifically,
-	 *  \li \c mode=Mean Passing the average of values.
-	 *  \li \c mode=Maximum Passing the maximum value of values.
+	 *  \li \c mode=MEAN Passing the average of values.
+	 *  \li \c mode=MAXIMUM Passing the maximum value of values.
 	 *  \li \c mode=Minumum Passing the minimum value of values.
-	 *  \li \c mode=Summation Passing the sum of values.
-	 *  \li \c mode=Multiplication Passing the multiplication of values.
+	 *  \li \c mode=SUMMATION Passing the sum of values.
+	 *  \li \c mode=MULTIPLICATION Passing the multiplication of values.
 	 *
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	summaryTagger(InheritanceType mode = Mean,
+	summaryTagger(InheritanceType mode = MEAN,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",

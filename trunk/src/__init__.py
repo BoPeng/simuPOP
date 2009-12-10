@@ -32,64 +32,64 @@ simuPOP core module.
 __all__ = [
     # Constants
     #
-    'Male',
-    'Female',
+    'MALE',
+    'FEMALE',
     #
-    'Customized',
-    'Autosome',
-    'ChromosomeX',
-    'ChromosomeY',
+    'CUSTOMIZED',
+    'AUTOSOME',
+    'CHROMOSOME_X',
+    'CHROMOSOME_Y',
     #
-    'Constant',
-    'BinomialDistribution',
-    'ExponentialDistribution',
-    'GeometricDistribution',
-    'PoissonDistribution',
-    'UniformDistribution',
+    'CONSTANT',
+    'BINOMIAL_DISTRIBUTION',
+    'EXPONENTIAL_DISTRIBUTION',
+    'GEOMETRIC_DISTRIBUTION',
+    'POISSON_DISTRIBUTION',
+    'UNIFORM_DISTRIBUTION',
     #
-    'NoSex',
-    'RandomSex',
-    'ProbOfMales',
-    'NumOfMales',
-    'NumOfFemales',
+    'NO_SEX',
+    'RANDOM_SEX',
+    'PROB_OF_MALES',
+    'NUM_OF_MALES',
+    'NUM_OF_FEMALES',
     #
-    'NoConversion',
-    'NumMarkers',
-    'TractLength',
+    'NO_CONVERSION',
+    'NUM_MARKERS',
+    'TRACT_LENGTH',
     #
-    'Spouse',
-    'OutbredSpouse',
-    'FullSibling',
-    'Sibling',
-    'Offspring',
-    'CommonOffspring',
+    'SPOUSE',
+    'OUTBRED_SPOUSE',
+    'FULLSIBLING',
+    'SIBLING',
+    'OFFSPRING',
+    'COMMON_OFFSPRING',
     #
-    'AnySex',
-    'MaleOnly',
-    'FemaleOnly',
-    'SameSex',
-    'OppositeSex',
+    'ANY_SEX',
+    'MALE_ONLY',
+    'FEMALE_ONLY',
+    'SAME_SEX',
+    'OPPOSITE_SEX',
     #
-    'Multiplicative',
-    'Additive',
-    'Heterogeneity',
+    'MULTIPLICATIVE',
+    'ADDITIVE',
+    'HETEROGENEITY',
     #
-    'ByIndInfo',
-    'ByProbability',
-    'ByProportion',
-    'ByCounts',
+    'BY_IND_INFO',
+    'BY_PROBABILITY',
+    'BY_PROPORTION',
+    'BY_COUNTS',
     #
-    'Paternal',
-    'Maternal',
+    'PATERNAL',
+    'MATERNAL',
     #
-    'Mean',
-    'Maximum',
-    'Minimum',
-    'Summation',
-    'Multiplication',
+    'MEAN',
+    'MAXIMUM',
+    'MINIMUM',
+    'SUMMATION',
+    'MULTIPLICATION',
     # 
-    'Haplodiploid',
-    'AllAvail',
+    'HAPLODIPLOID',
+    'ALL_AVAIL',
     #
     # Major simuPOP classes
     'population',
@@ -360,7 +360,7 @@ baseOperator.__deepcopy__ = _deepcopy
 # mating schemes
 
 def cloneMating(numOffspring = 1, sexMode = None, ops = cloneGenoTransmitter(),
-        subPopSize = [], subPops = AllAvail, weight = 0, selectionField = None):
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
     a clone offspring generator. Please refer to class ``offspringGenerator``
     for parameters *ops* and *numOffspring*, and to class ``homoMating`` for
@@ -372,14 +372,14 @@ def cloneMating(numOffspring = 1, sexMode = None, ops = cloneGenoTransmitter(),
     '''
     return homoMating(
         chooser = sequentialParentChooser(),
-        generator = offspringGenerator(ops, numOffspring, RandomSex),
+        generator = offspringGenerator(ops, numOffspring, RANDOM_SEX),
         subPopSize = subPopSize,
         subPops = subPops,
         weight = weight)
 
 
 def randomSelection(numOffspring = 1, sexMode = None, ops = cloneGenoTransmitter(),
-        subPopSize = [], subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with replacement, and a clone offspring generator. This mating
     scheme is usually used to simulate the basic haploid Wright-Fisher model
@@ -392,14 +392,14 @@ def randomSelection(numOffspring = 1, sexMode = None, ops = cloneGenoTransmitter
     '''
     return homoMating(
         chooser = randomParentChooser(True, selectionField),
-        generator = offspringGenerator(ops, numOffspring, RandomSex),
+        generator = offspringGenerator(ops, numOffspring, RANDOM_SEX),
         subPopSize = subPopSize,
         subPops = subPops,
         weight = weight)
 
 
-def randomMating(numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoTransmitter(), 
-        subPopSize = [], subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+def randomMating(numOffspring = 1, sexMode = RANDOM_SEX, ops = mendelianGenoTransmitter(), 
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
     widely used to simulate diploid sexual Wright-Fisher random mating.
@@ -416,8 +416,8 @@ def randomMating(numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoTrans
         weight = weight)
 
 
-def monogamousMating(numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoTransmitter(),
-        subPopSize = [], subPops = AllAvail, weight = 0, selectionField = None):
+def monogamousMating(numOffspring = 1, sexMode = RANDOM_SEX, ops = mendelianGenoTransmitter(),
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
     '''A homogeneous mating scheme that uses a random parents chooser without
     replacement and a Mendelian offspring generator. It differs from the basic
     random mating scheme in that each parent can mate only once so there is no
@@ -435,9 +435,9 @@ def monogamousMating(numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoT
         weight = weight)
 
 
-def polygamousMating(polySex=Male, polyNum=1, numOffspring = 1,
-        sexMode = RandomSex, ops = mendelianGenoTransmitter(), subPopSize = [],
-		subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+def polygamousMating(polySex=MALE, polyNum=1, numOffspring = 1,
+        sexMode = RANDOM_SEX, ops = mendelianGenoTransmitter(), subPopSize = [],
+		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a multi-spouse parents chooser
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that each parent of sex *polySex* will have *polyNum*
@@ -454,9 +454,9 @@ def polygamousMating(polySex=Male, polyNum=1, numOffspring = 1,
         weight = weight)
 
 
-def alphaMating(alphaSex=Male, alphaNum=0, alphaField='', numOffspring = 1, 
-    	sexMode = RandomSex, ops = mendelianGenoTransmitter(), subPopSize = [],
-		subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+def alphaMating(alphaSex=MALE, alphaNum=0, alphaField='', numOffspring = 1, 
+    	sexMode = RANDOM_SEX, ops = mendelianGenoTransmitter(), subPopSize = [],
+		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a alpha-individual parents chooser
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that selection of parents of sex *alphaSex* is limited to
@@ -477,8 +477,8 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='', numOffspring = 1,
         weight = weight)
 
 
-def haplodiploidMating(numOffspring = 1., sexMode = RandomSex,
-        ops = haplodiploidGenoTransmitter(), subPopSize = [], subPops = AllAvail,
+def haplodiploidMating(numOffspring = 1., sexMode = RANDOM_SEX,
+        ops = haplodiploidGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL,
         weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a haplodiploid offspring generator. It should be used
@@ -496,8 +496,8 @@ def haplodiploidMating(numOffspring = 1., sexMode = RandomSex,
         weight = weight)
 
 
-def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
-        ops = selfingGenoTransmitter(), subPopSize = [], subPops = AllAvail, weight = 0,
+def selfMating(replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
+        ops = selfingGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL, weight = 0,
         selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with or without replacement (parameter *replacement*) and a
@@ -517,9 +517,9 @@ def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
 
 ## 
 ## def consanguineousMating(infoFields = [], func = None, param = None,
-##         replacement = False, numOffspring = 1.,	sexMode = RandomSex,
+##         replacement = False, numOffspring = 1.,	sexMode = RANDOM_SEX,
 ##         ops = mendelianGenoTransmitter(), subPopSize = [],
-## 		subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+## 		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
 ##     '''A homogeneous mating scheme that uses an information parents chooser and
 ##     a Mendelian offspring generator. A function *func* should be defined to
 ##     locate certain types of relative to each individual and save their indexes
@@ -540,8 +540,8 @@ def selfMating(replacement=True, numOffspring = 1, sexMode = RandomSex,
 ## 
 
 def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
-        numOffspring = 1, sexMode = RandomSex, ops = mendelianGenoTransmitter(),
-        subPopSize = [], subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+        numOffspring = 1, sexMode = RANDOM_SEX, ops = mendelianGenoTransmitter(),
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random sexual parents chooser
     with replacement and a controlled offspring generator using Mendelian
     genotype transmitter. At each generation, function *freqFunc* will be

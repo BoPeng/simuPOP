@@ -221,9 +221,9 @@ public:
 	Sex sex() const
 	{
 		if (ISSETFLAG(m_flags, m_flagFemale) )
-			return Female;
+			return FEMALE;
 		else
-			return Male;
+			return MALE;
 	}
 
 
@@ -232,7 +232,7 @@ public:
 	 */
 	char sexChar() const
 	{
-		return sex() == Female ? 'F' : 'M';
+		return sex() == FEMALE ? 'F' : 'M';
 	}
 
 
@@ -243,7 +243,7 @@ public:
 	{
 		CHECKRANGESEX(sex);
 
-		if (sex == Male)
+		if (sex == MALE)
 			RESETFLAG(m_flags, m_flagFemale);
 		else
 			SETFLAG(m_flags, m_flagFemale);
@@ -939,13 +939,13 @@ public:
 		m_chromType = it->chromType(it->chromLocusPair(idx).first);
 		// we do not know anything about customized chromosome
 		// so we just assume it is autosome.
-		if (m_chromType == Customized)
-			m_chromType = Autosome;
+		if (m_chromType == CUSTOMIZED)
+			m_chromType = AUTOSOME;
 		//
-		if (m_chromType == ChromosomeY) {
-			if (m_it->sex() == Female) {
+		if (m_chromType == CHROMOSOME_Y) {
+			if (m_it->sex() == FEMALE) {
 				while (m_it.valid())
-					if ((++m_it)->sex() == Male)
+					if ((++m_it)->sex() == MALE)
 						break;
 				m_valid = m_it.valid();
 			}
@@ -984,15 +984,15 @@ public:
 	void advance(IndividualIterator<T> & it, UINT & p, bool & valid)
 	{
 		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
-		if (m_chromType == Autosome) {
+		if (m_chromType == AUTOSOME) {
 			++p;
 			if (p == m_ploidy) {
 				p = 0;
 				++it;
 				valid = it.valid();
 			}
-		} else if (m_chromType == ChromosomeX) {
-			if (it->sex() == Female) {
+		} else if (m_chromType == CHROMOSOME_X) {
+			if (it->sex() == FEMALE) {
 				// X0 -> X1
 				if (p == 0)
 					++p;
@@ -1010,11 +1010,11 @@ public:
 				++it;
 				valid = it.valid();
 			}
-		} else if (m_chromType == ChromosomeY) {
-			DBG_ASSERT(it->sex() == Male, SystemError,
+		} else if (m_chromType == CHROMOSOME_Y) {
+			DBG_ASSERT(it->sex() == MALE, SystemError,
 				"There is no chromosome Y for Female individuals");
 			while (it.valid())
-				if ((++it)->sex() == Male)
+				if ((++it)->sex() == MALE)
 					break;
 			p = 1;
 			valid = it.valid();

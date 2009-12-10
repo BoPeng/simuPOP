@@ -70,11 +70,11 @@ population::population(const uintList & size,
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, Haplodiploid),
+	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, HAPLODIPLOID),
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
-	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
-		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, Haplodiploid), lociPos.elems(),
+	setGenoStructure(fcmp_eq(ploidy, HAPLODIPLOID) ? 2 : static_cast<UINT>(ploidy),
+		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, HAPLODIPLOID), lociPos.elems(),
 		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
 	DBG_DO(DBG_DEVEL, cerr	<< "individual size is " << sizeof(individual) << '+'
@@ -472,7 +472,7 @@ IndAlleleIterator population::alleleIterator(UINT locus)
 	// use individual based
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
+	    || (ct != AUTOSOME && ct != CUSTOMIZED) || isHaplodiploid())
 		// this is a complex case
 		return IndAlleleIterator(locus, indIterator());
 	else
@@ -491,7 +491,7 @@ IndAlleleIterator population::alleleIterator(UINT locus, UINT subPop)
 	int ct = chromType(chromLocusPair(locus).first);
 	// this is a complex case
 	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
+	    || (ct != AUTOSOME && ct != CUSTOMIZED) || isHaplodiploid())
 		// this is a complex case
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else

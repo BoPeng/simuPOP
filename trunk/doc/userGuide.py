@@ -178,7 +178,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(size=[2,5], ploidy=sim.Haplodiploid, loci=[3, 5])
+pop = sim.population(size=[2,5], ploidy=sim.HAPLODIPLOID, loci=[3, 5])
 sim.InitByFreq(pop, [0.3, 0.7])
 sim.Dump(pop)
 #end_file
@@ -193,7 +193,7 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
-    chromTypes=[sim.Autosome]*2 + [sim.ChromosomeX, sim.ChromosomeY] + [sim.Customized]*2)
+    chromTypes=[sim.AUTOSOME]*2 + [sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2)
 sim.InitByFreq(pop, [0.3, 0.7])
 sim.Dump(pop, structure=False) # does not display genotypic structure information
 #end_file
@@ -368,8 +368,8 @@ pop.setVirtualSplitter(sim.sexSplitter())
 # initialize male and females with different genotypes. 
 sim.InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]))
 # set Sex information field to 0 for all males, and 1 for all females
-pop.setIndInfo([sim.Male], 'Sex', [0, 0])
-pop.setIndInfo([sim.Female], 'Sex', [0, 1])
+pop.setIndInfo([sim.MALE], 'Sex', [0, 0])
+pop.setIndInfo([sim.FEMALE], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
 sim.Dump(pop, structure=False)
 #end_file
@@ -397,7 +397,7 @@ pop.setVirtualSplitter(sim.combinedSplitter(splitters = [
 ]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # sim.Male
+pop.subPopSize([0, 0])    # sim.MALE
 pop.subPopSize([1, 4])    # individuals in sp 1 with value 2 at field x
 #
 # use a product splitter that defines additional VSPs by sex and info
@@ -407,8 +407,8 @@ pop.setVirtualSplitter(sim.productSplitter(splitters = [
 ]))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # sim.Male with value 1 in sp 0
-pop.subPopSize([1, 5])    # sim.Female with value 1 in sp 1
+pop.subPopSize([0, 0])    # sim.MALE with value 1 in sp 0
+pop.subPopSize([1, 5])    # sim.FEMALE with value 1 in sp 1
 #
 # use a combined splitter to join VSPs defined by a
 # product splitter
@@ -420,8 +420,8 @@ pop.setVirtualSplitter(sim.combinedSplitter([
     names = ['Male x<=3', 'Female x<=3', 'Female x=4']))
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 0])    # sim.Male with value 0, 1, 2 at field x
-pop.subPopSize([1, 1])    # sim.Female with value 0, 1 or 2 at field x
+pop.subPopSize([0, 0])    # sim.MALE with value 0, 1, 2 at field x
+pop.subPopSize([1, 1])    # sim.FEMALE with value 0, 1 or 2 at field x
 #end_file
 
 
@@ -1179,13 +1179,13 @@ def func(gen):
 
 checkNumOffspring(sim.randomMating(numOffspring=func))
 # Case 3: A geometric distribution
-checkNumOffspring(sim.randomMating(numOffspring=(sim.GeometricDistribution, 0.3)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.GEOMETRIC_DISTRIBUTION, 0.3)))
 # Case 4: A Possition distribution
-checkNumOffspring(sim.randomMating(numOffspring=(sim.PoissonDistribution, 3)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.POISSON_DISTRIBUTION, 3)))
 # Case 5: A Binomial distribution
-checkNumOffspring(sim.randomMating(numOffspring=(sim.BinomialDistribution, 0.1, 10)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.BINOMIAL_DISTRIBUTION, 0.1, 10)))
 # Case 6: A uniform distribution
-checkNumOffspring(sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 6)))
+checkNumOffspring(sim.randomMating(numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 6)))
 #end_file
 
 #begin_file log/sexMode.py
@@ -1206,18 +1206,18 @@ def checkSexMode(ms):
     # return individual sex as a string
     return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
-# Case 1: sim.NoSex (all male, sim.randomMating will not continue)
-checkSexMode(sim.randomMating(sexMode=sim.NoSex))
-# Case 2: sim.RandomSex (sim.Male/Female with probability 0.5)
-checkSexMode(sim.randomMating(sexMode=sim.RandomSex))
-# Case 3: sim.ProbOfMales (Specify probability of male)
-checkSexMode(sim.randomMating(sexMode=(sim.ProbOfMales, 0.8)))
-# Case 4: sim.NumOfMales (Specify number of male in each family)
-checkSexMode(sim.randomMating(numOffspring=3, sexMode=(sim.NumOfMales, 1)))
-# Case 5: sim.NumOfFemales (Specify number of female in each family)
+# Case 1: sim.NO_SEX (all male, sim.randomMating will not continue)
+checkSexMode(sim.randomMating(sexMode=sim.NO_SEX))
+# Case 2: sim.RANDOM_SEX (sim.Male/Female with probability 0.5)
+checkSexMode(sim.randomMating(sexMode=sim.RANDOM_SEX))
+# Case 3: sim.PROB_OF_MALES (Specify probability of male)
+checkSexMode(sim.randomMating(sexMode=(sim.PROB_OF_MALES, 0.8)))
+# Case 4: sim.NUM_OF_MALES (Specify number of male in each family)
+checkSexMode(sim.randomMating(numOffspring=3, sexMode=(sim.NUM_OF_MALES, 1)))
+# Case 5: sim.NUM_OF_FEMALES (Specify number of female in each family)
 checkSexMode(sim.randomMating(
-    numOffspring=(sim.UniformDistribution, 4, 6),
-    sexMode=(sim.NumOfFemales, 2))
+    numOffspring=(sim.UNIFORM_DISTRIBUTION, 4, 6),
+    sexMode=(sim.NUM_OF_FEMALES, 2))
 )
 #end_file
 
@@ -1231,9 +1231,9 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(sim.population(20, infoFields=['father_idx', 'mother_idx']),
-    sim.monogamousMating(numOffspring=2, sexMode=(sim.NumOfMales, 1)))
+    sim.monogamousMating(numOffspring=2, sexMode=(sim.NUM_OF_MALES, 1)))
 simu.evolve(
-    initOps = sim.initSex(sex=(sim.Male, sim.Female)),
+    initOps = sim.initSex(sex=(sim.MALE, sim.FEMALE)),
     duringOps = sim.parentsTagger(),
     gen = 5
 )
@@ -1256,7 +1256,7 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(sim.population(100, infoFields=['father_idx', 'mother_idx']),
-    sim.polygamousMating(polySex=sim.Male, polyNum=2))
+    sim.polygamousMating(polySex=sim.MALE, polyNum=2))
 simu.evolve(
     initOps = sim.initSex(),
     duringOps = sim.parentsTagger(),
@@ -1302,7 +1302,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(sim.population(1000, loci=5, 
     infoFields=['father_idx', 'mother_idx', 'fitness']),
-    sim.alphaMating(alphaSex=sim.Male, alphaNum=2))
+    sim.alphaMating(alphaSex=sim.MALE, alphaNum=2))
 simu.evolve(
     initOps = [
         sim.initSex(),
@@ -1330,7 +1330,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(10, ploidy=sim.Haplodiploid, loci=[5, 5],
+pop = sim.population(10, ploidy=sim.HAPLODIPLOID, loci=[5, 5],
     infoFields=['father_idx', 'mother_idx'])
 pop.setVirtualSplitter(sim.sexSplitter())
 simu = sim.simulator(pop, sim.haplodiploidMating())
@@ -1468,9 +1468,9 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def randomMating(numOffspring = 1., sexMode = sim.RandomSex,
+def randomMating(numOffspring = 1., sexMode = sim.RANDOM_SEX,
         preOps = sim.mendelianGenoTransmitter(), subPopSize = [],
-        subPops = AllAvail, weight = 0, selectionField = 'fitness'):
+        subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     'A basic diploid sexual random mating scheme.'
     return sim.homoMating(
         chooser = sim.randomParentsChooser(True, selectionField),
@@ -1544,7 +1544,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(10, loci=[5]*5,
     # one autosome, two sex chromosomes, and two mitochondrial chromosomes
-    chromTypes=[sim.Autosome, sim.ChromosomeX, sim.ChromosomeY] + [sim.Customized]*2,
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2,
     infoFields=['father_idx', 'mother_idx'])
 simu = sim.simulator(pop, sim.randomMating(ops= [
     sim.recombinator(rates=0.1),
@@ -1570,8 +1570,8 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 class sexSpecificRecombinator(sim.pyOperator):
-    def __init__(self, intensity=0, rates=0, loci=[], convMode=sim.NoConversion,
-            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=sim.NoConversion,
+    def __init__(self, intensity=0, rates=0, loci=[], convMode=sim.NO_CONVERSION,
+            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=sim.NO_CONVERSION,
             *args, **kwargs):
         # This operator is used to recombine maternal chromosomes
         self.recombinator = sim.recombinator(rates, intensity, loci, convMode)
@@ -1647,9 +1647,9 @@ def randomChooser(pop, sp):
     # identify males and females in each social rank
     for rank in range(3):
         males.append([x for x in pop.individuals(sp) \
-            if x.sex() == sim.Male and x.rank == rank])
+            if x.sex() == sim.MALE and x.rank == rank])
         females.append([x for x in pop.individuals(sp) \
-            if x.sex() == sim.Female and x.rank == rank])
+            if x.sex() == sim.FEMALE and x.rank == rank])
     #
     while True:
         # choose a rank randomly
@@ -1779,8 +1779,8 @@ def parentsChooser(pop, sp):
     'How to call a C++ level parents chooser.'
     # create an object with needed information (such as x, y) ...
     pc = myParentsChooser(
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.Male],
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.Female])
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.MALE],
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.FEMALE])
     while True:
         # return indexes of parents repeatedly
         yield pc.chooseParents()
@@ -1960,7 +1960,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 simu = sim.simulator(
     sim.population(1000, ancGen=2, infoFields=['ind_id', 'father_id', 'mother_id']),
-    sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 4)))
+    sim.randomMating(numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4)))
 simu.evolve(
     initOps = [
         sim.initSex(),
@@ -1977,8 +1977,8 @@ offFields = ['off%d' % x for x in range(4)]
 grandOffFields = ['grandOff%d' % x for x in range(5)]
 ped.addInfoFields(['spouse'] + offFields + grandOffFields)
 # only look spouse for fathers...
-ped.locateRelatives(sim.OutbredSpouse, ['spouse'], sex=sim.FemaleOnly)
-ped.locateRelatives(sim.CommonOffspring, ['spouse'] + offFields)
+ped.locateRelatives(sim.OUTBRED_SPOUSE, ['spouse'], sex=sim.FEMALE_ONLY)
+ped.locateRelatives(sim.COMMON_OFFSPRING, ['spouse'] + offFields)
 # trace offspring of offspring
 ped.traceRelatives([offFields, offFields], resultFields=grandOffFields)
 # 
@@ -2061,7 +2061,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=[1000, 1000])
 sim.InitSex(pop, maleFreq=0.3, subPops=0)
-sim.InitSex(pop, sex=[sim.Male, sim.Female, sim.Female], subPops=1)
+sim.InitSex(pop, sex=[sim.MALE, sim.FEMALE, sim.FEMALE], subPops=1)
 sim.Stat(pop, numOfMales=True, vars='numOfMales_sp')
 print pop.dvars(0).numOfMales
 print pop.dvars(1).numOfMales
@@ -2531,7 +2531,7 @@ simu = sim.simulator(
 simu.evolve(
     initOps = sim.initSex(),
     preOps = sim.migrator(rate=[[0.1], [0.2]],
-            mode=sim.ByProportion,
+            mode=sim.BY_PROPORTION,
             subPops=[1, 2],
             toSubPops=[3]),
     postOps = [
@@ -2544,7 +2544,7 @@ simu.evolve(
 #
 simu.evolve(
     preOps = sim.migrator(rate=[[50, 50], [100, 50]],
-            mode=sim.ByCounts,
+            mode=sim.BY_COUNTS,
             subPops=[3, 2],
             toSubPops=[2, 1]),
     postOps = [
@@ -2570,13 +2570,13 @@ pop.setVirtualSplitter(sim.sexSplitter())
 simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     # 500 males and 500 females
-    initOps = sim.initSex(sex=[sim.Male, sim.Female]),
+    initOps = sim.initSex(sex=[sim.MALE, sim.FEMALE]),
     preOps = [
         sim.migrator(rate=[
             [0, 0.10],
             [0, 0.05],
             ],
-            mode = sim.ByProportion,
+            mode = sim.BY_PROPORTION,
             subPops=[(0, 0), (0, 1)]),
         sim.stat(popSize=True, numOfMales=True, vars='numOfMales_sp'),
         sim.pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMales'], subPopSize[0], "
@@ -2602,7 +2602,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 pop = sim.population([10]*2, infoFields='migrate_to')
 pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
-sim.Migrate(pop, mode=sim.ByIndInfo)
+sim.Migrate(pop, mode=sim.BY_IND_INFO)
 pop.subPopSizes()
 #end_file
 
@@ -2778,7 +2778,7 @@ sim.GetRNG().setSeed(12345)
 simu = sim.simulator(sim.population(size=[1000], loci=[100]),
     sim.randomMating(ops=[
         sim.recombinator(rates=0.01, loci=50, reps=0),
-        sim.recombinator(rates=0.01, loci=50, reps=1, convMode=(sim.NumMarkers, 1, 10)),
+        sim.recombinator(rates=0.01, loci=50, reps=1, convMode=(sim.NUM_MARKERS, 1, 10)),
     ]), rep=2)
 simu.evolve(
     initOps = [
@@ -2950,7 +2950,7 @@ simu.evolve(
     preOps = [
         sim.smmMutator(rates=1e-3, loci=0),
         sim.smmMutator(rates=1e-3, incProb=0.6, loci=1,
-            mutStep=(sim.GeometricDistribution, 0.2)),
+            mutStep=(sim.GEOMETRIC_DISTRIBUTION, 0.2)),
     ],
     gen=100
 )
@@ -3407,7 +3407,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-pop = sim.population(100, loci=[1, 1, 1], chromTypes=[sim.Autosome, sim.ChromosomeX, sim.ChromosomeY])
+pop = sim.population(100, loci=[1, 1, 1], chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
 sim.InitByFreq(pop, [0.01, 0.05, 0.94])
 sim.Stat(pop, genoFreq=[0, 1])
 print 'Available genotypes on autosome:', pop.dvars().genoFreq[0].keys()
@@ -3482,7 +3482,7 @@ simu.evolve(
         # anc is 0 or 1
         sim.initInfo(lambda : random.randint(0, 1), infoFields='anc')
     ],
-    duringOps = sim.inheritTagger(mode=sim.Mean, infoFields='anc'),
+    duringOps = sim.inheritTagger(mode=sim.MEAN, infoFields='anc'),
     postOps = [
         sim.stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
             subPops=[(0,x) for x in range(5)]),
@@ -3623,7 +3623,7 @@ for sp in range(pop.numSubPop()):
 simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
     initOps = sim.initSex(),
-    duringOps = sim.inheritTagger(mode=sim.Maximum, infoFields='x'),
+    duringOps = sim.inheritTagger(mode=sim.MAXIMUM, infoFields='x'),
     postOps = [
         sim.stat(sumOfInfo='x', vars=['sumOfInfo_sp']),
         sim.pyEval(r'", ".join(["%3d" % subPop[i]["sumOfInfo"]["x"] for i in range(10)])+"\n"'),
@@ -3651,7 +3651,7 @@ simu.evolve(
         sim.initByFreq([0.5, 0.5]),
     ],
     preOps = sim.maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
-    duringOps = sim.summaryTagger(mode=sim.Mean, infoFields=['fitness', 'avgFitness']),
+    duringOps = sim.summaryTagger(mode=sim.MEAN, infoFields=['fitness', 'avgFitness']),
     postOps = [
         sim.stat(alleleFreq=0, meanOfInfo='avgFitness', step=10),
         sim.pyEval(r"'gen %d: allele freq: %.3f, average fitness of parents: %.3f\n' % "
@@ -3783,14 +3783,14 @@ simu.evolve(
         sim.infoExec('aff = ind.affected()', exposeInd='ind'),
     ],
         # get number of affected parents for each offspring and store in numOfAff
-    duringOps = sim.summaryTagger(mode=sim.Summation, infoFields=['aff', 'numOfAff']),
+    duringOps = sim.summaryTagger(mode=sim.SUMMATION, infoFields=['aff', 'numOfAff']),
     postOps = [
         # get affection sim.status for offspring
         sim.maPenetrance(loci=0, wildtype=0, penetrance=[0.1, 0.2, 0.4]),
         # calculate mean 'numOfAff' of offspring, for unaffected and affected subpopulations.
         sim.stat(meanOfInfo='numOfAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
         # print mean number of affected parents for unaffected and affected offspring.
-        sim.pyEval(r"'sim.Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
+        sim.pyEval(r"'sim.MEAN number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
             "(subPop[(0,0)]['meanOfInfo']['numOfAff'], subPop[(0,1)]['meanOfInfo']['numOfAff'])")
     ],
     gen = 5
@@ -3858,7 +3858,7 @@ sim.GetRNG().setSeed(12345)
 pop = sim.population(5000, loci=3)
 sim.InitByFreq(pop, [0.2]*5)
 # the multi-loci penetrance
-sim.MlPenetrance(pop, mode=sim.Multiplicative,
+sim.MlPenetrance(pop, mode=sim.MULTIPLICATIVE,
     ops = [sim.maPenetrance(loci=loc,
         penetrance=[0, 0.3, 0.6]) for loc in range(3)])
 # count the number of affected individuals.
@@ -4122,7 +4122,7 @@ simu.evolve(
         sim.mlSelector([
             sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
             sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
-            ], mode = sim.Additive, reps=0),
+            ], mode = sim.ADDITIVE, reps=0),
         sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}, reps=1),
         sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}, reps=2)
     ],
@@ -4308,7 +4308,7 @@ def Nt(gen, pop=None):
     return int((10**4) * exp(.00115 * gen))
 
 def fitness(gen, sp):
-    'sim.Constant positive selection pressure.'
+    'sim.CONSTANT positive selection pressure.'
     return [1, 1.01, 1.02]
 
 # simulate a trajectory backward in time, from generation 1000
@@ -4731,7 +4731,7 @@ sim.GetRNG().setSeed(12347)
 #end_ignore
 from simuPOP.sampling import IndexToID, PlotPedigree
 pop = sim.population(size=15, loci=5, infoFields=['father_idx', 'mother_idx'], ancGen=2)
-simu = sim.simulator(pop, sim.randomMating(numOffspring=(sim.UniformDistribution, 2, 4)))
+simu = sim.simulator(pop, sim.randomMating(numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4)))
 simu.evolve(
     preOps = [
         sim.initSex(),
@@ -5135,9 +5135,9 @@ options = [
     },
     {'longarg': 'k=',
      'default': 200,
-     'label': 'sim.Maximum allelic sim.state',
+     'label': 'sim.MAXIMUM allelic sim.state',
      'allowedTypes': [types.IntType],
-     'description': 'sim.Maximum allelic sim.state for a k-allele mutation model',
+     'description': 'sim.MAXIMUM allelic sim.state for a k-allele mutation model',
      'validate': simuOpt.valueGT(1),
     },
 ]

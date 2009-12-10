@@ -36,7 +36,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # customized chromosomes are NOT copied
         pop = self.getPop(size=100, loci=[10, 20, 30, 30],
-            chromTypes=[Autosome, Autosome, Customized, Customized])
+            chromTypes=[AUTOSOME, AUTOSOME, CUSTOMIZED, CUSTOMIZED])
         ApplyDuringMatingOperator(cloneGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         # check if 1 is copied to 2.
@@ -69,7 +69,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # customized chromosomes are NOT copied
         pop = self.getPop(size=100, loci=[20]*7,
-            chromTypes=[Autosome]*5 + [Customized]*2)
+            chromTypes=[AUTOSOME]*5 + [CUSTOMIZED]*2)
         ApplyDuringMatingOperator(mendelianGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(7):
@@ -86,8 +86,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p2, True)
         # Male...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Male)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(MALE)
         ApplyDuringMatingOperator(mendelianGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -110,8 +110,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p2, True)
         # Female ...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Female)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(FEMALE)
         ApplyDuringMatingOperator(mendelianGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -152,7 +152,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # customized chromosomes are NOT copied
         pop = self.getPop(size=100, loci=[20]*7,
-            chromTypes=[Autosome]*5 + [Customized]*2)
+            chromTypes=[AUTOSOME]*5 + [CUSTOMIZED]*2)
         ApplyDuringMatingOperator(selfingGenoTransmitter(),
             pop, dad = 0, mom = -1, off = 2)
         for ch in range(7):
@@ -168,8 +168,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p1, True)
         # Male...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Male)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(MALE)
         ApplyDuringMatingOperator(selfingGenoTransmitter(),
             pop, dad = 0, mom = -1, off = 2)
         for ch in range(9):
@@ -191,8 +191,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p1, True)
         # Female ...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Female)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(FEMALE)
         ApplyDuringMatingOperator(selfingGenoTransmitter(),
             pop, dad = 0, mom = -1, off = 2)
         for ch in range(9):
@@ -222,8 +222,8 @@ class TestTransmitters(unittest.TestCase):
         pop = self.getPop(size=100, loci=[20]*5)
         # Male...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*7 + [Customized]*2)
-        pop.individual(2).setSex(Male)
+            chromTypes=[AUTOSOME]*7 + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(MALE)
         ApplyDuringMatingOperator(haplodiploidGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -239,8 +239,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p1, True)
         # Female ...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*7  + [Customized]*2)
-        pop.individual(2).setSex(Female)
+            chromTypes=[AUTOSOME]*7  + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(FEMALE)
         ApplyDuringMatingOperator(haplodiploidGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -260,13 +260,13 @@ class TestTransmitters(unittest.TestCase):
         'Testing operator mitochondrialGenoTransmitter()'
         #
         pop = self.getPop(size=100, loci=[10, 20] + [20] + [30]*4,
-            chromTypes=[ChromosomeX, ChromosomeY] + [Customized]*5)
+            chromTypes=[CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*5)
         self.assertRaises(exceptions.ValueError,
             ApplyDuringMatingOperator, mitochondrialGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         #
         pop = self.getPop(size=100, loci=[10, 20] + [30]*5,
-            chromTypes=[ChromosomeX, ChromosomeY] + [Customized]*5)
+            chromTypes=[CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*5)
         ApplyDuringMatingOperator(mitochondrialGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         # 
@@ -292,7 +292,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # customized chromosomes are NOT copied
         pop = self.getPop(size=100, loci=[20]*7,
-            chromTypes=[Autosome]*5 + [Customized]*2)
+            chromTypes=[AUTOSOME]*5 + [CUSTOMIZED]*2)
         ApplyDuringMatingOperator(recombinator(rates=0),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(7):
@@ -309,8 +309,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p2, True)
         # Male...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Male)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(MALE)
         ApplyDuringMatingOperator(recombinator(rates=0),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -333,8 +333,8 @@ class TestTransmitters(unittest.TestCase):
                 self.assertNotEqual(g2 in p2, True)
         # Female ...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Female)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(FEMALE)
         ApplyDuringMatingOperator(recombinator(rates=0),
             pop, dad = 0, mom = 1, off = 2)
         for ch in range(9):
@@ -377,7 +377,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # customized chromosomes are NOT copied
         pop = self.getPop(size=100, loci=[20]*7,
-            chromTypes=[Autosome]*5 + [Customized]*2)
+            chromTypes=[AUTOSOME]*5 + [CUSTOMIZED]*2)
         ApplyDuringMatingOperator(recombinator(rates=0.1),
             pop, dad = 0, mom = 1, off = 2)
         for index in range(pop.chromEnd(6)):
@@ -395,8 +395,8 @@ class TestTransmitters(unittest.TestCase):
             #    self.assertNotEqual(g2 in p2, True)
         # Male...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Male)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(MALE)
         ApplyDuringMatingOperator(recombinator(rates=0.1),
             pop, dad = 0, mom = 1, off = 2)
         for index in range(pop.chromEnd(8)):
@@ -420,8 +420,8 @@ class TestTransmitters(unittest.TestCase):
                 #self.assertNotEqual(g2 in p2, True)
         # Female ...
         pop = self.getPop(size=100, loci=[20]*9,
-            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
-        pop.individual(2).setSex(Female)
+            chromTypes=[AUTOSOME]*5 + [CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*2)
+        pop.individual(2).setSex(FEMALE)
         ApplyDuringMatingOperator(recombinator(rates=0.1),
             pop, dad = 0, mom = 1, off = 2)
         for index in range(pop.chromEnd(8)):
@@ -530,7 +530,7 @@ class TestTransmitters(unittest.TestCase):
         pop = population(10000, loci=[3,4])
         InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
-        rec = recombinator(rates = 0.4, convMode = (NumMarkers, 1, 1), loci=[1,3])
+        rec = recombinator(rates = 0.4, convMode = (NUM_MARKERS, 1, 1), loci=[1,3])
         simu = simulator(pop, randomMating(ops=rec))
         simu.evolve( postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             gen=1 )
@@ -568,7 +568,7 @@ class TestTransmitters(unittest.TestCase):
         InitSex(pop)
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, 
-            randomMating( ops=recombinator(rates = 0.4, convMode = (NumMarkers, 1, 2), loci=[1,3])))
+            randomMating( ops=recombinator(rates = 0.4, convMode = (NUM_MARKERS, 1, 2), loci=[1,3])))
         simu.evolve( postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             gen=1 )
         #
@@ -602,7 +602,7 @@ class TestTransmitters(unittest.TestCase):
         pop = population(10000, loci=[3,10])
         InitSex(pop)
         InitByValue(pop, value=[a1]*13+[a2]*13)
-        simu = simulator(pop, randomMating(ops=recombinator(rates = 0.4, convMode=(NumMarkers, 1, 2), loci=[1,3,8]) ))
+        simu = simulator(pop, randomMating(ops=recombinator(rates = 0.4, convMode=(NUM_MARKERS, 1, 2), loci=[1,3,8]) ))
         simu.evolve(
             postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             gen=1 )
@@ -798,9 +798,9 @@ class TestTransmitters(unittest.TestCase):
 #         pop = population(size=N, loci=[2,5], sexChrom=True)
 #         # male     1 3
 #         # female 1 2
-#         InitByValue(pop, indRange=[0,N/2], sex=[Male]*(N/2), atPloidy=0, value=[a1]*7)
-#         InitByValue(pop, indRange=[0,N/2], sex=[Male]*(N/2), atPloidy=1, value=[a1]*2+[a3]*5)
-#         InitByValue(pop, indRange=[N/2,N], sex=[Female]*(N/2), value=[a1]*7+[a2]*7)
+#         InitByValue(pop, indRange=[0,N/2], sex=[MALE]*(N/2), atPloidy=0, value=[a1]*7)
+#         InitByValue(pop, indRange=[0,N/2], sex=[MALE]*(N/2), atPloidy=1, value=[a1]*2+[a3]*5)
+#         InitByValue(pop, indRange=[N/2,N], sex=[FEMALE]*(N/2), value=[a1]*7+[a2]*7)
 #         # now let us recombine
 #         simu = simulator(pop, randomMating())
 #         simu.evolve( [ recombinator(rates=r) ], gen=100)
@@ -808,7 +808,7 @@ class TestTransmitters(unittest.TestCase):
 #         #
 #         for i in range( pop.popSize() ):
 #             ind = pop.individual(i)
-#             if ind.sex() == Male:
+#             if ind.sex() == MALE:
 #                 # check the second chromosome
 #                 # arrGenotype(ploidy, chrom), no dict parameter for efficiency purpose
 #                 #print ind.arrGenotype()
@@ -821,7 +821,7 @@ class TestTransmitters(unittest.TestCase):
 
     def testHaplodiploid(self):
         'Testing recombination in haplodiploid populations'
-        pop = population(size=[20, 20], ploidy=Haplodiploid, loci=[3,5])
+        pop = population(size=[20, 20], ploidy=HAPLODIPLOID, loci=[3,5])
         simu = simulator(pop, haplodiploidMating())
         simu.evolve(
             initOps = [

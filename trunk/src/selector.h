@@ -302,7 +302,7 @@ private:
 
 /** This selector is created by a list of selectors. When it is applied to an
  *  individual, it applies these selectors to the individual, obtain a list of
- *  fitness values, and compute a combined fitness value from them. Additive,
+ *  fitness values, and compute a combined fitness value from them. ADDITIVE,
  *  multiplicative, and a heterogeneour multi-locus model are supported.
  */
 class mlSelector : public baseSelector
@@ -315,13 +315,13 @@ public:
 	 *  single-locus) fitness values. These fitness values are combined to a
 	 *  single fitness value using
 	 *  \li <em>Prod(f_i)</em>, namely the product of individual fitness if
-	 *       \e mode = \c Multiplicative,
-	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c Additive, and
+	 *       \e mode = \c MULTIPLICATIVE,
+	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c ADDITIVE, and
 	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c Heterogeneity
 	 *
 	 *  zero will be returned if the combined fitness value is less than zero.
 	 */
-	mlSelector(const opList & ops, int mode = Multiplicative,
+	mlSelector(const opList & ops, int mode = MULTIPLICATIVE,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :

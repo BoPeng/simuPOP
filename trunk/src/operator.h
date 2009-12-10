@@ -129,7 +129,7 @@ public:
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
 	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. <tt>subPops=[sp1]</tt>
 	 *    can be simplied as <tt>subPops=sp1</tt>. Negative indexes are not
-	 *    supported. A common default value (\c AllAvail) of this parameter
+	 *    supported. A common default value (\c ALL_AVAIL) of this parameter
 	 *    reprents all subpopulations of the population being aplied. Suport
 	 *    for this parameter vary from operator to operator and some operators
 	 *    do not support virtual subpopulations at all. Please refer to the

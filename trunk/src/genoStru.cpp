@@ -221,7 +221,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		ValueError, "If chromosome type is given, it should be given to all chromosomes");
 
 	if (chromTypes.empty())
-		m_chromTypes.resize(m_numLoci.size(), Autosome);
+		m_chromTypes.resize(m_numLoci.size(), AUTOSOME);
 	else
 		m_chromTypes = chromTypes;
 	// has only one chromX?
@@ -230,12 +230,12 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		UINT type = m_chromTypes[i];
-		DBG_ASSERT(type == Autosome || type == ChromosomeX || type == ChromosomeY || type == Customized,
-			ValueError, "Chromsome type can only be one of Autosome, ChromosomeX, ChromosomeY and Customized");
+		DBG_ASSERT(type == AUTOSOME || type == CHROMOSOME_X || type == CHROMOSOME_Y || type == CUSTOMIZED,
+			ValueError, "Chromsome type can only be one of AUTOSOME, CHROMOSOME_X, ChromosomeY and Customized");
 	}
 #endif
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == ChromosomeX) {
+		if (m_chromTypes[i] == CHROMOSOME_X) {
 			DBG_ASSERT(m_chromX == -1, ValueError,
 				"Only one chromosome X can be specified");
 			DBG_ASSERT(m_ploidy == 2, ValueError,
@@ -245,7 +245,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	}
 	m_chromY = -1;
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == ChromosomeY) {
+		if (m_chromTypes[i] == CHROMOSOME_Y) {
 			DBG_ASSERT(m_chromY == -1, ValueError,
 				"Only one chromosome Y can be specified");
 			DBG_ASSERT(m_ploidy == 2, ValueError,
@@ -258,7 +258,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	//
 	m_customized.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Customized) {
+		if (m_chromTypes[i] == CUSTOMIZED) {
 			DBG_FAILIF(!m_customized.empty() && m_customized.back() != i - 1,
 				ValueError,
 				"There can be several customized chromosmes, but they need to be adjacent to each other.");

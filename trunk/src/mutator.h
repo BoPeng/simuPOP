@@ -327,7 +327,7 @@ public:
 	 *  allele by \e mutStep steps. Acceptable input of parameter \e mutStep
 	 *  include
 	 *  \li A number: This is the default mode with default value 1.
-	 *  \li <tt>(GeometricDistribution, p)</tt>: The number of steps follows a
+	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>: The number of steps follows a
 	 *		a geometric distribution with parameter \e p.
 	 *  \li A Python function: This user defined function accepts the allele
 	 *		being mutated and return the steps to mutate.

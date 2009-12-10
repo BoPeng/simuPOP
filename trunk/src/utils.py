@@ -51,7 +51,7 @@ import exceptions, operator, types, os, sys, re
 
 from simuOpt import simuOptions
 
-from simuPOP import Male, Female, pointMutator, GetRNG
+from simuPOP import MALE, FEMALE, pointMutator, GetRNG
 
 def ViewVars(var, gui=None):
     '''
@@ -221,7 +221,7 @@ or non-circular
 
 def SaveCSV(pop, filename='', fields=[], loci=[], header=True,
     shift=1, combine=None,
-        sexCode={Male: '1', Female: '2'}, affectionCode={True: '1', False: '2'},
+        sexCode={MALE: '1', FEMALE: '2'}, affectionCode={True: '1', False: '2'},
         **kwargs):
     '''Save a simuPOP population ``pop`` in csv format.
 

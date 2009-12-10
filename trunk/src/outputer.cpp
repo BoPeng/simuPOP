@@ -52,17 +52,17 @@ void dumper::displayStructure(const population & pop, ostream & out)
 	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
 		out << (ch + 1) << ": " << pop.chromName(ch);
 		switch (pop.chromType(ch)) {
-		case Autosome:
-			out << " (Autosome, ";
+		case AUTOSOME:
+			out << " (AUTOSOME, ";
 			break;
-		case ChromosomeX:
-			out << " (ChromosomeX, ";
+		case CHROMOSOME_X:
+			out << " (CHROMOSOME_X, ";
 			break;
-		case ChromosomeY:
-			out << " (ChromosomeY, ";
+		case CHROMOSOME_Y:
+			out << " (CHROMOSOME_Y, ";
 			break;
-		case Customized:
-			out << " (Customized, ";
+		case CUSTOMIZED:
+			out << " (CUSTOMIZED, ";
 			break;
 		default:
 			throw ValueError("Wrong chromosome type");

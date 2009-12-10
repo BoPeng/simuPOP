@@ -97,7 +97,7 @@ void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
 
 	size_t ply = ind->ploidy();
-	if (ind->isHaplodiploid() && ind->sex() == Male)
+	if (ind->isHaplodiploid() && ind->sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
@@ -105,10 +105,10 @@ void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 
 	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 		for (size_t p = 0; p < ply; ++p) {
-			if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
+			if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 				continue;
-			if (((chromTypes[idx] == ChromosomeX && p == 1) ||
-			     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 				continue;
 			alleles.push_back(ind->allele(m_loci[idx], p));
 		}

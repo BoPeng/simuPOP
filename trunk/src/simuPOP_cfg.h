@@ -148,94 +148,94 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 // For genotypic structure
 enum Sex {
-	Male = 1,
-	Female = 2
+	MALE = 1,
+	FEMALE = 2
 };
 
 // For genotypic structure
 enum ChromType {
-	Customized = 11,
-	Autosome = 12,
-	ChromosomeX = 13,
-	ChromosomeY = 14
+	CUSTOMIZED = 11,
+	AUTOSOME = 12,
+	CHROMOSOME_X = 13,
+	CHROMOSOME_Y = 14
 };
 
 // For numOffspring and gene conversion
 enum Distribution {
-	Constant = 21,
-	BinomialDistribution = 22,
-	ExponentialDistribution = 23,
-	GeometricDistribution = 24,
-	PoissonDistribution = 25,
-	UniformDistribution = 26
+	CONSTANT = 21,
+	BINOMIAL_DISTRIBUTION = 22,
+	EXPONENTIAL_DISTRIBUTION = 23,
+	GEOMETRIC_DISTRIBUTION = 24,
+	POISSON_DISTRIBUTION = 25,
+	UNIFORM_DISTRIBUTION = 26
 };
 
 // For sexMode
 enum SexMode {
-	NoSex = 30,
-	RandomSex = 31,
-	ProbOfMales = 32,
-	NumOfMales = 33,
-	NumOfFemales = 34
+	NO_SEX = 30,
+	RANDOM_SEX = 31,
+	PROB_OF_MALES = 32,
+	NUM_OF_MALES = 33,
+	NUM_OF_FEMALES = 34
 };
 
 // For gene conversion
 enum ConversionMode {
-	NoConversion = 41,
-	NumMarkers = 42,
-	TractLength = 43
+	NO_CONVERSION = 41,
+	NUM_MARKERS = 42,
+	TRACT_LENGTH = 43
 };
 
 // For pedigree tracing
 enum RelativeType {
-	Offspring = 50,             // All offspring with all spouses (if there are more than one spouse)
-	CommonOffspring = 51,       // One spouse and their common offspring.
-	Spouse = 52,                // All spouses (with at least one offspring)
-	OutbredSpouse = 53,         // Spouse who is not a sibling.
-	Sibling = 54,               // Siblings who share at least one parent
-	FullSibling = 55,           // Siblings who share two parents
+	OFFSPRING = 50,             // All offspring with all spouses (if there are more than one spouse)
+	COMMON_OFFSPRING = 51,       // One spouse and their common offspring.
+	SPOUSE = 52,                // All spouses (with at least one offspring)
+	OUTBRED_SPOUSE = 53,         // Spouse who is not a sibling.
+	SIBLING = 54,               // Siblings who share at least one parent
+	FULLSIBLING = 55,           // Siblings who share two parents
 };
 
 // For pedigree tracing
 enum SexChoice {
-	AnySex = 60,
-	MaleOnly = 61,
-	FemaleOnly = 62,
-	SameSex = 63,
-	OppositeSex = 64
+	ANY_SEX = 60,
+	MALE_ONLY = 61,
+	FEMALE_ONLY = 62,
+	SAME_SEX = 63,
+	OPPOSITE_SEX = 64
 };
 
 // this one does not use 71, 72 to allow users to specify affection
 // status using True and False if they accidentally do so.
 enum AffectionStatus {
-	Unaffected = 0,
-	Affected = 1,
-	AnyAffectionStatus = 2,
+	UNAFFECTED = 0,
+	AFFECTED = 1,
+	ANY_AFFECTION_STATUS = 2,
 };
 
 enum MultiLociMode {
-	Multiplicative = 81,
-	Additive = 82,
-	Heterogeneity = 83
+	MULTIPLICATIVE = 81,
+	ADDITIVE = 82,
+	HETEROGENEITY = 83
 };
 
 enum MigrMode {
-	ByIndInfo = 91,
-	ByProbability = 92,
-	ByProportion = 93,
-	ByCounts = 94
+	BY_IND_INFO = 91,
+	BY_PROBABILITY = 92,
+	BY_PROPORTION = 93,
+	BY_COUNTS = 94
 };
 
 
 //
 enum InheritanceType {
-	Paternal = 101,
-	Maternal = 102,
-	Mean = 103,
-	Maximum = 104,
-	Minimum = 105,
-	Summation = 106,
-	Multiplication = 107,
+	PATERNAL = 101,
+	MATERNAL = 102,
+	MEAN = 103,
+	MAXIMUM = 104,
+	MINIMUM = 105,
+	SUMMATION = 106,
+	MULTIPLICATION = 107,
 };
 
 
@@ -444,7 +444,7 @@ public:
 
 // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
-#define CHECKRANGESEX(sex) DBG_FAILIF(sex != Male && sex != Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle " + toStr(Female) + " only.")
+#define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, "Wrong sex info. Male " + toStr(MALE) + " or Fenamle " + toStr(FEMALE) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numSubPop() - 1))
 #define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidSubPopID && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 ~ " + toStr(numChrom() - 1))

@@ -88,28 +88,28 @@ class TestInitialization(unittest.TestCase):
     def testInitSex(self):
         'Testing operator initSex'
         pop = population(size=[500, 1000], loci=[1])
-        InitSex(pop, sex=[Male, Female, Female])
+        InitSex(pop, sex=[MALE, FEMALE, FEMALE])
         for idx, ind in enumerate(pop.individuals()):
             if idx % 3 == 0:
-                self.assertEqual(ind.sex(), Male)
+                self.assertEqual(ind.sex(), MALE)
             else:
-                self.assertEqual(ind.sex(), Female)
+                self.assertEqual(ind.sex(), FEMALE)
         # maleFreq
         InitSex(pop, maleFreq=0.3)
         count = 0
         for ind in pop.individuals():
-            if ind.sex() == Male:
+            if ind.sex() == MALE:
                 count += 1
         assert count * 1.0 / 1500 > 0.25 and count * 1.0 /1500 < 0.35
         # male proportion
         InitSex(pop, maleProp=0.4)
         count = 0
         for ind in pop.individuals(0):
-            if ind.sex() == Male:
+            if ind.sex() == MALE:
                 count += 1
         #self.assertEqual(count, 200)
         for ind in pop.individuals(1):
-            if ind.sex() == Male:
+            if ind.sex() == MALE:
                 count += 1
         self.assertEqual(count, 600)
         # subPop, virtual subPop
@@ -117,14 +117,14 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
-        InitSex(pop, sex=[Male, Female, Female], subPops=[[0,0],[1,0]])
+        InitSex(pop, sex=[MALE, FEMALE, FEMALE], subPops=[[0,0],[1,0]])
         idx = 0
         for sp in range(2):
             for ind in pop.individuals([sp,0]):
                 if idx % 3 == 0:
-                    self.assertEqual(ind.sex(), Male)
+                    self.assertEqual(ind.sex(), MALE)
                 else:
-                    self.assertEqual(ind.sex(), Female)
+                    self.assertEqual(ind.sex(), FEMALE)
                 idx += 1
 
     def testInitByFreq(self):

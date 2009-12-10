@@ -57,77 +57,77 @@ class TestSelector(unittest.TestCase):
                     self.assertEqual(ind.fitness, 0.9)
             # haplodiploid population
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
-                ploidy=Haplodiploid)
+                ploidy=HAPLODIPLOID)
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25,
                 (0,):0.8, (1,):0.9}).apply(pop)
             for ind in pop.individuals():
-                if ind.genotype() == (0,0) and ind.sex() == Female:
+                if ind.genotype() == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif ind.genotype() == (0,1) and ind.sex() == Female:
+                elif ind.genotype() == (0,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif ind.genotype() == (1,0) and ind.sex() == Female:
+                elif ind.genotype() == (1,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif ind.genotype() == (1,1) and ind.sex() == Female:
+                elif ind.genotype() == (1,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif ind.genotype() == (0,0) and ind.sex() == Male:
+                elif ind.genotype() == (0,0) and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
-                elif ind.genotype() == (0,1) and ind.sex() == Male:
+                elif ind.genotype() == (0,1) and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
-                elif ind.genotype()[0] == 1 and ind.sex() == Male:
+                elif ind.genotype()[0] == 1 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
             #
             # sex chromosome
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[ChromosomeX, ChromosomeY])
+                chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):0.9, (1,):0.8, (0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():
-                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == Female:
+                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (0,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (0,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (1,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (1,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (1,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (1,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif ind.allele(0,0) == 0 and ind.sex() == Male:
+                elif ind.allele(0,0) == 0 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
-                elif ind.allele(0,0) == 2 and ind.sex() == Male:
+                elif ind.allele(0,0) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # 
             mapSelector(loci=[2], fitness={(0,):0.9, (1,):0.8, ():1}).apply(pop)
             for ind in pop.individuals():
-                if ind.sex() == Female:
+                if ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif ind.allele(2,1) == 0 and ind.sex() == Male:
+                elif ind.allele(2,1) == 0 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
-                elif ind.allele(2,1) == 2 and ind.sex() == Male:
+                elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # multiple loci
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[ChromosomeX, ChromosomeY])
+                chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0,1], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():
-                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == Female:
+                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (0,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (0,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (1,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (1,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (1,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (1,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (0,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (0,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (0,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (1,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (1,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (1,1) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (1,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
         else:
             InitByFreq(pop, [.2, 0, .8])
@@ -153,77 +153,77 @@ class TestSelector(unittest.TestCase):
                     self.assertEqual(ind.fitness, 0.9)
             # haplodiploid population
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
-                ploidy=Haplodiploid)
+                ploidy=HAPLODIPLOID)
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25,
                 (0,):0.8, (2,):0.9}).apply(pop)
             for ind in pop.individuals():
-                if ind.genotype() == (0,0) and ind.sex() == Female:
+                if ind.genotype() == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif ind.genotype() == (0,2) and ind.sex() == Female:
+                elif ind.genotype() == (0,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif ind.genotype() == (2,0) and ind.sex() == Female:
+                elif ind.genotype() == (2,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif ind.genotype() == (2,2) and ind.sex() == Female:
+                elif ind.genotype() == (2,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif ind.genotype() == (0,0) and ind.sex() == Male:
+                elif ind.genotype() == (0,0) and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
-                elif ind.genotype() == (0,2) and ind.sex() == Male:
+                elif ind.genotype() == (0,2) and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
-                elif ind.genotype()[0] == 1 and ind.sex() == Male:
+                elif ind.genotype()[0] == 1 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
             #
             # sex chromosome
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[ChromosomeX, ChromosomeY])
+                chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):0.9, (2,):0.8, (0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25}).apply(pop)
             for ind in pop.individuals():
-                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == Female:
+                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (0,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (0,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (2,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (2,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (2,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (2,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif ind.allele(0,0) == 0 and ind.sex() == Male:
+                elif ind.allele(0,0) == 0 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
-                elif ind.allele(0,0) == 2 and ind.sex() == Male:
+                elif ind.allele(0,0) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # 
             mapSelector(loci=[2], fitness={(0,):0.9, (2,):0.8, ():1}).apply(pop)
             for ind in pop.individuals():
-                if ind.sex() == Female:
+                if ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif ind.allele(2,1) == 0 and ind.sex() == Male:
+                elif ind.allele(2,1) == 0 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.9)
-                elif ind.allele(2,1) == 2 and ind.sex() == Male:
+                elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # multiple loci
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[ChromosomeX, ChromosomeY])
+                chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop)
             InitByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0,1], fitness={(0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25}).apply(pop)
             for ind in pop.individuals():
-                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == Female:
+                if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (0,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (0,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (2,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (2,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(0,1)) == (2,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(0,1)) == (2,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (0,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (0,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 1.0)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (0,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (0,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.5)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (2,0) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (2,0) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.3)
-                elif (ind.allele(0,0),ind.allele(1,1)) == (2,2) and ind.sex() == Female:
+                elif (ind.allele(0,0),ind.allele(1,1)) == (2,2) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
 
 
@@ -299,7 +299,7 @@ class TestSelector(unittest.TestCase):
         simulated = []
         sel = mlSelector(
                         [maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])],
-                        mode=Heterogeneity
+                        mode=HETEROGENEITY
                         )
         # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
@@ -666,7 +666,7 @@ class TestSelector(unittest.TestCase):
             [
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     mapSelector(loci=1, fitness={(0,0):1,(0,1):1,(1,1):.8}),
-                ], mode=Additive),
+                ], mode=ADDITIVE),
         simu.evolve(
             preOps = sel,
             initOps = [ initSex(), initByFreq(alleleFreq=[.2,.8])],
@@ -678,7 +678,7 @@ class TestSelector(unittest.TestCase):
             mlSelector([
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
-                ], mode=Multiplicative),
+                ], mode=MULTIPLICATIVE),
             ],
             initOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
