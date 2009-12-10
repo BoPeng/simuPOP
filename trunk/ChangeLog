@@ -9,7 +9,9 @@ TODO:
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
-version 0.9.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.9 - Rev 3196 (Dec 9, 2009)
   - NEW: Allow controlledRandomMating to fall back to random mating if there is
 		no locus to control.
   - NEW: Allow the use of a fixed value in operator ifElse, and allow the use
