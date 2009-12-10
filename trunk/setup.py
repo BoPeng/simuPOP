@@ -455,7 +455,7 @@ if __name__ == '__main__':
     #
     # if any of the wrap files does not exist
     # or if the wrap files are older than any of the source files.
-    if (not os.path.isfile('src/gsl_wrap.cpp') or \
+    if (not os.path.isfile('src/gsl_wrap.c') or \
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
@@ -473,9 +473,9 @@ if __name__ == '__main__':
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
-        print "Generating wrapper file src/gsl_wrap.cpp"
+        print "Generating wrapper file src/gsl_wrap.c"
         if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
-            SWIG_OUTDIR, '', 'src/gsl_wrap.cpp', 'src/gsl.i')) != 0:
+            SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
             print "Calling swig failed. Please check your swig version."
             sys.exit(1)
         print
@@ -496,8 +496,9 @@ if __name__ == '__main__':
     # build
     # For module simuPOP.gsl
     EXT_MODULES = [
-        Extension('simuPOP.gsl',
-            sources = GSL_FILES + ['src/gsl_wrap.cpp'],
+        Extension('simuPOP._gsl',
+            sources = GSL_FILES + ['src/gsl_wrap.c'],
+            include_dirs = ['.'],
         )
     ]
     for modu in MODULES:

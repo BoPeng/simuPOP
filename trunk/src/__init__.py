@@ -263,10 +263,14 @@ __all__ = [
     'ApplyDuringMatingOperator',
     'BernulliTrials',
     'weightedSampler',
-    # modules
-    'utils',
-    'plotter',
-    'sampling',
+    # 
+    # modules are not loaded by default because importing plotter will fail if
+    # rpy is not installed, and loading R is slow and perhaps unnecessary if
+    # rpy is installed.
+    #
+    #'utils',
+    #'plotter',
+    #'sampling',
 ]
 
 # get options

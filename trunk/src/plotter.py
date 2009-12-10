@@ -66,8 +66,8 @@ try:
     rpy_options.set_options(VERBOSE = False)
     from rpy import r, with_mode, NO_CONVERSION
 except ImportError, e:
-    print 'Rpy can not be loaded. Please verify your rpy installation.'
-    print 'Note that rpy > 0.99 is needed and rpy2 is not supported'
+    print 'Module simuPOP.plotter is unusable because module rpy can not be loaded.'
+    print 'You may want to install R and rpy (> 0.99, NOT rpy2) to enable this module.'
     raise e
 
 import os
