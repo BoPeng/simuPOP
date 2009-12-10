@@ -127,7 +127,7 @@ public:
 	 *  \li \c mode=PATERNAL Passing the value from father.
 	 *  \li \c mode=MEAN Passing the average of two values.
 	 *  \li \c mode=MAXIMUM Passing the maximum value of two values.
-	 *  \li \c mode=Minumum Passing the minimum value of two values.
+	 *  \li \c mode=MINIMUM Passing the minimum value of two values.
 	 *  \li \c mode=SUMMATION Passing the summation of two values.
 	 *  \li \c mode=MULTIPLICATION Passing the multiplication of two values.
 	 *

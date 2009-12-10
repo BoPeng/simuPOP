@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -590,9 +590,19 @@ es and mitochondrial, with arbitrary number of markers.
 \begin_layout Enumerate
 An arbitrary number of float numbers, called information fields, can be
  attached to individuals of a population.
- For example, information field father_idx and mother_idx are used to track
- an individual’s parents, and pack_year can be used to simulate an environmental
- factor associated with smoking.
+ For example, information field 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ are used to track an individual’s parents, and 
+\family typewriter
+pack_year
+\family default
+ can be used to simulate an environmental factor associated with smoking.
 \end_layout
 
 \begin_layout Enumerate
@@ -782,21 +792,21 @@ Thanks to the ‘glue language’ nature of Python, it is easy to inter-operate
  Python with other applications within a simuPOP script.
  For example, users can call any R function from Python/simuPOP for the
  purposes of visualization and statistical analysis, using 
-\series bold
+\family typewriter
 R
-\series default
+\family default
  and a Python module 
-\series bold
+\family typewriter
 RPy
-\series default
+\family default
 .
  This technique is widely used in simuPOP so it is highly recommended that
  you install R and rpy is your are familiar with R.
  In addition, although simuPOP uses the standard tkInter GUI toolkit when
  a graphical user interface is needed, it can make use of a 
-\series bold
+\family typewriter
 wxPython
-\series default
+\family default
  toolkit if it is available.
 \end_layout
 
@@ -950,12 +960,12 @@ InitSex(pop, sex=[MALE, FEMALE])
 
 It can be even worse if the definition of 
 \family typewriter
-Male
+MALE
 \family default
  is changed to a different value of the same type (e.g.
  to 
 \family typewriter
-Female
+FEMALE
 \family default
 ) and your simulation might produce erroranous result without a hint.
 \end_layout
@@ -1754,7 +1764,7 @@ pop.addInfoFields('field')
 \begin_layout Subsection
 Value 
 \family typewriter
-AllAvail
+ALL_AVAIL
 \family default
  for parameters 
 \family typewriter
@@ -1829,7 +1839,7 @@ recombinator(loci=[1,2,4])
 However, in the majority of the cases, these parameters take a default value
  
 \family typewriter
-AllAvail
+ALL_AVAIL
 \family default
  which applies the function or operator to all available loci, replicates
  or subpopulations.
@@ -2335,7 +2345,17 @@ will do nothing apparently, because it creates an operator.
 \end_layout
 
 \begin_layout Itemize
-Constants start with Capital characters.
+Constants are written in all capital characters with underscores separating
+ words (e.g.
+ 
+\family typewriter
+CHROMOSOME_X
+\family default
+, 
+\family typewriter
+UNIFORM_DISTRIBUTION
+\family default
+).
  Their names instead of their actual values should be used because those
  values can change without notice.
 \end_layout
@@ -6288,11 +6308,8 @@ pyOperator
 \family default
 .
  This operator has full access to the evolving population (or parents and
- offspring when 
-\family typewriter
-stage=DuringMating
-\family default
-), and can therefore perform arbitrary operations.
+ offspring when aplied during-mating), and can therefore perform arbitrary
+ operations.
 \end_layout
 
 \begin_layout Standard
@@ -7201,19 +7218,19 @@ If a Python function is given, this function will be called each time when
 If a tuple (or list) with more than one numbers is given, the first number
  must be one of 
 \family typewriter
-GeometricDistribution
+GEOMETRIC_DISTRIBUTION
 \family default
 , 
 \family typewriter
-PoissonDistribution
+POISSON_DISTRIBUTION
 \family default
 , 
 \family typewriter
-BinomialDistribution
+BINOMIAL_DISTRIBUTION
 \family default
  and 
 \family typewriter
-UniformDistribution
+UNIFORM_DISTRIBUTION
 \family default
 , with one or two additional parameters.
  The number of offspring will then follow a specific statistical distribution.
@@ -8721,8 +8738,19 @@ genotype transmitters
 \end_layout
 
 \begin_layout Standard
-All genotype transmitters only handle known chromosome types such as AUTOSOME,
- CHROMOSOME_X and CHROMOSOME_Y.
+All genotype transmitters only handle known chromosome types such as 
+\family typewriter
+AUTOSOME
+\family default
+, 
+\family typewriter
+CHROMOSOME_X
+\family default
+ and 
+\family typewriter
+CHROMOSOME_Y
+\family default
+.
  Customized chromosomes are left untouched because simuPOP does not know
  how they should be transmitted from parents to offspring.
  In case that Customized chromosomes are treated as mitochondrial chromosomes,
@@ -8730,7 +8758,7 @@ All genotype transmitters only handle known chromosome types such as AUTOSOME,
 \family typewriter
 mitochondrialGenoTransmitter
 \family default
- can be used to transmit Customized chromosomes randomly from mother to
+ can be used to transmit customized chromosomes randomly from mother to
  offspring.
  Example 
 \begin_inset CommandInset ref
@@ -8831,7 +8859,7 @@ reference "newOperator"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "infoChooser"
+reference "sexSpecificRec"
 
 \end_inset
 
@@ -11238,16 +11266,16 @@ migrator
 \family default
  to 
 \family typewriter
-ByProportion
+BY_PROPORTION
 \family default
  or 
 \family typewriter
-ByCount
+BY_COUNTS
 \family default
-s.
+.
  The 
 \family typewriter
-ByProportion
+BY_PROPORTION
 \family default
  mode interpret 
 \begin_inset Formula $r_{m,n}$
@@ -11272,7 +11300,7 @@ ByProportion
 subPopSize(m).
  In the 
 \family typewriter
-ByCounts
+BY_COUNTS
 \family default
  mode, 
 \begin_inset Formula $r_{m,n}$
@@ -11905,7 +11933,7 @@ any ploidy
 \family typewriter
 mendelianGenoTransmitter
 \family default
-: Copy genotypes from two parents (a MALE and a FEMALE) to an offspring
+: Copy genotypes from two parents (a male and a female) to an offspring
  following Mendel's laws, used by mating scheme 
 \family typewriter
 randomMating.
@@ -12927,7 +12955,11 @@ The names and acceptable parameters of acceptable models are listed below:
 \end_layout
 
 \begin_layout Enumerate
-Jukes and Cantor 1969 model: model='JC69', rate=[
+Jukes and Cantor 1969 model: 
+\family typewriter
+model='JC69'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -12966,7 +12998,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Kimura's 2-parameter 1980 model: model='K80', rate=[
+Kimura's 2-parameter 1980 model: 
+\family typewriter
+model='K80'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -13023,7 +13059,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Felsenstein 1981 model: model='F81', rate=[
+Felsenstein 1981 model: 
+\family typewriter
+model='F81'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -13079,7 +13119,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Hasegawa, Kishino and Yano 1985 model: model='HKY85', rate=[
+Hasegawa, Kishino and Yano 1985 model: 
+\family typewriter
+model='HKY85'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -13120,7 +13164,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Tamura 1992 model: model='T92', rate=[
+Tamura 1992 model: 
+\family typewriter
+model='T92'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -13156,7 +13204,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Tamura and Nei 1993 model: model='TN93', rate=[
+Tamura and Nei 1993 model: 
+\family typewriter
+model='TN93'
+\family default
+, rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -13220,7 +13272,11 @@ R=\left(\begin{array}{cccc}
 
 \end_deeper
 \begin_layout Enumerate
-Generalized time reversible model: model='GTR', rate=[
+Generalized time reversible model: 
+\family typewriter
+model='GTR'
+\family default
+, rate=[
 \begin_inset Formula $x_{1}$
 \end_inset
 
@@ -13282,7 +13338,11 @@ x_{3} & x_{5} & x_{6} & -\end{array}\right)\]
 
 \end_deeper
 \begin_layout Enumerate
-General model: model='general' (default), rate=[
+General model: 
+\family typewriter
+model='general'
+\family default
+ (default), rate=[
 \begin_inset Formula $x_{1}$
 \end_inset
 
@@ -16321,15 +16381,15 @@ mode=MAXIMUM
 \family default
 , 
 \family typewriter
-Minimum
+MINIMUM
 \family default
 , 
 \family typewriter
-Addition, MULTIPLICATION
+ADDITION, MULTIPLICATION
 \family default
  or 
 \family typewriter
-Average
+MEAN
 \family default
 ).
 \end_layout
@@ -16389,23 +16449,19 @@ summaryTagger
  If mating is sexual, two sets of values will be involved.
  Summarization methods include 
 \family typewriter
-Mean
+MEAN
 \family default
 , 
 \family typewriter
-Minimum
+MINIMUM
 \family default
-, 
-\family typewriter
-Miximum
-\family default
-,
+, MAXIMUM,
 \family typewriter
  SUMMATION
 \family default
  and 
 \family typewriter
-Multiplication
+MULTIPLICATION
 \family default
 .
  The operator is usually used to summarize certain characteristic of parents
@@ -24065,10 +24121,22 @@ Use a heterogeneous mating scheme that clones most individuals to the next
 
 \begin_layout Standard
 Example 
-\end_layout
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ageStructured"
 
-\begin_layout Section
-Pedigree Sampling
+\end_inset
+
+ gives an example of the evolution of age-structured population.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ageStructured.log"
+lstparams "caption={Example of the evolution of age-structured population.},label={ageStructured}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
