@@ -220,7 +220,7 @@ include test/test_07_tagging.py
 include test/test_08_opStat.py
 include test/test_09_pyOperator.py
 include test/test_10_opIfElse.py
-include test/test_11_opPause.py
+include test/test_11_terminator.py
 include test/test_12_migration.py
 include test/test_13_mutation.py
 include test/test_14_transmitter.py
@@ -228,7 +228,7 @@ include test/test_15_selection.py
 include test/test_16_sampling.py
 include test/test_17_qtrait.py
 include test/test_18_penetrance.py
-include test/test_19_utilitp.py
+include test/test_19_utility.py
 include test/test_20_plotter.py
 include test/test_21_performance.py
 include test/test_22_scripts.py
@@ -237,7 +237,6 @@ include test/test_22_scripts.py
 include doc/userGuide.pdf
 include doc/userGuide.py
 include doc/refManual.pdf
-include doc/cookbook.pdf
 
 # win32 files
 include win32/stdint.h
@@ -245,8 +244,8 @@ recursive-include win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.40.0
 recursive-include boost_1_40_0/boost *.hpp *.ipp
-recursive-include boost_1_40_0/libs/iostreams/src *.cpp *.hpp
-recursive-include boost_1_40_0/libs/serialization/src *.cpp *.hpp *.ipp
-recursive-include boost_1_40_0/libs/regex/src *.cpp *.hpp
-recursive-include boost_1_40_0/libs/detail *.cpp *.hpp
+recursive-include boost_1_40_0/libs/iostreams/src *.cpp
+recursive-include boost_1_40_0/libs/serialization/src *.cpp *.ipp
+recursive-include boost_1_40_0/libs/regex/src *.cpp
+recursive-include boost_1_40_0/libs/detail *.cpp
 
