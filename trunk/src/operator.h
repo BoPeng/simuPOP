@@ -123,7 +123,7 @@ public:
 	 *    \c end, and \c step will be ignored if this parameter is specified.
 	 *    A single generation number is also acceptable.
 	 *  \param reps A list of applicable replicates. A common default value
-	 *    \c AllAvail is interpreted as all replicates in a simulator. Negative
+	 *    \c ALL_AVAIL is interpreted as all replicates in a simulator. Negative
 	 *    indexes such as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt>
 	 *    can be used as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as

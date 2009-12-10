@@ -207,14 +207,14 @@ public:
 	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
 	 *  \param chromTypes A list that specifies the type of each chromosome,
 	 *    which can be \c AUTOSOME, \c CHROMOSOME_X, \c CHROMOSOME_Y, or
-	 *    \c Customized. All chromosomes are assumed to be autosomes if
+	 *    \c CUSTOMIZED. All chromosomes are assumed to be autosomes if
 	 *    this parameter is ignored. Sex chromosome can only be specified in a
 	 *    diploid population where the sex of an individual is determined by
 	 *    the existence of these chromosomes using the \c XX (\c FEMALE) and
 	 *    \c XY (\c MALE) convention. Both sex chromosomes have to be available
 	 *    and be specified only once. Because chromosomes \c X and \c Y are
 	 *    treated as two chromosomes, recombination on the pseudo-autosomal
-	 *    regions of the sex chromsomes is not supported. \c Customized
+	 *    regions of the sex chromsomes is not supported. \c CUSTOMIZED
 	 *    chromosomes are special chromosomes whose inheritance patterns are
 	 *    undefined. They rely on user-defined functions and operators to be
 	 *    passed from parents to offspring. Multiple customized chromosomes
@@ -941,7 +941,7 @@ public:
 	void removeIndividuals(const uintList & indexes = vectoru(),
 		const floatList & IDs = vectorf(), const string & idField = "ind_id");
 
-	/** Merge subpopulations \e subPops. If \e subPops is \c AllAvail (default),
+	/** Merge subpopulations \e subPops. If \e subPops is \c ALL_AVAIL (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
 	 *  to each other. They will all be merged to the subpopulation with the
 	 *  smallest subpopulation ID. Indexes of the rest of the subpopulation may
