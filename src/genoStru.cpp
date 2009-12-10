@@ -231,7 +231,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		UINT type = m_chromTypes[i];
 		DBG_ASSERT(type == AUTOSOME || type == CHROMOSOME_X || type == CHROMOSOME_Y || type == CUSTOMIZED,
-			ValueError, "Chromsome type can only be one of AUTOSOME, CHROMOSOME_X, ChromosomeY and Customized");
+			ValueError, "Chromsome type can only be one of AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y and CUSTOMIZED.");
 	}
 #endif
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
