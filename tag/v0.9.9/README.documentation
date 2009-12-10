@@ -1,0 +1,47 @@
+This README describes how the document of simuPOP is organized and
+distributed.
+
+WARNING: this documentation is currently imcomplete.
+
+Examples in the user's guide
+-----------------------------
+
+Examples in the user's guide are all in file doc/userGuide.py. They are
+separated by directives such as
+
+#file log/standard.log
+
+#end
+
+This userGuide.py file will be executed by doc/runSampleScript.py, such as
+
+    > cd doc
+    > ./runSampleScript.py userGuide.py
+
+runSampleScript.py will execute userGuide.py as if the examples are
+inputted from a Python interactive shell. The examples will be written to
+files such as log/standard.py and the output will be written to files such
+as log/standard.log. The log files, sometimes the the .py files, are
+inserted into log/userGuide.lyx, and are converted to .PDF or .html format.
+
+The advantage of this approach is that, if some examples are no longer
+compatible with a newer version of simuPOP, they will produce errors and be
+corrected.
+
+
+
+1. Doxygen.
+
+2. tools/doxy2swig
+
+3. doc/converter
+   > svn co -r 76658 \
+   http://svn.python.org/projects/doctools/converter/converter converter
+   > cd converter
+   > patch -p0 < ../converter_patch.diff
+
+4. cd $SIMUPOP/doc
+  > make dist_svn
+  > make dist_release  # for release
+
+NOTE: public key could be set up through sourceforge.net/account/services
