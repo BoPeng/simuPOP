@@ -17,7 +17,7 @@ Usage:
 Details:
 
     Create a splitter that defined two VSPs by affection status.These
-    VSPs are named Unaffected and Affected unless a new set of names
+    VSPs are named UNAFFECTED and AFFECTED unless a new set of names
     are specified by parameter names.
 
 "; 
@@ -322,8 +322,8 @@ Arguments:
                     parameter is specified. A single generation number
                     is also acceptable.
     reps:           A list of applicable replicates. A common default
-                    value AllAvail is interpreted as all replicates in
-                    a simulator. Negative indexes such as -1 (last
+                    value ALL_AVAIL is interpreted as all replicates
+                    in a simulator. Negative indexes such as -1 (last
                     replicate) is acceptable. rep=idx can be used as a
                     shortcut for rep=[idx].
     subPops:        A list of applicable (virtual) subpopulations,
@@ -1432,7 +1432,7 @@ Details:
     accessible from individual, population, and simulator classes.
     Currently, a genotypic structure consists of
     *   Ploidy, namely the number of homologous sets of chromosomes,
-    of a population. Haplodiploid population is also supported.
+    of a population. HAPLODIPLOID population is also supported.
     *   Number of chromosomes and number of loci on each chromosome.
     *   Positions of loci, which determine the relative distance
     between loci on the same chromosome. No unit is assumed so these
@@ -1724,7 +1724,7 @@ Usage:
 Details:
 
     return the type of all chromosomes (CUSTOMIZED, AUTOSOME,
-    ChromosomeX or CHROMOSOME_Y).
+    CHROMOSOME_X or CHROMOSOME_Y).
 
 "; 
 
@@ -2640,7 +2640,7 @@ Usage:
 
 Details:
 
-    set individual sex to Male or Female.
+    set individual sex to MALE or FEMALE.
 
 "; 
 
@@ -3140,7 +3140,7 @@ Details:
     *   mode=PATERNAL Passing the value from father.
     *   mode=MEAN Passing the average of two values.
     *   mode=MAXIMUM Passing the maximum value of two values.
-    *   mode=Minumum Passing the minimum value of two values.
+    *   mode=MINIMUM Passing the minimum value of two values.
     *   mode=SUMMATION Passing the summation of two values.
     *   mode=MULTIPLICATION Passing the multiplication of two values.
     An RuntimeError will be raised if any of the parents does not
@@ -3416,13 +3416,13 @@ Usage:
 
 Details:
 
-    Create an operator that initialize individual sex to Male or
-    Female. By default, it assign sex to individuals randomly, with
+    Create an operator that initialize individual sex to MALE or
+    FEMALE. By default, it assign sex to individuals randomly, with
     equal probability of having a male or a female. This probabability
     can be adjusted through parameter maleFreq or be made to exact
     proportions by specifying parameter maleProp. Alternatively, a
     fixed sequence of sexes can be assigned. For example, if
-    sex=[MALE, FEMALE], individuals will be assigned Male and Female
+    sex=[MALE, FEMALE], individuals will be assigned MALE and FEMALE
     successively. Parameter maleFreq or maleProp are ignored if sex is
     given. If a list of (virtual) subpopulation is specified in
     parameter subPop, only individuals in these subpopulations will be
@@ -4368,7 +4368,7 @@ Details:
     *   Prod(f_i), namely the product of individual penetrance if mode
     = MULTIPLICATIVE,
     *   sum(f_i) if mode = ADDITIVE, and
-    *   1-Prod(1 - f_i) if mode = Heterogeneity 0 or 1 will be
+    *   1-Prod(1 - f_i) if mode = HETEROGENEITY 0 or 1 will be
     returned if the combined penetrance value is less than zero or
     greater than 1.
 
@@ -4428,7 +4428,7 @@ Details:
     *   Prod(f_i), namely the product of individual fitness if mode =
     MULTIPLICATIVE,
     *   1-sum(1 - f_i) if mode = ADDITIVE, and
-    *   1-Prod(1 - f_i) if mode = Heterogeneity zero will be returned
+    *   1-Prod(1 - f_i) if mode = HETEROGENEITY zero will be returned
     if the combined fitness value is less than zero.
 
 "; 
@@ -4562,15 +4562,15 @@ Details:
     simuPOP user's guide for a detailed description of these
     distributions and their parameters.  Parameter sexMode is used to
     control the sex of each offspring. Its default value is usually
-    RandomSex which assign Male or Female to each individual randomly,
-    with equal probabilities. If NoSex is given, all individuals will
-    be Male. sexMode can also be one of (PROB_OF_MALES, p),
-    (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n). The first case
-    specifies the probability of male for each offspring. The next two
-    cases specifies the number of male or female individuals in each
-    family, respectively. If n is greater than or equal to the number
-    of offspring in this family, all offspring in this family will be
-    Male or Female.
+    RANDOM_SEX which assign MALE or FEMALE to each individual
+    randomly, with equal probabilities. If NO_SEX is given, all
+    individuals will be MALE. sexMode can also be one of
+    (PROB_OF_MALES, p), (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n).
+    The first case specifies the probability of male for each
+    offspring. The next two cases specifies the number of male or
+    female individuals in each family, respectively. If n is greater
+    than or equal to the number of offspring in this family, all
+    offspring in this family will be MALE or FEMALE.
 
 "; 
 
@@ -4979,22 +4979,22 @@ Details:
     length of relFields determines how many relatives an individual
     can have.  Parameter relType specifies what type of relative to
     locate. It can be
-    *   Spouse locate spouses with whom an individual has at least one
+    *   SPOUSE locate spouses with whom an individual has at least one
     common offspring.
-    *   OutbredSpouse locate non-slibling spouses, namely spouses with
-    no shared parent.
-    *   Offspring all offspring of each individual.
-    *   CommonOffspring common offspring between each individual and
-    its spouse (located by Spouse or OUTBRED_SPOUSE). relFields should
+    *   OUTBRED_SPOUSE locate non-slibling spouses, namely spouses
+    with no shared parent.
+    *   OFFSPRING all offspring of each individual.
+    *   COMMON_OFFSPRING common offspring between each individual and
+    its spouse (located by SPOUSE or OUTBRED_SPOUSE). relFields should
     consist of an information field for spouse and m-1 fields for
     offspring where m is the number of fields.
-    *   FullSibling siblings with common father and mother,
-    *   Sibling siblings with at least one common parent. Optionally,
+    *   FULLSIBLING siblings with common father and mother,
+    *   SIBLING siblings with at least one common parent. Optionally,
     you can specify the sex and affection status of relatives you
     would like to locate, using parameters sex and affectionStatus.
-    sex can be AnySex (default), MALE_ONLY, FEMALE_ONLY, SameSex or
-    OPPOSITE_SEX, and affectionStatus can be AFFECTED, Unaffected or
-    AnyAffectionStatus (default). Only relatives with specified
+    sex can be ANY_SEX (default), MALE_ONLY, FEMALE_ONLY, SAME_SEX or
+    OPPOSITE_SEX, and affectionStatus can be AFFECTED, UNAFFECTED or
+    ANY_AFFECTION_STATUS (default). Only relatives with specified
     properties will be located.  This function will by default go
     through all ancestral generations and locate relatives for all
     individuals. This can be changed by setting parameter ancGen to
@@ -5024,8 +5024,8 @@ Details:
     status at each generation. fieldPath should be a list of
     information fields, sex and affectionStatus are optional. If
     specified, they should be a list of ANY_SEX, MALE_ONLY,
-    FEMALE_ONLY, SameSex and OppsiteSex for parameter sex, and a list
-    of UNAFFECTED, Affected and AnyAffectionStatus for parameter
+    FEMALE_ONLY, SAME_SEX and OppsiteSex for parameter sex, and a list
+    of UNAFFECTED, AFFECTED and ANY_AFFECTION_STATUS for parameter
     affectionStatus.  For example, if fieldPath = [['father_id',
     'mother_id'], ['sib1', 'sib2'], ['off1', 'off2']], and sex =
     [ANY_SEX, MALE_ONLY, FEMALE_ONLY], this function will locate
@@ -5053,15 +5053,15 @@ Details:
 
     Return a list of IDs of individuals who have non-negative values
     at information fields infoFields. Additional requirements could be
-    specified by parameters sex and affectionStatus. sex can be AnySex
-    (default), MALE_ONLY, FEMALE_ONLY, SameSex or OPPOSITE_SEX, and
-    affectionStatus can be AFFECTED, Unaffected or AnyAffectionStatus
-    (default). This function by default check all individuals in all
-    ancestral generations, but you could limit the search using
-    parameter subPops (a list of (virtual) subpopulations) and (recent
-    ancestral generations) ancGen. Relatives fall out of specified
-    subpopulations and ancestral generaions will be considered
-    invalid.
+    specified by parameters sex and affectionStatus. sex can be
+    ANY_SEX (default), MALE_ONLY, FEMALE_ONLY, SAME_SEX or
+    OPPOSITE_SEX, and affectionStatus can be AFFECTED, UNAFFECTED or
+    ANY_AFFECTION_STATUS (default). This function by default check all
+    individuals in all ancestral generations, but you could limit the
+    search using parameter subPops (a list of (virtual)
+    subpopulations) and (recent ancestral generations) ancGen.
+    Relatives fall out of specified subpopulations and ancestral
+    generaions will be considered invalid.
 
 "; 
 
@@ -5346,7 +5346,7 @@ Arguments:
                     chromosome with a single locus.
     chromTypes:     A list that specifies the type of each chromosome,
                     which can be AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y,
-                    or Customized. All chromosomes are assumed to be
+                    or CUSTOMIZED. All chromosomes are assumed to be
                     autosomes if this parameter is ignored. Sex
                     chromosome can only be specified in a diploid
                     population where the sex of an individual is
@@ -5356,7 +5356,7 @@ Arguments:
                     specified only once. Because chromosomes X and Y
                     are treated as two chromosomes, recombination on
                     the pseudo-autosomal regions of the sex chromsomes
-                    is not supported. Customized chromosomes are
+                    is not supported. CUSTOMIZED chromosomes are
                     special chromosomes whose inheritance patterns are
                     undefined. They rely on user-defined functions and
                     operators to be passed from parents to offspring.
@@ -5868,7 +5868,7 @@ Usage:
 
 Details:
 
-    Merge subpopulations subPops. If subPops is AllAvail (default),
+    Merge subpopulations subPops. If subPops is ALL_AVAIL (default),
     all subpopulations will be merged. subPops do not have to be
     adjacent to each other. They will all be merged to the
     subpopulation with the smallest subpopulation ID. Indexes of the
@@ -8240,7 +8240,7 @@ Usage:
 Details:
 
     Create a sex splitter that defines male and female VSPs. These
-    VSPs are named Male and Female unless a new set of names are
+    VSPs are named MALE and FEMALE unless a new set of names are
     specified by parameter names.
 
 "; 
