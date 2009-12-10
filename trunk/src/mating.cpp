@@ -62,7 +62,7 @@ offspringGenerator::offspringGenerator(const opList & ops,
 	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
 		        static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
 		        static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2,
-		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NumOfMales and NumOfFemales");
+		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NUM_OF_MALES and NUM_OF_FEMALES");
 
 	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
 		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
