@@ -224,7 +224,7 @@ class baseSampler:
         if self.subPops == ALL_AVAIL:
             self.pop = pop
         else:
-            self.pop = pop.extractSubPops(self.subPops, rearrange);
+            self.pop = pop.extractSubPops(self.subPops, rearrange)
         return True
 
     def drawSample(self, pop):
