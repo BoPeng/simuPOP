@@ -10,6 +10,7 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
 version 1.0.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
 
 version 0.9.9 - Rev 3196 (Dec 9, 2009)
   - NEW: Allow controlledRandomMating to fall back to random mating if there is
