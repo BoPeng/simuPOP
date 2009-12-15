@@ -380,14 +380,15 @@ def valueValidFile():
 
 def valueListOf(t):
     '''Return a function that returns true if passed option val is a list of
-    type t. If t is a function (validator), check if all v in val pass t(v)
+    type ``t`` if ``t`` is a type, if ``v`` is one of ``t`` if ``t`` is a list,
+    or if ``v`` passes test ``t`` if ``t`` is a validator (a function).
     '''
     def func(val):
         if not type(val) in [types.ListType, types.TupleType]:
             return False
         if type(t) in [types.ListType, types.TupleType]:
             for i in val:
-                if not type(i) in t:
+                if not i in t:
                     return False
         elif type(t) == types.FunctionType:
             for i in val:
@@ -525,7 +526,7 @@ def _getParamValue(p, val):
     if type(val) == types.UnicodeType:
         val = str(val)
     # remove quotes from string?
-    if p.has_key('allowedTypes') and type('') in p['allowedTypes']:
+    if p.has_key('allowedTypes') and type('') in p['allowedTypes'] and type('') == type(val):
         for quote in ['"', "'", '"""', "'''"]:
             if val.startswith(quote) and val.endswith(quote):
                 val = val[len(quote):-len(quote)]
@@ -732,6 +733,7 @@ class _tkParamDialog(_paramDialog):
                     if lab is not None:
                         lab.configure(fg='black')
                 # set this one to red
+                print e
                 self.labelWidgets[g].configure(fg='red')
                 self.entryWidgets[g].focus_force()
                 return
