@@ -568,7 +568,7 @@ class TestSelector(unittest.TestCase):
         s2 = .2
         p = .2/ (.1+.2)
         # gen may not be used.
-        def sel(arr, gen=0):
+        def sel(arr, param=None, gen=0):
             if arr == (0, 0):
                 return 1 - s1
             elif arr == (0, 1):
@@ -610,7 +610,7 @@ class TestSelector(unittest.TestCase):
         s2 = .2
         p = .2/ (.1+.2)
         # gen may not be used.
-        def sel(arr, gen):
+        def sel(arr, fields, gen):
             if gen > 50:
                 if arr == (0, 0):
                     return 1 - s1
