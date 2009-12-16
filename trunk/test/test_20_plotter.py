@@ -98,7 +98,7 @@ class TestPlotter(unittest.TestCase):
             gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterByRep(self):
         'Testing byRep parameter of varPlotter'
@@ -122,7 +122,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterByDim(self):
         'Testing byDim paramter of varPlotter'
@@ -145,7 +145,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterSelectedRep(self):
         'Testing byDim paramter of varPlotter using selected replicates'
@@ -166,7 +166,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterTogether(self):
         'Testing plotting all lines together using varPlotter'
@@ -190,7 +190,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterByRepDim(self):
         'Testing byDim paramter of varPlotter'
@@ -214,7 +214,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterSaveAs(self):
         'Testing saveAs parameter of varPlotter'
@@ -241,7 +241,7 @@ class TestPlotter(unittest.TestCase):
             self.assertEqual(os.path.isfile('demo_%d.eps' % f), True)
             os.remove('demo_%d.eps' % f)
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterPar(self):
         'Testing parameter passing of varPlotter'
@@ -264,7 +264,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testVarPlotterHook(self):
         'Testing ylim parameter of varPlotter'
@@ -297,7 +297,7 @@ class TestPlotter(unittest.TestCase):
              gen = 30
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testScatterPlotter(self):
         'Testing scatterPlotter'
@@ -318,7 +318,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testScatterPlotterSP(self):
         'Testing scatterPlotter with multiple virtual subpopulations'
@@ -343,7 +343,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testScatterPlotterSubSet(self):
         'Testing scatterPlotter with partial individuals'
@@ -371,7 +371,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testInfoPlotterBase(self):
         'Testing basic histogram using infoPlotter'
@@ -388,7 +388,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testInfoPlotterFields(self):
         'Testing stat plotter with multiple fields and subpopulations'
@@ -418,7 +418,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testInfoPlotterQQplot(self):
         'Testing barplotter with multiple fields and subpopulations'
@@ -451,7 +451,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testInfoPlotterNoFunc(self):
         'Testing the stat plotter when no function is specified'
@@ -481,7 +481,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
 
     def testBoxPlotterBase(self):
@@ -501,7 +501,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testBoxPlotterFields(self):
         'Testing barplotter with multiple fields and subpopulations'
@@ -523,7 +523,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testBoxPlotterFieldsAndSubPop(self):
         'Testing boxPlotter with both fields and subpopulation'
@@ -552,7 +552,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testBoxPlotterByField(self):
         'Testing boxPlotter separated by information field'
@@ -578,7 +578,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testBoxPlotterBySubPop(self):
         'Testing boxPlotter separated by subpopulation'
@@ -603,7 +603,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
     def testBoxPlotterByFieldSubPop(self):
         'Testing boxPlotter separated by both field and subpopulation'
@@ -628,7 +628,7 @@ class TestPlotter(unittest.TestCase):
             gen = 5,
         )
         sleep(1)
-        plotter.r.dev_off()
+        r.dev_off()
 
 if __name__ == '__main__':
     unittest.main()
