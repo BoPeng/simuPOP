@@ -247,16 +247,25 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 		Py_XDECREF(m_genotype);
 		m_genotype = PyTuple_New(alleles.size());
 	}
-	// the number of information fields will not change.
-	if (m_info == NULL)
-		m_info = PyTuple_New(info.size());
 	// set value
 	for (size_t i = 0; i < alleles.size(); ++i)
 		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
-	for (size_t i = 0; i < info.size(); ++i)
-		PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
 
-	double fitness = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
+	// the number of information fields will not change.
+	if (m_func.numArgs() > 1) {
+		if (m_info == NULL)
+			m_info = PyTuple_New(info.size());
+		for (size_t i = 0; i < info.size(); ++i)
+			PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
+	}
+
+	double fitness;
+	if (m_func.numArgs() == 1)
+		fitness = m_func(PyObj_As_Double, "(O)", m_genotype);
+	if (m_func.numArgs() == 2)
+		fitness = m_func(PyObj_As_Double, "(OO)", m_genotype, m_info);
+	else    // this includes the case with *args argument
+		fitness = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
 
 	DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " fitness " << fitness << endl);
 	return fitness;

@@ -114,8 +114,8 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 
 	Sex s = sex();
 	UINT t = chromType(ch);
-	if ((s == FEMALE && t == CHROMOSOME_Y) ||    // female chromsome Y
-	    (s == MALE &&                           // second copy of chromosome X and first copy of chromosome Y
+	if ((s == FEMALE && t == CHROMOSOME_Y) ||       // female chromsome Y
+	    (s == MALE &&                               // second copy of chromosome X and first copy of chromosome Y
 	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))))
 		return false;
 

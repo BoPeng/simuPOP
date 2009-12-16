@@ -448,10 +448,10 @@ statNumOfMales::statNumOfMales(bool numOfMales, const subPopList & subPops, cons
 	: m_isActive(numOfMales), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfMales_String,	   propOfMales_String,
-		numOfFemales_String,	   propOfFemales_String,
-		numOfMales_sp_String,   propOfMales_sp_String,
-		numOfFemales_sp_String, propOfFemales_sp_String,""
+		numOfMales_String,		propOfMales_String,
+		numOfFemales_String,	propOfFemales_String,
+		numOfMales_sp_String,	propOfMales_sp_String,
+		numOfFemales_sp_String, propOfFemales_sp_String,   ""
 	};
 	const char * defaultVars[] = { numOfMales_String, numOfFemales_String, "" };
 

@@ -487,6 +487,44 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
+{
+	if (!m_func.isValid())
+		return;
+
+	PyObject * obj = m_func.object();
+
+	DBG_ASSERT(PyCallable_Check(obj), ValueError,
+		"Passed parameter should be None or a Python function");
+
+	// is it unbounded?
+	bool bounded = PyObject_HasAttrString(obj, "im_self");
+
+	// free python functions have a 'func_code' attribute
+	// built-in functions might not have (e.g. random.random)
+	if (!PyObject_HasAttrString(obj, "func_code"))
+		return;
+
+	PyObject * code = PyObject_GetAttrString(obj, "func_code");
+	DBG_ASSERT(code, SystemError, "Invalid attribute func_code for a function object");
+	// accepting arbitrary number of parameters?
+	PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
+	DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
+	long flag = PyInt_AsLong(co_flag);
+	Py_DECREF(co_flag);
+	if (flag & 0x04 || flag & 0x08)
+		m_numArgs = -1;
+	else {
+		PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
+		DBG_ASSERT(co_argcount, SystemError, "Invalid attribute co_argcount for a function object");
+		// substract 1 if the method is bounded to remove the count for self.
+		m_numArgs = PyInt_AsLong(co_argcount) - bounded;
+		Py_DECREF(co_argcount);
+	}
+	Py_DECREF(code);
+}
+
+
 uintList::uintList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
 	if (obj == NULL || obj == Py_None)

@@ -336,7 +336,9 @@ private:
  *  \c func in the form of <tt>func(geno, fields, gen)</tt>. For each
  *  individual, this operator passes the genotypes at these loci, values of
  *  specified information fields, and a generation number to this function. The
- *  return value is treated as the penetrance value.
+ *  return value is treated as the penetrance value. Functions in the forms of
+ *  <tt>func(geno)</tt> and <tt>func(geno, fields)</tt> are also acceptable. In
+ *  these cases, only the first one or two parameters will be passed.
  *
  *  If you need to pass sex or affection status to this function, you should
  *  define an information field (e.g. sex) and sync individual property with
@@ -366,8 +368,10 @@ public:
 		m_func(func), m_loci(loci.elems()), m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
-		if (!m_func.isValid())
-			throw ValueError("Passed variable is not a callable python function.");
+		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
+
+		DBG_FAILIF(m_func.numArgs() == 0 || m_func.numArgs() > 3, ValueError,
+			"Passed function should accept one to three regular arguments with an optional *arg argument.");
 
 		DBG_FAILIF(m_loci.empty(), ValueError,
 			"Please specify susceptibility loci");

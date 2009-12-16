@@ -598,15 +598,20 @@ bool ticToc::apply(population & pop)
 
 
 pyOperator::pyOperator(PyObject * func, PyObject * param,
-	bool passOffspringOnly,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
 	baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
-	m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
+	m_func(func), m_param(param ? param : Py_None)
 {
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
+
+	DBG_FAILIF(m_func.numArgs() == 3 || m_func.numArgs() > 5, ValueError,
+		"Passed function should accept 1, 2, 4, 5 or *args arguments.");
+
+	DBG_ASSERT(subPops.allAvail(), ValueError,
+		"Parameter subPops is not supported by this operator.");
 }
 
 
@@ -632,12 +637,10 @@ bool pyOperator::apply(population & pop)
 
 	// parammeter list, ref count increased
 	bool resBool;
-	// parenthesis is needed since PyCallFuncX are macros.
-	if (m_param.isValid())
-		resBool = m_func(PyObj_As_Bool, "(OO)", popObj, m_param.object());
-	else
+	if (m_func.numArgs() == 1)
 		resBool = m_func(PyObj_As_Bool, "(O)", popObj);
-
+	else
+		resBool = m_func(PyObj_As_Bool, "(OO)", popObj, m_param.object());
 	Py_DECREF(popObj);
 	return resBool;
 }
@@ -654,14 +657,11 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 		"Compiled with the wrong version of SWIG?");
 
 	bool res;
-	if (m_passOffspringOnly) {
-		// parammeter list, ref count increased
-		if (m_param.isValid())
-			res = m_func(PyObj_As_Bool, "(OO)", offObj, m_param.object());
-		else
-			res = m_func(PyObj_As_Bool, "(O)", offObj);
-
-	} else {
+	if (m_func.numArgs() == 1)
+		res = m_func(PyObj_As_Bool, "(O)", offObj);
+	else if (m_func.numArgs() == 2)
+		res = m_func(PyObj_As_Bool, "(OO)", offObj, m_param.object());
+	else {
 		// call the python function, pass all the parameters to it.
 		// get pop object
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -686,10 +686,10 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 			"Compiled with the wrong version of SWIG?");
 
 		// parammeter list, ref count increased
-		if (m_param.isValid())
-			res = m_func(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
-		else
+		if (m_func.numArgs() == 4)
 			res = m_func(PyObj_As_Bool, "(OOOO)", popObj, offObj, dadObj, momObj);
+		else    // this includes the *args case
+			res = m_func(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
 
 		Py_DECREF(popObj);
 		Py_DECREF(dadObj);

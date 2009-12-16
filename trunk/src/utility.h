@@ -230,11 +230,15 @@ private:
 class pyFunc
 {
 public:
-	pyFunc(PyObject * func) : m_func(func)
+	pyFunc(PyObject * func);
+
+
+	/// return number of arguments this function accepts,
+	/// which can be number of positional arguments if no tuple or keyword
+	/// arugments is specified, or -1 otherwise.
+	int numArgs() const
 	{
-		DBG_ASSERT(!m_func.isValid() || PyCallable_Check(m_func.object()),
-			ValueError,
-			"Passed parameter should be None or a Python function");
+		return m_numArgs;
 	}
 
 
@@ -295,6 +299,8 @@ public:
 
 private:
 	pyObject m_func;
+
+	long int m_numArgs;
 };
 
 

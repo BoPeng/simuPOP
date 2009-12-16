@@ -907,26 +907,20 @@ class pyOperator : public baseOperator
 {
 public:
 	/** Create a pure-Python operator that calls a user-defined function when
-	 *  it is applied. Depending on parameters \e stage, \e param, and
-	 *  \e offspringOnly, the function should have one of the following forms:
-	 *  \li <tt>func(pop)</tt> if used pre- or post-mating without \c param.
-	 *  \li <tt>func(pop, param)</tt> if used pre- or post-mating with \c param.
-	 *  \li <tt>func(pop, off, dad, mom)</tt> if used during mating with
-	 *    \c param.
-	 *  \li <tt>func(pop, off, dad, mom, param)</tt> if used during mating with
-	 *    \c param.
-	 *  \li <tt>func(off)</tt> if used during mating, with
-	 *    <tt>offspringOnly=True</tt> and without \c param.
-	 *  \li <tt>func(off, param)</tt> if used during mating with
-	 *    <tt>offspringOnly=True</tt> and with \c param.
+	 *  it is applied. If this operator is applied before or after mating,
+	 *  your function should have form <tt>func(pop)</tt> or
+	 *  <tt>func(func, param)</tt> where \c pop is the population to which
+	 *  the operator is applied, \c param is the value specified in parameter
+	 *  \e param. \c param will be ignored if your function only accepts
+	 *  one parameter.
 	 *
-	 *  where \c pop is the population to which the operator is applied, \c off
-	 *  is the offspring of \c dad and \c mom, and \c param is the parameter
-	 *  \e param specified when the operator is created. When this operator is
-	 *  applied during mating, it can be used in the \c ops parameter of a
-	 *  mating scheme, or used in the \c ops parameter of \c simulator.evolve
-	 *  and be applied after an offspring has been created. Please refer to the
-	 *  simuPOP user's guide for a detailed explanation.
+	 *  If this operator is applied during mating, your function should be in
+	 *  one of the forms <tt>func(off)</tt>, <tt>func(off, param)</tt>,
+	 *  <tt>func(pop, off, dad, mom)</tt> or
+	 *  <tt>func(pop, off, dad, mom, param</tt> where \c off is the offspring
+	 *  of \c dad and \c mom. This operator will pass appropriate parameters
+	 *  to the user-defined function depending on the number of accepted
+	 *  parameters.
 	 *
 	 *  This operator does not support parameters \e output, \e subPops and
 	 *  \e infoFields. If certain output is needed, it should be handled in the
@@ -935,7 +929,6 @@ public:
 	 *  evolution, they should not be open or closed in this Python operator.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
@@ -966,9 +959,6 @@ private:
 
 	/// parammeters
 	pyObject m_param;
-
-	// whether or not pass pop, dad, mon to a python function if it is applied during-mating.
-	bool m_passOffspringOnly;
 };
 
 
