@@ -7151,20 +7151,16 @@ Usage:
 Details:
 
     This selector assigns fitness values by calling a user provided
-    function. It accepts a list of loci and a Python function func.
-    For each individual, this operator passes the genotypes at these
-    loci, and a generation number to this function. The return value
-    is treated as the fitness value. Optionally, several information
-    fields can be given to parameter paramFields. In this case, the
-    user-defined Python function should accept a second parameter that
-    is a list of values at these information fields. In another word,
-    a user-defined function in the form of
-    *   func(geno, gen) is needed if paramFields is empty, or
-    *   func(geno, fields, gen) is needed if paramFields has some
-    information fields. If you need to pass sex or affection status to
-    this function, you should define an information field (e.g. sex)
-    and sync individual property with this field using operator
-    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
+    function. It accepts a list of loci (parameter loci), a list of
+    information fields (parameter paramFields) and a Python function
+    func in the form of func(geno, fields, gen). For each individual,
+    this operator passes the genotypes at these loci, values at
+    specified information fields, and a generation number to this
+    function. The return value is treated as the fitness value of this
+    individual.  If you need to pass sex or affection status to this
+    function, you should define an information field (e.g. sex) and
+    sync individual property with this field using operator infoExec
+    (e.g. infoExec('sex=ind.sex', exposeInd='ind').
 
 "; 
 
@@ -7172,8 +7168,8 @@ Details:
 
 Usage:
 
-    pySelector(loci, func, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, paramFields=[],
+    pySelector(func, loci=[], paramFields=[], begin=0, end=-1,
+      step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=AllAvail)
 
 Details:
