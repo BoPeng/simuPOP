@@ -843,11 +843,11 @@ def MlPenetrance(pop, ops, mode, ancGen = -1, *args, **kwargs):
     this function by default assign affection status to all generations.'''
     mlPenetrance(ops, mode, ancGen, *args, **kwargs).apply(pop)
 
-def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
+def PyPenetrance(pop, func, loci, paramFields=[], ancGen = -1, *args, **kwargs):
     '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    pyPenetrance(loci, func, ancGen, *args, **kwargs).apply(pop)
+    pyPenetrance(func, loci, paramFields, ancGen, *args, **kwargs).apply(pop)
 
 def PyQuanTrait(pop, loci, func, ancGen = -1, *args, **kwargs):
     '''Apply opertor ``pyQuanTrait`` to population ``pop``. Unlike the

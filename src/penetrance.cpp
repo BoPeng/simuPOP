@@ -303,21 +303,17 @@ double pyPenetrance::penet(individual * ind, ULONG gen)
 		Py_XDECREF(m_genotype);
 		m_genotype = PyTuple_New(alleles.size());
 	}
-	if (!info.empty() && (m_info == NULL || static_cast<UINT>(PySequence_Size(m_info)) != info.size())) {
-		Py_XDECREF(m_info);
+	// number of fields will not change.
+	if (m_info == NULL)
 		m_info = PyTuple_New(info.size());
-	}
+
 	// set value
 	for (size_t i = 0; i < alleles.size(); ++i)
 		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
 	for (size_t i = 0; i < info.size(); ++i)
 		PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
 
-	double penetrance;
-	if (info.empty())
-		penetrance = m_func(PyObj_As_Double, "(Oi)", m_genotype, gen);
-	else
-		penetrance = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
+	double penetrance = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
 
 	DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " penetrance " << penetrance << endl);
 	return penetrance;
