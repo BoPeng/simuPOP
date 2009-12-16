@@ -381,7 +381,7 @@ string sexSplitter::name(SubPopID vsp)
 	if (!m_names.empty())
 		return m_names[vsp];
 
-	return vsp == 0 ? "MALE" : "FEMALE";
+	return vsp == 0 ? "Male" : "Female";
 }
 
 
@@ -431,7 +431,7 @@ string affectionSplitter::name(SubPopID vsp)
 	if (!m_names.empty())
 		return m_names[vsp];
 
-	return vsp == 0 ? "UNAFFECTED" : "AFFECTED";
+	return vsp == 0 ? "Unaffected" : "Affected";
 }
 
 

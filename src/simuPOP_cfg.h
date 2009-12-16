@@ -188,12 +188,12 @@ enum ConversionMode {
 
 // For pedigree tracing
 enum RelativeType {
-	OFFSPRING = 50,             // All offspring with all spouses (if there are more than one spouse)
-	COMMON_OFFSPRING = 51,       // One spouse and their common offspring.
-	SPOUSE = 52,                // All spouses (with at least one offspring)
-	OUTBRED_SPOUSE = 53,         // Spouse who is not a sibling.
-	SIBLING = 54,               // Siblings who share at least one parent
-	FULLSIBLING = 55,           // Siblings who share two parents
+	OFFSPRING = 50,                 // All offspring with all spouses (if there are more than one spouse)
+	COMMON_OFFSPRING = 51,          // One spouse and their common offspring.
+	SPOUSE = 52,                    // All spouses (with at least one offspring)
+	OUTBRED_SPOUSE = 53,            // Spouse who is not a sibling.
+	SIBLING = 54,                   // Siblings who share at least one parent
+	FULLSIBLING = 55,               // Siblings who share two parents
 };
 
 // For pedigree tracing
