@@ -870,7 +870,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def myPenetrance(geno, fields, gen):
+def myPenetrance(geno):
     'A three-locus heterogeneity penetrance model'
     if sum(geno) < 2:
         return 0
@@ -954,7 +954,7 @@ simu.evolve(
         sim.initSex(),
         sim.initByFreq([0.5, 0.5])
     ],
-    duringOps = sim.pyOperator(func=rejectInd, offspringOnly=True),
+    duringOps = sim.pyOperator(func=rejectInd),
     gen = 1
 )
 # You should see no individual with allele 1 at locus 0, ploidy 0.
@@ -1440,7 +1440,7 @@ def markOff(param):
     def func(off, param):
         off.mark = param
         return True
-    return sim.pyOperator(func=func, param=param, offspringOnly=True)
+    return sim.pyOperator(func=func, param=param)
 
 simu = sim.simulator(pop, sim.heteroMating(
     matingSchemes = [
@@ -3147,7 +3147,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def fragileX(geno, fields, gen):
+def fragileX(geno):
     '''A disease model where an individual has increased risk of 
     affected if the number of tandem repeats exceed 75.
     '''
@@ -3748,7 +3748,7 @@ simu.evolve(
         sim.initByFreq([0.5, 0.5]),
         sim.initInfo(random.random, infoFields=['x', 'y'])
     ],
-    duringOps = sim.pyTagger(func=randomMove, infoFields=['x', 'y']),
+    #duringOps = sim.pyTagger(func=randomMove, infoFields=['x', 'y']),
     postOps = [
         sim.stat(minOfInfo='x', maxOfInfo='x'),
         sim.pyEval(r"'Range of x: %.2f, %.2f\n' % (minOfInfo['x'], maxOfInfo['x'])")
@@ -3880,7 +3880,7 @@ pop = sim.population(size=2000, loci=[1]*2, infoFields=['p', 'smoking'])
 pop.setVirtualSplitter(sim.infoSplitter(field='smoking', values=[0,1]))
 simu = sim.simulator(pop, sim.randomMating())
 # the second parameter gen can be used for varying selection pressure
-def penet(arr, smoking, gen):
+def penet(arr, smoking):
     #     BB     Bb      bb
     # AA  0.01   0.01    0.01
     # Aa  0.01   0.03    0.03
@@ -4152,7 +4152,7 @@ simu = sim.simulator(
 s1 = .02
 s2 = .03
 # the second parameter gen can be used for varying selection pressure
-def sel(arr, smoking, gen):
+def sel(arr, smoking):
     #     BB  Bb   bb
     # AA  1   1    1
     # Aa  1   1-s1 1-s2
@@ -5271,7 +5271,7 @@ def demoModel(gen, pop):
     # individuals that will be kept, plus some new guys.
     return pop.popSize() - pop.dvars().popSize + N / 75
 
-def pene(geno, age, gen):
+def pene(geno, age):
     'Define an age-dependent penetrance function'
     # the probability of getting disease increases with age
     return (0., 0.01*age[0], 0.01*age[0])[sum(geno)]
