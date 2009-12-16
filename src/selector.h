@@ -364,17 +364,12 @@ private:
 };
 
 /** This selector assigns fitness values by calling a user provided function.
- *  It accepts a list of loci and a Python function \c func. For each
- *  individual, this operator passes the genotypes at these loci, and a
+ *  It accepts a list of loci (parameter \e loci), a list of information fields
+ *  (parameter \e paramFields) and a Python function \c func in the form of
+ *  <tt>func(geno, fields, gen)</tt>. For each individual, this operator passes
+ *  the genotypes at these loci, values at specified information fields, and a
  *  generation number to this function. The return value is treated as the
- *  fitness value. Optionally, several information fields can be given to
- *  parameter \e paramFields. In this case, the user-defined Python function
- *  should accept a second parameter that is a list of values at these
- *  information fields. In another word, a user-defined function in the form
- *  of
- *  \li <tt>func(geno, gen)</tt> is needed if \c paramFields is empty, or
- *  \li <tt>func(geno, fields, gen)</tt> is needed if \c paramFields has some
- *      information fields.
+ *  fitness value of this individual.
  *
  *  If you need to pass sex or affection status to this function, you should
  *  define an information field (e.g. sex) and sync individual property with
@@ -389,13 +384,14 @@ public:
 	 *  \e paramFields), and a generation number to a user-defined function
 	 *  \e func. The return value will be treated as individual fitness.
 	 */
-	pySelector(uintList loci, PyObject * func,
+	pySelector(PyObject * func,
+		uintList loci = vectoru(),
+		const stringList & paramFields = vectorstr(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & paramFields = vectorstr(),
 		const stringList & infoFields = stringList("fitness")) :
 		baseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_func(func), m_paramFields(paramFields.elems()),
+		m_func(func), m_loci(loci.elems()), m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
 		if (!m_func.isValid())
@@ -415,8 +411,8 @@ public:
 	/// CPPONLY
 	pySelector(const pySelector & rhs) :
 		baseSelector(rhs),
-		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
+		m_loci(rhs.m_loci),
 		m_paramFields(rhs.m_paramFields),
 		m_genotype(NULL),
 		m_info(NULL)
@@ -444,11 +440,11 @@ public:
 
 
 private:
-	/// susceptibility loci
-	vectoru m_loci;
-
 	/// user supplied python function
 	pyFunc m_func;
+
+	/// susceptibility loci
+	vectoru m_loci;
 
 	/// copy of information fields
 	vectorstr m_paramFields;
