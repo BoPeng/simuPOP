@@ -6965,20 +6965,18 @@ Function form:
 Details:
 
     This penetrance operator assigns penetrance values by calling a
-    user provided function. It accepts a list of loci and a Python
-    function func. For each individual, this operator passes the
-    genotypes at these loci, and a generation number to this function.
-    The return value is treated as the penetrance value. Optionally,
-    several information fields can be given to parameter paramFields.
-    In this case, the user-defined Python function should accept a
-    second parameter that is a list of values at these information
-    fields. In another word, a user-defined function in the form of
-    *   func(geno, gen) is needed if paramFields is empty, or
-    *   func(geno, fields, gen) is needed if paramFields has some
-    information fields. If you need to pass sex or affection status to
-    this function, you should define an information field (e.g. sex)
-    and sync individual property with this field using operator
-    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
+    user provided function. It accepts a list of loci (parameter
+    loci), a list of information fields (parameter paramFields) and a
+    Python function func in the form of func(geno, fields, gen). For
+    each individual, this operator passes the genotypes at these loci,
+    values of specified information fields, and a generation number to
+    this function. The return value is treated as the penetrance
+    value.  If you need to pass sex or affection status to this
+    function, you should define an information field (e.g. sex) and
+    sync individual property with this field using operator infoExec
+    (e.g. infoExec('sex=ind.sex', exposeInd='ind'). These information
+    field could then be passed to this function in parameter
+    paramFields.
 
 "; 
 
@@ -6986,17 +6984,16 @@ Details:
 
 Usage:
 
-    pyPenetrance(loci, func, ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, paramFields=[],
+    pyPenetrance(func, loci=[], paramFields=[], ancGen=0, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
 
     Create a Python hybrid penetrance operator that passes genotype at
-    specified loci, optional values at specified information fields
-    (parameter paramFields), and a generation number to a user-defined
-    function func. The return value will be treated as individual
-    penetrance.
+    specified loci, values at specified information fields (parameter
+    paramFields), and a generation number to a user-defined function
+    func. The return value will be treated as individual penetrance.
 
 "; 
 

@@ -870,7 +870,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def myPenetrance(geno, gen):
+def myPenetrance(geno, fields, gen):
     'A three-locus heterogeneity penetrance model'
     if sum(geno) < 2:
         return 0
@@ -3147,7 +3147,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def fragileX(geno, gen):
+def fragileX(geno, fields, gen):
     '''A disease model where an individual has increased risk of 
     affected if the number of tandem repeats exceed 75.
     '''

@@ -331,39 +331,39 @@ private:
 };
 
 /** This penetrance operator assigns penetrance values by calling a user
- *  provided function. It accepts a list of loci and a Python function \c func.
- *  For each individual, this operator passes the genotypes at these loci, and
- *  a generation number to this function. The return value is treated as the
- *  penetrance value. Optionally, several information fields can be given to
- *  parameter \e paramFields. In this case, the user-defined Python function
- *  should accept a second parameter that is a list of values at these
- *  information fields. In another word, a user-defined function in the form
- *  of
- *  \li <tt>func(geno, gen)</tt> is needed if \c paramFields is empty, or
- *  \li <tt>func(geno, fields, gen)</tt> is needed if \c paramFields has some
- *      information fields.
+ *  provided function. It accepts a list of loci (parameter \c loci), a list
+ *  of information fields (parameter \c paramFields) and a Python function
+ *  \c func in the form of <tt>func(geno, fields, gen)</tt>. For each
+ *  individual, this operator passes the genotypes at these loci, values of
+ *  specified information fields, and a generation number to this function. The
+ *  return value is treated as the penetrance value.
  *
  *  If you need to pass sex or affection status to this function, you should
  *  define an information field (e.g. sex) and sync individual property with
  *  this field using operator \e infoExec (e.g.
- *  <tt>infoExec('sex=ind.sex', exposeInd='ind')</tt>.
+ *  <tt>infoExec('sex=ind.sex', exposeInd='ind')</tt>. These information field
+ *  could then be passed to this function in parameter \c paramFields.
  *
  *  <funcForm>PyPenetrance</funcForm>
  */
 class pyPenetrance : public basePenetrance
 {
 public:
-	/** Create a Python hybrid penetrance operator that passes genotype at specified
-	 *  \e loci, optional values at specified information fields (parameter
+	/** Create a Python hybrid penetrance operator that passes genotype at
+	 *  specified \e loci, values at specified information fields (parameter
 	 *  \e paramFields), and a generation number to a user-defined function
 	 *  \e func. The return value will be treated as individual penetrance.
 	 */
-	pyPenetrance(const uintList & loci, PyObject * func, int ancGen = 0,
+	pyPenetrance(PyObject * func,
+		const uintList & loci = vectoru(),
+		const stringList & paramFields = vectorstr(),
+		int ancGen = 0,
 		int begin = 0, int end = -1, int step = 1,
-		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & paramFields = vectorstr(), const stringList & infoFields = vectorstr()) :
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr()) :
 		basePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_func(func),  m_paramFields(paramFields.elems()),
+		m_func(func), m_loci(loci.elems()), m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
 		if (!m_func.isValid())
@@ -384,8 +384,8 @@ public:
 	/// CPPONLY
 	pyPenetrance(const pyPenetrance & rhs) :
 		basePenetrance(rhs),
-		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
+		m_loci(rhs.m_loci),
 		m_paramFields(rhs.m_paramFields),
 		m_genotype(NULL),
 		m_info(NULL)
@@ -413,11 +413,11 @@ public:
 
 
 private:
-	/// susceptibility loci
-	vectoru m_loci;
-
 	/// user supplied python function
 	pyFunc m_func;
+
+	/// susceptibility loci
+	vectoru m_loci;
 
 	/// copy of information fields
 	vectorstr m_paramFields;
