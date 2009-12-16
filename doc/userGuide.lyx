@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6490,15 +6490,10 @@ False
 \family default
  in a user-defined function), modify offspring, calculate statistics, or
  pass additional information from parents to offspring.
- Depending on parameter 
-\family typewriter
-param
-\family default
- and 
-\family typewriter
-offspringOnly
-\family default
-, such an operator accepts a function in the form of
+ Depending the number of parameters your function accept, the Python operator
+ will pass offspring, his or her parents and the whole population and optional
+ parameters to this function.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6508,12 +6503,12 @@ status open
 
 \begin_layout Plain Layout
 
-func(pop, dad, mom, off [, param])  # if offspringOnly=False (default)
+func(off [, param])                 # if your function accept 1 or 2 parameters
 \end_layout
 
 \begin_layout Plain Layout
 
-func(off [, param])                 # if offspringOnly=True
+func(pop, dad, mom, off [, param])  # if your function accept 4 or 5 parameters
 \end_layout
 
 \end_inset
@@ -14988,7 +14983,7 @@ status open
 
 \begin_layout Plain Layout
 
-def pfunc(genotype, gen):
+def pfunc(genotype):
 \end_layout
 
 \begin_layout Plain Layout
@@ -15019,7 +15014,7 @@ status open
 
 \begin_layout Plain Layout
 
-def pfunc(genotype, fields, gen):
+def pfunc(genotype, fields):
 \end_layout
 
 \begin_layout Plain Layout
@@ -15044,6 +15039,17 @@ and use this function in an operator
 pySelector(func=pfunc, loci=loci, paramFields=fields)
 \family default
 .
+ If the function you provide accepts three arguments, 
+\family typewriter
+pyPenetrance
+\family default
+ will pass generation number as the third argument so that you could implement
+ generation-specific penetrance models (e.g.
+ 
+\family typewriter
+pfunc(genotype, fields, gen)
+\family default
+).
 \end_layout
 
 \begin_layout Standard

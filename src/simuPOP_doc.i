@@ -50,7 +50,7 @@ Usage:
 
 Details:
 
-    Return \"UNAFFECTED\" if vsp=0 and \"AFFECTED\" if vsp=1, unless a new
+    Return \"Unaffected\" if vsp=0 and \"Affected\" if vsp=1, unless a new
     set of names are specified.
 
 "; 
@@ -6586,6 +6586,20 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyFunc::numArgs "
+
+Description:
+
+    return number of arguments this function accepts, which can be
+    number of positional arguments if no tuple or keyword arugments is
+    specified, or -1 otherwise.
+
+Usage:
+
+    x.numArgs()
+
+"; 
+
 %feature("docstring") simuPOP::pyFunc::isValid "
 
 Usage:
@@ -6758,32 +6772,23 @@ Details:
 
 Usage:
 
-    pyOperator(func, param=None, offspringOnly=False, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    pyOperator(func, param=None, begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
     Create a pure-Python operator that calls a user-defined function
-    when it is applied. Depending on parameters stage, param, and
-    offspringOnly, the function should have one of the following
-    forms:
-    *   func(pop) if used pre- or post-mating without param.
-    *   func(pop, param) if used pre- or post-mating with param.
-    *   func(pop, off, dad, mom) if used during mating with param.
-    *   func(pop, off, dad, mom, param) if used during mating with
-    param.
-    *   func(off) if used during mating, with offspringOnly=True and
-    without param.
-    *   func(off, param) if used during mating with offspringOnly=True
-    and with param. where pop is the population to which the operator
-    is applied, off is the offspring of dad and mom, and param is the
-    parameter param specified when the operator is created. When this
-    operator is applied during mating, it can be used in the ops
-    parameter of a mating scheme, or used in the ops parameter of
-    simulator.evolve and be applied after an offspring has been
-    created. Please refer to the simuPOP user's guide for a detailed
-    explanation.  This operator does not support parameters output,
+    when it is applied. If this operator is applied before or after
+    mating, your function should have form func(pop) or func(func,
+    param) where pop is the population to which the operator is
+    applied, param is the value specified in parameter param. param
+    will be ignored if your function only accepts one parameter.  If
+    this operator is applied during mating, your function should be in
+    one of the forms func(off), func(off, param), func(pop, off, dad,
+    mom) or func(pop, off, dad, mom, param where off is the offspring
+    of dad and mom. This operator will pass appropriate parameters to
+    the user-defined function depending on the number of accepted
+    parameters.  This operator does not support parameters output,
     subPops and infoFields. If certain output is needed, it should be
     handled in the user defined function func. Because the status of
     files used by other operators through parameter output is
@@ -6971,12 +6976,14 @@ Details:
     each individual, this operator passes the genotypes at these loci,
     values of specified information fields, and a generation number to
     this function. The return value is treated as the penetrance
-    value.  If you need to pass sex or affection status to this
-    function, you should define an information field (e.g. sex) and
-    sync individual property with this field using operator infoExec
-    (e.g. infoExec('sex=ind.sex', exposeInd='ind'). These information
-    field could then be passed to this function in parameter
-    paramFields.
+    value. Functions in the forms of func(geno) and func(geno, fields)
+    are also acceptable. In these cases, only the first one or two
+    parameters will be passed.  If you need to pass sex or affection
+    status to this function, you should define an information field
+    (e.g. sex) and sync individual property with this field using
+    operator infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
+    These information field could then be passed to this function in
+    parameter paramFields.
 
 "; 
 
@@ -7157,10 +7164,13 @@ Details:
     this operator passes the genotypes at these loci, values at
     specified information fields, and a generation number to this
     function. The return value is treated as the fitness value of this
-    individual.  If you need to pass sex or affection status to this
-    function, you should define an information field (e.g. sex) and
-    sync individual property with this field using operator infoExec
-    (e.g. infoExec('sex=ind.sex', exposeInd='ind').
+    individual. Functions in the forms of func(geno) and func(geno,
+    fields) are also acceptable. In these cases, only the first one or
+    two parameters will be passed.  If you need to pass sex or
+    affection status to this function, you should define an
+    information field (e.g. sex) and sync individual property with
+    this field using operator infoExec (e.g. infoExec('sex=ind.sex',
+    exposeInd='ind').
 
 "; 
 
@@ -8266,7 +8276,7 @@ Usage:
 
 Details:
 
-    Return \"MALE\" if vsp=0 and \"FEMALE\" otherwise, unless a new set of
+    Return \"Male\" if vsp=0 and \"Female\" otherwise, unless a new set of
     names are specified.
 
 "; 

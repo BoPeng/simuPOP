@@ -1021,8 +1021,8 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(sexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
-        self.assertEqual(pop.subPopName([1, 0]), 'MALE')
-        self.assertEqual(pop.subPopName([1, 1]), 'FEMALE')
+        self.assertEqual(pop.subPopName([1, 0]), 'Male')
+        self.assertEqual(pop.subPopName([1, 1]), 'Female')
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 1]):
@@ -1053,8 +1053,8 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(affectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfUnaffected)
-        self.assertEqual(pop.subPopName([1, 0]), 'UNAFFECTED')
-        self.assertEqual(pop.subPopName([1, 1]), 'AFFECTED')
+        self.assertEqual(pop.subPopName([1, 0]), 'Unaffected')
+        self.assertEqual(pop.subPopName([1, 1]), 'Affected')
         for ind in pop.individuals([1, 1]):
             self.assertEqual(ind.affected(), True)
         for ind in pop.individuals([1, 0]):
@@ -1202,8 +1202,8 @@ class TestPopulation(unittest.TestCase):
             sexSplitter()]))
         self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0")
         self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
-        self.assertEqual(pop.subPopName([0, 2]), "MALE")
-        self.assertEqual(pop.subPopName([0, 3]), "FEMALE")
+        self.assertEqual(pop.subPopName([0, 2]), "Male")
+        self.assertEqual(pop.subPopName([0, 3]), "Female")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
@@ -1226,9 +1226,9 @@ class TestPopulation(unittest.TestCase):
             genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0]], phase=True),
             sexSplitter()], vspMap=[[0,2], [1], [3]]))
         self.assertEqual(pop.numVirtualSubPop(), 3)
-        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0 or MALE")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0 or Male")
         self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
-        self.assertEqual(pop.subPopName([0, 2]), "FEMALE")
+        self.assertEqual(pop.subPopName([0, 2]), "Female")
         for ind in pop.individuals([0, 0]):
             self.assertTrue((ind.allele(1, 0) == 0 and ind.allele(1, 1) == 0) or ind.sex() == MALE)
         for ind in pop.individuals([0, 1]):
@@ -1257,10 +1257,10 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(productSplitter([
             genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0], [0, 1], [1, 1]], phase=True),
             sexSplitter()]))
-        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0, MALE")
-        self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 0 0, FEMALE")
-        self.assertEqual(pop.subPopName([0, 2]), "Genotype 1: 1 0, MALE")
-        self.assertEqual(pop.subPopName([0, 3]), "Genotype 1: 1 0, FEMALE")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0, Male")
+        self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 0 0, Female")
+        self.assertEqual(pop.subPopName([0, 2]), "Genotype 1: 1 0, Male")
+        self.assertEqual(pop.subPopName([0, 3]), "Genotype 1: 1 0, Female")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
