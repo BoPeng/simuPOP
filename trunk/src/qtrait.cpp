@@ -139,7 +139,7 @@ void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 		res = m_func("(O)", m_genotype);
 	else if (m_func.numArgs() == 2)
 		res = m_func("(OO)", m_genotype, m_info);
-	else // this includes the case with *args argument
+	else    // this includes the case with *args argument
 		res = m_func("(OOi)", m_genotype, m_info, gen);
 
 	if (PyNumber_Check(res)) {

@@ -149,7 +149,7 @@ public:
 	 *  number or a sequence of one element is acceptable. Otherwise, a sequence
 	 *  of values will be accepted and be assigned to each trait field.
 	 */
-	pyQuanTrait( PyObject * func,
+	pyQuanTrait(PyObject * func,
 		const uintList & loci = vectoru(),
 		const stringList & paramFields = vectorstr(),
 		int ancGen = 0,
