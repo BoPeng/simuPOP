@@ -183,6 +183,40 @@ PyObject * individual::genotype(int p, int chrom)
 }
 
 
+PyObject * individual::genoAtLoci(const vectoru & loci)
+{
+	vectoru chromTypes;
+
+    for (size_t j = 0; j < loci.size(); ++j)
+		chromTypes.push_back(chromType(chromLocusPair(loci[j]).first));
+
+	size_t ply = ploidy();
+	if (isHaplodiploid() && sex() == MALE)
+		ply = 1;
+
+	vectori alleles;
+	alleles.reserve(ply * loci.size());
+
+	for (size_t idx = 0; idx < loci.size(); ++idx) {
+		for (size_t p = 0; p < ply; ++p) {
+			if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
+				continue;
+			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+				 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+				continue;
+			alleles.push_back(allele(loci[idx], p));
+		}
+	}
+
+	PyObject * genoObj = PyTuple_New(alleles.size());
+	// set value
+	for (size_t j = 0; j < alleles.size(); ++j)
+		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
+    
+	return genoObj;
+}
+
+
 void individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,

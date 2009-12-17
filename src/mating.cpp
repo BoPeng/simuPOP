@@ -1206,19 +1206,23 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 	else if (!m_subPopSize.empty())                                                     // set subPoplation size
 		scratch.fitSubPopStru(m_subPopSize.elems(), pop.subPopNames());
 	else {                                                                              // use m_subPopSizeFunc
-		vectori res;
-		if (m_subPopSize.func().numArgs() == 1) {
-			res = m_subPopSize.func() (PyObj_As_IntArray, "(i)", pop.gen());
-		} else {
-			// get generation number
-			PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-			// if pop is valid?
-			DBG_FAILIF(popObj == NULL, SystemError,
-				"Could not pass population to the provided function. \n"
-				"Compiled with the wrong version of SWIG?");
-			res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", pop.gen(), popObj);
-			Py_XDECREF(popObj);
-		}
+        const pyFunc & func = m_subPopSize.func();
+	    PyObject * args = PyTuple_New(func.numArgs());
+        DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+        for (int i = 0; i < func.numArgs(); ++i) {
+            const string & arg = func.arg(i);
+            if (arg == "gen")
+                PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop.gen()));
+            else if (arg == "pop")
+                PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+            else {
+                DBG_FAILIF(true, ValueError,
+                    "Only parameters 'gen' and 'pop' are acceptable in a demographic function.");
+            }
+        }
+		vectori res = func(PyObj_As_IntArray, args);
+    	Py_XDECREF(args);
 
 		vectoru sz(res.size());
 		for (size_t i = 0; i < res.size(); i++)

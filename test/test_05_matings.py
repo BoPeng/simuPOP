@@ -43,7 +43,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def testSubPopSizes(self):
         'Testing parameter subPopSize of mating schemes'
-        def demo(gen, oldSize=[]):
+        def demo(gen):
             return (500 + gen*10, 1000 + gen*10)
         def demoSize(pop):
             gen = pop.dvars().gen

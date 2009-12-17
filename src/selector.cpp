@@ -215,59 +215,27 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 
 double pySelector::indFitness(individual * ind, ULONG gen)
 {
-	vectoru chromTypes;
+    PyObject * args = PyTuple_New(m_func.numArgs());
+    DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (size_t i = 0; i < m_loci.size(); ++i)
-		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
+    for (int i = 0; i < m_func.numArgs(); ++i) {
+        const string & arg = m_func.arg(i);
+        if (arg == "ind")
+            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
+        else if (arg == "geno")
+            PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
+        else if (arg == "gen")
+            PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
+        else {
+            DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
+                "Only parameters 'ind', 'geno', 'gen', and names of information fields are "
+                "acceptable in function " + m_func.name());
+            PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(ind->info(arg)));
+        }
+    }
 
-	size_t ply = ind->ploidy();
-	if (ind->isHaplodiploid() && ind->sex() == MALE)
-		ply = 1;
-
-	vectori alleles;
-	alleles.reserve(ply * m_loci.size());
-
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		for (size_t p = 0; p < ply; ++p) {
-			if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
-				continue;
-			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
-				continue;
-			alleles.push_back(ind->allele(m_loci[idx], p));
-		}
-	}
-
-	vectorf info(m_paramFields.size());
-	for (size_t i = 0; i < m_paramFields.size(); ++i)
-		info[i] = ind->info(m_paramFields[i]);
-
-	//
-	if (m_genotype == NULL || static_cast<UINT>(PySequence_Size(m_genotype)) != alleles.size()) {
-		Py_XDECREF(m_genotype);
-		m_genotype = PyTuple_New(alleles.size());
-	}
-	// set value
-	for (size_t i = 0; i < alleles.size(); ++i)
-		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
-
-	// the number of information fields will not change.
-	if (m_func.numArgs() > 1) {
-		if (m_info == NULL)
-			m_info = PyTuple_New(info.size());
-		for (size_t i = 0; i < info.size(); ++i)
-			PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
-	}
-
-	double fitness;
-	if (m_func.numArgs() == 1)
-		fitness = m_func(PyObj_As_Double, "(O)", m_genotype);
-	if (m_func.numArgs() == 2)
-		fitness = m_func(PyObj_As_Double, "(OO)", m_genotype, m_info);
-	else    // this includes the case with *args argument
-		fitness = m_func(PyObj_As_Double, "(OOi)", m_genotype, m_info, gen);
-
-	DBG_DO(DBG_SELECTOR, cerr << "Genotype " << alleles << " info " << info << " fitness " << fitness << endl);
+	double fitness = m_func(PyObj_As_Double, args);
+	Py_XDECREF(args);
 	return fitness;
 }
 

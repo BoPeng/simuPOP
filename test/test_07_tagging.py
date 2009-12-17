@@ -90,15 +90,14 @@ class TestTagger(unittest.TestCase):
                 infoFields=['trait1', 'trait2'])
         pop.setIndInfo([1], 'trait1')
         pop.setIndInfo([2], 'trait2')
-        def myfunc(values):
-            'values are t1_pa, t2_pa, t1_mo, t2_mo'
-            return [values[0]+values[2], values[1]*values[3]]
+        def myfunc(trait1, trait2):
+            return [trait1[0]+trait1[1], trait2[0]*trait2[1]]
         #
         simu = simulator(pop, randomMating())
         simu.evolve(
             initOps = [initSex()],
             duringOps =[
-                pyTagger(infoFields=['trait1', 'trait2'], func=myfunc),
+                pyTagger(func=myfunc),
             ],
             gen = 4)
         pop = simu.population(0)

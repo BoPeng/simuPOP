@@ -280,31 +280,35 @@ bool pedigreeTagger::applyDuringMating(population & pop, RawIndIterator offsprin
 bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
-	UINT numFields = infoSize();
+	PyObject * args = PyTuple_New(m_func.numArgs());
+    DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	vectoru idx(numFields);
+    for (int i = 0; i < m_func.numArgs(); ++i) {
+        const string & arg = m_func.arg(i);
 
-	for (size_t i = 0; i < numFields; ++i)
-		idx[i] = pop.infoIdx(infoField(i));
+		PyObject * item = PyTuple_New((dad != NULL) + (mom != NULL));
+		int idx = 0;
+		if (dad != NULL) {
+			PyTuple_SET_ITEM(item, idx, PyFloat_FromDouble(dad->info(arg)));
+			++idx;
+		}
+		if (mom != NULL)
+			PyTuple_SET_ITEM(item, idx, PyFloat_FromDouble(mom->info(arg)));
 
-	vectorf values;
-	if (dad != NULL) {
-		for (size_t i = 0; i < numFields; ++i)
-			values.push_back(dad->info(idx[i]));
+		PyTuple_SET_ITEM(args, i, item);
 	}
-	if (mom != NULL) {
-		for (size_t i = 0; i < numFields; ++i)
-			values.push_back(mom->info(idx[i]));
-	}
+
 	//
-	vectorf res = m_func(PyObj_As_Array, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()));
+	vectorf res = m_func(PyObj_As_Array, args);
 
-	DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
+	DBG_FAILIF(res.size() != static_cast<size_t>(m_func.numArgs()), ValueError,
+		"Please return a value for each information field");
 
 	// assign return values to offspring
-	for (size_t i = 0; i < numFields; ++i)
-		offspring->setInfo(res[i], idx[i]);
-
+	for (size_t i = 0; i < res.size(); ++i)
+		offspring->setInfo(res[i], m_func.arg(i));
+	
+	Py_DECREF(args);
 	return true;
 }
 

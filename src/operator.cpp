@@ -602,7 +602,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
 	baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
-	m_func(func), m_param(param ? param : Py_None)
+	m_func(func), m_param(param, true)
 {
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
@@ -617,31 +617,30 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 
 string pyOperator::describe(bool format)
 {
-	PyObject * name = PyObject_GetAttrString(m_func.func(), "__name__");
-
-	DBG_FAILIF(name == NULL, RuntimeError, "Passwd object does not have attribute __name__.");
-	return "<simuPOP.pyOperator> calling a Python function " + string(PyString_AsString(name));
+	return "<simuPOP.pyOperator> calling a Python function " + m_func.name();
 }
 
 
 bool pyOperator::apply(population & pop)
 {
-	// call the python function, pass the whole population in it.
-	// get pop object
-	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+	PyObject * args = PyTuple_New(m_func.numArgs());
+	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	// if pop is valid?
-	if (popObj == NULL)
-		throw SystemError("Could not pass population to the provided function. \n"
-			              "Compiled with the wrong version of SWIG?");
+	for (int i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
+		if (arg == "pop")
+			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+		else if (arg == "param") {
+			Py_INCREF(m_param.object());
+			PyTuple_SET_ITEM(args, i, m_param.object());
+		} else {
+			DBG_FAILIF(true, ValueError,
+				"Only parameters 'pop' and 'param' are acceptable in function " + m_func.name());
+		}
+	}
 
-	// parammeter list, ref count increased
-	bool resBool;
-	if (m_func.numArgs() == 1)
-		resBool = m_func(PyObj_As_Bool, "(O)", popObj);
-	else
-		resBool = m_func(PyObj_As_Bool, "(OO)", popObj, m_param.object());
-	Py_DECREF(popObj);
+	bool resBool = m_func(PyObj_As_Bool, args);
+	Py_XDECREF(args);
 	return resBool;
 }
 
@@ -649,54 +648,30 @@ bool pyOperator::apply(population & pop)
 bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
-	// get offspring object
-	PyObject * offObj = pyIndObj(static_cast<void *>(&(*offspring)));
+	PyObject * args = PyTuple_New(m_func.numArgs());
+	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	DBG_FAILIF(offObj == NULL, SystemError,
-		"Could not pass offspring to the provided function. \n"
-		"Compiled with the wrong version of SWIG?");
-
-	bool res;
-	if (m_func.numArgs() == 1)
-		res = m_func(PyObj_As_Bool, "(O)", offObj);
-	else if (m_func.numArgs() == 2)
-		res = m_func(PyObj_As_Bool, "(OO)", offObj, m_param.object());
-	else {
-		// call the python function, pass all the parameters to it.
-		// get pop object
-		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-
-		// get dad object
-		PyObject * dadObj, * momObj;
-		if (dad == NULL) {
-			Py_INCREF(Py_None);
-			dadObj = Py_None;
-		} else
-			dadObj = pyIndObj(static_cast<void *>(dad));
-
-		if (mom == NULL) {
-			Py_INCREF(Py_None);
-			momObj = Py_None;
-		} else
-			momObj = pyIndObj(static_cast<void *>(mom));
-
-		// if pop is valid?
-		DBG_FAILIF(popObj == NULL || dadObj == NULL || momObj == NULL, SystemError,
-			"Could not pass population or parental individuals to the provided function. \n"
-			"Compiled with the wrong version of SWIG?");
-
-		// parammeter list, ref count increased
-		if (m_func.numArgs() == 4)
-			res = m_func(PyObj_As_Bool, "(OOOO)", popObj, offObj, dadObj, momObj);
-		else    // this includes the *args case
-			res = m_func(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
-
-		Py_DECREF(popObj);
-		Py_DECREF(dadObj);
-		Py_DECREF(momObj);
+	for (int i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
+		if (arg == "pop")
+			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+        else if (arg == "off")
+            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
+        else if (arg == "dad")
+            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
+        else if (arg == "mom")
+            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
+		else if (arg == "param") {
+			Py_INCREF(m_param.object());
+			PyTuple_SET_ITEM(args, i, m_param.object());
+		} else {
+			DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', 'mom', and 'param' are acceptable in "
+				"function" + m_func.name());
+		}
 	}
-	Py_DECREF(offObj);
 
+	bool res = m_func(PyObj_As_Bool, args);
+	Py_XDECREF(args);
 	return res;
 }
 

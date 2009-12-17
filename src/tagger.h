@@ -358,17 +358,18 @@ private:
 class pyTagger : public baseOperator
 {
 public:
-	/** Create a hybrid tagger that passes parental information fields
-	 *  (parameter \e infoFields) to an user provided function \e func and use
-	 *  its return values to assign corresponding information fields of
-	 *  offspring. If more than one parent are available, maternal values are
-	 *  passed after paternal values. For example, if
-	 *  <tt>infoFields=['A', 'B']</tt>, the user-defined function should expect
-	 *  an array of size 4, with paternal values at fields \c 'A', \c 'B',
-	 *  followed by maternal values at these fields. The return value of this
-	 *  function should be a list, although a single value will be accepted
-	 *  if only one information field is specified. This operator ignores
-	 *  parameters \e stage, \e output and \e subPops.
+	/** Create a hybrid tagger that provides an user provided function \e func
+	 *  with values of specified information fields (determined by parameter
+	 *  names of this function) of parents and assign corresponding information
+	 *  fields of offspring with its return value. If more than one parent are
+	 *  available, maternal values are passed after paternal values. For
+	 *  example, if a function <tt>func(A, B)</tt> is passed, this operator
+	 *  will send two tuples with parental values of information fields \c 'A'
+	 *  and \c 'B' to this function and assign its return values to fields
+	 *  \c 'A' and \c 'B' of each offspring. The return value of this function
+	 *  should be a list, although a single value will be accepted if only one
+	 *  information field is specified. This operator ignores parameters
+	 *  \e stage, \e output and \e subPops.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -376,8 +377,8 @@ public:
 		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func)
 	{
-		DBG_FAILIF(infoSize() == 0, ValueError,
-			"infoFields can not be empty.");
+		DBG_ASSERT(infoSize() == 0, ValueError,
+			"Parameter infoFields of this operator is not used.");
 
 		DBG_ASSERT(m_func.isValid(), ValueError,
 			"Passed variable is not a callable python function.");
@@ -407,5 +408,7 @@ public:
 private:
 	pyFunc m_func;
 };
+
+
 }
 #endif

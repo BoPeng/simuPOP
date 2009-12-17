@@ -568,12 +568,12 @@ class TestSelector(unittest.TestCase):
         s2 = .2
         p = .2/ (.1+.2)
         # gen may not be used.
-        def sel(arr, param=None, gen=0):
-            if arr == (0, 0):
+        def sel(geno):
+            if geno == (0, 0):
                 return 1 - s1
-            elif arr == (0, 1):
+            elif geno == (0, 1):
                 return 1
-            elif arr == (1, 0):
+            elif geno == (1, 0):
                 return 1
             else:
                 return 1 - s2
@@ -610,22 +610,22 @@ class TestSelector(unittest.TestCase):
         s2 = .2
         p = .2/ (.1+.2)
         # gen may not be used.
-        def sel(arr, fields, gen):
+        def sel(geno, gen):
             if gen > 50:
-                if arr == (0, 0):
+                if geno == (0, 0):
                     return 1 - s1
-                elif arr == (0, 1):
+                elif geno == (0, 1):
                     return 1
-                elif arr == (1, 0):
+                elif geno == (1, 0):
                     return 1
                 else:
                     return 1 - s2
             else:
-                if arr == (0, 0):
+                if geno == (0, 0):
                     return 1 - s1/2.
-                elif arr == (0, 1):
+                elif geno == (0, 1):
                     return 1
-                elif arr == (1, 0):
+                elif geno == (1, 0):
                     return 1
                 else:
                     return 1 - s2/2.
@@ -688,10 +688,10 @@ class TestSelector(unittest.TestCase):
         'Testing the subPops parameter of selector'
         simu = simulator(
             population(size=[20, 30, 40], loci=[2],
-                infoFields=['fitness']),
+                infoFields='fitness'),
             randomMating())
-        def testFitness(pop, params):
-            for sp in params[0]:
+        def testFitness(pop, param):
+            for sp in param[0]:
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
         simu.evolve(

@@ -500,6 +500,11 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// is it unbounded?
 	int bounded = PyObject_HasAttrString(obj, "im_self");
 
+    // find its name.
+	PyObject * name = PyObject_GetAttrString(obj, "__name__");
+    m_name = string(PyString_AsString(name));
+    Py_DECREF(name);
+
 	// free python functions have a 'func_code' attribute
 	// built-in functions might not have (e.g. random.random)
 	if (!PyObject_HasAttrString(obj, "func_code"))
@@ -507,20 +512,26 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 
 	PyObject * code = PyObject_GetAttrString(obj, "func_code");
 	DBG_ASSERT(code, SystemError, "Invalid attribute func_code for a function object");
+	// probe number of parameters
+	PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
+	DBG_ASSERT(co_argcount, SystemError, "Invalid attribute co_argcount for a function object");
+	// substract 1 if the method is bounded to remove the count for self.
+	m_numArgs = PyInt_AsLong(co_argcount) - bounded;
+	Py_DECREF(co_argcount);
+	// probe parameter names
+	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
+	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
+    DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
+	for (int i = 0; i < m_numArgs; ++i) {
+		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
+		m_args.push_back(string(PyString_AsString(item)));
+	}
+	Py_DECREF(co_varnames);
 	// accepting arbitrary number of parameters?
 	PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
 	DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
-	long flag = PyInt_AsLong(co_flag);
+	m_flags = PyInt_AsLong(co_flag);
 	Py_DECREF(co_flag);
-	if (flag & 0x04 || flag & 0x08)
-		m_numArgs = -1;
-	else {
-		PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
-		DBG_ASSERT(co_argcount, SystemError, "Invalid attribute co_argcount for a function object");
-		// substract 1 if the method is bounded to remove the count for self.
-		m_numArgs = PyInt_AsLong(co_argcount) - bounded;
-		Py_DECREF(co_argcount);
-	}
 	Py_DECREF(code);
 }
 

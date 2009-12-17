@@ -88,11 +88,9 @@ string initInfo::describe(bool format)
 		desc += i == 0 ? " " : ", ";
 		desc += infoField(i);
 	}
-	if (m_values.empty()) {
-		PyObject * name = PyObject_GetAttrString(m_values.func().func(), "__name__");
-		DBG_FAILIF(name == NULL, RuntimeError, "Passwd object does not have attribute __name__");
-		desc += " using a Python function " + string(PyString_AsString(name));
-	} else
+	if (m_values.empty()) 
+		desc += " using a Python function " + m_values.func().name();
+	else
 		desc += " using a list of values";
 	return desc;
 }
