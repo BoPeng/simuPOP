@@ -186,10 +186,10 @@ namespace simuPOP {
 class pyObject
 {
 public:
-	pyObject(PyObject * obj) : m_object(NULL)
+	pyObject(PyObject * obj, bool defToNone=false) : m_object(obj)
 	{
-		if (obj != NULL && obj != Py_None)
-			m_object = obj;
+		if (m_object == NULL && defToNone)
+			m_object = Py_None;
 
 		Py_XINCREF(m_object);
 	}
@@ -205,7 +205,6 @@ public:
 	{
 		Py_XINCREF(m_object);
 	}
-
 
 	PyObject * object() const
 	{
@@ -233,12 +232,22 @@ public:
 	pyFunc(PyObject * func);
 
 
-	/// return number of arguments this function accepts,
-	/// which can be number of positional arguments if no tuple or keyword
-	/// arugments is specified, or -1 otherwise.
+	/// return number of arguments this function accepts.
+	/// This function does not count tuple parameters.
 	int numArgs() const
 	{
 		return m_numArgs;
+	}
+
+
+    string name() const
+    {
+        return m_name;
+    }
+	
+	string arg(int arg) const
+	{
+		return m_args[arg];
 	}
 
 
@@ -256,7 +265,7 @@ public:
 
 	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
 	template <typename T>
-	T operator()(void converter(PyObject *, T &), const char * format, ...)
+	T operator()(void converter(PyObject *, T &), const char * format, ...) const
 	{
 		va_list argptr;
 
@@ -277,8 +286,23 @@ public:
 		return retValue;
 	}
 
+	template <typename T>
+	T operator()(void converter(PyObject *, T &), PyObject * arglist) const
+	{
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			PyErr_Clear();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
 
-	PyObject * operator()(const char * format, ...)
+
+	PyObject * operator()(const char * format, ...) const
 	{
 		va_list argptr;
 
@@ -300,7 +324,13 @@ public:
 private:
 	pyObject m_func;
 
+    string m_name;
+
 	long int m_numArgs;
+
+	vectorstr m_args;
+
+	int m_flags;
 };
 
 

@@ -1657,7 +1657,7 @@ def randomChooser(pop, sp):
         yield males[rank][randint(0, len(males[rank]) - 1)], \
             females[rank][randint(0, len(females[rank]) - 1)]
 
-def setRank(pop, dad, mom, off):
+def setRank(off, dad):
     'The rank of offspring can increase or drop to zero randomly'
     off.rank = (dad.rank + randint(-1, 1)) % 3
 
@@ -3731,13 +3731,12 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-def randomMove(values):
+def randomMove(x, y):
     '''Pass parental information fields to offspring'''
-    x1, y1, x2, y2 = values
     # shift right with high concentration of alleles... 
-    x = random.normalvariate((x1+x2)/2., 0.1)
-    y = random.normalvariate((y1+y2)/2., 0.1)
-    return (x, y)
+    off_x = random.normalvariate((x[0]+x[1])/2., 0.1)
+    off_y = random.normalvariate((y[0]+y[1])/2., 0.1)
+    return off_x, off_y
 
 pop = sim.population(1000, loci=[1], infoFields=['x', 'y'])
 pop.setVirtualSplitter(sim.genotypeSplitter(loci=0, alleles=[[0, 0], [0,1], [1, 1]]))
@@ -3748,7 +3747,7 @@ simu.evolve(
         sim.initByFreq([0.5, 0.5]),
         sim.initInfo(random.random, infoFields=['x', 'y'])
     ],
-    #duringOps = sim.pyTagger(func=randomMove, infoFields=['x', 'y']),
+    duringOps = sim.pyTagger(func=randomMove),
     postOps = [
         sim.stat(minOfInfo='x', maxOfInfo='x'),
         sim.pyEval(r"'Range of x: %.2f, %.2f\n' % (minOfInfo['x'], maxOfInfo['x'])")
@@ -3880,22 +3879,22 @@ pop = sim.population(size=2000, loci=[1]*2, infoFields=['p', 'smoking'])
 pop.setVirtualSplitter(sim.infoSplitter(field='smoking', values=[0,1]))
 simu = sim.simulator(pop, sim.randomMating())
 # the second parameter gen can be used for varying selection pressure
-def penet(arr, smoking):
+def penet(geno, smoking):
     #     BB     Bb      bb
     # AA  0.01   0.01    0.01
     # Aa  0.01   0.03    0.03
     # aa  0.01   0.03    0.05
     #
-    # arr is (A1 A2 B1 B2)
-    if arr[0] + arr[1] == 1 and arr[2] + arr[3] != 0:
+    # geno is (A1 A2 B1 B2)
+    if geno[0] + geno[1] == 1 and geno[2] + geno[3] != 0:
         v = 0.03   # case of AaBb
-    elif arr[0] + arr[1] == 2 and arr[2] + arr[3] == 1:
+    elif geno[0] + geno[1] == 2 and geno[2] + geno[3] == 1:
         v = 0.03   # case of aaBb
-    elif arr[0] + arr[1] ==2 and arr[2] + arr[3] == 2:
+    elif geno[0] + geno[1] ==2 and geno[2] + geno[3] == 2:
         v = 0.05   # case of aabb
     else:                
         v = 0.01   # other cases
-    if smoking[0]:
+    if smoking:
         return v * 2
     else:
         return v
@@ -3910,7 +3909,7 @@ simu.evolve(
         # set smoking status randomly
         sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
         # assign affection status
-        sim.pyPenetrance(loci=[0, 1], func=penet, paramFields='smoking'),
+        sim.pyPenetrance(loci=[0, 1], func=penet),
         sim.stat(numOfAffected=True, subPops=[(0,0),(0,1)], 
             vars='propOfAffected_sp', step=20),
         sim.pyEval(r"'Non-smoker: %.2f%%\tSmoker: %.2f%%\n' % "
@@ -3939,7 +3938,7 @@ pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[40]))
 simu = sim.simulator(pop, sim.randomMating())
 def qtrait(geno, age):
     'Return two traits that depends on genotype and age'
-    return random.normalvariate(age[0] * sum(geno), 10), random.randint(0, 10*sum(geno))
+    return random.normalvariate(age * sum(geno), 10), random.randint(0, 10*sum(geno))
 
 simu.evolve(
     initOps = [
@@ -3949,8 +3948,7 @@ simu.evolve(
     postOps = [
         # use random age for simplicity
         sim.initInfo(lambda:random.randint(20, 75), infoFields='age'),
-        sim.pyQuanTrait(loci=(0,1), func=qtrait, paramFields='age',
-            infoFields=['qtrait1', 'qtrait2']),
+        sim.pyQuanTrait(loci=(0,1), func=qtrait, infoFields=['qtrait1', 'qtrait2']),
         sim.stat(meanOfInfo=['qtrait1'], subPops=[(0,0), (0,1)],
             vars='meanOfInfo_sp'),
         sim.pyEval(r"'Mean of trait1: %.3f (age < 40), %.3f (age >=40)\n' % "
@@ -4152,20 +4150,20 @@ simu = sim.simulator(
 s1 = .02
 s2 = .03
 # the second parameter gen can be used for varying selection pressure
-def sel(arr, smoking):
+def sel(geno, smoking):
     #     BB  Bb   bb
     # AA  1   1    1
     # Aa  1   1-s1 1-s2
     # aa  1   1    1-s2
     #
-    # arr is (A1 A2 B1 B2)
-    if arr[0] + arr[1] == 1 and arr[2] + arr[3] == 1:
+    # geno is (A1 A2 B1 B2)
+    if geno[0] + geno[1] == 1 and geno[2] + geno[3] == 1:
         v = 1 - s1  # case of AaBb
-    elif arr[2] + arr[3] == 2:
+    elif geno[2] + geno[3] == 2:
         v = 1 - s2  # case of ??bb
     else:                
         v = 1       # other cases
-    if smoking[0]:
+    if smoking:
         return v * 0.9
     else:
         return v
@@ -4175,7 +4173,7 @@ simu.evolve(
         sim.initSex(),
         sim.initByFreq(alleleFreq=[.5, .5])
     ],
-    preOps = sim.pySelector(loci=[0, 1], func=sel, paramFields='smoking'),
+    preOps = sim.pySelector(loci=[0, 1], func=sel),
     postOps = [
         # set smoking status randomly
         sim.initInfo(lambda : random.randint(0,1), infoFields='smoking'),
@@ -4460,13 +4458,12 @@ pop = sim.population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(sim.infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
 #
-def passInfo(fields):
-    'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
-    x1, y1, anc1, x2, y2, anc2 = fields
-    anc = (anc1 + anc2)/2.
-    x = (x1 + x2)/2 + random.normalvariate(anc - 0.5, 0.1)
-    y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
-    return x, y, anc
+def passInfo(x, y, anc):
+    'Parental fields will be passed as tuples'
+    off_anc = (anc[0] + anc[1])/2.
+    off_x = (x[0] + x[1])/2 + random.normalvariate(off_anc - 0.5, 0.1)
+    off_y = (y[0] + y[1])/2 + random.normalvariate(0, 0.1)
+    return off_x, off_y, off_anc
 
 simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
@@ -4489,7 +4486,7 @@ simu.evolve(
             par_mar = [0, 0, 2, 0],
         ),
     ],
-    duringOps = sim.pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+    duringOps = sim.pyTagger(passInfo),
     gen = 5,
 )
 #end_file
@@ -4509,13 +4506,13 @@ import random
 pop = sim.population([500], infoFields=['x', 'y', 'anc'])
 # Defines VSP 0, 1, 2, 3, 4 by anc.
 pop.setVirtualSplitter(sim.sexSplitter())
-def passInfo(fields):
-    'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
-    x1, y1, anc1, x2, y2, anc2 = fields
-    anc = (anc1 + anc2)/2.
-    x = (x1 + x2)/2 + random.normalvariate(anc - 0.5, 0.1)
-    y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
-    return x, y, anc
+
+def passInfo(x, y, anc):
+    'Parental fields will be passed as tuples'
+    off_anc = (anc[0] + anc[1])/2.
+    off_x = (x[0] + x[1])/2 + random.normalvariate(off_anc - 0.5, 0.1)
+    off_y = (y[0] + y[1])/2 + random.normalvariate(0, 0.1)
+    return off_x, off_y, off_anc
 
 simu = sim.simulator(pop, sim.randomMating())
 simu.evolve(
@@ -4544,7 +4541,7 @@ simu.evolve(
             main="!'Boxplots of ancestry values at generation %d' % gen",
         ),
     ],
-    duringOps = sim.pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+    duringOps = sim.pyTagger(passInfo),
     gen = 5,
 )
 #end_file
@@ -4892,13 +4889,13 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     G0:   Length of burn-in stage.
     G1:   Length of sim.population expansion stage.
     '''
-    def ins_expansion(gen, oldsize=[]):
+    def ins_expansion(gen):
         if gen < G0:
             return N0
         else:
             return N1
     rate = (math.log(N1) - math.log(N0))/G1
-    def exp_expansion(gen, oldsize=[]):
+    def exp_expansion(gen):
         if gen < G0:
             return N0
         else:            
@@ -4946,9 +4943,9 @@ class ne(sim.pyOperator):
         pop.dvars().ne = ne
         return True
 
-def Ne(pop, loci):
+def Ne(pop, param):
     '''Function form of operator ne'''
-    ne(loci).apply(pop)
+    ne(param).apply(pop)
     return pop.dvars().ne
 
 pop = sim.population(100, loci=[10])
@@ -5313,7 +5310,7 @@ simu.evolve(
     preOps = sim.infoExec('age += 1'),
     # number of individuals?
     postOps = [
-        sim.pyPenetrance(func=pene, loci=0, paramFields='age'),
+        sim.pyPenetrance(func=pene, loci=0),
         sim.pyOperator(func=outputStat)
     ],
     gen = 10

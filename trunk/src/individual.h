@@ -206,6 +206,12 @@ public:
 	PyObject * genotype(int ploidy = -1, int chrom = -1);
 
 
+	/** CPPONLY
+	 *  Return a Python object with alleles at specified loci. This function
+	 *  is usually used to collect alleles to send to a user-provided function.
+	 */
+	PyObject * genoAtLoci(const vectoru & loci);
+
 	/** Fill the genotype of an individual using a list of alleles \e geno.
 	 *  If parameters \e ploidy and/or \e chrom are specified, alleles will
 	 *  be copied to only all or specified chromosome on selected homologous

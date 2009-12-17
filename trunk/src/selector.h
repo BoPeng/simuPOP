@@ -363,64 +363,35 @@ private:
 	int m_mode;
 };
 
+
 /** This selector assigns fitness values by calling a user provided function.
- *  It accepts a list of loci (parameter \e loci), a list of information fields
- *  (parameter \e paramFields) and a Python function \c func in the form of
- *  <tt>func(geno, fields, gen)</tt>. For each individual, this operator passes
- *  the genotypes at these loci, values at specified information fields, and a
- *  generation number to this function. The return value is treated as the
- *  fitness value of this individual. Functions in the forms of
- *  <tt>func(geno)</tt> and <tt>func(geno, fields)</tt> are also acceptable. In
- *  these cases, only the first one or two parameters will be passed.
- *
- *  If you need to pass sex or affection status to this function, you should
- *  define an information field (e.g. sex) and sync individual property with
- *  this field using operator \e infoExec (e.g.
- *  <tt>infoExec('sex=ind.sex', exposeInd='ind')</tt>.
+ *  It accepts a list of loci (parameter \e loci) and a Python function \c func
+ *  which should be defined with one or more of parameters \c geno, \c gen,
+ *  \c ind, or names of information fields. When this operator is applied to a
+ *  population, it passes genotypes at specified loci, generation number, a
+ *  reference to an individual, and values at specified information fields to
+ *  respective parameters of this function. The returned penetrance values will
+ *  be used to determine the fitness of each individual.
  */
 class pySelector : public baseSelector
 {
 public:
 	/** Create a Python hybrid selector that passes genotype at specified
-	 *  \e loci, optional values at specified information fields (parameter
-	 *  \e paramFields), and a generation number to a user-defined function
-	 *  \e func. The return value will be treated as individual fitness.
+	 *  \e loci, values at specified information fields (if requested) and
+	 *  a generation number to a user-defined function \e func. The return
+	 *  value will be treated as individual fitness.
 	 */
-	pySelector(PyObject * func,
-		uintList loci = vectoru(),
-		const stringList & paramFields = vectorstr(),
+	pySelector(PyObject * func, uintList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		baseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_func(func), m_loci(loci.elems()), m_paramFields(paramFields.elems()),
-		m_genotype(NULL), m_info(NULL)
+		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
 
-		DBG_FAILIF(m_func.numArgs() == 0 || m_func.numArgs() > 3, ValueError,
-			"Passed function should accept one to three regular arguments with an optional *arg argument.");
-
 		DBG_FAILIF(m_loci.empty(), ValueError, "Please specify susceptibility loci");
 	};
-
-	~pySelector()
-	{
-		Py_XDECREF(m_genotype);
-		Py_XDECREF(m_info);
-	}
-
-
-	/// CPPONLY
-	pySelector(const pySelector & rhs) :
-		baseSelector(rhs),
-		m_func(rhs.m_func),
-		m_loci(rhs.m_loci),
-		m_paramFields(rhs.m_paramFields),
-		m_genotype(NULL),
-		m_info(NULL)
-	{
-	}
 
 
 	/// deep copy of a \c pySelector
@@ -448,15 +419,6 @@ private:
 
 	/// susceptibility loci
 	vectoru m_loci;
-
-	/// copy of information fields
-	vectorstr m_paramFields;
-
-	/// the object that passed to func
-	PyObject * m_genotype;
-
-	// the object that passed to func
-	PyObject * m_info;
 
 };
 }

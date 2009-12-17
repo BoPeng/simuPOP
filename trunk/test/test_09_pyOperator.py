@@ -46,10 +46,10 @@ class TestPyOperator(unittest.TestCase):
         op1.apply(self.pop)
         op2.apply(self.pop)
 
-    def myFuncWithParam(self, pop, para):
+    def myFuncWithParam(self, pop, param):
         ' para is (allele, freq) pair '
         Stat(pop, alleleFreq=[0])
-        assert abs(pop.dvars().alleleFreq[0][para[0]] - para[1]) < 0.05
+        assert abs(pop.dvars().alleleFreq[0][param[0]] - param[1]) < 0.05
         return True
 
     def testFuncWithParam(self):
