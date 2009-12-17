@@ -1084,7 +1084,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def demo(gen, pop=None):
+def demo(gen):
     return [500 + gen*10, 1000 + gen*10]
 
 simu = sim.simulator(
@@ -2635,7 +2635,7 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-def demo(gen, pop=None):
+def demo(gen, pop):
     if gen < 2:
         return 1000 + 100 * gen
     else:
@@ -3937,7 +3937,7 @@ import random
 pop = sim.population(size=5000, loci=2, infoFields=['qtrait1', 'qtrait2', 'age'])
 pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[40]))
 simu = sim.simulator(pop, sim.randomMating())
-def qtrait(geno, age, gen):
+def qtrait(geno, age):
     'Return two traits that depends on genotype and age'
     return random.normalvariate(age[0] * sum(geno), 10), random.randint(0, 10*sum(geno))
 
@@ -4303,7 +4303,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import trajectory, BackwardTrajectory
 from math import exp
-def Nt(gen, pop=None):
+def Nt(gen):
     'An exponential sim.population growth demographic model.'
     return int((10**4) * exp(.00115 * gen))
 
@@ -4977,13 +4977,13 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
-    def ins_expansion(gen, pop=None):
+    def ins_expansion(gen):
         if gen < G0:
             return N0
         else:
             return N1
     
-    def exp_expansion(gen, pop=None):
+    def exp_expansion(gen):
         if gen < G0:
             return N0
         else:            
@@ -5151,13 +5151,13 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
-    def ins_expansion(gen, pop=None):
+    def ins_expansion(gen):
         if gen < G0:
             return N0
         else:
             return N1
     
-    def exp_expansion(gen, pop=None):
+    def exp_expansion(gen):
         if gen < G0:
             return N0
         else:            
