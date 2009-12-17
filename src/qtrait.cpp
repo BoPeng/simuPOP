@@ -123,20 +123,23 @@ void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 		Py_XDECREF(m_genotype);
 		m_genotype = PyTuple_New(alleles.size());
 	}
-	if (!info.empty() && (m_info == NULL || static_cast<UINT>(PySequence_Size(m_info)) != info.size())) {
-		Py_XDECREF(m_info);
-		m_info = PyTuple_New(info.size());
-	}
 	// set value
 	for (size_t i = 0; i < alleles.size(); ++i)
 		PyTuple_SetItem(m_genotype, i, PyInt_FromLong(alleles[i]));
-	for (size_t i = 0; i < info.size(); ++i)
-		PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
+	// the number of information fields will not change
+	if (m_func.numArgs() > 1) {
+		if (m_info == NULL)
+			m_info = PyTuple_New(info.size());
+		for (size_t i = 0; i < info.size(); ++i)
+			PyTuple_SetItem(m_info, i, PyFloat_FromDouble(info[i]));
+	}
 
 	PyObject * res = NULL;
-	if (info.empty())
-		res = m_func("(Oi)", m_genotype, gen);
-	else
+	if (m_func.numArgs() == 1)
+		res = m_func("(O)", m_genotype);
+	else if (m_func.numArgs() == 2)
+		res = m_func("(OO)", m_genotype, m_info);
+	else // this includes the case with *args argument
 		res = m_func("(OOi)", m_genotype, m_info, gen);
 
 	if (PyNumber_Check(res)) {

@@ -121,16 +121,15 @@ private:
 
 
 /** This quantitative trait operator assigns a trait field by calling a user
- *  provided function. It accepts a list of loci and a Python function \c func.
- *  For each individual, this operator passes the genotypes at these loci, and
- *  a generation number to this function. The return value is used to set the
- *  trait fields of the individual. Optionally, several information fields can
- *  be given to parameter \e paramFields. In this case, the user-defined Python
- *  function should accept a second parameter that is a list of values at these
- *  information fields. In another word, a user-defined function in the form of
- *  \li <tt>func(geno, gen)</tt> is needed if \c paramFields is empty, or
- *  \li <tt>func(geno, fields, gen)</tt> is needed if \c paramFields has some
- *      information fields.
+ *  provided function. It accepts a list of loci (parameter \e loci), a list
+ *  of inforation fields (parameter \e paramFields) and a Python function
+ *  \c func in the form of <tt>func(geno, fields, gen)</tt>. For each
+ *  individual, this operator passes the genotypes at these loci, values at
+ *  specified information fields, and a generation number to this function.
+ *  The return value is used to set the trait fields of the individual.
+ *  Functions in the form of <tt>func(geno)</tt> and <tt>func(geno, fields)</tt>
+ *  are also acceptable. In these cases, only the first one or two parameters
+ *  will be passed.
  *
  *  If you need to pass sex or affection status to this function, you should
  *  define an information field (e.g. sex) and sync individual property with
@@ -144,22 +143,27 @@ class pyQuanTrait : public baseQuanTrait
 public:
 	/** Create a Python hybrid quantitative trait operator that passes genotype
 	 *  at specified \e loci, optional values at specified information fields
-	 *  (parameter \e paramFields), and a generation number to a user-defined
-	 *  function \e func. The return value will be assigned to specified
-	 *  trait fields (\e infoField). If only one trait field is specified, a
+	 *  (parameter \e paramFields), and an optional generation number to a
+	 *  user-defined function \e func. The return value will be assigned to
+	 *  specified trait fields (\e infoField). If only one trait field is specified, a
 	 *  number or a sequence of one element is acceptable. Otherwise, a sequence
 	 *  of values will be accepted and be assigned to each trait field.
 	 */
-	pyQuanTrait(const uintList & loci, PyObject * func, int ancGen = 0,
+	pyQuanTrait( PyObject * func,
+		const uintList & loci = vectoru(),
+		const stringList & paramFields = vectorstr(),
+		int ancGen = 0,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & paramFields = vectorstr(), const stringList & infoFields = vectorstr()) :
+		const stringList & infoFields = vectorstr()) :
 		baseQuanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_func(func),  m_paramFields(paramFields.elems()),
+		m_func(func), m_loci(loci.elems()), m_paramFields(paramFields.elems()),
 		m_genotype(NULL), m_info(NULL)
 	{
-		if (!m_func.isValid())
-			throw ValueError("Passed variable is not a callable python function.");
+		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
+
+		DBG_FAILIF(m_func.numArgs() == 0 || m_func.numArgs() > 3, ValueError,
+			"Passed function should accept one to three regular arguments with an optional *arg argument.");
 
 		DBG_FAILIF(m_loci.empty(), ValueError,
 			"Please specify susceptibility loci");
@@ -206,11 +210,11 @@ public:
 
 
 private:
-	/// susceptibility loci
-	vectoru m_loci;
-
 	/// user supplied python function
 	pyFunc m_func;
+
+	/// susceptibility loci
+	vectoru m_loci;
 
 	/// copy of information fields
 	vectorstr m_paramFields;
