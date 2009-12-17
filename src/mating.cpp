@@ -1206,19 +1206,19 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 	else if (!m_subPopSize.empty())                                                     // set subPoplation size
 		scratch.fitSubPopStru(m_subPopSize.elems(), pop.subPopNames());
 	else {                                                                              // use m_subPopSizeFunc
-        vectori res;
-        if (m_subPopSize.func().numArgs() == 1) {
-		    res = m_subPopSize.func() (PyObj_As_IntArray, "(i)", pop.gen());
-        } else {
-		    // get generation number
-	    	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-		    // if pop is valid?
-    		DBG_FAILIF(popObj == NULL, SystemError, 
-                "Could not pass population to the provided function. \n"
-		    	"Compiled with the wrong version of SWIG?");
-		    res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", pop.gen(), popObj);
-    		Py_XDECREF(popObj);
-        }
+		vectori res;
+		if (m_subPopSize.func().numArgs() == 1) {
+			res = m_subPopSize.func() (PyObj_As_IntArray, "(i)", pop.gen());
+		} else {
+			// get generation number
+			PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+			// if pop is valid?
+			DBG_FAILIF(popObj == NULL, SystemError,
+				"Could not pass population to the provided function. \n"
+				"Compiled with the wrong version of SWIG?");
+			res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", pop.gen(), popObj);
+			Py_XDECREF(popObj);
+		}
 
 		vectoru sz(res.size());
 		for (size_t i = 0; i < res.size(); i++)

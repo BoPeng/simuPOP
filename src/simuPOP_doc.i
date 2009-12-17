@@ -2225,25 +2225,25 @@ Details:
     used directly in a simulator, it will be responsible for creating
     an offspring population according to parameter subPopSize. This
     parameter can be a list of subpopulation sizes (or a number if
-    there is only one subpopulation) or a Python function. The
-    function should take two parameters, a generation number and a
-    population object which is the parental population just before
-    mating. The return value of this function should be a list of
-    subpopulation sizes for the offspring generation. A single number
-    can be returned if there is only one subpopulation. If a function
-    is passed to this parameter, it will be called at each generation
-    to determine the size of the offspring generation. The passed
-    parental population is usually used to determine offspring
-    population size from parental population size but nothing stops
-    you from modifying this parental population to prepare it for
-    mating. A common practice is to split and merge parental
-    populations in this function so that you do not have to use
-    operators for these tasks.  If this mating shcme is used within a
-    heterogeneous mating scheme. Parameters subPops and weight are
-    used to determine which (virtual) subpopulations this mating
-    scheme will be applied to, and how many offspring this mating
-    scheme will produce. Please refer to mating scheme heteroMating
-    for the use of these two parameters.
+    there is only one subpopulation) or a Python function which will
+    be called at each generation, just before mating, to determine the
+    subpopulation sizes of the offspring generation. The function
+    should have one of the two forms: func(gen) or func(gen, pop)
+    where gen is the current generation number and pop is the parental
+    population just before mating. The return value of this function
+    should be a list of subpopulation sizes for the offspring
+    generation. A single number can be returned if there is only one
+    subpopulation. The passed parental population is usually used to
+    determine offspring population size from parental population size
+    but you can also modify this population to prepare for mating. A
+    common practice is to split and merge parental populations in this
+    function so that you demographic related information and actions
+    could be implemented in the same function.  If this mating shcme
+    is used within a heterogeneous mating scheme. Parameters subPops
+    and weight are used to determine which (virtual) subpopulations
+    this mating scheme will be applied to, and how many offspring this
+    mating scheme will produce. Please refer to mating scheme
+    heteroMating for the use of these two parameters.
 
 "; 
 
@@ -7084,21 +7084,19 @@ Function form:
 Details:
 
     This quantitative trait operator assigns a trait field by calling
-    a user provided function. It accepts a list of loci and a Python
-    function func. For each individual, this operator passes the
-    genotypes at these loci, and a generation number to this function.
-    The return value is used to set the trait fields of the
-    individual. Optionally, several information fields can be given to
-    parameter paramFields. In this case, the user-defined Python
-    function should accept a second parameter that is a list of values
-    at these information fields. In another word, a user-defined
-    function in the form of
-    *   func(geno, gen) is needed if paramFields is empty, or
-    *   func(geno, fields, gen) is needed if paramFields has some
-    information fields. If you need to pass sex or affection status to
-    this function, you should define an information field (e.g. sex)
-    and sync individual property with this field using operator
-    infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
+    a user provided function. It accepts a list of loci (parameter
+    loci), a list of inforation fields (parameter paramFields) and a
+    Python function func in the form of func(geno, fields, gen). For
+    each individual, this operator passes the genotypes at these loci,
+    values at specified information fields, and a generation number to
+    this function. The return value is used to set the trait fields of
+    the individual. Functions in the form of func(geno) and func(geno,
+    fields) are also acceptable. In these cases, only the first one or
+    two parameters will be passed.  If you need to pass sex or
+    affection status to this function, you should define an
+    information field (e.g. sex) and sync individual property with
+    this field using operator infoExec (e.g. infoExec('sex=ind.sex',
+    exposeInd='ind').
 
 "; 
 
@@ -7106,20 +7104,20 @@ Details:
 
 Usage:
 
-    pyQuanTrait(loci, func, ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, paramFields=[],
+    pyQuanTrait(func, loci=[], paramFields=[], ancGen=0, begin=0,
+      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
       infoFields=[])
 
 Details:
 
     Create a Python hybrid quantitative trait operator that passes
     genotype at specified loci, optional values at specified
-    information fields (parameter paramFields), and a generation
-    number to a user-defined function func. The return value will be
-    assigned to specified trait fields (infoField). If only one trait
-    field is specified, a number or a sequence of one element is
-    acceptable. Otherwise, a sequence of values will be accepted and
-    be assigned to each trait field.
+    information fields (parameter paramFields), and an optional
+    generation number to a user-defined function func. The return
+    value will be assigned to specified trait fields (infoField). If
+    only one trait field is specified, a number or a sequence of one
+    element is acceptable. Otherwise, a sequence of values will be
+    accepted and be assigned to each trait field.
 
 "; 
 
