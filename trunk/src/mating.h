@@ -1055,19 +1055,20 @@ public:
 	 *  If this mating scheme is used directly in a simulator, it will be
 	 *  responsible for creating an offspring population according to parameter
 	 *  \e subPopSize. This parameter can be a list of subpopulation sizes
-	 *  (or a number if there is only one subpopulation) or a Python function.
-	 *  The function should take two parameters, a generation number and a
-	 *  population object which is the parental population just before mating.
-	 *  The return value of this function should be a list of subpopulation
-	 *  sizes for the offspring generation. A single number can be returned
-	 *  if there is only one subpopulation. If a function is passed to this
-	 *  parameter, it will be called at each generation to determine the
-	 *  size of the offspring generation. The passed parental population is
-	 *  usually used to determine offspring population size from parental
-	 *  population size but nothing stops you from modifying this parental
-	 *  population to prepare it for mating. A common practice is to split and
-	 *  merge parental populations in this function so that you do not have to
-	 *  use operators for these tasks.
+	 *  (or a number if there is only one subpopulation) or a Python function
+     *  which will be called at each generation, just before mating, to 
+     *  determine the subpopulation sizes of the offspring generation. The
+     *  function should have one of the two forms: <tt>func(gen)</tt> or
+     *  <tt>func(gen, pop)</tt> where \c gen is the current generation number
+     *  and \c pop is the parental population just before mating. The return
+     *  value of this function should be a list of subpopulation sizes for the
+     *  offspring generation. A single number can be returned if there is only
+     *  one subpopulation. The passed parental population is usually used to
+     *  determine offspring population size from parental population size but
+     *  you can also modify this population to prepare for mating. A common
+     *  practice is to split and merge parental populations in this function so
+     *  that you demographic related information and actions could be
+     *  implemented in the same function.
 	 *
 	 *  If this mating shcme is used within a heterogeneous mating scheme.
 	 *  Parameters \e subPops and \e weight are used to determine which (virtual)
