@@ -4815,80 +4815,33 @@ lstparams "caption={Add and remove loci and chromosomes},keywordstyle={\\ttfamil
 \end_layout
 
 \begin_layout Subsection
-Population extraction
+Extract individuals and subpopulations
 \end_layout
 
 \begin_layout Standard
-Another import population member function is 
+Functions 
 \family typewriter
-population.extract(loci=ALL_AVAIL, info=ALL_AVAIL, subPops=ALL_AVAIL, ancGen=-1)
+population.extractIndividuals
 \family default
-.
- It is a powerful function that can extract subset of individuals, loci,
- information fields and ancestral generations from an existing population.
- This function can be used to draw certain individuals from an existing
- population and form a sample.
- This function works as follows:
-\end_layout
-
-\begin_layout Itemize
-If all default parameters are used, this function is equivalent to 
+ and 
 \family typewriter
-population.clone()
+population.extractSubPops
 \family default
-.
-\end_layout
-
-\begin_layout Itemize
-If a list of loci are given to parameter 
+ could be used to extract individuals and subpopulations from an existing
+ population and form a new one.
+ Function 
 \family typewriter
-loci
+extractIndividuals
 \family default
-, only specified loci will be copied to the extracted population.
- Loci in parameter 
+ could be used to extract individuals from the present generation by indexes
+ or from all ancestral generations by IDs.
+ Function 
 \family typewriter
-loci
+extractSubPops
 \family default
- do not have to be in order but loci in the extracted population will keep
- their original positions, and thus in their original order.
-\end_layout
-
-\begin_layout Itemize
-If a list of information fields are given to parameter 
-\family typewriter
-info
-\family default
-, only specified information fields will be copied to the extracted population.
+ could be used to extract subpopulations, or goups of individuals defined
+ by virtual subpopulations from a population.
  
-\end_layout
-
-\begin_layout Itemize
-If a positive 
-\family typewriter
-ancGen
-\family default
- is given, only generations 
-\family typewriter
-0
-\family default
- -
-\family typewriter
- ancGen
-\family default
- will be extracted.
-\end_layout
-
-\begin_layout Itemize
-Subset of individuals is specified using a list of (virtual) subpopulations.
- For example, if you define virtual subpopulations by sex using a 
-\family typewriter
-sexSplitter
-\family default
-, you can draw all male individuals from a population using 
-\family typewriter
-subPops=[(0, 0)]
-\family default
-.
 \end_layout
 
 \begin_layout Standard
@@ -4899,7 +4852,7 @@ reference "extract"
 
 \end_inset
 
- demonstrates the use of this powerful function.
+ demonstrates the use of these functions.
 \end_layout
 
 \begin_layout Standard
@@ -7024,7 +6977,7 @@ demographic function
 subPopSize
 \family default
 .
- This function should take one of thw two forms 
+ This function should take one of the two forms 
 \family typewriter
 func(gen)
 \family default
@@ -16027,7 +15980,7 @@ status open
 
 \begin_layout Plain Layout
 
-def fitness_func(genotype, gen):
+def fitness_func(genotype):
 \end_layout
 
 \begin_layout Plain Layout
@@ -16058,7 +16011,7 @@ status open
 
 \begin_layout Plain Layout
 
-def fitness_func(genotype, fields, gen):
+def fitness_func(genotype, fields):
 \end_layout
 
 \begin_layout Plain Layout
@@ -16083,6 +16036,11 @@ and use this function in an operator
 pySelector(func=fitness_func, loci=loci, paramFields=fields)
 \family default
 .
+ It is also possible to use a third parameter 
+\family typewriter
+gen
+\family default
+ to return generation-dependent fitness values.
 \end_layout
 
 \begin_layout Standard
@@ -16178,7 +16136,11 @@ False
 \family default
 , a 
 \family typewriter
-pyOperator(func=func, offspringOnly=True)
+pyOperator(func=func)
+\family default
+ with a function in the form of 
+\family typewriter
+func(offspring)
 \family default
  is usually used in this case.
 \end_layout
@@ -22924,7 +22886,7 @@ status open
 
 \begin_layout Plain Layout
 
-def ins_expansion(gen, oldsize=[]):
+def ins_expansion(gen):
 \end_layout
 
 \begin_layout Plain Layout
@@ -22982,7 +22944,7 @@ status open
 
 \begin_layout Plain Layout
 
-def exp_expansion(gen, oldsize=[]):
+def exp_expansion(gen):
 \end_layout
 
 \begin_layout Plain Layout
@@ -23175,7 +23137,7 @@ status open
 
 \begin_layout Plain Layout
 
-kamMutator(rate=mu, maxAllele=k)
+kamMutator(rates=mu, maxAllele=k)
 \end_layout
 
 \end_inset
@@ -23250,12 +23212,12 @@ mlSelector([
 
 \begin_layout Plain Layout
 
-    maSelector(locus=loc1, fitness=[1,1,1-s1], wildtype=[0]),
+    maSelector(loci=loc1, fitness=[1,1,1-s1], wildtype=0),
 \end_layout
 
 \begin_layout Plain Layout
 
-    maSelector(locus=loc2, fitness=[1,1,1-s2], wildtype=[0])],
+    maSelector(loci=loc2, fitness=[1,1,1-s2], wildtype=0)],
 \end_layout
 
 \begin_layout Plain Layout
