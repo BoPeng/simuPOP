@@ -33,7 +33,7 @@ class TestQuanTrait(unittest.TestCase):
 
     def testPyQuanTrait(self):
         'Testing the hybrid quantitative trait operator'
-        def qt(geno, gen):
+        def qt(geno, fields):
             if geno == [0, 0]:
                 return random.normalvariate(0, 0.5)
             elif geno == [0, 1]:
@@ -47,14 +47,14 @@ class TestQuanTrait(unittest.TestCase):
         # multi-locus
         pop = population(1000, loci=[3,5], infoFields=['qtrait'])
         InitByFreq(pop, [.3, .7])
-        def qt1(geno, gen):
+        def qt1(geno):
             assert len(geno) == 4
             return random.normalvariate(0, 0.5*sum(geno) )
         PyQuanTrait(pop, loci=[2,6], func=qt1, infoFields='qtrait')
         # multi-fields
         pop = population(1000, loci=[3,5], infoFields=['qtrait1', 'qtrait2'])
         InitByFreq(pop, [.3, .7])
-        def qt1(geno, gen):
+        def qt1(geno):
             assert len(geno) == 4
             return random.normalvariate(0, 0.5*sum(geno) ), 1
         PyQuanTrait(pop, loci=[2,6], func=qt1, infoFields=['qtrait1', 'qtrait2'])
