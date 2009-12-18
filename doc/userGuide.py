@@ -4943,9 +4943,9 @@ class ne(sim.pyOperator):
         pop.dvars().ne = ne
         return True
 
-def Ne(pop, param):
+def Ne(pop, loci):
     '''Function form of operator ne'''
-    ne(param).apply(pop)
+    ne(loci).apply(pop)
     return pop.dvars().ne
 
 pop = sim.population(100, loci=[10])
@@ -5271,7 +5271,7 @@ def demoModel(gen, pop):
 def pene(geno, age):
     'Define an age-dependent penetrance function'
     # the probability of getting disease increases with age
-    return (0., 0.01*age[0], 0.01*age[0])[sum(geno)]
+    return (0., 0.01*age, 0.01*age)[sum(geno)]
 
 def outputStat(pop):
     'Calculate and output statistics'
