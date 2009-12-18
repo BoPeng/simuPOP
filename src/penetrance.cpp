@@ -26,6 +26,7 @@
 #include "penetrance.h"
 
 namespace simuPOP {
+
 // set pentrance to all individuals and record penetrance if requested.
 bool basePenetrance::apply(population & pop)
 {
@@ -82,6 +83,18 @@ bool basePenetrance::apply(population & pop)
 }
 
 
+bool basePenetrance::applyToIndividual(individual * ind, ULONG gen)
+{
+	double p = penet(ind, gen);
+
+	if (infoSize() > 0)
+		ind->setInfo(p, infoField(0));
+	bool affected = GetRNG().randUniform() < p;
+	ind->setAffected(affected);
+	return affected;
+}
+
+
 bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
@@ -89,10 +102,7 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 
 	if (infoSize() > 0)
 		offspring->setInfo(p, infoField(0));
-	if (GetRNG().randUniform() < p)
-		offspring->setAffected(true);
-	else
-		offspring->setAffected(false);
+	offspring->setAffected(GetRNG().randUniform() < p);
 	return true;
 }
 

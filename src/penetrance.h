@@ -50,7 +50,9 @@ namespace simuPOP {
  *  A penetrance operator can be applied at any stage of an evolutionary cycle.
  *  If it is applied before or after mating, it will set affection status of
  *  all parents and offspring, respectively. If it is applied during mating, it
- *  will set the affection status of each offspring.
+ *  will set the affection status of each offspring. You can also apply a
+ *  penetrance operator to an individual using its \c applyToIndividual
+ *  member function.
  *
  *  By default, a penetrance operator assigns affection status of individuals
  *  but does not save the actual penetrance value. However, if an information
@@ -110,6 +112,13 @@ public:
 
 	/// set penetrance to all individuals and record penetrance if requested
 	virtual bool apply(population & pop);
+
+	/** Apply the penetrance operator to a single individual \e ind and set his
+	 *  or her affection status. A generation number \e gen is needed if the
+	 *  penetrance model is generation-dependent. This function returns the
+	 *  affection status.
+	 */
+	virtual bool applyToIndividual(individual * ind, ULONG gen = 0);
 
 	/// set penetrance to all individuals
 	/// CPPONLY
