@@ -443,16 +443,18 @@ Details:
     stage of an evolutionary cycle. If it is applied before or after
     mating, it will set affection status of all parents and offspring,
     respectively. If it is applied during mating, it will set the
-    affection status of each offspring.  By default, a penetrance
-    operator assigns affection status of individuals but does not save
-    the actual penetrance value. However, if an information field is
-    specified, penetrance values will be saved to this field for
-    future analysis.  When a penetrance operator is applied to a
-    population, it is only applied to the current generation. You can,
-    however, use parameter ancGen=-1 to set affection status for all
-    ancestral generations, or a generation index to apply to only
-    ancestral generation younger than ancGen. Note that this parameter
-    is ignored if the operator is applied during mating.
+    affection status of each offspring. You can also apply a
+    penetrance operator to an individual using its applyToIndividual
+    member function.  By default, a penetrance operator assigns
+    affection status of individuals but does not save the actual
+    penetrance value. However, if an information field is specified,
+    penetrance values will be saved to this field for future analysis.
+    When a penetrance operator is applied to a population, it is only
+    applied to the current generation. You can, however, use parameter
+    ancGen=-1 to set affection status for all ancestral generations,
+    or a generation index to apply to only ancestral generation
+    younger than ancGen. Note that this parameter is ignored if the
+    operator is applied during mating.
 
 "; 
 
@@ -512,6 +514,21 @@ Description:
 Usage:
 
     x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::basePenetrance::applyToIndividual "
+
+Usage:
+
+    x.applyToIndividual(ind, gen=0)
+
+Details:
+
+    Apply the penetrance operator to a single individualind and set
+    his or her affection status. A generation number gen is needed if
+    the penetrance model is generation-dependent. This function
+    returns the affection status.
 
 "; 
 
