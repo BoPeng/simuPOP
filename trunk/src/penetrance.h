@@ -331,7 +331,7 @@ private:
 };
 
 /** This penetrance operator assigns penetrance values by calling a user
- *  provided function. It accepts a list of loci (parameter \c loci), 
+ *  provided function. It accepts a list of loci (parameter \c loci),
  *  and a Python function \c func which should be defined with one or more of
  *  parameters \c geno, \c gen, \c ind, or names of information fields. When
  *  this operator is applied to a population, it passes genotypes at specified

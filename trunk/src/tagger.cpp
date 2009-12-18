@@ -281,10 +281,11 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
-    DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-    for (int i = 0; i < m_func.numArgs(); ++i) {
-        const string & arg = m_func.arg(i);
+	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+	for (int i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
 
 		PyObject * item = PyTuple_New((dad != NULL) + (mom != NULL));
 		int idx = 0;
@@ -307,7 +308,7 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 	// assign return values to offspring
 	for (size_t i = 0; i < res.size(); ++i)
 		offspring->setInfo(res[i], m_func.arg(i));
-	
+
 	Py_DECREF(args);
 	return true;
 }

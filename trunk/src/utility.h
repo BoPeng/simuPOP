@@ -186,7 +186,7 @@ namespace simuPOP {
 class pyObject
 {
 public:
-	pyObject(PyObject * obj, bool defToNone=false) : m_object(obj)
+	pyObject(PyObject * obj, bool defToNone = false) : m_object(obj)
 	{
 		if (m_object == NULL && defToNone)
 			m_object = Py_None;
@@ -205,6 +205,7 @@ public:
 	{
 		Py_XINCREF(m_object);
 	}
+
 
 	PyObject * object() const
 	{
@@ -240,11 +241,12 @@ public:
 	}
 
 
-    string name() const
-    {
-        return m_name;
-    }
-	
+	string name() const
+	{
+		return m_name;
+	}
+
+
 	string arg(int arg) const
 	{
 		return m_args[arg];
@@ -286,10 +288,12 @@ public:
 		return retValue;
 	}
 
+
 	template <typename T>
 	T operator()(void converter(PyObject *, T &), PyObject * arglist) const
 	{
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
 		if (pyResult == NULL) {
 			PyErr_Print();
 			PyErr_Clear();
@@ -324,7 +328,7 @@ public:
 private:
 	pyObject m_func;
 
-    string m_name;
+	string m_name;
 
 	long int m_numArgs;
 

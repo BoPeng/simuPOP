@@ -91,24 +91,25 @@ bool baseQuanTrait::applyDuringMating(population & pop, RawIndIterator offspring
 
 void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 {
-   	PyObject * args = PyTuple_New(m_func.numArgs());
-    DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+	PyObject * args = PyTuple_New(m_func.numArgs());
 
-    for (size_t i = 0; i < m_func.numArgs(); ++i) {
-        const string & arg = m_func.arg(i);
-        if (arg == "ind")
-            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
-        else if (arg == "geno")
-            PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
-        else if (arg == "gen")
-            PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
-        else {
-            DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
-                "Only parameters 'ind', 'geno', 'gen', and names of information fields are "
-                "acceptable in function " + m_func.name());
-            PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(ind->info(arg)));
-        }
-    }
+	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
+		if (arg == "ind")
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
+		else if (arg == "geno")
+			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
+		else if (arg == "gen")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
+		else {
+			DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
+				"Only parameters 'ind', 'geno', 'gen', and names of information fields are "
+				"acceptable in function " + m_func.name());
+			PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(ind->info(arg)));
+		}
+	}
 
 	PyObject * res = PyEval_CallObject(m_func.func(), args);
 	Py_XDECREF(args);
