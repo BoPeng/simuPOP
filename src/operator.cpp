@@ -624,6 +624,7 @@ string pyOperator::describe(bool format)
 bool pyOperator::apply(population & pop)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
+
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
 	for (int i = 0; i < m_func.numArgs(); ++i) {
@@ -649,24 +650,25 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
+
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
 	for (int i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
-        else if (arg == "off")
-            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
-        else if (arg == "dad")
-            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
-        else if (arg == "mom")
-            PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
+		else if (arg == "off")
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
+		else if (arg == "dad")
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
+		else if (arg == "mom")
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
 		else if (arg == "param") {
 			Py_INCREF(m_param.object());
 			PyTuple_SET_ITEM(args, i, m_param.object());
 		} else {
 			DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', 'mom', and 'param' are acceptable in "
-				"function" + m_func.name());
+				                         "function" + m_func.name());
 		}
 	}
 

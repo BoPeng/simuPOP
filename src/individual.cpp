@@ -187,7 +187,7 @@ PyObject * individual::genoAtLoci(const vectoru & loci)
 {
 	vectoru chromTypes;
 
-    for (size_t j = 0; j < loci.size(); ++j)
+	for (size_t j = 0; j < loci.size(); ++j)
 		chromTypes.push_back(chromType(chromLocusPair(loci[j]).first));
 
 	size_t ply = ploidy();
@@ -202,7 +202,7 @@ PyObject * individual::genoAtLoci(const vectoru & loci)
 			if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 				continue;
 			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-				 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 				continue;
 			alleles.push_back(allele(loci[idx], p));
 		}
@@ -212,7 +212,7 @@ PyObject * individual::genoAtLoci(const vectoru & loci)
 	// set value
 	for (size_t j = 0; j < alleles.size(); ++j)
 		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
-    
+
 	return genoObj;
 }
 

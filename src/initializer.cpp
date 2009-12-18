@@ -88,7 +88,7 @@ string initInfo::describe(bool format)
 		desc += i == 0 ? " " : ", ";
 		desc += infoField(i);
 	}
-	if (m_values.empty()) 
+	if (m_values.empty())
 		desc += " using a Python function " + m_values.func().name();
 	else
 		desc += " using a list of values";

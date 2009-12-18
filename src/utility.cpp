@@ -500,10 +500,10 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// is it unbounded?
 	int bounded = PyObject_HasAttrString(obj, "im_self");
 
-    // find its name.
+	// find its name.
 	PyObject * name = PyObject_GetAttrString(obj, "__name__");
-    m_name = string(PyString_AsString(name));
-    Py_DECREF(name);
+	m_name = string(PyString_AsString(name));
+	Py_DECREF(name);
 
 	// free python functions have a 'func_code' attribute
 	// built-in functions might not have (e.g. random.random)
@@ -521,7 +521,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// probe parameter names
 	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
 	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
-    DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
+	DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
 	for (int i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(string(PyString_AsString(item)));

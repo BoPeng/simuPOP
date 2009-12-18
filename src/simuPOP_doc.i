@@ -2228,8 +2228,8 @@ Details:
     there is only one subpopulation) or a Python function which will
     be called at each generation, just before mating, to determine the
     subpopulation sizes of the offspring generation. The function
-    should have one of the two forms: func(gen) or func(gen, pop)
-    where gen is the current generation number and pop is the parental
+    should be defined with one or both parameters of gen and pop where
+    gen is the current generation number and pop is the parental
     population just before mating. The return value of this function
     should be a list of subpopulation sizes for the offspring
     generation. A single number can be returned if there is only one
@@ -2591,6 +2591,8 @@ Details:
     homologous copy of chromosomes will be returned.
 
 "; 
+
+%ignore simuPOP::individual::genoAtLoci(const vectoru &loci);
 
 %feature("docstring") simuPOP::individual::setGenotype "
 
@@ -6590,13 +6592,28 @@ Usage:
 
 Description:
 
-    return number of arguments this function accepts, which can be
-    number of positional arguments if no tuple or keyword arugments is
-    specified, or -1 otherwise.
+    return number of arguments this function accepts. This function
+    does not count tuple parameters.
 
 Usage:
 
     x.numArgs()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::name "
+
+Usage:
+
+    x.name()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::arg "
+
+Usage:
+
+    x.arg(arg)
 
 "; 
 
@@ -6725,7 +6742,7 @@ Usage:
 
 Usage:
 
-    pyObject(obj)
+    pyObject(obj, defToNone=False)
 
 "; 
 
@@ -6971,19 +6988,14 @@ Details:
 
     This penetrance operator assigns penetrance values by calling a
     user provided function. It accepts a list of loci (parameter
-    loci), a list of information fields (parameter paramFields) and a
-    Python function func in the form of func(geno, fields, gen). For
-    each individual, this operator passes the genotypes at these loci,
-    values of specified information fields, and a generation number to
-    this function. The return value is treated as the penetrance
-    value. Functions in the forms of func(geno) and func(geno, fields)
-    are also acceptable. In these cases, only the first one or two
-    parameters will be passed.  If you need to pass sex or affection
-    status to this function, you should define an information field
-    (e.g. sex) and sync individual property with this field using
-    operator infoExec (e.g. infoExec('sex=ind.sex', exposeInd='ind').
-    These information field could then be passed to this function in
-    parameter paramFields.
+    loci), and a Python function func which should be defined with one
+    or more of parameters geno, gen, ind, or names of information
+    fields. When this operator is applied to a population, it passes
+    genotypes at specified loci, generation number, a reference to an
+    individual, and values at specified information fields to
+    respective parameters of this function. The returned penetrance
+    values will be used to determine the affection status of each
+    individual.
 
 "; 
 
@@ -6991,32 +7003,17 @@ Details:
 
 Usage:
 
-    pyPenetrance(func, loci=[], paramFields=[], ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    pyPenetrance(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
     Create a Python hybrid penetrance operator that passes genotype at
-    specified loci, values at specified information fields (parameter
-    paramFields), and a generation number to a user-defined function
+    specified loci, values at specified information fields (if
+    requested), and a generation number to a user-defined function
     func. The return value will be treated as individual penetrance.
 
 "; 
-
-%feature("docstring") simuPOP::pyPenetrance::~pyPenetrance "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyPenetrance()
-
-"; 
-
-%ignore simuPOP::pyPenetrance::pyPenetrance(const pyPenetrance &rhs);
 
 %feature("docstring") simuPOP::pyPenetrance::clone "
 
@@ -7085,18 +7082,13 @@ Details:
 
     This quantitative trait operator assigns a trait field by calling
     a user provided function. It accepts a list of loci (parameter
-    loci), a list of inforation fields (parameter paramFields) and a
-    Python function func in the form of func(geno, fields, gen). For
-    each individual, this operator passes the genotypes at these loci,
-    values at specified information fields, and a generation number to
-    this function. The return value is used to set the trait fields of
-    the individual. Functions in the form of func(geno) and func(geno,
-    fields) are also acceptable. In these cases, only the first one or
-    two parameters will be passed.  If you need to pass sex or
-    affection status to this function, you should define an
-    information field (e.g. sex) and sync individual property with
-    this field using operator infoExec (e.g. infoExec('sex=ind.sex',
-    exposeInd='ind').
+    loci), and a Python function func which should be defined with one
+    or more of parameters geno, gen, ind, or names of information
+    fields. When this operator is applied to a population, it passes
+    genotypes at specified loci, generation number, a reference to an
+    individual, and values at specified information fields to
+    respective parameters of this function. The return values will be
+    assigned to specified trait fields.
 
 "; 
 
@@ -7104,36 +7096,21 @@ Details:
 
 Usage:
 
-    pyQuanTrait(func, loci=[], paramFields=[], ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+    pyQuanTrait(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
+      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
 
 Details:
 
     Create a Python hybrid quantitative trait operator that passes
     genotype at specified loci, optional values at specified
-    information fields (parameter paramFields), and an optional
-    generation number to a user-defined function func. The return
-    value will be assigned to specified trait fields (infoField). If
-    only one trait field is specified, a number or a sequence of one
-    element is acceptable. Otherwise, a sequence of values will be
-    accepted and be assigned to each trait field.
+    information fields (if requested), and an optional generation
+    number to a user-defined function func. The return value will be
+    assigned to specified trait fields (infoField). If only one trait
+    field is specified, a number or a sequence of one element is
+    acceptable. Otherwise, a sequence of values will be accepted and
+    be assigned to each trait field.
 
 "; 
-
-%feature("docstring") simuPOP::pyQuanTrait::~pyQuanTrait "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyQuanTrait()
-
-"; 
-
-%ignore simuPOP::pyQuanTrait::pyQuanTrait(const pyQuanTrait &rhs);
 
 %feature("docstring") simuPOP::pyQuanTrait::clone "
 
@@ -7156,19 +7133,14 @@ Usage:
 Details:
 
     This selector assigns fitness values by calling a user provided
-    function. It accepts a list of loci (parameter loci), a list of
-    information fields (parameter paramFields) and a Python function
-    func in the form of func(geno, fields, gen). For each individual,
-    this operator passes the genotypes at these loci, values at
-    specified information fields, and a generation number to this
-    function. The return value is treated as the fitness value of this
-    individual. Functions in the forms of func(geno) and func(geno,
-    fields) are also acceptable. In these cases, only the first one or
-    two parameters will be passed.  If you need to pass sex or
-    affection status to this function, you should define an
-    information field (e.g. sex) and sync individual property with
-    this field using operator infoExec (e.g. infoExec('sex=ind.sex',
-    exposeInd='ind').
+    function. It accepts a list of loci (parameter loci) and a Python
+    function func which should be defined with one or more of
+    parameters geno, gen, ind, or names of information fields. When
+    this operator is applied to a population, it passes genotypes at
+    specified loci, generation number, a reference to an individual,
+    and values at specified information fields to respective
+    parameters of this function. The returned penetrance values will
+    be used to determine the fitness of each individual.
 
 "; 
 
@@ -7176,28 +7148,17 @@ Details:
 
 Usage:
 
-    pySelector(func, loci=[], paramFields=[], begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=AllAvail)
+    pySelector(func, loci=[], begin=0, end=-1, step=1, at=[],
+      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
 
 Details:
 
     Create a Python hybrid selector that passes genotype at specified
-    loci, optional values at specified information fields (parameter
-    paramFields), and a generation number to a user-defined function
-    func. The return value will be treated as individual fitness.
+    loci, values at specified information fields (if requested) and a
+    generation number to a user-defined function func. The return
+    value will be treated as individual fitness.
 
 "; 
-
-%feature("docstring") simuPOP::pySelector::~pySelector "
-
-Usage:
-
-    x.~pySelector()
-
-"; 
-
-%ignore simuPOP::pySelector::pySelector(const pySelector &rhs);
 
 %feature("docstring") simuPOP::pySelector::clone "
 
@@ -7234,17 +7195,19 @@ Usage:
 
 Details:
 
-    Create a hybrid tagger that passes parental information fields
-    (parameter infoFields) to an user provided function func and use
-    its return values to assign corresponding information fields of
-    offspring. If more than one parent are available, maternal values
-    are passed after paternal values. For example, if infoFields=['A',
-    'B'], the user-defined function should expect an array of size 4,
-    with paternal values at fields 'A', 'B', followed by maternal
-    values at these fields. The return value of this function should
-    be a list, although a single value will be accepted if only one
-    information field is specified. This operator ignores parameters
-    stage, output and subPops.
+    Create a hybrid tagger that provides an user provided function
+    func with values of specified information fields (determined by
+    parameter names of this function) of parents and assign
+    corresponding information fields of offspring with its return
+    value. If more than one parent are available, maternal values are
+    passed after paternal values. For example, if a function func(A,
+    B) is passed, this operator will send two tuples with parental
+    values of information fields 'A' and 'B' to this function and
+    assign its return values to fields 'A' and 'B' of each offspring.
+    The return value of this function should be a list, although a
+    single value will be accepted if only one information field is
+    specified. This operator ignores parameters stage, output and
+    subPops.
 
 "; 
 
