@@ -6210,6 +6210,54 @@ l fitness.
 \end_layout
 
 \begin_layout Standard
+
+\series bold
+simuPOP operators use parameter names to determine which information should
+ be passed to a user-defined function
+\series default
+.
+ For example, a hybrid quantitative trait operator recognizes parameters
+ 
+\family typewriter
+ind
+\family default
+, 
+\family typewriter
+geno
+\family default
+, 
+\family typewriter
+gen
+\family default
+ and names of information fields such as 
+\family typewriter
+smoking
+\family default
+.
+ If your model depends on genotype, you could provide a function with parameter
+ geno (e.g.
+ 
+\family typewriter
+func(geno)
+\family default
+); if your model depends on smoking and genotype, you could provide a function
+ with parameters geno and smoking (e.g.
+ 
+\family typewriter
+func(geno, smoking)
+\family default
+); if you model depends on individual sex, you can use a function that passes
+ the whole individual (e.g.
+ 
+\family typewriter
+func(ind)
+\family default
+) so that you could check individual sex.
+ When a hybrid operator is applied to a population, it will check the parameter
+ names of provided Python function and send requested information automatically.
+\end_layout
+
+\begin_layout Standard
 For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6269,26 +6317,24 @@ pyOperator
 \end_layout
 
 \begin_layout Standard
-A pre- or post-mating 
+A 
 \family typewriter
 pyOperator
 \family default
- expects a function in the form of
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-func(pop [, param])
-\end_layout
-
-\end_inset
-
-where 
+ that is applied pre- or post- mating expects a function with one or both
+ parameters 
+\family typewriter
+pop
+\family default
+ and 
+\family typewriter
+param
+\family default
+, where
+\family typewriter
+ pop
+\family default
+ is the population being applied, and 
 \family typewriter
 param
 \family default
@@ -6443,30 +6489,37 @@ False
 \family default
  in a user-defined function), modify offspring, calculate statistics, or
  pass additional information from parents to offspring.
- Depending the number of parameters your function accept, the Python operator
- will pass offspring, his or her parents and the whole population and optional
- parameters to this function.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-func(off [, param])                 # if your function accept 1 or 2 parameters
-\end_layout
-
-\begin_layout Plain Layout
-
-func(pop, dad, mom, off [, param])  # if your function accept 4 or 5 parameters
-\end_layout
-
-\end_inset
-
-
+ Depending the names of parameters of your function, the Python operator
+ will pass offspring (parameter 
+\family typewriter
+off
+\family default
+), his or her parents (parameter 
+\family typewriter
+dad
+\family default
+ and 
+\family typewriter
+mom
+\family default
+), the whole population (parameter 
+\family typewriter
+pop
+\family default
+) and an optional parameter (parameter 
+\family typewriter
+param
+\family default
+) to this function.
+ For example, function 
+\family typewriter
+func(off)
+\family default
+ will accept references to an offspring, and 
+\family typewriter
+func(off, mom, dad)
+\family default
+ will accept references to both offspring and his or her parents.
 \end_layout
 
 \begin_layout Standard
