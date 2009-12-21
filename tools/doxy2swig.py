@@ -1217,6 +1217,7 @@ class Doxy2SWIG:
             # print all functions
             for cls in classes:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), cls['Name'])
+                print 'Writing class ', refName
                 out = open(os.path.join(dir, refName), 'w')
                 print >> out, '.. class:: %s\n' % cls['Name']
                 print >> out, self.shiftText(cls['Doc'])
