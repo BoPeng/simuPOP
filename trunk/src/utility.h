@@ -85,12 +85,9 @@ namespace simuPOP {
 // / Debug and info functions
 // ////////////////////////////////////////////////////////////
 
-/** Return names of all debug codes
- */
-vectorstr DebugCodes();
-
 /** Set debug code \e code. More than one code could be specified using a comma
- *  separated string. Name of available codes are available from \c DebugCodes.
+ *  separated string. Name of available codes are available from
+ *  <tt>ModuleInfo()['debug'].keys()</tt>.
  */
 void TurnOnDebug(const string & code = string());
 
@@ -1416,6 +1413,8 @@ public:
 	 *  not given, <tt>/dev/urandom</tt>, <tt>/dev/random</tt>, or other system
 	 *  random number source will be used to guarantee that random seeds are
 	 *  used even if more than one simuPOP sessions are started simultaneously.
+	 *  Names of supported random number generators are available from
+	 *  <tt>ModuleInfo()['availableRNGs']</tt>.
 	 */
 	RNG(const char * name = NULL, unsigned long seed = 0);
 
@@ -1833,8 +1832,6 @@ RNG & GetRNG();
 /// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
 void SetRNG(const string rng = string(), unsigned long seed = 0);
 
-/// list the names of all available random number generators
-vectorstr AvailableRNGs();
 
 // ////////////////////////////////////////////////////////////
 // /  Global debug and initialization related functions

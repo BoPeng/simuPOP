@@ -243,10 +243,8 @@ __all__ = [
     'RNG',
     'GetRNG',
     'SetRNG',
-    'AvailableRNGs',
     #
     'CloseOutput',
-    'DebugCodes',
     'LoadPopulation',
     'LoadSimulator',
     'ModuleInfo',
