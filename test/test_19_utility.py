@@ -92,7 +92,7 @@ class TestUtility(unittest.TestCase):
 
     def testSetRNG(self):
         'Testing all RNG types'
-        for rg in AvailableRNGs():
+        for rg in ModuleInfo()['availableRNGs']:
             SetRNG(rg)
 
     def testDefaultRNG(self):
@@ -172,7 +172,7 @@ class TestUtility(unittest.TestCase):
         'Testing RNG::seed() and RNG::setSeed()'
         import random
         seed = []
-        name = AvailableRNGs()[0]
+        name = ModuleInfo()['availableRNGs'][0]
         for i in range(100):
             SetRNG(name)
             sd = GetRNG().seed()
