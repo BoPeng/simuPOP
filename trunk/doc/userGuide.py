@@ -134,6 +134,60 @@ for sp in range(2):
     for a in range(3):
         print '%.2f ' % pop.dvars(sp).alleleFreq[0][a],
     print
+
+#end_file
+
+
+#begin_file log/userFunc.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import random
+pop = sim.population(1000, loci=1, infoFields='smoking')
+sim.InitInfo(pop, lambda:random.randint(0,1), infoFields='smoking')
+sim.InitByFreq(pop, [0.3, 0.7])
+
+# a penetrance function that depends on smoking
+def func(geno, smoking):
+    if smoking:
+        return (geno[0]+geno[1])*0.4
+    else:
+        return (geno[0]+geno[1])*0.1
+
+sim.PyPenetrance(pop, loci=0, func=func)
+sim.Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
+
+#end_file
+
+#begin_file log/withArgs.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import random
+pop = sim.population(1000, loci=1, infoFields=('x', 'y'))
+sim.InitInfo(pop, lambda:random.randint(0,1), infoFields=('x', 'y'))
+sim.InitByFreq(pop, [0.3, 0.7])
+
+# a penetrance function that depends on unknown information fields
+def func(*fields):
+    return 0.4*sum(fields)
+
+# function withArgs tells pyPenetrance that func accepts fields x, y so that
+# it will pass values at fields x and y to func.
+sim.PyPenetrance(pop, loci=0, func=sim.withArgs(func, pop.infoFields()))
+sim.Stat(pop, numOfAffected=True)
+print pop.dvars().numOfAffected
 #end_file
 
 #begin_file log/genoStru.py

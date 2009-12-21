@@ -497,6 +497,28 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	DBG_ASSERT(PyCallable_Check(obj), ValueError,
 		"Passed parameter should be None or a Python function");
 
+    if (PyObject_HasAttrString(obj, "args") && PyObject_HasAttrString(obj, "func")) {
+        // in this case, a withArgs object must have been passed.
+        PyObject * args = PyObject_GetAttrString(obj, "args");
+        m_numArgs = PySequence_Size(args);
+        for (int i = 0; i < m_numArgs; ++i) {
+		    PyObject * item = PySequence_GetItem(args, i);
+            DBG_ASSERT(PyString_Check(item), ValueError,
+                "Attribute args in a simuPOP withArgs object should be a list of strings");
+    		m_args.push_back(string(PyString_AsString(item)));
+            Py_DECREF(item);            
+        }
+        Py_DECREF(args);
+	    // find its name.
+        PyObject * func = PyObject_GetAttrString(obj, "func");
+    	DBG_ASSERT(PyCallable_Check(func), ValueError,
+	    	"The func attribute of the passed object should be callable.");
+    	PyObject * name = PyObject_GetAttrString(func, "__name__");
+	    m_name = string(PyString_AsString(name));
+    	Py_DECREF(name);
+        Py_DECREF(func);
+        return;
+    }
 	// is it unbounded?
 	int bounded = PyObject_HasAttrString(obj, "im_self");
 
