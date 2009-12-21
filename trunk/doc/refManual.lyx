@@ -638,22 +638,35 @@ simuPOPcontrolledRandomMatingRef
 Utility Classes
 \end_layout
 
+\begin_layout Subsection
+Class 
+\family typewriter
+withArgs
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-
 \backslash
-RNGRef
+simuPOPwithArgsRef
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
-
 \backslash
-simuPOPwithArgsRef
+RNGRef
 \end_layout
 
 \end_inset
@@ -673,21 +686,7 @@ status open
 
 
 \backslash
-AvailableRNGsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 CloseOutputRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-DebugCodesRef
 \end_layout
 
 \begin_layout Plain Layout
