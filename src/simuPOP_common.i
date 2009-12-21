@@ -348,6 +348,19 @@ pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
 pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
+class withArgs:
+    '''This class wraps around a function ``func`` and provides an attribute
+    ``args`` so that simuPOP knows which parameters to send to the function.
+    ``args`` should be a list of parameter names.
+    '''
+    def __init__(self, func, args):
+        self.args = args
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
+
 def _new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate
