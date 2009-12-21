@@ -238,6 +238,7 @@ __all__ = [
     'Stat',
     #
     # Global functions
+    'withArgs',
     # RNG Related
     'RNG',
     'GetRNG',
@@ -360,6 +361,20 @@ def _deepcopy(self, memo):
 population.__deepcopy__ = _deepcopy
 simulator.__deepcopy__ = _deepcopy
 baseOperator.__deepcopy__ = _deepcopy
+
+
+class withArgs:
+    '''This class wraps around a function ``func`` and provides an attribute
+    ``args`` so that simuPOP knows which parameters to send to the function.
+    ``args`` should be a list of parameter names.
+    '''
+    def __init__(self, func, args):
+        self.args = args
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
 
 # mating schemes
 
