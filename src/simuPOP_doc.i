@@ -7707,6 +7707,8 @@ Details:
     not given, /dev/urandom, /dev/random, or other system random
     number source will be used to guarantee that random seeds are used
     even if more than one simuPOP sessions are started simultaneously.
+    Names of supported random number generators are available from
+    ModuleInfo()['availableRNGs'].
 
 "; 
 
@@ -10355,18 +10357,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::DebugCodes "
-
-Usage:
-
-    DebugCodes()
-
-Details:
-
-    Return names of all debug codes
-
-"; 
-
 %feature("docstring") simuPOP::TurnOnDebug "
 
 Usage:
@@ -10377,7 +10367,7 @@ Details:
 
     Set debug code code. More than one code could be specified using a
     comma separated string. Name of available codes are available from
-    DebugCodes.
+    ModuleInfo()['debug'].keys().
 
 "; 
 
@@ -10493,18 +10483,6 @@ Description:
 Usage:
 
     SetRNG(rng=\"\", seed=0)
-
-"; 
-
-%feature("docstring") simuPOP::AvailableRNGs "
-
-Description:
-
-    list the names of all available random number generators
-
-Usage:
-
-    AvailableRNGs()
 
 "; 
 

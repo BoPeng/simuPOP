@@ -1154,6 +1154,7 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
             refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
+            print 'Writing reference for global function ', refName
             out = open(os.path.join(dir, refName), 'w')
             print >> out, '\n.. function::',
             if entry.has_key('Usage') and entry['Usage'] != '':
@@ -1197,7 +1198,7 @@ class Doxy2SWIG:
             #print >> out, '\\begin{description}'
             for mem in funcs:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), mem['Name'])
-                print 'Writing functions ', refName
+                print 'Writing reference for function ', refName
                 out = open(os.path.join(dir, refName), 'w')
                 print >> out, '\n.. function::',
                 if mem.has_key('Usage') and mem['Usage'] != '':
@@ -1217,7 +1218,7 @@ class Doxy2SWIG:
             # print all functions
             for cls in classes:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), cls['Name'])
-                print 'Writing class ', refName
+                print 'Writing reference for class ', refName
                 out = open(os.path.join(dir, refName), 'w')
                 print >> out, '.. class:: %s\n' % cls['Name']
                 print >> out, self.shiftText(cls['Doc'])
@@ -1244,6 +1245,7 @@ class Doxy2SWIG:
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
+            print 'Writing reference for class ', refName
             out = open(os.path.join(dir, refName), 'w')
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\nclass %s' % classname
