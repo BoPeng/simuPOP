@@ -186,13 +186,12 @@ simuPOP is an individual-based forward-time population genetics simulation
  time, subject to arbitrary number of genetic and environmental forces such
  as mutation, recombination, migration and demographic changes.
  Statistics of populations can be calculated and visualized dynamically
- which makes simuPOP an ideal tool to demonstrate population genetics models;
- generate datasets under various evolutionary settings, and more importantly,
- study complex evolutionary processes and evaluate gene mapping methods.
+ which makes simuPOP an ideal tool to simulate and study complex evolutionary
+ scenarios.
 \end_layout
 
 \begin_layout Abstract
-simuPOP is provided as a number of Python modules, which provide of a large
+simuPOP is provided as a number of Python modules, which consist of a large
  number of Python objects and functions, including population, mating schemes,
  operators (objects that manipulate populations) and simulators to coordinate
  the evolutionary processes.
@@ -306,9 +305,12 @@ What is simuPOP?
 \end_layout
 
 \begin_layout Standard
-simuPOP is an individual-based forward-time population genetics simulation
- environment based on Python, a dynamic object-oriented programming language
- that has been widely used in biological studies.
+simuPOP is an 
+\series bold
+individual-based forward-time population genetics simulation environment
+\series default
+ based on Python, a dynamic object-oriented programming language that has
+ been widely used in biological studies.
  simuPOP provides a large number of Python objects and functions, and a
  mechanism to evolve populations forward in time.
  It is the users’ responsibility to write a Python script to form a simulation.
