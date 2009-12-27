@@ -351,12 +351,9 @@ pop.mergeSubPops([1, 2])
 # split subpopulations
 pop.splitSubPop(1, [2, 7])
 pop.subPopSizes()
-# set information field to each individual's new subpopulation ID
-pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
-# this manually triggers an migration, individuals with negative values
-# at this information field are removed.
-pop.setSubPopByIndInfo('x')
-sim.Dump(pop, width=2, structure=False)
+# remove subpopulations
+pop.removeSubPops(1)
+pop.subPopSizes()
 #end_file
 
 #begin_file log/subPopName.py
