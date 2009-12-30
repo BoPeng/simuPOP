@@ -1222,6 +1222,69 @@ pop.addInfoFields('field')
 \end_layout
 
 \end_deeper
+\begin_layout Section
+Other help sources
+\end_layout
+
+\begin_layout Standard
+If you are new to Python, it is recommended that you borrow a Python book,
+ or at least go through the following online Python tutorials:
+\end_layout
+
+\begin_layout Enumerate
+The Python tutorial (
+\family typewriter
+http://docs.python.org/tut/tut.html
+\family default
+)
+\end_layout
+
+\begin_layout Enumerate
+Other online tutorials listed at 
+\family typewriter
+http://www.python.org/doc/
+\end_layout
+
+\begin_layout Standard
+If you are new to simuPOP, please read this guide before you dive into 
+\emph on
+the simuPOP reference manual
+\emph default
+, which describes all the details of simuPOP but does not show you how to
+ use it.
+ Both documents are available online at 
+\family typewriter
+http://simupop.sourceforge.net
+\family default
+ in both searchable HTML format and PDF format.
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+simuPOP online cookbook
+\emph default
+ (
+\family typewriter
+http://simupop.sourceforge.net
+\family default
+/cookbook) is a wiki-based website where you can browse and download examples,
+ functions and scripts for various simulation scenarios, and upload your
+ own code snippets for the benefit of all simuPOP users.
+ Please consider contributing to this cookbook if you have written some
+ scripts that might be useful to others.
+\end_layout
+
+\begin_layout Standard
+If you cannot find the answer you need, or if you believe that you have
+ encountered a bug, or if you would like to request a feature, please subscribe
+ to the simuPOP mailinglist (
+\family typewriter
+simupop-list@lists.sourceforge.net
+\family default
+) and send your questions there.
+\end_layout
+
 \begin_layout Chapter
 Core simuPOP components
 \begin_inset CommandInset label
@@ -1963,83 +2026,6 @@ random
 random.seed(GetRNG().seed())
 \family default
 .
-\end_layout
-
-\begin_layout Subsection
-Other help sources
-\end_layout
-
-\begin_layout Standard
-If you are new to Python, it is recommended that you borrow a Python book,
- or at least go through the following online Python tutorials:
-\end_layout
-
-\begin_layout Enumerate
-The Python tutorial (
-\family typewriter
-http://docs.python.org/tut/tut.html
-\family default
-)
-\end_layout
-
-\begin_layout Enumerate
-Other online tutorials listed at 
-\family typewriter
-http://www.python.org/doc/
-\end_layout
-
-\begin_layout Standard
-If you are new to simuPOP, please read this guide before you dive into 
-\emph on
-the simuPOP reference manual
-\emph default
-, which describes all the details of simuPOP but does not show you how to
- use it.
- The PDF versions of both documents are distributed with simuPOP.
- You can also get the latest version of the documents online, from the simuPOP
- subversion repository ( 
-\family typewriter
-http://simupop.sourceforge.net
-\family default
-, click
-\family sans
- SF.net summary > Code > SVN Browse > trunk > doc
-\family default
-).
- However, because simuPOP is under active development, there may be discrepancie
-s between your local simuPOP installation and these latest documents.
-\end_layout
-
-\begin_layout Standard
-A number of bundled scripts are distributed with simuPOP.
- They range from simple demonstration of population genetics models to observing
- the evolution of complex human genetic diseases.
- These scripts can be a good source to learn how to write a simuPOP script.
- Of course, if any of these scripts happens to fit your need, you may be
- able to use them directly, with writing a line of code.
-\end_layout
-
-\begin_layout Standard
-A 
-\emph on
-simuPOP cookbook
-\emph default
- is under development.
- The goal of this book is to provide recipes of commonly used simulation
- scenarios.
- A number of recipes are currently available under the 
-\family typewriter
-doc/cookbook
-\family default
- directory of a simuPOP distribution.
- This book might be made available online so that users can submit their
- own recipes.
-\end_layout
-
-\begin_layout Standard
-If you cannot find the answer you need, or if you believe that you have
- located a bug, or if you would like to request a feature, please subscribe
- to the simuPOP mailinglist and send your questions there.
 \end_layout
 
 \begin_layout Section
@@ -24427,6 +24413,83 @@ reference "ageStructured"
 
  gives an example of the evolution of age-structured population.
  
+\end_layout
+
+\begin_layout Itemize
+Information fields 
+\family typewriter
+ind_id
+\family default
+, 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+ and operators 
+\family typewriter
+idTagger
+\family default
+ and 
+\family typewriter
+pedigreeTagger
+\family default
+ are used to track pedigree information during evolution.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+cloneMating
+\family default
+ mating scheme is used to copy surviving individuals and a 
+\family typewriter
+randomMating
+\family default
+ mating scheme is used to produce offspring.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+idTagger
+\family default
+ and 
+\family typewriter
+pedigreeTagger
+\family default
+ are used in the 
+\family typewriter
+ops
+\family default
+ parameter of 
+\family typewriter
+randomMating
+\family default
+ because only new offspring should have a new ID and record parental IDs.
+ If you use these operators in the 
+\family typewriter
+duringOps
+\family default
+ parameter of the 
+\family typewriter
+evolve
+\family default
+ function, individuals copied by 
+\family typewriter
+cloneMating
+\family default
+ will have a new ID, and a missing parental ID.
+\end_layout
+
+\begin_layout Itemize
+The resulting population is age-structured so pedigrees could be extracted
+ from such a population.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/ageStructured.log"

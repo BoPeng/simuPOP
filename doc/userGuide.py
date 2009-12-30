@@ -5310,7 +5310,7 @@ sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
 N = 10000
-pop = sim.population(10000, loci=1, infoFields='age')
+pop = sim.population(N, loci=1, infoFields=['age', 'ind_id', 'father_id', 'mother_id'])
 pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[20, 50, 75]))
 def demoModel(gen, pop):
     '''A demographic model that keep a constant supply of new individuals'''
@@ -5344,7 +5344,13 @@ simu = sim.simulator(pop,
         sim.cloneMating(subPops=[(0,0), (0,1), (0,2)], weight=-1),
         # only individuals with age between 20 and 50 will mate and produce
         # offspring. The age of offspring will be zero.
-        sim.randomMating(subPops=[(0,1)]),
+        sim.randomMating(ops=[
+            sim.idTagger(),                   # give new born an ID
+            sim.pedigreeTagger(),             # track parents of each individual
+            sim.mendelianGenoTransmitter(),   # transmit genotype
+        ],
+        numOffspring=(sim.UNIFORM_DISTRIBUTION, 1, 3),
+        subPops=[(0,1)]),
     ], subPopSize=demoModel)
 )
 
@@ -5355,6 +5361,8 @@ simu.evolve(
         sim.initInfo(lambda: random.randint(0, 75), infoFields='age'),
         # random genotype
         sim.initByFreq([0.5, 0.5]),
+        # assign an unique ID to everyone.
+        sim.idTagger(),
         sim.pyOutput('Prevalence of disease in each age group:\n'),
     ],
     # increase the age of everyone by 1 before mating.
@@ -5362,8 +5370,15 @@ simu.evolve(
     # number of individuals?
     postOps = [
         sim.pyPenetrance(func=pene, loci=0),
-        sim.pyOperator(func=outputStat)
+        sim.pyOperator(func=outputStat, step=20)
     ],
-    gen = 10
-)     
+    gen = 200
+)
+
+# draw two pedigrees from the last age-structured population
+pop = simu.extract(0)
+from simuPOP import sampling
+sample = sampling.DrawNuclearFamilySample(pop, families=2, numOffspring=(2,3))
+sim.Dump(sample)
+
 #end_file
