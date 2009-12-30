@@ -86,7 +86,7 @@ if os.name == 'nt':
         r.windows_options(buffered=False)
 
 
-from simuPOP import pyOperator, subPopList, ALL_AVAIL
+from simuPOP import pyOperator, ALL_AVAIL
 
 def newDevice():
     '''Create a new graphics window and return its device number in R. This
@@ -480,7 +480,7 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
-            at=at, reps=reps, subPops=subPopList(), infoFields=[])
+            at=at, reps=reps, subPops=ALL_AVAIL, infoFields=[])
 
     def __del__(self):
         # Close the device if needed.
@@ -699,7 +699,7 @@ class scatterPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, begin=0, end=-1, step=1,
-        at=[], reps=ALL_AVAIL, subPops=subPopList(), **kwargs):
+        at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, **kwargs):
         '''
         infoFields
             Two information fields whose values will be the x- and y-axis of
@@ -860,7 +860,7 @@ class infoPlotter(pyOperator):
     '''
     def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, begin=0,
-        end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=subPopList(), **kwargs):
+        end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, **kwargs):
         '''
         func
             Name of the R function that will be called to draw figures from
@@ -1060,7 +1060,7 @@ class boxPlotter(pyOperator):
     def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
         leaveOpen=False, preHook=None, postHook=None, plotHook = None,
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-        subPops=subPopList(), **kwargs):
+        subPops=ALL_AVAIL, **kwargs):
         '''
         infoFields
             Information fields whose values will be sent to R function
