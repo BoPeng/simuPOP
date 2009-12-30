@@ -179,8 +179,7 @@ protected:
  *  until the expected number of disease alleles are met. At the second step,
  *  only families with wide type alleles are accepted to populate the rest of
  *  the offspring generation. This method is described in detail in
- *  "Peng et al, (2007) <em>Forward-time simulations of populations with
- *  complex human diseases</em>, PLoS Genetics".
+ *  "Peng et al, (2007) PLoS Genetics".
  */
 class controlledOffspringGenerator : public offspringGenerator
 {
