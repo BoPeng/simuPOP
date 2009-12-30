@@ -57,10 +57,7 @@ class offspringGenerator
 public:
 	/** Create a basic offspring generator. This offspring generator uses
 	 *  \e ops genotype transmitters to transmit genotypes from parents to
-	 *  offspring. It expects \e numParents from an upstream parents chooser
-	 *  and raises an \c RuntimeError if incorrect number of parents are
-	 *  passed. If both one and two parents can be handled, \c 0 should be
-	 *  specified for this parameter.
+	 *  offspring. 
 	 *
 	 *  A number of <em>during-mating operators</em> (parameter \e ops) can be
 	 *  used to, among other possible duties such as setting information fields
@@ -803,12 +800,10 @@ private:
  *  for each subpopulation and retrieves parents repeatedly using the iterator
  *  interface of the generator function.
  *
- *  This parent chooser does not support virtual subpopulation directly. A
- *  \c ValueError will be raised if this parent chooser is applied to a
- *  virtual subpopulation. However, because virtual subpopulations are defined
- *  in the passed parental population, it is easy to return parents from a
- *  particular virtual subpopulation using virtual subpopulation related
- *  functions.
+ *  This parent chooser does not support virtual subpopulation directly.
+ *  However, because virtual subpopulations are defined in the passed parental
+ *  population, it is easy to return parents from a particular virtual
+ *  subpopulation using virtual subpopulation related functions.
  */
 class pyParentsChooser : public parentChooser
 {

@@ -1467,24 +1467,6 @@ SIMUOPTIMIZED
  can also be used.
 \end_layout
 
-\begin_layout Note
-Please do not make use of exceptions raised by simuPOP functions to direct
- the logic of your script (e.g.
- use a 
-\family typewriter
-try ...
- except ...
-
-\family default
- statement around function 
-\family typewriter
-infoIdx
-\family default
- to find a valid information field).
- Because the optimized modules do not raise these exceptions, such a script
- may crash or yield invalid results when the optimized module is used.
-\end_layout
-
 \begin_layout Subsection
 Graphical user interface
 \end_layout
@@ -2787,6 +2769,59 @@ lstparams "caption={The carray datatype},label={carraydatatype}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Exception handling
+\end_layout
+
+\begin_layout Standard
+As shown in Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-standard-module"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+, optimized modules raise less exceptions than standard modules.
+ More specifically, the standard modules check for invalid inputs frequently
+ and raise exceptions (e.g.
+ out of bound loci indexes).
+ In constrast, the optimized modules only raise exceptions where proper
+ values could not be pre-determined (e.g.
+ looking for an individual in a population with an ID).
+ 
+\series bold
+Only exceptions that are raised in both types of modules are documented
+ in the simuPOP reference manual
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Generally speaking, 
+\series bold
+you should avoid using exceptions to direct the logic of your script
+\series default
+ (e.g.
+ use a 
+\family typewriter
+try ...
+ except ...
+
+\family default
+ statement around a function to find a valid input value).
+ Because the optimized modules might not raise these exceptions, such a
+ script may crash or yield invalid results when an optimized module is used.
+ If you have to use such a structure, check the reference manual and see
+ whether or not an exception will be raised in optimized modules.
 \end_layout
 
 \begin_layout Subsection

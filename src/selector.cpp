@@ -136,7 +136,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 		allele_string += toStr(alleles[i]);
 	}
 	allele_string += ")";
-	DBG_ASSERT(false, ValueError, "No fitness value for genotype " + allele_string);
+	throw ValueError("No fitness value for genotype " + allele_string);
 	// this line should not be reached.
 	return 0;
 }
