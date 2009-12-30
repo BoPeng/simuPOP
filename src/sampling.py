@@ -570,7 +570,7 @@ class nuclearFamilySampler(pedigreeSampler):
     '''A sampler that draws nuclear families with specified number of affected
     parents and offspring.
     '''
-    def __init__(self, families, numOffspring, affectedParents, affectedOffspring,
+    def __init__(self, families, numOffspring, affectedParents=0, affectedOffspring=0,
         subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''Creates a nuclear family sampler with parameters
 
@@ -674,8 +674,8 @@ class nuclearFamilySampler(pedigreeSampler):
                 self.selectedIDs.append(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
 
 
-def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
-    affectedOffspring, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
+def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
+    affectedOffspring=0, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw nuclear families from a population. Number of offspring, number of
     affected parents and number of affected offspring should be specified using
@@ -693,8 +693,8 @@ def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents,
         affectedOffspring, subPops, idField, fatherField, motherField).drawSample(pop)
  
 
-def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents,
-    affectedOffspring, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id',
+def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
+    affectedOffspring=0, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id',
     fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
@@ -709,7 +709,7 @@ class threeGenFamilySampler(pedigreeSampler):
     '''A sampler that draws three-generation families with specified pedigree
     size and number of affected individuals.
     '''
-    def __init__(self, families, numOffspring, pedSize, numOfAffected,
+    def __init__(self, families, numOffspring, pedSize, numOfAffected=0,
         subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
         '''
         families
@@ -825,7 +825,7 @@ class threeGenFamilySampler(pedigreeSampler):
                 self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
 
 
-def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected,
+def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected=0,
     subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw three-generation families from a population. Such families consist
     of grant parents, their children, spouse of these children, and grand
@@ -845,7 +845,7 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
         subPops, idField, fatherField, motherField).drawSample(pop)
  
 
-def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected,
+def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected=0,
     numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw ``numOfSamples`` three-generation pedigree samples from population ``pop``
