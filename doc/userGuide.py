@@ -5319,10 +5319,16 @@ def demoModel(gen, pop):
     # individuals that will be kept, plus some new guys.
     return pop.popSize() - pop.dvars().popSize + N / 75
 
-def pene(geno, age):
+def pene(geno, age, ind):
     'Define an age-dependent penetrance function'
+    # this disease does not occur in children
+    if age < 16:
+        return 0
+    # if an individual is already affected, keep so
+    if ind.affected():
+        return 1
     # the probability of getting disease increases with age
-    return (0., 0.01*age, 0.01*age)[sum(geno)]
+    return (0., 0.001*age, 0.001*age)[sum(geno)]
 
 def outputStat(pop):
     'Calculate and output statistics'
@@ -5378,7 +5384,8 @@ simu.evolve(
 # draw two pedigrees from the last age-structured population
 pop = simu.extract(0)
 from simuPOP import sampling
-sample = sampling.DrawNuclearFamilySample(pop, families=2, numOffspring=(2,3))
+sample = sampling.DrawNuclearFamilySample(pop, families=2, numOffspring=(2,3),
+    affectedParents=(1,2), affectedOffspring=(1,3))
 sim.Dump(sample)
 
 #end_file
