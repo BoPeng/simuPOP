@@ -135,9 +135,9 @@ Details:
 
 Usage:
 
-    baseMutator(rates=[], loci=AllAvail, mapIn=[], mapOut=[],
+    baseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       context=0, output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -463,7 +463,7 @@ Details:
 Usage:
 
     basePenetrance(ancGen=0, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -562,7 +562,7 @@ Details:
 Usage:
 
     baseQuanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -692,8 +692,8 @@ Details:
 
 Usage:
 
-    baseSelector(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=AllAvail)
+    baseSelector(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -917,7 +917,7 @@ Details:
 Usage:
 
     cloneGenoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -1093,9 +1093,9 @@ Details:
 
 Usage:
 
-    contextMutator(rates=[], loci=AllAvail, mutators=[],
+    contextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
       contexts=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -1152,8 +1152,7 @@ Details:
     expected number of disease alleles are met. At the second step,
     only families with wide type alleles are accepted to populate the
     rest of the offspring generation. This method is described in
-    detail in \"Peng et al, (2007) Forward-time simulations of
-    populations with  complex human diseases, PLoS Genetics\".
+    detail in \"Peng et al, (2007) PLoS Genetics\".
 
 "; 
 
@@ -1239,7 +1238,7 @@ Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, loci=[], output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -1911,7 +1910,7 @@ Details:
 Usage:
 
     genoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -2092,7 +2091,7 @@ Details:
 Usage:
 
     haplodiploidGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -2227,7 +2226,7 @@ Details:
 
 Usage:
 
-    homoMating(chooser, generator, subPopSize=[], subPops=AllAvail,
+    homoMating(chooser, generator, subPopSize=[], subPops=ALL_AVAIL,
       weight=0)
 
 Details:
@@ -2332,8 +2331,8 @@ Details:
 
 Usage:
 
-    idTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, output=\"\", infoFields=\"ind_id\")
+    idTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, output=\"\", infoFields=\"ind_id\")
 
 Details:
 
@@ -2413,7 +2412,7 @@ Details:
 Usage:
 
     ifElse(cond, ifOps=[], elseOps=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -2852,8 +2851,8 @@ Note:
 Usage:
 
     infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -2946,8 +2945,8 @@ Details:
 Usage:
 
     infoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3136,7 +3135,7 @@ Details:
 Usage:
 
     inheritTagger(mode=PATERNAL, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, output=\"\", infoFields=[])
 
 Details:
 
@@ -3202,9 +3201,9 @@ Details:
 
 Usage:
 
-    initByFreq(alleleFreq=[], loci=AllAvail, ploidy=AllAvail,
+    initByFreq(alleleFreq=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
       identicalInds=False, begin=0, end=1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3274,9 +3273,9 @@ Details:
 
 Usage:
 
-    initByValue(value=[], loci=AllAvail, ploidy=AllAvail,
+    initByValue(value=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
       proportions=[], freq=[], begin=0, end=1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3348,8 +3347,8 @@ Details:
 
 Usage:
 
-    initInfo(values, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    initInfo(values, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3422,7 +3421,7 @@ Details:
 Usage:
 
     initSex(maleFreq=0.5, maleProp=-1, sex=[], begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3524,9 +3523,9 @@ Details:
 
 Usage:
 
-    kamMutator(k, rates=[], loci=AllAvail, mapIn=[], mapOut=[],
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    kamMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3588,7 +3587,7 @@ Details:
 Usage:
 
     maPenetrance(loci, penetrance, wildtype=0, ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -3655,7 +3654,7 @@ Details:
 Usage:
 
     mapPenetrance(loci, penetrance, ancGen=0, begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3714,7 +3713,7 @@ Details:
 Usage:
 
     mapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -3776,7 +3775,7 @@ Details:
 Usage:
 
     maSelector(loci, fitness, wildtype=0, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -3907,9 +3906,9 @@ Details:
 
 Usage:
 
-    matrixMutator(rate, loci=AllAvail, mapIn=[], mapOut=[],
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    matrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
+      output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3969,7 +3968,7 @@ Details:
 Usage:
 
     mendelianGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -4044,8 +4043,8 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=AllAvail, name=\"\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, infoFields=[])
+    mergeSubPops(subPops=ALL_AVAIL, name=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -4153,9 +4152,9 @@ Details:
 
 Usage:
 
-    migrator(rate=[], mode=BY_PROBABILITY, toSubPops=AllAvail,
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=\"migrate_to\")
+    migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=\"migrate_to\")
 
 Details:
 
@@ -4252,7 +4251,7 @@ Details:
 Usage:
 
     mitochondrialGenoTransmitter(output=\"\", chroms=[], begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -4301,9 +4300,9 @@ Details:
 
 Usage:
 
-    mixedMutator(rates=[], loci=AllAvail, mutators=[], prob=[],
+    mixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
       mapIn=[], mapOut=[], context=0, output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -4363,7 +4362,7 @@ Details:
 Usage:
 
     mlPenetrance(ops, mode=MULTIPLICATIVE, ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -4424,7 +4423,7 @@ Details:
 Usage:
 
     mlSelector(ops, mode=MULTIPLICATIVE, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -4480,8 +4479,8 @@ Details:
 
 Usage:
 
-    noneOp(output=\">\", begin=0, end=0, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    noneOp(output=\">\", begin=0, end=0, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -4761,8 +4760,8 @@ Details:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, output=\"\", infoFields=[\"father_idx\",
+    parentsTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, output=\"\", infoFields=[\"father_idx\",
       \"mother_idx\"])
 
 Details:
@@ -4819,7 +4818,7 @@ Details:
 Usage:
 
     pause(stopOnKeyStroke=False, prompt=True, output=\">\", begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -5053,7 +5052,7 @@ Details:
 Usage:
 
     x.individualsWithRelatives(infoFields, sex=[],
-      affectionStatus=[], subPops=AllAvail, ancGen=-1)
+      affectionStatus=[], subPops=ALL_AVAIL, ancGen=-1)
 
 Details:
 
@@ -5090,7 +5089,7 @@ Details:
 Usage:
 
     pedigreeTagger(idField=\"ind_id\", output=\"\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[\"father_id\", \"mother_id\"])
 
 Details:
@@ -5158,7 +5157,7 @@ Details:
 Usage:
 
     pointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=0,
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
       infoFields=[])
 
 Details:
@@ -5873,7 +5872,7 @@ Details:
 
 Usage:
 
-    x.mergeSubPops(subPops=AllAvail, name=\"\")
+    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\")
 
 Details:
 
@@ -6000,7 +5999,7 @@ Details:
 
 Usage:
 
-    x.extractSubPops(subPops=AllAvail, rearrange=False)
+    x.extractSubPops(subPops=ALL_AVAIL, rearrange=False)
 
 Details:
 
@@ -6066,7 +6065,7 @@ Details:
 
 Usage:
 
-    x.recodeAlleles(alleles, loci=AllAvail, alleleNames=[])
+    x.recodeAlleles(alleles, loci=ALL_AVAIL, alleleNames=[])
 
 Details:
 
@@ -6455,7 +6454,7 @@ Details:
 Usage:
 
     pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\", begin=0,
-      end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -6548,7 +6547,7 @@ Details:
 Usage:
 
     pyExec(stmts=\"\", exposePop=\"\", output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -6702,9 +6701,9 @@ Details:
 
 Usage:
 
-    pyMutator(rates=[], loci=AllAvail, func=None, context=0,
+    pyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
       mapIn=[], mapOut=[], output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -6797,7 +6796,7 @@ Details:
 Usage:
 
     pyOperator(func, param=None, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -6855,7 +6854,7 @@ Details:
 Usage:
 
     pyOutput(msg=\"\", output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -7010,7 +7009,7 @@ Details:
 Usage:
 
     pyPenetrance(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -7103,7 +7102,7 @@ Details:
 Usage:
 
     pyQuanTrait(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -7155,7 +7154,7 @@ Details:
 Usage:
 
     pySelector(func, loci=[], begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=AllAvail)
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -7197,7 +7196,7 @@ Details:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, output=\"\", infoFields=[])
 
 Details:
 
@@ -7457,9 +7456,9 @@ Note:
 
 Usage:
 
-    recombinator(rates=[], intensity=-1, loci=AllAvail,
+    recombinator(rates=[], intensity=-1, loci=ALL_AVAIL,
       convMode=NO_CONVERSION, output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -7612,8 +7611,8 @@ Details:
 
 Usage:
 
-    resizeSubPops(subPops=AllAvail, sizes=[], proportions=[],
-      propagate=True, begin=0, end=-1, step=1, at=[], reps=AllAvail,
+    resizeSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
+      propagate=True, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       infoFields=[])
 
 Details:
@@ -7935,7 +7934,7 @@ Details:
 Usage:
 
     savePopulation(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8005,7 +8004,7 @@ Details:
 Usage:
 
     selfingGenoTransmitter(output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8155,7 +8154,7 @@ Details:
 Usage:
 
     setAncestralDepth(depth, output=\">\", begin=0, end=-1, step=1,
-      at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8686,9 +8685,9 @@ Details:
 
 Usage:
 
-    smmMutator(rates=[], loci=AllAvail, incProb=0.5, maxAllele=0,
+    smmMutator(rates=[], loci=ALL_AVAIL, incProb=0.5, maxAllele=0,
       mutStep=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=AllAvail, subPops=AllAvail, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8757,9 +8756,9 @@ Details:
 
 Usage:
 
-    splitSubPops(subPops=AllAvail, sizes=[], proportions=[],
+    splitSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
       names=[], randomize=True, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8862,9 +8861,9 @@ Usage:
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], vars=AllAvail, suffix=\"\",
-      output=\"\", begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+      neutrality=[], structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\",
+      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -9782,7 +9781,7 @@ Details:
 Usage:
 
     summaryTagger(mode=MEAN, begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, output=\"\", infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, output=\"\", infoFields=[])
 
 Details:
 
@@ -9859,8 +9858,8 @@ Details:
 Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
-      begin=0, end=-1, step=1, at=[], reps=AllAvail, subPops=AllAvail,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -9928,7 +9927,7 @@ Details:
 Usage:
 
     ticToc(output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -9974,7 +9973,7 @@ Details:
 Usage:
 
     turnOffDebug(code=\"DBG_ALL\", begin=0, end=-1, step=1, at=[],
-      reps=AllAvail, subPops=AllAvail, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -10023,8 +10022,8 @@ Details:
 
 Usage:
 
-    turnOnDebug(code, begin=0, end=-1, step=1, at=[], reps=AllAvail,
-      subPops=AllAvail, infoFields=[])
+    turnOnDebug(code, begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
