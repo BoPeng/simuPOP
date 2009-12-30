@@ -677,7 +677,7 @@ public:
 	 *  \e alleleNames parameter of the \c population function. \e locus could
 	 *  be ignored if alleles at all loci share the same names. If the name of
 	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
-	 *  returned. 
+	 *  returned.
 	 *  <group>4-allele</group>
 	 */
 	string alleleName(const UINT allele, const UINT locus = 0) const;

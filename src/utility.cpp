@@ -246,10 +246,10 @@ void saveRefCount()
 void checkRefCount()
 {
 	if (_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
-		cerr << "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
-		     << "\nThis may be a sign of memory leak, especially when refCount increase"
-		     << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
-		     << "\nthe problem.\n" << endl;
+		cerr	<< "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
+		        << "\nThis may be a sign of memory leak, especially when refCount increase"
+		        << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
+		        << "\nthe problem.\n" << endl;
 	g_refTotal = _Py_RefTotal;
 }
 
@@ -1895,8 +1895,8 @@ simpleStmt::simpleStmt(const string & stmt, const string & indVar) : m_var(""),
 			return;
 		}
 	}
-	DBG_DO(DBG_DEVEL, cerr << "Match statement with name " << m_var
-		                   << " and value " << m_value << " with operation " << m_operation << endl);
+	DBG_DO(DBG_DEVEL, cerr	<< "Match statement with name " << m_var
+		                    << " and value " << m_value << " with operation " << m_operation << endl);
 }
 
 
@@ -2195,15 +2195,15 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 
 	if (ISSETFLAG(m_flags, m_flagAppend) ) {
 
-		DBG_DO(DBG_UTILITY, cerr << "Get a persistent file: "
-			                     << filename << endl);
+		DBG_DO(DBG_UTILITY, cerr	<< "Get a persistent file: "
+			                        << filename << endl);
 
 		return *ostreamManager().getOstream(filename, readable,
 			ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
 	} else {                                                                          // not in append mode, but check if this file is alreay there
 
-		DBG_DO(DBG_UTILITY, cerr << "File is not persistent : "
-			                     << filename << endl);
+		DBG_DO(DBG_UTILITY, cerr	<< "File is not persistent : "
+			                        << filename << endl);
 
 		if (!ostreamManager().hasOstream(filename) ) {
 			if (readable)
@@ -2307,8 +2307,8 @@ void StreamProvider::analyzeOutputString(const string & output)
 	} else
 		RESETFLAG(m_flags, m_flagUseDefault);
 
-	DBG_DO(DBG_UTILITY, cerr << "Analyzed string is " << output << endl
-		                     << "Filename is " << format << endl);
+	DBG_DO(DBG_UTILITY, cerr	<< "Analyzed string is " << output << endl
+		                        << "Filename is " << format << endl);
 
 	m_filename = format;
 }
@@ -3701,8 +3701,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 #  ifndef OPTIMIZED
     if (debug(DBG_UTILITY)) {
         if (vectora(fr, fr + n) != vectora(to, to + n)) {
-            cerr << "Copy from " << vectora(fr, fr + n)
-                 << " to " << vectora(to, to + n) << " failed " << endl;
+            cerr	<< "Copy from " << vectora(fr, fr + n)
+                    << " to " << vectora(to, to + n) << " failed " << endl;
             cerr << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 		}
 	}
@@ -3870,9 +3870,9 @@ void testCopyGenotype()
 			to.begin() + to_idx, length);
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
             vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
-            cerr << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
-                 << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
-                 << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
+            cerr	<< "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
+                    << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
+                    << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
             // the error message can not be shown
             throw SystemError("Allele copy test for your system fails.\n"
 				              "Please email simuPOP mailing list with detailed os and compiler information");
