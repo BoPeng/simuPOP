@@ -2419,8 +2419,8 @@ PyObject * population::vars(vspID vsp)
 
 	if (!m_vars.hasVar("subPop"))
 		throw ValueError("Population local namespace does not have key 'subPop'. "
-		"You may forgot to call the stat operator, or use the 'vars' parameter "
-		"to generate subpopulation-specific statistics.");
+			             "You may forgot to call the stat operator, or use the 'vars' parameter "
+			             "to generate subpopulation-specific statistics.");
 
 	PyObject * spObj = m_vars.getVar("subPop");
 	// vsp? A tube with (sp, vsp)

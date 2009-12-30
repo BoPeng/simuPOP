@@ -1609,9 +1609,7 @@ Usage:
 Details:
 
     return the position of locus locus specified by the lociPos
-    parameter of the population function. An IndexError will be raised
-    if the absolute index locus is greater than or equal to the total
-    number of loci.
+    parameter of the population function.
 
 "; 
 
@@ -1675,8 +1673,7 @@ Usage:
 
 Details:
 
-    return the absolute index of locus locus on chromosome chrom. An
-    IndexError will be raised if chrom or locus is out of range. c.f.
+    return the absolute index of locus locus on chromosome chrom. c.f.
     chromLocusPair.
 
 "; 
@@ -1769,8 +1766,7 @@ Details:
     alleleNames parameter of the population function. locus could be
     ignored if alleles at all loci share the same names. If the name
     of an allele is unspecified, its index ('0', '1', '2', etc) is
-    returned. An IndexError will be raised if allele is larger than
-    the maximum allowed allele state of this module (ModuleMaxAllele).
+    returned.
 
 "; 
 
@@ -2347,11 +2343,7 @@ Details:
     an information field specified in parameter infoFields (default to
     ind_id). This operator is considered a during-mating operator but
     it can be used to set ID for all individuals of a population when
-    it is directly applied to the population. Because the information
-    field is supposed to record a unique ID for the whole population,
-    and because the IDs are increasingly assigned, this operator will
-    raise a RuntimeError if parental IDs are the same, or are larger
-    than the ID to be assigned to an offspring.
+    it is directly applied to the population.
 
 "; 
 
@@ -4153,9 +4145,8 @@ Details:
     each detination subpopulation. The migrants are chosen randomly.
     This operator goes through all source (virtual) subpopulations and
     assign detination subpopulation of each individual to an
-    information field. An RuntimeError will be raised if an individual
-    is assigned to migrate more than once. This might happen if you
-    are migrating from two overlapping virtual subpopulations.
+    information field. Unexpected results may happen if individuals
+    migrate from overlapping virtual subpopulations.
 
 "; 
 
@@ -4550,15 +4541,12 @@ Details:
 
     Create a basic offspring generator. This offspring generator uses
     ops genotype transmitters to transmit genotypes from parents to
-    offspring. It expects numParents from an upstream parents chooser
-    and raises an RuntimeError if incorrect number of parents are
-    passed. If both one and two parents can be handled, 0 should be
-    specified for this parameter.  A number of during-mating operators
-    (parameter ops) can be used to, among other possible duties such
-    as setting information fields of offspring, transmit genotype from
-    parents to offspring. Additional during-mating operators passed
-    from the simulator.evolve() function will be applied afterwards.
-    This general offspring generator does not have any default during-
+    offspring.  A number of during-mating operators (parameter ops)
+    can be used to, among other possible duties such as setting
+    information fields of offspring, transmit genotype from parents to
+    offspring. Additional during-mating operators passed from the
+    simulator.evolve() function will be applied afterwards. This
+    general offspring generator does not have any default during-
     mating operator but all stock mating schemes use an offspring
     generator with a default operator. For example, a
     mendelianOffspringGenerator is used by randomMating to trasmit
@@ -5649,7 +5637,6 @@ Usage:
 Details:
 
     Return the index of the first individual in subpopulation subPop.
-    An IndexError will be raised if subPop is out of range.
 
 "; 
 
@@ -5699,8 +5686,12 @@ Details:
     generation, and so on). This function will search this generation
     first but will search the whole population if an individual with
     id is not found. If no individual with id is found, an IndexError
-    will be raised. Note that a float id is acceptable as long as it
-    rounds closely to an integer.
+    will be raised. A float id is acceptable as long as it rounds
+    closely to an integer. Note that this function uses a dynamic
+    searching algorithm which tends to be slow. If you need to look
+    for multiple individuals from a static population, you might want
+    to convert a population object to a pedigree object and use
+    function pedigree.indByID.
 
 "; 
 
@@ -6926,11 +6917,10 @@ Details:
     population and a subpopulation index for each subpopulation and
     retrieves parents repeatedly using the iterator interface of the
     generator function.  This parent chooser does not support virtual
-    subpopulation directly. A ValueError will be raised if this parent
-    chooser is applied to a virtual subpopulation. However, because
-    virtual subpopulations are defined in the passed parental
-    population, it is easy to return parents from a particular virtual
-    subpopulation using virtual subpopulation related functions.
+    subpopulation directly. However, because virtual subpopulations
+    are defined in the passed parental population, it is easy to
+    return parents from a particular virtual subpopulation using
+    virtual subpopulation related functions.
 
 "; 
 

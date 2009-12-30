@@ -57,7 +57,7 @@ class offspringGenerator
 public:
 	/** Create a basic offspring generator. This offspring generator uses
 	 *  \e ops genotype transmitters to transmit genotypes from parents to
-	 *  offspring. 
+	 *  offspring.
 	 *
 	 *  A number of <em>during-mating operators</em> (parameter \e ops) can be
 	 *  used to, among other possible duties such as setting information fields
