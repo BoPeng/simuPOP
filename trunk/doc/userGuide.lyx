@@ -24489,6 +24489,13 @@ The resulting population is age-structured so pedigrees could be extracted
  from such a population.
 \end_layout
 
+\begin_layout Itemize
+The penetrance function is age dependent.
+ Because this penetrance function is applied to all individuals at each
+ year and an individual will have the disease once he or she is affected,
+ this penetrance function is more or less a hazard function.
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
