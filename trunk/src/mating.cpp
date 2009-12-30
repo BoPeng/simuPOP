@@ -588,7 +588,8 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 		"Please initialize this parent chooser before using it");
 	// choose a parent
 	if (!m_replacement) {
-		DBG_FAILIF(m_index.empty(), RuntimeError, "All parents have been chosen.");
+		if (m_index.empty())
+			throw RuntimeError("All parents have been chosen.");
 		individual * ind = &*m_index.back();
 		m_index.pop_back();
 		return individualPair(ind, NULL);
@@ -683,13 +684,13 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 	individual * mom = NULL;
 
 	if (!m_replacement) {
-		DBG_FAILIF(m_femaleIndex.empty(), ValueError,
-			"All females have been chosen.");
+		if (m_femaleIndex.empty())
+			throw ValueError("All females have been chosen.");
 		mom = &*m_femaleIndex.back();
 		m_femaleIndex.pop_back();
 
-		DBG_FAILIF(m_maleIndex.empty(), ValueError,
-			"All males have been chosen.");
+		if (m_maleIndex.empty())
+			throw ValueError("All males have been chosen.");
 		dad = &*m_maleIndex.back();
 		m_maleIndex.pop_back();
 		return std::make_pair(dad, mom);

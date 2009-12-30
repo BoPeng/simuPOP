@@ -487,8 +487,7 @@ public:
 	}
 
 
-	/** Return the index of the first individual in subpopulation \e subPop. An
-	 *  \c IndexError will be raised if \e subPop is out of range.
+	/** Return the index of the first individual in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
 	ULONG subPopBegin(UINT subPop) const
@@ -552,8 +551,12 @@ public:
 	 *  for parental generation, and so on). This function will search this
 	 *  generation first but will search the whole population if an
 	 *  individual with \e id is not found. If no individual with \e id is
-	 *  found, an \c IndexError will be raised. Note that a float \e id
-	 *  is acceptable as long as it rounds closely to an integer.
+	 *  found, an \c IndexError will be raised. A float \e id is acceptable
+	 *  as long as it rounds closely to an integer. Note that this function
+	 *  uses a dynamic searching algorithm which tends to be slow. If you need
+	 *  to look for multiple individuals from a static population, you might
+	 *  want to convert a population object to a pedigree object and use
+	 *  function <tt>pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
 	individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");

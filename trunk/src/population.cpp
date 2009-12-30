@@ -212,8 +212,8 @@ UINT population::subPopByName(const string & name) const
 {
 	vectorstr::const_iterator it = find(m_subPopNames.begin(), m_subPopNames.end(), name);
 
-	DBG_FAILIF(it == m_subPopNames.end(), ValueError,
-		"Subpopulation " + name + " not found.");
+	if (it == m_subPopNames.end())
+		throw ValueError("Subpopulation " + name + " not found.");
 	return it - m_subPopNames.begin();
 }
 
@@ -2417,8 +2417,8 @@ PyObject * population::vars(vspID vsp)
 	DBG_ASSERT(static_cast<UINT>(vsp.subPop()) < numSubPop(),
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
-	DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
-		"Population local namespace does not have key 'subPop'. "
+	if (!m_vars.hasVar("subPop"))
+		throw ValueError("Population local namespace does not have key 'subPop'. "
 		"You may forgot to call the stat operator, or use the 'vars' parameter "
 		"to generate subpopulation-specific statistics.");
 
@@ -2432,8 +2432,8 @@ PyObject * population::vars(vspID vsp)
 
 	spObj = PyDict_GetItem(spObj, key);
 
-	DBG_FAILIF(spObj == NULL, ValueError,
-		"Statistics for specified (virtual) subpopulation does not exist.");
+	if (spObj == NULL)
+		throw ValueError("Statistics for specified (virtual) subpopulation does not exist.");
 
 	Py_INCREF(spObj);
 	Py_INCREF(key);

@@ -97,9 +97,8 @@ namespace simuPOP {
  *  chosen randomly.
  *
  *  This operator goes through all source (virtual) subpopulations and assign
- *  detination subpopulation of each individual to an information field. An
- *  \c RuntimeError will be raised if an individual is assigned to migrate
- *  more than once. This might happen if you are migrating from two overlapping
+ *  detination subpopulation of each individual to an information field.
+ *  Unexpected results may happen if individuals migrate from overlapping
  *  virtual subpopulations.
  */
 class migrator : public baseOperator

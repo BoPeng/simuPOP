@@ -60,11 +60,7 @@ public:
 	 *  information field specified in parameter \e infoFields (default to
 	 *  \c ind_id). This operator is considered a during-mating operator but it
 	 *  can be used to set ID for all individuals of a population when it is
-	 *  directly applied to the population. Because the information field is
-	 *  supposed to record a unique ID for the whole population, and because
-	 *  the IDs are increasingly assigned, this operator will raise a
-	 *  \c RuntimeError if parental IDs are the same, or are larger than the ID
-	 *  to be assigned to an offspring.
+	 *  directly applied to the population. 
 	 */
 	idTagger(int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),

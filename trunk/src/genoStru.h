@@ -519,9 +519,7 @@ public:
 
 
 	/** return the position of locus \e locus specified by the \e lociPos
-	 *  parameter of the \c population function. An \c IndexError will be
-	 *  raised if the absolute index \e locus is greater than or equal to
-	 *  the total number of loci.
+	 *  parameter of the \c population function.
 	 *  <group>3-locus</group>
 	 */
 	double locusPos(UINT locus) const
@@ -593,8 +591,7 @@ public:
 
 
 	/** return the absolute index of locus \e locus on chromosome \e chrom.
-	 *  An \c IndexError will be raised if \e chrom or \e locus is out of
-	 *  range. c.f. \c chromLocusPair.
+	 *  c.f. \c chromLocusPair.
 	 *  <group>3-locus</group>
 	 */
 	UINT absLocusIndex(UINT chrom, UINT locus) const
@@ -680,8 +677,7 @@ public:
 	 *  \e alleleNames parameter of the \c population function. \e locus could
 	 *  be ignored if alleles at all loci share the same names. If the name of
 	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
-	 *  returned. An \c IndexError will be raised if \e allele is larger than
-	 *  the maximum allowed allele state of this module (<tt>ModuleMaxAllele</tt>).
+	 *  returned. 
 	 *  <group>4-allele</group>
 	 */
 	string alleleName(const UINT allele, const UINT locus = 0) const;
