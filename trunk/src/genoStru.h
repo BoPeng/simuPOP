@@ -413,8 +413,7 @@ public:
 	 */
 	string ploidyName() const;
 
-	/** return the number of loci on chromosome \e chrom, equivalent to
-	 *  <tt>numLoci()[</tt><em>chrom</em></tt>]</tt>.
+	/** return the number of loci on chromosome \e chrom.
 	 *  <group>3-locus</group>
 	 */
 	UINT numLoci(UINT chrom) const

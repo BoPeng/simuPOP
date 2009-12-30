@@ -1559,8 +1559,7 @@ Usage:
 
 Details:
 
-    return the number of loci on chromosome chrom, equivalent to
-    numLoci()[chrom].
+    return the number of loci on chromosome chrom.
 
 "; 
 
