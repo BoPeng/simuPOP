@@ -308,7 +308,7 @@ void individual::display(ostream & out, int width, const vectoru & loci)
 	if (infoSize() != 0) {
 		out << "| ";
 		for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
-			out << " " << setprecision(2) << *info;
+			out << " " << *info;
 	}
 }
 
