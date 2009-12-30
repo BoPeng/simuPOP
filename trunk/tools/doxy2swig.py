@@ -45,6 +45,11 @@ overrides = {'input_encoding': 'ascii',
              'output_encoding': 'latin-1'}
 
 import pprint
+try:
+    import simuPOP as sim
+except:
+    # this script needs simuPOP but I will have to let it run without simuPOP from time to time
+    pass
 
 # customized latex output
 class myLaTeXTranslator(LaTeXTranslator):
@@ -722,6 +727,23 @@ class Doxy2SWIG:
                     add_desc = False
 
 
+    def replacePythonConstants(self, text):
+        '''replace True by ALL_AVAIL etc'''
+        try:
+            text = text.replace('subPops=%s' % sim.ALL_AVAIL, 'subPops=ALL_AVAIL')
+            for sexMode in ['NO_SEX', 'RANDOM_SEX', 'PROB_OF_MALES', 'NUM_OF_MALES', 'NUM_OF_FEMALES']:
+                text = text.replace('sexMode=%s' % eval('sim.' + sexMode), 'sexMode=%s' % sexMode)
+            # for polySex and alphaSex
+            for sex in ['MALE', 'FEMALE']:
+                text = text.replace('Sex=%s' % eval('sim.' + sex), 'Sex=%s' % sex)
+            for transmitter in [ 'haplodiploidGenoTransmitter', 'mendelianGenoTransmitter', 'mitochondrialGenoTransmitter',
+                'selfingGenoTransmitter', 'cloneGenoTransmitter', 'recombinator']:
+                text = text.replace('ops=%s' % eval('sim.' + transmitter+'()'), 'ops=%s' % (transmitter+'()'))
+        except Exception, e:
+            print e
+            pass
+        return text
+
     def scan_module(self, module):
         ''' scan python module file and retrieve function definitions '''
         # add module entry
@@ -757,7 +779,7 @@ class Doxy2SWIG:
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Usage'] = self.content[-1]['Usage'].replace('self, ', '').replace('self)', ')')
-                self.content[-1]['Usage'] = re.sub(r'(<simuPOP.(\w+)>)', r'\2()', self.content[-1]['Usage'])
+                self.content[-1]['Usage'] = self.replacePythonConstants(self.content[-1]['Usage'])
                 members = []
                 for key1, value1 in inspect.getmembers(value, inspect.isroutine):
                     if not visiblename(key1) or key1.startswith('_'):
@@ -783,7 +805,7 @@ class Doxy2SWIG:
                 args, varargs, varkw, defaults = inspect.getargspec(value)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
-                self.content[-1]['Usage'] = re.sub(r'(<simuPOP.(\w+)>)', r'\2()', self.content[-1]['Usage'])
+                self.content[-1]['Usage'] = self.replacePythonConstants(self.content[-1]['Usage'])
                 self.content[-1]['Description'] = getdoc(value)
                 # latex can not yet handle numbers in function name
                 self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] or \
