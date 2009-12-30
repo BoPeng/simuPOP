@@ -534,8 +534,6 @@ void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 		"Please provide at least one information field for spouse and one for offspring.");
 
 	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-	DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
-
 	UINT maxOffspring = resultFields.size() - 1;
 
 	vectori offspringIdx(maxOffspring);
