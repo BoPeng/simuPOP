@@ -18,9 +18,10 @@ class TestSimulator(unittest.TestCase):
     def testClone(self):
         'Testing simulator::clone() of simulator'
         pop = population(size=[100, 40], loci=[2, 5])
-        simu = simulator(pop, randomMating(), rep = 3)
+        simu = simulator(pop, rep = 3)
         simu.evolve(
             initOps = [initSex(), initByFreq([0.3, .7])],
+            matingScheme=randomMating(),
             postOps = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
         )
@@ -33,28 +34,15 @@ class TestSimulator(unittest.TestCase):
         # test if a cloned simulator can evolve again
         simu1.evolve(
             initOps = [initSex()],
+            matingScheme=randomMating(),
             postOps = stat(alleleFreq=range(pop.totNumLoci())),
             gen = 20
         )
 
-    def testSave(self):
-        'Testing simulator::save(filename)'
-        pop = population(size=[100, 40], loci=[2, 5])
-        simu = simulator(pop, randomMating(), rep = 3)
-        simu.evolve(
-            initOps = [initSex(), initByFreq([0.3, .7])],
-            postOps = stat(alleleFreq=range(pop.totNumLoci())),
-            gen = 10
-        )
-        simu.save("simuout.sim");
-        simu1 = LoadSimulator("simuout.sim", randomMating())
-        self.assertEqual(simu, simu1)
-        os.remove("simuout.sim")
-
     def testSetGen(self):
         'Testing simulator::gen(), setGen(gen)'
         pop = population(size=1, loci=[1])
-        simu = simulator(pop, randomMating(), rep=3)
+        simu = simulator(pop, rep=3)
         self.assertEqual(simu.numRep(), 3)
         self.assertEqual(simu.gen(), 0)
         simu.setGen(10)
@@ -63,26 +51,24 @@ class TestSimulator(unittest.TestCase):
     def testEvolve(self):
         'Testing simulator:: evolve()'
         pop = population(size=1, loci=[1])
-        simu = simulator(pop, randomMating(), rep=3)
+        simu = simulator(pop, rep=3)
         self.assertEqual(simu.gen(), 0)
         # no terminator, no ending generation is specified
         self.assertRaises(exceptions.ValueError, simu.evolve)
         # sample
-        simu = simulator(
-            population(size=[20, 80], loci=[3]),
-                randomMating(ops = recombinator(rates=0.001)))
-        simu.evolve(
+        pop = population(size=[200, 80], loci=[3])
+        pop.evolve(
             initOps = [initSex(), initByFreq([0.2, 0.8])],
+            matingScheme=randomMating(ops = recombinator(rates=0.001)),
             postOps = stat(alleleFreq=[1]),
             finalOps = stat(),
-            #dryrun=True,
             gen=10
         )
 
     def testExtract(self):
         'Testing simulator::extract(rep), numRep()'
         pop = population(size=[20, 80], loci=[3])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         repnum = simu.numRep()
         simu.extract(2)
         self.assertEqual(simu.numRep(), repnum-1)
@@ -92,7 +78,7 @@ class TestSimulator(unittest.TestCase):
     def testAdd(self):
         'Testing simulator::add(pop)'
         pop = population(size=[20, 80], loci=[3])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         repnum = simu.numRep()
         pop1 = population(size=[20, 50], loci=[2])
         simu.add(pop1)
@@ -106,7 +92,7 @@ class TestSimulator(unittest.TestCase):
     def testPopulation(self):
         'Testing simulator::population(rep), populations()'
         pop = population(size=1000, loci=[1])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         # pop is not affected if simu changes
         for rep in range(5):
             for idx in range(pop.popSize()):
@@ -135,17 +121,18 @@ class TestSimulator(unittest.TestCase):
 
     def testAddInfoField(self):
         'Testing setMatingScheme(matingScheme)'
-        simu = simulator(population(100, infoFields=['a']), cloneMating(), rep=3)
-        simu.evolve(initOps=[initSex()], gen=1)
-        simu.setMatingScheme(randomMating())
-        simu.evolve(initOps=[initSex()], gen=1)
+        simu = simulator(population(100, infoFields=['a']), rep=3)
+        simu.evolve(initOps=[initSex()], 
+            matingScheme=cloneMating(), gen=1)
+        simu.evolve(initOps=[initSex()],
+            matingScheme=randomMating(), gen=1)
 
     def testVars(self):
         'Testing simulator::vars(rep), vars(rep, subPop), dvars(rep), dvars(rep, subPop)'
         pop = population(size=100, loci=[2, 4])
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=range(0, 6))
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         for rep in range(5):
             self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
             self.assertEqual(len(simu.dvars(rep).alleleFreq), 6)
@@ -153,18 +140,10 @@ class TestSimulator(unittest.TestCase):
         pop = population(size=[20, 80], loci=[2, 4])
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=range(0, 6), vars=['alleleFreq', 'alleleFreq_sp'])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         for rep in range(5):
             self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
             self.assertEqual(len(simu.dvars(rep, 1).alleleFreq), 6)
-
-    def testIntegrity(self):
-        'Testing checking of simulator integrity'
-        simu = simulator(population(1), cloneMating())
-        simu.population(0).addInfoFields('something')
-        # one can not change the genotype structure of the populations
-        # in a simulator
-        self.assertRaises(exceptions.ValueError, simu.evolve)
 
 if __name__ == '__main__':
     unittest.main()
