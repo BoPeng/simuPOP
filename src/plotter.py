@@ -699,7 +699,7 @@ class scatterPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, begin=0, end=-1, step=1,
-        at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, **kwargs):
+        at=[], reps=ALL_AVAIL, subPops=[], **kwargs):
         '''
         infoFields
             Two information fields whose values will be the x- and y-axis of
@@ -860,7 +860,7 @@ class infoPlotter(pyOperator):
     '''
     def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, begin=0,
-        end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, **kwargs):
+        end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=[], **kwargs):
         '''
         func
             Name of the R function that will be called to draw figures from
@@ -1059,8 +1059,7 @@ class boxPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
         leaveOpen=False, preHook=None, postHook=None, plotHook = None,
-        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-        subPops=ALL_AVAIL, **kwargs):
+        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=[], **kwargs):
         '''
         infoFields
             Information fields whose values will be sent to R function
