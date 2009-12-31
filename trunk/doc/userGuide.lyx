@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.9 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 1.0.0 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -2758,59 +2758,6 @@ lstparams "caption={The carray datatype},label={carraydatatype}"
 \end_layout
 
 \begin_layout Subsection
-Exception handling
-\end_layout
-
-\begin_layout Standard
-As shown in Examples 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-standard-module"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-optimized-module"
-
-\end_inset
-
-, optimized modules raise less exceptions than standard modules.
- More specifically, the standard modules check for invalid inputs frequently
- and raise exceptions (e.g.
- out of bound loci indexes).
- In constrast, the optimized modules only raise exceptions where proper
- values could not be pre-determined (e.g.
- looking for an individual in a population with an ID).
- 
-\series bold
-Only exceptions that are raised in both types of modules are documented
- in the simuPOP reference manual
-\series default
-.
-\end_layout
-
-\begin_layout Standard
-Generally speaking, 
-\series bold
-you should avoid using exceptions to direct the logic of your script
-\series default
- (e.g.
- use a 
-\family typewriter
-try ...
- except ...
-
-\family default
- statement around a function to find a valid input value).
- Because the optimized modules might not raise these exceptions, such a
- script may crash or yield invalid results when an optimized module is used.
- If you have to use such a structure, check the reference manual and see
- whether or not an exception will be raised in optimized modules.
-\end_layout
-
-\begin_layout Subsection
 
 \family typewriter
 defdict
@@ -3189,6 +3136,59 @@ recombinator(loci=ALL_AVAIL)
 \family default
  will recombine at all applicable loci, which will vary from population
  to population.
+\end_layout
+
+\begin_layout Subsection
+Exception handling
+\end_layout
+
+\begin_layout Standard
+As shown in Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-standard-module"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+, optimized modules raise less exceptions than standard modules.
+ More specifically, the standard modules check for invalid inputs frequently
+ and raise exceptions (e.g.
+ out of bound loci indexes).
+ In constrast, the optimized modules only raise exceptions where proper
+ values could not be pre-determined (e.g.
+ looking for an individual in a population with an ID).
+ 
+\series bold
+Only exceptions that are raised in both types of modules are documented
+ in the simuPOP reference manual
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Generally speaking, 
+\series bold
+you should avoid using exceptions to direct the logic of your script
+\series default
+ (e.g.
+ use a 
+\family typewriter
+try ...
+ except ...
+
+\family default
+ statement around a function to find a valid input value).
+ Because the optimized modules might not raise these exceptions, such a
+ script may crash or yield invalid results when an optimized module is used.
+ If you have to use such a structure, please check the reference manual
+ and see whether or not an exception will be raised in optimized modules.
 \end_layout
 
 \begin_layout Section
@@ -4732,8 +4732,8 @@ TagID
 \family typewriter
 ancGen
 \family default
-) can be used to limit the search to a specific generation if you know in
- advance which generation the individual locates.
+) can be used to limit search to a specific generation if you know in advance
+ which generation the individual locates.
 \end_layout
 
 \begin_layout Standard
