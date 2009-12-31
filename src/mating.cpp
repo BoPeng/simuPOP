@@ -123,7 +123,7 @@ Sex offspringGenerator::getSex(int count)
 }
 
 
-void offspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
+void offspringGenerator::initialize(const population & pop, SubPopID subPop)
 {
 	m_initialized = true;
 }
@@ -144,8 +144,7 @@ string offspringGenerator::describe(bool format) const
 
 UINT offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                            RawIndIterator & it,
-                                           RawIndIterator & itEnd,
-                                           vector<baseOperator *> & ops)
+                                           RawIndIterator & itEnd)
 {
 	DBG_ASSERT(initialized(), ValueError,
 		"Offspring generator is not initialized before used to generate offspring");
@@ -180,26 +179,6 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 			}
 		}
 
-		if (!accept)
-			continue;
-
-		// apply during mating operators
-		iop = ops.begin();
-		iopEnd = ops.end();
-		for (; iop != iopEnd; ++iop) {
-			try {
-				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
-					accept = false;
-					break;
-				}
-			} catch (Exception e) {
-				cerr	<< "DuringMating operator " << (*iop)->describe()
-				        << " throws an exception.\n"
-				        << e.message() << "\n" << endl;
-				throw e;
-			}
-		}                                                                         // all during-mating operators
 		if (accept) {
 			it++;
 			count++;
@@ -334,9 +313,9 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 }
 
 
-void controlledOffspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
+void controlledOffspringGenerator::initialize(const population & pop, SubPopID subPop)
 {
-	offspringGenerator::initialize(pop, subPop, ops);
+	offspringGenerator::initialize(pop, subPop);
 
 	// expected frequency at each locus
 	if (subPop == 0) {
@@ -397,8 +376,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 /// CPPONLY
 UINT controlledOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                                      RawIndIterator & offBegin,
-                                                     RawIndIterator & offEnd,
-                                                     vector<baseOperator *> & ops)
+                                                     RawIndIterator & offEnd)
 {
 	UINT nLoci = m_loci.size();
 	//
@@ -407,7 +385,7 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 	//
 	RawIndIterator itBegin = offBegin;
 	UINT numOff = offspringGenerator::generateOffspring(pop,
-		dad, mom, offBegin, offEnd, ops);
+		dad, mom, offBegin, offEnd);
 
 	//
 	if (numOff == 0)
@@ -1244,16 +1222,14 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 }
 
 
-bool mating::mate(population & pop, population & scratch,
-                  vector<baseOperator * > & ops)
+bool mating::mate(population & pop, population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
 		return false;
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
-		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
-				scratch.rawIndEnd(sp), ops))
+		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
 			return false;
 	submitScratch(pop, scratch);
 	return true;
@@ -1343,8 +1319,7 @@ void mating::submitScratch(population & pop, population & scratch)
    }
 
 
-   bool pedigreeMating::mate(population & pop, population & scratch,
-                          vector<baseOperator * > & ops)
+   bool pedigreeMating::mate(population & pop, population & scratch)
    {
     // scrtach will have the right structure.
     if (!prepareScratchPop(pop, scratch))
@@ -1358,7 +1333,7 @@ void mating::submitScratch(population & pop, population & scratch)
 
     for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
         if (!m_generator->initialized())
-            m_generator->initialize(pop, sp, ops);
+            m_generator->initialize(pop, sp);
 
         RawIndIterator it = scratch.rawIndBegin(sp);
         RawIndIterator itEnd;
@@ -1387,7 +1362,7 @@ void mating::submitScratch(population & pop, population & scratch)
             // whatever the numOffspring function returns for this
             // offspring generator, only generate one offspring.
             UINT numOff = m_generator->generateOffspring(pop, dad, mom,
-                it, itEnd, ops);
+                it, itEnd);
             (void)numOff;
             DBG_FAILIF(numOff != 1, RuntimeError,
                 "Generation of offspring must succeed in pedigreeMating");
@@ -1422,8 +1397,7 @@ string homoMating::describe(bool format) const
 
 
 bool homoMating::mateSubPop(population & pop, SubPopID subPop,
-                            RawIndIterator offBegin, RawIndIterator offEnd,
-                            vector<baseOperator * > & ops)
+                            RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
 	if (offBegin == offEnd)
@@ -1433,7 +1407,7 @@ bool homoMating::mateSubPop(population & pop, SubPopID subPop,
 		m_parentChooser->initialize(pop, subPop);
 
 	if (!m_offspringGenerator->initialized())
-		m_offspringGenerator->initialize(pop, subPop, ops);
+		m_offspringGenerator->initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
@@ -1445,7 +1419,7 @@ bool homoMating::mateSubPop(population & pop, SubPopID subPop,
 		mom = parents.second;
 
 		//
-		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd);
 		(void)numOff;             // silent warning about unused variable.
 	}
 	m_parentChooser->finalize(pop, subPop);
@@ -1525,8 +1499,7 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 }
 
 
-bool heteroMating::mate(population & pop, population & scratch,
-                        vector<baseOperator * > & ops)
+bool heteroMating::mate(population & pop, population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1660,7 +1633,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 			// real mating
 			try {
-				if (!m[idx]->mateSubPop(pop, sp, ind, ind + *itSize, ops))
+				if (!m[idx]->mateSubPop(pop, sp, ind, ind + *itSize))
 					return false;
 			} catch (...) {
 				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;

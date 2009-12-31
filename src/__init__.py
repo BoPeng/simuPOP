@@ -246,7 +246,6 @@ __all__ = [
     #
     'CloseOutput',
     'LoadPopulation',
-    'LoadSimulator',
     'ModuleInfo',
     'TurnOffDebug',
     'TurnOnDebug',
