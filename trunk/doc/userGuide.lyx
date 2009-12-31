@@ -314,7 +314,7 @@ What is simuPOP?
 \end_layout
 
 \begin_layout Standard
-simuPOP is an 
+simuPOP is a 
 \series bold
 general-purpose individual-based forward-time population genetics simulation
  environment
@@ -367,6 +367,8 @@ general-purpose
  arbitrary nonrandom mating schemes, virtual subpopulations, information
  fields and Python operators, to construct and study almost arbitrarily
  complex evolutionary scenarios.
+ In addition, because simuPOP provides a large number of functions to manipulate
+ populations, it can be used as an data manipulatation and analysis tool.
 \end_layout
 
 \begin_layout Standard
@@ -377,7 +379,12 @@ simuPOP is provided as a number of Python modules, which consist of a large
  It is the users’ responsibility to write a Python script to glue these
  pieces together and form a simulation.
  At a more user-friendly level, an increasing number of functions and scripts
- contributed by simuPOP users is available in the online simuPOP cookbook.
+ contributed by simuPOP users is available in the online simuPOP cookbook
+ (
+\family typewriter
+http://simupop.sourceforge.net/cookbook
+\family default
+).
  They provide useful functions for different applications (e.g.
  load and manipulate HapMap samples, import and export files from another
  application) and allow users who are unfamiliar with simuPOP to perform
@@ -394,7 +401,11 @@ A simuPOP
 \series bold
 population
 \series default
- consists of individuals of the same 
+ consists of 
+\series bold
+individuals
+\series default
+ of the same 
 \series bold
 genotype structure
 \series default
@@ -449,6 +460,7 @@ A life cycle of an evolutionary process
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 Illustration of the discrete-generation evolutionary model used by simuPOP.
 \end_layout
 
@@ -534,7 +546,7 @@ post-mating operators
  The offspring population will then become the parental population of the
  next evolutionary cycle.
  Many simuPOP operators can be applied in different stages so the type of
- an operator is determined by when it is applied.
+ an operator is determined by the stage at which it is applied.
 \end_layout
 
 \begin_layout Standard
@@ -687,6 +699,8 @@ pack_year
 \begin_layout Enumerate
 simuPOP does not impose a limit on the number of homologous sets of chromosomes,
  the size of the genome or populations.
+ The size of your simulation is only limited by the physical memory of your
+ computer.
 \end_layout
 
 \begin_layout Enumerate
@@ -728,7 +742,8 @@ nt (case–control, affected sibpairs, random, nuclear and large pedigrees),
 \begin_layout Enumerate
 Mating schemes can work on virtual subpopulations of a subpopulation.
  For example, positive assortative mating can be implemented by mating individua
-ls with similar properties such as ancestry.
+ls with similar properties such as ancestry and overlapping generations
+ could be simulated by copying individuals acorss generations.
  The number of offspring per mating event can be fixed or can follow a statistic
 al distribution.
  
@@ -867,7 +882,8 @@ python setup.py install
 \family typewriter
 installation
 \family default
- section of the simupop website for more information.
+ section of the simupop website for instructions for specific platforms
+ and compilers.
 \end_layout
 
 \begin_layout Standard
@@ -899,10 +915,18 @@ R
 \family typewriter
 rpy
 \family default
- to plot figures, it is recommended that you install them.
+ (not 
+\family typewriter
+rpy2
+\family default
+) to plot figures, 
+\series bold
+it is hihgly recommended that you install R and RPy with simuPOP
+\series default
+.
  In addition, although simuPOP uses the standard 
 \family typewriter
-tkInter
+Tkinter
 \family default
  GUI toolkit when a graphical user interface is needed, it can make use
  of a 
@@ -957,7 +981,15 @@ reference "cha:A-real-example"
 
 \end_inset
 
-) demonstrates how to write a script to solve a real-world simulation problem.
+) demonstrates how to write a script to solve a real-world simulation problem
+ and the last chapter (Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Advanced-topics"
+
+\end_inset
+
+) describes some advanced simulation techniques.
  Because some sections describe advanced features that are only used in
  the construction of highly complex simulations, or implementation details
  that concern only advanced users, new simuPOP users can safely skip these
@@ -965,7 +997,11 @@ reference "cha:A-real-example"
  
 \series bold
 Sections that describe advanced topics are marked by one or two asterisks
- (*) after the section heads
+ (*) after the section
+\series default
+ 
+\series bold
+titles
 \series default
 .
 \end_layout
@@ -987,7 +1023,7 @@ reference "cha:simuPOP-Operators"
 
 \end_inset
 
- quickly and understand what simuPOP is and what features it provide.
+ quickly and understand what simuPOP is and what features it provides.
  Then, you can read Chapter 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1251,7 +1287,7 @@ If you are new to simuPOP, please read this guide before you dive into
 the simuPOP reference manual
 \emph default
 , which describes all the details of simuPOP but does not show you how to
- use it.
+ use them.
  Both documents are available online at 
 \family typewriter
 http://simupop.sourceforge.net
@@ -1340,7 +1376,7 @@ Standard libraries have detailed debug and run-time validation mechanism
 \end_layout
 
 \begin_layout Standard
-Example 
+Examples 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lst:Use-of-standard-module"
@@ -1356,8 +1392,12 @@ reference "lst:Use-of-optimized-module"
 
  demonstrate the differences between standard and optimized modules, by
  executing two invalid commands.
- A standard module returns proper error messages, while an optimized module
- returns erroneous results and or simply crashes.
+ A standard module checks all input values and raises exceptions when invalid
+ inputs are detected.
+ An interactive Python session would catch these exceptions and print proper
+ error messages.
+ In constrast, an optimized module returns erroneous results and or simply
+ crashes when such inputs are given.
 \end_layout
 
 \begin_layout Standard
@@ -1412,12 +1452,12 @@ Use of optimized simuPOP modules
 
 \begin_layout Plain Layout
 
->>> from simuPOP import *
+>>> import simuPOP as sim
 \end_layout
 
 \begin_layout Plain Layout
 
->>> pop = population(10, loci=[2])
+>>> pop = sim.population(10, loci=[2])
 \end_layout
 
 \begin_layout Plain Layout
@@ -1462,7 +1502,7 @@ setOptions
 simuOpt
 \family default
  module to control the choice of one of the six simuPOP modules.
- By specifying one of 
+ By specifying one of the values 
 \family typewriter
 short, long
 \family default
@@ -1577,7 +1617,7 @@ The use of GUI can be controlled either globally or individually.
 \family typewriter
 SIMUGUI
 \family default
-, 
+, function 
 \family typewriter
 simuOpt.setOptions(gui)
 \family default
@@ -24350,7 +24390,14 @@ simuCDCV(model='instant', N0=10000, N1=10000, G0=500, G1=500,
 \end_layout
 
 \begin_layout Chapter
-Advanced topics *
+Advanced topics 
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:Advanced-topics"
+
+\end_inset
+
+*
 \end_layout
 
 \begin_layout Section
