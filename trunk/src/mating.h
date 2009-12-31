@@ -118,13 +118,12 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	virtual void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
+	virtual void initialize(const population & pop, SubPopID subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
+		RawIndIterator & offEnd);
 
 	/// CPPONLY
 	virtual void finalize(const population & pop)
@@ -218,13 +217,12 @@ public:
 	controlledOffspringGenerator(const controlledOffspringGenerator & rhs);
 
 	/// CPPONLY
-	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
+	void initialize(const population & pop, SubPopID subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
+		RawIndIterator & offEnd);
 
 	/// Deep copy of a controlled random mating scheme
 	virtual offspringGenerator * clone() const
@@ -919,8 +917,7 @@ public:
 	 *  mate a subpopulation, called by mate().
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator * > & ops)
+	                        RawIndIterator offBegin, RawIndIterator offEnd)
 	{
 		return true;
 	}
@@ -928,10 +925,9 @@ public:
 
 	/** CPPONLY
 	 *  Generate an offspring population \e scratch from parental population
-	 *  \e pop. During mating operators \e ops will be applied after each
-	 *  offspring is generated.
+	 *  \e pop.
 	 */
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
+	virtual bool mate(population & pop, population & scratch);
 
 	/** CPPONLY
 	 *  Prepare a scratch population \e scratch.
@@ -1018,7 +1014,7 @@ protected:
    bool prepareScratchPop(population & pop, population & scratch);
 
    /// CPPONLY
-   virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
+   virtual bool mate(population & pop, population & scratch);
 
    private:
    pedigree m_ped;
@@ -1120,8 +1116,7 @@ public:
 
 	/// CPPONLY
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:
 	parentChooser * m_parentChooser;
@@ -1199,7 +1194,7 @@ public:
 	/** CPPONLY Call each homogeneous mating scheme to populate offspring
 	 *  generation.
 	 */
-	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
+	bool mate(population & pop, population & scratch);
 
 private:
 	vectormating m_matingSchemes;

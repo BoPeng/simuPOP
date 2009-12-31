@@ -43,14 +43,6 @@ using std::vector;
 using std::fill;
 using std::swap;
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-
 #ifndef OPTIMIZED
 #  include <time.h>
 
@@ -111,11 +103,9 @@ private:
 /** A simuPOP simulator is responsible for evolving one or more replicates
  *  of a \e population forward in time, subject to various \e operators.
  *  Populations in a simulator are created as identical copies of a population
- *  and will become different after evolution. A <em>mating scheme</em> needs
- *  to be specified, which will be used to generate offspring generations during
- *  evolution. A number of functions are provided to access simulator
- *  properties, access populations and their variables, copy, save and load a
- *  simulator.
+ *  and will become different after evolution. A number of functions are
+ *  provided to access simulator properties, access populations and their
+ *  variables, copy, save and load a simulator.
  *
  *  The most important member function of a simulator is \c evolve, which
  *  evolves populations forward in time, subject to various \e operators. For
@@ -134,7 +124,7 @@ public:
 	 *  \note Population \e pop is copied to a simulator so the input
 	 *  population will be kept untouched.
 	 */
-	simulator(const population & pop, mating & matingScheme, UINT rep = 1);
+	simulator(const population & pop, UINT rep = 1);
 
 	// destroy a simulator along with all its populations
 	~simulator();
@@ -219,7 +209,7 @@ public:
 	string describe(
 		const opList & initOps = opList(),
 		const opList & preOps = opList(),
-		const opList & duringOps = opList(),
+		const mating & matingScheme = mating(),
 		const opList & postOps = opList(),
 		const opList & finalOps = opList(),
 		int gen = -1);
@@ -274,7 +264,7 @@ public:
 	vectoru evolve(
 		const opList & initOps = opList(),
 		const opList & preOps = opList(),
-		const opList & duringOps = opList(),
+		const mating & matingScheme = mating(),
 		const opList & postOps = opList(),
 		const opList & finalOps = opList(),
 		int gen = -1);
@@ -283,11 +273,6 @@ public:
 	/// CPPONLY apply a list of operators to all populations
 	bool apply(const opList & ops);
 
-
-	/** Set a new mating scheme \e matingScheme to a simulator.
-	 *  <group>7-change</group>
-	 */
-	void setMatingScheme(const mating & matingScheme);
 
 	/** Return the local namespace of the \e rep-th population, equivalent to
 	 *  <tt>x.population(rep).vars(subPop)</tt>.
@@ -305,61 +290,6 @@ public:
 	/// Note that mating schemes are not tested.
 	int __cmp__(const simulator & rhs) const;
 
-	/** Save a simulator to file \c filename, which can be loaded by a global
-	 *  function \c LoadSimulator.
-	 *  <group>0-stru</group>
-	 */
-	void save(string filename) const;
-
-	/// CPPONLY load simulator from a file
-	void load(string filename);
-
-private:
-	friend class boost::serialization::access;
-
-	template<class Archive>
-	void save(Archive & ar, const UINT version) const
-	{
-		ULONG l_gen = gen();
-		ar & l_gen;
-		ar & m_numRep;
-
-		DBG_DO(DBG_SIMULATOR, cerr	<< "Saving a simulator with "
-			                        << m_numRep << " populations." << endl);
-
-		// ignore scratch population
-		for (UINT i = 0; i < m_numRep; i++)
-			ar & (*m_ptrRep[i]);
-	}
-
-
-	template<class Archive>
-	void load(Archive & ar, const UINT version)
-	{
-		ULONG l_gen;
-		ar & l_gen;
-
-		ar & m_numRep;
-
-		DBG_DO(DBG_SIMULATOR, cerr	<< "Loading a simulator with "
-			                        << m_numRep << " populations." << endl);
-
-		m_ptrRep = vector<population *>(m_numRep);
-
-		for (UINT i = 0; i < m_numRep; ++i) {
-			m_ptrRep[i] = new population();
-			ar & (*m_ptrRep[i]);
-			m_ptrRep[i]->setRep(i);
-		}
-		m_scratchPop = new population(*m_ptrRep[0]);
-
-		// only after all replicates are ready do we set gen
-		setGen(l_gen);
-	}
-
-
-	BOOST_SERIALIZATION_SPLIT_MEMBER();
-
 private:
 	/// access scratch population
 	population & scratchpopulation()
@@ -371,9 +301,6 @@ private:
 private:
 	/// current generation
 	ULONG m_gen;
-
-	/// mating functor that will do the mating.
-	mating * m_matingScheme;
 
 	/// number of replicates of population
 	UINT m_numRep;
@@ -390,17 +317,6 @@ private:
 
 };
 
-/// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
-simulator & LoadSimulator(const string & file,
-	mating & matingScheme);
-
 }
-
-#ifndef SWIG
-#  ifndef _NO_SERIALIZATION_
-// version 0: base (reset for version 1.0)
-BOOST_CLASS_VERSION(simuPOP::simulator, 0)
-#  endif
-#endif
 
 #endif

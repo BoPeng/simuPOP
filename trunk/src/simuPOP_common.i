@@ -348,6 +348,13 @@ pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
 pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
+def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[], finalOps=[]):
+    simu = simulator(self)
+    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps)
+    self = simu.extract(0)
+    return gen[0]
+
+population.evolve = evolve_pop
 
 def _new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate

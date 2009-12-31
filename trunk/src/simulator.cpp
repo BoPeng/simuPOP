@@ -43,7 +43,7 @@ population & pyPopIterator::next()
 }
 
 
-simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
+simulator::simulator(const population & pop, UINT rep)
 	: m_gen(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
@@ -51,12 +51,6 @@ simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating simulator " << endl);
 
-	m_matingScheme = matingScheme.clone();
-	DBG_DO(DBG_SIMULATOR, cerr << "mating scheme copied" << endl);
-
-	if (!m_matingScheme->isCompatible(pop))
-		throw ValueError
-			("mating type is not compatible with current population settings.");
 
 	// create replicates of given population
 	m_ptrRep = vector<population *>(m_numRep);
@@ -94,19 +88,15 @@ simulator::~simulator()
 
 	for (UINT i = 0; i < m_numRep; ++i)
 		delete m_ptrRep[i];
-
-	delete m_matingScheme;
 }
 
 
 simulator::simulator(const simulator & rhs) :
 	m_gen(rhs.m_gen),
-	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
 	m_ptrRep(0),
 	m_scratchPop(NULL)
 {
-	m_matingScheme = rhs.m_matingScheme->clone();
 	m_scratchPop = rhs.m_scratchPop->clone();
 	m_ptrRep = vector<population *>(m_numRep);
 	for (size_t i = 0; i < m_numRep; ++i) {
@@ -143,13 +133,6 @@ population & simulator::extract(UINT rep)
 }
 
 
-void simulator::setMatingScheme(const mating & matingScheme)
-{
-	delete m_matingScheme;
-	m_matingScheme = matingScheme.clone();
-}
-
-
 void simulator::add(const population & pop)
 {
 	++m_numRep;
@@ -171,12 +154,12 @@ void simulator::setGen(ULONG gen)
 
 string simulator::describe(const opList & initOps,
                            const opList & preOps,
-                           const opList & duringOps,
+                           const mating & matingScheme,
                            const opList & postOps,
                            const opList & finalOps,
                            int gen)
 {
-	if (initOps.empty() && preOps.empty() && duringOps.empty() && postOps.empty() && finalOps.empty() && gen == -1)
+	if (initOps.empty() && preOps.empty() && postOps.empty() && finalOps.empty() && gen == -1)
 		return "<simuPOP.simulator> a simulator with " + toStr(m_numRep) + " population" + (m_numRep == 1 ? "." : "s.");
 
 	vectorstr allDesc(m_numRep, "");
@@ -212,13 +195,7 @@ string simulator::describe(const opList & initOps,
 			desc << "</ul>\n";
 		}
 		desc	<< "\n<li>Populate an offspring populaton from the parental population using mating scheme "
-		        << m_matingScheme->describe(false) << endl;
-		if (!duringOps.empty()) {
-			desc << "<ul>\nWith additional during mating operators\n<ul>\n";
-			for (size_t it = 0; it < duringOps.size(); ++it)
-				desc << "<li>" << duringOps[it]->describe(false) << " " << duringOps[it]->applicability() << endl;
-			desc << "</ul>\n</ul>\n";
-		}
+		        << matingScheme.describe(false) << endl;
 		//
 		if (postOps.empty())
 			desc << "\n<li>No operator is applied to the offspring population (postOps)." << endl;
@@ -270,24 +247,25 @@ string simulator::describe(const opList & initOps,
 vectoru simulator::evolve(
                           const opList & initOps,
                           const opList & preOps,
-                          const opList & duringOps,
+                          const mating & matingScheme,
                           const opList & postOps,
                           const opList & finalOps,
                           int gens)
 {
+	if (numRep() == 0)
+		return vectoru();
+
 	// check compatibility of operators
 	for (size_t i = 0; i < preOps.size(); ++i) {
 		DBG_ASSERT(preOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + preOps[i]->describe() + " is not compatible.");
 	}
-	for (size_t i = 0; i < duringOps.size(); ++i) {
-		DBG_ASSERT(duringOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
-			"Operator " + duringOps[i]->describe() + " is not compatible.");
-	}
 	for (size_t i = 0; i < postOps.size(); ++i) {
 		DBG_ASSERT(postOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + postOps[i]->describe() + " is not compatible.");
 	}
+	if (!matingScheme.isCompatible(pop(0)))
+		throw ValueError("mating type is not compatible with current population settings.");
 
 	vector<bool> activeReps(m_numRep);
 	fill(activeReps.begin(), activeReps.end(), true);
@@ -377,18 +355,9 @@ vectoru simulator::evolve(
 			if (!activeReps[curRep])
 				continue;
 			// start mating:
-			// find out active during-mating operators
-			vectorop activeDuringMatingOps;
-			for (vectorop::const_iterator op = duringOps.begin(), opEnd = duringOps.end();
-			     op != opEnd; ++op) {
-				if ( (*op)->isActive(curRep, m_gen, end, activeReps))
-					activeDuringMatingOps.push_back(*op);
-			}
-
 			try {
-				if (!m_matingScheme->mate(curPop, scratchpopulation(), activeDuringMatingOps)) {
-					DBG_DO(DBG_SIMULATOR, cerr << "During-mating Operator stops at replicate "
-						+ toStr(curRep) << endl);
+				if (!const_cast<mating&>(matingScheme).mate(curPop, scratchpopulation())) {
+					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " + toStr(curRep) << endl);
 
 					numStopped++;
 					activeReps[curRep] = false;
@@ -511,51 +480,6 @@ int simulator::__cmp__(const simulator & rhs) const
 			return 1;
 
 	return 0;
-}
-
-
-void simulator::save(string filename) const
-{
-	boost::iostreams::filtering_ostream ofs;
-
-	ofs.push(boost::iostreams::gzip_compressor());
-	ofs.push(boost::iostreams::file_sink(filename, std::ios::binary));
-
-	if (!ofs)
-		throw RuntimeError("Can not open file " + filename);
-
-	boost::archive::text_oarchive oa(ofs);
-	oa << *this;
-}
-
-
-void simulator::load(string filename)
-{
-	boost::iostreams::filtering_istream ifs;
-
-	ifs.push(boost::iostreams::gzip_decompressor());
-	ifs.push(boost::iostreams::file_source(filename, std::ios::binary));
-
-	// do not need to test again
-	if (!ifs)
-		throw RuntimeError("Can not open file " + filename);
-
-	try {
-		boost::archive::text_iarchive ia(ifs);
-		ia >> *this;
-	} catch (...) {
-		throw RuntimeError("Failed to load simulator. Your file may be corrupted.");
-	}
-}
-
-
-simulator & LoadSimulator(const string & file, mating & matingScheme)
-{
-	population p;
-	simulator * a = new simulator(p, matingScheme);
-
-	a->load(file);
-	return *a;
 }
 
 
