@@ -17,15 +17,15 @@ import unittest, os, sys, random, math, sets, exceptions
 
 class TestMatingSchemes(unittest.TestCase):
 
-    def getFamSize(self, ms, gen=1, N=1000):
+    def getFamSize(self, numOffspring, gen=1, N=1000):
         '''Check the number of offspring for each family using
            information field father_idx'''
         simu = simulator(
-            population(size=[N], infoFields=['father_idx', 'mother_idx']),
-            matingScheme=ms)
+            population(size=[N], infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = initSex(),
-            duringOps = parentsTagger(),
+            matingScheme=randomMating(numOffspring=numOffspring,
+                ops=[mendelianGenoTransmitter(), parentsTagger()]),
             gen=gen)
         # get the parents of each offspring
         parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
@@ -51,9 +51,9 @@ class TestMatingSchemes(unittest.TestCase):
             self.assertEqual(pop.subPopSizes(), intended_size)
 
         pop = population(size=[500, 1000], infoFields=['migrate_to'])
-        simu = simulator(pop, randomMating(subPopSize=demo))
-        simu.evolve(
+        pop.evolve(
             initOps = [initSex()],
+            matingScheme = randomMating(subPopSize=demo),
             postOps = pyOperator(func=demoSize),
             gen = 100
         )
@@ -63,22 +63,22 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing number of offspring'
         # single number
         self.assertEqual(
-             self.getFamSize(randomMating(numOffspring=5), N=50),
+             self.getFamSize(numOffspring=5, N=50),
              [5]*10)
 
         # Python function
         def nos(gen):
             return gen%2+1
         self.assertEqual(
-            self.getFamSize(randomMating(numOffspring=nos), gen=2),
+            self.getFamSize(numOffspring=nos, gen=2),
             [2]*500)
         self.assertEqual(
-            self.getFamSize(randomMating(numOffspring=nos), gen=3),
+            self.getFamSize(numOffspring=nos, gen=3),
             [1]*1000)
         # randomnumber
         def nos(gen):
             return random.randint(1, 3)
-        cnt = self.getFamSize(randomMating(numOffspring=nos), N=1000)
+        cnt = self.getFamSize(numOffspring=nos, N=1000)
         self.assertEqual(sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1, 4) ]
         #
@@ -87,8 +87,7 @@ class TestMatingSchemes(unittest.TestCase):
             assert num[i] < mean + 50 and num[i] > mean - 50
         # GEOMETRIC_DISTRIBUTION
         p = 0.33
-        cnt = self.getFamSize(randomMating(
-            numOffspring=(GEOMETRIC_DISTRIBUTION, p)), N=10000)
+        cnt = self.getFamSize( numOffspring=(GEOMETRIC_DISTRIBUTION, p), N=10000)
         # mean should be 1/p, variance (1-p)/(p*p)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
@@ -96,8 +95,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(abs(var - (1-p)/(p*p)) < 1, True)
         # POISSON_DISTRIBUTION
         p = 3
-        cnt = self.getFamSize(randomMating(
-            numOffspring=(POISSON_DISTRIBUTION, p)), N=100000)
+        cnt = self.getFamSize( numOffspring=(POISSON_DISTRIBUTION, p), N=100000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (p+1)) < 0.1, True)
@@ -105,8 +103,7 @@ class TestMatingSchemes(unittest.TestCase):
         # BINOMIAL_DISTRIBUTION
         p = 0.3
         n = 10
-        cnt = self.getFamSize(randomMating(
-            numOffspring=(BINOMIAL_DISTRIBUTION, p, n)), N=10000)
+        cnt = self.getFamSize( numOffspring=(BINOMIAL_DISTRIBUTION, p, n), N=10000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - ((n-1)*p+1)) < 0.1, True)
@@ -114,17 +111,14 @@ class TestMatingSchemes(unittest.TestCase):
         # UNIFORM_DISTRIBUTION
         a = 3
         b = 6
-        cnt = self.getFamSize(randomMating(
-            numOffspring=(UNIFORM_DISTRIBUTION, a, b)), N=10000)
+        cnt = self.getFamSize( numOffspring=(UNIFORM_DISTRIBUTION, a, b), N=10000)
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (a + b)/2.) < 0.1, True)
 
     def checkSexMode(self, ms):
-        simu = simulator(
-            population(size=[40]),
-            matingScheme=ms)
-        simu.evolve(initOps = initSex(), gen=1)
+        simu = simulator( population(size=[40]))
+        simu.evolve(initOps = initSex(), matingScheme=ms, gen=1)
         # return individual sex as a string
         return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
@@ -146,9 +140,10 @@ class TestMatingSchemes(unittest.TestCase):
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
         # PROB_OF_MALES
         pop = population(10000)
-        simu = simulator(pop, randomMating(sexMode=(PROB_OF_MALES, 0.3)))
+        simu = simulator(pop)
         simu.evolve(
             initOps = [initSex(), initByFreq([0.5, 0.5])],
+            matingScheme = randomMating(sexMode=(PROB_OF_MALES, 0.3)),
             postOps = [
                 stat(numOfMales=True),
                 # number of male should be variable, but not too much
@@ -162,10 +157,11 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing monogemous mating scheme'
         pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
         InitByFreq(pop, [0.2, 0.3, 0.5])
-        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1)))
+        simu = simulator(pop)
         simu.evolve(
             initOps = initSex(sex=(MALE, FEMALE)), 
-            duringOps = parentsTagger(),
+            matingScheme =  monogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1),
+                ops=[mendelianGenoTransmitter(), parentsTagger()]),
             gen = 5)
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
@@ -175,17 +171,14 @@ class TestMatingSchemes(unittest.TestCase):
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
         pop = population(size=[10000, 10000], loci=[2], infoFields=['father_idx', 'mother_idx'])
-        simu = simulator(pop,
-            heteroMating(
-                [randomMating(numOffspring=2, subPops=0),
-                randomMating(numOffspring=4, subPops=1)])
-        )
-        simu.evolve(
+        pop.evolve(
             initOps = initSex(),
-            duringOps = parentsTagger(),
+            matingScheme=heteroMating(
+                [randomMating(numOffspring=2, subPops=0, ops=[mendelianGenoTransmitter(), parentsTagger()]),
+                randomMating(numOffspring=4, subPops=1, ops=[mendelianGenoTransmitter(), parentsTagger()])]),
             gen=10)      
-        parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
-            simu.population(0).indInfo('father_idx'))]
+        parents = [(x, y) for x, y in zip(pop.indInfo('mother_idx'),
+            pop.indInfo('father_idx'))]
         # Individuals with identical parents are considered as siblings.
         famSize = []
         lastParent = (-1, -1)
@@ -200,19 +193,17 @@ class TestMatingSchemes(unittest.TestCase):
         # virtual subpopulation
         pop = population(size =[20000, 20000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
-        simu = simulator(pop, heteroMating(
-            matingSchemes = [
-                randomMating(numOffspring=1, subPops=[(0,0)]),
-                randomMating(numOffspring=2, subPops=[(1,1)])
-            ])
-        )
-        simu.evolve(
+        pop.evolve(
             initOps = initSex(),
-            duringOps = parentsTagger(),
+            matingScheme = heteroMating(
+                matingSchemes = [
+                randomMating(numOffspring=1, subPops=[(0,0)], ops=[mendelianGenoTransmitter(), parentsTagger()]),
+                randomMating(numOffspring=2, subPops=[(1,1)], ops=[mendelianGenoTransmitter(), parentsTagger()]),
+                ]),
             gen =10
         )
-        parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
-            simu.population(0).indInfo('father_idx'))]
+        parents = [(x, y) for x, y in zip(pop.indInfo('mother_idx'),
+            pop.indInfo('father_idx'))]
         # Individuals with identical parents are considered as siblings.
         famSize = []
         lastParent = (-1, -1)
@@ -232,10 +223,10 @@ class TestMatingSchemes(unittest.TestCase):
         for i in range(100):
             pop.individual(i).setSex(MALE)
             pop.individual(100+i).setSex(FEMALE)
-        simu = simulator(pop, polygamousMating(polySex=MALE, polyNum=3, numOffspring=2))
+        simu = simulator(pop)
         simu.evolve(
             initOps = [],
-            duringOps = parentsTagger(),
+            matingScheme = polygamousMating(polySex=MALE, polyNum=3, numOffspring=2,ops=[mendelianGenoTransmitter(), parentsTagger()]),
             gen = 1)
         # there is only one MALE...
         fi = simu.population(0).indInfo('father_idx')
@@ -250,40 +241,23 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing pedigree mating using a population object'
         pop = population(size=[100, 100], loci=[2, 5], ancGen=-1,
             infoFields=['father_idx', 'mother_idx'])
-        simu = simulator(pop, randomMating())
-        simu.evolve(
+        pop.evolve(
             initOps = initSex(),
-            duringOps = parentsTagger(),
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(), parentsTagger()]),
             gen = 20
         )
-        return
-        ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
-        simu = simulator(pop, pedigreeMating(ped,
-            offspringGenerator(mendelianGenoTransmitter())))
-        simu.evolve(
-            duringOps = parentsTagger(),
-            gen = 100
-        )
-        ped1 = simu.extract(0)
-        self.assertEqual(simu.gen(), 21)
-        # compare two populations!
-        self.assertEqual(ped.ancestralGens(), ped1.ancestralGens())
-        self.assertEqual(ped.ancestralGens(), 20)
-        for gen in range(21):
-            ped.useAncestralGen(gen)
-            ped1.useAncestralGen(gen)
-            self.assertEqual(ped.indInfo('father_idx'), ped1.indInfo('father_idx'))
-            self.assertEqual(ped.indInfo('mother_idx'), ped1.indInfo('mother_idx'))
 
     def testSequentialParentsChooser(self):
         'Testing sequential parent chooser'
         pop = population(size=[100, 200], infoFields=['parent_idx'])
         InitByFreq(pop, [.3, .7])
-        simu = simulator(pop, homoMating(
-            sequentialParentsChooser(),
-            offspringGenerator(selfingGenoTransmitter())))
-        simu.evolve(
-            duringOps = parentsTagger(infoFields='parent_idx'), 
+        pop.evolve(
+            matingScheme = homoMating(
+                sequentialParentsChooser(),
+                offspringGenerator(ops=[
+                    selfingGenoTransmitter(),
+                    parentsTagger(infoFields='parent_idx'), 
+                    ])),
             gen=1)
 
     def testRandomParentsChooser(self):
@@ -292,11 +266,12 @@ class TestMatingSchemes(unittest.TestCase):
             return [0.5 + gen*0.01]
         pop = population(size=[1000, 2000], infoFields=['parent_idx'])
         InitByFreq(pop, [.2, .8])
-        simu = simulator(pop, homoMating(
-            randomParentChooser(),
-            offspringGenerator(selfingGenoTransmitter())))
-        simu.evolve(
-            duringOps = parentsTagger(infoFields='parent_idx'), 
+        pop.evolve(
+            matingScheme= homoMating(
+                randomParentChooser(),
+                offspringGenerator([selfingGenoTransmitter(),
+                    parentsTagger(infoFields='parent_idx'), 
+                ])),
             gen=1)
 
     def testPyParentsChooserRetValue(self):
@@ -326,13 +301,11 @@ class TestMatingSchemes(unittest.TestCase):
                 yield 0, pop.subPopSize(sp)
         def testPyRetValue(func):
             pop = population([200]*5)
-            simu = simulator(pop,
-                homoMating(
+            pop.evolve(
+                matingScheme= homoMating(
                     pyParentsChooser(func),
                     offspringGenerator(cloneGenoTransmitter())
-                )
-            )
-            simu.evolve(
+                ),
                 gen = 5
             )
         testPyRetValue(retIndex)
@@ -349,16 +322,15 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[50, 100], loci=[5]*5, ploidy=1,
             chromTypes=[CUSTOMIZED]*5)
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, 
-            randomMating(ops=[mitochondrialGenoTransmitter()]))
-        simu.evolve(
+        pop.evolve(
             initOps = [initSex(),
                 # female has [1]
                 initByValue([1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
+            matingScheme=randomMating(ops=[mitochondrialGenoTransmitter()]),
             gen = 1
         )
-        self.assertEqual(simu.population(0).genotype(), [1]*(150*25))
+        self.assertEqual(pop.genotype(), [1]*(150*25))
 
 
 
