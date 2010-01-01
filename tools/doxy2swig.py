@@ -556,11 +556,10 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::population::evolve',
              'type': u'memberofclass_simuPOP::population',
              'Description': '',
-             'Details': evolve_pop['Description'],
+             'Details': ur'<group>7-evolve</group>' + evolve_pop['Description'],
              'Usage': 'x.' + evolve_pop['Usage'].replace('evolve_pop', 'evolve').replace('self, ', ''),
             },
         ])
-
         # change a few usages:
         print "Number of entries: ", len(self.content)
         def myhash(entry):

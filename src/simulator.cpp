@@ -43,36 +43,73 @@ population & pyPopIterator::next()
 }
 
 
-simulator::simulator(const population & pop, UINT rep)
-	: m_numRep(rep)
+simulator::simulator(PyObject * pops, UINT rep, bool steal)
 {
-	DBG_ASSERT(m_numRep >= 1, ValueError,
+	DBG_ASSERT(rep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating simulator " << endl);
+	m_pops = vector<population *>();
 
-
+	if (PySequence_Check(pops)) {
+		UINT size = PySequence_Size(pops);
+		for (size_t i = 0; i < size; ++i) {
+			PyObject * item = PySequence_GetItem(pops, i);
+			void * pop = pyPopPointer(item);
+			DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
+			if (steal) {
+				population * tmp = new population();
+				tmp->swap(*reinterpret_cast<population*>(pop));
+				m_pops.push_back(tmp);
+			} else {
+				try {
+					m_pops.push_back(reinterpret_cast<population*>(pop)->clone());
+					DBG_FAILIF(m_pops.back() == NULL,
+						SystemError, "Fail to create new replicate");
+				} catch (...) {
+					throw RuntimeError("Failed to create a population.");
+				}
+			}
+			Py_DECREF(item);
+		}
+	} else {
+		void * pop  = pyPopPointer(pops);
+		DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
+		if (steal) {
+			population * tmp = new population();
+			tmp->swap(*reinterpret_cast<population*>(pop));
+			m_pops.push_back(tmp);
+		} else {
+			try {
+				m_pops.push_back(reinterpret_cast<population*>(pop)->clone());
+				DBG_FAILIF(m_pops.back() == NULL,
+					SystemError, "Fail to create new replicate");
+			} catch (...) {
+				throw RuntimeError("Failed to create a population.");
+			}
+		}
+	}
+	// parameter rep
+	UINT numRep = m_pops.size();
+	for (UINT i = 1; i < rep; ++i) {
+		for (UINT j = 0; j < numRep; ++j) {
+			try {
+				m_pops.push_back(m_pops[j]->clone());
+				DBG_FAILIF(m_pops.back() == NULL,
+					SystemError, "Fail to create new replicate.");
+			} catch (...) {
+				throw RuntimeError("Failed to create a population.");
+			}
+		}
+	}
+	// set var "rep"
+	for (UINT i = 0; i < m_pops.size(); ++i)
+		m_pops[i]->setRep(i);
 	// create replicates of given population
-	m_ptrRep = vector<population *>(m_numRep);
-	m_scratchPop = new population(pop);
+	m_scratchPop = new population();
 
 	DBG_FAILIF(m_scratchPop == NULL,
 		SystemError, "Fail to create scratch population");
-
-	try {
-		for (UINT i = 0; i < m_numRep; ++i) {
-			m_ptrRep[i] = new population(pop);
-
-			DBG_FAILIF(m_ptrRep[i] == NULL,
-				SystemError, "Fail to create new replicate");
-
-			// set replication number
-			m_ptrRep[i]->setRep(i);
-		}
-	} catch (...) {
-		cerr << "Can not create " << m_numRep << " populations" << endl;
-		throw RuntimeError("Failed to create a population.");
-	}
 
 	// set generation number for all replicates
 	DBG_DO(DBG_SIMULATOR, cerr << "simulator created" << endl);
@@ -84,21 +121,20 @@ simulator::~simulator()
 	// call the destructor of each replicates
 	delete m_scratchPop;
 
-	for (UINT i = 0; i < m_numRep; ++i)
-		delete m_ptrRep[i];
+	for (UINT i = 0; i < m_pops.size(); ++i)
+		delete m_pops[i];
 }
 
 
 simulator::simulator(const simulator & rhs) :
-	m_numRep(rhs.m_numRep),
-	m_ptrRep(0),
+	m_pops(0),
 	m_scratchPop(NULL)
 {
 	m_scratchPop = rhs.m_scratchPop->clone();
-	m_ptrRep = vector<population *>(m_numRep);
-	for (size_t i = 0; i < m_numRep; ++i) {
-		m_ptrRep[i] = rhs.m_ptrRep[i]->clone();
-		m_ptrRep[i]->setRep(i);
+	m_pops = vector<population *>(rhs.m_pops.size());
+	for (size_t i = 0; i < m_pops.size(); ++i) {
+		m_pops[i] = rhs.m_pops[i]->clone();
+		m_pops[i]->setRep(i);
 	}
 }
 
@@ -111,37 +147,34 @@ simulator * simulator::clone() const
 
 population & simulator::pop(UINT rep) const
 {
-	DBG_FAILIF(rep >= m_numRep, IndexError,
+	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
 
-	return *m_ptrRep[rep];
+	return *m_pops[rep];
 }
 
 
 population & simulator::extract(UINT rep)
 {
-	DBG_FAILIF(rep >= m_numRep, IndexError,
+	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
 
-	population * pop = m_ptrRep[rep];
-	m_ptrRep.erase(m_ptrRep.begin() + rep);
-	--m_numRep;
+	population * pop = m_pops[rep];
+	m_pops.erase(m_pops.begin() + rep);
 	return *pop;
 }
 
 
-void simulator::add(const population & pop, bool clone)
+void simulator::add(const population & pop, bool steal)
 {
-	++m_numRep;
 
-    if (clone)
-    	m_ptrRep.push_back(new population(pop));
-    else {
+    if (steal) {
         population * tmp = new population();
         const_cast<population&>(pop).swap(*tmp);
-        m_ptrRep.push_back(tmp);
-    }
-	DBG_FAILIF(m_ptrRep.back() == NULL,
+        m_pops.push_back(tmp);
+    } else
+    	m_pops.push_back(new population(pop));
+	DBG_FAILIF(m_pops.back() == NULL,
 		RuntimeError, "Fail to add new population.");
 }
 
@@ -154,14 +187,14 @@ string simulator::describe(const opList & initOps,
                            int gen)
 {
 	if (initOps.empty() && preOps.empty() && postOps.empty() && finalOps.empty() && gen == -1)
-		return "<simuPOP.simulator> a simulator with " + toStr(m_numRep) + " population" + (m_numRep == 1 ? "." : "s.");
+		return "<simuPOP.simulator> a simulator with " + toStr(m_pops.size()) + " population" + (m_pops.size() == 1 ? "." : "s.");
 
-	vectorstr allDesc(m_numRep, "");
+	vectorstr allDesc(m_pops.size(), "");
 
 	// assuming all active replicates.
-	vector<bool> activeReps(m_numRep);
+	vector<bool> activeReps(m_pops.size());
 
-	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		ostringstream desc;
 
 		if (initOps.empty())
@@ -211,7 +244,7 @@ string simulator::describe(const opList & initOps,
 	}
 	ostringstream desc;
 	vectoru reps;
-	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		if (reps.empty())
 			reps.push_back(curRep);
 		else {
@@ -249,22 +282,22 @@ vectoru simulator::evolve(
 
 	// check compatibility of operators
 	for (size_t i = 0; i < preOps.size(); ++i) {
-		DBG_ASSERT(preOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
+		DBG_ASSERT(preOps[i]->isCompatible(*m_pops[0]), ValueError,
 			"Operator " + preOps[i]->describe() + " is not compatible.");
 	}
 	for (size_t i = 0; i < postOps.size(); ++i) {
-		DBG_ASSERT(postOps[i]->isCompatible(*m_ptrRep[0]), ValueError,
+		DBG_ASSERT(postOps[i]->isCompatible(*m_pops[0]), ValueError,
 			"Operator " + postOps[i]->describe() + " is not compatible.");
 	}
 	if (!matingScheme.isCompatible(pop(0)))
 		throw ValueError("mating type is not compatible with current population settings.");
 
-	vector<bool> activeReps(m_numRep);
+	vector<bool> activeReps(m_pops.size());
 	fill(activeReps.begin(), activeReps.end(), true);
 	UINT numStopped = 0;
 
 	// evolved generations, which will be returned.
-	vectoru evolvedGens(m_numRep, 0U);
+	vectoru evolvedGens(m_pops.size(), 0U);
 
 	// does not evolve.
 	if (gens == 0)
@@ -281,10 +314,10 @@ vectoru simulator::evolve(
 	ElapsedTime("PreopDone");
 
 	// make sure rep and gen exists in pop
-	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-		if (!m_ptrRep[curRep]->getVars().hasVar("gen"))
-			m_ptrRep[curRep]->setGen(0);
-		m_ptrRep[curRep]->setRep(curRep);
+	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+		if (!m_pops[curRep]->getVars().hasVar("gen"))
+			m_pops[curRep]->setGen(0);
+		m_pops[curRep]->setRep(curRep);
 	}
 
 	while (1) {
@@ -293,8 +326,8 @@ vectoru simulator::evolve(
 		saveRefCount();
 #endif
 
-		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-			population & curPop = *m_ptrRep[curRep];
+		for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+			population & curPop = *m_pops[curRep];
 			int curGen = curPop.gen();
 			int end = -1;
 			if (gens > 0)
@@ -424,7 +457,7 @@ vectoru simulator::evolve(
 		//    cur, end = cur +1
 		//    will go two generations.
 		//  therefore, step should:
-		if (numStopped == m_numRep || gens == 0)
+		if (numStopped == m_pops.size() || gens == 0)
 			break;
 	}                                                                                         // the big loop
 
@@ -441,18 +474,18 @@ bool simulator::apply(const opList & ops)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
 		// check compatibility of operators
-		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
+		DBG_ASSERT(ops[i]->isCompatible(*m_pops[0]), ValueError,
 			"Operator " + ops[i]->describe() + " is not compatible.");
 	}
 
 	// really apply
-	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-		population & curPop = *m_ptrRep[curRep];
+	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+		population & curPop = *m_pops[curRep];
 		size_t it;
 
 		// apply pre-mating ops to current gen
 		for (it = 0; it < ops.size(); ++it) {
-			vector<bool> activeReps(m_numRep);
+			vector<bool> activeReps(m_pops.size());
 			fill(activeReps.begin(), activeReps.end(), true);
 			if (!ops[it]->isActive(curRep, 0, 0, activeReps, true))
 				continue;

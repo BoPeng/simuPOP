@@ -1666,6 +1666,15 @@ void * pyIndPointer(PyObject * obj)
 }
 
 
+void * pyPopPointer(PyObject * obj)
+{
+	void * ptr = 0;
+
+	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
+	return ptr;
+}
+
+
 // Expression evaluation
 // because of ref count, need to define copier
 
