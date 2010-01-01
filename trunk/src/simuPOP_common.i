@@ -349,8 +349,13 @@ pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
 def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[], finalOps=[], gen=-1):
-    simu = simulator(self)
+    # create a simulator with small population
+    simu = simulator(population())
+    # swap the population into the simulator to avoid cloning a large population (self)
+    self.swap(simu.population(0))
+    # evolve
     gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
+    # get the evolved population
     self.swap(simu.population(0))
     return gen[0]
 

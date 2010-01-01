@@ -130,11 +130,17 @@ population & simulator::extract(UINT rep)
 }
 
 
-void simulator::add(const population & pop)
+void simulator::add(const population & pop, bool clone)
 {
 	++m_numRep;
 
-	m_ptrRep.push_back(new population(pop));
+    if (clone)
+    	m_ptrRep.push_back(new population(pop));
+    else {
+        population * tmp = new population();
+        const_cast<population&>(pop).swap(*tmp);
+        m_ptrRep.push_back(tmp);
+    }
 	DBG_FAILIF(m_ptrRep.back() == NULL,
 		RuntimeError, "Fail to add new population.");
 }

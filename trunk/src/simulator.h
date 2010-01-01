@@ -108,10 +108,7 @@ private:
  *  variables, copy, save and load a simulator.
  *
  *  The most important member function of a simulator is \c evolve, which
- *  evolves populations forward in time, subject to various \e operators. For
- *  convenience, member functions are provided to set virtual splitter, add
- *  information field and set ancestral depth to all populations in a
- *  simulator.
+ *  evolves populations forward in time, subject to various operators.
  */
 class simulator
 {
@@ -160,11 +157,13 @@ public:
 	population & pop(UINT rep) const;
 
 	/** Add a population \e pop to the end of an existing simulator. This
-	 *  creates an cloned copy of \e pop in the simulator so the evolution
-	 *  of the simulator will not change \e pop.
+	 *  function by default creates an cloned copy of \e pop in the simulator
+	 *  so the evolution of the simulator will not change \e pop. However, if
+	 *  parameter \e clone is set to \e False, the content of \c pop will be
+	 *  absorbed by the simulator, leaving an empty population.
 	 *  <group>4-modify</group>
 	 */
-	void add(const population & pop);
+	void add(const population & pop, bool clone = true);
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
@@ -205,26 +204,23 @@ public:
 	 *  initialize populations before evolution. Operators \e finalOps are
 	 *  applied to all populations after the evolution.
 	 *
-	 *  Operators \e preOps, \e duringOps and \e postOps are applied during the
-	 *  life cycle of each generation. These operators can be applied at all or
-	 *  some of the generations, to all or some of the evolving populations,
-	 *  depending the \e begin, \e end, \e step, \e at and \e reps parameters
-	 *  of these operators. These operators are applied in the order at which
-	 *  they are specified. Populations in a simulator are evolved one by one.
-	 *  At each generation, operators \e preOps are applied to the parental
+	 *  Operators \e preOps, and \e postOps are applied during the life cycle
+	 *  of each generation. These operators can be applied at all or some of
+	 *  the generations, to all or some of the evolving populations, depending
+	 *  the \e begin, \e end, \e step, \e at and \e reps parameters of these
+	 *  operators. These operators are applied in the order at which they are
+	 *  specified. Populations in a simulator are evolved one by one. At each
+	 *  generation, operators \e preOps are applied to the parental
 	 *  generations. A mating scheme is then used to populate an offspring
 	 *  generation. For each offspring, his or her sex is determined before
 	 *  during-mating operators of the mating scheme are used to transmit
-	 *  parental genotypes. During-mating operators specified in parameters
-	 *  \e duringOps are applied afterwards. An offspring will be discarded if
-	 *  any of the during-mating operator fails (return \c False). After an
-	 *  offspring generation is successfully generated and becomes the current
-	 *  generation, operators \e postOps are applied to the offspring
-	 *  generation. If any of the \e preOps and \e postOps fails (return
-	 *  \c False), the evolution of a population will be stopped. The
-	 *  generation number of a population is increased by one if an offspring
-	 *  generation has been successfully populated even if a post-during
-	 *  operator fails.
+	 *  parental genotypes. After an offspring generation is successfully
+	 *  generated and becomes the current generation, operators \e postOps are
+	 *  applied to the offspring generation. If any of the \e preOps and
+	 *  \e postOps fails (return \c False), the evolution of a population will
+	 *  be stopped. The generation number of a population is increased by one
+	 *  if an offspring generation has been successfully populated even if a
+	 *  post-during operator fails.
 	 *
 	 *  Parameter \e gen can be set to a positive number, which is the number
 	 *  of generations to evolve. Because a simulator always starts at the
@@ -236,11 +232,6 @@ public:
 	 *  the end of the evolution, the generations that each replicates have
 	 *  evolved are returned. Note that \e finalOps are applied to all applicable
 	 *  population, including those that have stopped before others.
-	 *
-	 *  The last parameter \e dryrun, if set to \c True, will print a
-	 *  description of this evolutionary process. It can help you understand
-	 *  what exactly will happen at each generation during an evolutionary
-	 *  process.
 	 *
 	 *  <group>2-evolve</group>
 	 */

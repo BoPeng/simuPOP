@@ -61,16 +61,14 @@ public:
 	 *
 	 *  A number of <em>during-mating operators</em> (parameter \e ops) can be
 	 *  used to, among other possible duties such as setting information fields
-	 *  of offspring, transmit genotype from parents to offspring. Additional
-	 *  during-mating operators passed from the \c simulator.evolve() function
-	 *  will be applied afterwards. This general offspring generator does not
-	 *  have any default during-mating operator but all stock mating schemes
-	 *  use an offspring generator with a default operator. For example, a
-	 *  \c mendelianOffspringGenerator is used by \c randomMating to trasmit
-	 *  genotypes. Note that applicability parameters \c begin, \c step,
-	 *  \c end, \c at and \c reps could be used in these operators but
-	 *  negative population and generation indexes are unsupported.
-	 *
+	 *  of offspring, transmit genotype from parents to offspring. This general
+	 *  offspring generator does not have any default during-mating operator
+	 *  but all stock mating schemes use an offspring generator with a default
+	 *  operator. For example, a \c mendelianOffspringGenerator is used by
+	 *  \c randomMating to trasmit genotypes. Note that applicability
+	 *  parameters \c begin, \c step, \c end, \c at and \c reps could be used
+	 *  in these operators but negative population and generation indexes are
+	 *  unsupported.
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each
