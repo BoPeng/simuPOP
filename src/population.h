@@ -1344,19 +1344,19 @@ public:
 	 */
 	ULONG gen() const
 	{
-        try {
-    		return m_vars.getVarAsInt("gen");
-        } catch (...) {
-            const_cast<population*>(this)->setGen(0);
-            return 0;
-        }
+		try {
+			return m_vars.getVarAsInt("gen");
+		} catch (...) {
+			const_cast<population *>(this)->setGen(0);
+			return 0;
+		}
 	}
 
 
 	/// CPPONLY
 	void setGen(ULONG gen)
 	{
-    	m_vars.setIntVar("gen", gen);
+		m_vars.setIntVar("gen", gen);
 	}
 
 
