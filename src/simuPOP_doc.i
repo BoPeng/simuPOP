@@ -218,7 +218,18 @@ Usage:
 
 %ignore simuPOP::baseMutator::mutate(AlleleRef allele, UINT locus);
 
-%ignore simuPOP::baseMutator::fillContext(const population &pop, IndAlleleIterator ptr, UINT locus);
+%feature("docstring") simuPOP::baseMutator::fillContext "
+
+Description:
+
+    a rarely used feature, performance should be a secondary
+    consideration.
+
+Usage:
+
+    x.fillContext(pop, ptr, locus)
+
+"; 
 
 %ignore simuPOP::baseMutator::setContext(int context);
 
@@ -398,7 +409,7 @@ Usage:
 
 Details:
 
-    Apply an operator to populationpop directly, without checking its
+    Apply an operator to population pop directly, without checking its
     applicability.
 
 "; 
@@ -525,7 +536,7 @@ Usage:
 
 Details:
 
-    Apply the penetrance operator to a single individualind and set
+    Apply the penetrance operator to a single individual ind and set
     his or her affection status. A generation number gen is needed if
     the penetrance model is generation-dependent. This function
     returns the affection status.
@@ -953,11 +964,10 @@ Usage:
 Details:
 
     This class implements a C++ iterator class that iterate through
-    all alleles in a (virtual) (sub) population using 1. an
-    IndIterator that will skip invisible individuals and invalid
-    alleles, or 2. a gapped iterator that will run faster, in the case
-    that a): no virtual subpopulation b): not sex chromosomes c): not
-    haplodiploid
+    all alleles in a (virtual) (sub)population using 1. an IndIterator
+    that will skip invisible individuals and invalid alleles, or 2. a
+    gapped iterator that will run faster, in the case that a): no
+    virtual subpopulation b): not sex chromosomes c): not haplodiploid
 
 "; 
 
@@ -1271,7 +1281,7 @@ Usage:
 
 Description:
 
-    Apply a dumper operator to populationpop.
+    Apply a dumper operator to population pop.
 
 Usage:
 
@@ -1302,10 +1312,6 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::Exception::Exception "
-
-Description:
-
-    constructor
 
 Usage:
 
@@ -1939,7 +1945,7 @@ Usage:
 Details:
 
     Clear (set alleles to zero) chromosome chrom on the ploidy-th
-    homologous set of chromosomes of individualind. It is equivalent
+    homologous set of chromosomes of individual ind. It is equivalent
     to ind.setGenotype([0], ploidy, chrom).
 
 "; 
@@ -2449,7 +2455,7 @@ Usage:
 
 Description:
 
-    apply the ifElse operator to populationpop.
+    apply the ifElse operator to population pop.
 
 Usage:
 
@@ -2787,7 +2793,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    individuals in a (sub) population. If allInds are true, the
+    individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
     individualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
@@ -3022,7 +3028,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub) population using 1. an IndIterator
+    infomation fields in a (sub)population using 1. an IndIterator
     that will skip invisible individuals, or 2. a gapped iterator that
     will run faster. Note that 1, 2 should yield identical result, and
     2 should be used when there is no virtual subpopulation.q
@@ -3249,7 +3255,7 @@ Usage:
 
 Description:
 
-    apply this operator to populationpop
+    apply this operator to population pop
 
 Usage:
 
@@ -3322,7 +3328,7 @@ Usage:
 
 Description:
 
-    apply this operator to populationpop
+    apply this operator to population pop
 
 Usage:
 
@@ -3395,7 +3401,7 @@ Usage:
 
 Description:
 
-    apply this operator to populationpop
+    apply this operator to population pop
 
 Usage:
 
@@ -3470,7 +3476,7 @@ Usage:
 
 Description:
 
-    apply this operator to populationpop
+    apply this operator to population pop
 
 Usage:
 
@@ -3817,7 +3823,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::maSelector::indFitness(individual *ind, ULONG gen);
+%feature("docstring") simuPOP::maSelector::indFitness "
+
+Description:
+
+    calculate/return the fitness value, currently assuming diploid
+
+Usage:
+
+    x.indFitness(ind, gen)
+
+"; 
 
 %feature("docstring") simuPOP::maSelector::describe "Obsolete or undocumented function."
 
@@ -4352,8 +4368,7 @@ Details:
     them and assign affection status accordingly. ADDITIVE,
     multiplicative, and a heterogeneour multi-locus model are
     supported. Please refer to Neil Rish (1989) \"Linkage Strategies
-    for  Genetically Complex Traits\" for some analysis of these
-    models.
+    for Genetically Complex Traits\" for some analysis of these models.
 
 "; 
 
@@ -5412,7 +5427,7 @@ Usage:
 Details:
 
     Create a cloned copy of a population. Note that Python statement
-    pop1 = pop only creates a reference to an existing populationpop.
+    pop1 = pop only creates a reference to an existing population pop.
 
 "; 
 
@@ -5608,7 +5623,7 @@ Usage:
 
 Details:
 
-    return the absolute index of an individualidx in subpopulation
+    return the absolute index of an individual idx in subpopulation
     subPop.
 
 "; 
@@ -5661,7 +5676,7 @@ Usage:
 
 Details:
 
-    Return a refernce to individualidx in the population (if
+    Return a refernce to individual idx in the population (if
     subPop=[], default) or a subpopulation (if subPop=sp). Virtual
     subpopulation is not supported. Note that a float idx is
     acceptable as long as it rounds closely to an integer.
@@ -5703,7 +5718,7 @@ Usage:
 
 Details:
 
-    Return a reference to individualidx in ancestral generation gen.
+    Return a reference to individual idx in ancestral generation gen.
     The correct individual will be returned even if the current
     generation is not the present one (see also useAncestralGen). If a
     valid subPop is specified, index is relative to that subPop.
@@ -5898,7 +5913,7 @@ Details:
     Add all individuals, including ancestors, in pop to the current
     population. Two populations should have the same genotypic
     structures and number of ancestral generations. Subpopulations in
-    populationpop are kept.
+    population pop are kept.
 
 "; 
 
@@ -5910,11 +5925,11 @@ Usage:
 
 Details:
 
-    Add chromosomes in populationpop to the current population.
+    Add chromosomes in population pop to the current population.
     Population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
     This function merges genotypes on the new chromosomes from
-    populationpop individual by individual.
+    population pop individual by individual.
 
 "; 
 
@@ -5926,7 +5941,7 @@ Usage:
 
 Details:
 
-    Add loci from populationpop, chromosome by chromosome. Added loci
+    Add loci from population pop, chromosome by chromosome. Added loci
     will be inserted according to their position. Their position and
     names should not overlap with any locus in the current population.
     Population pop should have the same number of individuals as the
@@ -5989,7 +6004,7 @@ Details:
     larger. Their genotypes will be set to zero (default), or be
     copied from existing individuals if propagate is set to True. More
     specifically, if a subpopulation with 3 individuals is expanded to
-    7, the added individuals will copy genotypes from individual1, 2,
+    7, the added individuals will copy genotypes from individual 1, 2,
     3, and 1 respectively. Note that this function only resizes the
     current generation.
 
@@ -6090,7 +6105,7 @@ Usage:
 
 Details:
 
-    Push populationpop into the current population. Both populations
+    Push population pop into the current population. Both populations
     should have the same genotypic structure. The current population
     is discarded if ancestralDepth (maximum number of ancestral
     generations to hold) is zero so no ancestral generation can be
@@ -6099,7 +6114,7 @@ Details:
     generations by one. If ancestralDepth is positive and there are
     already ancestralDepth ancestral generations (see also:
     ancestralGens()), the greatest ancestral generation will be
-    discarded. In any case, populationpop becomes invalid as all its
+    discarded. In any case, population pop becomes invalid as all its
     individuals are absorbed by the current population.
 
 "; 
@@ -6511,7 +6526,7 @@ Usage:
 Details:
 
     Evaluate the expression and optional statements in the local
-    namespace of populationpop and return its result as a string.
+    namespace of population pop and return its result as a string.
 
 "; 
 
@@ -6519,7 +6534,7 @@ Details:
 
 Description:
 
-    Apply the pyEval operator to populationpop.
+    Apply the pyEval operator to population pop.
 
 Usage:
 
@@ -6598,8 +6613,7 @@ Usage:
 
 Description:
 
-    return number of arguments this function accepts. This function
-    does not count tuple parameters.
+    This function does not count tuple parameters.
 
 Usage:
 
@@ -6644,7 +6658,7 @@ Usage:
 Details:
 
     this class implements a Python itertor class that can be used to
-    iterate through individuals in a (sub) population. If allInds are
+    iterate through individuals in a (sub)population. If allInds are
     true, visiblility of individuals will not be checked. Otherwise, a
     functor will be used to check if indiviudals belong to a specified
     virtual subpopulation.  An instance of this class is returned by
@@ -6830,7 +6844,7 @@ Usage:
 
 Details:
 
-    Apply the pyOperator operator to populationpop. Calling this
+    Apply the pyOperator operator to population pop. Calling this
     function is equivalent to call func with parameter pop and
     optional parameter param.
 
@@ -7571,7 +7585,7 @@ Usage:
 Details:
 
     Initialize a recombinator for the genotypic structure of
-    populationpop. This function should be called before a
+    population pop. This function should be called before a
     recombinator is explicitly applied to a population.
 
 "; 
@@ -7977,7 +7991,7 @@ Usage:
 
 Description:
 
-    Apply operator to populationpop.
+    Apply operator to population pop.
 
 Usage:
 
@@ -8182,7 +8196,7 @@ Usage:
 
 Description:
 
-    apply the setAncestralDepth operator to populationpop.
+    apply the setAncestralDepth operator to population pop.
 
 Usage:
 
@@ -8261,8 +8275,7 @@ Details:
 
 Description:
 
-    destructor I can not clear dict here since a resize of g_vars will
-    copy this object and hence call this destructore.
+    hence call this destructore.
 
 Usage:
 
@@ -8404,7 +8417,7 @@ Usage:
 
 Details:
 
-    Create a simulator with rep replicates of populationpop.
+    Create a simulator with rep replicates of population pop.
     Population pop will be copied rep times (default to 1), while
     keeping the passed population intact. A mating scheme matingScheme
     will be used to evolve these populations.
@@ -8477,7 +8490,7 @@ Usage:
 
 Details:
 
-    Add a populationpop to the end of an existing simulator. This
+    Add a population pop to the end of an existing simulator. This
     creates an cloned copy of pop in the simulator so the evolution of
     the simulator will not change pop.
 
@@ -8598,8 +8611,7 @@ Details:
 
 Description:
 
-    a Pyton function used to compare the simulator objects Note that
-    mating schemes are not tested.
+    Note that mating schemes are not tested.
 
 Usage:
 
@@ -8822,7 +8834,7 @@ Details:
     namespace of the population being applied. Other operators can
     retrieve these variables or evalulate expression directly in this
     local namespace. Please refer to operator baseOperator for a
-    detailed explanation of these common operator parameters.   stat
+    detailed explanation of these common operator parameters.  stat
     supports parameter subPops. It usually calculate the same set of
     statistics for all subpopulations (subPops=subPopList()). If a
     list of (virtual) subpopulations are specified, statistics for
@@ -9529,7 +9541,7 @@ Usage:
 
 Description:
 
-    exception, throw if an operator would like to stop all replicates.
+    all replicates.
 
 "; 
 
@@ -9841,7 +9853,7 @@ Usage:
 
 Details:
 
-    Apply an operator to populationpop directly, without checking its
+    Apply an operator to population pop directly, without checking its
     applicability.
 
 "; 
@@ -10261,182 +10273,6 @@ Usage:
     x.get()
 
 "; 
-
-%feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::LoadPopulation "
-
-Usage:
-
-    LoadPopulation(file)
-
-Details:
-
-    load a population from a file.
-
-"; 
-
-%feature("docstring") simuPOP::TurnOnDebug "
-
-Usage:
-
-    TurnOnDebug(code=\"\")
-
-Details:
-
-    Set debug code code. More than one code could be specified using a
-    comma separated string. Name of available codes are available from
-    ModuleInfo()['debug'].keys().
-
-"; 
-
-%feature("docstring") simuPOP::TurnOffDebug "
-
-Usage:
-
-    TurnOffDebug(code=\"DBG_ALL\")
-
-Details:
-
-    Turn off debug code code. More than one code could be specified
-    using a comma separated string. Default to turn off all debug
-    codes.
-
-"; 
-
-%ignore simuPOP::debug(DBG_CODE code);
-
-%ignore simuPOP::simuPOP_kbhit();
-
-%ignore simuPOP::simuPOP_getch();
-
-%ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
-
-%ignore simuPOP::PyObj_As_Int(PyObject *obj, long int &val);
-
-%ignore simuPOP::PyObj_As_Double(PyObject *obj, double &val);
-
-%ignore simuPOP::PyObj_As_String(PyObject *obj, string &val);
-
-%ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
-
-%ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
-
-%ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
-
-%ignore simuPOP::PyObj_Is_DoubleNumArray(PyObject *obj);
-
-%ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
-
-%ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
-
-%ignore simuPOP::Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
-
-%ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-
-%ignore simuPOP::NumArray_Size(PyObject *obj);
-
-%ignore simuPOP::NumArray_Data(PyObject *obj);
-
-%ignore simuPOP::mainVars();
-
-%ignore simuPOP::moduleVars();
-
-%ignore simuPOP::pyPopObj(void *p);
-
-%ignore simuPOP::pyIndObj(void *p);
-
-%ignore simuPOP::pyIndPointer(PyObject *p);
-
-%ignore simuPOP::ostreamManager();
-
-%feature("docstring") simuPOP::CloseOutput "
-
-Usage:
-
-    CloseOutput(output=\"\")
-
-Details:
-
-    Output files specified by '>' are closed immediately after they
-    are written. Those specified by '>>' and '>>>' are closed by a
-    simulator after simulator.evolve(). However, these files will be
-    kept open if the operators are applied directly to a population
-    using the operators' function form. In this case, function
-    closeOutput can be used to close a specific file output, and close
-    all unclosed files if output is unspecified. An exception will be
-    raised if output does not exist or it has already been closed.
-
-"; 
-
-%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
-
-%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
-
-%ignore simuPOP::hweTest(const vectoru &cnt);
-
-%ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
-
-%ignore simuPOP::formatText(const string &text);
-
-%feature("docstring") simuPOP::GetRNG "
-
-Description:
-
-    return the currently used random number generator
-
-Usage:
-
-    GetRNG()
-
-"; 
-
-%feature("docstring") simuPOP::SetRNG "
-
-Description:
-
-    set random number generator. If seed=0 (default), a random seed
-    will be given. If rng=\"\", seed will be set to the current random
-    number generator.
-
-Usage:
-
-    SetRNG(rng=\"\", seed=0)
-
-"; 
-
-%feature("docstring") simuPOP::ModuleInfo "
-
-Usage:
-
-    ModuleInfo()
-
-Details:
-
-    Return a dictionary with information regarding the currently
-    loaded simuPOP module. This dictionary has the following keys:
-    *   revision: revision number.
-    *   version: simuPOP version string.
-    *   optimized: Is this module optimized (True or False).
-    *   alleleType: Allele type of the module (short, long or binary).
-    *   maxAllele: the maximum allowed allele state, which is 1 for
-    binary modules, 255 for short modules and 65535 for long modules.
-    *   compiler: the compiler that compiles this module.
-    *   date: date on which this module is compiled.
-    *   python: version of python.
-    *   platform: platform of the module.
-    *   maxNumSubPop: maximum number of subpopulations.
-    *   maxIndex: maximum index size (limits population size * total
-    number of marker).
-    *   debug: A list of effective debugging codes.
-
-"; 
-
-%ignore simuPOP::initialize();
-
-%ignore simuPOP::cnull();
-
-%ignore std::pow3(unsigned n);
 
 %feature("docstring") simuPOP::population::dvars "
 
