@@ -533,6 +533,7 @@ class Doxy2SWIG:
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
+        evolve_pop = [x for x in self.content if 'evolve_pop' in x['Name']][0]
         self.content.extend([
             {'Name': u'simuPOP::population::dvars',
              'type': u'memberofclass_simuPOP::population',
@@ -552,7 +553,14 @@ class Doxy2SWIG:
              'cppArgs': u'(int rep, vspID subPop=[])',
              'Usage': u'x.dvars(rep, subPop=[])',
              },
+            {'Name': u'simuPOP::population::evolve',
+             'type': u'memberofclass_simuPOP::population',
+             'Description': '',
+             'Details': evolve_pop['Description'],
+             'Usage': 'x.' + evolve_pop['Usage'].replace('evolve_pop', 'evolve').replace('self, ', ''),
+            },
         ])
+
         # change a few usages:
         print "Number of entries: ", len(self.content)
         def myhash(entry):
@@ -709,7 +717,7 @@ class Doxy2SWIG:
                 else:
                     add_def = True
             elif add_def:
-                self.content[-1]['Usage'] = line.strip()
+                self.content[-1]['Usage'] += line.strip()
                 if line.strip().endswith(':'):
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
                     add_desc = True
@@ -1460,13 +1468,13 @@ if __name__ == '__main__':
     p = Doxy2SWIG(xml_file)
     # generate interface file.
     p.generate()
+    # add some other functions
+    p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
     # clean up, and process CPPONLY etc
     p.post_process()
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
-    # add some other functions
-    p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
     sys.path = [os.path.join(src_path, 'src')] + sys.path
     p.scan_module('simuPOP')
     p.scan_module('simuOpt')
