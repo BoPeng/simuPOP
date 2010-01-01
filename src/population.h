@@ -1344,7 +1344,12 @@ public:
 	 */
 	ULONG gen() const
 	{
-		return m_vars.getVarAsInt("gen");
+        try {
+    		return m_vars.getVarAsInt("gen");
+        } catch (...) {
+            const_cast<population*>(this)->setGen(0);
+            return 0;
+        }
 	}
 
 

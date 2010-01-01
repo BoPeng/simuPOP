@@ -88,7 +88,8 @@ class TestOperator(unittest.TestCase):
         os.remove('a.txt')
         #
         # you can ignore >
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="a.txt"),
             gen=10)
         # although everyone have written to this file,
@@ -97,7 +98,8 @@ class TestOperator(unittest.TestCase):
         os.remove('a.txt')
         #
         # >>
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output=">>a.txt"),
             gen=10)
         # a is appended 5 rep * 11 generations
@@ -105,7 +107,8 @@ class TestOperator(unittest.TestCase):
         os.remove('a.txt')
         #
         # rep = ...
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output=">>a.txt", reps=-1),
             gen=10)
         # a is appended 5 rep * 11 generations
@@ -126,7 +129,8 @@ class TestOperator(unittest.TestCase):
             os.remove('rep%d.txt'%i)
         #
         # you can ignore >
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>rep%d.txt'%rep"),
             matingScheme=cloneMating(),
             gen=10)
@@ -137,7 +141,8 @@ class TestOperator(unittest.TestCase):
             os.remove('rep%d.txt'%i)
         #
         # >>
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>>rep%d.txt'%rep"),
             matingScheme=cloneMating(),
             gen=10)
@@ -146,7 +151,8 @@ class TestOperator(unittest.TestCase):
             self.assertFileContent("rep%d.txt"%i, 'a'*10)
             os.remove('rep%d.txt'%i)
         # each generation?
-        simu.setGen(0)
+        for pop in simu.populations():
+            pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>>gen%d.txt'%gen"),
             matingScheme=cloneMating(),
             gen=10)

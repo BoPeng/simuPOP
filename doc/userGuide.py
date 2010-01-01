@@ -1879,7 +1879,7 @@ sim.GetRNG().setSeed(12345)
 simu = sim.simulator(sim.population(50, loci=[10], ploidy=1),
     rep=3)
 simu.evolve(gen = 5)
-simu.gen()
+simu.dvars(0).gen
 simu.evolve(
     initOps=[sim.initByFreq([0.5, 0.5])],
     matingScheme=sim.randomSelection(),
@@ -1892,7 +1892,7 @@ simu.evolve(
         sim.terminateIf('len(alleleNum[5]) == 1'),
     ],
 )
-simu.gen()
+simu.dvars(0).gen
 #end_file
 
 #begin_file log/describe.py
@@ -2101,7 +2101,7 @@ simu.evolve(
 )
 # continue to evolve
 simu.evolve(gen=10)
-simu.gen()
+simu.dvars(0).gen
 #end_file
 
 #begin_file log/initSex.py
