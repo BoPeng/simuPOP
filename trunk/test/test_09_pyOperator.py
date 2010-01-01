@@ -76,7 +76,7 @@ class TestPyOperator(unittest.TestCase):
             postOps = pyOperator(self.myFuncAsTerminator),
             matingScheme=randomMating(),
             gen = 10 )
-        assert simu.gen() == 4
+        assert simu.dvars(0).gen == 4
 
     def dynaMutator(self, pop, param):
         ''' this mutator mutate common loci with low mutation rate
@@ -117,7 +117,7 @@ class TestPyOperator(unittest.TestCase):
             gen = 30
         )
         # will not terminate when allele frequency get out of control
-        self.assertEqual( simu.gen(), 30)
+        self.assertEqual(simu.dvars(0).gen, 30)
 
 
 if __name__ == '__main__':

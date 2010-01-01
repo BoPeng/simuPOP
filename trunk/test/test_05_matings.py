@@ -151,7 +151,7 @@ class TestMatingSchemes(unittest.TestCase):
             ],
             gen = 10
         )
-        self.assertEqual(simu.gen(), 10)
+        self.assertEqual(simu.dvars(0).gen, 10)
 
     def testMonoMating(self):
         'Testing monogemous mating scheme'

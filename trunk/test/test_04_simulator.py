@@ -28,7 +28,7 @@ class TestSimulator(unittest.TestCase):
         simu1 = simu.clone()
         for i in range(3):
             self.assertEqual(simu.population(i), simu1.population(i))
-        self.assertEqual(simu1.gen(), simu.gen())
+        self.assertEqual(simu1.dvars(0).gen, simu.dvars(0).gen)
         # this test should be enough
         self.assertEqual(simu, simu1)
         # test if a cloned simulator can evolve again
@@ -39,20 +39,10 @@ class TestSimulator(unittest.TestCase):
             gen = 20
         )
 
-    def testSetGen(self):
-        'Testing simulator::gen(), setGen(gen)'
-        pop = population(size=1, loci=[1])
-        simu = simulator(pop, rep=3)
-        self.assertEqual(simu.numRep(), 3)
-        self.assertEqual(simu.gen(), 0)
-        simu.setGen(10)
-        self.assertEqual(simu.gen(), 10)
-
     def testEvolve(self):
         'Testing simulator:: evolve()'
         pop = population(size=1, loci=[1])
         simu = simulator(pop, rep=3)
-        self.assertEqual(simu.gen(), 0)
         # no terminator, no ending generation is specified
         self.assertRaises(exceptions.ValueError, simu.evolve)
         # sample
