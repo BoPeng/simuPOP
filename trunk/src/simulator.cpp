@@ -59,11 +59,11 @@ simulator::simulator(PyObject * pops, UINT rep, bool steal)
 			DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 			if (steal) {
 				population * tmp = new population();
-				tmp->swap(*reinterpret_cast<population*>(pop));
+				tmp->swap(*reinterpret_cast<population *>(pop));
 				m_pops.push_back(tmp);
 			} else {
 				try {
-					m_pops.push_back(reinterpret_cast<population*>(pop)->clone());
+					m_pops.push_back(reinterpret_cast<population *>(pop)->clone());
 					DBG_FAILIF(m_pops.back() == NULL,
 						SystemError, "Fail to create new replicate");
 				} catch (...) {
@@ -73,15 +73,15 @@ simulator::simulator(PyObject * pops, UINT rep, bool steal)
 			Py_DECREF(item);
 		}
 	} else {
-		void * pop  = pyPopPointer(pops);
+		void * pop = pyPopPointer(pops);
 		DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 		if (steal) {
 			population * tmp = new population();
-			tmp->swap(*reinterpret_cast<population*>(pop));
+			tmp->swap(*reinterpret_cast<population *>(pop));
 			m_pops.push_back(tmp);
 		} else {
 			try {
-				m_pops.push_back(reinterpret_cast<population*>(pop)->clone());
+				m_pops.push_back(reinterpret_cast<population *>(pop)->clone());
 				DBG_FAILIF(m_pops.back() == NULL,
 					SystemError, "Fail to create new replicate");
 			} catch (...) {
@@ -168,12 +168,12 @@ population & simulator::extract(UINT rep)
 void simulator::add(const population & pop, bool steal)
 {
 
-    if (steal) {
-        population * tmp = new population();
-        const_cast<population&>(pop).swap(*tmp);
-        m_pops.push_back(tmp);
-    } else
-    	m_pops.push_back(new population(pop));
+	if (steal) {
+		population * tmp = new population();
+		const_cast<population &>(pop).swap(*tmp);
+		m_pops.push_back(tmp);
+	} else
+		m_pops.push_back(new population(pop));
 	DBG_FAILIF(m_pops.back() == NULL,
 		RuntimeError, "Fail to add new population.");
 }
