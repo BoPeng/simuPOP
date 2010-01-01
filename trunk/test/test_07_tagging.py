@@ -20,11 +20,10 @@ class TestTagger(unittest.TestCase):
         'Testing parents tagger.'
         simu = simulator(
             population(size=[50,150], ploidy=2, loci=[2,4],
-                    infoFields=['father_idx', 'mother_idx']),
-            randomMating(numOffspring=2))
+                    infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[parentsTagger()],
+            matingScheme = randomMating(numOffspring=2, ops=[mendelianGenoTransmitter(), parentsTagger()]),
             gen = 1
         )
         pop = simu.population(0)
@@ -46,11 +45,11 @@ class TestTagger(unittest.TestCase):
                 infoFields=['paternal_tag', 'maternal_tag'])
         pop.individual(0).setInfo(1, 'paternal_tag')
         pop.individual(50).setInfo(2, 'paternal_tag')
-        simu = simulator(pop, randomMating())
+        simu = simulator(pop)
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[inheritTagger(mode=PATERNAL)],
+            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
             gen = 1)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
@@ -69,11 +68,11 @@ class TestTagger(unittest.TestCase):
             ind.setInfo(1, 'paternal_tag')
         for ind in pop.individuals(1):
             ind.setInfo(2, 'paternal_tag')
-        simu = simulator( pop, randomMating())
+        simu = simulator( pop)
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[inheritTagger(mode=PATERNAL)],
+            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
             gen = 1
         )
         # we only know subpopulation 0 can not have tag 2
@@ -93,12 +92,12 @@ class TestTagger(unittest.TestCase):
         def myfunc(trait1, trait2):
             return [trait1[0]+trait1[1], trait2[0]*trait2[1]]
         #
-        simu = simulator(pop, randomMating())
+        simu = simulator(pop)
         simu.evolve(
             initOps = [initSex()],
-            duringOps =[
+            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), 
                 pyTagger(func=myfunc),
-            ],
+            ]),
             gen = 4)
         pop = simu.population(0)
         for ind in pop.individuals():
@@ -114,12 +113,12 @@ class TestTagger(unittest.TestCase):
         InitByFreq(pop, [0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]
-        simu = simulator(pop, randomMating())
+        simu = simulator(pop)
         simu.evolve(
-            duringOps =[
+            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), 
                 parentsTagger(output='>>pedigree.dat', infoFields=[]),
                 pyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
-                ],
+                ]),
             end=10
         )
         return

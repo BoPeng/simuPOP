@@ -18,12 +18,12 @@ class TestIfElseOperator(unittest.TestCase):
 
     def testIfElseOperator(self):
         'Testing opeartor ifElse'
-        simu = simulator(population(1000, loci=[2]),
-            randomMating())
+        pop = population(1000, loci=[2])
         # now if we want to flip a lot of alleles whenever it reaches 0.2
-        simu.evolve(
+        pop.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
             initOps = [ initSex(), initByFreq([.5,.5]) ],
+            matingScheme = randomMating(),
             postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
@@ -38,16 +38,16 @@ class TestIfElseOperator(unittest.TestCase):
             ],
             gen = 1000
         )
-        self.assertEqual(simu.gen(), 1000)
+        self.assertEqual(pop.dvars().gen, 1000)
 
     def testIfElseOperators(self):
         'Testing opeartor ifElse with multiple operators'
-        simu = simulator(population(1000, loci=[2]),
-            randomMating())
+        simu = simulator(population(1000, loci=[2]))
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         simu.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
             initOps = [ initSex(), initByFreq([.5,.5]) ],
+            matingScheme = randomMating(),
             postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
@@ -66,7 +66,7 @@ class TestIfElseOperator(unittest.TestCase):
             ],
             gen = 1000
         )
-        self.assertEqual(simu.gen(), 1000)
+        self.assertEqual(simu.dvars(0).gen, 1000)
 
 
 if __name__ == '__main__':

@@ -31,8 +31,8 @@ class TestPyOperator(unittest.TestCase):
     def testSimpleFunc(self):
         'Testing Python operator'
         InitByFreq(self.pop, [.2, .3, .5])
-        simu = simulator(self.pop, randomMating())
-        simu.evolve( postOps = pyOperator(self.myFunc),
+        self.pop.evolve( postOps = pyOperator(self.myFunc),
+            matingScheme=randomMating(),
             gen=20)
 
     def testCopyClone(self):
@@ -55,11 +55,11 @@ class TestPyOperator(unittest.TestCase):
     def testFuncWithParam(self):
         'Testing python operator with parameters'
         InitByFreq(self.pop, [.2, .8])
-        simu = simulator(self.pop, randomMating())
-        simu.evolve( postOps=[
+        self.pop.evolve( postOps=[
             pyOperator(func=self.myFuncWithParam, param=(0,.2)),
             pyOperator(func=self.myFuncWithParam, param=(1,.8)),
             ],
+            matingScheme=randomMating(),
             gen=2
         )
 
@@ -71,9 +71,10 @@ class TestPyOperator(unittest.TestCase):
 
     def testTerminator(self):
         'Testing hybrid terminator'
-        simu = simulator(self.pop, randomMating())
+        simu = simulator(self.pop)
         simu.evolve(initOps = [initSex()],
             postOps = pyOperator(self.myFuncAsTerminator),
+            matingScheme=randomMating(),
             gen = 10 )
         assert simu.gen() == 4
 
@@ -102,11 +103,12 @@ class TestPyOperator(unittest.TestCase):
 
     def testDynaMutator(self):
         'Testing dynamic mutator (an example)'
-        simu = simulator(self.pop, randomMating())
+        simu = simulator(self.pop)
         simu.evolve(
             initOps = [
                 initByFreq( [.6, .4], loci=[0,2,4]),
                 initByFreq( [.8, .2], loci=[1,3]) ],
+            matingScheme=randomMating(),
             postOps = [
                 pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
                 stat(alleleFreq=range(5)),

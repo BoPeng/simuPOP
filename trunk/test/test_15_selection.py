@@ -304,9 +304,10 @@ class TestSelector(unittest.TestCase):
         # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
             pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
-            simu = simulator(pop, randomMating())
+            simu = simulator(pop)
             simu.evolve(
                 initOps = [initSex(), initByFreq([1-p]+[p/10.]*10)],
+                matingScheme = randomMating(),
                 preOps = sel,
                 postOps = [
                     stat(alleleFreq=[0]),
@@ -314,10 +315,10 @@ class TestSelector(unittest.TestCase):
                     #pyEval(r'"%d\n"%alleleNum[0][0]', step=100)
                 ]
             )
-            print i, simu.gen()
-            simulated.append(simu.gen())
-            #if simu.gen() < lost[0] or simu.gen() > lost[1]:
-            #    print "Warning: something may be wrong %d outside: [%f %f]. " % (simu.gen(), lost[0], lost[1])
+            print i, simu.dvars(0).gen
+            simulated.append(simu.dvars(0).gen)
+            #if simu.dvars(0).gen < lost[0] or simu.dvars(0).gen > lost[1]:
+            #    print "Warning: something may be wrong %d outside: [%f %f]. " % (simu.dvars(0).gen, lost[0], lost[1])
         print rpy.r.quantile(simulated,  [0.05, 0.25, 0.5, 0.75, 0.95])
 
 
@@ -325,13 +326,13 @@ class TestSelector(unittest.TestCase):
         'Testing directional selection in s subpopulation using a map selector'
         simu = simulator(
             population(size=[200, 1000], ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
             initOps=[ initSex(), initByFreq(alleleFreq=[.5, .5])],
+                matingScheme = randomMating(),
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
@@ -342,7 +343,7 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
 
     def testMapSelectorDirSelection(self):
@@ -352,13 +353,13 @@ class TestSelector(unittest.TestCase):
         # when more than one information fields are available.
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
             initOps =[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+                matingScheme = randomMating(),
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
@@ -369,7 +370,7 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
 
     def testMaSelectorDirSelection(self):
@@ -377,13 +378,13 @@ class TestSelector(unittest.TestCase):
         # specify relative fitness: w11, w12/w21, w22
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
             initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+                matingScheme = randomMating(),
             preOps = maSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
             postOps = [
@@ -394,15 +395,14 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMapSelectorHeteroAdv(self):
         'Testing heterozygous advantage using map selector'
         # specify relative fitness: w11, w12/w21, w22
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         s1 = .1
         s2 = .2
         p = .2/ (.1+.2)
@@ -416,6 +416,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
+                matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -425,7 +426,7 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMaSelectorHeteroAdv(self):
         'Testing heterozygous advantage using a multi-allele selector'
@@ -435,8 +436,7 @@ class TestSelector(unittest.TestCase):
         # specify relative fitness: w11, w12/w21, w22
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
         #    stable.
@@ -448,6 +448,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = maSelector(loci=0, wildtype=0,
                     fitness=[1-s1, 1, 1-s2]),
+                matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -457,20 +458,20 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMapSelectorHeteroDisadv(self):
         'Testing heterozygous disadvantage using map selector'
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 2. heterozygote inferiority
         #     w11 > w12, w12 < w22
         #    p unstable, become fix
         simu.evolve(
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.8, (1,1):1}),
+                matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 # pyEval('alleleFreq[0][0]'),
@@ -481,7 +482,7 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMaSelectorHeteroDisadv(self):
         'Testing heterozygous advantage using a multi-allele selector'
@@ -491,14 +492,14 @@ class TestSelector(unittest.TestCase):
         # specify relative fitness: w11, w12/w21, w22
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 2. heterozygote inferiority
         #     w11 > w12, w12 < w22
         #    p unstable, become fix
         simu.evolve(
             preOps = maSelector(loci=0, wildtype=0,
                     fitness=[1, 0.7, 1]),
+                matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 #pyEval('alleleFreq[0][0]'),
@@ -509,17 +510,17 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMultiLocusMaSelector(self):
         'Testing the multi-locus version of the maSelector'
         simu = simulator(
             population(size=1000, ploidy=2, loci=[3,6],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         simu.evolve(
             preOps = maSelector(loci=[3,6], wildtype=0,
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]),
+                matingScheme = randomMating(),
             initOps=[initSex(), initByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
@@ -580,8 +581,7 @@ class TestSelector(unittest.TestCase):
         #
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
         #    stable.
@@ -593,6 +593,7 @@ class TestSelector(unittest.TestCase):
             initOps = [
                 initSex(),
                 initByFreq(alleleFreq=[.5,.5])],
+                matingScheme = randomMating(),
             preOps = pySelector(loci=0, func=sel),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
@@ -602,7 +603,7 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testPySelectorWithGen(self):
         'Testing varying selection pressure using pySelector'
@@ -632,8 +633,7 @@ class TestSelector(unittest.TestCase):
         #
         simu = simulator(
             population(size=1000, ploidy=2, loci=[1],
-            infoFields=['fitness', 'spare']),
-            randomMating() )
+            infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
         #    stable.
@@ -646,6 +646,7 @@ class TestSelector(unittest.TestCase):
                 initSex(),
                 initByFreq(alleleFreq=[.5,.5])],
             preOps = pySelector(loci=[0], func=sel),
+                matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -654,14 +655,13 @@ class TestSelector(unittest.TestCase):
             gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 100)
+        self.assertEqual(simu.dvars(0).gen, 100)
 
     def testMlSelector(self):
         'Testing multi-locus selector'
         simu = simulator(
             population(size=1000, ploidy=2, loci=[2],
-            infoFields=['fitness', 'spare']),
-            randomMating())
+            infoFields=['fitness', 'spare']))
         sel = mlSelector(
             [
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
@@ -669,17 +669,18 @@ class TestSelector(unittest.TestCase):
                 ], mode=ADDITIVE),
         simu.evolve(
             preOps = sel,
+                matingScheme = randomMating(),
             initOps = [ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
         #
-        simu.setGen(0)
         simu.evolve(preOps = [
             mlSelector([
                     mapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=MULTIPLICATIVE),
             ],
+                matingScheme = randomMating(),
             initOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
@@ -688,8 +689,7 @@ class TestSelector(unittest.TestCase):
         'Testing the subPops parameter of selector'
         simu = simulator(
             population(size=[20, 30, 40], loci=[2],
-                infoFields='fitness'),
-            randomMating())
+                infoFields='fitness'))
         def testFitness(pop, param):
             for sp in param[0]:
                 for ind in pop.individuals(sp):
@@ -700,13 +700,13 @@ class TestSelector(unittest.TestCase):
                 mapSelector(loci = 1, fitness = {(0,0):1.,(0,1):1.,(1,1):.8}, subPops=[1]),
                 pyOperator(func=testFitness, param=([0, 2],)),
                 ],
+                matingScheme = randomMating(),
             gen = 5
         )
         # subPop is also allowed
         simu = simulator(
             population(size=[20, 30, 40], loci=[2],
-                infoFields=['fitness']),
-            randomMating())
+                infoFields=['fitness']))
         simu.evolve(
             initOps = [initSex(), initByFreq([.4, .6])],
             preOps = [
@@ -716,6 +716,7 @@ class TestSelector(unittest.TestCase):
                     subPops=2),
                 pyOperator(func=testFitness, param=([0],)),
                 ],
+                matingScheme = randomMating(),
             gen = 5
         )
 

@@ -21,9 +21,10 @@ class TestTerminator(unittest.TestCase):
     def testTerminator(self):
         'Testing operator terminateIf that terminates a replicate'
         pop = population(size=100, loci=[2])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         gens = simu.evolve(
             initOps = [initSex(), initByFreq([0.3, 0.7])],
+            matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
                 terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200')
@@ -40,9 +41,10 @@ class TestTerminator(unittest.TestCase):
     def testTerminateAll(self):
         'Testing operator terminateIf that terminates all replicates'
         pop = population(size=100, loci=[2])
-        simu = simulator(pop, randomMating(), rep=5)
+        simu = simulator(pop, rep=5)
         gens = simu.evolve(
             initOps = [initSex(), initByFreq([0.3, 0.7])],
+            matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
                 terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)

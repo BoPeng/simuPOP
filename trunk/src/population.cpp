@@ -58,8 +58,6 @@ population::population(const uintList & size,
 	m_ancestralGens(ancGen),
 	m_vars(NULL, true),
 	m_ancestralPops(0),
-	m_rep(-1),
-	m_gen(0),
 	m_curAncestralGen(0),
 	m_indOrdered(true)
 {
@@ -117,8 +115,6 @@ population::population(const population & rhs) :
 	m_inds(0),
 	m_ancestralGens(rhs.m_ancestralGens),
 	m_vars(rhs.m_vars),                                                                     // variables will be copied
-	m_rep(-1),                                                                              // rep is set to -1 for new pop (until simulator really set them
-	m_gen(0),
 	m_curAncestralGen(rhs.m_curAncestralGen),
 	m_indOrdered(true)
 {

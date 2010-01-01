@@ -87,12 +87,13 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = initSex(),
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = [varPlotter('subPopSize[0]', update=10,
                 win=10, main="!'Three colorful lines, no legend, win=10, gen=%d' % gen")],
             gen = 30
@@ -106,13 +107,14 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = [
              varPlotter('subPopSize', byRep=True, lty_dim=[1, 2, 3],
                 main='3 rep, 3 colorful thick lines, ylabs differ',
@@ -130,12 +132,13 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
-            preOps = [stator, migr],
+            preOps = [stator, migr], 
+            matingScheme=randomMating(),
             postOps = [
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  col_rep=['red', 'green'], update=10,
@@ -153,12 +156,13 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=5)
+            rep=5)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
+            matingScheme=randomMating(),
             preOps = [stator, migr],
             postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
                  col_rep=['red', 'green', 'blue'], byDim=True, update=10,
@@ -174,13 +178,14 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp',
                  col_rep=['red', 'green', 'blue'], update=10,
                  main='9 lines, col rep, lty dim',
@@ -198,13 +203,14 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
-            randomMating(), rep=2)
+            rep=2)
         migr = migrator(rate=[[0, .2],[.25, 0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = [
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  byDim=True, byRep=True, update=10,
@@ -222,13 +228,14 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = [
              varPlotter('[x**2 for x in subPopSize]', byRep=True,
                  win=20, update=10, ylim=[0, 10000],
@@ -249,13 +256,14 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
-            randomMating(), rep=2)
+            rep=2)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = [
              varPlotter('subPopSize', byRep=True, ylim=[0,100],
                  ylab='sp', win=10, update=10,
@@ -272,7 +280,7 @@ class TestPlotter(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
-            randomMating(), rep=3)
+            rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
@@ -288,6 +296,7 @@ class TestPlotter(unittest.TestCase):
         simu.evolve(
             initOps = [initSex()],
             preOps = [stator, migr],
+            matingScheme=randomMating(),
             postOps = varPlotter('subPopSize', byRep=True, ylim=[0,100], plot_axes=False,
                  ylab='sp', col_dim=['red', 'blue', 'black'],
                  update=5, main_rep=['dimension %d' % x for x in range(3)],
@@ -308,12 +317,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
             gen = 5,
         )
@@ -329,12 +337,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
@@ -354,12 +361,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
@@ -379,9 +385,9 @@ class TestPlotter(unittest.TestCase):
         pop = population([500, 1000], infoFields=['x'])
         InitSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = inheritTagger(PATERNAL, infoFields='x'),
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
+                inheritTagger(PATERNAL, infoFields='x')]),
             postOps = histPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2),
                 #pause(),
@@ -399,12 +405,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 histPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
@@ -429,14 +434,13 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
         def qqline(r, data=None, **kwargs):
             r.qqline(data)
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 qqPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
@@ -462,15 +466,14 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
         def qqplot(r, data=None, field=None, subPop=None, **kwargs):
             r.qqnorm(data, main='QQ drawn in plotHook fld: %s sp: %s' % (field, subPop))
             r.qqline(data)
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 infoPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
@@ -490,9 +493,9 @@ class TestPlotter(unittest.TestCase):
         pop = population([500, 100], infoFields=['x'])
         InitSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = inheritTagger(PATERNAL, infoFields='x'),
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
+                inheritTagger(PATERNAL, infoFields='x')]),
             postOps = [
                 boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
@@ -512,12 +515,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = boxPlotter(infoFields=['x', 'y'], step=2),
                 #pause(),
             gen = 5,
@@ -535,12 +537,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = [
                 boxPlotter(infoFields=['x', 'y'], 
                     subPops=[(0, 0), (0, 1)], style='quantile',
@@ -564,12 +565,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = boxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
                     step=2, col_fld=['yellow', 'green'],
@@ -589,12 +589,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
                     step=2, horizontal_sp=[True, False],
@@ -614,12 +613,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            duringOps = [
+        pop.evolve(
+            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
                 inheritTagger(PATERNAL, infoFields='x'),
                 inheritTagger(MATERNAL, infoFields='y'),
-            ],
+            ]),
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,
                     step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],

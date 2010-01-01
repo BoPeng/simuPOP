@@ -960,7 +960,7 @@ next:
 }
 
 
-PyObject * SharedVariables::getVar(const string & name, bool nameError)
+PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 {
 	DBG_ASSERT(m_dict != NULL, ValueError,
 		"Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
