@@ -829,7 +829,7 @@ public:
 	PyObject * setVar(const string & name, const PyObject * val);
 
 	/// CPPONLY get variable, NULL is returned if nothing is found.
-	PyObject * getVar(const string & name, bool nameError = true);
+	PyObject * getVar(const string & name, bool nameError = true) const;
 
 	bool hasVar(const string & name)
 	{
@@ -872,7 +872,7 @@ public:
 	PyObject * setTupleDefDictVar(const string & name, const tupleDict & val);
 
 	/// CPPONLY
-	bool getVarAsBool(const string & name, bool nameError = true)
+	bool getVarAsBool(const string & name, bool nameError = true) const
 	{
 		bool val;
 
@@ -882,7 +882,7 @@ public:
 
 
 	/// CPPONLY
-	long int getVarAsInt(const string & name, bool nameError = true)
+	long int getVarAsInt(const string & name, bool nameError = true) const
 	{
 		long int val;
 
@@ -892,7 +892,7 @@ public:
 
 
 	/// CPPONLY
-	double getVarAsDouble(const string & name, bool nameError = true)
+	double getVarAsDouble(const string & name, bool nameError = true) const
 	{
 		double val;
 
@@ -905,7 +905,7 @@ public:
 	// void numArrayOwnMem(const string& name);
 
 	/// CPPONLY
-	string getVarAsString(const string & name, bool nameError = true)
+	string getVarAsString(const string & name, bool nameError = true) const
 	{
 		string val;
 

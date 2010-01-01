@@ -140,23 +140,6 @@ public:
 	simulator * clone() const;
 
 
-	/** Return the current generation number, which is the initial generation
-	 *  number (\c 0, or some value set by \c setGen(gen)) plus the total
-	 *  number of generations evolved.
-	 *  <group>1-gen</group>
-	 */
-	ULONG gen() const
-	{
-		return m_gen;
-	}
-
-
-	/** Set the current generation number of a simulator to \e gen.
-	 *  <group>1-gen</group>
-	 */
-	void setGen(ULONG gen);
-
-
 	/** Return the number of replicates.
 	 *  <group>3-pop</group>
 	 */
@@ -299,9 +282,6 @@ private:
 
 
 private:
-	/// current generation
-	ULONG m_gen;
-
 	/// number of replicates of population
 	UINT m_numRep;
 

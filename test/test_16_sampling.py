@@ -21,50 +21,49 @@ import unittest, os, sys, exceptions
 class TestSampling(unittest.TestCase):
 
     def setUp(self):
-        simu = simulator(
-            population(size=[1000,2000], loci=[5,10],
+        self.pop = population(size=[1000,2000], loci=[5,10],
                 ancGen=1,
-                infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex']),
-            randomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 4)))
-        simu.evolve(
+                infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex'])
+        self.pop.evolve(
             initOps = [
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8]),
                  idTagger(),
             ],
-            duringOps = [
+            matingScheme=randomMating(
+                numOffspring=(UNIFORM_DISTRIBUTION, 2, 4),
+                ops=[mendelianGenoTransmitter(),
                 idTagger(),
                 pedigreeTagger(),
                 parentsTagger(),
-            ],
+            ]),
             postOps = [
                 mapPenetrance(loci=0,
                     penetrance={(0,0):0.1,(0,1):.7,(1,1):1}),
             ],
             gen = 4
         )
-        self.pop = simu.extract(0)
         for gen in range(self.pop.ancestralGens(), -1, -1):
             self.pop.useAncestralGen(gen)
             self.pop.setIndInfo(range(self.pop.popSize()), 'oldindex')
         # more complicated one
-        simu1 = simulator(
-            population(size=[5000, 20000], ploidy=2, loci=[5,10],
-                ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id']),
-            randomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 5)))
-        simu1.evolve(
+        self.largepop = population(size=[5000, 20000], ploidy=2, loci=[5,10],
+                ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id'])
+        self.largepop.evolve(
             initOps=[
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci())),
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
                  idTagger(),
             ],
             #preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-            duringOps = [
+            matingScheme=randomMating(
+                numOffspring=(UNIFORM_DISTRIBUTION, 2, 5),
+                ops=[mendelianGenoTransmitter(),
                 idTagger(),
                 pedigreeTagger(),
                 parentsTagger(),
-            ],
+                ]),
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 mapPenetrance(loci=0,
@@ -72,7 +71,6 @@ class TestSampling(unittest.TestCase):
             ],
             gen = 10
         )
-        self.largepop = simu1.extract(0)
         for gen in range(self.largepop.ancestralGens(), -1, -1):
             self.largepop.useAncestralGen(gen)
             self.largepop.setIndInfo(range(self.largepop.popSize()), 'oldindex')

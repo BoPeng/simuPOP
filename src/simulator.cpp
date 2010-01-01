@@ -44,7 +44,7 @@ population & pyPopIterator::next()
 
 
 simulator::simulator(const population & pop, UINT rep)
-	: m_gen(0), m_numRep(rep)
+	: m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
@@ -75,8 +75,6 @@ simulator::simulator(const population & pop, UINT rep)
 	}
 
 	// set generation number for all replicates
-	setGen(0);
-
 	DBG_DO(DBG_SIMULATOR, cerr << "simulator created" << endl);
 }
 
@@ -92,7 +90,6 @@ simulator::~simulator()
 
 
 simulator::simulator(const simulator & rhs) :
-	m_gen(rhs.m_gen),
 	m_numRep(rhs.m_numRep),
 	m_ptrRep(0),
 	m_scratchPop(NULL)
@@ -143,15 +140,6 @@ void simulator::add(const population & pop)
 }
 
 
-void simulator::setGen(ULONG gen)
-{
-	m_gen = gen;
-	// set gen for all replicates
-	for (UINT i = 0; i < m_numRep; ++i)
-		m_ptrRep[i]->setGen(gen, true);
-}
-
-
 string simulator::describe(const opList & initOps,
                            const opList & preOps,
                            const mating & matingScheme,
@@ -181,9 +169,7 @@ string simulator::describe(const opList & initOps,
 		if (gen < 0)
 			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
 		else
-			desc	<< "\nEvolve a population for " << gen << " generations. "
-			        << "(generations " << m_gen << " - " << m_gen + gen - 1
-			        << ", stops at generation " << m_gen + gen << ")\n";
+			desc	<< "\nEvolve a population for " << gen << " generations" << endl;
 		desc << "<ul>\n";
 		if (preOps.empty())
 			desc << "<li>No operator is applied to the parental generation (preOps)." << endl;
@@ -278,12 +264,6 @@ vectoru simulator::evolve(
 	if (gens == 0)
 		return evolvedGens;
 
-	int end = -1;
-	if (gens > 0)
-		end = gen() + gens - 1;
-
-	DBG_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
-		"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 	InitClock();
 
@@ -294,10 +274,14 @@ vectoru simulator::evolve(
 
 	ElapsedTime("PreopDone");
 
-	while (1) {
-		// starting a new gen
-		setGen(m_gen);
+    // make sure rep and gen exists in pop
+    for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+        if (!m_ptrRep[curRep]->getVars().hasVar("gen"))
+            m_ptrRep[curRep]->setGen(0);
+        m_ptrRep[curRep]->setRep(curRep);
+    }
 
+	while (1) {
 		// save refcount at the beginning
 #ifdef Py_REF_DEBUG
 		saveRefCount();
@@ -305,6 +289,12 @@ vectoru simulator::evolve(
 
 		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
 			population & curPop = *m_ptrRep[curRep];
+            int curGen = curPop.gen();
+	        int end = -1;
+        	if (gens > 0)
+		        end = curGen + gens - 1;
+	        DBG_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
+        		"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
 				"Replicate number does not match");
@@ -322,7 +312,7 @@ vectoru simulator::evolve(
 			// apply pre-mating ops to current gen()
 			if (!preOps.empty()) {
 				for (it = 0; it < preOps.size(); ++it) {
-					if (!preOps[it]->isActive(curRep, m_gen, end, activeReps))
+					if (!preOps[it]->isActive(curRep, curGen, end, activeReps))
 						continue;
 
 					try {
@@ -382,7 +372,7 @@ vectoru simulator::evolve(
 			// apply post-mating ops to next gen()
 			if (!postOps.empty()) {
 				for (it = 0; it < postOps.size(); ++it) {
-					if (!postOps[it]->isActive(curRep, m_gen, end, activeReps))
+					if (!postOps[it]->isActive(curRep, curGen, end, activeReps))
 						continue;
 
 					try {
@@ -412,13 +402,13 @@ vectoru simulator::evolve(
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
 			++evolvedGens[curRep];
+            curPop.setGen(curGen+1);
 		}                                                                                       // each replicates
 
 #ifdef Py_REF_DEBUG
 		checkRefCount();
 #endif
 
-		++m_gen;                                                                  // increase generation!
 		--gens;
 		//
 		//   start 0, gen = 2

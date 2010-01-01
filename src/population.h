@@ -285,8 +285,6 @@ public:
 		std::swap(m_ancestralGens, rhs.m_ancestralGens);
 		m_vars.swap(rhs.m_vars);
 		m_ancestralPops.swap(rhs.m_ancestralPops);
-		std::swap(m_rep, rhs.m_rep);
-		std::swap(m_gen, rhs.m_gen);
 		std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
 		std::swap(m_indOrdered, rhs.m_indOrdered);
 		std::swap(m_vspSplitter, rhs.m_vspSplitter);
@@ -1329,16 +1327,14 @@ public:
 	 */
 	int rep()
 	{
-		return m_rep;
+		return m_vars.getVarAsInt("rep");
 	}
 
 
 	/// CPPONLY  set rep number
-	void setRep(int rep, bool setVar = true)
+	void setRep(int rep)
 	{
-		m_rep = rep;
-		if (setVar)
-			m_vars.setIntVar("rep", rep);
+		m_vars.setIntVar("rep", rep);
 	}
 
 
@@ -1348,16 +1344,14 @@ public:
 	 */
 	ULONG gen() const
 	{
-		return m_gen;
+		return m_vars.getVarAsInt("gen");
 	}
 
 
 	/// CPPONLY
-	void setGen(ULONG gen, bool setVar = true)
+	void setGen(ULONG gen)
 	{
-		m_gen = gen;
-		if (setVar)
-			m_vars.setIntVar("gen", gen);
+    	m_vars.setIntVar("gen", gen);
 	}
 
 
@@ -1734,12 +1728,6 @@ private:
 	};
 
 	std::deque<popData> m_ancestralPops;
-
-	/// curent replicate number
-	int m_rep;
-
-	/// generation
-	ULONG m_gen;
 
 	/// current ancestral depth
 	UINT m_curAncestralGen;
