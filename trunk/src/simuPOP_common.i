@@ -348,7 +348,17 @@ pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
 pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
-def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[], finalOps=[], gen=-1):
+def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
+    finalOps=[], gen=-1):
+    '''Evolve the current population \e gen generations using mating scheme
+    \e matingScheme and operators \e initOps (applied before evolution),
+    \e preOps (applied to the parental population at the beginning of each
+    life cycle), \e postOps (applied to the offspring population at the end of
+    each life cycle) and \e finalOps (applied at the end of evolution). More
+    specifically, this function creates a \e simulator using the current
+    population, call its \e evolve function using passed parameters and then
+    replace the current population with the evolved population. Please refer to
+    function \c simulator.evolve for more details about each parameter. '''
     # create a simulator with small population
     simu = simulator(population())
     # swap the population into the simulator to avoid cloning a large population (self)
