@@ -55,6 +55,31 @@ class TestSimulator(unittest.TestCase):
             gen=10
         )
 
+    def testCreateSimulator(self):
+        'Testing the construction of simulator'
+        pop = population(size=[20, 80], loci=1)
+        pop1 = population(size=[20, 40], loci=2)
+        simu = simulator([pop, pop1], steal=False)
+        self.assertEqual(pop.popSize(), 100)
+        self.assertEqual(pop1.popSize(), 60)
+        self.assertEqual(simu.population(0).popSize(), 100)
+        self.assertEqual(simu.population(1).popSize(), 60)
+        # steal
+        simu = simulator([pop, pop1])
+        self.assertEqual(pop.popSize(), 0)
+        self.assertEqual(pop1.popSize(), 0)
+        self.assertEqual(simu.population(0).popSize(), 100)
+        self.assertEqual(simu.population(1).popSize(), 60)
+        # rep
+        pop = population(size=[20, 80], loci=1)
+        pop1 = population(size=[20, 40], loci=2)
+        simu = simulator([pop, pop1], rep=3, steal=False)
+        self.assertEqual(pop.popSize(), 100)
+        self.assertEqual(pop1.popSize(), 60)
+        self.assertEqual(simu.population(2).popSize(), 100)
+        self.assertEqual(simu.population(3).popSize(), 60)
+        self.assertEqual(simu.numRep(), 6)
+
     def testExtract(self):
         'Testing simulator::extract(rep), numRep()'
         pop = population(size=[20, 80], loci=[3])
@@ -76,26 +101,32 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(repnum).subPopSizes(), (20, 50))
         simu.population(repnum).removeSubPops(1)
         self.assertEqual(simu.population(repnum).subPopSizes(), (20,))
-        self.assertEqual(pop1.subPopSizes(), (20, 50))
+        self.assertEqual(pop1.subPopSizes(), (0,))
+        # add without strealing
+        pop = population(size=[300, 500], loci=1)
+        repnum = simu.numRep()
+        simu.add(pop, steal=False)
+        self.assertEqual(simu.numRep(), repnum + 1)
+        self.assertEqual(pop.subPopSizes(), (300, 500))
+
 
 
     def testPopulation(self):
         'Testing simulator::population(rep), populations()'
         pop = population(size=1000, loci=[1])
         simu = simulator(pop, rep=5)
+        self.assertEqual(pop.popSize(), 0)
         # pop is not affected if simu changes
         for rep in range(5):
-            for idx in range(pop.popSize()):
+            for idx in range(simu.population(rep).popSize()):
                 simu.population(rep).individual(idx).setAllele(1, 0)
                 self.assertEqual(simu.population(rep).individual(idx).allele(0), 1)
-                self.assertEqual(pop.individual(idx).allele(0), 0)
         # reference to the rep-th population
         for rep in range(5):
             pop = simu.population(rep)
             for idx in range(pop.popSize()):
                 pop.individual(rep).setAllele(1, 0)
                 self.assertEqual(simu.population(rep).individual(idx).allele(0), 1)
-                self.assertEqual(pop.individual(idx).allele(0), 1)
         # independent copy of the population
         for rep in range(5):
             pop1 = simu.population(rep).clone()

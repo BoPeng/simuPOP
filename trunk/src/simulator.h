@@ -113,15 +113,15 @@ private:
 class simulator
 {
 public:
-	/** Create a simulator with \e rep replicates of population \e pop.
-	 *  Population \e pop will be copied \e rep times (default to \c 1), while
-	 *  keeping the passed population intact. A mating scheme \e matingScheme
-	 *  will be used to evolve these populations.
-	 *
-	 *  \note Population \e pop is copied to a simulator so the input
-	 *  population will be kept untouched.
+	/** Create a simulator with \e rep (default to \c 1) replicates of
+	 *  populations \e pops, which is a list of populations although a
+	 *  single population object is also acceptable. Contents of passed
+	 *  populations are by default moved to the simulator to avoid duplication
+	 *  of potentially large population objects, leaving empty populations
+	 *  behind. This behavior can be changed by setting \e steal to \c False,
+	 *  in which case populations are copied to the simulator.
 	 */
-	simulator(const population & pop, UINT rep = 1);
+	simulator(PyObject * pops, UINT rep = 1, bool steal = true);
 
 	// destroy a simulator along with all its populations
 	~simulator();
@@ -142,7 +142,7 @@ public:
 	 */
 	UINT numRep() const
 	{
-		return m_numRep;
+		return m_pops.size();
 	}
 
 
@@ -157,13 +157,12 @@ public:
 	population & pop(UINT rep) const;
 
 	/** Add a population \e pop to the end of an existing simulator. This
-	 *  function by default creates an cloned copy of \e pop in the simulator
-	 *  so the evolution of the simulator will not change \e pop. However, if
-	 *  parameter \e clone is set to \e False, the content of \c pop will be
-	 *  absorbed by the simulator, leaving an empty population.
+	 *  function by default moves \c pop to the simulator, leaving an empty
+	 *  population for passed population object. If \c steal is set to \c False,
+	 *  the population will be copied to the simulator, and thus unchanged.
 	 *  <group>4-modify</group>
 	 */
-	void add(const population & pop, bool clone = true);
+	void add(const population & pop, bool steal = true);
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
@@ -177,7 +176,7 @@ public:
 	 */
 	pyPopIterator populations()
 	{
-		return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
+		return pyPopIterator(m_pops.begin(), m_pops.end());
 	}
 
 
@@ -254,9 +253,9 @@ public:
 	 */
 	PyObject * vars(UINT rep, vspID subPop = vspID())
 	{
-		if (static_cast<UINT>(rep) >= m_numRep)
+		if (static_cast<UINT>(rep) >= m_pops.size())
 			throw ValueError("Replicate index out of range.");
-		return m_ptrRep[rep]->vars(subPop);
+		return m_pops[rep]->vars(subPop);
 	}
 
 
@@ -273,11 +272,8 @@ private:
 
 
 private:
-	/// number of replicates of population
-	UINT m_numRep;
-
 	/// replicate pointers
-	vector<population *> m_ptrRep;
+	vector<population *> m_pops;
 
 	/// the scratch pop
 	population * m_scratchPop;
