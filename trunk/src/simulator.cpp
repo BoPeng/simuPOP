@@ -169,7 +169,7 @@ string simulator::describe(const opList & initOps,
 		if (gen < 0)
 			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
 		else
-			desc	<< "\nEvolve a population for " << gen << " generations" << endl;
+			desc << "\nEvolve a population for " << gen << " generations" << endl;
 		desc << "<ul>\n";
 		if (preOps.empty())
 			desc << "<li>No operator is applied to the parental generation (preOps)." << endl;
@@ -274,12 +274,12 @@ vectoru simulator::evolve(
 
 	ElapsedTime("PreopDone");
 
-    // make sure rep and gen exists in pop
-    for (UINT curRep = 0; curRep < m_numRep; curRep++) {
-        if (!m_ptrRep[curRep]->getVars().hasVar("gen"))
-            m_ptrRep[curRep]->setGen(0);
-        m_ptrRep[curRep]->setRep(curRep);
-    }
+	// make sure rep and gen exists in pop
+	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+		if (!m_ptrRep[curRep]->getVars().hasVar("gen"))
+			m_ptrRep[curRep]->setGen(0);
+		m_ptrRep[curRep]->setRep(curRep);
+	}
 
 	while (1) {
 		// save refcount at the beginning
@@ -289,12 +289,12 @@ vectoru simulator::evolve(
 
 		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
 			population & curPop = *m_ptrRep[curRep];
-            int curGen = curPop.gen();
-	        int end = -1;
-        	if (gens > 0)
-		        end = curGen + gens - 1;
-	        DBG_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
-        		"Evolve with unspecified ending generation should have at least one terminator (operator)");
+			int curGen = curPop.gen();
+			int end = -1;
+			if (gens > 0)
+				end = curGen + gens - 1;
+			DBG_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
+				"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
 				"Replicate number does not match");
@@ -346,7 +346,7 @@ vectoru simulator::evolve(
 				continue;
 			// start mating:
 			try {
-				if (!const_cast<mating&>(matingScheme).mate(curPop, scratchpopulation())) {
+				if (!const_cast<mating &>(matingScheme).mate(curPop, scratchpopulation())) {
 					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " + toStr(curRep) << endl);
 
 					numStopped++;
@@ -402,7 +402,7 @@ vectoru simulator::evolve(
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
 			++evolvedGens[curRep];
-            curPop.setGen(curGen+1);
+			curPop.setGen(curGen + 1);
 		}                                                                                       // each replicates
 
 #ifdef Py_REF_DEBUG

@@ -1192,9 +1192,9 @@ Details:
 
 %ignore simuPOP::controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffspringGenerator &rhs);
 
-%ignore simuPOP::controlledOffspringGenerator::initialize(const population &pop, SubPopID subPop, vector< baseOperator * > const &ops);
+%ignore simuPOP::controlledOffspringGenerator::initialize(const population &pop, SubPopID subPop);
 
-%ignore simuPOP::controlledOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::controlledOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
 %feature("docstring") simuPOP::controlledOffspringGenerator::clone "
 
@@ -2208,7 +2208,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
+%ignore simuPOP::heteroMating::mate(population &pop, population &scratch);
 
 %feature("docstring") simuPOP::homoMating "
 
@@ -2300,7 +2300,7 @@ Usage:
 
 %ignore simuPOP::homoMating::weight() const;
 
-%ignore simuPOP::homoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::homoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
 %feature("docstring") simuPOP::idTagger "
 
@@ -3876,9 +3876,9 @@ Usage:
 
 %ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
-%ignore simuPOP::mating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::mating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
-%ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
+%ignore simuPOP::mating::mate(population &pop, population &scratch);
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
@@ -4599,9 +4599,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::initialize(const population &pop, SubPopID subPop, vector< baseOperator * > const &ops);
+%ignore simuPOP::offspringGenerator::initialize(const population &pop, SubPopID subPop);
 
-%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
 %ignore simuPOP::offspringGenerator::finalize(const population &pop);
 
@@ -6267,11 +6267,11 @@ Details:
 
 %ignore simuPOP::population::rep();
 
-%ignore simuPOP::population::setRep(int rep, bool setVar=true);
+%ignore simuPOP::population::setRep(int rep);
 
 %ignore simuPOP::population::gen() const;
 
-%ignore simuPOP::population::setGen(ULONG gen, bool setVar=true);
+%ignore simuPOP::population::setGen(ULONG gen);
 
 %feature("docstring") simuPOP::population::vars "
 
@@ -8276,7 +8276,7 @@ Usage:
 
 %ignore simuPOP::SharedVariables::setVar(const string &name, const PyObject *val);
 
-%ignore simuPOP::SharedVariables::getVar(const string &name, bool nameError=true);
+%ignore simuPOP::SharedVariables::getVar(const string &name, bool nameError=true) const;
 
 %feature("docstring") simuPOP::SharedVariables::hasVar "
 
@@ -8318,13 +8318,13 @@ Usage:
 
 %ignore simuPOP::SharedVariables::setTupleDefDictVar(const string &name, const tupleDict &val);
 
-%ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true);
+%ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true) const;
 
-%ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true);
+%ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true) const;
 
-%ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true);
+%ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true) const;
 
-%ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true);
+%ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true) const;
 
 %feature("docstring") simuPOP::SharedVariables::dict "
 
@@ -8386,15 +8386,13 @@ Details:
     replicates of a population forward in time, subject to various
     operators. Populations in a simulator are created as identical
     copies of a population and will become different after evolution.
-    A mating scheme needs to be specified, which will be used to
-    generate offspring generations during evolution. A number of
-    functions are provided to access simulator properties, access
-    populations and their variables, copy, save and load a simulator.
-    The most important member function of a simulator is evolve, which
-    evolves populations forward in time, subject to various operators.
-    For convenience, member functions are provided to set virtual
-    splitter, add information field and set ancestral depth to all
-    populations in a simulator.
+    A number of functions are provided to access simulator properties,
+    access populations and their variables, copy, save and load a
+    simulator.  The most important member function of a simulator is
+    evolve, which evolves populations forward in time, subject to
+    various operators. For convenience, member functions are provided
+    to set virtual splitter, add information field and set ancestral
+    depth to all populations in a simulator.
 
 "; 
 
@@ -8402,7 +8400,7 @@ Details:
 
 Usage:
 
-    simulator(pop, matingScheme, rep=1)
+    simulator(pop, rep=1)
 
 Details:
 
@@ -8439,32 +8437,6 @@ Details:
     Clone a simulator, along with all its populations. Note that
     Python assign statement simu1 = simu only creates a symbolic link
     to an existing simulator.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::gen "
-
-Usage:
-
-    x.gen()
-
-Details:
-
-    Return the current generation number, which is the initial
-    generation number (0, or some value set by setGen(gen)) plus the
-    total number of generations evolved.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setGen "
-
-Usage:
-
-    x.setGen(gen)
-
-Details:
-
-    Set the current generation number of a simulator to gen.
 
 "; 
 
@@ -8541,8 +8513,8 @@ Details:
 
 Usage:
 
-    x.describe(initOps=[], preOps=[], duringOps=[], postOps=[],
-      finalOps=[], gen=-1)
+    x.describe(initOps=[], preOps=[], matingScheme=mating,
+      postOps=[], finalOps=[], gen=-1)
 
 Details:
 
@@ -8558,7 +8530,7 @@ Details:
 
 Usage:
 
-    x.evolve(initOps=[], preOps=[], duringOps=[], postOps=[],
+    x.evolve(initOps=[], preOps=[], matingScheme=mating, postOps=[],
       finalOps=[], gen=-1)
 
 Details:
@@ -8609,18 +8581,6 @@ Details:
 
 %ignore simuPOP::simulator::apply(const opList &ops);
 
-%feature("docstring") simuPOP::simulator::setMatingScheme "
-
-Usage:
-
-    x.setMatingScheme(matingScheme)
-
-Details:
-
-    Set a new mating scheme matingScheme to a simulator.
-
-"; 
-
 %feature("docstring") simuPOP::simulator::vars "
 
 Usage:
@@ -8646,21 +8606,6 @@ Usage:
     x.__cmp__(rhs)
 
 "; 
-
-%feature("docstring") simuPOP::simulator::save "
-
-Usage:
-
-    x.save(filename)
-
-Details:
-
-    Save a simulator to file filename, which can be loaded by a global
-    function LoadSimulator.
-
-"; 
-
-%ignore simuPOP::simulator::load(string filename);
 
 %feature("docstring") simuPOP::smmMutator "
 
@@ -10328,20 +10273,6 @@ Usage:
 Details:
 
     load a population from a file.
-
-"; 
-
-%feature("docstring") simuPOP::LoadSimulator "
-
-Description:
-
-    load a simulator from a file with the specified mating scheme. The
-    file format is by default determined by file extension
-    (format=\"auto\"). Otherwise, format can be one of txt, bin, or xml.
-
-Usage:
-
-    LoadSimulator(file, matingScheme)
 
 "; 
 
