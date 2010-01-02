@@ -200,8 +200,6 @@ __all__ = [
     'savePopulation',
     'ifElse',
     'pause',
-    'turnOffDebug',
-    'turnOnDebug',
     'ticToc',
     #
     # Function form of operators

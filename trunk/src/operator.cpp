@@ -607,9 +607,6 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
 
-	DBG_FAILIF(m_func.numArgs() == 3 || m_func.numArgs() > 5, ValueError,
-		"Passed function should accept 1, 2, 4, 5 or *args arguments.");
-
 	DBG_ASSERT(subPops.allAvail(), ValueError,
 		"Parameter subPops is not supported by this operator.");
 }
