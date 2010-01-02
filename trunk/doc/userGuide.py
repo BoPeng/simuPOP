@@ -1083,15 +1083,16 @@ pop.evolve(
 import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
-import simuPOP as sim
+from simuPOP import initByFreq, population
 #begin_ignore
-sim.GetRNG().setSeed(12345)
+from simuPOP import GetRNG
+GetRNG().setSeed(12345)
 #end_ignore
 def InitByFreq(pop, *args, **kwargs):
-    sim.initByFreq(*args, **kwargs).apply(pop)
+    initByFreq(*args, **kwargs).apply(pop)
 
-pop = sim.population(1000, loci=[2,3])
-sim.InitByFreq(pop, [.2, .3, .5])
+pop = population(1000, loci=[2,3])
+InitByFreq(pop, [.2, .3, .5])
 #end_file
 
 #begin_file log/migrSize.py
@@ -1537,17 +1538,17 @@ marks.count(2.)
 import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
-import simuPOP as sim
+from simuPOP import *
 #begin_ignore
-sim.GetRNG().setSeed(12345)
+GetRNG().setSeed(12345)
 #end_ignore
-def randomMating(numOffspring = 1., sexMode = sim.RANDOM_SEX,
-        preOps=sim.mendelianGenoTransmitter(), subPopSize = [],
-        subPops=sim.ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+def randomMating(numOffspring=1., sexMode=RANDOM_SEX,
+        ops=mendelianGenoTransmitter(), subPopSize=[],
+        subPops=ALL_AVAIL, weight=0, selectionField='fitness'):
     'A basic diploid sexual random mating scheme.'
-    return sim.homoMating(
-        chooser=sim.randomParentsChooser(True, selectionField),
-        generator=sim.offspringGenerator(ops, numOffspring, sexMode),
+    return homoMating(
+        chooser=randomParentsChooser(True, selectionField),
+        generator=offspringGenerator(ops, numOffspring, sexMode),
         subPopSize=subPopSize,
         subPops=subPops,
         weight=weight)
@@ -1567,7 +1568,8 @@ pop = sim.population(100, loci=5*3, infoFields='parent_idx')
 pop.evolve(
     initOps=[sim.initByFreq([0.2]*5)],
     preOps=sim.dumper(structure=False, max=5),
-    matingScheme=sim.homoMating(sim.sequentialParentChooser(),
+    matingScheme=sim.homoMating(
+        sim.sequentialParentChooser(),
         sim.offspringGenerator(ops=[
             sim.selfingGenoTransmitter(),
             sim.parentsTagger(infoFields='parent_idx'),
@@ -1642,27 +1644,27 @@ pop.evolve(
 import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
-import simuPOP as sim
+from simuPOP import *
 #begin_ignore
-sim.GetRNG().setSeed(12345)
+GetRNG().setSeed(12345)
 #end_ignore
-class sexSpecificRecombinator(sim.pyOperator):
-    def __init__(self, intensity=0, rates=0, loci=[], convMode=sim.NO_CONVERSION,
-            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=sim.NO_CONVERSION,
+class sexSpecificRecombinator(pyOperator):
+    def __init__(self, intensity=0, rates=0, loci=[], convMode=NO_CONVERSION,
+            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=NO_CONVERSION,
             *args, **kwargs):
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = sim.recombinator(rates, intensity, loci, convMode)
+        self.recombinator = recombinator(rates, intensity, loci, convMode)
         # This operator is used to recombine paternal chromosomes
-        self.maleRecombinator = sim.recombinator(maleRates, maleIntensity,
+        self.maleRecombinator = recombinator(maleRates, maleIntensity,
             maleLoci, maleConvMode)
         #
         self.initialized = False
         #
-        sim.pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
+        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
     #
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinators need to be initialized. Basically, they cache some
-        # sim.population properties to speed up genotype transmission.
+        # population properties to speed up genotype transmission.
         if not self.initialized:
             self.recombinator.initialize(pop)
             self.maleRecombinator.initialize(pop)
@@ -1672,17 +1674,17 @@ class sexSpecificRecombinator(sim.pyOperator):
         self.maleRecombinator.transmitGenotype(dad, off, 1)
         return True
 
-pop = sim.population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
+pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
 pop.evolve(
     initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.4] + [0.2]*3)
+        initSex(),
+        initByFreq([0.4] + [0.2]*3)
     ],
-    matingScheme=sim.randomMating(ops=[
+    matingScheme=randomMating(ops=[
         sexSpecificRecombinator(rates=0.1, maleRates=0),
-        sim.parentsTagger()
+        parentsTagger()
     ]),
-    postOps=sim.dumper(structure=False),
+    postOps=dumper(structure=False),
     gen = 2
 )
 #end_file
@@ -1707,6 +1709,7 @@ def func():
 
 for i in func():
     print '%.3f' % i,
+
 #end_file
 
 #begin_file log/pyParentsChooser.py
@@ -2288,34 +2291,6 @@ for rep in range(5):
 #end_ignore
 #end_file
 
-#begin_file log/setAncDepth.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(sim.population(100, infoFields=['father_idx', 'mother_idx']),
-    rep=5)
-simu.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.3, 0.7])
-    ],
-    preOps=sim.setAncestralDepth(2, at=-2),
-    matingScheme=sim.randomMating(ops=[
-        sim.mendelianGenoTransmitter(),
-        sim.parentsTagger(begin=98),
-    ]),
-    gen = 100
-)
-pop = simu.population(3)
-print pop.ancestralGens()
-print pop.ancestor(10, 1).father_idx
-#end_file
-
 
 #begin_file log/ifElseFixed.py
 #begin_ignore
@@ -2379,6 +2354,7 @@ simu.evolve(
 for pop in simu.populations():
     print 'Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
         (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
+
 #end_file
 
 #begin_file log/terminateIf.py
@@ -4434,6 +4410,47 @@ pop.evolve(
 )
 #end_file
 
+
+#begin_file log/simuProgress.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from simuPOP.utils import simuProgress
+pop = sim.population(10000, loci=[10], infoFields='index')
+prog = simuProgress('Setting individual genotype...\n', pop.popSize(), gui=False)
+for idx in range(pop.popSize()):
+    # do something to each individaul
+    pop.individual(idx).index = idx
+    prog.update(idx + 1)
+
+#end_file
+
+
+#begin_file log/viewVars.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from simuPOP.utils import ViewVars
+pop = sim.population([1000, 2000], loci=3)
+sim.InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
+sim.InitByFreq(pop, [0.2, 0.8], loci=2)
+sim.Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
+    alleleFreq=range(3),
+    vars=['genoFreq', 'genoNum', 'haploFreq', 'alleleNum_sp'])
+ViewVars(pop.vars())
+#end_file
+
+
 #begin_file log/varPlotter.py
 #begin_ignore
 import simuOpt
@@ -4443,7 +4460,6 @@ import simuPOP as sim
 #begin_ignore
 sim.GetRNG().setSeed(12345)
 #end_ignore
-import simuPOP as sim
 from simuPOP.plotter import varPlotter
 pop = sim.population(size=1000, loci=2)
 simu = sim.simulator(pop, rep=3)

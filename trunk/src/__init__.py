@@ -198,7 +198,6 @@ __all__ = [
     'noneOp',
     'dumper',
     'savePopulation',
-    'setAncestralDepth',
     'ifElse',
     'pause',
     'turnOffDebug',
