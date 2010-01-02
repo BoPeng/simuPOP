@@ -144,7 +144,7 @@ const char * g_debugCodes[] = {
 
 
 // set debug area, default to turn all code on
-void TurnOnDebug(const string & codeString)
+void turnOnDebug(const string & codeString)
 {
 #ifndef OPTIMIZED
 	if (codeString == "DBG_ALL")
@@ -181,7 +181,7 @@ void TurnOnDebug(const string & codeString)
 
 
 // turn off debug, default to turn all code off
-void TurnOffDebug(const string & codeString)
+void turnOffDebug(const string & codeString)
 {
 #ifndef OPTIMIZED
 	if (codeString == "DBG_ALL")
@@ -2323,7 +2323,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 }
 
 
-void CloseOutput(const string & output)
+void closeOutput(const string & output)
 {
 	if (output.empty())
 		ostreamManager().closeAll();
@@ -2934,17 +2934,17 @@ ULONG weightedSampler::get()
 }
 
 
-// this is used for BernulliTrials and copyGenotype
+// this is used for bernulliTrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
 
-BernulliTrials::BernulliTrials(RNG & rng)
+bernulliTrials::bernulliTrials(RNG & rng)
 	: m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
 	m_cur(npos)
 {
 }
 
 
-BernulliTrials::BernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
+bernulliTrials::bernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
 	: m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
 	m_cur(npos)
 {
@@ -2963,12 +2963,12 @@ BernulliTrials::BernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
 
 
 //
-BernulliTrials::~BernulliTrials()
+bernulliTrials::~bernulliTrials()
 {
 }
 
 
-void BernulliTrials::setParameter(const vectorf & prob, ULONG trials)
+void bernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 {
 	m_N = trials;
 	m_prob = prob;
@@ -2990,7 +2990,7 @@ void BernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 
 
 // utility function.
-void BernulliTrials::setAll(size_t idx, bool v)
+void bernulliTrials::setAll(size_t idx, bool v)
 {
 	WORDTYPE * ptr = m_pointer[idx];
 
@@ -3023,7 +3023,7 @@ void BernulliTrials::setAll(size_t idx, bool v)
 // use a != 0 to avoid compiler warning
 #define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
 
-void BernulliTrials::doTrial()
+void bernulliTrials::doTrial()
 {
     DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
@@ -3051,8 +3051,8 @@ void BernulliTrials::doTrial()
                 // for the quality of random bits.
                 *ptr = 0;
                 for (size_t b = 0; b < WORDBIT / 16; ++b) {
-                    // blocks[i] = static_cast<int16_t>(GetRNG().randGet());
-                    tmp = GetRNG().randInt(0xFFFF);
+                    // blocks[i] = static_cast<int16_t>(getRNG().randGet());
+                    tmp = getRNG().randInt(0xFFFF);
                     *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
                 ptr++;
@@ -3061,13 +3061,13 @@ void BernulliTrials::doTrial()
             if (rest != 0) {
                 size_t b = 0;
                 for (b = 0; b < rest / 16; ++b) {
-                    tmp = GetRNG().randInt(0xFFFF);
+                    tmp = getRNG().randInt(0xFFFF);
                     *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
                 // last bits
                 rest -= b * 16;
                 if (rest != 0) {
-                    tmp = GetRNG().randInt(0xFFFF);
+                    tmp = getRNG().randInt(0xFFFF);
                     *ptr |= (g_bitMask[rest] & tmp) << b * 16;
 				}
 			}
@@ -3109,7 +3109,7 @@ void BernulliTrials::doTrial()
 }
 
 
-UINT BernulliTrials::curTrial()
+UINT bernulliTrials::curTrial()
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return m_cur;
@@ -3117,7 +3117,7 @@ UINT BernulliTrials::curTrial()
 
 
 // get a trial corresponding to m_prob.
-void BernulliTrials::trial()
+void bernulliTrials::trial()
 {
     if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
 		doTrial();
@@ -3127,20 +3127,20 @@ void BernulliTrials::trial()
 }
 
 
-bool BernulliTrials::trialSucc(size_t idx) const
+bool bernulliTrials::trialSucc(size_t idx) const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return getBit(m_pointer[idx], m_cur);
 }
 
 
-bool BernulliTrials::trialSucc(size_t idx, size_t cur) const
+bool bernulliTrials::trialSucc(size_t idx, size_t cur) const
 {
     return getBit(m_pointer[idx], cur);
 }
 
 
-size_t BernulliTrials::probFirstSucc() const
+size_t bernulliTrials::probFirstSucc() const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     size_t i = 0;
@@ -3151,7 +3151,7 @@ size_t BernulliTrials::probFirstSucc() const
 }
 
 
-size_t BernulliTrials::probNextSucc(size_t pos) const
+size_t bernulliTrials::probNextSucc(size_t pos) const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     const size_t sz = probSize();
@@ -3165,7 +3165,7 @@ size_t BernulliTrials::probNextSucc(size_t pos) const
 }
 
 
-size_t BernulliTrials::trialFirstSucc(size_t idx) const
+size_t bernulliTrials::trialFirstSucc(size_t idx) const
 {
     size_t blk = m_N / WORDBIT;
     WORDTYPE * ptr = m_pointer[idx];
@@ -3188,7 +3188,7 @@ size_t BernulliTrials::trialFirstSucc(size_t idx) const
 }
 
 
-size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
+size_t bernulliTrials::trialNextSucc(size_t idx, size_t pos) const
 {
     const BitSet & bs = m_table[idx];
 
@@ -3233,7 +3233,7 @@ size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
 }
 
 
-void BernulliTrials::setTrialSucc(size_t idx, bool succ)
+void bernulliTrials::setTrialSucc(size_t idx, bool succ)
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     if (succ)
@@ -3243,7 +3243,7 @@ void BernulliTrials::setTrialSucc(size_t idx, bool succ)
 }
 
 
-double BernulliTrials::trialSuccRate(UINT index) const
+double bernulliTrials::trialSuccRate(UINT index) const
 {
     // efficiency is not considered here
     size_t count = 0;
@@ -3255,7 +3255,7 @@ double BernulliTrials::trialSuccRate(UINT index) const
 }
 
 
-double BernulliTrials::probSuccRate() const
+double bernulliTrials::probSuccRate() const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     UINT count = 0;
@@ -3274,17 +3274,17 @@ double BernulliTrials::probSuccRate() const
 RNG g_RNG;
 
 // return the global RNG
-RNG & GetRNG()
+RNG & getRNG()
 {
     return g_RNG;
 }
 
 
 // set global rng
-// this is temporary since GetRNG() might not exist in the future
-void SetRNG(const string r, unsigned long seed)
+// this is temporary since getRNG() might not exist in the future
+void setRNG(const string r, unsigned long seed)
 {
-    GetRNG().setRNG(r.c_str(), seed);
+    getRNG().setRNG(r.c_str(), seed);
 }
 
 
@@ -3394,7 +3394,7 @@ ostream & cnull()
 }
 
 
-PyObject * ModuleInfo()
+PyObject * moduleInfo()
 {
     // output a dictionary with many keys
     PyObject * dict = PyDict_New();
@@ -3867,14 +3867,14 @@ void testCopyGenotype()
     for (size_t i = 0; i < 100; ++i) {
         for (size_t j = 0; j < 1000; ++j) {
             // use != 0 to reduce compiler warning
-            from[j] = GetRNG().randInt(2) != 0;
+            from[j] = getRNG().randInt(2) != 0;
             to[j] = 0;
 		}
-        size_t from_idx = GetRNG().randInt(300);
-        size_t to_idx = GetRNG().randInt(300);
+        size_t from_idx = getRNG().randInt(300);
+        size_t to_idx = getRNG().randInt(300);
         if (from_idx > to_idx)
 			continue;
-        size_t length = GetRNG().randInt(500);
+        size_t length = getRNG().randInt(500);
         copyGenotype(from.begin() + from_idx,
 			to.begin() + to_idx, length);
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=

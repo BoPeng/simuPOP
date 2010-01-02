@@ -74,18 +74,18 @@ __all__ = [
     'threeGenFamilySampler',
     'combinedSampler',
     # Functions to draw samples
-    'DrawRandomSample',
-    'DrawRandomSamples',
-    'DrawCaseControlSample',
-    'DrawCaseControlSamples',
-    'DrawAffectedSibpairSample',
-    'DrawAffectedSibpairSamples',
-    'DrawNuclearFamilySample',
-    'DrawNuclearFamilySamples',
-    'DrawThreeGenFamilySample',
-    'DrawThreeGenFamilySamples',
-    'DrawCombinedSample',
-    'DrawCombinedSamples',
+    'drawRandomSample',
+    'drawRandomSamples',
+    'drawCaseControlSample',
+    'drawCaseControlSamples',
+    'drawAffectedSibpairSample',
+    'drawAffectedSibpairSamples',
+    'drawNuclearFamilySample',
+    'drawNuclearFamilySamples',
+    'drawThreeGenFamilySample',
+    'drawThreeGenFamilySamples',
+    'drawCombinedSample',
+    'drawCombinedSamples',
     #
 ]
 
@@ -281,7 +281,7 @@ class randomSampler(baseSampler):
         return self.pop.extractIndividuals(indexes = indexes)
 
 
-def DrawRandomSample(pop, sizes, subPops=ALL_AVAIL):
+def drawRandomSample(pop, sizes, subPops=ALL_AVAIL):
     '''Draw ``sizes`` random individuals from a population. If a single ``sizes``
     is given, individuals are drawn randomly from the whole population or
     from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
@@ -293,9 +293,9 @@ def DrawRandomSample(pop, sizes, subPops=ALL_AVAIL):
     return randomSampler(sizes=sizes, subPops=subPops).drawSample(pop)
 
 
-def DrawRandomSamples(pop, sizes, numOfSamples=1, subPops=ALL_AVAIL):
+def drawRandomSamples(pop, sizes, numOfSamples=1, subPops=ALL_AVAIL):
     '''Draw ``numOfSamples`` random samples from a population and return a list of
-    populations. Please refer to function ``DrawRandomSample`` for more details
+    populations. Please refer to function ``drawRandomSample`` for more details
     about parameters ``sizes`` and ``subPops``.'''
     return randomSampler(sizes=sizes, subPops=subPops).drawSamples(pop, numOfSamples=numOfSamples)
 
@@ -387,7 +387,7 @@ class caseControlSampler(baseSampler):
         return self.pop.extractIndividuals(indexes = indexes)
 
 
-def DrawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
+def drawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     '''Draw a case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals. If single ``cases`` and
     ``controls`` are given, individuals are drawn randomly from the whole
@@ -401,10 +401,10 @@ def DrawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     return caseControlSampler(cases, controls, subPops).drawSample(pop) 
 
 
-def DrawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL):
+def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL):
     '''Draw ``numOfSamples`` case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals and return a list of
-    populations. Please refer to function ``DrawCaseControlSample`` for a
+    populations. Please refer to function ``drawCaseControlSample`` for a
     detailed descriptions of parameters.
     '''
     return caseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples) 
@@ -541,7 +541,7 @@ class affectedSibpairSampler(pedigreeSampler):
                     subPops=sp))
 
 
-def DrawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL, 
+def drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw affected sibpair samples from a population. If a single
     ``families`` is given, affected sibpairs and their parents are drawn
@@ -556,11 +556,11 @@ def DrawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL,
         motherField).drawSample(pop)
  
 
-def DrawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL, 
+def drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL, 
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
-    ``DrawAffectedSibpairSample`` for a description of other parameters.
+    ``drawAffectedSibpairSample`` for a description of other parameters.
     '''
     return affectedSibpairSample(families, subPops, idField, fatherField,
         motherField).drawSamples(pop, numOfSamples)
@@ -674,7 +674,7 @@ class nuclearFamilySampler(pedigreeSampler):
                 self.selectedIDs.append(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
 
 
-def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
+def drawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
     affectedOffspring=0, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw nuclear families from a population. Number of offspring, number of
@@ -693,12 +693,12 @@ def DrawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
         affectedOffspring, subPops, idField, fatherField, motherField).drawSample(pop)
  
 
-def DrawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
+def drawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
     affectedOffspring=0, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id',
     fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
-    ``DrawNuclearFamilySample`` for a description of other parameters.
+    ``drawNuclearFamilySample`` for a description of other parameters.
     '''
     return nuclearFamilySample(families, numOffspring, affectedParents,
         affectedOffspring, subPops, idField, fatherField,
@@ -825,7 +825,7 @@ class threeGenFamilySampler(pedigreeSampler):
                 self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
 
 
-def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected=0,
+def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected=0,
     subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw three-generation families from a population. Such families consist
     of grant parents, their children, spouse of these children, and grand
@@ -845,12 +845,12 @@ def DrawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
         subPops, idField, fatherField, motherField).drawSample(pop)
  
 
-def DrawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected=0,
+def drawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected=0,
     numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
     motherField='mother_id'):
     '''Draw ``numOfSamples`` three-generation pedigree samples from population ``pop``
     and return a list of populations. Please refer to function
-    ``DrawThreeGenFamilySample`` for a description of other parameters.
+    ``drawThreeGenFamilySample`` for a description of other parameters.
     '''
     return threeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSamples(pop, numOfSamples)
@@ -887,7 +887,7 @@ class combinedSampler(baseSampler):
         return pop.extractIndividuals(IDs = allIDs, idField = self.idField)
 
 
-def DrawCombinedSample(pop, samplers, idField='ind_id'):
+def drawCombinedSample(pop, samplers, idField='ind_id'):
     '''Draw different types of samples using a list of ``samplers``. A
     population consists of all individuals from these samples will
     be returned. An ``idField`` that stores an unique ID for all individuals
@@ -896,9 +896,9 @@ def DrawCombinedSample(pop, samplers, idField='ind_id'):
     '''
     return combinedSampler(samplers, idField=idField).drawSample(pop)
 
-def DrawCombinedSamples(pop, samplers, numOfSamples=1, idField='ind_id'):
+def drawCombinedSamples(pop, samplers, numOfSamples=1, idField='ind_id'):
     '''Draw combined samples ``numOfSamples`` numOfSamples and return a list of populations.
-    Please refer to function ``DrawCombinedSample`` for details about
+    Please refer to function ``drawCombinedSample`` for details about
     parameters ``samplers`` and ``idField``.
     '''
     return combinedSampler(samplers, idField=idField).drawSamples(pop, numOfSamples)

@@ -41,7 +41,7 @@
  * StreamManager
  * StreamProvider
  * RNG
- * BernulliTrials
+ * bernulliTrials
  * parameter polymorphism
  */
 
@@ -87,14 +87,14 @@ namespace simuPOP {
 
 /** Set debug code \e code. More than one code could be specified using a comma
  *  separated string. Name of available codes are available from
- *  <tt>ModuleInfo()['debug'].keys()</tt>.
+ *  <tt>moduleInfo()['debug'].keys()</tt>.
  */
-void TurnOnDebug(const string & code = string());
+void turnOnDebug(const string & code = string());
 
 /** Turn off debug code \e code. More than one code could be specified using a
  *  comma separated string. Default to turn off all debug codes.
  */
-void TurnOffDebug(const string & code = "DBG_ALL");
+void turnOffDebug(const string & code = "DBG_ALL");
 
 #ifndef OPTIMIZED
 /// test if one code is turned on, CPPONLY
@@ -1373,7 +1373,7 @@ private:
  *  \e output is unspecified. An exception will be raised if \e output does
  *  not exist or it has already been closed.
  */
-void CloseOutput(const string & output = string());
+void closeOutput(const string & output = string());
 
 // ////////////////////////////////////////////////////////////
 // / Random number generator
@@ -1403,7 +1403,7 @@ private:
 
 /** This random number generator class wraps around a number of random number
  *  generators from GNU Scientific Library. You can obtain and change the
- *  RNG used by the current simuPOP module through the \c GetRNG() function,
+ *  RNG used by the current simuPOP module through the \c getRNG() function,
  *  or create a separate random number generator and use it in your script.
  */
 class RNG
@@ -1417,7 +1417,7 @@ public:
 	 *  random number source will be used to guarantee that random seeds are
 	 *  used even if more than one simuPOP sessions are started simultaneously.
 	 *  Names of supported random number generators are available from
-	 *  <tt>ModuleInfo()['availableRNGs']</tt>.
+	 *  <tt>moduleInfo()['availableRNGs']</tt>.
 	 */
 	RNG(const char * name = NULL, unsigned long seed = 0);
 
@@ -1711,7 +1711,7 @@ private:
  *
  *  We expect that N is big (usually populaiton size) and p_i are small
  *
- *  using fast BernulliTrial method for fix p,
+ *  using fast bernulliTrial method for fix p,
  *  we can fill up this table very quickly column by column
  *
  *  This class will provide easy access to row (each trial) or column
@@ -1724,17 +1724,17 @@ private:
  *  if trial will be called, e.g., N+2 times all the time,
  *  this treatment might not be very efficient.
  */
-class BernulliTrials
+class bernulliTrials
 {
 public:
 	/// CPPONLY
-	BernulliTrials(RNG & rng);
+	bernulliTrials(RNG & rng);
 
 	///
-	BernulliTrials(RNG & rng, const vectorf & prob, ULONG trials);
+	bernulliTrials(RNG & rng, const vectorf & prob, ULONG trials);
 
 	///
-	~BernulliTrials();
+	~bernulliTrials();
 
 	/** CPPONLY
 	 * return size of trial
@@ -1830,10 +1830,10 @@ private:
 };
 
 /// return the currently used random number generator
-RNG & GetRNG();
+RNG & getRNG();
 
 /// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
-void SetRNG(const string rng = string(), unsigned long seed = 0);
+void setRNG(const string rng = string(), unsigned long seed = 0);
 
 
 // ////////////////////////////////////////////////////////////
@@ -1856,7 +1856,7 @@ void SetRNG(const string rng = string(), unsigned long seed = 0);
  *  \li \c maxIndex: maximum index size (limits population size * total number of marker).
  *  \li \c debug: A list of effective debugging codes.
  */
-PyObject * ModuleInfo();
+PyObject * moduleInfo();
 
 #ifdef BINARYALLELE
 // efficiently copy alleles (block by block, rather than 1 by 1)

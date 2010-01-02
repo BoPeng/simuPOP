@@ -675,7 +675,7 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-void ApplyDuringMatingOperator(const baseOperator & op,
+void applyDuringMatingOperator(const baseOperator & op,
                                population * pop, int dad, int mom, ULONG off)
 {
 	baseOperator * opPtr = op.clone();

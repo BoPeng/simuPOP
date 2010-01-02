@@ -442,7 +442,7 @@ public:
 	randomParentChooser(bool replacement = true,
 		const string & selectionField = "fitness") :
 		parentChooser(selectionField), m_replacement(replacement),
-		m_index(0), m_chosen(0), m_sampler(GetRNG()), m_size(0), m_shift(0)
+		m_index(0), m_chosen(0), m_sampler(getRNG()), m_size(0), m_shift(0)
 	{
 	}
 
@@ -507,7 +507,7 @@ public:
 	randomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
 		parentChooser(selectionField), m_replacement(replacement),
 		m_maleIndex(0), m_femaleIndex(0), m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(GetRNG()), m_femalesampler(GetRNG())
+		m_malesampler(getRNG()), m_femalesampler(getRNG())
 	{
 	}
 
@@ -579,7 +579,7 @@ public:
 		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
 		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(GetRNG()), m_femalesampler(GetRNG())
+		m_malesampler(getRNG()), m_femalesampler(getRNG())
 	{
 		DBG_FAILIF(polyNum < 1, ValueError,
 			"Number of sex partners has to be at least one");
@@ -659,7 +659,7 @@ public:
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
 		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(GetRNG()), m_femalesampler(GetRNG())
+		m_malesampler(getRNG()), m_femalesampler(getRNG())
 	{
 	}
 

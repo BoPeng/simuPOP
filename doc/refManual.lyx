@@ -715,56 +715,56 @@ status open
 
 
 \backslash
-CloseOutputRef
+closeOutputRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-DescribeRef
+describeRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-LoadPopulationRef
+loadPopulationRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-ModuleInfoRef
+moduleInfoRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-GetRNGRef
+getRNGRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-SetRNGRef
+setRNGRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-TurnOnDebugRef
+turnOnDebugRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-TurnOffDebugRef
+turnOffDebugRef
 \end_layout
 
 \end_inset
@@ -1415,13 +1415,6 @@ savePopulationRef
 
 
 \backslash
-setAncestralDepthRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 ifElseRef
 \end_layout
 
@@ -1430,20 +1423,6 @@ ifElseRef
 
 \backslash
 pauseRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-turnOnDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-turnOffDebugRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1911,14 +1890,14 @@ simuPOPutilstrajectorySimulatorRef
 
 
 \backslash
-simuPOPutilsForwardTrajectoryRef
+simuPOPutilssimulateForwardTrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsBackwardTrajectoryRef
+simuPOPutilssimulateBackwardTrajectoryRef
 \end_layout
 
 \end_inset
@@ -1938,21 +1917,21 @@ status open
 
 
 \backslash
-simuPOPutilsMigrIslandRatesRef
+simuPOPutilsmigrIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsMigrHierarchicalIslandRatesRef
+simuPOPutilsmigrHierarchicalIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsMigrSteppingStoneRatesRef
+simuPOPutilsmigrSteppingStoneRatesRef
 \end_layout
 
 \end_inset
@@ -1992,7 +1971,7 @@ status open
 
 
 \backslash
-simuPOPutilsViewVarsRef
+simuPOPutilsviewVarsRef
 \end_layout
 
 \end_inset
@@ -2012,7 +1991,7 @@ status open
 
 
 \backslash
-simuPOPutilsSaveCSVRef
+simuPOPutilssaveCSVRef
 \end_layout
 
 \end_inset
@@ -2140,14 +2119,14 @@ simuPOPsamplingrandomSamplerRef
 
 
 \backslash
-simuPOPsamplingDrawRandomSampleRef
+simuPOPsamplingdrawRandomSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawRandomSamplesRef
+simuPOPsamplingdrawRandomSamplesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2161,14 +2140,14 @@ simuPOPsamplingcaseControlSamplerRef
 
 
 \backslash
-simuPOPsamplingDrawCaseControlSampleRef
+simuPOPsamplingdrawCaseControlSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawCaseControlSamplesRef
+simuPOPsamplingdrawCaseControlSamplesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2189,14 +2168,14 @@ simuPOPsamplingaffectedSibpairSamplerRef
 
 
 \backslash
-simuPOPsamplingDrawAffectedSibpairSampleRef
+simuPOPsamplingdrawAffectedSibpairSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawAffectedSibpairSamplesRef
+simuPOPsamplingdrawAffectedSibpairSamplesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2210,14 +2189,14 @@ simuPOPsamplingnuclearFamilySamplerRef
 
 
 \backslash
-simuPOPsamplingDrawNuclearFamilySampleRef
+simuPOPsamplingdrawNuclearFamilySampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawNuclearFamilySamplesRef
+simuPOPsamplingdrawNuclearFamilySamplesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2231,14 +2210,14 @@ simuPOPsamplingthreeGenFamilySamplerRef
 
 
 \backslash
-simuPOPsamplingDrawThreeGenFamilySampleRef
+simuPOPsamplingdrawThreeGenFamilySampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawThreeGenFamilySamplesRef
+simuPOPsamplingdrawThreeGenFamilySamplesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2252,14 +2231,14 @@ simuPOPsamplingcombinedSamplerRef
 
 
 \backslash
-simuPOPsamplingDrawCombinedSampleRef
+simuPOPsamplingdrawCombinedSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingDrawCombinedSamplesRef
+simuPOPsamplingdrawCombinedSamplesRef
 \end_layout
 
 \end_inset

@@ -54,7 +54,7 @@ class TestInitialization(unittest.TestCase):
     def assertGenotype(self, pop, genotype,loci=[], subPop=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
         geno = self.getGenotype(pop, loci, subPop, atPloidy)
-        if ModuleInfo()['alleleType'] == 'binary':
+        if moduleInfo()['alleleType'] == 'binary':
             if type(genotype) == type(1):
                 self.assertEqual(geno, [genotype>0]*len(geno))
             else:
@@ -68,7 +68,7 @@ class TestInitialization(unittest.TestCase):
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,loci=[], subPop=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
         geno = self.getGenotype(pop, loci, subPop, atPloidy)
-        if ModuleInfo()['alleleType'] == 'binary':
+        if moduleInfo()['alleleType'] == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
                 assert freq0 >= freqLow[0] and freq0 <= freqHigh[0]
@@ -191,7 +191,7 @@ class TestInitialization(unittest.TestCase):
         self.clearGenotype(pop)
         InitByFreq(pop, [[0, 0, 1], [0, 1], [1]], subPops=[[0,0],[1,1], [2,1]])
         for ind in pop.individuals([0,0]):
-            if ModuleInfo()['alleleType'] == 'binary':
+            if moduleInfo()['alleleType'] == 'binary':
                 for allele in ind.genotype():
                      self.assertEqual(allele, 1) 
             else:

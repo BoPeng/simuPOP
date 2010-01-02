@@ -33,7 +33,7 @@ class TestSelector(unittest.TestCase):
             elif ind.genotype() == (1,1):
                 self.assertEqual(ind.fitness, 0.25)
         #
-        if ModuleInfo()['alleleType'] == 'binary':
+        if moduleInfo()['alleleType'] == 'binary':
             InitByFreq(pop, [.2, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():

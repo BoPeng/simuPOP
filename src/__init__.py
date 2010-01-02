@@ -238,15 +238,15 @@ __all__ = [
     'withArgs',
     # RNG Related
     'RNG',
-    'GetRNG',
-    'SetRNG',
+    'getRNG',
+    'setRNG',
     #
-    'CloseOutput',
-    'Describe',
-    'LoadPopulation',
-    'ModuleInfo',
-    'TurnOffDebug',
-    'TurnOnDebug',
+    'closeOutput',
+    'describe',
+    'loadPopulation',
+    'moduleInfo',
+    'turnOffDebug',
+    'turnOnDebug',
     #
     'MaPenetrance',
     'MapPenetrance',
@@ -256,8 +256,8 @@ __all__ = [
     'PyQuanTrait',
     #
     # For testing only
-    'ApplyDuringMatingOperator',
-    'BernulliTrials',
+    'applyDuringMatingOperator',
+    'bernulliTrials',
     'weightedSampler',
     # 
     # modules are not loaded by default because importing plotter will fail if
@@ -299,7 +299,7 @@ if simuOptions['Revision'] is not None and simuRev() < simuOptions['Revision']:
         'Please consider upgrading your simuPOP installation.')
 
 if not simuOptions['Quiet']:
-    info = ModuleInfo()
+    info = moduleInfo()
     print "simuPOP : Copyright (c) 2004-2009 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
     if info['version'].endswith('svn'):
@@ -311,7 +311,7 @@ if not simuOptions['Quiet']:
         print ("Version %s (Revision %d, %s) for Python %s" % \
             (info['version'], info['revision'], info['date'], info['python']))
     print info['compiler']
-    print "Random Number Generator is set to %s with random seed 0x%08x." % (GetRNG().name(), GetRNG().seed())
+    print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     if info['optimized']:
         print "This is the optimized %s allele version with %d maximum allelic states." % (info['alleleType'], info['maxAllele']+1)
@@ -321,7 +321,7 @@ if not simuOptions['Quiet']:
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
-    TurnOnDebug('DBG_GENERAL')
+    turnOnDebug('DBG_GENERAL')
     # only display banner once
     simuOptions['Quiet'] = True
 
@@ -329,7 +329,7 @@ if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
         if g not in ['', None]:
             print "Turn on debug '%s'" % g
-            TurnOnDebug(g)
+            turnOnDebug(g)
 
 # Other definitions that does not really belong to simuUtil.py
 class _dw(object):

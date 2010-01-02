@@ -1310,7 +1310,7 @@ public:
 	void sortIndividuals(bool infoOnly = false) const;
 
 	/** Save population to a file \e filename, which can be loaded by a global
-	 *  function <tt>LoadPopulation(filename)</tt>.
+	 *  function <tt>loadPopulation(filename)</tt>.
 	 *  <group>8-pop</group>
 	 */
 	void save(const string & filename) const;
@@ -1745,7 +1745,7 @@ private:
 
 /** load a population from a file.
  */
-population & LoadPopulation(const string & file);
+population & loadPopulation(const string & file);
 
 }
 

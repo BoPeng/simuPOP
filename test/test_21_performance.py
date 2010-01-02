@@ -465,14 +465,14 @@ class TestPerformance(unittest.TestCase):
     # long: 6.32, 19.82, 52.03
 
 
-    def TestBernulliTrials(self):
+    def TestbernulliTrials(self):
         'Testing the performance of bernulli trials'
         rg = rng()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
         for pi in p:
             c1 = time.clock()
-            bt = BernulliTrials(rg, [pi]*100, N)
+            bt = bernulliTrials(rg, [pi]*100, N)
             for rep in range(400):
                 bt.doTrial()
             c2 = time.clock()
@@ -502,7 +502,7 @@ class TestPerformance(unittest.TestCase):
         '''Testing the performance of using list, dict and defaultdict to calculate
         and store allele frequencies
         '''
-        pop = LoadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
+        pop = loadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         for i in range(4):
             pop1 = pop.clone();
             print pop1.popSize()
@@ -526,7 +526,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestLD(self):
         'Testing the performance of calculating LD for a large number of loci'
-        pop = LoadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
+        pop = loadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         c1 = time.clock()
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         c2 = time.clock()
@@ -737,7 +737,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestSerialization(self):
         import stat
-        pop = LoadPopulation('exp3_0_9.txt')
+        pop = loadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
         #InitByFreq(pop, [.2, .8])
         #simu = simulator(pop, randomMating(), reps=1)
@@ -756,7 +756,7 @@ class TestPerformance(unittest.TestCase):
                 print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
                     os.stat('exp_%s.%s' % (label, format) )[stat.ST_SIZE]/1024./1024.)
                 c1 = time.clock()
-                pop1 = LoadPopulation('exp_%s.%s' % (label, format))
+                pop1 = loadPopulation('exp_%s.%s' % (label, format))
                 self.assertEqual(pop, pop1)
                 c2 = time.clock()
                 print "%s, load, %s: %.1f " % (format, label, c2 - c1)

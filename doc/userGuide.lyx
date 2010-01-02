@@ -1065,18 +1065,19 @@ individual.setInfo()
 \end_layout
 
 \begin_layout Itemize
-Standalone functions start with capital character.
+Standalone functions start with small character (e.g.
+ 
+\family typewriter
+loadPopulation()
+\family default
+) but functions that apply operators (funcion form of operators) start with
+ capital characters (e.g.
+ 
+\family typewriter
+InitInfo()
+\family default
+).
  This is how you can differ an operator from its function version.
- For example, 
-\family typewriter
-TurnOnDebug(DBG_POPULATION)
-\family default
- is the function to turn on debug mode for population related functions
- and 
-\family typewriter
-turnOnDebug(DBG_POPULATION) 
-\family default
-will do nothing apparently, because it creates an operator.
  
 \end_layout
 
@@ -1580,7 +1581,7 @@ simuPOP.utils.simuProgress
 \family default
  and a dialog used by function 
 \family typewriter
-simuPOP.utils.ViewVars
+simuPOP.utils.viewVars
 \family default
  to display a large number of variables.
  The most notable feature of the use of GUI in simuPOP is that 
@@ -1985,7 +1986,7 @@ from simuPOP import utils
 
 \begin_layout Plain Layout
 
-utils.BackwardTrajectory(N=1000, endGen=100, endFreq=0.1)
+utils.simulateBackwardTrajectory(N=1000, endGen=100, endFreq=0.1)
 \end_layout
 
 \end_inset
@@ -4945,34 +4946,19 @@ population!save
 \family default
  member function and global function 
 \family typewriter
-LoadPopulation
+loadPopulation
 \family default
 
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-function!LoadPopulation
+function!loadPopulation
 \end_layout
 
 \end_inset
 
 .
- (Yes, it is 
-\family typewriter
-Load..
-
-\family default
- not 
-\family typewriter
-load..
-
-\family default
- because 
-\family typewriter
-LoadPopulation
-\family default
- is a global function.).
  
 \series bold
 Virtual splitters are not saved
@@ -6460,7 +6446,7 @@ file
  will not be closed afterward.
  In this case, 
 \family typewriter
-CloseOutput('file')
+closeOutput('file')
 \family default
  should be used to explicitly close the file.
 \end_layout
@@ -8384,7 +8370,7 @@ Orders at which operators are applied during an evolutionary process
 If you suspect that your simulation is not running as expected, you can
  have a close look at your evolutionary process using function 
 \family typewriter
-Describe()
+describe()
 \family default
 .
  This function takes the same set of parameters as 
@@ -8399,7 +8385,7 @@ simulator.evolve()
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/describe.log"
-lstparams "caption={Describe an evolutionary process},label={describe}"
+lstparams "caption={describe an evolutionary process},label={describe}"
 
 \end_inset
 
@@ -9911,7 +9897,7 @@ simuUtil.
 \begin_layout Itemize
 
 \family typewriter
-MigrIslandRates(r, n)
+migrIslandRates(r, n)
 \family default
  returns a 
 \begin_inset Formula $n\times n$
@@ -9935,7 +9921,7 @@ for a traditional island model where individuals have equal probability
 \begin_layout Itemize
 
 \family typewriter
-MigrHierarchicalIslandRates(r1, r2, n)
+migrHierarchicalIslandRates(r1, r2, n)
 \family default
  models a hierarchical island model in which local populations are grouped
  into neighborhoods within which there is considerable gene flow and between
@@ -9980,7 +9966,7 @@ MigrHierarchicalIslandRates(r1, r2, n)
  can vary across groups of islands.
  For example, 
 \family typewriter
-MigrHierarchicalIslandRates([r11, r12], r2, [3, 2])
+migrHierarchicalIslandRates([r11, r12], r2, [3, 2])
 \family default
  returns a 
 \begin_inset Formula $5\times5$
@@ -10003,7 +9989,7 @@ MigrHierarchicalIslandRates([r11, r12], r2, [3, 2])
 \begin_layout Itemize
 
 \family typewriter
-MigrSteppingStoneRates(r, n, circular=False)
+migrSteppingStoneRates(r, n, circular=False)
 \family default
  returns a 
 \begin_inset Formula $n\times n$
@@ -16340,7 +16326,7 @@ reference "statHaploFreq"
  small population.
  Note that the 
 \family typewriter
-ViewVars
+viewVars
 \family default
  function defined in module 
 \family typewriter
@@ -18988,7 +18974,7 @@ None
 \begin_layout Subsubsection
 Forward-time trajectory simulations (function 
 \family typewriter
-ForwardTrajectory
+simulateForwardTrajectory
 \family default
 )
 \end_layout
@@ -19071,7 +19057,7 @@ Simulated trajectories of one locus in two subpopulations
 \begin_layout Subsubsection
 Backward-time trajectory simulations (function 
 \family typewriter
-BackwardTrajectory
+simulateBackwardTrajectory
 \family default
 ).
 \end_layout
@@ -19243,7 +19229,7 @@ lstparams "caption={Using a text-based progress bar},label={simuProgress}"
 \begin_layout Subsection
 Display population variables (function 
 \family typewriter
-ViewVars
+viewVars
 \family default
 )
 \end_layout
@@ -19252,7 +19238,7 @@ ViewVars
 If a population has a large number of variables, or if you are not sure
  which variable to output, you could use function 
 \family typewriter
-ViewVars
+viewVars
 \family default
  to view the population variables in a tree form.
  If wxPython is available, a dialog could be used to view the variables
@@ -19277,7 +19263,7 @@ reference "viewVars"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/viewVars.py"
-lstparams "caption={Using function ViewVars to display population variables},label={viewVars}"
+lstparams "caption={Using function viewVars to display population variables},label={viewVars}"
 
 \end_inset
 
@@ -19326,7 +19312,7 @@ Using wxPython to display population variables
 \begin_layout Subsection
 Export simuPOP population in csv format (function 
 \family typewriter
-SaveCSV
+saveCSV
 \family default
 )
 \end_layout
@@ -20619,11 +20605,11 @@ simuPOP.sampling
  more complicated sampling schemes by deriving from its these class.
  For example, you can use 
 \family typewriter
-DrawRandomSample(pop, size=100)
+drawRandomSample(pop, size=100)
 \family default
  to select 100 random individuals from a population, or use 
 \family typewriter
-DrawAffectedSibpairSample(pop, families=100)
+drawAffectedSibpairSample(pop, families=100)
 \family default
  to select 100 pairs of affected invididuals with their parents from a multi-gen
 erational population, or a age-structured population with parents and offspring
@@ -20685,11 +20671,11 @@ randomSampler
 \family default
 , functions 
 \family typewriter
-DrawRandomSample
+drawRandomSample
 \family default
  and 
 \family typewriter
-DrawRandomSamples
+drawRandomSamples
 \family default
 )
 \end_layout
@@ -20697,11 +20683,11 @@ DrawRandomSamples
 \begin_layout Standard
 Functions 
 \family typewriter
-DrawRandomSample
+drawRandomSample
 \family default
  and 
 \family typewriter
-DrawRandomSamples
+drawRandomSamples
 \family default
  draw random invidiauls from a given population.
  If a simple number is given to parameter 
@@ -20767,11 +20753,11 @@ CaseControlSamples
 \begin_layout Standard
 Functions 
 \family typewriter
-DrawCaseControlSample
+drawCaseControlSample
 \family default
  and 
 \family typewriter
-DrawCaseControlSamples
+drawCaseControlSamples
 \family default
  draw cases (affected individuals) and controls (unaffected invidiauls)
  from a given population.
@@ -21002,7 +20988,7 @@ affectedSibpairSampler
 \family default
 , functions 
 \family typewriter
-DrawAffectedSibpairSample(s)
+drawAffectedSibpairSample(s)
 \family default
 )
 \end_layout
@@ -21017,11 +21003,11 @@ simuPOP.sampling
 \family default
  module provides functions 
 \family typewriter
-DrawAffectedSibpairSample
+drawAffectedSibpairSample
 \family default
  and 
 \family typewriter
-DrawAffectedSibpairSamples
+drawAffectedSibpairSamples
 \family default
  to draw such families from a population.
  Example 
@@ -21107,11 +21093,11 @@ nuclearFamilySampler
 \family default
 , functions 
 \family typewriter
-DrawNuclearFamilySample
+drawNuclearFamilySample
 \family default
  and 
 \family typewriter
-DrawNuclearFamilySample
+drawNuclearFamilySample
 \family default
 s)
 \end_layout
@@ -21120,11 +21106,11 @@ s)
 A nuclear family consists of two parents and their offspring.
  Functions 
 \family typewriter
-DrawNuclearFamilySample
+drawNuclearFamilySample
 \family default
  and 
 \family typewriter
-DrawNuclearFamilySamples
+drawNuclearFamilySamples
 \family default
  to draw such families from a population, with restrictions on number of
  offspring, number of affected parents and number of affected offspring.
@@ -21214,7 +21200,7 @@ threeGenFamilySampler
 \family default
 , functions 
 \family typewriter
-DrawThreeGenFamilySample and DrawThreeGenFamilySamples
+drawThreeGenFamilySample and drawThreeGenFamilySamples
 \family default
 )
 \end_layout
@@ -21225,11 +21211,11 @@ A three-generation family consists of two parents, their common offspring,
  Individuals in sampled families have either no or two parents.
  Functions 
 \family typewriter
-DrawThreeGenFamilySample
+drawThreeGenFamilySample
 \family default
  and 
 \family typewriter
-DrawThreeGenFamilySamples
+drawThreeGenFamilySamples
 \family default
  to draw such families from a population, with restrictions on number of
  offspring, total number of individuals and number of affected individuals
@@ -21333,11 +21319,11 @@ combinedSampler
 \family default
 , functions 
 \family typewriter
-DrawCombinedSample
+drawCombinedSample
 \family default
  and 
 \family typewriter
-DrawCombinedSamples
+drawCombinedSamples
 \family default
 )
 \end_layout
@@ -21478,11 +21464,11 @@ If a list of sample sizes is given, specified number of samples will be
  analyses.
  Function 
 \family typewriter
-DrawCaseControlSample
+drawCaseControlSample
 \family default
  cannot be used because both groups are affected, but you can 
 \family typewriter
-DrawRandomSample
+drawRandomSample
 \family default
  from two VSPs defined by age.
  Example 
@@ -22855,14 +22841,14 @@ AvailableRNG
 
 , 
 \family typewriter
-SetRNG(name, seed)
+setRNG(name, seed)
 \family default
 )
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
-SetRNG
+setRNG
 \end_layout
 
 \end_inset
@@ -22871,7 +22857,7 @@ SetRNG
  It is also possible to save the random seed of a simuPOP session (c.f.
  
 \family typewriter
-GetRNG().seed()
+getRNG().seed()
 \family default
 ) and use it to replay the session later.
  
@@ -22880,12 +22866,12 @@ GetRNG().seed()
 \begin_layout Standard
 
 \family typewriter
-GetRNG().seed()
+getRNG().seed()
 \family default
  returns the seed of the simuPOP random number generator.
  It can be used to replay your simulation if 
 \family typewriter
-GetRNG()
+getRNG()
 \family default
  is your only source of random number generator.
  If you also use the Python 
@@ -22894,7 +22880,7 @@ random
 \family default
  module, it is a good practise to set its seed using 
 \family typewriter
-random.seed(GetRNG().seed())
+random.seed(getRNG().seed())
 \family default
 .
  Example 
@@ -22925,11 +22911,11 @@ Debug-related operators and functions *
 \begin_layout Subsection
 Functions 
 \family typewriter
-TurnOnDebug
+turnOnDebug
 \family default
  and 
 \family typewriter
-TurnOffDebug
+turnOffDebug
 \end_layout
 
 \begin_layout Standard
@@ -22938,11 +22924,11 @@ Debug information can be useful when something looks suspicious.
  information before and during evolution.
  Functions 
 \family typewriter
-TurnOnDebug(code)
+turnOnDebug(code)
 \family default
  and 
 \family typewriter
-TurnOffDebug(code)
+turnOffDebug(code)
 \family default
  could be used to turn on and off some debug information.
 \end_layout
@@ -22988,7 +22974,7 @@ Turn on/off debug information
 
 \end_inset
 
->>> TurnOnDebug(DBG_POPULATION)
+>>> turnOnDebug(DBG_POPULATION)
 \end_layout
 
 \begin_layout Plain Layout
@@ -23048,11 +23034,11 @@ status open
 \begin_layout Standard
 Besides functions 
 \family typewriter
-TurnOnDebug(code) 
+turnOnDebug(code) 
 \family default
 and 
 \family typewriter
-TurnOffDebug(code)
+turnOffDebug(code)
 \family default
 , you dould set environmental variable 
 \family typewriter
@@ -23069,7 +23055,7 @@ code
 \family default
 A list of valid debug code could be found in function 
 \family typewriter
-ModuleInfo()['debug']
+moduleInfo()['debug']
 \family default
 .
 \end_layout

@@ -744,7 +744,7 @@ Usage:
 
 %feature("docstring") simuPOP::baseSelector::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::BernulliTrials "
+%feature("docstring") simuPOP::bernulliTrials "
 
 Details:
 
@@ -759,7 +759,7 @@ Details:
     dimensional table: a vector of probabilities cross expected number
     of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
-    fast BernulliTrial method for fix p, we can fill up this table
+    fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
     to row (each trial) or column (called each prob) of this table.
     if this table is accessed row by row (each trial), a internal
@@ -769,27 +769,27 @@ Details:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
+%ignore simuPOP::bernulliTrials::bernulliTrials(RNG &rng);
 
-%feature("docstring") simuPOP::BernulliTrials::BernulliTrials "
-
-Usage:
-
-    BernulliTrials(rng, prob, trials)
-
-"; 
-
-%feature("docstring") simuPOP::BernulliTrials::~BernulliTrials "
+%feature("docstring") simuPOP::bernulliTrials::bernulliTrials "
 
 Usage:
 
-    x.~BernulliTrials()
+    bernulliTrials(rng, prob, trials)
 
 "; 
 
-%ignore simuPOP::BernulliTrials::trialSize() const;
+%feature("docstring") simuPOP::bernulliTrials::~bernulliTrials "
 
-%feature("docstring") simuPOP::BernulliTrials::probSize "
+Usage:
+
+    x.~bernulliTrials()
+
+"; 
+
+%ignore simuPOP::bernulliTrials::trialSize() const;
+
+%feature("docstring") simuPOP::bernulliTrials::probSize "
 
 Usage:
 
@@ -797,9 +797,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::setParameter(const vectorf &prob, ULONG trials);
+%ignore simuPOP::bernulliTrials::setParameter(const vectorf &prob, ULONG trials);
 
-%feature("docstring") simuPOP::BernulliTrials::doTrial "
+%feature("docstring") simuPOP::bernulliTrials::doTrial "
 
 Description:
 
@@ -811,9 +811,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::curTrial();
+%ignore simuPOP::bernulliTrials::curTrial();
 
-%feature("docstring") simuPOP::BernulliTrials::trial "
+%feature("docstring") simuPOP::bernulliTrials::trial "
 
 Description:
 
@@ -825,7 +825,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::trialSucc "
+%feature("docstring") simuPOP::bernulliTrials::trialSucc "
 
 Usage:
 
@@ -833,7 +833,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::probFirstSucc "
+%feature("docstring") simuPOP::bernulliTrials::probFirstSucc "
 
 Usage:
 
@@ -841,7 +841,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::probNextSucc "
+%feature("docstring") simuPOP::bernulliTrials::probNextSucc "
 
 Usage:
 
@@ -849,7 +849,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::trialFirstSucc "
+%feature("docstring") simuPOP::bernulliTrials::trialFirstSucc "
 
 Usage:
 
@@ -857,7 +857,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::trialNextSucc "
+%feature("docstring") simuPOP::bernulliTrials::trialNextSucc "
 
 Usage:
 
@@ -865,7 +865,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::setTrialSucc "
+%feature("docstring") simuPOP::bernulliTrials::setTrialSucc "
 
 Usage:
 
@@ -873,7 +873,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::trialSuccRate "
+%feature("docstring") simuPOP::bernulliTrials::trialSuccRate "
 
 Description:
 
@@ -885,7 +885,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernulliTrials::probSuccRate "
+%feature("docstring") simuPOP::bernulliTrials::probSuccRate "
 
 Description:
 
@@ -898,7 +898,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::probabilities();
+%ignore simuPOP::bernulliTrials::probabilities();
 
 %feature("docstring") simuPOP::cloneGenoTransmitter "
 
@@ -6257,7 +6257,7 @@ Usage:
 Details:
 
     Save population to a file filename, which can be loaded by a
-    global function LoadPopulation(filename).
+    global function loadPopulation(filename).
 
 "; 
 
@@ -7674,7 +7674,7 @@ Details:
     This random number generator class wraps around a number of random
     number generators from GNU Scientific Library. You can obtain and
     change the RNG used by the current simuPOP module through the
-    GetRNG() function, or create a separate random number generator
+    getRNG() function, or create a separate random number generator
     and use it in your script.
 
 "; 
@@ -7694,7 +7694,7 @@ Details:
     number source will be used to guarantee that random seeds are used
     even if more than one simuPOP sessions are started simultaneously.
     Names of supported random number generators are available from
-    ModuleInfo()['availableRNGs'].
+    moduleInfo()['availableRNGs'].
 
 "; 
 
@@ -9879,7 +9879,7 @@ Usage:
 
 Function form:
 
-    TurnOffDebug
+    turnOffDebug
 
 Details:
 
@@ -9924,7 +9924,7 @@ Usage:
 
 Function form:
 
-    TurnOnDebug
+    turnOnDebug
 
 Details:
 
@@ -9932,7 +9932,7 @@ Details:
     for non-optimized modules, namely
     *   set environment variable SIMUDEBUG.
     *   use simuOpt.setOptions(debug) function.
-    *   use function TurnOnDebug
+    *   use function turnOnDebug
     *   use the turnOnDebug operator The advantage of using an
     operator is that you can turn on debug at given generations.
 
@@ -10237,13 +10237,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
+%feature("docstring") simuPOP::applyDuringMatingOperator "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::LoadPopulation "
+%feature("docstring") simuPOP::loadPopulation "
 
 Usage:
 
-    LoadPopulation(file)
+    loadPopulation(file)
 
 Details:
 
@@ -10251,11 +10251,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Describe "
+%feature("docstring") simuPOP::describe "
 
 Usage:
 
-    Describe(initOps=[], preOps=[], matingScheme=mating, postOps=[],
+    describe(initOps=[], preOps=[], matingScheme=mating, postOps=[],
       finalOps=[], gen=-1, numRep=1)
 
 Details:
@@ -10268,25 +10268,25 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::TurnOnDebug "
+%feature("docstring") simuPOP::turnOnDebug "
 
 Usage:
 
-    TurnOnDebug(code=\"\")
+    turnOnDebug(code=\"\")
 
 Details:
 
     Set debug code code. More than one code could be specified using a
     comma separated string. Name of available codes are available from
-    ModuleInfo()['debug'].keys().
+    moduleInfo()['debug'].keys().
 
 "; 
 
-%feature("docstring") simuPOP::TurnOffDebug "
+%feature("docstring") simuPOP::turnOffDebug "
 
 Usage:
 
-    TurnOffDebug(code=\"DBG_ALL\")
+    turnOffDebug(code=\"DBG_ALL\")
 
 Details:
 
@@ -10344,11 +10344,11 @@ Details:
 
 %ignore simuPOP::ostreamManager();
 
-%feature("docstring") simuPOP::CloseOutput "
+%feature("docstring") simuPOP::closeOutput "
 
 Usage:
 
-    CloseOutput(output=\"\")
+    closeOutput(output=\"\")
 
 Details:
 
@@ -10373,7 +10373,7 @@ Details:
 
 %ignore simuPOP::formatText(const string &text);
 
-%feature("docstring") simuPOP::GetRNG "
+%feature("docstring") simuPOP::getRNG "
 
 Description:
 
@@ -10381,11 +10381,11 @@ Description:
 
 Usage:
 
-    GetRNG()
+    getRNG()
 
 "; 
 
-%feature("docstring") simuPOP::SetRNG "
+%feature("docstring") simuPOP::setRNG "
 
 Description:
 
@@ -10395,15 +10395,15 @@ Description:
 
 Usage:
 
-    SetRNG(rng=\"\", seed=0)
+    setRNG(rng=\"\", seed=0)
 
 "; 
 
-%feature("docstring") simuPOP::ModuleInfo "
+%feature("docstring") simuPOP::moduleInfo "
 
 Usage:
 
-    ModuleInfo()
+    moduleInfo()
 
 Details:
 

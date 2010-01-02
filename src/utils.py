@@ -35,25 +35,25 @@ and format conversion utilities.
 """
 
 __all__ = [
-    'ViewVars',
-    'MigrIslandRates',
-    'MigrHierarchicalIslandRates',
-    'MigrSteppingStoneRates',
-    'SaveCSV',
+    'viewVars',
+    'migrIslandRates',
+    'migrHierarchicalIslandRates',
+    'migrSteppingStoneRates',
+    'saveCSV',
     'simuProgress',
     'trajectory',
     'trajectorySimulator',
-    'BackwardTrajectory',
-    'ForwardTrajectory',
+    'simulateBackwardTrajectory',
+    'simulateForwardTrajectory',
 ]
 
 import exceptions, operator, types, os, sys, re
 
 from simuOpt import simuOptions
 
-from simuPOP import MALE, FEMALE, pointMutator, GetRNG
+from simuPOP import MALE, FEMALE, pointMutator, getRNG
 
-def ViewVars(var, gui=None):
+def viewVars(var, gui=None):
     '''
     list a variable in tree format, either in text format or in a
         wxPython window.
@@ -101,7 +101,7 @@ def ViewVars(var, gui=None):
 
 
 # migration rate matrix generators
-def MigrIslandRates(r, n):
+def migrIslandRates(r, n):
     '''migration rate matrix
 
 ::
@@ -124,7 +124,7 @@ def MigrIslandRates(r, n):
     return m
 
 
-def MigrHierarchicalIslandRates(r1, r2, n):
+def migrHierarchicalIslandRates(r1, r2, n):
     '''
     Return the migration rate matrix for a hierarchical island model
     where there are different migration rate within and across groups
@@ -181,7 +181,7 @@ def MigrHierarchicalIslandRates(r1, r2, n):
     return m
 
 
-def MigrSteppingStoneRates(r, n, circular=False):
+def migrSteppingStoneRates(r, n, circular=False):
     '''migration rate matrix, circular stepping stone model (X=1-m)
 
 ::
@@ -221,7 +221,7 @@ or non-circular
     return m
 
 
-def SaveCSV(pop, filename='', fields=[], loci=[], header=True,
+def saveCSV(pop, filename='', fields=[], loci=[], header=True,
     shift=1, combine=None,
         sexCode={MALE: '1', FEMALE: '2'}, affectionCode={True: '1', False: '2'},
         **kwargs):
@@ -590,7 +590,7 @@ class trajectory:
     '''A ``trajectory`` object contains frequencies of one or more loci in one
     or more subpopulations over several generations. It is usually returned by
     member functions of class ``trajectorySimulator`` or equivalent global
-    functions ``ForwardTrajectory`` and ``BackwardTrajectory``.
+    functions ``simulateForwardTrajectory`` and ``simulateBackwardTrajectory``.
 
     The ``trajectory`` object provides several member functions to facilitate
     the use of trajectory-simulation techiniques. For example,
@@ -995,7 +995,7 @@ class trajectorySimulator:
             # with s1 and s2 on hand, calculate freq at the next generation
             y = x * (1 + s2 * x + s1 * (1 - x)) / (1 + s2 * x * x + 2 * s1 * x * (1 - x))
             # y is obtained, is the expected allele frequency for the next generation t+1
-            it = GetRNG().randBinomial(2 * Nt, y)
+            it = getRNG().randBinomial(2 * Nt, y)
             xt.append(float(it) / (2 * Nt))
         return xt
 
@@ -1049,7 +1049,7 @@ class trajectorySimulator:
                 else:
                      y = y1
             # y is obtained, is the expected allele frequency for the previous generation t-1
-            it = GetRNG().randBinomial(int(2 * Nt), y)
+            it = getRNG().randBinomial(int(2 * Nt), y)
             xt.append(float(it) / (2 * Nt))
         return xt
 
@@ -1089,7 +1089,7 @@ class trajectorySimulator:
                 endingXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x) / sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
+                    it = getRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
                     for sp in range(len(Nt)):
                         endingXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(beginXt):
@@ -1182,7 +1182,7 @@ class trajectorySimulator:
                 beginXt = [[0]*self.nLoci for x in Nt]
                 p = [float(x)/sum(Nt) for x in Nt]
                 for loc in range(self.nLoci):
-                    it = GetRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
+                    it = getRNG().randMultinomial(int(tmpXt[loc]*sum(Nt)), p)
                     beginXt[sp][loc] = float(it[sp]) / Nt[sp]
             elif len(Nt) < len(endingXt):
                 # check length of previous Nt.
@@ -1397,7 +1397,7 @@ class trajectorySimulator:
         return None
 
 
-def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1,
+def simulateForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1,
         fitness=None, maxAttempts=10000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more
@@ -1412,7 +1412,7 @@ def ForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1,
     return trajectorySimulator(N, nLoci, fitness, logger).simuForward(
         beginGen, endGen, beginFreq, endFreq, maxAttempts)
     
-def BackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
+def simulateBackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
         minMutAge=None, maxMutAge=None, maxAttempts=1000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
     more loci (*fitness*), this function simulates a trajectory of one or more

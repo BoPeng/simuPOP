@@ -129,7 +129,7 @@ class TestPopulation(unittest.TestCase):
         'Testing population::setGenotype(geno), setGenotype(geno, subPop)'
         pop = population(loci=[1, 2], size=[1, 2])
         self.assertRaises(exceptions.IndexError, pop.setGenotype, [1], 2)
-        if ModuleInfo()['alleleType'] == 'binary':
+        if moduleInfo()['alleleType'] == 'binary':
             pop.setGenotype([0, 1, 0])
             self.assertEqual(pop.individual(0).genotype(), [0, 1, 0, 0, 1, 0])
             self.assertEqual(pop.individual(1).genotype(), [0, 1, 0, 0, 1, 0])
@@ -977,7 +977,7 @@ class TestPopulation(unittest.TestCase):
             InitSex(pop)
             InitInfo(pop, lambda:random.randint(0, 40), infoFields=['a', 'b'])
         pop.save("popout")
-        pop1 = LoadPopulation("popout")
+        pop1 = loadPopulation("popout")
         self.assertEqual(pop, pop1)
         self.assertEqual(pop.indInfo('a'), pop1.indInfo('a'))
         self.assertEqual(pop.indInfo('b'), pop1.indInfo('b'))
@@ -985,7 +985,7 @@ class TestPopulation(unittest.TestCase):
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         a = pop.dvars().alleleFreq[0][1]
         pop.save("popout")
-        pop1 = LoadPopulation("popout")
+        pop1 = loadPopulation("popout")
         self.assertEqual(a, pop1.dvars().alleleFreq[0][1])
         self.assertEqual(pop, pop1)
         os.remove('popout')

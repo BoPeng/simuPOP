@@ -464,7 +464,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: baseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
-		m_mutators(mutators), m_sampler(GetRNG())
+		m_mutators(mutators), m_sampler(getRNG())
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
 			"Please specify a probability for each passed mutator.");
