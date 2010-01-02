@@ -178,6 +178,7 @@ void simulator::add(const population & pop, bool steal)
 		RuntimeError, "Fail to add new population.");
 }
 
+
 string simulator::describe(bool format)
 {
 	return "<simuPOP.simulator> a simulator with " + toStr(m_pops.size()) + " population" + (m_pops.size() == 1 ? "." : "s.");
@@ -428,11 +429,11 @@ int simulator::__cmp__(const simulator & rhs) const
 
 
 string Describe(const opList & initOps,
-                           const opList & preOps,
-                           const mating & matingScheme,
-                           const opList & postOps,
-                           const opList & finalOps,
-                           int gen, UINT numRep)
+                const opList & preOps,
+                const mating & matingScheme,
+                const opList & postOps,
+                const opList & finalOps,
+                int gen, UINT numRep)
 {
 	vectorstr allDesc(numRep, "");
 

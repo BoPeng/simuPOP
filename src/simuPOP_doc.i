@@ -8505,22 +8505,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::describe "
-
-Usage:
-
-    x.describe(initOps=[], preOps=[], matingScheme=mating,
-      postOps=[], finalOps=[], gen=-1)
-
-Details:
-
-    This function takes the same parameters as simulator.evolve and
-    output a description of how an evolutionary process will be
-    executed, basically by calling the describe() function of all
-    operators. It is recommended that you call this function if you
-    have any doubt how your simulation will proceed.
-
-"; 
+%ignore simuPOP::simulator::describe(bool format=true);
 
 %feature("docstring") simuPOP::simulator::evolve "
 
@@ -10263,6 +10248,23 @@ Usage:
 Details:
 
     load a population from a file.
+
+"; 
+
+%feature("docstring") simuPOP::Describe "
+
+Usage:
+
+    Describe(initOps=[], preOps=[], matingScheme=mating, postOps=[],
+      finalOps=[], gen=-1, numRep=1)
+
+Details:
+
+    This function takes the same parameters as simulator.evolve and
+    output a description of how an evolutionary process will be
+    executed, basically by calling the describe() function of all
+    operators. It is recommended that you call this function if you
+    have any doubt how your simulation will proceed.
 
 "; 
 
