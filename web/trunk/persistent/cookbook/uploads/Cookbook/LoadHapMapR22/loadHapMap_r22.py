@@ -54,8 +54,8 @@ http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LoadHapMap22 for
 for details about this script.
 '''
 
-import simuOpt
-simuOpt.setOptions(optimized=True, alleleType='binary')
+from simuOpt import *
+setOptions(optimized=True, alleleType='binary')
 from simuPOP import *
 
 import os, sys, urllib, gzip, exceptions, tempfile, shutil
@@ -65,8 +65,8 @@ release = 22
 # This link does not have JPT+CHT FILES, they are older (2007-11-20)
 #Genotype_URL = 'http://www.hapmap.org/downloads/phasing/2007-08_rel22/phased/'
 # Data from this link may not be correct but they are newer (2008-6-25)
-Genotype_URL = 'http://ftp.hapmap.org/phasing/2007-08_rel22/phased/'
-Recom_URL = 'http://ftp.hapmap.org/recombination/2008-03_rel22_B36/rates/'
+Genotype_URL = 'ftp://ftp.hapmap.org/hapmap/phasing/2007-08_rel22/phased/'
+Recom_URL = 'ftp://ftp.hapmap.org/hapmap/recombination/2008-03_rel22_B36/rates/'
 legend_file = 'genotypes_chr%d_%s_r22_nr.b36_fwd_legend.txt.gz'
 genotype_file = {
     'CEU': 'genotypes_chr%d_CEU_r22_nr.b36_fwd.phase.gz',
@@ -84,8 +84,9 @@ def downloadIfNeeded(URL, path, file, logger=None):
         return        
     if logger is not None:
         logger.info('Downloading %s ...' % file)
-    urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
-    if not os.path.isfile(diskfile):
+    try:
+        urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
+    except:
         raise exceptions.SystemError('Failed to download file %s from URL %s' \
             % (file, URL))
 
@@ -242,7 +243,7 @@ def set_map_dist(pop, ch, dest, logger=None):
     pop.dvars().genDist = map
 
     
-def loadHapMapPop(chrom, popName, dir=None, logger=None):
+def loadHapMapPop(chrom, popName, logger=None):
     '''Download and import the specified chromosome of a hapmap population.
     If a directory is specified, the loaded population will be saved in
     simuPOP format with filename HapMap_XXX_chrY.pop where XXX is population
@@ -255,26 +256,13 @@ def loadHapMapPop(chrom, popName, dir=None, logger=None):
     popName
         Name of the population, should be one of 'CEU', 'YRI' or 'JPT+CHB'
 
-    dir
-        Name of the directory to save the imported population in simuPOP
-        format.
-    
     logger
         An optional logger object (c.f. the Python logging module) where all
         logging and debugging information is written to.
 
     This function returns the loaded population.
     '''
-    popFile = os.path.join(dir, "HapMap_%s_chr%d.pop" % (popName, chrom))
-    if os.path.isfile(popFile):
-        if logger is not None:
-            logger.info("Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile)
-        try:
-            pop = LoadPopulation(popFile)
-            return pop
-        except:
-            # continue to load file
-            pass
+
     if logger is not None:
         logger.info("Loading HapMap chromosome %d of population %s" % (chrom, popName))
     tmpdir = tempfile.mkdtemp()
@@ -289,9 +277,7 @@ def loadHapMapPop(chrom, popName, dir=None, logger=None):
         alleleNames=alleleNames, subPopNames=[popName])
     load_population(pop, chrom, popName, tmpdir, logger)
     set_map_dist(pop, chrom, tmpdir, logger)
-    logger.info("Save population to %s." % popFile)
     pop.dvars().HapMap_rel = release
-    pop.save(popFile)
     shutil.rmtree(tmpdir)
     return pop
 
@@ -301,7 +287,7 @@ options = [
      'useDefault': True,
      'label': 'Destination directory',
      'allowedTypes': [type('')],
-     'validate': simuOpt.valueValidDir(),
+     'validate': valueValidDir(),
      'description': 'A directory to save HapMap data in simuPOP format.',
     },
     {'longarg': 'chroms=',
@@ -310,15 +296,13 @@ options = [
      'label': 'Chromosomes to download',
      'allowedTypes': [type([]), type(())],
      'chooseFrom': range(1, 23),
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(1, 22)),
+     'validate': valueListOf(valueBetween(1, 22)),
      'description': 'Which chromosomes to download and process',
     },
 ]
 
-#BATCHTESTING --chroms=1
-
 if __name__ == '__main__':
-    pars = simuOpt.simuParam(options, 
+    pars = simuParam(options, 
         'This script downloads the 22 release of the HapMap datasets\n'
         'and saves them in simuPOP format. It also downloads the fine-scale\n'
         'recombination map and saves the genetic distance of each marker in\n'
@@ -331,4 +315,16 @@ if __name__ == '__main__':
     logger = logging.getLogger('loadHapMap')
     for chrom in pars.chroms:
         for sample in ['CEU', 'YRI', 'JPT+CHB']:
-            loadHapMapPop(chrom, sample, pars.dest, logger)
+            popFile = os.path.join(pars.dest, "HapMap_%s_chr%d.pop" % (sample, chrom))
+            try:
+                if os.path.isfile(popFile):
+                    # test if this file is OK.
+                    LoadPopulation(popFile)
+                    logger.info("Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile)
+                    continue
+            except:
+                # continue to load file
+                pass
+            pop = loadHapMapPop(chrom, sample, logger)
+            logger.info("Save population to %s." % popFile)
+            pop.save(popFile)

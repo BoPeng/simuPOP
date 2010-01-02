@@ -1,15 +1,18 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1232383392
 host=127.0.0.1
 name=Main.MatingSchemes
-rev=50
-targets=Cookbook.ConsanguineousMating,Cookbook.Selfing,Cookbook.OverlappingGenerations,Cookbook.AssortativeMating,Cookbook.PythonParentChooser,Cookbook.CppLevelParentChooser,Cookbook.HaplodiploidMating
-text=This page lists a few non-random mating schemes%0a%0a!! Homogeneous mating schemes%0a%0aHomogeneous mating schemes apply the same parent-selection and offspring-generation schemes to all subpopulations. Non-random mating can be achieved by using special parent choosers.%0a%0a* [[Cookbook/ConsanguineousMating]] Consanguineoug mating between first cousins.%0a%0a!! Hetergeneous mating schemes%0a%0aHeterogeneous mating schemes apply multiple homogeneous mating schemes to different subpopulation and virtual subpopulations. They can be used to implement complex mating schemes where individuals with different properties mate differently.%0a%0a* [[Cookbook/Selfing]] Partial self-fertilization.%0a%0a* [[Cookbook/OverlappingGenerations]] Overlapping generations.%0a%0a* [[Cookbook/AssortativeMating]] Assortative mating.%0a%0a%0a!! Python parent choosers%0a%0aPython parent choosers are the most flexible parent choosers in the sense that you can grab a subpopulation and pick parents by yourself. The only technique difficulty is that you need to write a Python generator for it.%0a%0a* [[Cookbook/PythonParentChooser]] Python parent chooser%0a%0a* [[Cookbook/CppLevelParentChooser]] A Python parent chooser implemented at the C++ level.%0a%0a!! Customized during mating operators (genotype transmitters)%0a%0a* [[Cookbook/haplodiploidMating]] Recombination in haplodiploid populations.
-time=1233547803
+rev=51
+targets=Cookbook.Selfing,Cookbook.OverlappingGenerations,Cookbook.AssortativeMating,Cookbook.PythonParentChooser,Cookbook.CppLevelParentChooser,Cookbook.HaplodiploidMating
+text=This page lists a few non-random mating schemes%0a%0a!! Homogeneous mating schemes%0a%0aHomogeneous mating schemes apply the same parent-selection and offspring-generation schemes to all subpopulations. Non-random mating can be achieved by using special parent choosers.%0a%0a!! Hetergeneous mating schemes%0a%0aHeterogeneous mating schemes apply multiple homogeneous mating schemes to different subpopulation and virtual subpopulations. They can be used to implement complex mating schemes where individuals with different properties mate differently.%0a%0a* [[Cookbook/Selfing]] Partial self-fertilization.%0a%0a* [[Cookbook/OverlappingGenerations]] Overlapping generations.%0a%0a* [[Cookbook/AssortativeMating]] Assortative mating.%0a%0a%0a!! Python parent choosers%0a%0aPython parent choosers are the most flexible parent choosers in the sense that you can grab a subpopulation and pick parents by yourself. The only technique difficulty is that you need to write a Python generator for it.%0a%0a* [[Cookbook/PythonParentChooser]] Python parent chooser%0a%0a* [[Cookbook/CppLevelParentChooser]] A Python parent chooser implemented at the C++ level.%0a%0a!! Customized during mating operators (genotype transmitters)%0a%0a* [[Cookbook/haplodiploidMating]] Recombination in haplodiploid populations.
+time=1260328423
+author:1260328423=
+diff:1260328423:1233547803:=5a6,7%0a> %0a> * [[Cookbook/ConsanguineousMating]] Consanguineoug mating between first cousins.%0a
+host:1260328423=127.0.0.1
 author:1233093465=
 diff:1233093465:1233093358:=21,22d20%0a%3c %0a%3c Python parent choosers are the most flexible parent choosers in the sense that you can grab a subpopulation and pick parents by yourself. The only technique difficulty is that you need to write a Python generator for it.%0a
 host:1233093465=127.0.0.1

@@ -1,16 +1,22 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 GTB5 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1232384195
 host=127.0.0.1
 name=Cookbook.Selfing
-rev=4
+rev=6
 targets=
-text=(:title Simulation of partial self-fertilization of certain plants:)%0a%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:selfing.py | http://simupop.sourceforge.net/images/download.jpg]]|selfing.py%0a%0aThis script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happen to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a%0a%0a=python [=%0adef simuSelfing(perc, N, n_rep, gen):%0a    '''%0a    perc    percentage of individuals under selfing mating schemes%0a    N       population size%0a    n_rep   Number of replicates per simulation%0a    gen     generations to run%0a    '''%0a    pop = population(N, loci=[2])%0a    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))%0a%0a    simu = simulator(pop,%0a        heteroMating([%0a            selfMating(subPop=(0, 0)),%0a            randomMating(subPop=(0, 1))%0a        ]),%0a        rep=n_rep%0a    )%0a%0a    simu.evolve(preOps=[%0a            initByValue([0, 1, 1, 0]),%0a            pyExec('ld_hist=[]')  # record ld%0a        ],%0a        ops=[%0a            recombinator(rates=0.01),%0a            stat(LD=[0,1]),%0a            pyExec('ld_hist.append(LD[0][1])')%0a        ],%0a        gen = gen%0a    )%0a    print simu.dvars(0).ld_hist%0a    return 0%0a%0a=]%0a
-time=1244769078
+text=(:title Simulation of partial self-fertilization of certain plants:)%0a%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:selfing.py | http://simupop.sourceforge.net/images/download.jpg]]|selfing.py%0a%0aThis script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happens to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a%0a%0a=python [=%0adef simuSelfing(perc, N, n_rep, gen):%0a    '''%0a    perc    percentage of individuals under selfing mating schemes%0a    N       population size%0a    n_rep   Number of replicates per simulation%0a    gen     generations to run%0a    '''%0a    pop = population(N, loci=[2])%0a    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))%0a%0a    simu = simulator(pop,%0a        heteroMating([%0a            selfMating(subPops=[(0, 0)]),%0a            randomMating(subPops=[(0, 1)], ops = recombinator(rates=0.01))%0a        ]),%0a        rep=n_rep%0a    )%0a%0a    simu.evolve(%0a        initOps= [%0a            initSex(),%0a            initByValue([0, 1, 1, 0]),%0a            pyExec('ld_hist=[]')  # record ld%0a        ],%0a        postOps=[%0a            stat(LD=[0,1]),%0a            pyExec('ld_hist.append(LD[0][1])')%0a        ],%0a        gen = gen%0a    )%0a    print simu.dvars(0).ld_hist%0a    return 0%0a=]%0a
+time=1261106452
 title=Simulation of partial self-fertilization of certain plants
+author:1261106452=
+diff:1261106452:1261106305:=21,22c21,22%0a%3c             selfMating(subPops=[(0, 0)]),%0a%3c             randomMating(subPops=[(0, 1)], ops = recombinator(rates=0.01))%0a---%0a>             selfMating(subPop=(0, 0)),%0a>             randomMating(subPop=(0, 1))%0a27,29c27%0a%3c     simu.evolve(%0a%3c         initOps= [%0a%3c             initSex(),%0a---%0a>     simu.evolve(preOps=[%0a33c31,32%0a%3c         postOps=[%0a---%0a>         ops=[%0a>             recombinator(rates=0.01),%0a40a40%0a> %0a
+host:1261106452=127.0.0.1
+author:1261106305=
+diff:1261106305:1244769078:=5c5%0a%3c This script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happens to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a---%0a> This script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happen to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a
+host:1261106305=127.0.0.1
 author:1244769078=
 diff:1244769078:1232488695:=32c32%0a%3c             recombinator(rates=0.01),%0a---%0a>             recombinator(rate=0.01),%0a
 host:1244769078=127.0.0.1

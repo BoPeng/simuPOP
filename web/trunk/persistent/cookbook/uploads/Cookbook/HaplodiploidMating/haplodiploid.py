@@ -61,13 +61,13 @@ class haplodiploidRecombinator(pyOperator):
         self.recombinator.transmitGenotype(mom, off, 0)
         # If the offspring is male, copy the second homologous copy from
         # her father. Male individuals only have one homologous set.
-        if off.sex() == Female:
+        if off.sex() == FEMALE:
             self.copier.copyChromosomes(dad, 0, off, 1)
         return True
 
 
 def haplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
-        convMode=NoConversion, numOffspring = 1., sexMode = RandomSex,
+        convMode=NO_CONVERSION, numOffspring = 1., sexMode = RANDOM_SEX,
         ops = [], subPopSize = [], subPops = [], weight = 0):
     '''
     Return a mating scheme that uses random parents chooser and a customized
@@ -103,7 +103,7 @@ def simuHaplodiploid(N, numMito=3, gen=10):
     operator that actually uses a recombinator to recombine maternal
     chromosomes, and then a genoTransmitter to copy paternal chromosomes.
     '''
-    pop = population(N, ploidy=Haplodiploid, loci=[20]*2,
+    pop = population(N, ploidy=HAPLODIPLOID, loci=[20]*2,
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 

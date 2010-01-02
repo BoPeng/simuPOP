@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 from simuPOP import *
 from simuPOP.utils import MigrIslandRates
-from simuPOP.sampling import RandomSample
+from simuPOP.sampling import DrawRandomSample
 
 def calcFst(pop):
     'Calculate Fst and Gst for the whole population and a random sample'
     Stat(pop, structure=range(5), vars=['F_st', 'G_st'])
-    sample = RandomSample(pop, size=[500]*pop.numSubPop())[0]
+    sample = DrawRandomSample(pop, sizes=[500]*pop.numSubPop())
     Stat(sample, structure=range(5), vars=['F_st', 'G_st'])
     print 'Gen: %3d Gst: %.6f (all), %.6f (sample) Fst: %.6f (all) %.6f (sample)' \
         % (pop.dvars().gen,

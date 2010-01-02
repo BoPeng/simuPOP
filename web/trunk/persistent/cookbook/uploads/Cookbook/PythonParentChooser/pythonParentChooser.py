@@ -23,8 +23,8 @@ import random
 
 def podParentsChooser(pop, sp):
     '''Choose parents of parents from different pods'''
-    males = [x for x in pop.individuals() if x.sex() == Male]
-    females = [x for x in pop.individuals() if x.sex() == Female]
+    males = [x for x in pop.individuals() if x.sex() == MALE]
+    females = [x for x in pop.individuals() if x.sex() == FEMALE]
     while True:
         # randomly choose a male
         male = males[random.randint(0, len(males)-1)]
@@ -58,7 +58,7 @@ def simuPodMating(numPods, podSize):
             # calculate size of pods
         preOps = stat(popSize=True, subPops=[(0,x) for x in range(numPods)]),
             # offspring stays with their natal pod
-        duringOps = inheritTagger(mode=Maternal, infoFields='pod'),
+        duringOps = inheritTagger(mode=MATERNAL, infoFields='pod'),
         postOps = [
             # print size of each pod
             pyEval(r"'Size of pods: %s\n' % (','.join(['%d' % x for x in subPopSize]))")

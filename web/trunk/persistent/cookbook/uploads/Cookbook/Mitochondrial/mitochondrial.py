@@ -42,7 +42,7 @@ def simuMitochondrial(N, numMito=3, gen=10):
     '''
     pop = population(N, loci=[5]*(3 + numMito),
         # one autosome, two sex chromosomes, and numMito mitochondrial chromosomes
-        chromTypes=[Autosome, ChromosomeX, ChromosomeY] + [Customized]*numMito,
+        chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*numMito,
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 

@@ -55,7 +55,6 @@ def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
     if maxAllele != 0:
         nu = maxAllele
     else:
-        # ??? pop.maxAllele()?? should be highest number used to label an allele
         nu = max(pop.genotype()) + shift
     if nu > 999:
         print "Warning: Current version (2.93) of FSTAT can not handle more than 999 alleles at each locus"
@@ -78,8 +77,6 @@ def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
     for sp in range(0, pop.numSubPop()):
         # genotype of subpopulation sp, individuals are
         # rearranged in perfect order
-        # ??? gt = pop.arrGenotype(sp, True)???
-        # FIXME: use for ind in pop.individuals(sp): (a cleaner)
         gt = pop.genotype(sp)
         for ind in range(0, pop.subPopSize(sp)):
             f.write("%d " % (sp+1))
@@ -90,7 +87,6 @@ def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
                 if combine is None:
                     ale1 = gt[p1+al] + shift
                     ale2 = gt[p2+al] + shift
-                    # ??? '%%0%dd%%0%dd ' @#$%^&*~.......
                     f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
                 else:
                     f.write('%%0%dd' % nd % combine([gt[p1+al], gt[p2+al]]))
@@ -162,28 +158,11 @@ def LoadFstat(file, loci=[]):
     if sum(subPopSize) != len(gt):
         raise exceptions.ValueError("Population size does not match")
     # we have all the information, create a population
-    # ???pop = population( subPop=subPopSize, loci = numLoci, ploidy=2,
-    # ???    lociNames=lociNames)
     pop = population(size=subPopSize, loci=numLoci, lociNames=lociNames)
-    #
-    gs = pop.totNumLoci()
-    # ??? popGT = pop.arrGenotype(True)
-    popGT = pop.genotype()
-    # ??? need to know and set maxAllele???
-    #
-    # FIXME: rewrite using 
-    #
-    # for ind in pop.individuals():
-    #     ind.setAllele(..., 0)
-    #     ind.setAllele(..., 1)
-    #
-    # for ind in range(0, len(gt)):
-    #    p1 = 2*gs*ind                # begining of first hemo copy
-    #    p2 = 2*gs*ind + gs     # second
-    #    for al in range(0, gs): # allele
-    #        ale = int(gt[ind][al+1])
-    #        popGT[2*gs*ind + al] = ale/(10**nd)
-    #        popGT[2*gs*ind + gs + al] = ale%(10*nd)
+    for idx, ind in enumerate(pop.individuals()):
+        for locus in range(pop.totNumLoci()):
+            for ploidy in [0,1]:
+                ind.setAllele(int(gt[idx][locus+1][ploidy])-1, idx=locus, ploidy=ploidy)
     return pop
 
 
@@ -191,10 +170,10 @@ if __name__ == '__main__':
     # for testing
     # test func SaveFstat
     outfile = 'Fstatout.dat'
-    pop = population(size=[3,4,5], loci=[2,3])
+    pop = population(size=[3,4,5], loci=[2,3],
+                     lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
     InitByFreq(pop, [.1, .2, .3, .4])
     SaveFstat(pop, outfile)
     print open(outfile).read()
-
-    # test func LoadFstat ???
+    # load the saved population(in fstat format) into pop1(in simuPOP format) 
     pop1 = LoadFstat('Fstatout.dat')

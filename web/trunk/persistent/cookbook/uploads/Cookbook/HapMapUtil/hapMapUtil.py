@@ -27,13 +27,16 @@
 
 '''
 This python module provides several utility functions that handles HapMap
-populations.
+populations. When used as a script, this module creates a population using
+selected markers and populations.
 '''
 
-import simuOpt
 from simuPOP import *
 from types import *
-import sys, os
+import simuOpt as opt
+
+import os
+import sys
 
 def mergeHapMapPops(HapMap_dir, HapMap_pops, chrom, logger=None):
     '''
@@ -152,6 +155,7 @@ def getHapMapMarkers(HapMap_dir, names = [], chroms=[], HapMap_pops=['CEU'],
     ePos = paramExpandList(endPos, len(chs), 'Incorrect ending position')
     nMarkers = paramExpandList(numMarkers, len(chs), 'Incorrect number of markers')
     #
+    print sPos, ePos, chs, names
     for chIdx, ch in enumerate(chs):
         markers = []
         chPop = mergeHapMapPops(HapMap_dir, HapMap_pops, ch, logger)
@@ -216,7 +220,7 @@ HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 options = [
     {
     'longarg': 'HapMap_dir=',
-    'default': '',
+    'default': '../HapMap',
     'useDefault': True,
     'label': 'HapMap data directory',
     'description': '''Directory to store HapMap data in simuPOP format. The 
@@ -224,7 +228,7 @@ options = [
         using script loadHapMap_r22.py from the simuPOP online cookbook. The
         files have names such as HapMap_CEU_chr10.pop.''',
      'allowedTypes': [StringType],
-     'validate': simuOpt.valueValidDir(),
+     'validate': opt.valueValidDir(),
     },
     {
     'longarg': 'HapMap_pops=',
@@ -232,10 +236,9 @@ options = [
     'useDefault': False,
     'label' : 'Name of populations',
     'description': '''Which HapMap populations to use?''',
-    'allowedTypes': [StringType],
     'allowedTypes': [ListType, TupleType],
     'chooseFrom': HapMap_pops,
-    'validate': simuOpt.valueListOf(simuOpt.valueOneOf(HapMap_pops)),
+    'validate': opt.valueListOf(HapMap_pops),
     },
     {
     'longarg': 'markerList=',
@@ -248,7 +251,7 @@ options = [
         parameter 'markerListCols' can be used to specify the columns if the
         fields are not in order.''',
     'allowedTypes': [StringType],
-    'validate': simuOpt.valueOr(simuOpt.valueEqual(''), simuOpt.valueValidFile()),
+    'validate': opt.valueOr(opt.valueEqual(''), opt.valueValidFile()),
     },
     {
     'longarg': 'markerListCols=',
@@ -259,16 +262,16 @@ options = [
         in the marker list file (start at 0). It should be [1, 9, 10] for an
         illumina annotation fiel.''',
     'allowedTypes': [TupleType, ListType],
-    'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
+    'validate': opt.valueListOf(opt.valueGE(0)),
     },
     {
     'longarg': 'chroms=',
-    'default': [1],
+    'default': [],
     'useDefault': True,
     'label': 'Chromosomes to use',
     'description': 'A list of chromosomes (1-22) to use.',
     'allowedTypes': [TupleType, ListType],
-    'validate': simuOpt.valueListOf(simuOpt.valueBetween(1, 22)),
+    'validate': opt.valueListOf(opt.valueBetween(1, 22)),
     },
     {
     'longarg': 'numMarkers=',
@@ -280,29 +283,29 @@ options = [
         for some chromosomes.
         ''',
     'allowedTypes': [TupleType, ListType],
-    'validate': simuOpt.valueOr(simuOpt.valueGT(0), simuOpt.valueListOf(simuOpt.valueGE(0)))
+    'validate': opt.valueOr(opt.valueGT(0), opt.valueListOf(opt.valueGE(0)))
     },
     {
     'longarg': 'startPos=',
     'default': [],
     'useDefault': True,
-    'label': 'staring position',
+    'label': 'staring position (bp)',
     'description': '''Starting position of the markers on each chromosome.
         The beginning of the chromosomes will be assumed if this parameter
         is unspecified or is set to zero.''',
     'allowedTypes': [TupleType, ListType],
-    'validate': simuOpt.valueOr(simuOpt.valueGE(0), simuOpt.valueListOf(simuOpt.valueGE(0)))
+    'validate': opt.valueOr(opt.valueGE(0), opt.valueListOf(opt.valueGE(0)))
     },
     {
     'longarg': 'endPos=',
     'default': [],
     'useDefault': True,
-    'label': 'Ending position',
+    'label': 'Ending position (bp)',
     'description': '''Ending position of the markers on each chromosome.
         The end of the chromosomes will be assumed if this parameter is
         unspecifed or is set to zero.''',
      'allowedTypes': [TupleType, ListType],
-     'validate': simuOpt.valueOr(simuOpt.valueGE(0), simuOpt.valueListOf(simuOpt.valueGE(0)))
+     'validate': opt.valueOr(opt.valueGE(0), opt.valueListOf(opt.valueGE(0)))
     },
     {
     'longarg': 'minAF=',
@@ -311,7 +314,7 @@ options = [
     'label': 'Minimal minor allele frequency',
     'description': '''Minimal allele frequency of selected markers.''',
     'allowedTypes': [IntType, LongType, FloatType],
-    'validate': simuOpt.valueBetween(0, 0.5)
+    'validate': opt.valueBetween(0, 0.5)
     },
     {
     'longarg': 'minDist=',
@@ -320,7 +323,7 @@ options = [
     'label': 'Minimal distance between markers',
     'description': '''Minimal distance between adjacent markers''',
     'allowedTypes': [IntType, LongType, FloatType],
-    'validate': simuOpt.valueGE(0),
+    'validate': opt.valueGE(0),
     },
     {
     'longarg': 'filename=',
@@ -334,13 +337,11 @@ options = [
     }
 ]
 
-#BATCHTESTING --HapMap_dir=/local/bpeng/research/HapMap
-
 if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger()
-    pars = simuOpt.simuParam(options,
+    pars = opt.simuParam(options,
         'This script chooses specified markers from one or more HapMap\n'
         'populations and saves them in simuPOP format.\n',
         __doc__)
@@ -350,7 +351,7 @@ if __name__ == '__main__':
         logger.info('Reading marker list %s' % pars.markerList)
     names = []
     if pars.markerList != '':
-        mlist = open(markerList)
+        mlist = open(pars.markerList)
         for line in mlist.readlines():
             if line.startswith('#') or line.strip() == '':
                 continue
@@ -358,16 +359,21 @@ if __name__ == '__main__':
             if len(fields) == 1:
                 fields = line.split()
             try:
-                name = fields[markerListCols[0]]
-                ch = int(fields[markerListCols[1]].lstrip('chr'))
-                pos = float(fields[markerListCols[2]])
-            except:
+                name = fields[pars.markerListCols[0]]
+                ch = int(fields[pars.markerListCols[1]].lstrip('chr'))
+                pos = float(fields[pars.markerListCols[2]])
+            except Exception, e:
                 if logger is not None:
                     logger.debug("Ignoring line %s..." % line[:50])
+                    logger.debug(e)
                 continue
             if len(pars.chroms) > 0 and ch not in pars.chroms:
                 continue
+            print 'Adding locus %s (#%d)' % (name, len(names))
             names.append(name)
+        if len(names) == 0:
+            print 'Failed to locate any locus. Please check your parameters.'
+            sys.exit(0)
     #
     pop = getHapMapMarkers(pars.HapMap_dir, 
         names = names,

@@ -1,3 +1,6 @@
+from simuPOP import *
+import os, sys, exceptions
+
 #!/usr/bin/env python
 #
 # Purpose:
@@ -22,26 +25,23 @@
 # Change Log:
 #     2009-06-25 Bo Peng <bpeng@mdanderson.org>
 #
-#         Move functions SaveSolarFrqFile, SaveSoloarMapFile and
-#         SaveMerlinPedFile from simuUtil.py to the online cookbook.
+#         Move the function SaveSolarFrqFile from simuUtil.py to the online
+#         cookbook.
 # 
 
-def SaveSolarFrqFile(pop, output='', outputExpr='', loci=[], calcFreq=True):
-    '''Output a frequency file, in a format readable by solar
-    calcFreq
-        whether or not calculate allele frequency
+def SaveSolarFrqFile(pop, output='', loci=[], calcFreq=True):
+    '''
+    Output a frequency file, in a format readable by solar calcFreq
     '''
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     if output != '':
         file = output
-    elif outputExpr != '':
-        file = eval(outputExpr, globals(), pop.vars())
     else:
-        raise exceptions.ValueError, "Please specify output or outputExpr"
+        raise exceptions.ValueError, "Please specify output"
     # open data file and pedigree file to write.
     try:
-        frqOut = open(file + ".frq", "w")
+        frqOut = open(file, "w")
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + file + ".frq to write."
     if loci == []:
@@ -58,4 +58,15 @@ def SaveSolarFrqFile(pop, output='', outputExpr='', loci=[], calcFreq=True):
         except:
             print "Can not output allele frequency for marker %s " % m
     frqOut.close()
+
+
+if __name__ == '__main__':
+    #for testing
+    outfile = 'SolarOut.dat'
+    pop = population(size=[100]*3, loci=[2,3],
+                     lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
+    InitByFreq(pop, [.1, .3, .6])
+    SaveSolarFrqFile(pop, outfile)
+    print open(outfile).read()
+
 
