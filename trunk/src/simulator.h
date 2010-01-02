@@ -182,7 +182,7 @@ public:
 
 	/** CPPONLY Describe a simulator.
 	 */
-	string describe(bool format=true);
+	string describe(bool format = true);
 
 	/** Evolve all populations \e gen generations, subject to several lists of
 	 *  operators which are applied at different stages of an evolutionary
@@ -280,12 +280,12 @@ private:
  *  your simulation will proceed.
  */
 string Describe(
-    const opList & initOps = opList(),
-    const opList & preOps = opList(),
-    const mating & matingScheme = mating(),
-    const opList & postOps = opList(),
-    const opList & finalOps = opList(),
-    int gen = -1,
+	const opList & initOps = opList(),
+	const opList & preOps = opList(),
+	const mating & matingScheme = mating(),
+	const opList & postOps = opList(),
+	const opList & finalOps = opList(),
+	int gen = -1,
 	UINT numRep = 1);
 
 }
