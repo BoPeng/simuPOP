@@ -90,31 +90,6 @@ for ind in pop.individuals():
     print 
 #end_file
 
-#begin_file log/carray.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(size=2, loci=[3, 4])
-sim.InitByFreq(pop, [0.3, 0.5, 0.2])
-ind = pop.individual(0)
-arr = ind.genotype()    # a carray to the underlying genotype
-geno = list(arr)        # a list of alleles
-print arr
-print geno
-arr.count(1)           # count
-arr.index(2)           # index 
-ind.setAllele(5, 3)    # change underlying genotype using setAllele
-print arr              # arr is change
-print geno             # but not geno
-arr[2:5] = 4           # can use regular Python slice operation
-print ind.genotype()
-#end_file
-
 #begin_file log/defdict.py
 #begin_ignore
 import simuOpt
@@ -332,7 +307,16 @@ ind.genotype(1)
 # set genotype (genotype, ploidy, chrom)
 ind.setGenotype([2, 1], 1, 1)
 geno
+#
+geno.count(1)           # count
+geno.index(2)           # index 
+ind.setAllele(5, 3)    # change underlying genotype using setAllele
+print geno              # geno is change
+print geno             # but not geno
+geno[2:5] = 4           # can use regular Python slice operation
+print ind.genotype()
 #end_file
+
 
 #begin_file log/subPop.py
 #begin_ignore
@@ -1031,53 +1015,6 @@ pop.evolve(
 pop.genotype()[:20]
 #end_file
 
-#begin_file log/newOperator.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-class dynaMutator(sim.pyOperator):
-    '''This mutator mutates commom loci with low mutation rate and rare
-    loci with high mutation rate, as an attempt to raise allele frequency
-    of rare loci to an higher level.'''
-    def __init__(self, cutoff, mu1, mu2, *args, **kwargs):
-        self.cutoff = cutoff
-        self.mu1 = mu1
-        self.mu2 = mu2
-        sim.pyOperator.__init__(self, func=self.mutate, *args, **kwargs)
-    #
-    def mutate(self, pop):
-        sim.Stat(pop, alleleFreq=range(pop.totNumLoci()))
-        for i in range(pop.totNumLoci()):
-            # Get the frequency of allele 1 (disease allele)
-            if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                sim.KamMutate(pop, k=2, rates=self.mu1, loci=[i])
-            else:
-                sim.KamMutate(pop, k=2, rates=self.mu2, loci=[i])
-        return True
-
-pop = sim.population(size=10000, loci=[2, 3])
-pop.evolve(
-    initOps=[ 
-        sim.initSex(),
-        sim.initByFreq([.99, .01], loci=[0, 2, 4]),
-        sim.initByFreq([.8, .2], loci=[1, 3])
-    ],
-    preOps=dynaMutator(cutoff=.2, mu1=1e-2, mu2=1e-5),
-    matingScheme=sim.randomMating(),
-    postOps=[
-        sim.stat(alleleFreq=range(5), step=10),
-        sim.pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
-            step=10),
-    ],
-    gen = 31
-)          
-#end_file
-
 #begin_file log/funcInitByFreq.py
 #begin_ignore
 import simuOpt
@@ -1532,353 +1469,6 @@ marks.count(0.)
 marks.count(1.)
 marks.count(2.)
 #end_file
-
-#begin_file log/randomMating.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-from simuPOP import *
-#begin_ignore
-GetRNG().setSeed(12345)
-#end_ignore
-def randomMating(numOffspring=1., sexMode=RANDOM_SEX,
-        ops=mendelianGenoTransmitter(), subPopSize=[],
-        subPops=ALL_AVAIL, weight=0, selectionField='fitness'):
-    'A basic diploid sexual random mating scheme.'
-    return homoMating(
-        chooser=randomParentsChooser(True, selectionField),
-        generator=offspringGenerator(ops, numOffspring, sexMode),
-        subPopSize=subPopSize,
-        subPops=subPops,
-        weight=weight)
-
-#end_file
-
-#begin_file log/sequentialSelfing.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(100, loci=5*3, infoFields='parent_idx')
-pop.evolve(
-    initOps=[sim.initByFreq([0.2]*5)],
-    preOps=sim.dumper(structure=False, max=5),
-    matingScheme=sim.homoMating(
-        sim.sequentialParentChooser(),
-        sim.offspringGenerator(ops=[
-            sim.selfingGenoTransmitter(),
-            sim.parentsTagger(infoFields='parent_idx'),
-        ])
-    ),
-    postOps=sim.dumper(structure=False, max=5),
-    gen = 1
-)
-#end_file
-
-#begin_file log/controlledOffGenerator.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-def traj(gen):
-    return [0.5 + gen * 0.01]
-
-pop = sim.population(1000, loci=[10]*2)
-# evolve the sim.population while keeping allele frequency 0.5
-pop.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.5, 0.5])
-    ],
-    matingScheme=sim.homoMating(sim.randomParentChooser(),
-        sim.controlledOffspringGenerator(loci=5,
-            alleles=[0], freqFunc=traj,
-            ops = sim.selfingGenoTransmitter())),
-    postOps=[
-        sim.stat(alleleFreq=[5, 15]),
-        sim.pyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')
-    ],
-    gen = 5
-)
-#end_file
-
-#begin_file log/mitochondrial.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-pop = sim.population(10, loci=[5]*5,
-    # one autosome, two sex chromosomes, and two mitochondrial chromosomes
-    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2,
-    infoFields=['father_idx', 'mother_idx'])
-pop.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.4] + [0.2]*3)
-    ],
-    matingScheme=sim.randomMating(ops= [
-        sim.recombinator(rates=0.1),
-        sim.mitochondrialGenoTransmitter(),
-        sim.parentsTagger()
-    ]),
-    postOps=sim.dumper(structure=False),
-    gen = 2
-)
-#end_file
-
-#begin_file log/sexSpecificRec.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-from simuPOP import *
-#begin_ignore
-GetRNG().setSeed(12345)
-#end_ignore
-class sexSpecificRecombinator(pyOperator):
-    def __init__(self, intensity=0, rates=0, loci=[], convMode=NO_CONVERSION,
-            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=NO_CONVERSION,
-            *args, **kwargs):
-        # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(rates, intensity, loci, convMode)
-        # This operator is used to recombine paternal chromosomes
-        self.maleRecombinator = recombinator(maleRates, maleIntensity,
-            maleLoci, maleConvMode)
-        #
-        self.initialized = False
-        #
-        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
-    #
-    def transmitGenotype(self, pop, off, dad, mom):
-        # Recombinators need to be initialized. Basically, they cache some
-        # population properties to speed up genotype transmission.
-        if not self.initialized:
-            self.recombinator.initialize(pop)
-            self.maleRecombinator.initialize(pop)
-            self.initialized = True
-        # Form the first homologous copy of offspring.
-        self.recombinator.transmitGenotype(mom, off, 0)
-        self.maleRecombinator.transmitGenotype(dad, off, 1)
-        return True
-
-pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
-pop.evolve(
-    initOps=[
-        initSex(),
-        initByFreq([0.4] + [0.2]*3)
-    ],
-    matingScheme=randomMating(ops=[
-        sexSpecificRecombinator(rates=0.1, maleRates=0),
-        parentsTagger()
-    ]),
-    postOps=dumper(structure=False),
-    gen = 2
-)
-#end_file
-
-
-#begin_file log/generator.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-def func():
-    i = 1
-    all = 0
-    while i <= 5:
-        all += 1./i
-        i += 1
-        yield all 
-
-for i in func():
-    print '%.3f' % i,
-
-#end_file
-
-#begin_file log/pyParentsChooser.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-from random import randint
-def randomChooser(pop, sp):
-    males = []
-    females = []
-    # identify males and females in each social rank
-    for rank in range(3):
-        males.append([x for x in pop.individuals(sp) \
-            if x.sex() == sim.MALE and x.rank == rank])
-        females.append([x for x in pop.individuals(sp) \
-            if x.sex() == sim.FEMALE and x.rank == rank])
-    #
-    while True:
-        # choose a rank randomly
-        rank = int(pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).rank)
-        yield males[rank][randint(0, len(males[rank]) - 1)], \
-            females[rank][randint(0, len(females[rank]) - 1)]
-
-def setRank(off, dad):
-    'The rank of offspring can increase or drop to zero randomly'
-    off.rank = (dad.rank + randint(-1, 1)) % 3
-
-pop = sim.population(size=[1000, 2000], loci=1, infoFields='rank')
-pop.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initInfo(lambda : randint(0, 2), infoFields='rank')
-    ],
-    matingScheme=sim.homoMating(
-        sim.pyParentsChooser(randomChooser),
-        sim.offspringGenerator(ops=sim.mendelianGenoTransmitter())
-    ),
-    gen = 5
-)    
-#end_file
-
-
-#begin_file log/cppParentChooser.py
-#expect_error because some system does not have swig or vc to compile
-#begin_ignore
-classFile = open('log/myParentsChooser.h', 'w')
-classFile.write('''#include <stdlib.h>
-#include <vector>
-#include <utility>
-using std::pair;
-using std::vector;
-class myParentsChooser
-{
-public:
-        // A constructor takes all locations of male and female.
-        myParentsChooser(const std::vector<int> & m, const std::vector<int> & f)
-                : male_idx(m), female_idx(f)
-        {
-                srand(time(0));
-        }
-
-        pair<unsigned long, unsigned long> chooseParents()
-        {
-                unsigned long male = rand() % male_idx.size();
-                unsigned long female = rand() % male_idx.size();
-                return std::make_pair(male, female);
-        }
-private:
-        vector<int> male_idx;
-        vector<int> female_idx;
-};
-''')
-classFile.close()
-interFile = open('log/myParentsChooser.i', 'w')
-interFile.write('''%module myParentsChooser
-%{
-#include "myParentsChooser.h"
-%}
-// std_vector.i for std::vector
-%include "std_vector.i"
-%template() std::vector<int>;
-// stl.i for std::pair
-%include "stl.i"
-%template() std::pair<unsigned long, unsigned long>;
-%include "myParentsChooser.h"
-''')
-interFile.close()
-setupFile = open('log/setup.py', 'w')
-setupFile.write('''from distutils.core import setup, Extension
-import sys
-# Under linux/gcc, lib stdc++ is needed for C++ based extension.
-if sys.platform == 'linux2':
-    libs = ['stdc++']
-else:
-    libs = []
-setup(name = "myParentsChooser",
-    description = "A sample parent chooser",
-    py_modules = ['myParentsChooser'],  # will be generated by SWIG
-    ext_modules = [
-        Extension('_myParentsChooser',
-            sources = ['myParentsChooser.i'],
-            swig_opts = ['-O', '-templatereduce', '-shadow',
-                '-python', '-c++', '-keyword', '-nodefaultctor'],
-            include_dirs = ["."],
-    )
-  ]
-)
-''')
-setupFile.close()
-import os, sys
-sys.path.append('log')
-try:
-    import myParentsChooser
-except:
-    os.chdir('log')
-    os.system('python setup.py build_ext --swig-opts="-O -templatereduce -shadow -c++ -keyword -nodefaultctor" install --install-purelib="." --install-platlib="."')
-    os.chdir('..')
-#end_ignore
-
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-
-# The class myParentsChooser is defined in module myParentsChooser
-try:
-    from myParentsChooser import myParentsChooser
-except ImportError:
-    # if failed to import the C++ version, use a Python version
-    import random
-    class myParentsChooser:
-        def __init__(self, maleIndexes, femaleIndexes):
-            self.maleIndexes = maleIndexes
-            self.femaleIndexes = femaleIndexes
-        def chooseParents(self):
-            return self.maleIndexes[random.randint(0, len(self.maleIndexes)-1)],\
-                self.femaleIndexes[random.randint(0, len(self.femaleIndexes)-1)]
-
-def parentsChooser(pop, sp):
-    'How to call a C++ level parents chooser.'
-    # create an object with needed information (such as x, y) ...
-    pc = myParentsChooser(
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.MALE],
-        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.FEMALE])
-    while True:
-        # return indexes of parents repeatedly
-        yield pc.chooseParents()
-
-pop = sim.population(100, loci=1)
-simu.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.5, 0.5])
-    ],
-    matingScheme=sim.homoMating(sim.pyParentsChooser(parentsChooser),
-        sim.offspringGenerator(ops=sim.mendelianGenoTransmitter())),
-    gen = 100
-)
-#end_file
-
 #begin_file log/simulator.py
 #begin_ignore
 import simuOpt
@@ -2383,37 +1973,6 @@ simu.evolve(
 
 #end_file
 
-#begin_file log/debug.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(sim.population(100, loci=1), rep=5)
-simu.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.1, 0.9])
-    ],
-    matingScheme=sim.randomMating(),
-    postOps=[
-        sim.stat(alleleFreq=0),
-        sim.ifElse('alleleNum[0][0] == 0',
-            ifOps=[
-                sim.turnOnDebug("DBG_MUTATOR"),
-                sim.pointMutator(loci=0, allele=0, inds=0),
-            ],
-            elseOps=sim.turnOffDebug("DBG_MUTATOR")),
-    ],
-    gen = 100
-)
-#begin_ignore
-sim.TurnOffDebug("DBG_MUTATOR")
-#end_ignore
-#end_file
 
 #begin_file log/pause.py
 #begin_ignore
@@ -5360,6 +4919,481 @@ if os.path.isfile('log/simuCDCV.py'):
     hlp.close()
 
 #end_ignore
+#end_file
+
+
+#begin_file log/randomSeed.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+import random
+def simulate():
+    pop = sim.population(1000, loci=10, infoFields='age')
+    pop.evolve(
+        initOps=[
+            sim.initSex(),
+            sim.initByFreq([0.5, 0.5]),
+            sim.initInfo(lambda: random.randint(0, 10), infoFields='age')
+        ],
+        matingScheme=sim.randomMating(),
+        finalOps=sim.stat(alleleFreq=0),
+        gen=100
+    )
+    return pop.dvars().alleleFreq[0][0]
+
+seed = sim.GetRNG().seed()
+random.seed(seed)
+print '%.4f' % simulate()
+# will yield different result
+print '%.4f' % simulate()
+sim.SetRNG(seed=seed)
+random.seed(seed)
+# will yield identical result because the same seeds are used
+print '%.4f' % simulate()
+#end_file
+
+
+#begin_file log/debug.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+# redirect system stderr
+import sys
+debugOutput = open('debug.txt', 'w')
+old_stderr = sys.stderr
+sys.stderr = debugOutput
+# start simulation
+simu = sim.simulator(sim.population(100, loci=1), rep=5)
+simu.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initByFreq([0.1, 0.9])
+    ],
+    matingScheme=sim.randomMating(),
+    postOps=[
+        sim.stat(alleleFreq=0),
+        sim.ifElse('alleleNum[0][0] == 0',
+            ifOps=[
+                # the is None part makes the function return True
+                sim.pyOperator(lambda : sim.TurnOnDebug("DBG_MUTATOR") is None),
+                sim.pointMutator(loci=0, allele=0, inds=0),
+            ],
+            elseOps=sim.pyOperator(lambda : sim.TurnOffDebug("DBG_MUTATOR") is None)),
+    ],
+    gen = 100
+)
+# replace standard stdandard error
+sys.stderr = old_stderr
+debugOutput.close()
+print ''.join(open('debug.txt').readlines()[:5])
+#begin_ignore
+sim.TurnOffDebug("DBG_MUTATOR")
+#end_ignore
+#end_file
+
+
+
+#begin_file log/newOperator.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+class dynaMutator(sim.pyOperator):
+    '''This mutator mutates commom loci with low mutation rate and rare
+    loci with high mutation rate, as an attempt to raise allele frequency
+    of rare loci to an higher level.'''
+    def __init__(self, cutoff, mu1, mu2, *args, **kwargs):
+        self.cutoff = cutoff
+        self.mu1 = mu1
+        self.mu2 = mu2
+        sim.pyOperator.__init__(self, func=self.mutate, *args, **kwargs)
+    #
+    def mutate(self, pop):
+        sim.Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        for i in range(pop.totNumLoci()):
+            # Get the frequency of allele 1 (disease allele)
+            if pop.dvars().alleleFreq[i][1] < self.cutoff:
+                sim.KamMutate(pop, k=2, rates=self.mu1, loci=[i])
+            else:
+                sim.KamMutate(pop, k=2, rates=self.mu2, loci=[i])
+        return True
+
+pop = sim.population(size=10000, loci=[2, 3])
+pop.evolve(
+    initOps=[ 
+        sim.initSex(),
+        sim.initByFreq([.99, .01], loci=[0, 2, 4]),
+        sim.initByFreq([.8, .2], loci=[1, 3])
+    ],
+    preOps=dynaMutator(cutoff=.2, mu1=1e-2, mu2=1e-5),
+    matingScheme=sim.randomMating(),
+    postOps=[
+        sim.stat(alleleFreq=range(5), step=10),
+        sim.pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
+            step=10),
+    ],
+    gen = 31
+)          
+#end_file
+
+#begin_file log/randomMating.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+from simuPOP import *
+#begin_ignore
+GetRNG().setSeed(12345)
+#end_ignore
+def randomMating(numOffspring=1., sexMode=RANDOM_SEX,
+        ops=mendelianGenoTransmitter(), subPopSize=[],
+        subPops=ALL_AVAIL, weight=0, selectionField='fitness'):
+    'A basic diploid sexual random mating scheme.'
+    return homoMating(
+        chooser=randomParentsChooser(True, selectionField),
+        generator=offspringGenerator(ops, numOffspring, sexMode),
+        subPopSize=subPopSize,
+        subPops=subPops,
+        weight=weight)
+
+#end_file
+
+#begin_file log/sequentialSelfing.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=5*3, infoFields='parent_idx')
+pop.evolve(
+    initOps=[sim.initByFreq([0.2]*5)],
+    preOps=sim.dumper(structure=False, max=5),
+    matingScheme=sim.homoMating(
+        sim.sequentialParentChooser(),
+        sim.offspringGenerator(ops=[
+            sim.selfingGenoTransmitter(),
+            sim.parentsTagger(infoFields='parent_idx'),
+        ])
+    ),
+    postOps=sim.dumper(structure=False, max=5),
+    gen = 1
+)
+#end_file
+
+#begin_file log/controlledOffGenerator.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+def traj(gen):
+    return [0.5 + gen * 0.01]
+
+pop = sim.population(1000, loci=[10]*2)
+# evolve the sim.population while keeping allele frequency 0.5
+pop.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
+    ],
+    matingScheme=sim.homoMating(sim.randomParentChooser(),
+        sim.controlledOffspringGenerator(loci=5,
+            alleles=[0], freqFunc=traj,
+            ops = sim.selfingGenoTransmitter())),
+    postOps=[
+        sim.stat(alleleFreq=[5, 15]),
+        sim.pyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')
+    ],
+    gen = 5
+)
+#end_file
+
+#begin_file log/mitochondrial.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(10, loci=[5]*5,
+    # one autosome, two sex chromosomes, and two mitochondrial chromosomes
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2,
+    infoFields=['father_idx', 'mother_idx'])
+pop.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initByFreq([0.4] + [0.2]*3)
+    ],
+    matingScheme=sim.randomMating(ops= [
+        sim.recombinator(rates=0.1),
+        sim.mitochondrialGenoTransmitter(),
+        sim.parentsTagger()
+    ]),
+    postOps=sim.dumper(structure=False),
+    gen = 2
+)
+#end_file
+
+#begin_file log/sexSpecificRec.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+from simuPOP import *
+#begin_ignore
+GetRNG().setSeed(12345)
+#end_ignore
+class sexSpecificRecombinator(pyOperator):
+    def __init__(self, intensity=0, rates=0, loci=[], convMode=NO_CONVERSION,
+            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=NO_CONVERSION,
+            *args, **kwargs):
+        # This operator is used to recombine maternal chromosomes
+        self.recombinator = recombinator(rates, intensity, loci, convMode)
+        # This operator is used to recombine paternal chromosomes
+        self.maleRecombinator = recombinator(maleRates, maleIntensity,
+            maleLoci, maleConvMode)
+        #
+        self.initialized = False
+        #
+        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
+    #
+    def transmitGenotype(self, pop, off, dad, mom):
+        # Recombinators need to be initialized. Basically, they cache some
+        # population properties to speed up genotype transmission.
+        if not self.initialized:
+            self.recombinator.initialize(pop)
+            self.maleRecombinator.initialize(pop)
+            self.initialized = True
+        # Form the first homologous copy of offspring.
+        self.recombinator.transmitGenotype(mom, off, 0)
+        self.maleRecombinator.transmitGenotype(dad, off, 1)
+        return True
+
+pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
+pop.evolve(
+    initOps=[
+        initSex(),
+        initByFreq([0.4] + [0.2]*3)
+    ],
+    matingScheme=randomMating(ops=[
+        sexSpecificRecombinator(rates=0.1, maleRates=0),
+        parentsTagger()
+    ]),
+    postOps=dumper(structure=False),
+    gen = 2
+)
+#end_file
+
+
+#begin_file log/generator.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+def func():
+    i = 1
+    all = 0
+    while i <= 5:
+        all += 1./i
+        i += 1
+        yield all 
+
+for i in func():
+    print '%.3f' % i,
+
+#end_file
+
+#begin_file log/pyParentsChooser.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+from random import randint
+def randomChooser(pop, sp):
+    males = []
+    females = []
+    # identify males and females in each social rank
+    for rank in range(3):
+        males.append([x for x in pop.individuals(sp) \
+            if x.sex() == sim.MALE and x.rank == rank])
+        females.append([x for x in pop.individuals(sp) \
+            if x.sex() == sim.FEMALE and x.rank == rank])
+    #
+    while True:
+        # choose a rank randomly
+        rank = int(pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).rank)
+        yield males[rank][randint(0, len(males[rank]) - 1)], \
+            females[rank][randint(0, len(females[rank]) - 1)]
+
+def setRank(off, dad):
+    'The rank of offspring can increase or drop to zero randomly'
+    off.rank = (dad.rank + randint(-1, 1)) % 3
+
+pop = sim.population(size=[1000, 2000], loci=1, infoFields='rank')
+pop.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initInfo(lambda : randint(0, 2), infoFields='rank')
+    ],
+    matingScheme=sim.homoMating(
+        sim.pyParentsChooser(randomChooser),
+        sim.offspringGenerator(ops=sim.mendelianGenoTransmitter())
+    ),
+    gen = 5
+)    
+#end_file
+
+
+#begin_file log/cppParentChooser.py
+#expect_error because some system does not have swig or vc to compile
+#begin_ignore
+classFile = open('log/myParentsChooser.h', 'w')
+classFile.write('''#include <stdlib.h>
+#include <vector>
+#include <utility>
+using std::pair;
+using std::vector;
+class myParentsChooser
+{
+public:
+        // A constructor takes all locations of male and female.
+        myParentsChooser(const std::vector<int> & m, const std::vector<int> & f)
+                : male_idx(m), female_idx(f)
+        {
+                srand(time(0));
+        }
+
+        pair<unsigned long, unsigned long> chooseParents()
+        {
+                unsigned long male = rand() % male_idx.size();
+                unsigned long female = rand() % male_idx.size();
+                return std::make_pair(male, female);
+        }
+private:
+        vector<int> male_idx;
+        vector<int> female_idx;
+};
+''')
+classFile.close()
+interFile = open('log/myParentsChooser.i', 'w')
+interFile.write('''%module myParentsChooser
+%{
+#include "myParentsChooser.h"
+%}
+// std_vector.i for std::vector
+%include "std_vector.i"
+%template() std::vector<int>;
+// stl.i for std::pair
+%include "stl.i"
+%template() std::pair<unsigned long, unsigned long>;
+%include "myParentsChooser.h"
+''')
+interFile.close()
+setupFile = open('log/setup.py', 'w')
+setupFile.write('''from distutils.core import setup, Extension
+import sys
+# Under linux/gcc, lib stdc++ is needed for C++ based extension.
+if sys.platform == 'linux2':
+    libs = ['stdc++']
+else:
+    libs = []
+setup(name = "myParentsChooser",
+    description = "A sample parent chooser",
+    py_modules = ['myParentsChooser'],  # will be generated by SWIG
+    ext_modules = [
+        Extension('_myParentsChooser',
+            sources = ['myParentsChooser.i'],
+            swig_opts = ['-O', '-templatereduce', '-shadow',
+                '-python', '-c++', '-keyword', '-nodefaultctor'],
+            include_dirs = ["."],
+    )
+  ]
+)
+''')
+setupFile.close()
+import os, sys
+sys.path.append('log')
+try:
+    import myParentsChooser
+except:
+    os.chdir('log')
+    os.system('python setup.py build_ext --swig-opts="-O -templatereduce -shadow -c++ -keyword -nodefaultctor" install --install-purelib="." --install-platlib="."')
+    os.chdir('..')
+#end_ignore
+
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+
+# The class myParentsChooser is defined in module myParentsChooser
+try:
+    from myParentsChooser import myParentsChooser
+except ImportError:
+    # if failed to import the C++ version, use a Python version
+    import random
+    class myParentsChooser:
+        def __init__(self, maleIndexes, femaleIndexes):
+            self.maleIndexes = maleIndexes
+            self.femaleIndexes = femaleIndexes
+        def chooseParents(self):
+            return self.maleIndexes[random.randint(0, len(self.maleIndexes)-1)],\
+                self.femaleIndexes[random.randint(0, len(self.femaleIndexes)-1)]
+
+def parentsChooser(pop, sp):
+    'How to call a C++ level parents chooser.'
+    # create an object with needed information (such as x, y) ...
+    pc = myParentsChooser(
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.MALE],
+        [x for x in range(pop.popSize()) if pop.individual(x).sex() == sim.FEMALE])
+    while True:
+        # return indexes of parents repeatedly
+        yield pc.chooseParents()
+
+pop = sim.population(100, loci=1)
+simu.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initByFreq([0.5, 0.5])
+    ],
+    matingScheme=sim.homoMating(sim.pyParentsChooser(parentsChooser),
+        sim.offspringGenerator(ops=sim.mendelianGenoTransmitter())),
+    gen = 100
+)
 #end_file
 
 

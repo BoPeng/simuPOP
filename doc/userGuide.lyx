@@ -1809,253 +1809,6 @@ baseOperator.
 \end_layout
 
 \end_deeper
-\begin_layout Subsection
-Debug-related operators and functions
-\end_layout
-
-\begin_layout Standard
-If your simuPOP session or script does not behave as expected, it might
- be helpful to let simuPOP print out some debug information.
- For example, the following code might crash simuPOP:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> population(1, loci=[100]).individual(0).genotype()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is unclear why this simple command causes us trouble, instead of outputting
- the genotype of the only individual of this population.
- However, the reason is clear if you turn on debug information:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-lstparams "keywordstyle={\ttfamily}"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Turn on/off debug information
-\end_layout
-
-\end_inset
-
->>> TurnOnDebug(DBG_POPULATION)
-\end_layout
-
-\begin_layout Plain Layout
-
->>> population(1, loci=100).individual(0).genotype()
-\end_layout
-
-\begin_layout Plain Layout
-
-Constructor of population is called
-\end_layout
-
-\begin_layout Plain Layout
-
-Destructor of population is called 
-\end_layout
-
-\begin_layout Plain Layout
-
-Segmentation fault (core dumped)
-\end_layout
-
-\end_inset
-
-
-\family typewriter
-population(1, loci=[100])
-\family default
- creates a temporary object that is destroyed right after the execution
- of the command.
- When Python tries to display the genotype, it will refer to an invalid
- location.
- The correct method to print the genotype is to create a persistent population
- object: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> pop = population(1, loci=[100])
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop.individual(0).genotype()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-There are several methods to turn on or off debug information:
-\end_layout
-
-\begin_layout Enumerate
-In an interactive Python section or a simuPOP script, you can use functions
- 
-\family typewriter
-TurnOnDebug(code) 
-\family default
-and 
-\family typewriter
-TurnOffDebug(code) 
-\family default
-to turn on and off debug information.
-\end_layout
-
-\begin_layout Enumerate
-If you would like to turn on and off debugging without modifying your script,
- you could define an environmental variable 
-\family typewriter
-SIMUDEBUG
-\family default
- to a comma separated code list.
-\end_layout
-
-\begin_layout Enumerate
-If you would like to turn on or off debugging information during an evolutionary
- process, you can use operators 
-\family typewriter
-turnOnDebug 
-\family default
-and 
-\family typewriter
-turnOffDebug
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-A list of valid debug code could be found in function 
-\family typewriter
-ModuleInfo()['debug']
-\family default
-.
-\end_layout
-
-\begin_layout Note
-Debug information is only available in standard (non-optimized) modules.
-\end_layout
-
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Note
-All debug information is written to Python 
-\family typewriter
-sys.stderr
-\family default
-.
- It is possible to redirect it to a file so that debug information is not
- mixed with regular output.
-\end_layout
-
-\begin_layout Subsection
-Random number generator *
-\end_layout
-
-\begin_layout Standard
-When simuPOP is loaded, it creates a default random number generator (
-\family typewriter
-RNG
-\family default
-) of type 
-\family typewriter
-mt19937
-\family default
- using a random seed from a system random number generator that guarantees
- random seeds for all instances of simuPOP even if they are initialized
- at the same time.
- After simuPOP is loaded, you can reset this system RNG with a different
- random number generator (c.f.
- 
-\family typewriter
-AvailableRNGs()
-\family default
-
-\begin_inset Index
-status open
-
-\begin_layout Plain Layout
-AvailableRNG
-\end_layout
-
-\end_inset
-
-, 
-\family typewriter
-SetRNG(name, seed)
-\family default
-)
-\begin_inset Index
-status open
-
-\begin_layout Plain Layout
-SetRNG
-\end_layout
-
-\end_inset
-
-.
- It is also possible to save the random seed of a simuPOP session (c.f.
- 
-\family typewriter
-GetRNG().seed()
-\family default
-) and use it to replay the session later.
- 
-\end_layout
-
-\begin_layout Note
-
-\family typewriter
-GetRNG().seed()
-\family default
- returns the seed of the simuPOP random number generator.
- It can be used to replay your simulation if 
-\family typewriter
-GetRNG()
-\family default
- is your only source of random number generator.
- If you also use the Python 
-\family typewriter
-random
-\family default
- module, it is a good practise to set its seed using 
-\family typewriter
-random.seed(GetRNG().seed())
-\family default
-.
-\end_layout
-
 \begin_layout Section
 Pythonic issues
 \end_layout
@@ -2696,235 +2449,6 @@ lstparams "caption={Ranges and iterators},label={iterator}"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-carray
-\family default
- datatype
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:carray-datatype"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-simuPOP uses mostly standard Python types such as tuples, lists and dictionaries.
- However, for efficiency considerations, simuPOP defines and uses a new
- 
-\family typewriter
-carray 
-\family default
-datatype to refer to an internal array of genotypes.
- Such an object can only be returned from 
-\family typewriter
-individual.genotype
-\family default
- and 
-\family typewriter
-population.genotype
-\family default
- functions.
- Instead of copying all genotypes to a Python tuple or list, these functions
- return a 
-\family typewriter
-carray 
-\family default
-object that directly reflect the underlying genotype.
- This object behaves like a regular Python list except that the underlying
- genotype will be changed if elements of this object are changed.
- In addition, elements in this array will be changed if the underlying genotype
- is changed using another method.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "carraydatatype"
-
-\end_inset
-
- demonstrates the use of this datatype.
- It also shows how to get an independent list of alleles using the 
-\family typewriter
-list()
-\family default
- built-in function.
- Compare to 
-\family typewriter
-allele()
-\family default
-, 
-\family typewriter
-setAllele()
-\family default
- and 
-\family typewriter
-setGenotype()
-\family default
- functions, it is usually more efficient and more convenient to read and
- write genotypes using carray objects, although this usage is usually less
- readable.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/carray.log"
-lstparams "caption={The carray datatype},label={carraydatatype}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-defdict
-\family default
- datatype
-\end_layout
-
-\begin_layout Standard
-simuPOP uses dictionaries to save statistics such as allele frequencies.
- For example, 
-\family typewriter
-alleleFreq[5]
-\family default
- can be 
-\family typewriter
-{0:0.2, 3:0.8}
-\family default
- meaning there are 20% allele 0 and 80% allele 3 at locus 5 in a population.
- However, because it is sometimes unclear whether or not a particular allele
- exists in a population, 
-\family typewriter
-alleleFreq[5][allele]
-\family default
- can fail with a 
-\family typewriter
-KeyError
-\family default
- exception if 
-\family typewriter
-alleleFreq[5]
-\family default
- does not have key 
-\family typewriter
-allele
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-To address this problem, a special default dictionary type 
-\family typewriter
-defdict
-\family default
- is used for dictionaries with keys determined from a population.
- This derived dictionary type works just like a regular dictionay, but it
- returns 0, instead of raising a 
-\family typewriter
-KeyError
-\family default
- exception, when an invalid key is used.
- For example, subpopulations in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "defdictType"
-
-\end_inset
-
- have different alleles.
- Although 
-\family typewriter
-pop.dvars(sp).alleleFreq[0]
-\family default
- have only two keys for 
-\family typewriter
-sp=0
-\family default
- or 
-\family typewriter
-1
-\family default
-, 
-\family typewriter
-pop.dvars(sp).alleleFreq[0][x]
-\family default
- are used to print frequencies of alleles 
-\family typewriter
-0
-\family default
-, 
-\family typewriter
-1
-\family default
- and 
-\family typewriter
-2
-\family default
-.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/defdict.log"
-lstparams "caption={The defdict datatype},label={defdictType}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Note
-The standard 
-\family typewriter
-collections
-\family default
- module of Python has a 
-\family typewriter
-defaultdict
-\family default
- type that accepts a default factory function that will be used when an
- invalid key is encountered.
- The 
-\family typewriter
-defdict
-\family default
- type is similar to 
-\family typewriter
-defaultdict(int)
-\family default
- but with an important difference: when an invalid key is encountered, 
-\family typewriter
-d[key]
-\family default
- with a default value will be inserted to a 
-\family typewriter
-defaultdict(int)
-\family default
-, but will not be inserted to a 
-\family typewriter
-defdict
-\family default
-.
- That is to say, it is safe to use 
-\family typewriter
-alleleFreq[loc].keys()
-\family default
- to get available alleles after non-assignment 
-\family typewriter
-alleleFreq[loc][allele]
-\family default
- operations.
 \end_layout
 
 \begin_layout Subsection
@@ -4003,7 +3527,11 @@ Individuals are building blocks of a population.
 \end_layout
 
 \begin_layout Subsection
-Access individual genotype
+Access individual genotype (the 
+\family typewriter
+carray
+\family default
+ datatype)
 \end_layout
 
 \begin_layout Standard
@@ -4073,14 +3601,32 @@ Memory layout of individual genotype
 
 \begin_layout Standard
 simuPOP provides several functions to read/write individual genotype.
+ For example, 
+\family typewriter
+individual.allele()
+\family default
+ and 
+\family typewriter
+individual.setAllele()
+\family default
+ can be used to read and write single alleles.
+ You could also access alleles in batch mode using functions 
+\family typewriter
+individual.genotype()
+\family default
+ and 
+\family typewriter
+individual.setGenotype()
+\family default
+.
  It is worth noting that, instead of copying genotypes of an individual
  to a Python tuple or list, the return value of function 
 \family typewriter
 genotype([p, [ch]])
 \family default
  is a special python carray object that reflects the underlying genotypes.
- Modifying elements of this array will change the genotype of an individual
- directly.
+ This object behaves like a regular Python list except that the underlying
+ genotype will be changed if elements of this object are changed.
  Only 
 \family typewriter
 count
@@ -4117,6 +3663,14 @@ lstparams "caption={Access individual genotype},label={individual_genotype}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The same object will also be returned by function 
+\family typewriter
+population.genotype()
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -6744,123 +6298,6 @@ reference "sub:Using-C++"
 \end_layout
 
 \begin_layout Subsection
-Define your own operators **
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-pyOperator
-\family default
- is a Python class so you can derive your own operator from this operator.
- The tricky part is that the constructor of the derived operator needs to
- call the 
-\family typewriter
-__init__
-\family default
- function of 
-\family typewriter
-pyOperator
-\family default
- will proper functions.
- This technique has been used by simuPOP in a number of occasions.
- For example, the 
-\family typewriter
-varPlotter
-\family default
- operator defined in 
-\family typewriter
-plotter.py
-\family default
- is derived from 
-\family typewriter
-pyOperator
-\family default
-.
- This class encapsulates several different plot class that uses 
-\family typewriter
-rpy
-\family default
- to plot python expressions.
- One of the plotters is passed to the func parameter of 
-\family typewriter
-pyOperator.__init__
-\family default
- so that it can be called when this operator is applied.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sequentialSelfing"
-
-\end_inset
-
- rewrites the 
-\family typewriter
-dynaMutator
-\family default
- defined in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyOperator"
-
-\end_inset
-
- into a derived operator.
- The parameters are now passed to the constructor of 
-\family typewriter
-dynaMutator
-\family default
- and are saved as member variables.
- A member function 
-\family typewriter
-mutate
-\family default
- is defined and is passed to the constructor of 
-\family typewriter
-pyOperator
-\family default
-.
- Other than making 
-\family typewriter
-dynaMutator
-\family default
- look like a real simuPOP operator, this example does not show a lot of
- advantage over defining a function.
- However, when the operator gets complicated (as in the case for 
-\family typewriter
-varPlotter
-\family default
-), the object oriented implementation will prevail.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/newOperator.log"
-lstparams "caption={Define a new Python operator},label={newOperator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-New during-mating operators can be defined similarly.
- They are usually used to define customized genotype transmitters.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Customized-genotype-transmitter"
-
-\end_inset
-
- will describe this feature in detail.
-\end_layout
-
-\begin_layout Subsection
 Function form of an operator
 \begin_inset CommandInset label
 LatexCommand label
@@ -8497,1006 +7934,6 @@ reference "heteroMatingWeight"
 LatexCommand lstinputlisting
 filename "log/heteroMatingWeight.log"
 lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},label={heteroMatingWeight}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Non-random and customized mating schemes *
-\end_layout
-
-\begin_layout Subsection
-The structure of a homogeneous mating scheme *
-\end_layout
-
-\begin_layout Standard
-A 
-\emph on
-homogeneous mating scheme
-\emph default
- populates an offspring generation as follows:
-\end_layout
-
-\begin_layout Enumerate
-Create an empty offspring population (generation) with appropriate size.
- Parental and offspring generation can differ in size but they must have
- the same number of subpopulations.
-\end_layout
-
-\begin_layout Enumerate
-For each subpopulation, repeatedly choose a parent or a pair of parents
- from the parental generation.
- This is done by a simuPOP object called a 
-\series bold
-parent chooser
-\series default
-.
-\end_layout
-
-\begin_layout Enumerate
-One or more offspring are produced from the chosen parent(s) and are placed
- in the offspring population.
- This is done by a simuPOP 
-\series bold
-offspring generator
-\series default
-.
-\end_layout
-
-\begin_layout Enumerate
-A offspring generator uses one or more during-mating operators to transmit
- parental genotype to offspring.
- These operators are call 
-\series bold
-genotype transmitters
-\series default
-.
-\end_layout
-
-\begin_layout Enumerate
-After the offspring generation is populated, it will replace the parental
- generation and becomes the present generation of a population.
-\end_layout
-
-\begin_layout Standard
-A simuPOP mating scheme uses a particular set of parent chooser, offspring
- generator, and genotype transmitters.
- For example, a 
-\family typewriter
-selfingMating
-\family default
- mating scheme uses a 
-\family typewriter
-randomParentChooser
-\family default
- to choose a parent randomly from a population, possibly according to individual
- fitness, it uses a standard 
-\family typewriter
-offspringGenerator
-\family default
- that uses a 
-\family typewriter
-selfingOffspringGenerator
-\family default
- to transmit genotype.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "randomMating"
-
-\end_inset
-
- demonstrates how the most commonly used mating scheme, the diploid sexual
- 
-\family typewriter
-randomMating
-\family default
- mating scheme is defined in 
-\family typewriter
-simuPOP.py
-\family default
-.
- The following sections basically explain how you can construct your own
- mating scheme from scratch, using stocked or customized parent chooser,
- offspring generator and genotype transmitters.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/randomMating.py"
-lstparams "caption={Define a random mating scheme},firstline=2,label={randomMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
-\family typewriter
-homoMating
-\family default
- mating scheme *
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-homoMating
-\family default
- is used to define all pre-defined homogeneous mating schemes.
- It takes five parameters: 
-\family typewriter
-chooser
-\family default
- (a 
-\emph on
-parent chooser
-\emph default
- that is responsible for choosing one or two parents from the parental generatio
-n), 
-\family typewriter
-generator
-\family default
- (an 
-\emph on
-offspring generator
-\emph default
- that is responsible for generating a number of offspring from the chosen
- parents), 
-\family typewriter
-subPopSize
-\family default
- (parameter to control offspring subpopulation sizes), 
-\family typewriter
-subPops
-\family default
- (applicable subpopulatiosn or virtual subpopulations), and 
-\family typewriter
-weight
-\family default
- (weighting parameter when used in a heterogeneous mating scheme).
- When this mating scheme is applied to the whole population, 
-\family typewriter
-subPopSize
-\family default
- is used to determine the subpopulation sizes of the offspring generation
- (see Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:offspring-size"
-
-\end_inset
-
- for details), parameters 
-\family typewriter
-subPops
-\family default
- and 
-\family typewriter
-weight
-\family default
- are ignored.
- Otherwise, the number of offspring this mating scheme will produce is determine
-d by the heterogeneous mating scheme.
-\end_layout
-
-\begin_layout Standard
-Parameters 
-\family typewriter
-subPopSize
-\family default
-, 
-\family typewriter
-subPops
-\family default
- and 
-\family typewriter
-weight
-\family default
- are more or less standard but different parent choosers and offspring generator
-s can be combined to define a large number of homogeneous mating schemes.
- For example, the standard 
-\family typewriter
-selfMating
-\family default
- mating scheme uses a 
-\family typewriter
-randomParentChooser
-\family default
- but you can easily use a 
-\family typewriter
-sequentialParentChooser
-\family default
- to choose parents sequentially and self-fertilize parents one by one.
- This is demonstrated in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sequentialSelfing"
-
-\end_inset
-
-.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/sequentialSelfing.log"
-lstparams "caption={Define a sequential selfing mating scheme},label={sequentialSelfing}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The simuPOP reference manual lists all pre-defined parent choosers and offspring
- generators.
- They may or may not work together depending on the number of parents a
- parent chooser produces, and the number of parents an offspring generator
- can handle.
- You can also define your own parent choosers and offspring generators,
- as shown below.
-\end_layout
-
-\begin_layout Subsection
-Offspring generators *
-\end_layout
-
-\begin_layout Standard
-An 
-\family typewriter
-offspringGenerator
-\family default
- accepts a parameters 
-\family typewriter
-ops
-\family default
- (a list of during-mating operators), 
-\family typewriter
-numOffspring
-\family default
- (control number of offspring per mating event) and 
-\family typewriter
-sexMode
-\family default
- (control offspring sex).
- We have examined the last two parameters in detail in sections 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:number-of-offspring"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:offspring-sex"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-The most tricky parameter is the 
-\family typewriter
-ops
-\family default
- parameter.
- It accepts a list of during mating operators that are used to transmit
- genotypes from parent(s) to offspring and/or set individual information
- fields.
- The standard 
-\family typewriter
-offspringGenerator
-\family default
- does not have any default operator so no genotype will be transmitted by
- default.
- All stock mating schemes use a default genotype transmitter.
- (e,g, a 
-\family typewriter
-mendelianGenoTransmitter
-\family default
- in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "randomMating"
-
-\end_inset
-
- is passed to the offspring generator used in 
-\family typewriter
-randomMating
-\family default
-).
- Note that you need to specify all needed operators if you use parameter
- 
-\family typewriter
-ops
-\family default
- to change the operators used in a mating scheme (see Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "heteroMatingWeight"
-
-\end_inset
-
-).
- That is to say, you can use 
-\family typewriter
-ops=recombinator()
-\family default
- to replace a default 
-\family typewriter
-mendelianGenoTransmitter()
-\family default
-, but you have to use 
-\family typewriter
-ops=[idTagger(), mendelianGenoTransmitter()]
-\family default
- if you would like to add a during-mating operator to the default one.
-\end_layout
-
-\begin_layout Standard
-Another offspring generator is provided in simuPOP.
- This 
-\family typewriter
-controlledOffspringGenerator 
-\family default
-is used to control an evolutionary process so that the allele frequencies
- at certain loci follows some pre-simulated 
-\emph on
-frequency trajectories
-\emph default
-.
- Please refer to 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Peng2007a"
-
-\end_inset
-
- for rationals behind such an offspring generator and its applications in
- the simulation of complex human diseases.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "controlledOffGenerator"
-
-\end_inset
-
- demonstrates the use of such a controlled offspring generator.
- Instead of using a realistic frequency trajectory function, it forces allele
- frequency at locus 5 to increase linearly.
- In contrast, the allele frequency at locus 15 on the second chromosome
- oscillates as a result of genetic drift.
- Note that the random mating version of this mating scheme is defined in
- simuPOP as 
-\family typewriter
-controlledRandomMating
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/controlledOffGenerator.log"
-lstparams "caption={A controlled random mating scheme},label={controlledOffGenerator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Pre-defined genotype transmitters *
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Pre-defined-genotype-transmitters"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Although any during mating operators can be used in parameter 
-\family typewriter
-ops 
-\family default
-of an offspring generator, those that transmit genotype from parents to
- offspring are customarily called 
-\series bold
-genotype transmitters
-\series default
-.
- simuPOP provides a number of genotype transmitters including clone, Mendelian,
- selfing, haplodiploid, genotype transmitter, and a recombinator.
- They are usually used implicitly in a mating scheme, but they can also
- be used explicitly.
-\end_layout
-
-\begin_layout Standard
-All genotype transmitters only handle known chromosome types such as 
-\family typewriter
-AUTOSOME
-\family default
-, 
-\family typewriter
-CHROMOSOME_X
-\family default
- and 
-\family typewriter
-CHROMOSOME_Y
-\family default
-.
- Customized chromosomes are left untouched because simuPOP does not know
- how they should be transmitted from parents to offspring.
- In case that Customized chromosomes are treated as mitochondrial chromosomes,
- a 
-\family typewriter
-mitochondrialGenoTransmitter
-\family default
- can be used to transmit customized chromosomes randomly from mother to
- offspring.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mitochondrial.log"
-
-\end_inset
-
- demonstrates the use of a 
-\family typewriter
-recombinator
-\family default
- to recombine an autosome and two sex chromosomes, and a 
-\family typewriter
-mitochondrialGenoTransmitter
-\family default
- to transmit mitochondrial chromosomes.
- Note that the default 
-\family typewriter
-mendelianGenoTransmitter
-\family default
- is replaced by these two operators.
- It will be (wastefully) applied if the new during-mating operators are
- used in the 
-\family typewriter
-simulator.evolve
-\family default
- function.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mitochondrial.log"
-lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial.log}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Customized genotype transmitter **
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Customized-genotype-transmitter"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Although simuPOP provides a number of genotype transmitters, they may still
- be cases where customized genotype transmitter is needed.
- For example, a recombinator can be used to recombine parental chromosomes
- but it is well known that male and female individuals differ in recombination
- rates.
- How can you apply two different recombinators to male and female individuals
- separately?
-\end_layout
-
-\begin_layout Standard
-An immediate thought can be the use of virtual subpopulations.
- If you apply two random mating schemes to two virtual subpopulations defined
- by sex, 
-\family typewriter
-randomParentsChooser
-\family default
- will not work because no opposite sex can be found in each virtual subpopulatio
-n.
- In this case, a customized genotype transmitter can be used.
-\end_layout
-
-\begin_layout Standard
-A customized genotype transmitter is only a Python during-mating operator.
- Although it is possible to define a function and use a pyOperator directly
- (Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyOperator"
-
-\end_inset
-
-), it is much better to derive an operator from pyOperator, as the case
- in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "newOperator"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sexSpecificRec"
-
-\end_inset
-
- defines a 
-\family typewriter
-sexSpecificRecombinator
-\family default
- that uses, internally, two different recombinators to recombine male and
- female parents.
- The key statement is the 
-\family typewriter
-pyOperator.__init__
-\family default
- line which initializes a Python operator with given function 
-\family typewriter
-self.transmitGenotype
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The actual function to transmit parental genotype is 
-\family typewriter
-self.transmitGenotype
-\family default
-.
- This function initializes two recombinators if they have not been initialized
- and uses them to transmit parental genotypes.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sexSpecificRec"
-
-\end_inset
-
- outputs the population in two generations.
- You should notice that paternal chromosome are not recombined when they
- are transmitted to offspring.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/sexSpecificRec.log"
-lstparams "caption={A customized genotype transmitter for sex-specific recombination},label={sexSpecificRec}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-A Python parent chooser *
-\end_layout
-
-\begin_layout Standard
-Parent choosers are responsible for choosing one or two parents from a parental
- (virtual) subpopulation.
- simuPOP defines a few parent choosers that choose parent(s) sequentially,
- randomly (with or without replacement), or with additional conditions.
- Some of these parent choosers support natual selection.
- We have seen sequential and random parent choosers in Examples 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sequentialSelfing"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "controlledOffGenerator"
-
-\end_inset
-
-.
- Please refer to the simuPOP reference manual for details about these objects.
-\end_layout
-
-\begin_layout Standard
-A parent choosing scheme can be quite complicated in reality.
- For example, salamanders along a river may mate with their neighbors and
- form several subspecies.
- This behavior cannot be readily simulated using any pre-define parent choosers
- so a hybrid parent chooser 
-\family typewriter
-pyParentsChooser()
-\family default
- should be used.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyParentsChooser
-\family default
- accepts a user-defined Python generator function, instead of a normal python
- function, that returns a parent, or a pair of parents repeatedly.
- Briefly speaking, when a generator function is called, it returns a 
-\emph on
-generator
-\emph default
- object that provides an iterator interface.
- Each time when this iterator iterates, this function resumes where it was
- stopped last time, executes and returns what the next 
-\emph on
-yield
-\emph default
- statement returns.
- For example, example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator"
-
-\end_inset
-
- defines a function that calculate 
-\begin_inset Formula $f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}$
-\end_inset
-
- for 
-\begin_inset Formula $k=1,...,5$
-\end_inset
-
-.
- It does not calculate each 
-\begin_inset Formula $f\left(k\right)$
-\end_inset
-
- repeatedly but returns 
-\begin_inset Formula $f\left(1\right)$
-\end_inset
-
-, 
-\begin_inset Formula $f\left(2\right)$
-\end_inset
-
-, ...
- sequentially.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/generator.log"
-lstparams "caption={A sample generator function},label={generator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyParentsChooser
-\family default
- accepts a parent generator function, which takes a population and a subpopulati
-on index as parameters.
- When this parent chooser is applied to a subpopulation, it will call this
- generator function and ask the generated generator object repeated for
- either a parent, or a pair of parents (
-\emph on
-references to individual objects or indexes relative to a subpopulation
-\emph default
-).
- Note that 
-\family typewriter
-pyParentsChooser
-\family default
- does not support virtual subpopulation but you can mimic the effect by
- returning only parents from certain virtual subpopulations.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyParentsChooser"
-
-\end_inset
-
- implements a hybrid parent chooser that chooses parents with equal social
- status (
-\family typewriter
-rank
-\family default
-).
- In this parent chooser, all males and females are categorized by their
- sex and social status.
- A parent is chosen randomly, and then his/her spouse is chosen from females/mal
-es with the same social status.
- The rank of their offspring can increase or decrease randomly.
- It becomes obvious now that whereas a python function can return random
- male/female pair, the generator interface is much more efficient because
- the identification of sex/status groups is done only once.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyParentsChooser.log"
-lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={pyParentsChooser}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Using C++ to implement a parent chooser **
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Using-C++"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A user defined parent chooser can be fairly complex and computationally
- intensive.
- For example, if a parent tends to find a spouse in his/her vincinity, geometric
- distances between all qualified individuals and a chosen parent need to
- be calculated for each mating event.
- If the optimization of the parent chooser can speed up the simulation significa
-ntly, it may be worthwhile to write the parent chooser in C++.
- 
-\end_layout
-
-\begin_layout Standard
-Although it is feasible, and sometimes easier to derive a class from class
- 
-\family typewriter
-parentChooser
-\family default
- in mating.h (.cpp), modifying simuPOP source code is not recommended because
- you would have to modify a new version of simuPOP whenever you upgrade
- your simuPOP distribution.
- Implementing your parent choosing algorithm in another Python module is
- preferred.
-\end_layout
-
-\begin_layout Standard
-The first step is to write your own parent chooser in C/C++.
- Basically, you will need to pass all necessary information to the C++ level
- and implement an algorithm to choose parents randomly.
- Although simple function based solutions are possible, a C++ level class
- such as the 
-\family typewriter
-myParentsChooser 
-\family default
-class defined in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "parentChooseHeader"
-
-\end_inset
-
- is recommended.
- This class is initialized with indexes of male and female individuals and
- use a function 
-\family typewriter
-chooseParents
-\family default
- to return a pair of parents randomly.
- This parent chooser is very simple but more complicated parent selection
- scenarios can be implemented similarly.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/myParentsChooser.h"
-lstparams "caption={Implement a parent chooser in C++},label={parentChooseHeader},language=C"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The second step is to wrap your C++ functions and classes to a Python module.
- There are many tools available but SWIG (
-\family typewriter
-www.swig.org
-\family default
-) is arguably the most convenient and powerful one.
- To use SWIG, you will need to prepare an interface file, which basically
- tells SWIG which functions and classes you would like to expose and how
- to pass parameters between Python and C++.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "parentsChooserInterface"
-
-\end_inset
-
- lists an interface file for the C++ class defined in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "parentChooseHeader"
-
-\end_inset
-
-.
- Please refer to the SWIG reference manual for details.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/myParentsChooser.i"
-lstparams "caption={An interface file for the myParentsChooser class},label={parentsChooserInterface},language=Awk"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The exact procedure to generate and compile a wrapper file varies from system
- to system, and from compiler to compiler.
- Fortunately, the standard Python module setup process supports SWIG.
- All you need to do is to write a Python 
-\family typewriter
-setup.py
-\family default
- file and let the 
-\family typewriter
-distutil
-\family default
- module of Python handle all the details for you.
- A typical 
-\family typewriter
-setup.py
-\family default
- file is demonstrated in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "parentsChooserSetup"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/setup.py"
-lstparams "caption={Building and installing the myParentsChooser module},label={parentsChooserSetup}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You parent chooser can now be compiled and installed using the standard
- Python 
-\family typewriter
-setup.py
-\family default
- commands such as
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-python setup.py install
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Please refer to the Python reference manual for other building and installation
- options.
- Note that Python 2.4 and earlier do not support option swig_opts well so
- you might have to pass these options using command
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-python setup.py build_ext --swig-opts=
-\begin_inset Quotes erd
-\end_inset
-
--O -templatereduce 
-\backslash
-
-\end_layout
-
-\begin_layout Plain Layout
-
-    -shadow -c++ -keyword -nodefaultctor
-\begin_inset Quotes erd
-\end_inset
-
- install
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "parentChooseHeader"
-
-\end_inset
-
- demonstrates how to use such a C++ parents chooser in your simuPOP script.
- It uses the same Python parent chooser interface as in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyParentsChooser"
-
-\end_inset
-
-, but leaves all the (potentially) computationally intensive parts to the
- C++ level 
-\family typewriter
-myParentsChooser
-\family default
- object.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/cppParentChooser.py"
-lstparams "caption={Implement a parent chooser in C++},label={cppParentChooser}"
 
 \end_inset
 
@@ -17150,6 +15587,148 @@ Stat
 \end_layout
 
 \begin_layout Subsection
+
+\family typewriter
+defdict
+\family default
+ datatype
+\end_layout
+
+\begin_layout Standard
+simuPOP uses dictionaries to save statistics such as allele frequencies.
+ For example, 
+\family typewriter
+alleleFreq[5]
+\family default
+ can be 
+\family typewriter
+{0:0.2, 3:0.8}
+\family default
+ meaning there are 20% allele 0 and 80% allele 3 at locus 5 in a population.
+ However, because it is sometimes unclear whether or not a particular allele
+ exists in a population, 
+\family typewriter
+alleleFreq[5][allele]
+\family default
+ can fail with a 
+\family typewriter
+KeyError
+\family default
+ exception if 
+\family typewriter
+alleleFreq[5]
+\family default
+ does not have key 
+\family typewriter
+allele
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+To address this problem, a special default dictionary type 
+\family typewriter
+defdict
+\family default
+ is used for dictionaries with keys determined from a population.
+ This derived dictionary type works just like a regular dictionay, but it
+ returns 0, instead of raising a 
+\family typewriter
+KeyError
+\family default
+ exception, when an invalid key is used.
+ For example, subpopulations in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "defdictType"
+
+\end_inset
+
+ have different alleles.
+ Although 
+\family typewriter
+pop.dvars(sp).alleleFreq[0]
+\family default
+ have only two keys for 
+\family typewriter
+sp=0
+\family default
+ or 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+pop.dvars(sp).alleleFreq[0][x]
+\family default
+ are used to print frequencies of alleles 
+\family typewriter
+0
+\family default
+, 
+\family typewriter
+1
+\family default
+ and 
+\family typewriter
+2
+\family default
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/defdict.log"
+lstparams "caption={The defdict datatype},label={defdictType}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Note
+The standard 
+\family typewriter
+collections
+\family default
+ module of Python has a 
+\family typewriter
+defaultdict
+\family default
+ type that accepts a default factory function that will be used when an
+ invalid key is encountered.
+ The 
+\family typewriter
+defdict
+\family default
+ type is similar to 
+\family typewriter
+defaultdict(int)
+\family default
+ but with an important difference: when an invalid key is encountered, 
+\family typewriter
+d[key]
+\family default
+ with a default value will be inserted to a 
+\family typewriter
+defaultdict(int)
+\family default
+, but will not be inserted to a 
+\family typewriter
+defdict
+\family default
+.
+ That is to say, it is safe to use 
+\family typewriter
+alleleFreq[loc].keys()
+\family default
+ to get available alleles after non-assignment 
+\family typewriter
+alleleFreq[loc][allele]
+\family default
+ operations.
+\end_layout
+
+\begin_layout Subsection
 Support for virtual subpopulations
 \end_layout
 
@@ -19261,80 +17840,6 @@ n being fixed.
 LatexCommand lstinputlisting
 filename "log/terminateIf.log"
 lstparams "caption={Terminate the evolution of all populations in a simulator},label={terminateIf}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Turn on and off debugging mode (operator 
-\family typewriter
-turnOnDebug
-\family default
- and 
-\family typewriter
-turnOffDebug
-\family default
-) *
-\end_layout
-
-\begin_layout Standard
-Debug information can be useful when something looks suspicious.
- By turnning on certain debug code, simuPOP will print out some internal
- information before and during evolution.
- The usually way to turn on and off debug information is to use functions
- 
-\family typewriter
-TurnOnDebug(code)
-\family default
- and 
-\family typewriter
-TurnOffDebug(code)
-\family default
-, or setting environmental variable 
-\family typewriter
-SIMUDEBUG=code
-\family default
- where 
-\family typewriter
-code
-\family default
- is one of the debug codes listed by function 
-\family typewriter
-ListDebugCodes
-\family default
-.
- Note that debug information is only available in standard modules.
-\end_layout
-
-\begin_layout Standard
-However, the amount of output can be overwhelming in some cases which makes
- it necessary to limit the debug information to certain generations.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "debug"
-
-\end_inset
-
- demonstrates how to turn on debug information conditionally and turn it
- off afterwards, using operators 
-\family typewriter
-turnOnDebug
-\family default
- and 
-\family typewriter
-turnOffDebug
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/debug.log"
-lstparams "caption={Turn on and off debug information during evolution.},label={debug},lastline=25"
 
 \end_inset
 
@@ -24317,7 +22822,1440 @@ name "cha:Advanced-topics"
 \end_layout
 
 \begin_layout Section
-Age structured populations with overlapping generations *
+Random number generator *
+\end_layout
+
+\begin_layout Standard
+When simuPOP is loaded, it creates a default random number generator (
+\family typewriter
+RNG
+\family default
+) of type 
+\family typewriter
+mt19937
+\family default
+ using a random seed from a system random number generator that guarantees
+ random seeds for all instances of simuPOP even if they are initialized
+ at the same time.
+ After simuPOP is loaded, you can reset this system RNG with a different
+ random number generator (c.f.
+ 
+\family typewriter
+AvailableRNGs()
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+AvailableRNG
+\end_layout
+
+\end_inset
+
+, 
+\family typewriter
+SetRNG(name, seed)
+\family default
+)
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+SetRNG
+\end_layout
+
+\end_inset
+
+.
+ It is also possible to save the random seed of a simuPOP session (c.f.
+ 
+\family typewriter
+GetRNG().seed()
+\family default
+) and use it to replay the session later.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+GetRNG().seed()
+\family default
+ returns the seed of the simuPOP random number generator.
+ It can be used to replay your simulation if 
+\family typewriter
+GetRNG()
+\family default
+ is your only source of random number generator.
+ If you also use the Python 
+\family typewriter
+random
+\family default
+ module, it is a good practise to set its seed using 
+\family typewriter
+random.seed(GetRNG().seed())
+\family default
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomSeed"
+
+\end_inset
+
+ demonstrates how to use these functions to replay an evolutionary process.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/randomSeed.log"
+lstparams "caption={Use saved random seed to replay an evolutionary process},label={randomSeed}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Debug-related operators and functions *
+\end_layout
+
+\begin_layout Subsection
+Functions 
+\family typewriter
+TurnOnDebug
+\family default
+ and 
+\family typewriter
+TurnOffDebug
+\end_layout
+
+\begin_layout Standard
+Debug information can be useful when something looks suspicious.
+ By turnning on certain debug code, simuPOP will print out some internal
+ information before and during evolution.
+ Functions 
+\family typewriter
+TurnOnDebug(code)
+\family default
+ and 
+\family typewriter
+TurnOffDebug(code)
+\family default
+ could be used to turn on and off some debug information.
+\end_layout
+
+\begin_layout Standard
+For example, the following code might crash simuPOP:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> population(1, loci=[100]).individual(0).genotype()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is unclear why this simple command causes us trouble, instead of outputting
+ the genotype of the only individual of this population.
+ However, the reason is clear if you turn on debug information:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "keywordstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Turn on/off debug information
+\end_layout
+
+\end_inset
+
+>>> TurnOnDebug(DBG_POPULATION)
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> population(1, loci=100).individual(0).genotype()
+\end_layout
+
+\begin_layout Plain Layout
+
+Constructor of population is called
+\end_layout
+
+\begin_layout Plain Layout
+
+Destructor of population is called 
+\end_layout
+
+\begin_layout Plain Layout
+
+Segmentation fault (core dumped)
+\end_layout
+
+\end_inset
+
+
+\family typewriter
+population(1, loci=[100])
+\family default
+ creates a temporary object that is destroyed right after the execution
+ of the command.
+ When Python tries to display the genotype, it will refer to an invalid
+ location.
+ The correct method to print the genotype is to create a persistent population
+ object: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> pop = population(1, loci=[100])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop.individual(0).genotype()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Besides functions 
+\family typewriter
+TurnOnDebug(code) 
+\family default
+and 
+\family typewriter
+TurnOffDebug(code)
+\family default
+, you dould set environmental variable 
+\family typewriter
+SIMUDEBUG=code
+\family default
+ where 
+\family typewriter
+code
+\family default
+ is a comma separated debug codes.
+
+\family typewriter
+ 
+\family default
+A list of valid debug code could be found in function 
+\family typewriter
+ModuleInfo()['debug']
+\family default
+.
+\end_layout
+
+\begin_layout Note
+Debug information is only available in standard (non-optimized) modules.
+\end_layout
+
+\begin_layout Subsection
+Turn on and off debugging during evolution *
+\end_layout
+
+\begin_layout Standard
+The amount of output can be overwhelming in some cases which makes it necessary
+ to limit the debug information to certain generations, or triggered by
+ certain conditions.
+ In addition, debugging information may interfere with your regular output
+ so you may want to direct such output to another destination, such as a
+ dedicated file.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "debug"
+
+\end_inset
+
+ demonstrates how to turn on debug information conditionally and turn it
+ off afterwards, using operator 
+\family typewriter
+pyOperator
+\family default
+.
+ It also demonstrates how to redirect debug output to a file but redefining
+ system standard error output.
+ Note that 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+is None
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ is used to make sure the lamdba functions return 
+\family typewriter
+True
+\family default
+ so that the evolutionary process can continue after the python operator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/debug.log"
+lstparams "caption={Turn on and off debug information during evolution.},label={debug}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Define your own operators *
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ is a Python class so you can derive your own operator from this operator.
+ The tricky part is that the constructor of the derived operator needs to
+ call the 
+\family typewriter
+__init__
+\family default
+ function of 
+\family typewriter
+pyOperator
+\family default
+ will proper functions.
+ This technique has been used by simuPOP in a number of occasions.
+ For example, the 
+\family typewriter
+varPlotter
+\family default
+ operator defined in 
+\family typewriter
+plotter.py
+\family default
+ is derived from 
+\family typewriter
+pyOperator
+\family default
+.
+ This class encapsulates several different plot class that uses 
+\family typewriter
+rpy
+\family default
+ to plot python expressions.
+ One of the plotters is passed to the func parameter of 
+\family typewriter
+pyOperator.__init__
+\family default
+ so that it can be called when this operator is applied.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sequentialSelfing"
+
+\end_inset
+
+ rewrites the 
+\family typewriter
+dynaMutator
+\family default
+ defined in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyOperator"
+
+\end_inset
+
+ into a derived operator.
+ The parameters are now passed to the constructor of 
+\family typewriter
+dynaMutator
+\family default
+ and are saved as member variables.
+ A member function 
+\family typewriter
+mutate
+\family default
+ is defined and is passed to the constructor of 
+\family typewriter
+pyOperator
+\family default
+.
+ Other than making 
+\family typewriter
+dynaMutator
+\family default
+ look like a real simuPOP operator, this example does not show a lot of
+ advantage over defining a function.
+ However, when the operator gets complicated (as in the case for 
+\family typewriter
+varPlotter
+\family default
+), the object oriented implementation will prevail.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/newOperator.log"
+lstparams "caption={Define a new Python operator},label={newOperator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+New during-mating operators can be defined similarly.
+ They are usually used to define customized genotype transmitters.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Customized-genotype-transmitter"
+
+\end_inset
+
+ will describe this feature in detail.
+\end_layout
+
+\begin_layout Section
+Non-random and customized mating schemes *
+\end_layout
+
+\begin_layout Subsection
+The structure of a homogeneous mating scheme *
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+homogeneous mating scheme
+\emph default
+ populates an offspring generation as follows:
+\end_layout
+
+\begin_layout Enumerate
+Create an empty offspring population (generation) with appropriate size.
+ Parental and offspring generation can differ in size but they must have
+ the same number of subpopulations.
+\end_layout
+
+\begin_layout Enumerate
+For each subpopulation, repeatedly choose a parent or a pair of parents
+ from the parental generation.
+ This is done by a simuPOP object called a 
+\series bold
+parent chooser
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+One or more offspring are produced from the chosen parent(s) and are placed
+ in the offspring population.
+ This is done by a simuPOP 
+\series bold
+offspring generator
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+A offspring generator uses one or more during-mating operators to transmit
+ parental genotype to offspring.
+ These operators are call 
+\series bold
+genotype transmitters
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+After the offspring generation is populated, it will replace the parental
+ generation and becomes the present generation of a population.
+\end_layout
+
+\begin_layout Standard
+A simuPOP mating scheme uses a particular set of parent chooser, offspring
+ generator, and genotype transmitters.
+ For example, a 
+\family typewriter
+selfingMating
+\family default
+ mating scheme uses a 
+\family typewriter
+randomParentChooser
+\family default
+ to choose a parent randomly from a population, possibly according to individual
+ fitness, it uses a standard 
+\family typewriter
+offspringGenerator
+\family default
+ that uses a 
+\family typewriter
+selfingOffspringGenerator
+\family default
+ to transmit genotype.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomMating"
+
+\end_inset
+
+ demonstrates how the most commonly used mating scheme, the diploid sexual
+ 
+\family typewriter
+randomMating
+\family default
+ mating scheme is defined in 
+\family typewriter
+simuPOP.py
+\family default
+.
+ The following sections basically explain how you can construct your own
+ mating scheme from scratch, using stocked or customized parent chooser,
+ offspring generator and genotype transmitters.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/randomMating.py"
+lstparams "caption={Define a random mating scheme},firstline=2,label={randomMating}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+homoMating
+\family default
+ mating scheme *
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+homoMating
+\family default
+ is used to define all pre-defined homogeneous mating schemes.
+ It takes five parameters: 
+\family typewriter
+chooser
+\family default
+ (a 
+\emph on
+parent chooser
+\emph default
+ that is responsible for choosing one or two parents from the parental generatio
+n), 
+\family typewriter
+generator
+\family default
+ (an 
+\emph on
+offspring generator
+\emph default
+ that is responsible for generating a number of offspring from the chosen
+ parents), 
+\family typewriter
+subPopSize
+\family default
+ (parameter to control offspring subpopulation sizes), 
+\family typewriter
+subPops
+\family default
+ (applicable subpopulatiosn or virtual subpopulations), and 
+\family typewriter
+weight
+\family default
+ (weighting parameter when used in a heterogeneous mating scheme).
+ When this mating scheme is applied to the whole population, 
+\family typewriter
+subPopSize
+\family default
+ is used to determine the subpopulation sizes of the offspring generation
+ (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-size"
+
+\end_inset
+
+ for details), parameters 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+weight
+\family default
+ are ignored.
+ Otherwise, the number of offspring this mating scheme will produce is determine
+d by the heterogeneous mating scheme.
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\family typewriter
+subPopSize
+\family default
+, 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+weight
+\family default
+ are more or less standard but different parent choosers and offspring generator
+s can be combined to define a large number of homogeneous mating schemes.
+ For example, the standard 
+\family typewriter
+selfMating
+\family default
+ mating scheme uses a 
+\family typewriter
+randomParentChooser
+\family default
+ but you can easily use a 
+\family typewriter
+sequentialParentChooser
+\family default
+ to choose parents sequentially and self-fertilize parents one by one.
+ This is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sequentialSelfing"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/sequentialSelfing.log"
+lstparams "caption={Define a sequential selfing mating scheme},label={sequentialSelfing}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The simuPOP reference manual lists all pre-defined parent choosers and offspring
+ generators.
+ They may or may not work together depending on the number of parents a
+ parent chooser produces, and the number of parents an offspring generator
+ can handle.
+ You can also define your own parent choosers and offspring generators,
+ as shown below.
+\end_layout
+
+\begin_layout Subsection
+Offspring generators *
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+offspringGenerator
+\family default
+ accepts a parameters 
+\family typewriter
+ops
+\family default
+ (a list of during-mating operators), 
+\family typewriter
+numOffspring
+\family default
+ (control number of offspring per mating event) and 
+\family typewriter
+sexMode
+\family default
+ (control offspring sex).
+ We have examined the last two parameters in detail in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:number-of-offspring"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-sex"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The most tricky parameter is the 
+\family typewriter
+ops
+\family default
+ parameter.
+ It accepts a list of during mating operators that are used to transmit
+ genotypes from parent(s) to offspring and/or set individual information
+ fields.
+ The standard 
+\family typewriter
+offspringGenerator
+\family default
+ does not have any default operator so no genotype will be transmitted by
+ default.
+ All stock mating schemes use a default genotype transmitter.
+ (e,g, a 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomMating"
+
+\end_inset
+
+ is passed to the offspring generator used in 
+\family typewriter
+randomMating
+\family default
+).
+ Note that you need to specify all needed operators if you use parameter
+ 
+\family typewriter
+ops
+\family default
+ to change the operators used in a mating scheme (see Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "heteroMatingWeight"
+
+\end_inset
+
+).
+ That is to say, you can use 
+\family typewriter
+ops=recombinator()
+\family default
+ to replace a default 
+\family typewriter
+mendelianGenoTransmitter()
+\family default
+, but you have to use 
+\family typewriter
+ops=[idTagger(), mendelianGenoTransmitter()]
+\family default
+ if you would like to add a during-mating operator to the default one.
+\end_layout
+
+\begin_layout Standard
+Another offspring generator is provided in simuPOP.
+ This 
+\family typewriter
+controlledOffspringGenerator 
+\family default
+is used to control an evolutionary process so that the allele frequencies
+ at certain loci follows some pre-simulated 
+\emph on
+frequency trajectories
+\emph default
+.
+ Please refer to 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Peng2007a"
+
+\end_inset
+
+ for rationals behind such an offspring generator and its applications in
+ the simulation of complex human diseases.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "controlledOffGenerator"
+
+\end_inset
+
+ demonstrates the use of such a controlled offspring generator.
+ Instead of using a realistic frequency trajectory function, it forces allele
+ frequency at locus 5 to increase linearly.
+ In contrast, the allele frequency at locus 15 on the second chromosome
+ oscillates as a result of genetic drift.
+ Note that the random mating version of this mating scheme is defined in
+ simuPOP as 
+\family typewriter
+controlledRandomMating
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/controlledOffGenerator.log"
+lstparams "caption={A controlled random mating scheme},label={controlledOffGenerator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Pre-defined genotype transmitters *
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Pre-defined-genotype-transmitters"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although any during mating operators can be used in parameter 
+\family typewriter
+ops 
+\family default
+of an offspring generator, those that transmit genotype from parents to
+ offspring are customarily called 
+\series bold
+genotype transmitters
+\series default
+.
+ simuPOP provides a number of genotype transmitters including clone, Mendelian,
+ selfing, haplodiploid, genotype transmitter, and a recombinator.
+ They are usually used implicitly in a mating scheme, but they can also
+ be used explicitly.
+\end_layout
+
+\begin_layout Standard
+All genotype transmitters only handle known chromosome types such as 
+\family typewriter
+AUTOSOME
+\family default
+, 
+\family typewriter
+CHROMOSOME_X
+\family default
+ and 
+\family typewriter
+CHROMOSOME_Y
+\family default
+.
+ Customized chromosomes are left untouched because simuPOP does not know
+ how they should be transmitted from parents to offspring.
+ In case that Customized chromosomes are treated as mitochondrial chromosomes,
+ a 
+\family typewriter
+mitochondrialGenoTransmitter
+\family default
+ can be used to transmit customized chromosomes randomly from mother to
+ offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mitochondrial.log"
+
+\end_inset
+
+ demonstrates the use of a 
+\family typewriter
+recombinator
+\family default
+ to recombine an autosome and two sex chromosomes, and a 
+\family typewriter
+mitochondrialGenoTransmitter
+\family default
+ to transmit mitochondrial chromosomes.
+ Note that the default 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ is replaced by these two operators.
+ It will be (wastefully) applied if the new during-mating operators are
+ used in the 
+\family typewriter
+simulator.evolve
+\family default
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mitochondrial.log"
+lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial.log}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Customized genotype transmitter **
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Customized-genotype-transmitter"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although simuPOP provides a number of genotype transmitters, they may still
+ be cases where customized genotype transmitter is needed.
+ For example, a recombinator can be used to recombine parental chromosomes
+ but it is well known that male and female individuals differ in recombination
+ rates.
+ How can you apply two different recombinators to male and female individuals
+ separately?
+\end_layout
+
+\begin_layout Standard
+An immediate thought can be the use of virtual subpopulations.
+ If you apply two random mating schemes to two virtual subpopulations defined
+ by sex, 
+\family typewriter
+randomParentsChooser
+\family default
+ will not work because no opposite sex can be found in each virtual subpopulatio
+n.
+ In this case, a customized genotype transmitter can be used.
+\end_layout
+
+\begin_layout Standard
+A customized genotype transmitter is only a Python during-mating operator.
+ Although it is possible to define a function and use a pyOperator directly
+ (Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyOperator"
+
+\end_inset
+
+), it is much better to derive an operator from pyOperator, as the case
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexSpecificRec"
+
+\end_inset
+
+ defines a 
+\family typewriter
+sexSpecificRecombinator
+\family default
+ that uses, internally, two different recombinators to recombine male and
+ female parents.
+ The key statement is the 
+\family typewriter
+pyOperator.__init__
+\family default
+ line which initializes a Python operator with given function 
+\family typewriter
+self.transmitGenotype
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The actual function to transmit parental genotype is 
+\family typewriter
+self.transmitGenotype
+\family default
+.
+ This function initializes two recombinators if they have not been initialized
+ and uses them to transmit parental genotypes.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexSpecificRec"
+
+\end_inset
+
+ outputs the population in two generations.
+ You should notice that paternal chromosome are not recombined when they
+ are transmitted to offspring.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/sexSpecificRec.log"
+lstparams "caption={A customized genotype transmitter for sex-specific recombination},label={sexSpecificRec}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A Python parent chooser *
+\end_layout
+
+\begin_layout Standard
+Parent choosers are responsible for choosing one or two parents from a parental
+ (virtual) subpopulation.
+ simuPOP defines a few parent choosers that choose parent(s) sequentially,
+ randomly (with or without replacement), or with additional conditions.
+ Some of these parent choosers support natual selection.
+ We have seen sequential and random parent choosers in Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sequentialSelfing"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "controlledOffGenerator"
+
+\end_inset
+
+.
+ Please refer to the simuPOP reference manual for details about these objects.
+\end_layout
+
+\begin_layout Standard
+A parent choosing scheme can be quite complicated in reality.
+ For example, salamanders along a river may mate with their neighbors and
+ form several subspecies.
+ This behavior cannot be readily simulated using any pre-define parent choosers
+ so a hybrid parent chooser 
+\family typewriter
+pyParentsChooser()
+\family default
+ should be used.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyParentsChooser
+\family default
+ accepts a user-defined Python generator function, instead of a normal python
+ function, that returns a parent, or a pair of parents repeatedly.
+ Briefly speaking, when a generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when this iterator iterates, this function resumes where it was
+ stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ For example, example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "generator"
+
+\end_inset
+
+ defines a function that calculate 
+\begin_inset Formula $f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $k=1,...,5$
+\end_inset
+
+.
+ It does not calculate each 
+\begin_inset Formula $f\left(k\right)$
+\end_inset
+
+ repeatedly but returns 
+\begin_inset Formula $f\left(1\right)$
+\end_inset
+
+, 
+\begin_inset Formula $f\left(2\right)$
+\end_inset
+
+, ...
+ sequentially.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/generator.log"
+lstparams "caption={A sample generator function},label={generator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyParentsChooser
+\family default
+ accepts a parent generator function, which takes a population and a subpopulati
+on index as parameters.
+ When this parent chooser is applied to a subpopulation, it will call this
+ generator function and ask the generated generator object repeated for
+ either a parent, or a pair of parents (
+\emph on
+references to individual objects or indexes relative to a subpopulation
+\emph default
+).
+ Note that 
+\family typewriter
+pyParentsChooser
+\family default
+ does not support virtual subpopulation but you can mimic the effect by
+ returning only parents from certain virtual subpopulations.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyParentsChooser"
+
+\end_inset
+
+ implements a hybrid parent chooser that chooses parents with equal social
+ status (
+\family typewriter
+rank
+\family default
+).
+ In this parent chooser, all males and females are categorized by their
+ sex and social status.
+ A parent is chosen randomly, and then his/her spouse is chosen from females/mal
+es with the same social status.
+ The rank of their offspring can increase or decrease randomly.
+ It becomes obvious now that whereas a python function can return random
+ male/female pair, the generator interface is much more efficient because
+ the identification of sex/status groups is done only once.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyParentsChooser.log"
+lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={pyParentsChooser}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Using C++ to implement a parent chooser **
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Using-C++"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parent chooser can be fairly complex and computationally
+ intensive.
+ For example, if a parent tends to find a spouse in his/her vincinity, geometric
+ distances between all qualified individuals and a chosen parent need to
+ be calculated for each mating event.
+ If the optimization of the parent chooser can speed up the simulation significa
+ntly, it may be worthwhile to write the parent chooser in C++.
+ 
+\end_layout
+
+\begin_layout Standard
+Although it is feasible, and sometimes easier to derive a class from class
+ 
+\family typewriter
+parentChooser
+\family default
+ in mating.h (.cpp), modifying simuPOP source code is not recommended because
+ you would have to modify a new version of simuPOP whenever you upgrade
+ your simuPOP distribution.
+ Implementing your parent choosing algorithm in another Python module is
+ preferred.
+\end_layout
+
+\begin_layout Standard
+The first step is to write your own parent chooser in C/C++.
+ Basically, you will need to pass all necessary information to the C++ level
+ and implement an algorithm to choose parents randomly.
+ Although simple function based solutions are possible, a C++ level class
+ such as the 
+\family typewriter
+myParentsChooser 
+\family default
+class defined in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentChooseHeader"
+
+\end_inset
+
+ is recommended.
+ This class is initialized with indexes of male and female individuals and
+ use a function 
+\family typewriter
+chooseParents
+\family default
+ to return a pair of parents randomly.
+ This parent chooser is very simple but more complicated parent selection
+ scenarios can be implemented similarly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/myParentsChooser.h"
+lstparams "caption={Implement a parent chooser in C++},label={parentChooseHeader},language=C"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The second step is to wrap your C++ functions and classes to a Python module.
+ There are many tools available but SWIG (
+\family typewriter
+www.swig.org
+\family default
+) is arguably the most convenient and powerful one.
+ To use SWIG, you will need to prepare an interface file, which basically
+ tells SWIG which functions and classes you would like to expose and how
+ to pass parameters between Python and C++.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentsChooserInterface"
+
+\end_inset
+
+ lists an interface file for the C++ class defined in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentChooseHeader"
+
+\end_inset
+
+.
+ Please refer to the SWIG reference manual for details.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/myParentsChooser.i"
+lstparams "caption={An interface file for the myParentsChooser class},label={parentsChooserInterface},language=Awk"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The exact procedure to generate and compile a wrapper file varies from system
+ to system, and from compiler to compiler.
+ Fortunately, the standard Python module setup process supports SWIG.
+ All you need to do is to write a Python 
+\family typewriter
+setup.py
+\family default
+ file and let the 
+\family typewriter
+distutil
+\family default
+ module of Python handle all the details for you.
+ A typical 
+\family typewriter
+setup.py
+\family default
+ file is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentsChooserSetup"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/setup.py"
+lstparams "caption={Building and installing the myParentsChooser module},label={parentsChooserSetup}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You parent chooser can now be compiled and installed using the standard
+ Python 
+\family typewriter
+setup.py
+\family default
+ commands such as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+python setup.py install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please refer to the Python reference manual for other building and installation
+ options.
+ Note that Python 2.4 and earlier do not support option swig_opts well so
+ you might have to pass these options using command
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+python setup.py build_ext --swig-opts=
+\begin_inset Quotes erd
+\end_inset
+
+-O -templatereduce 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    -shadow -c++ -keyword -nodefaultctor
+\begin_inset Quotes erd
+\end_inset
+
+ install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentChooseHeader"
+
+\end_inset
+
+ demonstrates how to use such a C++ parents chooser in your simuPOP script.
+ It uses the same Python parent chooser interface as in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyParentsChooser"
+
+\end_inset
+
+, but leaves all the (potentially) computationally intensive parts to the
+ C++ level 
+\family typewriter
+myParentsChooser
+\family default
+ object.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/cppParentChooser.py"
+lstparams "caption={Implement a parent chooser in C++},label={cppParentChooser}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Age structured populations with overlapping generations **
 \end_layout
 
 \begin_layout Standard

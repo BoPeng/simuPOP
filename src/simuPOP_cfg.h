@@ -268,11 +268,6 @@ enum DBG_CODE {
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 
-// DBG_NAMES are defined in utility.cpp
-// if you add any debug code here, you need to add its name
-// in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
-// etc will be function well.
-
 // info is usually used for subpopulation index.
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
