@@ -732,61 +732,6 @@ private:
 	clock_t m_lastTime;
 };
 
-/** This operator sets the number of ancestral generations to keep during the
- *  evolution of a population. This is usually used to start storing ancestral
- *  generations at the end of an evolutionary process. A typical usage is
- *  <tt>setAncestralDepth(1, at=-1)</tt> which will cause the parental
- *  generation of the present population to be stored at the last generation
- *  of an evolutionary process.
- */
-class setAncestralDepth : public baseOperator
-{
-
-public:
-	/** Create a \c setAncestralDepth operator that sets the ancestral depth of
-	 *  an population. It basically calls the
-	 *  <tt>population.setAncestralDepth</tt> member function of a population.
-	 */
-	setAncestralDepth(int depth, const stringFunc & output = ">",
-		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
-		baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
-		m_depth(depth)
-	{
-	};
-
-	/// destructor
-	virtual ~setAncestralDepth()
-	{
-	};
-
-	/// HIDDEN
-	virtual baseOperator * clone() const
-	{
-		return new setAncestralDepth(*this);
-	}
-
-
-	/// apply the \c setAncestralDepth operator to population \e pop.
-	virtual bool apply(population & pop)
-	{
-		pop.setAncestralDepth(m_depth);
-		return true;
-	}
-
-
-	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.setAncestralDepth>";
-	}
-
-
-private:
-	int m_depth;
-};
-
 /** Turn on debug. There are several ways to turn on debug information for
  *  non-optimized modules, namely
  *  \li set environment variable \c SIMUDEBUG.

@@ -910,7 +910,7 @@
   \csname py@noticestart@#1\endcsname
   \par\strong{\csname py@noticelabel@#1\endcsname}
 }{\csname py@noticeend@\py@noticetype\endcsname}
-\newcommand{\note}[1]{\strong{\py@noticelabel@note} #1}
+\newcommand{\note}[1]{\par\textcolor{blue}{\strong{\py@noticelabel@note}} #1}
 \newcommand{\warning}[1]{\strong{\py@noticelabel@warning} #1}
 
 % Deprecation stuff.

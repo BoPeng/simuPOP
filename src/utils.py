@@ -80,6 +80,7 @@ def ViewVars(var, gui=None):
     try:
         import wx, wx.py.filling as fill
     except ImportError:
+        import pprint
         pprint.pprint(var)
         return
 
@@ -88,10 +89,11 @@ def ViewVars(var, gui=None):
     if var==None:
         fillFrame = fill.FillingFrame()
     else:
-        if type(var) == type( dw({}) ):
+        try:
+            # a dvars() object?
             fillFrame = fill.FillingFrame(rootObject=var.__dict__,
                 rootLabel='var')
-        else:
+        except:
             fillFrame = fill.FillingFrame(rootObject=var,
                 rootLabel='var')
     fillFrame.Show(True)

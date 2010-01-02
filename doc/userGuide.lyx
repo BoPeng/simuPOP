@@ -1044,24 +1044,24 @@ Before we dive into the details of simuPOP, it is helpful to know a few
 All classes (e.g.
  
 \family typewriter
-population
+population()
 \family default
-()), member functions (e.g.
+), member functions (e.g.
  
 \family typewriter
-population.vars
+population.vars()
 \family default
-()) and parameter names start with small character and use capital character
+) and parameter names start with small character and use capital character
  for the first character of each word afterward (e.g.
  
 \family typewriter
-population.subPopSize
+population.subPopSize()
 \family default
-(), 
+, 
 \family typewriter
-individual.setInfo
+individual.setInfo()
 \family default
-()).
+).
 \end_layout
 
 \begin_layout Itemize
@@ -1104,6 +1104,14 @@ simuPOP uses the abbreviated form of the following words in function and
 \begin_deeper
 \begin_layout Quote
 
+\family typewriter
+pop
+\family default
+ (population), 
+\family typewriter
+pops
+\family default
+ (populations), 
 \family typewriter
 pos
 \family default
@@ -1148,20 +1156,6 @@ expr
 stmts
 \family default
  (statements).
-\end_layout
-
-\begin_layout Standard
-It usually possible to guess whether or not a parameter accepts a single
- or a list of objects by its name.
- For example, 
-\family typewriter
-subPop
-\family default
- accepts single subpopulation and 
-\family typewriter
-subPops
-\family default
- accepts a list of subpopulations.
 \end_layout
 
 \end_deeper
@@ -1209,12 +1203,9 @@ values
 names
 \family default
  are used.
-\end_layout
-
-\begin_layout Itemize
-
+ 
 \series bold
-Plural form parameters usually accept single inputs.
+Such parameters usually accept single inputs.
 
 \series default
  For example, 
@@ -1341,11 +1332,15 @@ There are six flavors of the core simuPOP module: short, long and binary
  This is enough most of the times but not so if you need to simulate models
  such as the infinite allele model.
  In those cases, you should use the long allele version of the modules,
- which use 32 bits for each allele and can have 
+ which use 32 or 64 bits for each allele and can have 
 \begin_inset Formula $2^{32}$
 \end_inset
 
- possible allele states.
+ or 
+\begin_inset Formula $2^{64}$
+\end_inset
+
+ possible allele states depending on your platform .
  On the other hand, if you would like to simulate a large number of binary
  (SNP) markers, binary libraries can save you a lot of RAM because they
  use 1 bit for each allele.
@@ -1361,7 +1356,7 @@ Standard libraries have detailed debug and run-time validation mechanism
  The cost of such run-time validation varies from case to case but can be
  high under some extreme circumstances.
  Because of this, optimized versions for all modules are provided.
- They bypass all parameter checking and run-time validations and will simply
+ They bypass most parameter checking and run-time validations and will simply
  crash if things go wrong.
  It is recommended that you use standard libraries whenever possible and
  only use the optimized version when performance is needed and you are confident
@@ -1402,6 +1397,91 @@ lstparams "caption={Use of standard simuPOP modules},keywords={from,import},labe
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+ also demonstrates how to use the 
+\family typewriter
+setOptions
+\family default
+ function in the 
+\family typewriter
+simuOpt
+\family default
+ module to control the choice of one of the six simuPOP modules.
+ By specifying one of the values 
+\family typewriter
+short, long
+\family default
+ or 
+\family typewriter
+binary 
+\family default
+for option 
+\family typewriter
+alleleType
+\family default
+, and setting
+\family typewriter
+ optimized
+\family default
+ to 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
+\family default
+, the right flavor of module will be chosen when simuPOP is loaded.
+ In addition, option 
+\family typewriter
+quiet
+\family default
+ can be used suppress the banner message when simuPOP is loaded.
+ An alternative method is to set environmental variable 
+\family typewriter
+SIMUALLELETYPE
+\family default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+r
+\end_layout
+
+\end_inset
+
+ to 
+\family typewriter
+short
+\family default
+, 
+\family typewriter
+long
+\family default
+ or 
+\family typewriter
+binary
+\family default
+ to use the standard short, long or binary module, and variable 
+\family typewriter
+SIMUOPTIMIZED
+\family default
+ to use the optimized modules.
+ Command line options 
+\family typewriter
+--optimized
+\family default
+ can also be used.
 \end_layout
 
 \begin_layout Standard
@@ -1476,91 +1556,6 @@ Segmentation fault
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-optimized-module"
-
-\end_inset
-
- also demonstrates how to use the 
-\family typewriter
-setOptions
-\family default
- function in the 
-\family typewriter
-simuOpt
-\family default
- module to control the choice of one of the six simuPOP modules.
- By specifying one of the values 
-\family typewriter
-short, long
-\family default
- or 
-\family typewriter
-binary 
-\family default
-for option 
-\family typewriter
-alleleType
-\family default
-, and setting
-\family typewriter
- optimized
-\family default
- to 
-\family typewriter
-True
-\family default
- or 
-\family typewriter
-False
-\family default
-, the right flavor of module will be chosen when simuPOP is loaded.
- In addition, option 
-\family typewriter
-quiet
-\family default
- can be used suppress initial output.
- An alternative method is to set environmental variable 
-\family typewriter
-SIMUALLELETYPE
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-r
-\end_layout
-
-\end_inset
-
- to 
-\family typewriter
-short
-\family default
-, 
-\family typewriter
-long
-\family default
- or 
-\family typewriter
-binary
-\family default
- to use the standard short, long or binary module, and variable 
-\family typewriter
-SIMUOPTIMIZED
-\family default
- to use the optimized modules.
- Command line options 
-\family typewriter
---optimized
-\family default
- can also be used.
 \end_layout
 
 \begin_layout Subsection
@@ -1960,7 +1955,7 @@ turnOffDebug
 \begin_layout Standard
 A list of valid debug code could be found in function 
 \family typewriter
-moduleInfo()['debug']
+ModuleInfo()['debug']
 \family default
 .
 \end_layout
@@ -2937,7 +2932,7 @@ User-defined functions and the
 \family typewriter
 withArgs
 \family default
- function
+ function *
 \end_layout
 
 \begin_layout Standard
@@ -3672,17 +3667,17 @@ normal
  chromosomes in diploid, and in haploid populations.
  simuPOP supports three other types of chromosomes, namely 
 \emph on
-ChromosomeX
+chromosome X
 \emph default
 , 
 \emph on
-ChromosomeY
+chromosome Y
 \emph default
- and 
+ and
 \emph on
-Customized
+ customized
 \emph default
-.
+ chromosome types.
  Sex chromosomes are only valid in haploid populations where chromosomes
  X and Y are used to determine the sex of an offspring.
  Customized chromosomes rely on user defined functions and operators to
@@ -4002,74 +3997,18 @@ Individual
 \end_layout
 
 \begin_layout Standard
-Individuals are building blocks of populations.
+Individuals are building blocks of a population.
  An individual object cannot be created independently, but references to
  inidividuals can be retrieved using member functions of a population object.
- In addition to structural information shared by all individuals in a population
-, the individual class provides member functions to get and set 
-\emph on
-genotype
-\emph default
-, 
-\emph on
-sex
-\emph default
-, 
-\emph on
-affection status
-\emph default
- and 
-\emph on
-information fields
-\emph default
- of an individual.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "individuals"
+\end_layout
 
-\end_inset
-
- demonstrates how to access and modify individual sex, affection status
- and information fields.
- Note that 
-\series bold
-information fields can be accessed as attributes of individuals
-\series default
-.
- For example, 
-\family typewriter
-ind.info('father_idx')
-\family default
- is equivalent to 
-\family typewriter
-ind.father_idx
-\family default
- and 
-\family typewriter
-ind.setInfo(35, 'age')
-\family default
- is equivalent to 
-\family typewriter
-ind.age = 35
-\family default
-.
+\begin_layout Subsection
+Access individual genotype
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/individual.log"
-lstparams "caption={Access Individual properties},label={individuals}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Genotypes of an individual are stored sequentially and can be accessed locus
- by locus, or in batch.
+From a user's point of view, genotypes of an individual are stored sequentially
+ and can be accessed locus by locus, or in batch.
  The alleles are arranged by position, chromosome and ploidy.
  That is to say, the first allele on the first chromosome of the first homologou
 s set is followed by alleles at other loci on the same chromosome, then
@@ -4174,6 +4113,73 @@ reference "individual_genotype"
 LatexCommand lstinputlisting
 filename "log/individual_genotype.log"
 lstparams "caption={Access individual genotype},label={individual_genotype}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Individual sex, affection status and information fields
+\end_layout
+
+\begin_layout Standard
+In addition to structural information shared by all individuals in a population,
+ the individual class provides member functions to get and set 
+\emph on
+genotype
+\emph default
+, 
+\emph on
+sex
+\emph default
+, 
+\emph on
+affection status
+\emph default
+ and 
+\emph on
+information fields
+\emph default
+ of an individual.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "individuals"
+
+\end_inset
+
+ demonstrates how to access and modify individual sex, affection status
+ and information fields.
+ Note that 
+\series bold
+information fields can be accessed as attributes of individuals
+\series default
+.
+ For example, 
+\family typewriter
+ind.info('father_idx')
+\family default
+ is equivalent to 
+\family typewriter
+ind.father_idx
+\family default
+ and 
+\family typewriter
+ind.setInfo(35, 'age')
+\family default
+ is equivalent to 
+\family typewriter
+ind.age = 35
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/individual.log"
+lstparams "caption={Access Individual properties},label={individuals}"
 
 \end_inset
 
@@ -5325,7 +5331,7 @@ pyExec
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "hybridOperator"
+reference "expression"
 
 \end_inset
 
@@ -5423,29 +5429,10 @@ Virtual splitters are not saved
 .pop
 \family default
  is recommended.
- 
-\end_layout
-
-\begin_layout Standard
-The native simuPOP format is not human readable and is not recognized by
- other applications.
- Other formats such as the one used by the popular 
-\family typewriter
-FSTAT 
-\family default
-software is supported.
- They are implemented in Python in a Python utility module 
-\family typewriter
-simuUtil.py
-\family default
-.
- simuPOP cannot use one of such formats because none of them can handle
- huge populations that simuPOP can handle, and unique features such as populatio
-n variables.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "hybridOperator"
+reference "savePop"
 
 \end_inset
 
@@ -5461,120 +5448,24 @@ lstparams "caption={Save and load a population},label={savePop}"
 
 \end_layout
 
+\begin_layout Standard
+The native simuPOP format is portable across different platforms but is
+ not human readable and is not recognized by other applications.
+ If you need to save a simuPOP population in a format that is recognizable
+ by a particular software, please check the simuPOP online bookbook and
+ see if there is an existing supporting module.
+ Otherwise, you could write your own import and export function using population
+ functions.
+ 
+\end_layout
+
 \begin_layout Section
 Operators
 \end_layout
 
 \begin_layout Standard
 Operators are objects that act on populations.
- They can be used in the following ways:
-\end_layout
-
-\begin_layout Itemize
-Operators are usually passed to the 
-\family typewriter
-ops
-\family default
-, 
-\family typewriter
-preOps 
-\family default
-and 
-\family typewriter
-postOps
-\family default
- parameters of the 
-\family typewriter
-evolve
-\family default
- function of a simulator.
- The simulator will apply these operators before (
-\family typewriter
-preOps
-\family default
-), after (
-\family typewriter
-postPos
-\family default
-) or during (
-\family typewriter
-ops
-\family default
-) an evolutionary process.
- Depending on parameters of an operator, it can be applied before, during,
- and/or after mating in a life cycle of a generation (parameter 
-\family typewriter
-stage
-\family default
-, see Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:life-cycle"
-
-\end_inset
-
-), to a subset of generations (parameters 
-\family typewriter
-begin
-\family default
-, 
-\family typewriter
-end
-\family default
-, 
-\family typewriter
-step
-\family default
-, 
-\family typewriter
-at
-\family default
-), a subset of populations in a simulator (parameter 
-\family typewriter
-rep
-\family default
-), a subset of (virtual) subpopulations in each replicate (parameter 
-\family typewriter
-subPop
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-During-mating operators are used by mating schemes to transmit parental
- genotype (and sometimes information fields) to offspring.
- Applicability parameters such as 
-\family typewriter
-begin
-\family default
-, 
-\family typewriter
-end
-\family default
-, 
-\family typewriter
-rep
-\family default
- are ignored.
-\end_layout
-
-\begin_layout Itemize
-Most of the operators can be applied to a population directly, using their
- function forms.
- Applicability parameters are ignored.
-\end_layout
-
-\begin_layout Standard
-The following sections will introduce common features of all operators.
- The next chapter will explain some of the operators in detail.
-\end_layout
-
-\begin_layout Subsection
-Applicable stages and generations
-\end_layout
-
-\begin_layout Standard
-There are two types of operators:
+ There are two types of operators:
 \end_layout
 
 \begin_layout Itemize
@@ -5667,6 +5558,15 @@ idTagger
 \family default
  could be applied to a whole population and assign an unique ID to all individua
 ls, or to offspring during mating.
+\end_layout
+
+\begin_layout Standard
+The following sections will introduce common features of all operators.
+ The next chapter will explain all simuPOP operators in detail.
+\end_layout
+
+\begin_layout Subsection
+Applicable generations
 \end_layout
 
 \begin_layout Standard
@@ -5854,7 +5754,7 @@ lstparams "caption={Applicable generations of an operator.},label={applicableGen
 \end_layout
 
 \begin_layout Subsection
-Applicable populations
+Applicable populations and (virtual) subpopulations
 \end_layout
 
 \begin_layout Standard
@@ -7662,7 +7562,7 @@ lstparams "caption={Control the number of offspring per mating event.},label={nu
 \end_layout
 
 \begin_layout Subsection
-Determine offspring sex
+Determine sex of offspring
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:offspring-sex"
@@ -9655,6 +9555,15 @@ simulator([pop, pop1, pop2])
 stolen
 \emph default
  after it is used to create a simulator.
+ If you would like to keep the populations, you could set parameter 
+\family typewriter
+steal
+\family default
+ to 
+\family typewriter
+False
+\family default
+ so that the populations will be copied to the simulator.
 \end_layout
 
 \begin_layout Standard
@@ -10309,7 +10218,7 @@ name "cha:simuPOP-Operators"
 \end_layout
 
 \begin_layout Standard
-simuPOP is large, consisting of more than 80 operators and various functions
+simuPOP is large, consisting of more than 70 operators and various functions
  that covers all important aspects of genetic studies.
  These includes mutation (
 \emph on
@@ -15786,8 +15695,8 @@ in this simple case, two types of selection scenarios yield identical results
 \begin_layout Standard
 These two types of selection scenarios do not have to always yield identical
  results.
- Exceptions may be found in cases with more than one offspring or sexual
- mating with sex-specific survival rate.
+ Exceptions exist in cases with more than one offspring or sexual mating
+ with sex-specific survival rate.
  simuPOP provides both selection implementations and you should choose one
  of them for your particular simulation.
 \end_layout
@@ -16690,7 +16599,11 @@ MEAN
 \family typewriter
 MINIMUM
 \family default
-, MAXIMUM,
+, 
+\family typewriter
+MAXIMUM
+\family default
+,
 \family typewriter
  SUMMATION
 \family default
@@ -18961,7 +18874,17 @@ simu.evolve(
 
 \begin_layout Plain Layout
 
-    ops = [sel], # and other operators
+    preOps=[sel], # and other operators
+\end_layout
+
+\begin_layout Plain Layout
+
+    matingScheme=randomMating(),
+\end_layout
+
+\begin_layout Plain Layout
+
+    gen=10
 \end_layout
 
 \begin_layout Plain Layout
@@ -19124,64 +19047,6 @@ snapshot_5_20.pop
 LatexCommand lstinputlisting
 filename "log/savePopulation.log"
 lstparams "caption={Save snapshots of an evolving population},label={savePopulation}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Change ancestral depth of populations (operator 
-\family typewriter
-setAncestralDepth
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "twoStage"
-
-\end_inset
-
- describes a two-stage evolutionary process where a random mating scheme
- is used in the first stage and another mating scheme is used in the second
- stage to prepare for pedigree ascertainment.
- The ancestral depth of each population is changed to 1 before the second
- 
-\family typewriter
-simulator.evolve
-\family default
- call.
- This step can also be done using a 
-\family typewriter
-setAncestralDepth
-\family default
- operator, which simply set the ancestral depth of each population to a
- given depth (please refer to class 
-\family typewriter
-population
-\family default
- for a detailed explanation for 
-\emph on
-ancetral depth
-\emph default
-).
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "setAncDepth"
-
-\end_inset
-
- demonstrates a tpical usage of this operator.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/setAncDepth.log"
-lstparams "caption={Change ancestral depth during the evolution},label={setAncDepth}"
 
 \end_inset
 
@@ -19469,7 +19334,7 @@ turnOffDebug
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/debug.log"
-lstparams "caption={Turn on and off debug information during evolution.},label={debug},lastline=17"
+lstparams "caption={Turn on and off debug information during evolution.},label={debug},lastline=25"
 
 \end_inset
 
@@ -20817,7 +20682,148 @@ lstparams "caption={Simulation and use of backward-time simulated trajectories.}
 \end_layout
 
 \begin_layout Subsection
-Progress bar
+Graphical or text-based progress bar (class 
+\family typewriter
+simuProgress
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+If your simulation takes a while to finish, you could use a progress bar
+ to indicate its progress.
+ The 
+\family typewriter
+simuProgress
+\family default
+ class is provided for such a purpose.
+ Basically, you create a 
+\family typewriter
+simuProgress
+\family default
+ project with intended total steps, and calls its 
+\family typewriter
+update
+\family default
+ member function with each progress.
+ Depending on available graphical toolkit and the global or local GUI settings,
+ a 
+\family typewriter
+wxPython
+\family default
+ based dialog, a 
+\family typewriter
+Tkinter
+\family default
+ based dialog, or a text-based dialog will be used.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simuProgress"
+
+\end_inset
+
+ demonstrates how to use a text-based progress bar.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simuProgress.log"
+lstparams "caption={Using a text-based progress bar},label={simuProgress}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Display population variables (function 
+\family typewriter
+ViewVars
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+If a population has a large number of variables, or if you are not sure
+ which variable to output, you could use function 
+\family typewriter
+ViewVars
+\family default
+ to view the population variables in a tree form.
+ If wxPython is available, a dialog could be used to view the variables
+ interactively.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "viewVars"
+
+\end_inset
+
+ demonstrates how to use this function.
+ The wxPython-based dialog is displayed in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "viewVars"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/viewVars.py"
+lstparams "caption={Using function ViewVars to display population variables},label={viewVars}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:viewvars"
+
+\end_inset
+
+Using wxPython to display population variables
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figures/viewVars.png
+	lyxscale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Export simuPOP population in csv format (function 
+\family typewriter
+SaveCSV
+\family default
+)
 \end_layout
 
 \begin_layout Section
