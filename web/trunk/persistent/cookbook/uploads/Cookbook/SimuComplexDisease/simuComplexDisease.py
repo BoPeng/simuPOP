@@ -136,6 +136,7 @@ You can add more stat() operator if you need to preserve more information.
 import os, sys, exceptions, types, math
 import simuOpt
 from simuPOP import *
+from simuPOP import utils
 
 #
 # declare all options. getParam will use these information to get parameters
@@ -591,7 +592,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ### 
     print '\n\nSimulating trajectory of allele frequencies'
     # 1. define population size function
-    def popSizeFunc(gen, curSize=[]):
+    def popSizeFunc(gen):
         if gen < burninGen:
             return [initSize]
         if growthModel == 'linear':
@@ -614,7 +615,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     elif maxMutAge > endingGen:
         print 'maxMutAge should be smaller than endingGen, set it to endingGen.'
         maxMutAge = endingGen
-    traj = utils.BackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
+    traj = utils.simulateBackwardTrajectory(popSizeFunc, fitness=fitness, nLoci=len(DSLafter),
         endGen=endingGen, endFreq=curAlleleFreq, minMutAge=minMutAge,
         maxMutAge=maxMutAge)
     #
@@ -782,39 +783,32 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     except:
         pass
     #
-    # start simulation.
-    simu = simulator( pop, 
-        controlledRandomMating(
+    # evolve! If --dryrun is set, only show info
+    pop.evolve( initOps = initOperators, preOps = preOperators, postOps = postOperators,
+        matingScheme = controlledRandomMating(
             subPopSize=popSizeFunc,            # demographic model
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
             freqFunc=traj.func(),                                # frequency control function
             ops = [rec, parentsTagger()],
         ),
-        rep=1)
-    # evolve! If --dryrun is set, only show info
-    simu.evolve( initOps = initOperators, preOps = preOperators, postOps = postOperators,
-        gen=endingGen-savedGen, dryrun=dryrun )
-    if dryrun:
-        raise exceptions.SystemError("Stop since in dryrun mode.")
+        gen=endingGen-savedGen)
     # prepare for the last several generations
     # change mating scheme to random mating.
     #
     # save saveGen-1 ancestral generations
-    simu.population(0).setAncestralDepth(savedGen-1)
-    simu.setMatingScheme(
-        randomMating(
+    pop.setAncestralDepth(savedGen-1)
+    # different evolution method for the last few generations
+    pop.evolve(preOps = preOperators, postOps = postOperators,
+        matingScheme = randomMating(
             subPopSize=popSizeFunc,            # demographic model
             numOffspring = ({'constant': NumOffspring, 
                     'geometric': GeometricDistribution
                    }[numOffMode], numOffspring),
             ops = [rec, parentsTagger()],
-        )
-    )
-    # different evolution method for the last few generations
-    simu.evolve(preOps = preOperators, postOps = postOperators, end=endingGen)
+        ),
+        end=endingGen)
     # succeed save information
-    pop = simu.population(0)
     # we want to save info on how this population is generated.
     # This is not required but is a good practise
     pop.dvars().DSLafter = DSLafter

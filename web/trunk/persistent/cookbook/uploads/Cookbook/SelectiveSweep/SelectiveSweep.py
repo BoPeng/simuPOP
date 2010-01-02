@@ -18,10 +18,10 @@ except:
 else:
     useRPy = True
         
-def I2k(pop, loci):
+def I2k(pop, param):
     #Stat(pop, alleleFreq=loci)
     I2k ={}
-    for loc in loci:
+    for loc in param:
         #print pop.dvars().alleleFreq[loc].values()[0]
         I2k[loc] = sum([x*x for x in pop.dvars().alleleFreq[loc].values()])
         #print I2k
@@ -43,7 +43,6 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
             ind.setAllele(0, 1, ploidy=0)
             ind.setAllele(0, 1, ploidy=1)
 
-    simu = simulator(pop, randomMating(ops=recombinator(rates=r)))
 
     selLocus = 1
 
@@ -56,7 +55,7 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
         
     a=[]
 
-    g = simu.evolve(
+    g = pop.evolve(
         initOps = initSex(),
         preOps = [
             stat (alleleFreq=[selLocus]),
@@ -68,6 +67,7 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
             maSelector (loci = selLocus, fitness = [1, 1.+2*eta*0.05, 1+2*0.05]),
             stat (alleleFreq=[selLocus]),
         ],
+        matingScheme = randomMating(ops=recombinator(rates=r)),
         postOps = [
             #dumper(),
             stat(alleleFreq=[0,1]),
@@ -77,13 +77,9 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
             #plotter,
             #pause(at=gen-1)
         ],
-
-    #dryrun=True,
-    gen = gen
+        gen = gen
     )
-    
-    
-    return simu.dvars(0).I2k[0], simu.dvars(0).alleleFreq[1][1], g[0]
+    return pop.dvars().I2k[0], pop.dvars().alleleFreq[1][1], g
 
 if __name__ == '__main__':
     #resFile = open('result.txt', 'w')

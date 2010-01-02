@@ -46,11 +46,7 @@ def simuPodMating(numPods, podSize):
     InitByFreq(pop, [0.2, 0.8])
     pop.setIndInfo([x for z in range(numPods) for x in [z]*podSize], 'pod')
     pop.setVirtualSplitter(infoSplitter('pod', range(numPods)))
-
-    simu = simulator(pop, homoMating(
-        pyParentsChooser(podParentsChooser),
-        offspringGenerator(numOffspring=1, ops=mendelianGenoTransmitter())))
-    simu.evolve(
+    pop.evolve(
         initOps = [
             initSex(),
             initByFreq([0.5, 0.5])
@@ -58,7 +54,11 @@ def simuPodMating(numPods, podSize):
             # calculate size of pods
         preOps = stat(popSize=True, subPops=[(0,x) for x in range(numPods)]),
             # offspring stays with their natal pod
-        duringOps = inheritTagger(mode=MATERNAL, infoFields='pod'),
+        matingScheme = homoMating(
+            pyParentsChooser(podParentsChooser),
+            offspringGenerator(numOffspring=1, ops=[
+                mendelianGenoTransmitter(),
+                inheritTagger(mode=MATERNAL, infoFields='pod')])),
         postOps = [
             # print size of each pod
             pyEval(r"'Size of pods: %s\n' % (','.join(['%d' % x for x in subPopSize]))")

@@ -54,15 +54,16 @@ def simuSpatial():
         for j in range(10):
             xy.append((i, j))
     r = spatialMigrRates(xy, 3)
-    simu = simulator(population(size=[100]*100, loci=[1],
-        infoFields='migrate_to'), randomSelection())
-    simu.evolve(
+    pop = population(size=[100]*100, loci=[1],
+        infoFields='migrate_to')
+    pop.evolve(
         # only subpopulation 55 has genotype 1, 1
         initOps = [
             initSex(),
             initByValue([1, 1], subPops=55),
         ],
         preOps = migrator(rate=r),
+        matingScheme = randomSelection(),
         postOps = pyOperator(printAlleleFreq, at=3),
         gen = 10
     )

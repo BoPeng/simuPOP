@@ -247,7 +247,7 @@ def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bott
     after burnin, split the population at generation split.
     '''
     inc = (endSize-initSize)/float(end-burnin)
-    def func(gen, oldSize=[]):
+    def func(gen):
         if gen == bottleneckGen:
             if gen < split:
                 return [bottleneckSize]
@@ -274,7 +274,7 @@ def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1,
     after burnin, split the population at generation split.
     '''
     rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
-    def func(gen, oldSize=[]):
+    def func(gen):
         if gen == bottleneckGen:
             if gen < split:
                 return [bottleneckSize]
@@ -298,7 +298,7 @@ def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bot
     Instaneously expand population size from intiSize to endSize
     after burnin, split the population at generation split.
     '''
-    def func(gen, oldSize=[]):
+    def func(gen):
         if gen == bottleneckGen:
             if gen < split:
                 return [bottleneckSize]
@@ -531,17 +531,11 @@ def simuCDCV(numDSL, initSpec, selModel,
     #
     # create a simulator, if not in resume mode
     if resume == '':
-        simu = simulator(     
-            population(size=incFunc(0), loci=[1]*(numDSL),
-                infoFields=['fitness']),    
-            randomMating(subPopSize=incFunc)
-        )
+        pop = population(size=incFunc(0), loci=[1]*(numDSL), infoFields=['fitness'])
     else:
         try:
             print "Resuming simulation from file ", resume, " at generation ", resumeAtGen
             pop = LoadPopulation(resume)
-            simu = simulator(pop, randomMating(subPopSize=incFunc))
-            simu.setGen(resumeAtGen)
         except exceptions.Exception, e:
             print "Can not resume from population "+ resume + ". Aborting."
             raise e
@@ -564,9 +558,9 @@ def simuCDCV(numDSL, initSpec, selModel,
                 sel.append(maSelector(loci=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
         # now, the whole selector
         if selModelAllDSL == 'additive':
-            selection = mlSelector(sel, mode=Additive)
+            selection = mlSelector(sel, mode=ADDITIVE)
         elif selModelAllDSL == 'multiplicative':
-            selection = mlSelector(sel, mode=Multiplicative)
+            selection = mlSelector(sel, mode=MULTIPLICATIVE)
     # migration
     if numSubPop == 1 or migrModel == 'none':
         # no migration
@@ -603,7 +597,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     NeMax = 0
     FMax = 0
     # start evolution
-    simu.evolve(                            # start evolution
+    pop.evolve(                            # start evolution
         initOps=
             [initSex()] + 
             # initialize DSL 
@@ -619,6 +613,7 @@ def simuCDCV(numDSL, initSpec, selModel,
             # migration
             migration, 
         ],
+        matingScheme = randomMating(subPopSize=incFunc),
         postOps = [         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
@@ -644,7 +639,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     )
     #
     if savePop != '':
-        simu.population(0).savePopulation(savePop)
+        pop.savePopulation(savePop)
 
 
 if __name__ == '__main__':

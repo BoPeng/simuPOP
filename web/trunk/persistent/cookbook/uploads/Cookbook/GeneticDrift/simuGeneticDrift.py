@@ -55,7 +55,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
     # diploid population, one chromosome with 1 locus
     # random mating with sex
     pop = population(size=popSize, loci=[1])
-    simu=simulator(pop, randomMating(), rep=replications)
+    simu=simulator(pop, rep=replications)
 
     if useRPy:
         plotter = varPlotter('alleleFreq[0][0]', ylim=[0, 1], ylab='allele frequency',
@@ -79,6 +79,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
             initSex(),
             initByFreq([p, 1-p])
         ],
+        matingScheme = randomMating(),
         postOps = [
             stat(alleleFreq=[0]),
             pyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),

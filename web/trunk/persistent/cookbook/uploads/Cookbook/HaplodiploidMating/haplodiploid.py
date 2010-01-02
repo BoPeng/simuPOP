@@ -87,7 +87,7 @@ def haplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
     return homoMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
-            [haplodiploidRecombinator(rates, intensity, loci, convMode)],
+            [haplodiploidRecombinator(rates, intensity, loci, convMode)] + ops,
             numOffspring, sexMode),
         subPopSize = subPopSize,
         subPops = subPops,
@@ -107,19 +107,20 @@ def simuHaplodiploid(N, numMito=3, gen=10):
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 
-    simu = simulator(pop, haplodiploidRecMating(rates=0.1))
-
-    simu.evolve(
+    pop.evolve(
         initOps=[
             initSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
             initByFreq([0.4] + [0.2]*3),
         ],
-        duringOps = parentsTagger(),
+        matingScheme = haplodiploidRecMating(rates=0.1,
+            # this operator is appended, instead of replace the haplodiploid
+            # recombinator
+            ops = [parentsTagger()]),
         postOps = dumper(structure=False),
         gen = gen
     )
-    return simu.extract(0)
+    return pop
 
 
 if __name__ == '__main__':

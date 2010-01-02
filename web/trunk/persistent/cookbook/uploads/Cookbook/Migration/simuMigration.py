@@ -64,7 +64,6 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
     # Therefore, the average allele frequency named theoretical value among all subpopulations will be 0.5
     for i in range(numOfSubPops):
         InitByFreq(pop, [i*1./(numOfSubPops-1), 1 - i*1./(numOfSubPops-1)], subPops=[i])
-    simu = simulator(pop, randomMating())
 
     # check if plot
     if useRPy:
@@ -92,13 +91,14 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
         s = 10
     else:
         s = 20
-    simu.evolve(
+    pop.evolve(
         initOps = initSex(),
         preOps = [
             stat(alleleFreq=[0], vars=['alleleFreq_sp']), 
             pyEval(r'"Frequency at generation %d: %s\n" % (gen, ", ".join(["%.2f" % x for x in freq]))',
                 stmts = 'freq = [subPop[x]["alleleFreq"][0][0] for x in range(%i)]' % numOfSubPops, step = s),
         ],
+        matingScheme = randomMating(),
         postOps = [
             migrator(rate = a),
             plotter,

@@ -66,16 +66,16 @@ if not par.getParam():
 # random mating with sex
 pop = population(size=popSize, ploidy=2, loci=[1])
 pop.setVirtualSplitter(sexSplitter())
-simu = simulator(pop, randomMating())
 
 # simulation
 print "p\tP00 (p^2)\tP01 (2p(1-p))\tP11 ((1-p)^2)"
-simu.evolve(
+pop.evolve(
     initOps = [
         initSex(),
         initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
     ],
+    matingScheme = randomMating(),
     postOps = [
         stat(alleleFreq=[0], genoFreq=[0]),
         pyEval(r"'%.3f\t%.3f (%.3f)\t%.3f (%.3f)\t%.3f (%.3f)\n' % (alleleFreq[0][0], "\

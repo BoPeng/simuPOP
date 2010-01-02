@@ -28,8 +28,9 @@ def simuRestartIfFailed(N, initFreq, freqRange, gen, genCheck):
     # used in an expression
     pop.dvars().fr = freqRange
     while True:
-        simu = simulator(pop, randomMating())
+        simu = simulator(pop, steal=False)
         evolved = simu.evolve(
+            matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0], at=genCheck),
                 terminateIf('alleleFreq[0][1] > fr[1] or alleleFreq[0][1] < fr[0]',

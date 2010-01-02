@@ -91,12 +91,13 @@ def simu(N):
     # you can also use a PointerMutator ...
     pop.individual(0).setAllele(2,0)
     pop.individual(0).setAllele(2,1)
-    simu = simulator(pop, randomMating())
-    simu.evolve(
-        duringOps = pyOperator(func=offGen),
+    pop.evolve(
+        matingScheme = randomMating(ops=[
+            mendelianGenoTransmitter(),
+            pyOperator(func=offGen)]),
         postOps = pyOperator(func=allTwos),
     )
-    return (simu.dvars(0).succ, simu.gen())
+    return (pop.dvars().succ, pop.dvars().gen)
 
 if __name__ == '__main__':
     pars = simuOpt.simuParam(options,

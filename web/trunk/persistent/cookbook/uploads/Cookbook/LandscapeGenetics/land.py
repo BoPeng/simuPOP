@@ -52,18 +52,6 @@ def geoChooser(pop, sp):
         if len(g2Cases)==0: continue
         yield g1Idx, g2Cases[randint(0,len(g2Cases)-1)]
 
-#DISTANCE MATING
-sim = simulator(
-    pop,
-    #randomMating(subPopSize=[POPSIZE]),
-    homoMating(
-        pyParentsChooser(geoChooser),
-        offspringGenerator(ops=mendelianGenoTransmitter()),#numOffspring=(UniformDistribution, 2, 4)),
-        subPopSize=[POPSIZE]
-    ),
-    rep=1
-)
-
 
 def dmp(pop):
     print "pSize", pop.popSize()    
@@ -164,7 +152,7 @@ def killUnfit(pop):
 
 
 
-sim.evolve(
+pop.evolve(
     initOps = [
         initByFreq(alleleFreq=[1,0])
     ],
@@ -172,7 +160,13 @@ sim.evolve(
         pyOperator(killUnfit),
         kamMutator(k=2, rates=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2)),
     ],
-    duringOps = pyOperator(placeIndividual),
+    matingScheme = homoMating(
+        pyParentsChooser(geoChooser),
+        offspringGenerator(ops=[
+            mendelianGenoTransmitter(),#numOffspring=(UniformDistribution, 2, 4)),
+            pyOperator(placeIndividual)]),
+        subPopSize=[POPSIZE]
+    ),
     postOps = pyOperator(dmp),
     gen = 1000
 )

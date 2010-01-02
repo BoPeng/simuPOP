@@ -48,13 +48,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     pop.setVirtualSplitter(genotypeSplitter(loci=0,
         alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]))
 
-    # Negative weight means fixed size (weight * current subpopulation size).
-    # In the case of no positive weight, zero weights means proportional to
-    # parental (virtual) subpopulation size.
-    simu = simulator(pop, heteroMating([randomMating(weight = -1*w),
-        randomMating(subPops=[(0, x) for x in vsp], weight = 0)]))
-    #
-    simu.evolve(
+    pop.evolve(
         initOps = [
             initSex(),
             initByFreq([0.5, 0.5]),
@@ -62,6 +56,11 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
             ],
             # calculate virtual population sizes, and allele frequency at locus 0.
         preOps = stat(popSize=True, alleleFreq=[0], subPops=[(0,0), (0,1), (0,2)]),
+        # Negative weight means fixed size (weight * current subpopulation size).
+        # In the case of no positive weight, zero weights means proportional to
+        # parental (virtual) subpopulation size.
+        matingScheme = heteroMating([randomMating(weight = -1*w),
+            randomMating(subPops=[(0, x) for x in vsp], weight = 0)]),
         postOps = [
             # print size of virtual populations and allele frequency
             pyEval(r"'#inds with genotype AA %4d, Aa %4d, aa %4d, freq of A: %.1f\n' % "
@@ -71,7 +70,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
         ],
         gen = gen
     )
-    return simu.dvars(0).AaNum
+    return pop.dvars().AaNum
 
 
 if __name__ == '__main__':

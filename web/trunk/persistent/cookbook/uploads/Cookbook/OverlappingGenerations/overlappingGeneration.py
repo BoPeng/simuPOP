@@ -47,19 +47,18 @@ def simuOverlappingGeneration(size, maxAge, minMatingAge, maxMatingAge, gen):
     pop.setVirtualSplitter(infoSplitter('age',
         cutoff=[minMatingAge, maxMatingAge + 0.1, maxAge + 0.1]))
     #
-    simu = simulator(pop, heteroMating(
-        # age <= maxAge, copy to the next generation (weight=-1)
-        [cloneMating(subPops=[(0, x) for x in (0, 1, 2)], weight=-1),
-        # random mating for individuals in mating ages
-        randomMating(subPops=[(0, 1)])])
-    )
-    simu.evolve(
+    pop.evolve(
         initOps = [
             initSex(),
             initByFreq([0.5, 0.5])
         ],
             # increase age by 1
         preOps = infoExec('age += 1'),
+        matingScheme = heteroMating(
+            # age <= maxAge, copy to the next generation (weight=-1)
+            [cloneMating(subPops=[(0, x) for x in (0, 1, 2)], weight=-1),
+            # random mating for individuals in mating ages
+            randomMating(subPops=[(0, 1)])]),
         postOps = [
             # count the individuals in each virtual subpopulation
             stat(popSize=True, subPops=[(0,0), (0,1), (0,2), (0,3)]),

@@ -15,21 +15,22 @@ def recordTrajectory(N, initFreq, gen):
     Evolve a population gen generations and record its allele
     frequency trajectory.
     '''
-    simu = simulator(population(N, loci=[1]), randomMating())
-    simu.evolve(
+    pop = population(N, loci=[1])
+    pop.evolve(
         initOps = [
             initSex(),
             initByFreq([1 - initFreq, initFreq]),
             # initialize an array in the population's local namespace
             pyExec('traj=[]')
         ],
+        matingScheme = randomMating(),
         postOps = [
             stat(alleleFreq=[0]),
             pyExec('traj.append(alleleFreq[0][1])'),
         ],
         gen = gen
     )
-    return simu.dvars(0).traj
+    return pop.dvars().traj
 
 
 def simuFollowTrajectory(N, locus, initFreq, traj):
@@ -42,9 +43,7 @@ def simuFollowTrajectory(N, locus, initFreq, traj):
     def func(gen):
         return traj[gen]
     #
-    simu = simulator(
-        population(size=N, loci=[100]), # a larger simulation
-        controlledRandomMating(loci=locus, alleles=1, freqFunc=func),
+    simu = simulator(population(size=N, loci=[100]), # a larger simulation
         rep = 5
     )
     simu.evolve(
@@ -52,6 +51,7 @@ def simuFollowTrajectory(N, locus, initFreq, traj):
             initSex(),
             initByFreq([1 - initFreq, initFreq])
         ],
+        matingScheme = controlledRandomMating(loci=locus, alleles=1, freqFunc=func),
         postOps = [stat(alleleFreq=[locus], at=-1)],
         gen = len(traj)
     )

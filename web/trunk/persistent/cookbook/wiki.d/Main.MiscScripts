@@ -1,16 +1,19 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.15) Gecko/2009101601 Firefox/3.0.15 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1260998504
 host=127.0.0.1
 name=Main.MiscScripts
-rev=3
-targets=Main.CaseControlPower
-text=(:title Miscellaneous topics:)%0a%0a!! A power calculator for case control association studies with known family history or cases and/or controls.%0a%0aScript [[ caseControlPower | caseControlPower.py]] calculates statistical power of case control association studies with known family histories. It makes use of simuPOP's simuOpt module for its graphical user interface and simuPOP.gsl module for probability functions.
-time=1261000246
+rev=4
+targets=Cookbook.CaseControlPower
+text=(:title Miscellaneous topics:)%0a%0a!! A power calculator for case control association studies with known family history or cases and/or controls.%0a%0aScript [[ Cookbook/caseControlPower | caseControlPower.py]] calculates statistical power of case control association studies with known family histories. It makes use of simuPOP's simuOpt module for its graphical user interface and simuPOP.gsl module for probability functions.
+time=1262470191
 title=Miscellaneous topics
+author:1262470191=
+diff:1262470191:1261000246:=5c5%0a%3c Script [[ Cookbook/caseControlPower | caseControlPower.py]] calculates statistical power of case control association studies with known family histories. It makes use of simuPOP's simuOpt module for its graphical user interface and simuPOP.gsl module for probability functions.%0a\ No newline at end of file%0a---%0a> Script [[ caseControlPower | caseControlPower.py]] calculates statistical power of case control association studies with known family histories. It makes use of simuPOP's simuOpt module for its graphical user interface and simuPOP.gsl module for probability functions.%0a\ No newline at end of file%0a
+host:1262470191=127.0.0.1
 author:1261000246=
 diff:1261000246:1261000141:=3,5c3%0a%3c !! A power calculator for case control association studies with known family history or cases and/or controls.%0a%3c %0a%3c Script [[ caseControlPower | caseControlPower.py]] calculates statistical power of case control association studies with known family histories. It makes use of simuPOP's simuOpt module for its graphical user interface and simuPOP.gsl module for probability functions.%0a\ No newline at end of file%0a---%0a> !! A power calculator for case control association studies with known family history or cases and/or controls. [[ caseControlPower | caseControlPower.py]]%0a\ No newline at end of file%0a
 host:1261000246=127.0.0.1

@@ -84,7 +84,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
     # random mating with sex
     simu = simulator(
         population(size=popSize, ploidy=2, loci=[2]),
-        randomMating(ops=recombinator(rates = recRate)), rep = numRep)
+        rep = numRep)
 
     # get method value used to plot and evolve
     if method=="D'":
@@ -115,6 +115,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
             initSex(),
             initByValue([0,1,1,0])
         ],
+        matingScheme = randomMating(ops=recombinator(rates = recRate)), 
         postOps = [
             stat(alleleFreq=[0], LD=[0, 1]),
             pyEval(methodeval),
