@@ -3991,7 +3991,7 @@ for idx in range(pop.popSize()):
 #begin_file log/viewVars.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, gui=False)
 #end_ignore
 import simuPOP as sim
 #begin_ignore

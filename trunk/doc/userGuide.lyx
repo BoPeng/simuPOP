@@ -19295,9 +19295,11 @@ Using wxPython to display population variables
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figures/viewVars.png
 	lyxscale 30
+	width 60text%
 
 \end_inset
 
