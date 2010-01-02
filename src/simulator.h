@@ -180,20 +180,9 @@ public:
 	}
 
 
-	/** This function takes the same parameters as \c simulator.evolve and
-	 *  output a description of how an evolutionary process will be executed,
-	 *  basically by calling the \c describe() function of all operators. It
-	 *  is recommended that you call this function if you have any doubt how
-	 *  your simulation will proceed.
-	 *  <group>2-evolve</group>
+	/** CPPONLY Describe a simulator.
 	 */
-	string describe(
-		const opList & initOps = opList(),
-		const opList & preOps = opList(),
-		const mating & matingScheme = mating(),
-		const opList & postOps = opList(),
-		const opList & finalOps = opList(),
-		int gen = -1);
+	string describe(bool format=true);
 
 	/** Evolve all populations \e gen generations, subject to several lists of
 	 *  operators which are applied at different stages of an evolutionary
@@ -283,6 +272,21 @@ private:
 #endif
 
 };
+
+/** This function takes the same parameters as \c simulator.evolve and
+ *  output a description of how an evolutionary process will be executed,
+ *  basically by calling the \c describe() function of all operators. It
+ *  is recommended that you call this function if you have any doubt how
+ *  your simulation will proceed.
+ */
+string Describe(
+    const opList & initOps = opList(),
+    const opList & preOps = opList(),
+    const mating & matingScheme = mating(),
+    const opList & postOps = opList(),
+    const opList & finalOps = opList(),
+    int gen = -1,
+	UINT numRep = 1);
 
 }
 

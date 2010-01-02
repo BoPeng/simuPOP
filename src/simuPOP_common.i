@@ -359,10 +359,8 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     population, call its \e evolve function using passed parameters and then
     replace the current population with the evolved population. Please refer to
     function \c simulator.evolve for more details about each parameter. '''
-    # create a simulator with small population
-    simu = simulator(population())
-    # swap the population into the simulator to avoid cloning a large population (self)
-    self.swap(simu.population(0))
+    # create a simulator with self
+    simu = simulator(self)
     # evolve
     gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
     # get the evolved population

@@ -51,6 +51,7 @@ class TestTagger(unittest.TestCase):
             initOps = [initSex()],
             matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
             gen = 1)
+        pop = simu.population(0)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
@@ -75,6 +76,7 @@ class TestTagger(unittest.TestCase):
             matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
             gen = 1
         )
+        pop = simu.extract(0)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
