@@ -239,8 +239,6 @@ class MyRestWriter(RestWriter):
 # the user's guide (http://simupop.sourceforge.net/manual) for a detailed
 # description of this example.
 #
-
-from simuPOP import *
 ''' % outfilename
                 print >> outfile, txt
             # insert a URL
