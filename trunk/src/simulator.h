@@ -180,7 +180,7 @@ public:
 	}
 
 
-	/** CPPONLY Describe a simulator.
+	/** CPPONLY describe a simulator.
 	 */
 	string describe(bool format = true);
 
@@ -279,7 +279,7 @@ private:
  *  is recommended that you call this function if you have any doubt how
  *  your simulation will proceed.
  */
-string Describe(
+string describe(
 	const opList & initOps = opList(),
 	const opList & preOps = opList(),
 	const mating & matingScheme = mating(),

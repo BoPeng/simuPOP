@@ -1568,7 +1568,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
 				double Dp = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
 				double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
-				// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
+				// if turnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 				DBG_DO(DBG_STATOR, cerr << "P_AB: " << P_AB
 					                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 					" LD: " << D << " LD': " << Dp << " r2: " << r2 << endl);
@@ -1606,7 +1606,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 						// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
 						double Dp = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
 						double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
-						// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
+						// if turnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 						DBG_DO(DBG_STATOR, cerr << "P_AB: " << P_AB
 							                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
 							" LD: " << D << " LD': " << Dp << " r2: " << r2 << endl);

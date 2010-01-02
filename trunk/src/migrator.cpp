@@ -160,11 +160,11 @@ bool migrator::apply(population & pop)
 					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
 			}
 		} else if (m_mode == BY_PROBABILITY) {
-			weightedSampler ws(GetRNG(), m_rate[from]);
+			weightedSampler ws(getRNG(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
 			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
-				//toIndex = GetRNG().randIntByFreq( rateSize, &m_rate[from][0] ) ;
+				//toIndex = getRNG().randIntByFreq( rateSize, &m_rate[from][0] ) ;
 				toIndex = ws.get();
 
 				DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
@@ -203,7 +203,7 @@ bool migrator::apply(population & pop)
 			while (k < spSize)
 				toIndices[k++] = spFrom;
 
-			GetRNG().randomShuffle(toIndices.begin(), toIndices.end());
+			getRNG().randomShuffle(toIndices.begin(), toIndices.end());
 			IndIterator ind = pop.indIterator(spFrom);
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
@@ -259,7 +259,7 @@ bool splitSubPops::apply(population & pop)
 
 		// randomize indiviudlas
 		if (m_randomize) {
-			GetRNG().randomShuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
+			getRNG().randomShuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
 			pop.setIndOrdered(false);
 		}
 

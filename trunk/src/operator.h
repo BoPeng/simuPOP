@@ -805,7 +805,7 @@ private:
  *  operator \e op to \e dad, \e mom and \e off of population \e pop.
  *  If index of dad or mom is negative, NULL will be passed.
  */
-void ApplyDuringMatingOperator(const baseOperator & op,
+void applyDuringMatingOperator(const baseOperator & op,
 	population * pop, int dad, int mom, ULONG off);
 
 }

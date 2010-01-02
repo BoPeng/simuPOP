@@ -428,7 +428,7 @@ int simulator::__cmp__(const simulator & rhs) const
 }
 
 
-string Describe(const opList & initOps,
+string describe(const opList & initOps,
                 const opList & preOps,
                 const mating & matingScheme,
                 const opList & postOps,

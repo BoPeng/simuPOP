@@ -40,7 +40,7 @@ class TestGenoStru(unittest.TestCase):
             alleleNames=[['1', 'x'], ['2', 'a'], ['3', 'y', 'z'], ['4', 'b'], ['5', 'd'], ['6', 'c']])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
         self.assertEqual(pop.alleleNames(0), ('1', 'x'))
-        if ModuleInfo()['alleleType'] == 'binary':
+        if moduleInfo()['alleleType'] == 'binary':
             self.assertEqual(pop.alleleNames(1), ('3', 'y'))
         else:
             self.assertEqual(pop.alleleNames(1), ('3', 'y', 'z'))
@@ -57,12 +57,12 @@ class TestGenoStru(unittest.TestCase):
         arr[:] = [0, 1, 2]*4
         # can print
         # expression
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(str(arr), "[0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]")
         else:
             self.assertEqual(str(arr), "[0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]")
         # count
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr[5], 2)
             self.assertEqual(arr.count(2), 4)
         else:
@@ -70,7 +70,7 @@ class TestGenoStru(unittest.TestCase):
             self.assertEqual(arr.count(2), 0)
             self.assertEqual(arr.count(1), 8)
         arr[0] = 1
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr.count(1), 5)
         else:
             self.assertEqual(arr.count(1), 9)
@@ -80,38 +80,38 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(arr.index(1), 0)
         # can read write
         arr[3] = 3
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr[3], 3)
         else:
             self.assertEqual(arr[3], 1)
         # convert to list
         arr[:] = [0, 1, 2]*4
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr.tolist(), [0, 1, 2]*4)
         else:
             self.assertEqual(arr.tolist(), [0, 1, 1]*4)
             self.assertNotEqual(arr.tolist(), [0, 1, 2]*4)
         # convert to list
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr, [0, 1, 2]*4)
         else:
             self.assertEqual(arr, [0, 1, 1]*4)
         # slice
         arr[:] = [0, 1, 2]*4
         arr1 = arr[:3]
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr1, [0, 1, 2])
         else:
             self.assertEqual(arr1, [0, 1, 1])
         arr1 = arr[3:5]
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr1, [0, 1])
         else:
             self.assertEqual(arr1, [0, 1])
         # assign slice
         arr1[:] = 5
         # IMPORTANT NOTE that arr will also be affected
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr1, [5, 5] )
             self.assertEqual(arr, [0, 1, 2, 5, 5, 2, 0, 1, 2, 0, 1, 2])
         else:
@@ -120,13 +120,13 @@ class TestGenoStru(unittest.TestCase):
         # assign vector
         arr1[:] = [0, 0]
         self.assertEqual(arr1, [0, 0] )
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr, [0, 1, 2, 0, 0, 2, 0, 1, 2, 0, 1, 2])
         else:
             self.assertEqual(arr, [0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1])
         # assign from another part
         arr[:6] = arr[6:12]
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(arr, [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2])
         else:
             self.assertEqual(arr, [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1])
@@ -250,7 +250,7 @@ class TestGenoStru(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.alleleName(0), '_')
         self.assertEqual(pop.alleleName(1), 'A')
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(pop.alleleName(2), 'C')
             self.assertEqual(pop.alleleName(3), 'T')
             self.assertEqual(pop.alleleName(4), 'G')
@@ -258,7 +258,7 @@ class TestGenoStru(unittest.TestCase):
         else:
             self.assertEqual(pop.alleleNames(), ('_', 'A'))
         self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
-            ModuleInfo()['maxAllele']+1)
+            moduleInfo()['maxAllele']+1)
         # test locus-specific allele names
         pop = population(size=[20, 80], ploidy=2, loci=[1, 2],
             alleleNames = [['A1', 'A2'], ['B1', 'B2', 'B3'], ['C1', 'C2', 'C3', 'C4']])
@@ -266,14 +266,14 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.alleleName(1), 'A2')
         self.assertEqual(pop.alleleName(0, 1), 'B1')
         self.assertEqual(pop.alleleName(1, 2), 'C2')
-        if ModuleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary':
             self.assertEqual(pop.alleleName(2), '2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2', 'B3'))
         else:
             self.assertEqual(pop.alleleName(1), 'A2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
         self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
-            ModuleInfo()['maxAllele']+1)
+            moduleInfo()['maxAllele']+1)
 
 
     def testInfoField(self):

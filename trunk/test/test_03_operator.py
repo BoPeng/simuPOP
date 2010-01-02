@@ -222,17 +222,17 @@ class TestOperator(unittest.TestCase):
         )
 
 
-    def testCloseOutput(self):
-        '''Testing global function CloseOutput'''
+    def testcloseOutput(self):
+        '''Testing global function closeOutput'''
         pop = population(100, loci=[2])
         Dump(pop, output='a.pop')
         size = len(open('a.pop').read())
-        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
         Dump(pop, output='>>a.pop')
-        CloseOutput('a.pop')
+        closeOutput('a.pop')
         self.assertEqual(len(open('a.pop').read()), size)
-        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
-        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'b.pop')
+        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
+        self.assertRaises(exceptions.RuntimeError, closeOutput, 'b.pop')
         Dump(pop, output='>>a.pop')
         Dump(pop, output='>>a.pop')
         self.assertEqual(len(open('a.pop').read()), size * 2)
@@ -240,8 +240,8 @@ class TestOperator(unittest.TestCase):
         Dump(pop, output='>>>a.pop')
         Dump(pop, output='>>>a.pop')
         self.assertEqual(len(open('a.pop').read()), size * 4)
-        CloseOutput('a.pop')
-        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+        closeOutput('a.pop')
+        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
         os.remove('a.pop')
 
 

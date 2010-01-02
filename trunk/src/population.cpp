@@ -2515,7 +2515,7 @@ void population::sortIndividuals(bool infoOnly) const
 }
 
 
-population & LoadPopulation(const string & file)
+population & loadPopulation(const string & file)
 {
 	population * p = new population();
 

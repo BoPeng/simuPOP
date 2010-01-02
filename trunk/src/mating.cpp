@@ -82,17 +82,17 @@ ULONG offspringGenerator::numOffspring(int gen)
 	}
 	switch (static_cast<int>(m_numOffspring[0])) {
 	case GEOMETRIC_DISTRIBUTION:
-		return GetRNG().randGeometric(m_numOffspring[1]);
+		return getRNG().randGeometric(m_numOffspring[1]);
 	case POISSON_DISTRIBUTION:
-		return GetRNG().randPoisson(m_numOffspring[1]) + 1;
+		return getRNG().randPoisson(m_numOffspring[1]) + 1;
 	case BINOMIAL_DISTRIBUTION:
-		return GetRNG().randBinomial(static_cast<UINT>(m_numOffspring[2]) - 1, m_numOffspring[1]) + 1;
+		return getRNG().randBinomial(static_cast<UINT>(m_numOffspring[2]) - 1, m_numOffspring[1]) + 1;
 	case UNIFORM_DISTRIBUTION:
 		// max: 5
 		// num: 2
 		// randint(4)  ==> 0, 1, 2, 3
 		// + 2 ==> 2, 3, 4, 5
-		return GetRNG().randInt(static_cast<UINT>(m_numOffspring[2]) - static_cast<UINT>(m_numOffspring[1]) + 1)
+		return getRNG().randInt(static_cast<UINT>(m_numOffspring[2]) - static_cast<UINT>(m_numOffspring[1]) + 1)
 		       + static_cast<UINT>(m_numOffspring[1]);
 	default:
 		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
@@ -111,9 +111,9 @@ Sex offspringGenerator::getSex(int count)
 	if (mode == NO_SEX)
 		return MALE;
 	else if (mode == RANDOM_SEX)
-		return GetRNG().randBit() ? MALE : FEMALE;
+		return getRNG().randBit() ? MALE : FEMALE;
 	else if (mode == PROB_OF_MALES)
-		return GetRNG().randUniform() < m_sexMode[1] ? MALE : FEMALE;
+		return getRNG().randUniform() < m_sexMode[1] ? MALE : FEMALE;
 	else if (mode == NUM_OF_MALES)
 		return count < static_cast<int>(m_sexMode[1]) ? MALE : FEMALE;
 	else if (mode == NUM_OF_FEMALES)
@@ -278,7 +278,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			// step 2: assign these alleles to each subpopulation according to a multi-nomial
 			// distribution with p_i beging allele frequency at each subpopulation.
 			// assign these numbers to each subpopulation
-			vectoru counts = GetRNG().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pop.ploidy()),
+			vectoru counts = getRNG().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pop.ploidy()),
 				curFreq);
 			for (size_t sp = 0; sp < counts.size(); ++sp)
 				m_expAlleles[numSP * i + sp] = counts[sp];
@@ -553,7 +553,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	}
 
 	if (!m_replacement)
-		GetRNG().randomShuffle(m_index.begin(), m_index.end());
+		getRNG().randomShuffle(m_index.begin(), m_index.end());
 
 	m_shift = pop.subPopBegin(sp);
 	m_initialized = true;
@@ -578,12 +578,12 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 			// basePtr points to the beginning of the population, not subpopulation
 			ind = &*(basePtr + m_shift + m_sampler.get());
 		else
-			ind = &*(basePtr + m_shift + GetRNG().randInt(m_size));
+			ind = &*(basePtr + m_shift + getRNG().randInt(m_size));
 	} else {
 		if (m_selection)
 			ind = &*(m_index[m_sampler.get()]);
 		else
-			ind = &*(m_index[GetRNG().randInt(m_size)]);
+			ind = &*(m_index[getRNG().randInt(m_size)]);
 	}
 	return individualPair(ind, NULL);
 }
@@ -635,8 +635,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	if (!m_replacement) {
 		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
 		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
-		GetRNG().randomShuffle(m_maleIndex.begin(), m_maleIndex.end());
-		GetRNG().randomShuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+		getRNG().randomShuffle(m_maleIndex.begin(), m_maleIndex.end());
+		getRNG().randomShuffle(m_femaleIndex.begin(), m_femaleIndex.end());
 	}
 
 	if (m_selection) {
@@ -686,8 +686,8 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 		dad = &*(m_maleIndex[m_malesampler.get()]);
 		mom = &*(m_femaleIndex[m_femalesampler.get()]);
 	} else {
-		dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
-		mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+		dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
+		mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
 	}
 	return std::make_pair(dad, mom);
 }
@@ -773,7 +773,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 		if (m_selection)
 			dad = &*(m_maleIndex[m_malesampler.get()]);
 		else
-			dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
+			dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
 
 		if (m_polySex == MALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -788,7 +788,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 		if (m_selection)
 			mom = &*(m_femaleIndex[m_femalesampler.get()]);
 		else
-			mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+			mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
 
 		if (m_polySex == FEMALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -885,8 +885,8 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 			m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
 		} else     // fix me, without replacement!
 			m_newAlphaIndex.push_back(
-				m_alphaSex == MALE ? m_maleIndex[GetRNG().randInt(m_numMale)]
-				: m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+				m_alphaSex == MALE ? m_maleIndex[getRNG().randInt(m_numMale)]
+				: m_femaleIndex[getRNG().randInt(m_numFemale)]);
 	}
 	if (m_alphaSex == MALE) {
 		m_maleIndex.swap(m_newAlphaIndex);
@@ -923,8 +923,8 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 		dad = &*(m_maleIndex[m_malesampler.get()]);
 		mom = &*(m_femaleIndex[m_femalesampler.get()]);
 	} else {
-		dad = &*(m_maleIndex[GetRNG().randInt(m_numMale)]);
-		mom = &*(m_femaleIndex[GetRNG().randInt(m_numFemale)]);
+		dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
+		mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
 	}
 
 	return std::make_pair(dad, mom);
@@ -998,7 +998,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
         m_size = m_index.size();
 
     if (!m_replacement)
-        GetRNG().randomShuffle(m_index.begin(), m_index.end());
+        getRNG().randomShuffle(m_index.begin(), m_index.end());
 
     DBG_FAILIF(!m_replacement && m_selection, ValueError,
         "Selection is not allowed in random sample without replacement");
@@ -1040,7 +1040,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
         }
     }
     DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
-    individual * par2 = validInds[GetRNG().randInt(validInds.size())];
+    individual * par2 = validInds[getRNG().randInt(validInds.size())];
     DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
                             << " par2: " << par2 - &*basePtr << endl);
     return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
@@ -1650,7 +1650,7 @@ bool heteroMating::mate(population & pop, population & scratch)
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
 			DBG_DO(DBG_MATING, cerr << "Random shuffle individuals in the offspring generation." << endl);
-			GetRNG().randomShuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
+			getRNG().randomShuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
 			scratch.setIndOrdered(false);
 		}
 	}                         // each subpopulation.

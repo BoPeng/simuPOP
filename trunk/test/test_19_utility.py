@@ -90,31 +90,31 @@ class TestUtility(unittest.TestCase):
             postOps=[ pause(at=[20], popName='tmpPop') ], end=25)
 
 
-    def testSetRNG(self):
+    def testsetRNG(self):
         'Testing all RNG types'
-        for rg in ModuleInfo()['availableRNGs']:
-            SetRNG(rg)
+        for rg in moduleInfo()['availableRNGs']:
+            setRNG(rg)
 
     def testDefaultRNG(self):
         'Testing default RNG'
-        rg = GetRNG()
+        rg = getRNG()
         self.assertEqual(rg.name(), 'mt19937')
 
     def testBinomial(self):
         'Testing binomial distribution'
-        rg = GetRNG()
+        rg = getRNG()
         for n in range(1,10):
             rg.randBinomial(10, .7)
 
     def testUniform(self):
         'Testing uniform distribution generator'
-        rg = GetRNG()
+        rg = getRNG()
         for n in range(1,10):
             rg.randUniform()
 
     def testRandBit(self):
         'Testing random bit function'
-        rg = GetRNG()
+        rg = getRNG()
         sum = 0
         for n in range(10000):
             sum += rg.randBit()
@@ -122,13 +122,13 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(sum > 4900)
 
 
-    def testBernulliTrials(self):
+    def testbernulliTrials(self):
         'Testing bernullitrials'
         import math
-        rg = GetRNG()
+        rg = getRNG()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
-        bt = BernulliTrials(rg, p, N)
+        bt = bernulliTrials(rg, p, N)
         bt.doTrial()
         for i in range(len(p)):
             prop = bt.trialSuccRate(i)
@@ -137,7 +137,7 @@ class TestUtility(unittest.TestCase):
             self.assertTrue(prop > p[i] - 3*std and prop < p[i] + 3*std)
         # another test, for each trail
         for pi in p:
-            bt = BernulliTrials(rg, [pi]*N, 10)
+            bt = bernulliTrials(rg, [pi]*N, 10)
             bt.doTrial()
             for i in range(10):
                 bt.trial();
@@ -147,7 +147,7 @@ class TestUtility(unittest.TestCase):
                 self.assertTrue(prop > pi - 3*std and prop < pi + 3*std, "We are testing if the proportion falls within three standard deviation of SD. This test may fail from time to time.")
 
         # test find_first and find_next
-        bt = BernulliTrials(rg, p, N)
+        bt = bernulliTrials(rg, p, N)
         bt.doTrial()
         for i in range(len(p)):
             pos = bt.trialFirstSucc(i)
@@ -172,42 +172,42 @@ class TestUtility(unittest.TestCase):
         'Testing RNG::seed() and RNG::setSeed()'
         import random
         seed = []
-        name = ModuleInfo()['availableRNGs'][0]
+        name = moduleInfo()['availableRNGs'][0]
         for i in range(100):
-            SetRNG(name)
-            sd = GetRNG().seed()
+            setRNG(name)
+            sd = getRNG().seed()
             self.assertFalse(sd in seed)
             seed.append(sd)
         # test set seed
         sd = random.randint(100, 10000)
-        SetRNG(name, sd)
-        self.assertEqual(GetRNG().seed(), sd)
+        setRNG(name, sd)
+        self.assertEqual(getRNG().seed(), sd)
         # test if sequences are the same once the seed is set
         sd = random.randint(100, 10000)
-        SetRNG(name, sd)
-        seq = [GetRNG().randInt(10000) for x in range(100)]
-        SetRNG(name, sd)
-        seq1 = [GetRNG().randInt(10000) for x in range(100)]
+        setRNG(name, sd)
+        seq = [getRNG().randInt(10000) for x in range(100)]
+        setRNG(name, sd)
+        seq1 = [getRNG().randInt(10000) for x in range(100)]
         self.assertEqual(seq, seq1)
         # randBit need to be treated separately because it uses
         # global variable of RNG().
         sd = random.randint(100, 10000)
-        SetRNG(name, sd)
-        seq = [GetRNG().randBit() for x in range(100)]
-        SetRNG(name, sd)
-        seq1 = [GetRNG().randBit() for x in range(100)]
+        setRNG(name, sd)
+        seq = [getRNG().randBit() for x in range(100)]
+        setRNG(name, sd)
+        seq1 = [getRNG().randBit() for x in range(100)]
         self.assertEqual(seq, seq1)
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
-        sampler = weightedSampler(GetRNG(), [1, 2, 3, 4])
+        sampler = weightedSampler(getRNG(), [1, 2, 3, 4])
         num = []
         for i in range(100000):
             num.append(sampler.get())
         for i in range(4):
             self.assertAlmostEqual(num.count(i) / 100000., 0.1 * (i+1), 2)
         # the proportion version
-        sampler = weightedSampler(GetRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
+        sampler = weightedSampler(getRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
         num = []
         for i in range(100000):
             num.append(sampler.get())
@@ -230,7 +230,7 @@ class TestUtility(unittest.TestCase):
         simuUtil.VC_merlin('ped')
 
 
-    def testMemoryLeakLoadPopulation(self):
+    def testMemoryLeakloadPopulation(self):
         'Testing if loadPopulation leaks memory'
         # run this and see if memory usage goes up continuously
         pop = population(100, loci=[400])
@@ -238,7 +238,7 @@ class TestUtility(unittest.TestCase):
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         pop.save('test.bin')
         for i in range(4):
-            pop = LoadPopulation('test.bin')
+            pop = loadPopulation('test.bin')
             #pop = population(100, loci=[1000]*10)
             Stat(pop, alleleFreq=range(pop.totNumLoci()))
             #print pop.dvars().alleleFreq[100][0]
@@ -256,36 +256,36 @@ class TestUtility(unittest.TestCase):
     def testTrajectorySimulatorInputs(self):
         'Testing invalid inputs for trajectory simulation functions'
         # both backward and forward
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, fitness=[1, 1.01], beginGen=100, endGen=1000,
             beginFreq=0.1, endFreq=[0.1, 0.2])
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, beginGen=2000, endGen=1000,
             beginFreq=0.1, endFreq=[0.2, 0.3])
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, fitness=[1]*5, beginGen=0, endGen=1000,
             beginFreq=0.1, endFreq=[0.2, 0.3])
         #
         # forward trajectory simulation
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, beginGen=100, endGen=200, beginFreq=0.1, endFreq=0.09)
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, beginGen=100, endGen=200, beginFreq=0.1, endFreq=[0.09])
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[0.08, 0.09])
-        self.assertRaises(exceptions.ValueError, ForwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.18, 0.09]*2])
         #
         # backward trajectory simulation
-        self.assertRaises(exceptions.ValueError, BackwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
             N=1000, endGen=3000, endFreq=[0.1, 0.2])
-        self.assertRaises(exceptions.ValueError, BackwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
             N=1000, endGen=0, endFreq=0.1)
-        self.assertRaises(exceptions.ValueError, BackwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
             N=1000, endGen=3000, endFreq=[0.1, 0.2, 0.3])
-        self.assertRaises(exceptions.ValueError, BackwardTrajectory,
+        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
             N=1000, endGen=0, endFreq=0.1)
 
     def testBackTrajectorySimple(self):
@@ -337,7 +337,7 @@ class TestUtility(unittest.TestCase):
         # one mutation in each subpopulation
         self.assertEqual(len(traj.mutators(loci=[0])), 2) 
     
-    def testForwardTrajectorySimple(self):
+    def testsimulateForwardTrajectorySimple(self):
         'Testing forward trajectory simulation with constant population size and no selection'
         trajSimulator = trajectorySimulator(N=1000)
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
@@ -347,7 +347,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0])), 0)
         #
 
-    def testForwardTrajectorySubPop(self):
+    def testsimulateForwardTrajectorySubPop(self):
         'Testing forward trajectory simulation with subpopulations and no selection'
         # simple with subpopulation
         trajSimulator = trajectorySimulator(N=[1000, 2000])
@@ -367,7 +367,7 @@ class TestUtility(unittest.TestCase):
             else:
                 return [1, 0.999, 0.998]
         #
-        traj = ForwardTrajectory(N=[2000, 4000], fitness=fitness, beginGen=0,
+        traj = simulateForwardTrajectory(N=[2000, 4000], fitness=fitness, beginGen=0,
             endGen=150, beginFreq=[0.2, 0.2], endFreq=[[0.25, 0.35], [0.1, 0.15]])
         self.assertTrue(traj.freq(150, 0)[0] >= 0.25 and traj.freq(150, 0)[0] <= 0.35)
         self.assertTrue(traj.freq(150, 1)[0] >= 0.10 and traj.freq(150, 1)[0] <= 0.15)
@@ -406,7 +406,7 @@ class TestUtility(unittest.TestCase):
         # no mutation
         self.assertEqual(len(traj.mutators(loci=[0, 1])), 0)
         # the function form
-        traj = ForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
+        traj = simulateForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 
 
     def testBackwardSimpleMultiLociSubPop(self):
@@ -442,7 +442,7 @@ class TestUtility(unittest.TestCase):
         # no mutation
         self.assertEqual(len(traj.mutators(loci=[0])), 0)
         # the function form
-        traj = ForwardTrajectory(N=[1000, 3000], nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
+        traj = simulateForwardTrajectory(N=[1000, 3000], nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 
         #
 
@@ -467,7 +467,7 @@ class TestUtility(unittest.TestCase):
         # one mutation
         self.assertEqual(len(traj.mutators(loci=[0])), 1)
         # the function form
-        traj = BackwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], endGen=3000, endFreq=0.1) 
+        traj = simulateBackwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], endGen=3000, endFreq=0.1) 
         #
         # simuForward
         # test trajectory
@@ -477,7 +477,7 @@ class TestUtility(unittest.TestCase):
         # no mutation
         self.assertEqual(len(traj.mutators(loci=[0])), 0)
         # the function form
-        traj = ForwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], beginGen=100,
+        traj = simulateForwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], beginGen=100,
             endGen=200, beginFreq=0.1, endFreq=[0.14, 0.15]) 
         #
         # FIXME: multi-subpopulation case
@@ -505,7 +505,7 @@ class TestUtility(unittest.TestCase):
         # one mutation
         self.assertEqual(len(traj.mutators(loci=[0,1])), 2)
         # the function form
-        traj = BackwardTrajectory(N=1000, nLoci=2, endGen=3000, endFreq=0.1) 
+        traj = simulateBackwardTrajectory(N=1000, nLoci=2, endGen=3000, endFreq=0.1) 
         #
         # simuForward
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
@@ -515,7 +515,7 @@ class TestUtility(unittest.TestCase):
         # no mutation
         self.assertEqual(len(traj.mutators(loci=[0,1])), 0)
         # the function form
-        traj = ForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
+        traj = simulateForwardTrajectory(N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 
         #
         # Fix: multi subpopulation.

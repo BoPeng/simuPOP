@@ -236,7 +236,7 @@ namespace std
 %rename(individual) ind(double, vspID);
 %rename(population) pop(UINT) const;
 
-%newobject LoadPopulation;
+%newobject loadPopulation;
 %newobject LoadSimulator;
 
 // %newobject simuPOP::population::extract;

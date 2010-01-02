@@ -68,7 +68,7 @@ bool basePenetrance::apply(population & pop)
 				if (savePene)
 					ind->setInfo(p, infoIdx);
 
-				if (GetRNG().randUniform() < p)
+				if (getRNG().randUniform() < p)
 					ind->setAffected(true);
 				else
 					ind->setAffected(false);
@@ -89,7 +89,7 @@ bool basePenetrance::applyToIndividual(individual * ind, ULONG gen)
 
 	if (infoSize() > 0)
 		ind->setInfo(p, infoField(0));
-	bool affected = GetRNG().randUniform() < p;
+	bool affected = getRNG().randUniform() < p;
 	ind->setAffected(affected);
 	return affected;
 }
@@ -102,7 +102,7 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 
 	if (infoSize() > 0)
 		offspring->setInfo(p, infoField(0));
-	offspring->setAffected(GetRNG().randUniform() < p);
+	offspring->setAffected(getRNG().randUniform() < p);
 	return true;
 }
 
