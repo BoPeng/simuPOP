@@ -245,6 +245,7 @@ __all__ = [
     'SetRNG',
     #
     'CloseOutput',
+    'Describe',
     'LoadPopulation',
     'ModuleInfo',
     'TurnOffDebug',

@@ -537,7 +537,7 @@ During-mating operators
 \emph on
 recombinator
 \emph default
- can be used to transmit parental genotype to offspring.
+ can be applied by a mating scheme to transmit parental genotype to offspring.
  After an offspring population is populated, 
 \series bold
 post-mating operators
@@ -572,27 +572,16 @@ reference "simple-example"
  The first line imports the standard simuPOP module.
  The second line creates a diploid population with 1000 individuals, each
  having one chromosome with two loci.
- The third line creates a simulator with three replicates of this population.
- Random mating will be used to generate offspring but a 
-\family typewriter
-recombinator
-\family default
- is used to recombine parental chromosomes with the given recombination
- rate 
-\family typewriter
-0.01
-\family default
- during the generation of offspring.
- The last statement uses the 
-\family typewriter
-evolve()
-\family default
- function to evolve the populations for 100 generations, subject to five
- operators.
+ 
 \end_layout
 
 \begin_layout Standard
-Operators 
+The 
+\family typewriter
+evolve()
+\family default
+ function evolves the population using a random mating scheme and four operators.
+ Operators 
 \family typewriter
 initSex
 \family default
@@ -614,39 +603,43 @@ initByValue
 12/21
 \family default
 .
+ The populations are then evolved for 100 generations.
+ A random mating scheme is used to generate offspring.
+ Instead of using the default Mendelian genotype transmitter, a 
+\family typewriter
+recombinator
+\family default
+ (during-mating operator) is used to recombine parental chromosomes with
+ the given recombination rate 
+\family typewriter
+0.01
+\family default
+ during the generation of offspring.
  The other operators are applied to the offspring generation (post-mating)
- at every generation.
+ at every 10 generations (parameter 
+\family typewriter
+step
+\family default
+).
  Operator 
 \family typewriter
 stat
 \family default
  calculates linkage disequilibrium between the first and second loci.
- The results of this operator are stored in a local variable space of each
+ The results of this operator are stored in a local variable space of the
  population.
- The last two operators 
+ The last operator 
 \family typewriter
 pyEval
 \family default
- and 
-\family typewriter
-pyOutput
-\family default
- are applied at the end of every 10 generations.
- 
-\family typewriter
-pyEval
-\family default
- is applied to all replicates to output calculated linkage disequilibrium
- values with a trailing tab, and the last operator outputs a newline after
- the last replicate.
- The result is a table of three columns, representing the decay of linkage
- disequilibrium of each replicate at 10 generation intervals.
+ outputs calculated linkage disequilibrium values with a trailing new line.
+ The result represents the decay of linkage disequilibrium of this population
+ at 10 generation intervals.
  The return value of the 
 \family typewriter
 evolve
 \family default
- function, which is the number of evolved generations for each replicate,
- is also printed.
+ function, which is the number of evolved generations, is also printed.
 \end_layout
 
 \begin_layout Section
@@ -5096,11 +5089,20 @@ lstparams "caption={Add and remove loci and chromosomes},keywordstyle={\\ttfamil
 \end_layout
 
 \begin_layout Subsection
-Extract individuals and subpopulations
+Remove or extract individuals and subpopulations
 \end_layout
 
 \begin_layout Standard
 Functions 
+\family typewriter
+population.removeIndividuals
+\family default
+ and 
+\family typewriter
+population.removeSubPops
+\family default
+ remove selected individuals or groups of individuals from a population.
+ Functions 
 \family typewriter
 population.extractIndividuals
 \family default
@@ -5108,32 +5110,43 @@ population.extractIndividuals
 \family typewriter
 population.extractSubPops
 \family default
- could be used to extract individuals and subpopulations from an existing
- population and form a new one.
- Function 
-\family typewriter
-extractIndividuals
-\family default
- could be used to extract individuals from the present generation by indexes
- or from all ancestral generations by IDs.
- Function 
-\family typewriter
-extractSubPops
-\family default
- could be used to extract subpopulations, or goups of individuals defined
- by virtual subpopulations from a population.
- 
+ extract individuals and subpopulations from an existing population and
+ form a new one.
 \end_layout
 
 \begin_layout Standard
-Example 
+Functions 
+\family typewriter
+removeIndividauls
+\family default
+ and 
+\family typewriter
+extractIndividuals
+\family default
+ could be used to remove or extract individuals from the present generation
+ by indexes or from all ancestral generations by IDs.
+ The present population structure will be kept, even if some subpopulations
+ are left empty.
+ Functions 
+\family typewriter
+removeSubPops
+\family default
+ or 
+\family typewriter
+extractSubPops
+\family default
+ could be used to remove or extract subpopulations, or goups of individuals
+ defined by virtual subpopulations from a population.
+ The latter case is very interesting because it could be used to remove
+ or extract individuals with similar properties, such as all individuals
+ between the ages 40 and 60, as demonstrated in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "extract"
 
 \end_inset
 
- demonstrates the use of these functions.
+.
 \end_layout
 
 \begin_layout Standard
@@ -5330,6 +5343,8 @@ function of this example does not specify how many generations to evolve
  so it will stop only after all replicates stop.
  The return value of this function indicates how many generations each replicate
  has evolved.
+ This example also demonstrates how to run multiple replicates of an evolutionar
+y process, which we will discuss in detail latter.
 \end_layout
 
 \begin_layout Standard
@@ -5555,57 +5570,107 @@ The following sections will introduce common features of all operators.
 \end_layout
 
 \begin_layout Subsection
-Applicable generations
+Applicable stages and generations
 \end_layout
 
 \begin_layout Standard
-A simuPOP life cycle (a 
-\emph on
-generation
-\emph default
-) can be divided into 
-\emph on
-pre-mating
-\emph default
-, 
-\emph on
-during-mating
-\emph default
- and 
-\emph on
-post-mating
-\emph default
+There are two types of operators:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Operators that are applied to populations
+\series default
 .
- In the pre-mating stage, the present generation is the parental generation.
- In the during-mating stage, an offspring generation is populated from the
- parental generation.
- In the post-mating stage, the offspring generation has become the present
- generation.
- Operators specified in the 
+ These operators are used in the 
+\family typewriter
+initOps
+\family default
+, 
 \family typewriter
 preOps
 \family default
 , 
 \family typewriter
-duringOps
+postOps
 \family default
  and 
 \family typewriter
-postOps
+finalOps
 \family default
  parameters of the 
 \family typewriter
-simulator.evolve
+evolve
 \family default
- function are applied, respectively, at these stages.
+ function.
+ The 
+\family typewriter
+initOps
+\family default
+ operators are applied before an evolutionary process, the 
+\family typewriter
+preOps
+\family default
+ operators are applied to the parental population at each generation before
+ mating, the 
+\family typewriter
+postOps
+\family default
+ operators are applied to the offspring population at each generation after
+ mating, and the 
+\family typewriter
+finalOps
+\family default
+ operators are applied after an evolutionary process.
+ Examples of such operators include 
+\family typewriter
+mergeSubPops
+\family default
+ to merge subpopulations and 
+\family typewriter
+smmMutator
+\family default
+ to mutate individuals using a stepwise mutation model.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Operators that are applied to individuals
+\series default
+ (offspring) during mating.
+ These operators are used in the 
+\family typewriter
+ops
+\family default
+ parameter of a mating scheme.
+ They are usually used to transmit genotype or other information from parents
+ to offspring.
+ Examples of such operators include 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ that transmit parental genotype to offspring according to Mendelian laws
+ and 
+\family typewriter
+parentsTagger
+\family default
+ that record the indexes of parents in the parental population to each offspring.
 \end_layout
 
 \begin_layout Standard
-Operators that are passed to the 
+Some mutators could be applied both to populations and individuals.
+ For example, an 
 \family typewriter
-simulator.evolve
+idTagger
 \family default
- function are, by default, applied to all generations during an evolutionary
+ could be applied to a whole population and assign an unique ID to all individua
+ls, or to offspring during mating.
+\end_layout
+
+\begin_layout Standard
+Operators are, by default, applied to all generations during an evolutionary
  process.
  This can be changed using the 
 \family typewriter
@@ -5699,7 +5764,8 @@ reference "applicableGen"
 \end_inset
 
  demonstrates how to set applicable generations of an operator.
- In this example, a population is initialized before evolution using a 
+ In this example, a population is initialized before evolution using an
+ 
 \family typewriter
 initByFreq
 \family default
@@ -6278,91 +6344,16 @@ reference "sec:Mating-Schemes"
 genotype transmitters
 \series default
  just to show the kind of task they perform.
-\end_layout
-
-\begin_layout Standard
-During mating operators could be used in two ways:
-\end_layout
-
-\begin_layout Itemize
-In the 
+ More during mating operators could be specified by replacing the default
+ operator used in the 
 \family typewriter
 ops
 \family default
  parameter of a mating scheme (or an offspring generator if you are defining
  your own mating scheme).
- 
-\series bold
-Operators specified in this way will replace the default operator a mating
- scheme uses
-\series default
-.
-\end_layout
-
-\begin_layout Itemize
-In the 
-\family typewriter
-ops
-\family default
- parameter of the 
-\family typewriter
-simulator.evolve
-\family default
- function.
- 
-\series bold
-These operators will be applied after an offspring is created using operators
- of a mating scheme
-\series default
-.
 \end_layout
 
 \begin_layout Standard
-In another word,
-\end_layout
-
-\begin_layout Itemize
-If you would like to change how genotypes are transmitted, replace the genotype
- transmitter of a mating scheme with your own ones.
- For example, 
-\family typewriter
-recombinator
-\family default
- should generally be used in a mating scheme.
-\end_layout
-
-\begin_layout Itemize
-If you would like to modify individual property after his or her genotypes
- are transmitted, use them in the 
-\family typewriter
-simulator.evolve
-\family default
- function.
- A good example is operator 
-\family typewriter
-parentsTagger
-\family default
- that record the indexes of an offspring's parents in the parental generation.
-\end_layout
-
-\begin_layout Standard
-There are some subtleties involved in the use of during-mating operators.
- For example,
-\end_layout
-
-\begin_layout Itemize
-During-mating operators do not support parameter 
-\family typewriter
-subPops
-\family default
-.
- If you would like to apply different during-mating operators to different
- (virtual) subpopulations, you can use a heterogeneous mating scheme that
- applies different homogeneous mating schemes with different operators to
- different (virtual) subpopulations.
-\end_layout
-
-\begin_layout Itemize
 Operators used in a mating scheme honor applicability parameters 
 \family typewriter
 begin
@@ -6405,19 +6396,6 @@ mendelianGenoTransmitter
  is applied before that.
 \end_layout
 
-\begin_layout Itemize
-Operators used in 
-\family typewriter
-simulator.evolve
-\family default
- are applied after an individual is created.
- If something needs to be done before the default genotype transmitter is
- used, you have to replace the default genotype transmitter with a list
- of operators which will be called by the mating scheme in the order at
- which operators are specified.
- 
-\end_layout
-
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -6452,6 +6430,15 @@ reference "sub:Customized-genotype-transmitter"
 \end_inset
 
  demonstrates how to define your own genotype transmitter.
+ Note that during-mating operators do not support parameter 
+\family typewriter
+subPops
+\family default
+.
+ If you would like to apply different during-mating operators to different
+ (virtual) subpopulations, you can use a heterogeneous mating scheme that
+ applies different homogeneous mating schemes with different operators to
+ different (virtual) subpopulations.
 \end_layout
 
 \begin_layout Subsection
@@ -9623,8 +9610,111 @@ Simulator
 \begin_layout Standard
 A simuPOP simulator evolves one or more copies of a population forward in
  time, subject to various operators.
- Although simulators have been used extensively in the previous chapters,
- it is worthwhile to have a detailed look at this object.
+ Although a population could evolve by itself using function 
+\family typewriter
+population.evolve
+\family default
+, a simulator with one replicate is actually used.
+\end_layout
+
+\begin_layout Subsection
+Add, access and remove populations from a simulator
+\end_layout
+
+\begin_layout Standard
+A simulator could be created by one or more replicates of a list of populations.
+ For example, you could create a simulator from five replicates of a population
+ using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+simulator(pop, rep=5)
+\end_layout
+
+\end_inset
+
+or from a list of populations using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+simulator([pop, pop1, pop2])
+\end_layout
+
+\end_inset
+
+.
+ In order to avoid duplication of potentially large populations, a population
+ is by default 
+\emph on
+stolen
+\emph default
+ after it is used to create a simulator.
+\end_layout
+
+\begin_layout Standard
+Populations in a simulator can be added or removed using functions 
+\family typewriter
+simulator.add()
+\family default
+ and 
+\family typewriter
+simulator.extract(idx)
+\family default
+.
+ The
+\series bold
+ newly added populations do not have to have the same genotypic structure
+ as existing populations
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+When a simulator is created, you can access populations in this simulator
+ using function 
+\family typewriter
+simulator.population(idx)
+\family default
+ or iterate through all populations using function 
+\family typewriter
+simulator.populations()
+\family default
+.
+ These functions return references to the populations so that you can access
+ populations.
+ Modifying these references will change the corresponding populations within
+ the simulator.
+ The references will become invalid once the simulator object is destoryed.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simulator"
+
+\end_inset
+
+ demonstrates different ways to create a simulator and how to access populations
+ within it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simulator.log"
+lstparams "caption={Create a simulator and access populations},label={simulator}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -9644,8 +9734,8 @@ evolve
  function.
  A generation number is used to track the number of generations a simulator
  has evolved.
- Because a new simulator has generation number 0, a simulator would be at
- the beginning of generation 
+ Because a new population has generation number 0, a population would be
+ at the beginning of generation 
 \begin_inset Formula $n$
 \end_inset
 
@@ -9714,17 +9804,24 @@ True
 evolve
 \family default
  function twice so the second part starts at generation 5.
- You can also use 
-\family typewriter
-simu.setGen(0)
-\family default
- to reset the generation number if you would like to have a fresh start
- for the second 
-\family typewriter
-evolve()
-\family default
- call.
+\end_layout
+
+\begin_layout Standard
+The generation number is stored in each population using population variable
  
+\family typewriter
+gen
+\family default
+.You can access these numbers from a simulator using function 
+\family typewriter
+simulator.dvars(idx)
+\family default
+ or from a population using function 
+\family typewriter
+population.dvars()
+\family default
+.
+ If needed, you can reset generation numbers by changing these variables.
 \end_layout
 
 \begin_layout Standard
@@ -9732,100 +9829,6 @@ evolve()
 LatexCommand lstinputlisting
 filename "log/simuGen.log"
 lstparams "caption={Generation number of a simulator},keywordstyle={\\ttfamily},label={simuGen}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Population access and other simulator operations
-\end_layout
-
-\begin_layout Standard
-Function 
-\family typewriter
-population()
-\family default
- and 
-\family typewriter
-populations()
-\family default
- are provided to access populations within a simulator.
- Similar to functions 
-\family typewriter
-individual()
-\family default
- and 
-\family typewriter
-individuals()
-\family default
- for a population
-\family typewriter
-,population(rep)
-\family default
- returns a reference to the 
-\family typewriter
-rep
-\family default
-th population in a simulator and 
-\family typewriter
-populations()
-\family default
- returns an Python iterator that can be used to iterate through all populations.
- Modifying these references will change the corresponding populations within
- the simulator.
- An independent copy of a population can be made using the 
-\family typewriter
-clone()
-\family default
- function of a population (e.g.
- 
-\family typewriter
-simu.population(0).clone()
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-Populations in a simulator can be added or removed using functions 
-\family typewriter
-add()
-\family default
- and 
-\family typewriter
-extract()
-\family default
-.
- The
-\series bold
- newly added populations do not have to have the same genotypic structure
- as existing populations
-\series default
-.
- However, because the same operators will be applied to all populations,
- it is your responsibility to make sure that the operators can be applied
- to these populations.
-\end_layout
-
-\begin_layout Standard
-Just like populations, a simulator can be cloned, saved and loaded.
- This makes it easy to stop a simulator, take a snapshot and resume evolution.
- It is even easy to save a simlator, transfer it to another machine and
- resume the evolution over there.
- Because 
-\series bold
-virtual splitters are not saved with populations
-\series default
-, you will have to re-assign splitters to populations if they are needed
- for subsequent simulations.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/simuFunc.log"
-lstparams "caption={Clone, save and load a simulator},label={simuFunc}"
 
 \end_inset
 
@@ -9923,40 +9926,6 @@ reps
 \family default
 .
  
-\end_layout
-
-\begin_layout Itemize
-During-mating operators specified in the 
-\family typewriter
-duringOps
-\family default
- of function 
-\family typewriter
-simulator.evolve
-\family default
- parameter of simulator.evolve will be applied after an offspring is produced,
- subject to replicate and generation applicability restraint specified by
- parameters 
-\family typewriter
-begin
-\family default
-, 
-\family typewriter
-end
-\family default
-, 
-\family typewriter
-step
-\family default
-, 
-\family typewriter
-at
-\family default
-, and 
-\family typewriter
-reps
-\family default
-.
 \end_layout
 
 \begin_layout Itemize
@@ -10069,40 +10038,15 @@ Orders at which operators are applied during an evolutionary process
 If you suspect that your simulation is not running as expected, you can
  have a close look at your evolutionary process using function 
 \family typewriter
-simulator.describe()
+Describe()
 \family default
 .
  This function takes the same set of parameters as 
 \family typewriter
 simulator.evolve()
 \family default
- and returns a description of the evolution process, which can help you
- identify misuse of operators that cause, for example, duplicated (if you
- use a 
-\family typewriter
-recombinator
-\family default
- in parameter 
-\family typewriter
-duringOps
-\family default
- of 
-\family typewriter
-simulator.evolve
-\family default
-), or missing (if you replace 
-\family typewriter
-medelianGenoTransmitter
-\family default
- of 
-\family typewriter
-randomMating
-\family default
- using 
-\family typewriter
-ops=idTagger()
-\family default
-) genotype transmission to offspring.
+ and returns a description of the evolution process, which might help you
+ identify misuse of operators.
 \end_layout
 
 \begin_layout Standard
@@ -10110,40 +10054,6 @@ ops=idTagger()
 LatexCommand lstinputlisting
 filename "log/describe.log"
 lstparams "caption={Describe an evolutionary process},label={describe}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Modifying populations and mating scheme *
-\end_layout
-
-\begin_layout Standard
-Although a standard Wright-Fisher random mating scheme is usually preferred
- because it leads to a larger effective population size than other mating
- schemes, it is difficult to ascertain pedigrees from a random mating population
- because there will be very few siblings in such a population.
- In addition, because we usually only sample from the last few generations,
- it would be more efficient to keep tract of pedigree information only for
- these generations.
- Such considerations lead to the popularity of a two stage evolutionary
- scenario where the standard random mating scheme is used in the first stage
- and another mating scheme that is more suitable for pedigree ascertainment
- is used in the second stage.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "twoStage"
-
-\end_inset
-
- demonstrates the implementation of such a scenario.
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/twoStage.log"
-lstparams "caption={A two-stage evolutionary process},label={twoStage}"
 
 \end_inset
 

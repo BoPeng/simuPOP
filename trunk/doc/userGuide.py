@@ -31,17 +31,15 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=1000, loci=2)
-simu = sim.simulator(pop, rep=3)
-simu.evolve(
+pop.evolve(
     initOps=[
         sim.initSex(),
         sim.initByValue([1, 2, 2, 1])
     ],
-    matingScheme = sim.randomMating(ops=sim.recombinator(rates=0.01)),
+    matingScheme=sim.randomMating(ops=sim.recombinator(rates=0.01)),
     postOps=[
-        sim.stat(LD=[0, 1]),
-        sim.pyEval(r"'%.2f\t' % LD[0][1]", step=10),
-        sim.pyOutput('\n', reps=-1, step=10)
+        sim.stat(LD=[0, 1], step=10),
+        sim.pyEval(r"'%.2f\n' % LD[0][1]", step=10),
     ],
     gen=100
 )
@@ -666,13 +664,24 @@ import simuPOP as sim
 sim.GetRNG().setSeed(12345)
 #end_ignore
 import random
-pop = sim.population(size=[20, 20], loci=[5, 5], infoFields=['x', 'y'])
+pop = sim.population(size=[200, 200], loci=[5, 5], infoFields='age')
 sim.InitByValue(pop, range(10))
-sim.InitInfo(pop, lambda: random.randint(0,5), infoFields='x')
-pop.setVirtualSplitter(sim.infoSplitter(field='x', values=[0, 1, 2, 3, 4, 5]))
-pop1 = pop.extractSubPops(subPops=[(0,1), (0,3)])
-sim.Dump(pop1, structure=False)
+sim.InitInfo(pop, lambda: random.randint(0,75), infoFields='age')
+pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[20, 60]))
+# remove individuals
+pop.removeIndividuals(indexes=range(0, 300, 10))
+print pop.subPopSizes()
+# remove subPopulation
+pop.removeSubPops(1)
+print pop.subPopSizes()
+# remove virtual subpopulation (people with age between 20 and 60)
+pop.removeSubPops([(0, 1)])
+print pop.subPopSizes()
+# extract another virtual subpopulation (people with age greater than 60)
+pop1 = pop.extractSubPops([(0,2)])
+sim.Dump(pop1, structure=False, max=10)
 #end_file
+
 
 #begin_file log/popVars.py
 #begin_ignore
@@ -1867,6 +1876,54 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/simulator.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.GetRNG().setSeed(12345)
+#end_ignore
+pop = sim.population(100, loci=10)
+# five copies of the same population
+simu = sim.simulator(pop, rep=5)
+simu.numRep()
+# evolve for ten generations and save the populations
+simu.evolve(
+    initOps=[
+        sim.initSex(),
+        sim.initByFreq([0.3, 0.7])
+    ],
+    matingScheme=sim.randomMating(),
+    finalOps=sim.savePopulation('!"pop%d.pop"%rep'),
+    gen=10
+)
+# load the population and create another simulator
+simu = sim.simulator([sim.LoadPopulation('pop%d.pop' % x) for x in range(5)])
+# continue to evolve
+simu.evolve(
+    matingScheme=sim.randomMating(),
+    gen=10
+)
+# print out allele frequency
+for pop in simu.populations():
+    sim.Stat(pop, alleleFreq=0)
+    print '%.2f' % pop.dvars().alleleFreq[0][0],
+
+print
+# get a population
+pop = simu.extract(0)
+simu.numRep()
+#begin_ignore
+import os
+for x in range(5):
+    os.remove('pop%d.pop' % x)
+
+#end_ignore
+#end_file
+
+
 #begin_file log/simuGen.py
 #begin_ignore
 import simuOpt
@@ -1892,7 +1949,7 @@ simu.evolve(
         sim.terminateIf('len(alleleNum[5]) == 1'),
     ],
 )
-simu.dvars(0).gen
+[simu.dvars(x).gen for x in range(3)]
 #end_file
 
 #begin_file log/describe.py
@@ -1901,16 +1958,13 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
-pop = sim.population(10000, loci=100, infoFields=['ind_id', 'age'])
-pop.setVirtualSplitter(sim.infoSplitter(field='age', cutoff=[20, 50, 75]))
 
 def outputStat(pop):
     'Calculate and output statistics, ignored'
     return True
 
-simu = sim.simulator(pop)
 # describe this evolutionary process
-print simu.describe(
+print sim.Describe(
     initOps=[
         sim.initSex(),
         sim.initInfo(lambda: random.randint(0, 75), infoFields='age'),
@@ -1930,7 +1984,8 @@ print simu.describe(
         sim.maPenetrance(loci=0, penetrance=[0.01, 0.1, 0.3]),
         sim.pyOperator(func=outputStat)
     ],
-    gen = 100
+    gen = 100,
+    numRep = 3
 )     
 #end_file
 
@@ -2079,30 +2134,6 @@ GrandChildren's parents: %s ''' % \
 
 #end_file
 
-
-#begin_file log/simuFunc.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.GetRNG().setSeed(12345)
-#end_ignore
-simu = sim.simulator(sim.population(100, loci=[5, 10], infoFields='x'),
-    rep=5)
-simu.evolve(
-    initOps=[
-        sim.initSex(),
-        sim.initByFreq([0.4, 0.6])
-    ],
-    matingScheme=sim.randomMating(),
-    gen=10
-)
-# continue to evolve
-simu.evolve(gen=10)
-simu.dvars(0).gen
-#end_file
 
 #begin_file log/initSex.py
 #begin_ignore
