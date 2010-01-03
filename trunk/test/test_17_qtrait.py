@@ -21,7 +21,7 @@ class TestQuanTrait(unittest.TestCase):
     def setUp(self):
         self.pop = population(size=[5000],
             ploidy=2, loci = [1], infoFields=['qtrait'])
-        self.pop.setVirtualSplitter(rangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
+        self.pop.setVirtualSplitter(RangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
         InitByValue(self.pop,
             value = [[0,0],[0,1],[1,1]],
             subPops = ((0, 0), (0, 1), (0, 2)))

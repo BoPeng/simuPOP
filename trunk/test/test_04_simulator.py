@@ -49,7 +49,7 @@ class TestSimulator(unittest.TestCase):
         pop = population(size=[200, 80], loci=[3])
         pop.evolve(
             initOps = [initSex(), initByFreq([0.2, 0.8])],
-            matingScheme=randomMating(ops = recombinator(rates=0.001)),
+            matingScheme=randomMating(ops = Recombinator(rates=0.001)),
             postOps = stat(alleleFreq=[1]),
             finalOps = stat(),
             gen=10
@@ -144,7 +144,7 @@ class TestSimulator(unittest.TestCase):
         'Testing setMatingScheme(matingScheme)'
         simu = simulator(population(100, infoFields=['a']), rep=3)
         simu.evolve(initOps=[initSex()], 
-            matingScheme=cloneMating(), gen=1)
+            matingScheme=CloneMating(), gen=1)
         simu.evolve(initOps=[initSex()],
             matingScheme=randomMating(), gen=1)
 

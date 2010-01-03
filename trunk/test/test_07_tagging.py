@@ -23,7 +23,7 @@ class TestTagger(unittest.TestCase):
                     infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = [initSex()],
-            matingScheme = randomMating(numOffspring=2, ops=[mendelianGenoTransmitter(), parentsTagger()]),
+            matingScheme = randomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 1
         )
         pop = simu.population(0)
@@ -49,7 +49,7 @@ class TestTagger(unittest.TestCase):
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
+            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1)
         pop = simu.population(0)
         # we only know subpopulation 0 can not have tag 2
@@ -73,7 +73,7 @@ class TestTagger(unittest.TestCase):
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [initSex()],
-            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), inheritTagger(mode=PATERNAL)]),
+            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1
         )
         pop = simu.extract(0)
@@ -97,8 +97,8 @@ class TestTagger(unittest.TestCase):
         simu = simulator(pop)
         simu.evolve(
             initOps = [initSex()],
-            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), 
-                pyTagger(func=myfunc),
+            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), 
+                PyTagger(func=myfunc),
             ]),
             gen = 4)
         pop = simu.population(0)
@@ -117,9 +117,9 @@ class TestTagger(unittest.TestCase):
             return [val[0]+1]
         simu = simulator(pop)
         simu.evolve(
-            matingScheme = randomMating(ops=[mendelianGenoTransmitter(), 
-                parentsTagger(output='>>pedigree.dat', infoFields=[]),
-                pyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
+            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), 
+                ParentsTagger(output='>>pedigree.dat', infoFields=[]),
+                PyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
                 ]),
             end=10
         )

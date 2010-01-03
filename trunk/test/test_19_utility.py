@@ -74,7 +74,7 @@ class TestUtility(unittest.TestCase):
         self.assertRaises( exceptions.SystemError, simu.evolve,
             postOps=[ pause(at=[10]),
                         # should quite, can not reach generation 12
-                        terminateIf("True", at=[12] ) ] )
+                        TerminateIf("True", at=[12] ) ] )
 
     def interactiveTestExitToShell(self):
         'Testing exit to a shell'
@@ -220,7 +220,7 @@ class TestUtility(unittest.TestCase):
         import simuUtil
         pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
         simu = simulator(pop, randomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
-        simu.evolve(duringOps=[parentsTagger()], end=5)
+        simu.evolve(duringOps=[ParentsTagger()], end=5)
         pop = simu.population(0)
         #
         def comb(geno):

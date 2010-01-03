@@ -62,7 +62,7 @@ namespace simuPOP {
  *  applied. These are achieved by a common set of parameters such as \c begin,
  *  \c end, \c step, \c at, \c stage for all operators. Note that a specific
  *  operator does not have to honor all these parameters. For example, a
- *  recombinator can only be applied during mating so it ignores the \c stage
+ *  Recombinator can only be applied during mating so it ignores the \c stage
  *  parameter.
  *
  *  An operator can be applied to all or part of the generations during the
@@ -514,13 +514,13 @@ private:
 /** This operator does nothing when it is applied to a population. It is
  *  usually used as a placeholder when an operator is needed syntactically.
  */
-class noneOp : public baseOperator
+class NoneOp : public baseOperator
 {
 
 public:
-	/** Create a \c noneOp.
+	/** Create a \c NoneOp.
 	 */
-	noneOp(const stringFunc & output = ">",
+	NoneOp(const stringFunc & output = ">",
 		int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator("", begin, end, step, at, reps, subPops, infoFields)
@@ -529,7 +529,7 @@ public:
 
 
 	/// destructor
-	virtual ~noneOp()
+	virtual ~NoneOp()
 	{
 	}
 
@@ -537,7 +537,7 @@ public:
 	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
-		return new noneOp(*this);
+		return new NoneOp(*this);
 	}
 
 
@@ -549,7 +549,7 @@ public:
 	}
 
 
-	/// apply the \c noneOp operator to one population
+	/// apply the \c NoneOp operator to one population
 	virtual bool apply(population & pop)
 	{
 		return true;
@@ -632,7 +632,7 @@ private:
  *  <em>evolved generations</em> (return value from <tt>simulator::evolve</tt>)
  *  if termination happens after mating.
  */
-class terminateIf : public baseOperator
+class TerminateIf : public baseOperator
 {
 
 public:
@@ -644,7 +644,7 @@ public:
 	 *  operator is allowed to write to an \e output (default to ""), the generation
 	 *  number, proceeded with an optional \e message.
 	 */
-	terminateIf(string condition = string(), bool stopAll = false, string message = string(),
+	TerminateIf(string condition = string(), bool stopAll = false, string message = string(),
 		const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
@@ -654,10 +654,10 @@ public:
 	}
 
 
-	/// deep copy of a \c terminateIf terminator
+	/// deep copy of a \c TerminateIf terminator
 	virtual baseOperator * clone() const
 	{
-		return new terminateIf(*this);
+		return new TerminateIf(*this);
 	}
 
 
@@ -668,7 +668,7 @@ public:
 	// check all alleles in vector allele if they are fixed.
 	virtual bool apply(population & pop);
 
-	virtual ~terminateIf()
+	virtual ~TerminateIf()
 	{
 	}
 

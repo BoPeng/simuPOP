@@ -180,7 +180,7 @@ bool baseMutator::apply(population & pop)
 }
 
 
-matrixMutator::matrixMutator(const matrix & rate,
+MatrixMutator::MatrixMutator(const matrix & rate,
 	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
 	const stringFunc & output,
 	int begin, int end, int step, const intList & at,
@@ -230,7 +230,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 }
 
 
-void matrixMutator::mutate(AlleleRef allele, UINT)
+void MatrixMutator::mutate(AlleleRef allele, UINT)
 {
 	DBG_FAILIF(static_cast<size_t>(allele) >= m_sampler.size(), IndexError,
 		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
@@ -240,7 +240,7 @@ void matrixMutator::mutate(AlleleRef allele, UINT)
 
 
 // mutate to a state other than current state with equal probability
-void kamMutator::mutate(AlleleRef allele, UINT)
+void KamMutator::mutate(AlleleRef allele, UINT)
 {
 #ifdef BINARYALLELE
 	allele = !allele;
@@ -254,7 +254,7 @@ void kamMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-smmMutator::smmMutator(const floatList & rates, const uintList & loci,
+SmmMutator::SmmMutator(const floatList & rates, const uintList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
@@ -283,7 +283,7 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 }
 
 
-void smmMutator::mutate(AlleleRef allele, UINT)
+void SmmMutator::mutate(AlleleRef allele, UINT)
 {
 	UINT step = 1;
 
@@ -295,7 +295,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 		step = getRNG().randGeometric(m_mutStep[1]);
 	} else {
 		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
-			"Invalid Python function for smmMutator");
+			"Invalid Python function for SmmMutator");
 		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>(allele));
 	}
 
@@ -324,7 +324,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void pyMutator::mutate(AlleleRef allele, UINT)
+void PyMutator::mutate(AlleleRef allele, UINT)
 {
 	int resInt = 0;
 
@@ -349,7 +349,7 @@ void pyMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void mixedMutator::initialize(population & pop)
+void MixedMutator::initialize(population & pop)
 {
 	baseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
@@ -357,7 +357,7 @@ void mixedMutator::initialize(population & pop)
 }
 
 
-void mixedMutator::mutate(AlleleRef allele, UINT locus)
+void MixedMutator::mutate(AlleleRef allele, UINT locus)
 {
 	UINT idx = m_sampler.get();
 	baseMutator * mut = reinterpret_cast<baseMutator *>(m_mutators[idx]);
@@ -368,7 +368,7 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-void contextMutator::initialize(population & pop)
+void ContextMutator::initialize(population & pop)
 {
 	baseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
@@ -376,7 +376,7 @@ void contextMutator::initialize(population & pop)
 }
 
 
-void contextMutator::mutate(AlleleRef allele, UINT locus)
+void ContextMutator::mutate(AlleleRef allele, UINT locus)
 {
 	const vectori & alleles = context();
 
@@ -408,7 +408,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-bool pointMutator::apply(population & pop)
+bool PointMutator::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 

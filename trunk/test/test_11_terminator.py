@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions
 class TestTerminator(unittest.TestCase):
 
     def testTerminator(self):
-        'Testing operator terminateIf that terminates a replicate'
+        'Testing operator TerminateIf that terminates a replicate'
         pop = population(size=100, loci=[2])
         simu = simulator(pop, rep=5)
         gens = simu.evolve(
@@ -27,7 +27,7 @@ class TestTerminator(unittest.TestCase):
             matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
-                terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200')
+                TerminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200')
             ]
         )
         # it is very unlikely that gens are equal
@@ -39,7 +39,7 @@ class TestTerminator(unittest.TestCase):
 
 
     def testTerminateAll(self):
-        'Testing operator terminateIf that terminates all replicates'
+        'Testing operator TerminateIf that terminates all replicates'
         pop = population(size=100, loci=[2])
         simu = simulator(pop, rep=5)
         gens = simu.evolve(
@@ -47,7 +47,7 @@ class TestTerminator(unittest.TestCase):
             matingScheme = randomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
-                terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)
+                TerminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)
             ]
         )
         return

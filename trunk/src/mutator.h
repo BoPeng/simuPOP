@@ -67,7 +67,7 @@ public:
 	 *  allowed allele for the loaded module (1 for binary, 255 for short and
 	 *  65535 for long modules). Whereas some general mutation models treat
 	 *  alleles as numbers, other models assume specific interpretation of
-	 *  alleles. For example, an \c acgtMutator assumes alleles \c 0, \c 1,
+	 *  alleles. For example, an \c AcgtMutator assumes alleles \c 0, \c 1,
 	 *  \c 2 and \c 3 as nucleotides \c A, \c C, \c G and \c T. Using a mutator
 	 *  that is incompatible with your simulation will certainly yield erroneous
 	 *  results.
@@ -78,7 +78,7 @@ public:
 	 *  item being the corresponding allele of real allele \c i, and a
 	 *  \e mapOut list with its \e i-th item being the real allele of allele
 	 *  \c i assumed in the model. For example <tt>mapIn=[0, 0, 1]</tt> and
-	 *  <tt>mapOut=[1, 2]</tt> would allow the use of a \c snpMutator to mutate
+	 *  <tt>mapOut=[1, 2]</tt> would allow the use of a \c SnpMutator to mutate
 	 *  between alleles 1 and 2, instead of 0 and 1. Parameters \e mapIn and
 	 *  \e mapOut also accept a user-defined Python function that returns
 	 *  a corresponding allele for a given allele. This allows easier mapping
@@ -196,7 +196,7 @@ protected:
  #
  *  <funcForm>MatrixMutate</funcForm>
  */
-class matrixMutator : public baseMutator
+class MatrixMutator : public baseMutator
 {
 public:
 	/** Create a mutator that mutates alleles \c 0, \c 1, ..., \c n-1 using a
@@ -209,7 +209,7 @@ public:
 	 *  classes \c mutator and \c baseOperator for detailed explanation of
 	 *  other parameters.
 	 */
-	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
+	MatrixMutator(const matrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -217,7 +217,7 @@ public:
 		const stringList & infoFields = vectorstr());
 
 	/// destructor.
-	~matrixMutator()
+	~MatrixMutator()
 	{
 	}
 
@@ -225,17 +225,17 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c matrixMutator
+	/// deep copy of a \c MatrixMutator
 	virtual baseOperator * clone() const
 	{
-		return new matrixMutator(*this);
+		return new MatrixMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.matrixMutator>";
+		return "<simuPOP.MatrixMutator>";
 	}
 
 
@@ -249,7 +249,7 @@ private:
  *  probability.
  *  <funcForm>KamMutate</funcForm>
  */
-class kamMutator : public baseMutator
+class KamMutator : public baseMutator
 {
 public:
 	/** Create a k-allele mutator that mutates alleles to one of the other
@@ -260,7 +260,7 @@ public:
 	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
 	 *  and \c baseOperator for descriptions of other parameters.
 	 */
-	kamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	KamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -275,7 +275,7 @@ public:
 	}
 
 
-	~kamMutator()
+	~KamMutator()
 	{
 	}
 
@@ -283,17 +283,17 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c kamMutator
+	/// deep copy of a \c KamMutator
 	virtual baseOperator * clone() const
 	{
-		return new kamMutator(*this);
+		return new KamMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.kamMutator> A k-allele mutation model with K=" +
+		return "<simuPOP.KamMutator> A k-allele mutation model with K=" +
 		       toStr(m_k);
 	}
 
@@ -313,7 +313,7 @@ private:
  *  boundaries (0 and maximum allowed allele).
  *  <funcForm>SmmMutate</funcForm>
  */
-class smmMutator : public baseMutator
+class SmmMutator : public baseMutator
 {
 public:
 	/** Create a stepwise mutation mutator that mutates an allele by increasing
@@ -337,17 +337,17 @@ public:
 	 *  change this behavior.
 	 *
 	 *  If you need to use other generalized stepwise mutation models, you can
-	 *  implement them using a \c pyMutator. If performance becomes a concern,
+	 *  implement them using a \c PyMutator. If performance becomes a concern,
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
-	smmMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	SmmMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
-	~smmMutator()
+	~SmmMutator()
 	{
 	}
 
@@ -356,17 +356,17 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c smmMutator
+	/// deep copy of a \c SmmMutator
 	virtual baseOperator * clone() const
 	{
-		return new smmMutator(*this);
+		return new SmmMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.smmMutator> a step-wise mutation model mutator";
+		return "<simuPOP.SmmMutator> a step-wise mutation model mutator";
 	}
 
 
@@ -383,7 +383,7 @@ private:
  *  an allele when an mutation event happens.
  *  <funcForm>PyMutate</funcForm>
  */
-class pyMutator : public baseMutator
+class PyMutator : public baseMutator
 {
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
@@ -402,7 +402,7 @@ public:
 	 *  parameter \e loci. Please refer to classes \c mutator and
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
-	pyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	PyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -415,10 +415,10 @@ public:
 	}
 
 
-	/// deep copy of a \c pyMutator
+	/// deep copy of a \c PyMutator
 	virtual baseOperator * clone() const
 	{
-		return new pyMutator(*this);
+		return new PyMutator(*this);
 	}
 
 
@@ -428,7 +428,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.pyMutator>" ;
+		return "<simuPOP.PyMutator>" ;
 	}
 
 
@@ -443,7 +443,7 @@ private:
  *  an allele when an mutation event happens.
  *  <funcForm>MixedMutate</funcForm>
  */
-class mixedMutator : public baseMutator
+class MixedMutator : public baseMutator
 {
 public:
 	/** Create a mutator that randomly chooses one of the specified \e mutators
@@ -457,7 +457,7 @@ public:
 	 *  Please refer to classes \c mutator and \c baseOperator for descriptions
 	 *  of other parameters.
 	 */
-	mixedMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	MixedMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
@@ -476,10 +476,10 @@ public:
 	}
 
 
-	/// deep copy of a \c mixedMutator
+	/// deep copy of a \c MixedMutator
 	virtual baseOperator * clone() const
 	{
-		return new mixedMutator(*this);
+		return new MixedMutator(*this);
 	}
 
 
@@ -493,7 +493,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.mixedMutator>" ;
+		return "<simuPOP.MixedMutator>" ;
 	}
 
 
@@ -508,7 +508,7 @@ private:
  *  them to mutate an allele depending on the context of the mutated allele.
  *  <funcForm>ContextMutate</funcForm>
  */
-class contextMutator : public baseMutator
+class ContextMutator : public baseMutator
 {
 public:
 	/** Create a mutator that choose one of the specified \e mutators to mutate
@@ -531,7 +531,7 @@ public:
 	 *  parameter \e loci is specified. Please refer to classes \c mutator and
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
-	contextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	ContextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
@@ -558,7 +558,7 @@ public:
 	/// deep copy of a \c context-dependentMutator
 	virtual baseOperator * clone() const
 	{
-		return new contextMutator(*this);
+		return new ContextMutator(*this);
 	}
 
 
@@ -572,7 +572,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.contextMutator> context-dependent mutator>" ;
+		return "<simuPOP.ContextMutator> context-dependent mutator>" ;
 	}
 
 
@@ -589,7 +589,7 @@ private:
  *  This mutator is usually used to introduce a mutant to a population.
  *  <funcForm>PointMutate</funcForm>
  */
-class pointMutator : public baseOperator
+class PointMutator : public baseOperator
 {
 public:
 	/** Create a point mutator that mutates alleles at specified \e loci to
@@ -602,7 +602,7 @@ public:
 	 *  also accepted). Please refer to class \c baseOperator for detailed
 	 *  descriptions of other parameters.
 	 */
-	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
+	PointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
@@ -614,25 +614,25 @@ public:
 
 
 	/// destructor
-	virtual ~pointMutator()
+	virtual ~PointMutator()
 	{
 	}
 
 
-	/// deep copy of a \c pointMutator
+	/// deep copy of a \c PointMutator
 	virtual baseOperator * clone() const
 	{
-		return new pointMutator(*this);
+		return new PointMutator(*this);
 	}
 
 
-	/// apply a \c pointMutator
+	/// apply a \c PointMutator
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.pointMutator>" ;
+		return "<simuPOP.PointMutator>" ;
 	}
 
 

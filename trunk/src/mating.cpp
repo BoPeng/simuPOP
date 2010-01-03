@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-offspringGenerator::offspringGenerator(const opList & ops,
+OffspringGenerator::OffspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatList & sexMode) :
 	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
 	m_transmitters(ops), m_initialized(false)
@@ -70,7 +70,7 @@ offspringGenerator::offspringGenerator(const opList & ops,
 }
 
 
-ULONG offspringGenerator::numOffspring(int gen)
+ULONG OffspringGenerator::numOffspring(int gen)
 {
 	if (m_numOffspring.size() == 1)
 		return static_cast<UINT>(m_numOffspring[0]);
@@ -104,7 +104,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 }
 
 
-Sex offspringGenerator::getSex(int count)
+Sex OffspringGenerator::getSex(int count)
 {
 	int mode = static_cast<int>(m_sexMode[0]);
 
@@ -123,15 +123,15 @@ Sex offspringGenerator::getSex(int count)
 }
 
 
-void offspringGenerator::initialize(const population & pop, SubPopID subPop)
+void OffspringGenerator::initialize(const population & pop, SubPopID subPop)
 {
 	m_initialized = true;
 }
 
 
-string offspringGenerator::describe(bool format) const
+string OffspringGenerator::describe(bool format) const
 {
-	string desc = "<simuPOP.offspringGenerator> produces offspring using operators\n<ul>\n";
+	string desc = "<simuPOP.OffspringGenerator> produces offspring using operators\n<ul>\n";
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
 
@@ -142,7 +142,7 @@ string offspringGenerator::describe(bool format) const
 }
 
 
-UINT offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+UINT OffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                            RawIndIterator & it,
                                            RawIndIterator & itEnd)
 {
@@ -188,11 +188,11 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 }
 
 
-controlledOffspringGenerator::controlledOffspringGenerator(
+ControlledOffspringGenerator::ControlledOffspringGenerator(
 	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
 	const opList & ops, const floatListFunc & numOffspring,
 	const floatList & sexMode)
-	: offspringGenerator(ops, numOffspring, sexMode),
+	: OffspringGenerator(ops, numOffspring, sexMode),
 	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 {
@@ -201,8 +201,8 @@ controlledOffspringGenerator::controlledOffspringGenerator(
 }
 
 
-controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffspringGenerator & rhs)
-	: offspringGenerator(rhs),
+ControlledOffspringGenerator::ControlledOffspringGenerator(const ControlledOffspringGenerator & rhs)
+	: OffspringGenerator(rhs),
 	m_loci(rhs.m_loci),
 	m_alleles(rhs.m_alleles),
 	m_freqFunc(rhs.m_freqFunc)
@@ -210,9 +210,9 @@ controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffsp
 }
 
 
-string controlledOffspringGenerator::describe(bool format) const
+string ControlledOffspringGenerator::describe(bool format) const
 {
-	string desc = "<simuPOP.controlledOffspringGenerator> produces offspring using operators\n<ul>\n";
+	string desc = "<simuPOP.ControlledOffspringGenerator> produces offspring using operators\n<ul>\n";
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
 
@@ -223,7 +223,7 @@ string controlledOffspringGenerator::describe(bool format) const
 }
 
 
-void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
+void ControlledOffspringGenerator::getExpectedAlleles(const population & pop,
                                                       vectorf & expFreq)
 {
 	// determine expected number of alleles of each allele
@@ -313,9 +313,9 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 }
 
 
-void controlledOffspringGenerator::initialize(const population & pop, SubPopID subPop)
+void ControlledOffspringGenerator::initialize(const population & pop, SubPopID subPop)
 {
-	offspringGenerator::initialize(pop, subPop);
+	OffspringGenerator::initialize(pop, subPop);
 
 	// expected frequency at each locus
 	if (subPop == 0) {
@@ -374,7 +374,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 
 
 /// CPPONLY
-UINT controlledOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+UINT ControlledOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                                      RawIndIterator & offBegin,
                                                      RawIndIterator & offEnd)
 {
@@ -384,7 +384,7 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 	// record family size (this may be wrong for the last family)
 	//
 	RawIndIterator itBegin = offBegin;
-	UINT numOff = offspringGenerator::generateOffspring(pop,
+	UINT numOff = OffspringGenerator::generateOffspring(pop,
 		dad, mom, offBegin, offEnd);
 
 	//
@@ -461,7 +461,7 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 }
 
 
-void sequentialParentChooser::initialize(population & pop, SubPopID sp)
+void SequentialParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_begin = pop.indIterator(sp);
 	m_ind = m_begin;
@@ -469,15 +469,15 @@ void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-parentChooser::individualPair sequentialParentChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair SequentialParentChooser::chooseParents(RawIndIterator)
 {
 	if (!m_ind.valid())
 		m_ind = m_begin;
-	return parentChooser::individualPair(&*m_ind++, NULL);
+	return ParentChooser::individualPair(&*m_ind++, NULL);
 }
 
 
-void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
+void SequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -500,7 +500,7 @@ void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair SequentialParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -527,7 +527,7 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIter
 }
 
 
-void randomParentChooser::initialize(population & pop, SubPopID sp)
+void RandomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_index.clear();
 
@@ -560,7 +560,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator basePtr)
+ParentChooser::individualPair RandomParentChooser::chooseParents(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -589,7 +589,7 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 }
 
 
-void randomParentsChooser::initialize(population & pop, SubPopID subPop)
+void RandomParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -653,7 +653,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair RandomParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -677,9 +677,9 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 	// this exception should be raised also in optimized mode because the cause
 	// can be random.
 	if (m_numMale == 0)
-		throw RuntimeError("randomParentsChooser fails because there is no male individual in a subpopulation.");
+		throw RuntimeError("RandomParentsChooser fails because there is no male individual in a subpopulation.");
 	if (m_numFemale == 0)
-		throw RuntimeError("randomParentsChooser fails because there is no female individual in a subpopulation ");
+		throw RuntimeError("RandomParentsChooser fails because there is no female individual in a subpopulation ");
 
 	if (m_selection) {
 		// using weighted sampler.
@@ -693,7 +693,7 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 }
 
 
-void polyParentsChooser::initialize(population & pop, SubPopID subPop)
+void PolyParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -749,7 +749,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair PolyParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -768,7 +768,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 	// using weidhted sampler.
 	if (dad == NULL) {
 		if (m_numMale == 0)
-			throw RuntimeError("polyParentsChooser fails because there is no male individual in a subpopulation.");
+			throw RuntimeError("PolyParentsChooser fails because there is no male individual in a subpopulation.");
 
 		if (m_selection)
 			dad = &*(m_maleIndex[m_malesampler.get()]);
@@ -783,7 +783,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 
 	if (mom == NULL) {
 		if (m_numFemale == 0)
-			throw RuntimeError("polyParentsChooser fails because there is no female individual in a subpopulation.");
+			throw RuntimeError("PolyParentsChooser fails because there is no female individual in a subpopulation.");
 
 		if (m_selection)
 			mom = &*(m_femaleIndex[m_femalesampler.get()]);
@@ -799,7 +799,7 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
+void AlphaParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -903,7 +903,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -914,9 +914,9 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 	// this exception should be raised also in optimized mode because the cause
 	// can be random.
 	if (m_numMale == 0)
-		throw RuntimeError("alphaParentsChooser fails because there is no male individual in a subpopulation.");
+		throw RuntimeError("AlphaParentsChooser fails because there is no male individual in a subpopulation.");
 	if (m_numFemale == 0)
-		throw RuntimeError("alphaParentsChooser fails because there is no female individual in a subpopulation ");
+		throw RuntimeError("AlphaParentsChooser fails because there is no female individual in a subpopulation ");
 
 	// using weidhted sampler.
 	if (m_selection) {                                    // with selection
@@ -1010,17 +1010,17 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-   parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
+   ParentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
    {
     DBG_ASSERT(initialized(), SystemError,
         "Please initialize this parent chooser before using it");
-    individual * par1 = randomParentChooser::chooseParents(basePtr).first;
+    individual * par1 = RandomParentChooser::chooseParents(basePtr).first;
     Sex sex1 = par1->sex();
     // there is no valid information field value
     if (m_degenerate) {
         int attempt = 0;
         while (++attempt < 1000) {
-            individual * par2 = randomParentChooser::chooseParents(basePtr).first;
+            individual * par2 = RandomParentChooser::chooseParents(basePtr).first;
             if (par2->sex() != sex1)
                 return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
         }
@@ -1047,14 +1047,14 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
    }
  */
 
-pyParentsChooser::pyParentsChooser(PyObject * pc)
-	: parentChooser(), m_func(pc), m_popObj(NULL),
+PyParentsChooser::PyParentsChooser(PyObject * pc)
+	: ParentChooser(), m_func(pc), m_popObj(NULL),
 	m_generator(NULL), m_parIterator(NULL)
 {
 }
 
 
-void pyParentsChooser::initialize(population & pop, SubPopID sp)
+void PyParentsChooser::initialize(population & pop, SubPopID sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
@@ -1091,7 +1091,7 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::individualPair PyParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -1117,7 +1117,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
-		return parentChooser::individualPair(&*(m_begin + parent), NULL);
+		return ParentChooser::individualPair(&*(m_begin + parent), NULL);
 	} else if (PySequence_Check(item)) {
 		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
 			"Parents should be returned in the form of a sequence of two elements");
@@ -1140,21 +1140,21 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 			Py_DECREF(v);
 		}
 		Py_DECREF(item);
-		return parentChooser::individualPair(parents[0], parents[1]);
+		return ParentChooser::individualPair(parents[0], parents[1]);
 	} else {
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
 		if (ind)
-			return parentChooser::individualPair(reinterpret_cast<individual *>(pyIndPointer(item)), NULL);
+			return ParentChooser::individualPair(reinterpret_cast<individual *>(pyIndPointer(item)), NULL);
 		else
 			DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
 	}
 	// this should not be reached
-	return parentChooser::individualPair(NULL, NULL);
+	return ParentChooser::individualPair(NULL, NULL);
 }
 
 
-void pyParentsChooser::finalize(population & pop, SubPopID sp)
+void PyParentsChooser::finalize(population & pop, SubPopID sp)
 {
 	DBG_FAILIF(m_popObj == NULL || m_parIterator == NULL || m_generator == NULL,
 		SystemError, "Python generator is not properly initialized.");
@@ -1246,7 +1246,7 @@ void mating::submitScratch(population & pop, population & scratch)
 
 /*
    pedigreeMating::pedigreeMating(const pedigree & ped,
-    const offspringGenerator & generator, bool setSex, bool setAffection,
+    const OffspringGenerator & generator, bool setSex, bool setAffection,
     const vectorstr & copyFields)
     : mating(uintListFunc()), m_ped(ped),
     m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
@@ -1375,22 +1375,22 @@ void mating::submitScratch(population & pop, population & scratch)
    }
  */
 
-homoMating::homoMating(parentChooser & chooser,
-	offspringGenerator & generator,
+homoMating::homoMating(ParentChooser & chooser,
+	OffspringGenerator & generator,
 	const uintListFunc & subPopSize,
 	subPopList subPops, double weight)
 	: mating(subPopSize), m_subPops(subPops), m_weight(weight)
 {
-	m_parentChooser = chooser.clone();
-	m_offspringGenerator = generator.clone();
+	m_ParentChooser = chooser.clone();
+	m_OffspringGenerator = generator.clone();
 }
 
 
 string homoMating::describe(bool format) const
 {
 	string desc = "<simuPOP.homoMating> a homogeneous mating scheme that uses\n<ul>\n<li>"
-	              + m_parentChooser->describe(false) + "\n<li>"
-	              + m_offspringGenerator->describe(false) + "</ul>\n";
+	              + m_ParentChooser->describe(false) + "\n<li>"
+	              + m_OffspringGenerator->describe(false) + "</ul>\n";
 
 	return format ? formatText(desc) : desc;
 }
@@ -1403,27 +1403,27 @@ bool homoMating::mateSubPop(population & pop, SubPopID subPop,
 	if (offBegin == offEnd)
 		return true;
 
-	if (!m_parentChooser->initialized())
-		m_parentChooser->initialize(pop, subPop);
+	if (!m_ParentChooser->initialized())
+		m_ParentChooser->initialize(pop, subPop);
 
-	if (!m_offspringGenerator->initialized())
-		m_offspringGenerator->initialize(pop, subPop);
+	if (!m_OffspringGenerator->initialized())
+		m_OffspringGenerator->initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
 		individual * dad = NULL;
 		individual * mom = NULL;
-		parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin());
+		ParentChooser::individualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
 		dad = parents.first;
 		mom = parents.second;
 
 		//
-		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd);
+		UINT numOff = m_OffspringGenerator->generateOffspring(pop, dad, mom, it, offEnd);
 		(void)numOff;             // silent warning about unused variable.
 	}
-	m_parentChooser->finalize(pop, subPop);
-	m_offspringGenerator->finalize(pop);
+	m_ParentChooser->finalize(pop, subPop);
+	m_OffspringGenerator->finalize(pop);
 	return true;
 }
 

@@ -329,7 +329,7 @@ public:
 
 	/** Set a VSP \e splitter to the population, which defines the same VSPs
 	 *  for all subpopulations. If different VSPs are needed for different
-	 *  subpopulations, a \c combinedSplitter can be used to make these VSPs
+	 *  subpopulations, a \c CombinedSplitter can be used to make these VSPs
 	 *  available to all subpopulations.
 	 *  <group>3-VSP</group>
 	 */
@@ -1027,7 +1027,7 @@ public:
 	 *  names of extracted subpopulations are kept although extracted
 	 *  subpopulations can have fewer individuals if they are created from
 	 *  extracted virtual subpopulations. (e.g. it is possible to extract all
-	 *  male individuals from a subpopulation using a \c sexSplitter()). If
+	 *  male individuals from a subpopulation using a \c SexSplitter()). If
 	 *  \e rearrange is \c True, each (virtual) subpopulation in \e subPops
 	 *  becomes a new subpopulation in the extracted population in the order
 	 *  at which they are specified. Because each virtual subpopulation becomes
@@ -1067,7 +1067,7 @@ public:
 	 *  Structure and names of extracted subpopulations will be kept although
 	 *  extracted subpopulations can have fewer individuals if they are created
 	 *  from extracted virtual subpopulations. (e.g. it is possible to extract
-	 *  all male individuals from a subpopulation using a \c sexSplitter()).
+	 *  all male individuals from a subpopulation using a \c SexSplitter()).
 	 *  If a list of loci is specified, only genotypes at specified loci are
 	 *  extracted. If a list of \e infoFields is specified, only these
 	 *  information fields are extracted. If \e ancGen is not \c -1 (default,

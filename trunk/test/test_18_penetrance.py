@@ -21,7 +21,7 @@ class TestPenetrance(unittest.TestCase):
     def setUp(self):
         self.pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        self.pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        self.pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(self.pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -52,7 +52,7 @@ class TestPenetrance(unittest.TestCase):
         'Testing info field for penetrance opeartors'
         pop = population(size=[500,100,1000],
             ploidy=2, loci = [1], infoFields=['penetrance'])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],

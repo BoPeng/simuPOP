@@ -112,7 +112,7 @@ class TestPyOperator(unittest.TestCase):
             postOps = [
                 pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
                 stat(alleleFreq=range(5)),
-                terminateIf( 'alleleFreq[0][1] < 0.2' )
+                TerminateIf( 'alleleFreq[0][1] < 0.2' )
                 ],
             gen = 30
         )

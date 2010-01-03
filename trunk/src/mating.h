@@ -52,7 +52,7 @@ namespace simuPOP {
  *  offspring, determinning their sex, and transmitting genotypes from parents
  *  to offspring.
  */
-class offspringGenerator
+class OffspringGenerator
 {
 public:
 	/** Create a basic offspring generator. This offspring generator uses
@@ -97,18 +97,18 @@ public:
 	 *  greater than or equal to the number of offspring in this family, all
 	 *  offspring in this family will be \c MALE or \c FEMALE.
 	 */
-	offspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
+	OffspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RANDOM_SEX);
 
-	virtual ~offspringGenerator()
+	virtual ~OffspringGenerator()
 	{
 	}
 
 
 	/// Make a deep copy of this offspring generator.
-	virtual offspringGenerator * clone() const
+	virtual OffspringGenerator * clone() const
 	{
-		return new offspringGenerator(*this);
+		return new OffspringGenerator(*this);
 	}
 
 
@@ -178,7 +178,7 @@ protected:
  *  the offspring generation. This method is described in detail in
  *  "Peng et al, (2007) PLoS Genetics".
  */
-class controlledOffspringGenerator : public offspringGenerator
+class ControlledOffspringGenerator : public OffspringGenerator
 {
 public:
 	/** Create an offspring generator that selects offspring so that allele
@@ -202,17 +202,17 @@ public:
 	 *  offspring generation is then filled with families without only wild
 	 *  type alleles at these \e loci.
 	 *
-	 *  This offspring generator is derived from class \e offspringGenerator.
-	 *  Please refer to class \e offspringGenerator for a detailed description
+	 *  This offspring generator is derived from class \e OffspringGenerator.
+	 *  Please refer to class \e OffspringGenerator for a detailed description
 	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
-	controlledOffspringGenerator(const uintList & loci, const uintList & alleles,
+	ControlledOffspringGenerator(const uintList & loci, const uintList & alleles,
 		PyObject * freqFunc, const opList & ops = vectorop(),
 		const floatListFunc & numOffspring = 1, const floatList & sexMode = RANDOM_SEX);
 
 
 	/// CPPONLY
-	controlledOffspringGenerator(const controlledOffspringGenerator & rhs);
+	ControlledOffspringGenerator(const ControlledOffspringGenerator & rhs);
 
 	/// CPPONLY
 	void initialize(const population & pop, SubPopID subPop);
@@ -223,9 +223,9 @@ public:
 		RawIndIterator & offEnd);
 
 	/// Deep copy of a controlled random mating scheme
-	virtual offspringGenerator * clone() const
+	virtual OffspringGenerator * clone() const
 	{
-		return new controlledOffspringGenerator(*this);
+		return new ControlledOffspringGenerator(*this);
 	}
 
 
@@ -261,23 +261,23 @@ private:
  *  two parents, which should be matched by the offspring generator. This class
  *  is the base class of all parent choosers, and should not be used directly.
  */
-class parentChooser
+class ParentChooser
 {
 public:
 	typedef std::pair<individual *, individual *> individualPair;
 
 public:
 	// CPPONLY
-	parentChooser(const string & selectionField = string()) : m_initialized(false),
+	ParentChooser(const string & selectionField = string()) : m_initialized(false),
 		m_selectionField(selectionField)
 	{
 	}
 
 
 	/// Deep copy of a parent chooser
-	virtual parentChooser * clone() const
+	virtual ParentChooser * clone() const
 	{
-		return new parentChooser(*this);
+		return new ParentChooser(*this);
 	}
 
 
@@ -294,7 +294,7 @@ public:
 	/// describe a general parent chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.parentChooser> (base class)";
+		return "<simuPOP.ParentChooser> (base class)";
 	}
 
 
@@ -313,7 +313,7 @@ public:
 
 
 	/// destructor
-	virtual ~parentChooser() { }
+	virtual ~ParentChooser() { }
 
 protected:
 	bool m_initialized;
@@ -327,28 +327,28 @@ protected:
  *  reached, this parent chooser will restart from the beginning of the
  *  (virtual) subpopulation.
  */
-class sequentialParentChooser : public parentChooser
+class SequentialParentChooser : public ParentChooser
 {
 public:
 	/** Create a parent chooser that chooses a parent from a parental (virtual)
 	 *  subpopulation sequentially.
 	 */
-	sequentialParentChooser() : parentChooser()
+	SequentialParentChooser() : ParentChooser()
 	{
 	}
 
 
 	/// Deep copy of a sequential parent chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new sequentialParentChooser(*this);
+		return new SequentialParentChooser(*this);
 	}
 
 
 	/// describe a sequential parent chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.sequentialParentChooser> chooses a parent sequentially";
+		return "<simuPOP.SequentialParentChooser> chooses a parent sequentially";
 	}
 
 
@@ -373,14 +373,14 @@ private:
  *  fathers (or mothers) from the beginning of the (virtual) subpopulation
  *  again.
  */
-class sequentialParentsChooser : public parentChooser
+class SequentialParentsChooser : public ParentChooser
 {
 public:
 	/** Create a parent chooser that chooses two parents sequentially from a
 	 *  parental (virtual) subpopulation.
 	 */
-	sequentialParentsChooser() :
-		parentChooser(), m_maleIndex(0), m_femaleIndex(0),
+	SequentialParentsChooser() :
+		ParentChooser(), m_maleIndex(0), m_femaleIndex(0),
 		m_numMale(0), m_numFemale(0),
 		m_curMale(0), m_curFemale(0)
 	{
@@ -388,16 +388,16 @@ public:
 
 
 	/// Deep copy of a sequential parents chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new sequentialParentsChooser(*this);
+		return new SequentialParentsChooser(*this);
 	}
 
 
 	/// describe a sequential parents chooser.
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.sequentialParentsChooser> chooses two parents sequentially";
+		return "<simuPOP.SequentialParentsChooser> chooses two parents sequentially";
 	}
 
 
@@ -430,7 +430,7 @@ private:
  *  will be raised if all parents are exhausted. Selection is disabled in the
  *  without-replacement case.
  */
-class randomParentChooser : public parentChooser
+class RandomParentChooser : public ParentChooser
 {
 public:
 	/** Create a random parent chooser that choose parents with or without
@@ -439,25 +439,25 @@ public:
 	 *  population, the probability that a parent is chosen is proportional to
 	 *  his/her fitness value stored in \e selectionField.
 	 */
-	randomParentChooser(bool replacement = true,
+	RandomParentChooser(bool replacement = true,
 		const string & selectionField = "fitness") :
-		parentChooser(selectionField), m_replacement(replacement),
+		ParentChooser(selectionField), m_replacement(replacement),
 		m_index(0), m_chosen(0), m_sampler(getRNG()), m_size(0), m_shift(0)
 	{
 	}
 
 
 	/// Deep copy of a random parent chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new randomParentChooser(*this);
+		return new RandomParentChooser(*this);
 	}
 
 
 	/// describe a random parent chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.randomParentChooser> chooses one parent randomly";
+		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
 	}
 
 
@@ -495,7 +495,7 @@ protected:
  *  males or females are exhausted. Selection is disabled in the
  *  without-replacement case.
  */
-class randomParentsChooser : public parentChooser
+class RandomParentsChooser : public ParentChooser
 {
 public:
 	/** Create a random parents chooser that choose two parents with or without
@@ -504,8 +504,8 @@ public:
 	 *  population, the probability that a parent is chosen is proportional to
 	 *  his/her fitness value stored in \e selectionField.
 	 */
-	randomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
-		parentChooser(selectionField), m_replacement(replacement),
+	RandomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
+		ParentChooser(selectionField), m_replacement(replacement),
 		m_maleIndex(0), m_femaleIndex(0), m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(getRNG()), m_femalesampler(getRNG())
 	{
@@ -513,16 +513,16 @@ public:
 
 
 	/// Deep copy of a random parents chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new randomParentsChooser(*this);
+		return new RandomParentsChooser(*this);
 	}
 
 
 	/// describe a random parents chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.randomParentsChooser> chooses two parents randomly";
+		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
 	}
 
 
@@ -561,7 +561,7 @@ private:
  *  This mimicks multi-spouse mating schemes such as polygyny or polyandry
  *  in some populations. Natural selection is supported for both sexes.
  */
-class polyParentsChooser : public parentChooser
+class PolyParentsChooser : public ParentChooser
 {
 public:
 	/** Create a multi-spouse parents chooser where each father (if \e polySex
@@ -572,9 +572,9 @@ public:
 	 *  same sex. Selection will be disabled if specified information field
 	 *  \e selectionField (default to \c "fitness") does not exist.
 	 */
-	polyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
+	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
 		const string & selectionField = "fitness") :
-		parentChooser(selectionField),
+		ParentChooser(selectionField),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
 		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
@@ -586,16 +586,16 @@ public:
 	}
 
 
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new polyParentsChooser(*this);
+		return new PolyParentsChooser(*this);
 	}
 
 
 	/// describe a polygenic parents chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.polyParentsChooser> chooses parents with several spouses";
+		return "<simuPOP.PolyParentsChooser> chooses parents with several spouses";
 	}
 
 
@@ -640,7 +640,7 @@ private:
  *  identical to a random mating scheme, except that one of the parents are
  *  chosen from these alpha individuals.
  */
-class alphaParentsChooser : public parentChooser
+class AlphaParentsChooser : public ParentChooser
 {
 public:
 	/** Create a parent chooser that chooses father (if \e alphaSex is \c MALE)
@@ -653,9 +653,9 @@ public:
 	 *  from the alpha individuals randomly or according to individual fitness.
 	 *  The other parents are chosen randomly.
 	 */
-	alphaParentsChooser(Sex alphaSex = MALE, UINT alphaNum = 0, string alphaField = string(),
+	AlphaParentsChooser(Sex alphaSex = MALE, UINT alphaNum = 0, string alphaField = string(),
 		const string & selectionField = "fitness") :
-		parentChooser(selectionField),
+		ParentChooser(selectionField),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
 		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
@@ -665,16 +665,16 @@ public:
 
 
 	/// Deep copy of an alpha parents chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new alphaParentsChooser(*this);
+		return new AlphaParentsChooser(*this);
 	}
 
 
 	/// describe an alpha parents chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.alphaParentsChooser> chooses alpha individuals and their spouses";
+		return "<simuPOP.AlphaParentsChooser> chooses alpha individuals and their spouses";
 	}
 
 
@@ -720,14 +720,14 @@ private:
  *  scheme can be implemeneted using this mating scheme if certain type of
  *  relatives are located for each individual, and are used for mating.
  *
- *  This parent chooser uses \c randomParentChooser to choose one parent and
+ *  This parent chooser uses \c RandomParentChooser to choose one parent and
  *  randomly choose another one from the information fields. Natural selection
  *  is supported during the selection of the first parent. Because of
  *  potentially uneven distribution of valid information fields, the overall
  *  process may not be as random as expected.
  */
 /*
-   class infoParentsChooser : public randomParentChooser
+   class infoParentsChooser : public RandomParentChooser
    {
    public:
  */
@@ -745,7 +745,7 @@ private:
    PyObject * func = NULL, PyObject * param = NULL,
    const string & idField = '',
    const string & selectionField = "fitness") :
-   randomParentChooser(true, selectionField),
+   RandomParentChooser(true, selectionField),
    m_infoFields(infoFields.elems()), m_idField(idField), m_func(func), m_param(param),
    m_infoIdx(0), m_degenerate(false)
    {
@@ -755,7 +755,7 @@ private:
 
 
    /// Deep copy of a infomation parent chooser.
-   parentChooser * clone() const
+   ParentChooser * clone() const
    {
    return new infoParentsChooser(*this);
    }
@@ -783,7 +783,7 @@ private:
 
    vectori m_infoIdx;
    // if there is no valid individual, this mating schemes
-   // works like a double parentChooser.
+   // works like a double ParentChooser.
    bool m_degenerate;
    }; */
 
@@ -800,7 +800,7 @@ private:
  *  population, it is easy to return parents from a particular virtual
  *  subpopulation using virtual subpopulation related functions.
  */
-class pyParentsChooser : public parentChooser
+class PyParentsChooser : public ParentChooser
 {
 public:
 	/** Create a Python parent chooser using a Python generator function
@@ -810,11 +810,11 @@ public:
 	 *  parents repeatedly using the iterator interface of the generator
 	 *  function.
 	 */
-	pyParentsChooser(PyObject * parentsGenerator);
+	PyParentsChooser(PyObject * parentsGenerator);
 
 	/// CPPONLY
-	pyParentsChooser(const pyParentsChooser & rhs)
-		: parentChooser(rhs), m_func(rhs.m_func),
+	PyParentsChooser(const PyParentsChooser & rhs)
+		: ParentChooser(rhs), m_func(rhs.m_func),
 		m_popObj(NULL), m_generator(NULL), m_parIterator(NULL)
 	{
 		m_initialized = false;
@@ -822,16 +822,16 @@ public:
 
 
 	/// Deep copy of a python parent chooser.
-	parentChooser * clone() const
+	ParentChooser * clone() const
 	{
-		return new pyParentsChooser(*this);
+		return new PyParentsChooser(*this);
 	}
 
 
 	/// describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
-		return "<simuPOP.pyParentsChooser> chooses parents according to a user-provided Python function";
+		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
 
@@ -842,7 +842,7 @@ public:
 	void finalize(population & pop, SubPopID sp);
 
 	/// destructor
-	~pyParentsChooser()
+	~PyParentsChooser()
 	{
 		DBG_FAILIF(m_popObj != NULL || m_parIterator != NULL || m_generator != NULL,
 			SystemError, "Python generator is not properly destroyed.");
@@ -983,7 +983,7 @@ protected:
  *  greatest ancestral generation in \e ped).
  */
 /*
-   pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
+   pedigreeMating(const pedigree & ped, const OffspringGenerator & generator,
    bool setSex = false, bool setAffection = false,
    const vectorstr & copyFields = vectorstr());
 
@@ -1017,7 +1017,7 @@ protected:
    private:
    pedigree m_ped;
 
-   offspringGenerator * m_generator;
+   OffspringGenerator * m_generator;
 
    int m_parentalPopSize;
 
@@ -1064,8 +1064,8 @@ public:
 	 *  offspring this mating scheme will produce. Please refer to mating scheme
 	 *  \c heteroMating for the use of these two parameters.
 	 */
-	homoMating(parentChooser & chooser,
-		offspringGenerator & generator,
+	homoMating(ParentChooser & chooser,
+		OffspringGenerator & generator,
 		const uintListFunc & subPopSize = uintListFunc(),
 		subPopList subPops = subPopList(),
 		double weight = 0);
@@ -1073,8 +1073,8 @@ public:
 	/// destructor
 	~homoMating()
 	{
-		delete m_parentChooser;
-		delete m_offspringGenerator;
+		delete m_ParentChooser;
+		delete m_OffspringGenerator;
 	}
 
 
@@ -1082,8 +1082,8 @@ public:
 	homoMating(const homoMating & rhs) :
 		mating(rhs), m_subPops(rhs.m_subPops), m_weight(rhs.m_weight)
 	{
-		m_offspringGenerator = rhs.m_offspringGenerator->clone();
-		m_parentChooser = rhs.m_parentChooser->clone();
+		m_OffspringGenerator = rhs.m_OffspringGenerator->clone();
+		m_ParentChooser = rhs.m_ParentChooser->clone();
 	}
 
 
@@ -1117,8 +1117,8 @@ public:
 		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:
-	parentChooser * m_parentChooser;
-	offspringGenerator * m_offspringGenerator;
+	ParentChooser * m_ParentChooser;
+	OffspringGenerator * m_OffspringGenerator;
 
 	///
 	subPopList m_subPops;

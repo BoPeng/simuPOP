@@ -177,7 +177,7 @@ class TestPerformance(unittest.TestCase):
             #    43.66, 64.6, 83.77
             #
             #
-            # Version 0.8.2, rewrite offspringGenerators, GCC 4.1.2
+            # Version 0.8.2, rewrite OffspringGenerators, GCC 4.1.2
             #
             # 11/8/2007
             #
@@ -417,7 +417,7 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.evolve(
                 initOps = [initByFreq([1-p]+[p/10.]*10)],
-                ops = [recombinator(rate=0.0001)],
+                ops = [Recombinator(rate=0.0001)],
                 end=100
             )
             c2 = time.clock()
@@ -428,7 +428,7 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.evolve(
                 initOps = [initByFreq([1-p]+[p/10.]*10)],
-                ops = [recombinator(rate=0.5)],
+                ops = [Recombinator(rate=0.5)],
                 end=100
             )
             c2 = time.clock()
@@ -651,8 +651,8 @@ class TestPerformance(unittest.TestCase):
         simu.evolve(
             initOps = [initByValue([50]*200)],
             ops = [
-               #recombinator(rate=0.5),
-               smmMutator(rate=0.0001),
+               #Recombinator(rate=0.5),
+               SmmMutator(rate=0.0001),
                pyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -671,8 +671,8 @@ class TestPerformance(unittest.TestCase):
         simu.evolve(
             initOps = [initByValue([50]*200)],
             ops = [
-               recombinator(rate=0.5),
-               smmMutator(rate=0.0001),
+               Recombinator(rate=0.5),
+               SmmMutator(rate=0.0001),
                pyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -691,7 +691,7 @@ class TestPerformance(unittest.TestCase):
         simu.evolve(
             initOps = [initByValue([50]*200)],
             ops = [
-               smmMutator(rate=0.0001),
+               SmmMutator(rate=0.0001),
                pyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -709,8 +709,8 @@ class TestPerformance(unittest.TestCase):
         simu.evolve(
             initOps = [initByValue([50]*200)],
             ops = [
-               recombinator(rate=0.0005),
-               smmMutator(rate=0.0001),
+               Recombinator(rate=0.0005),
+               SmmMutator(rate=0.0001),
                pyEval(r'"%s\n"%gen', step=10),
            ],
            end = 100

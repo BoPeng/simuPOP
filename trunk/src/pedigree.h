@@ -64,10 +64,10 @@ public:
 	 *  unique ID for all individuals. Multiple individuls with the same ID are
 	 *  allowed and will be considered as the same individual, but a warning
 	 *  will be given if they actually differ in genotype or information fields.
-	 *  Operators \c idTagger and  \c pedigreeTagger are usually used to assign
+	 *  Operators \c IdTagger and  \c PedigreeTagger are usually used to assign
 	 *  such IDs, although function \c sampling.indexToID could be used to
 	 *  assign unique IDs and construct parental IDs from index based
-	 *  relationship recorded by operator \c parentsTagger. A pedigree object
+	 *  relationship recorded by operator \c ParentsTagger. A pedigree object
 	 *  could be constructed with one or no parent but certain functions such
 	 *  as relative tracking will not be available for such pedigrees.
 	 */
@@ -303,19 +303,19 @@ private:
 //
 //
 //  /// load pedigree from a file, the file is usually saved by \c parentTagger or
-//  /// \c parentsTagger. The format is described in the simuPOP reference manual
+//  /// \c ParentsTagger. The format is described in the simuPOP reference manual
 //  void load(const string & filename);
 //
 //  /// load information \c name from a information pedigree file and add to this pedigree
 //  /// Information \c name should not have existed in the pedigree. The information
 //  /// pedigree file \c filename is usually produced by taggers such as \c sexTagger
-//  /// \c affectionTagger, \c pyTagger and \c infoTagger.
+//  /// \c affectionTagger, \c PyTagger and \c infoTagger.
 //  void loadInfo(const string & filename, const string & name);
 //
 //  /// load information \c names from a information pedigree file and add to this pedigree
 //  /// Information names in \c names should not have existed in the pedigree.
 //  /// pedigree file \c filename is usually produced by taggers such as \c sexTagger
-//  /// \c affectionTagger, \c pyTagger and \c infoTagger.
+//  /// \c affectionTagger, \c PyTagger and \c infoTagger.
 //  void loadInfo(const string & filename, const vectorstr & names);
 //
 //  /// add an information field to the pedigree, with given initial value

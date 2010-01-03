@@ -316,11 +316,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
             gen = 5,
@@ -336,11 +336,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 scatterPlotter(['x', 'y'],
@@ -360,11 +360,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 scatterPlotter(['x', 'y'],
@@ -386,8 +386,8 @@ class TestPlotter(unittest.TestCase):
         InitSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x')]),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x')]),
             postOps = histPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2),
                 #pause(),
@@ -404,11 +404,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 histPlotter(infoFields=['x', 'y'],
@@ -433,13 +433,13 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         def qqline(r, data=None, **kwargs):
             r.qqline(data)
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 qqPlotter(infoFields=['x', 'y'],
@@ -465,14 +465,14 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         def qqplot(r, data=None, field=None, subPop=None, **kwargs):
             r.qqnorm(data, main='QQ drawn in plotHook fld: %s sp: %s' % (field, subPop))
             r.qqline(data)
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 infoPlotter(infoFields=['x', 'y'],
@@ -494,8 +494,8 @@ class TestPlotter(unittest.TestCase):
         InitSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x')]),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x')]),
             postOps = [
                 boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
@@ -514,11 +514,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = boxPlotter(infoFields=['x', 'y'], step=2),
                 #pause(),
@@ -536,11 +536,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
                 boxPlotter(infoFields=['x', 'y'], 
@@ -564,11 +564,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = boxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
@@ -588,11 +588,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
@@ -612,11 +612,11 @@ class TestPlotter(unittest.TestCase):
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            matingScheme=randomMating(ops=[mendelianGenoTransmitter(),
-                inheritTagger(PATERNAL, infoFields='x'),
-                inheritTagger(MATERNAL, infoFields='y'),
+            matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
+                InheritTagger(PATERNAL, infoFields='x'),
+                InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,

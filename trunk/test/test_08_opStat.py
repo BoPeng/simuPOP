@@ -37,7 +37,7 @@ class TestStat(unittest.TestCase):
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         InitSex(pop, sex=[MALE, FEMALE])
         Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
         self.assertEqual(pop.dvars().subPopSize, [100, 400, 800])
@@ -73,7 +73,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfMales, 1./8)
         self.assertEqual(pop.dvars(1).propOfFemales, 7./8)
         # test virtual subpopulations
-        pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]))
+        pop.setVirtualSplitter(ProportionSplitter([0.4, 0.6]))
         Stat(pop, numOfMales=True, subPops=[(0, 0), (1, 1)], vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfFemales_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfMales, 80)
@@ -106,7 +106,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfAffected, 1/8.)
         self.assertEqual(pop.dvars(1).propOfUnaffected, 7/8.)
         # virtual subpopulation?
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         Stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)],
             vars=['numOfAffected_sp', 'propOfUnaffected_sp', 'numOfUnaffected_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
@@ -130,7 +130,7 @@ class TestStat(unittest.TestCase):
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
         pop = population(size=[500,100,1000], ploidy=2, loci = [1])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -168,7 +168,7 @@ class TestStat(unittest.TestCase):
         'Testing counting of heterozygote frequency'
         pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         if moduleInfo()['alleleType'] == 'binary':
@@ -203,7 +203,7 @@ class TestStat(unittest.TestCase):
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
         pop = population(size=[500,100,1000], ploidy=2, loci = [1])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -244,7 +244,7 @@ class TestStat(unittest.TestCase):
         import random
         pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
         InitSex(pop, sex=[MALE, FEMALE])
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         pop.setIndInfo([1], field='x', subPop=(0, 0))
         pop.setIndInfo([2], field='x', subPop=(0, 1))
         pop.setIndInfo([random.randint(4, 10) for x in range(500)],
@@ -264,7 +264,7 @@ class TestStat(unittest.TestCase):
         'Testing calculation of Fst value'
         pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],

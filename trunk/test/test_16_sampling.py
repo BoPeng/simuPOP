@@ -28,14 +28,14 @@ class TestSampling(unittest.TestCase):
             initOps = [
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8]),
-                 idTagger(),
+                 IdTagger(),
             ],
             matingScheme=randomMating(
                 numOffspring=(UNIFORM_DISTRIBUTION, 2, 4),
-                ops=[mendelianGenoTransmitter(),
-                idTagger(),
-                pedigreeTagger(),
-                parentsTagger(),
+                ops=[MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger(),
+                ParentsTagger(),
             ]),
             postOps = [
                 mapPenetrance(loci=0,
@@ -54,15 +54,15 @@ class TestSampling(unittest.TestCase):
                  initSex(),
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
-                 idTagger(),
+                 IdTagger(),
             ],
             #preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
             matingScheme=randomMating(
                 numOffspring=(UNIFORM_DISTRIBUTION, 2, 5),
-                ops=[mendelianGenoTransmitter(),
-                idTagger(),
-                pedigreeTagger(),
-                parentsTagger(),
+                ops=[MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger(),
+                ParentsTagger(),
                 ]),
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
@@ -92,7 +92,7 @@ class TestSampling(unittest.TestCase):
             inpop = self.pop.individual(int(ind.oldindex))
             self.assertEqual(ind, inpop)
         #
-        self.pop.setVirtualSplitter(sexSplitter())
+        self.pop.setVirtualSplitter(SexSplitter())
         s = drawRandomSample(self.pop, 10, subPops=[(0,0), (1,0)])
         # all samples should be MALE
         self.assertEqual(s.popSize(), 10)
