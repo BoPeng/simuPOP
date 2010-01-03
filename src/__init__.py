@@ -216,7 +216,7 @@ __all__ = [
     #
     'tagID',
     #
-    'Migrate',
+    'migrate',
     'resizeSubPops',
     'splitSubPops',
     'mergeSubPops',
@@ -758,7 +758,7 @@ def infoExec(pop, *args, **kwargs):
     '''
     InfoExec(*args, **kwargs).apply(pop)
 
-def Migrate(pop, *args, **kwargs):
+def migrate(pop, *args, **kwargs):
     'Function form of operator ``Migrator``.'
     Migrator(*args, **kwargs).apply(pop)
 

@@ -9649,7 +9649,7 @@ Migrator
 \family default
  (and its function form 
 \family typewriter
-Migrate
+migrate
 \family default
 ) migrates individuals from one subpopulation to another.
  The key parameters are
@@ -10039,7 +10039,7 @@ operators
 \end_layout
 
 \begin_layout Subsubsection
-Migrate from virtual subpopulations *
+migrate from virtual subpopulations *
 \end_layout
 
 \begin_layout Standard
