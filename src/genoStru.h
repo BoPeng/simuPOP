@@ -252,7 +252,7 @@ namespace simuPOP {
  *  All individuals in a population share the same genotypic properties such as
  *  number of chromosomes, number and position of loci, names of markers,
  *  chromosomes, and information fields. These properties are stored in this
- *  \c GenoStruTrait class and are accessible from \c individual,
+ *  \c GenoStruTrait class and are accessible from \c Individual,
  *  \c Population, and \c Simulator classes. Currently, a genotypic structure
  *  consists of
  *

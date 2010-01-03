@@ -36,7 +36,7 @@
 
 namespace simuPOP {
 
-class individual;
+class Individual;
 class Population;
 
 /**
@@ -757,7 +757,7 @@ public:
 	 *  \e allele defines a VSP, which is a list of allowed alleles at these
 	 *  \e loci. If only one VSP is defined, the outer list of the nested list
 	 *  can be ignored. If phase if true, the order of alleles in each list is
-	 *  significant. If more than one set of alleles are given, individuals
+	 *  significant. If more than one set of alleles are given, Individuals
 	 *  having either of them is qualified.
 	 *
 	 *  For example, in a haploid population, <tt>loci=1, alleles=[0, 1]</tt>
@@ -819,9 +819,9 @@ public:
 	string name(SubPopID vsp);
 
 private:
-	bool match(const individual * ind, const vectori & alleles) const;
+	bool match(const Individual * ind, const vectori & alleles) const;
 
-	bool matchSingle(const individual * ind, const vectori & alleles) const;
+	bool matchSingle(const Individual * ind, const vectori & alleles) const;
 
 private:
 	vectoru m_loci;

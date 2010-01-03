@@ -142,7 +142,7 @@ string OffspringGenerator::describe(bool format) const
 }
 
 
-UINT OffspringGenerator::generateOffspring(Population & pop, individual * dad, individual * mom,
+UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
                                            RawIndIterator & it,
                                            RawIndIterator & itEnd)
 {
@@ -374,7 +374,7 @@ void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID s
 
 
 /// CPPONLY
-UINT ControlledOffspringGenerator::generateOffspring(Population & pop, individual * dad, individual * mom,
+UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
                                                      RawIndIterator & offBegin,
                                                      RawIndIterator & offEnd)
 {
@@ -469,11 +469,11 @@ void SequentialParentChooser::initialize(Population & pop, SubPopID sp)
 }
 
 
-ParentChooser::individualPair SequentialParentChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndIterator)
 {
 	if (!m_ind.valid())
 		m_ind = m_begin;
-	return ParentChooser::individualPair(&*m_ind++, NULL);
+	return ParentChooser::IndividualPair(&*m_ind++, NULL);
 }
 
 
@@ -500,13 +500,13 @@ void SequentialParentsChooser::initialize(Population & pop, SubPopID subPop)
 }
 
 
-ParentChooser::individualPair SequentialParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair SequentialParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	individual * dad = NULL;
-	individual * mom = NULL;
+	Individual * dad = NULL;
+	Individual * mom = NULL;
 
 	if (m_curMale == m_numMale)
 		m_curMale = 0;
@@ -560,7 +560,7 @@ void RandomParentChooser::initialize(Population & pop, SubPopID sp)
 }
 
 
-ParentChooser::individualPair RandomParentChooser::chooseParents(RawIndIterator basePtr)
+ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -568,11 +568,11 @@ ParentChooser::individualPair RandomParentChooser::chooseParents(RawIndIterator 
 	if (!m_replacement) {
 		if (m_index.empty())
 			throw RuntimeError("All parents have been chosen.");
-		individual * ind = &*m_index.back();
+		Individual * ind = &*m_index.back();
 		m_index.pop_back();
-		return individualPair(ind, NULL);
+		return IndividualPair(ind, NULL);
 	}
-	individual * ind = NULL;
+	Individual * ind = NULL;
 	if (m_index.empty()) {
 		if (m_selection)
 			// basePtr points to the beginning of the population, not subpopulation
@@ -585,7 +585,7 @@ ParentChooser::individualPair RandomParentChooser::chooseParents(RawIndIterator 
 		else
 			ind = &*(m_index[getRNG().randInt(m_size)]);
 	}
-	return individualPair(ind, NULL);
+	return IndividualPair(ind, NULL);
 }
 
 
@@ -653,13 +653,13 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 }
 
 
-ParentChooser::individualPair RandomParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	individual * dad = NULL;
-	individual * mom = NULL;
+	Individual * dad = NULL;
+	Individual * mom = NULL;
 
 	if (!m_replacement) {
 		if (m_femaleIndex.empty())
@@ -749,13 +749,13 @@ void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
 }
 
 
-ParentChooser::individualPair PolyParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	individual * dad = NULL;
-	individual * mom = NULL;
+	Individual * dad = NULL;
+	Individual * mom = NULL;
 
 	if (m_polyNum > 1 && m_polyCount > 0) {
 		if (m_polySex == MALE)
@@ -824,7 +824,7 @@ void AlphaParentsChooser::initialize(Population & pop, SubPopID subPop)
 	}
 
 	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
-		ValueError, "No alpha individual or individual of opposite sex is found.");
+		ValueError, "No alpha individual or Individual of opposite sex is found.");
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
@@ -875,7 +875,7 @@ void AlphaParentsChooser::initialize(Population & pop, SubPopID subPop)
 	// now, we need to choose a few alpha individuals
 	vector<RawIndIterator> m_newAlphaIndex;
 	vectorf m_newAlphaFitness;
-	// select individuals
+	// select Individuals
 	for (size_t i = 0; i < m_alphaNum; ++i) {
 		if (m_selection) {     // fix me, without replacement!
 			// using weighted sampler.
@@ -903,13 +903,13 @@ void AlphaParentsChooser::initialize(Population & pop, SubPopID subPop)
 }
 
 
-ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair AlphaParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	individual * dad = NULL;
-	individual * mom = NULL;
+	Individual * dad = NULL;
+	Individual * mom = NULL;
 
 	// this exception should be raised also in optimized mode because the cause
 	// can be random.
@@ -1010,17 +1010,17 @@ ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-   ParentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
+   ParentChooser::IndividualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
    {
     DBG_ASSERT(initialized(), SystemError,
         "Please initialize this parent chooser before using it");
-    individual * par1 = RandomParentChooser::chooseParents(basePtr).first;
+    Individual * par1 = RandomParentChooser::chooseParents(basePtr).first;
     Sex sex1 = par1->sex();
     // there is no valid information field value
     if (m_degenerate) {
         int attempt = 0;
         while (++attempt < 1000) {
-            individual * par2 = RandomParentChooser::chooseParents(basePtr).first;
+            Individual * par2 = RandomParentChooser::chooseParents(basePtr).first;
             if (par2->sex() != sex1)
                 return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
         }
@@ -1028,7 +1028,7 @@ ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
     }
     // the way this parent chooser is initialized guranttees that
     // theres is at lest one valid field.
-    vector<individual *> validInds;
+    vector<Individual *> validInds;
     for (size_t i = 0; i < m_infoIdx.size(); ++i) {
         int info = par1->intInfo(m_infoIdx[i]);
         if (info < 0)
@@ -1040,7 +1040,7 @@ ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
         }
     }
     DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
-    individual * par2 = validInds[getRNG().randInt(validInds.size())];
+    Individual * par2 = validInds[getRNG().randInt(validInds.size())];
     DBG_DO(DBG_DEVEL, cerr	<< "infoParentsChooser: par1: " << par1 - &*basePtr
                             << " par2: " << par2 - &*basePtr << endl);
     return sex1 == MALE ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
@@ -1091,7 +1091,7 @@ void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 }
 
 
-ParentChooser::individualPair PyParentsChooser::chooseParents(RawIndIterator)
+ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -1117,12 +1117,12 @@ ParentChooser::individualPair PyParentsChooser::chooseParents(RawIndIterator)
 			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
-		return ParentChooser::individualPair(&*(m_begin + parent), NULL);
+		return ParentChooser::IndividualPair(&*(m_begin + parent), NULL);
 	} else if (PySequence_Check(item)) {
 		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
 			"Parents should be returned in the form of a sequence of two elements");
 
-		individual * parents[2];
+		Individual * parents[2];
 		for (size_t i = 0; i < 2; ++i) {
 			PyObject * v = PySequence_GetItem(item, i);
 			if (PyInt_Check(v) || PyLong_Check(v)) {
@@ -1133,24 +1133,24 @@ ParentChooser::individualPair PyParentsChooser::chooseParents(RawIndIterator)
 			} else {
 				void * ind = pyIndPointer(v);
 				if (ind)
-					parents[i] = reinterpret_cast<individual *>(ind);
+					parents[i] = reinterpret_cast<Individual *>(ind);
 				else
 					DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
 			}
 			Py_DECREF(v);
 		}
 		Py_DECREF(item);
-		return ParentChooser::individualPair(parents[0], parents[1]);
+		return ParentChooser::IndividualPair(parents[0], parents[1]);
 	} else {
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
 		if (ind)
-			return ParentChooser::individualPair(reinterpret_cast<individual *>(pyIndPointer(item)), NULL);
+			return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(pyIndPointer(item)), NULL);
 		else
 			DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
 	}
 	// this should not be reached
-	return ParentChooser::individualPair(NULL, NULL);
+	return ParentChooser::IndividualPair(NULL, NULL);
 }
 
 
@@ -1302,8 +1302,8 @@ void mating::submitScratch(Population & pop, Population & scratch)
             pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
         }
         for (size_t it = 0; it < pop.popSize(); ++it) {
-            individual & ind = pop.ind(it);
-            individual & pedInd = m_ped.ind(it);
+            Individual & ind = pop.ind(it);
+            Individual & pedInd = m_ped.ind(it);
             if (m_setSex)
                 ind.setSex(pedInd.sex());
             if (m_setAffection)
@@ -1342,13 +1342,13 @@ void mating::submitScratch(Population & pop, Population & scratch)
             DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
                 "Parental index " + toStr(father_idx) + " out of range of 0 - "
  + toStr(m_parentalPopSize - 1));
-            individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
+            Individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
 
             int mother_idx = m_ped.mother(i);
             DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
                 "Parental index " + toStr(mother_idx) + " out of range of 0 - "
  + toStr(m_parentalPopSize - 1));
-            individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
+            Individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
 
             if (m_setSex)
                 it->setSex(m_ped.ind(i, sp).sex());
@@ -1412,9 +1412,9 @@ bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * dad = NULL;
-		individual * mom = NULL;
-		ParentChooser::individualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+		Individual * dad = NULL;
+		Individual * mom = NULL;
+		ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
 		dad = parents.first;
 		mom = parents.second;
 

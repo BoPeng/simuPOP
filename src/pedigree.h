@@ -35,7 +35,7 @@
 namespace simuPOP {
 
 /** The pedigree class is derived from the population class. Unlike a
- *  population class that emphasizes on individual properties, the pedigree
+ *  population class that emphasizes on Individual properties, the pedigree
  *  class emphasizes on relationship between individuals. An unique ID for
  *  all individuals is needed to create a pedigree object from a population
  *  object. Compared to the \c Population class, a \c pedigree object is
@@ -89,7 +89,7 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>4-ind</group>
 	 */
-	individual & indByID(double id);
+	Individual & indByID(double id);
 
 
 	/** Return the number of parents each individual has. This function returns
@@ -186,7 +186,7 @@ public:
 	 *  will be considered invalid.
 	 *  <group>4-locate</group>
 	 */
-	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
+	vectoru IndividualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
@@ -220,7 +220,7 @@ private:
 	int m_fatherIdx;
 	int m_motherIdx;
 
-	std::map<ULONG, individual *> m_idMap;
+	std::map<ULONG, Individual *> m_idMap;
 };
 
 // /// A pedigree manipulation class
@@ -233,7 +233,7 @@ private:
 //    parental generations plus 1. Therefore, each individual can be identified
 //    by (gen, idx).
 //
-//    Each individual can have a few properties
+//    Each Individual can have a few properties
 //    1. mother (c.f. mother())
 //    2. father (c.f. father(), optional because a pedigree can have only one sex)
 //    3. subpopulation (if subpopulation structure is given)

@@ -236,13 +236,13 @@ public:
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// HIDDEN
 	string describe(bool format = true);
 
 protected:
-	string evalInfo(individual *, bool update);
+	string evalInfo(Individual *, bool update);
 
 	/// expression to evaluate
 	Expression m_expr;
@@ -326,7 +326,7 @@ public:
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// HIDDEN
 	string describe(bool format = true);

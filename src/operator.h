@@ -262,7 +262,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 
 	//@}
@@ -543,7 +543,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL)
+	                               Individual * dad = NULL, Individual * mom = NULL)
 	{
 		return true;
 	}
@@ -607,7 +607,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// apply the \c IfElse operator to population \e pop.
 	virtual bool apply(Population & pop);
@@ -786,7 +786,7 @@ public:
 
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// HIDDEN
 	string describe(bool format = true);

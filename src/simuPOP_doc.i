@@ -60,7 +60,7 @@ Details:
 Details:
 
     This parent chooser mimicks some animal populations where only
-    certain individuals (usually males) can mate. Alpha individuals
+    certain individuals (usually males) can mate. Alpha Individuals
     can be chosen either randomly (with natural selection) or
     according to an information field. After the alpha individuals are
     selected, the parent chooser works identical to a random mating
@@ -403,7 +403,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::BaseOperator::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseOperator::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %ignore simuPOP::BaseOperator::getOstream(PyObject *dict=NULL, bool readable=false);
 
@@ -502,7 +502,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BasePenetrance::penet(individual *, ULONG gen);
+%ignore simuPOP::BasePenetrance::penet(Individual *, ULONG gen);
 
 %feature("docstring") simuPOP::BasePenetrance::apply "
 
@@ -532,7 +532,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::BasePenetrance::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BasePenetrance::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::BasePenetrance::describe "Obsolete or undocumented function."
 
@@ -600,7 +600,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BaseQuanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
+%ignore simuPOP::BaseQuanTrait::qtrait(Individual *, ULONG gen, vectorf &traits);
 
 %feature("docstring") simuPOP::BaseQuanTrait::apply "
 
@@ -614,7 +614,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BaseQuanTrait::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseQuanTrait::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::BaseQuanTrait::describe "Obsolete or undocumented function."
 
@@ -632,11 +632,11 @@ Details:
     supports natural selection is applied to the parental population,
     it will select parents with probabilities that are proportional to
     individual fitness stored in an information field (default to
-    fitness). Individual fitness is considered relative fitness and
+    fitness). individual fitness is considered relative fitness and
     can be any non-negative number. This simple process has some
     implications that can lead to advanced usages of natural selection
     in simuPOP:
-    *   It is up to the mating scheme how to handle individual
+    *   It is up to the mating scheme how to handle Individual
     fitness. Some mating schemes do not support natural selection at
     all.
     *   A mating scheme performs natural selection according to
@@ -649,11 +649,11 @@ Details:
     individuals have the same fitness values (e.g. 0), the mating
     scheme selects parents randomly.
     *   Multiple selectors can be applied to the same parental
-    generation. Individual fitness is determined by the last fitness
+    generation. individual fitness is determined by the last fitness
     value it is assigned.
     *   A selection operator can be applied to virtual subpopulations
     and set fitness values only to part of the individuals.
-    *   Individuals with zero fitness in a subpopulation with anyone
+    *   individuals with zero fitness in a subpopulation with anyone
     having a positive fitness value will not be selected to produce
     offspring. This can sometimes lead to unexpected behaviors. For
     example, if you only assign fitness value to part of the
@@ -675,7 +675,7 @@ Details:
     uses the fact that an individual will be discarded when any of the
     during mating operators returns False. It is important to remember
     that:
-    *   Individual fitness needs to be between 0 and 1 in this case.
+    *   individual fitness needs to be between 0 and 1 in this case.
     *   This method applies natural selection to offspring instead of
     parents. These two implementation can be identical or different
     depending on the mating scheme used.
@@ -726,7 +726,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BaseSelector::indFitness(individual *, ULONG gen);
+%ignore simuPOP::BaseSelector::indFitness(Individual *, ULONG gen);
 
 %feature("docstring") simuPOP::BaseSelector::apply "
 
@@ -740,7 +740,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::BaseSelector::describe "Obsolete or undocumented function."
 
@@ -946,7 +946,7 @@ Usage:
 
 %feature("docstring") simuPOP::CloneGenoTransmitter::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::CloneGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::CloneGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::CombinedAlleleIterator "
 
@@ -1194,7 +1194,7 @@ Details:
 
 %ignore simuPOP::ControlledOffspringGenerator::initialize(const Population &pop, SubPopID subPop);
 
-%ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
+%ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
 %feature("docstring") simuPOP::ControlledOffspringGenerator::clone "
 
@@ -1991,7 +1991,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::GenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::GenotypeSplitter "
 
@@ -2118,7 +2118,7 @@ Usage:
 
 %feature("docstring") simuPOP::HaplodiploidGenoTransmitter::initialize "Obsolete or undocumented function."
 
-%ignore simuPOP::HaplodiploidGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::HaplodiploidGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::HeteroMating "
 
@@ -2314,7 +2314,7 @@ Details:
     to. These ID can be used to uniquely identify an individual in a
     multi-generational Population and be used to reliably reconstruct
     a Pedigree.  To ensure uniqueness across populations, a single
-    source of ID is used for this operator. Individual IDs are
+    source of ID is used for this operator. individual IDs are
     assigned consecutively starting from 1. Value 1 instead of 0 is
     used because most software applications use 0 as missing values
     for parentship. If you would like to reset the sequence or start
@@ -2380,7 +2380,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::IdTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::IdTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::IdTagger::clone "
 
@@ -2443,7 +2443,7 @@ Usage:
 
 %feature("docstring") simuPOP::IfElse::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::IfElse::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::IfElse::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::IfElse::apply "
 
@@ -2485,7 +2485,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::individual "
+%feature("docstring") simuPOP::Individual "
 
 Details:
 
@@ -2505,29 +2505,29 @@ Details:
     chromosomes, followed by alleles on the second homologous set of
     the chromosomes for a diploid individual. A consequence of this
     memory layout is that alleles at the same locus of a non-haploid
-    individual are separated by individual::totNumLoci() loci. It is
+    Individual are separated by individual::totNumLoci() loci. It is
     worth noting that access to invalid chromosomes, such as the Y
     chromosomes of female individuals, are not restricted.
 
 "; 
 
-%feature("docstring") simuPOP::individual::individual "
+%feature("docstring") simuPOP::Individual::Individual "
 
 Usage:
 
-    individual()
+    Individual()
 
 Details:
 
     An individual object cannot be created directly. It has to be
     accessed from a population object using functions such as
-    Population::individual(idx).
+    Population::Individual(idx).
 
 "; 
 
-%ignore simuPOP::individual::individual(const individual &ind);
+%ignore simuPOP::Individual::Individual(const Individual &ind);
 
-%feature("docstring") simuPOP::individual::~individual "
+%feature("docstring") simuPOP::Individual::~Individual "
 
 Description:
 
@@ -2535,21 +2535,21 @@ Description:
 
 Usage:
 
-    x.~individual()
+    x.~Individual()
 
 "; 
 
-%ignore simuPOP::individual::setGenoPtr(GenoIterator pos);
+%ignore simuPOP::Individual::setGenoPtr(GenoIterator pos);
 
-%ignore simuPOP::individual::setInfoPtr(InfoIterator pos);
+%ignore simuPOP::Individual::setInfoPtr(InfoIterator pos);
 
-%ignore simuPOP::individual::copyFrom(const individual &rhs);
+%ignore simuPOP::Individual::copyFrom(const Individual &rhs);
 
-%ignore simuPOP::individual::genoPtr() const;
+%ignore simuPOP::Individual::genoPtr() const;
 
-%ignore simuPOP::individual::infoPtr() const;
+%ignore simuPOP::Individual::infoPtr() const;
 
-%feature("docstring") simuPOP::individual::allele "
+%feature("docstring") simuPOP::Individual::allele "
 
 Usage:
 
@@ -2565,9 +2565,9 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::alleleChar "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Individual::alleleChar "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::individual::setAllele "
+%feature("docstring") simuPOP::Individual::setAllele "
 
 Usage:
 
@@ -2583,7 +2583,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::genotype "
+%feature("docstring") simuPOP::Individual::genotype "
 
 Usage:
 
@@ -2599,9 +2599,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::genoAtLoci(const vectoru &loci);
+%ignore simuPOP::Individual::genoAtLoci(const vectoru &loci);
 
-%feature("docstring") simuPOP::individual::setGenotype "
+%feature("docstring") simuPOP::Individual::setGenotype "
 
 Usage:
 
@@ -2617,7 +2617,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::sex "
+%feature("docstring") simuPOP::Individual::sex "
 
 Usage:
 
@@ -2629,7 +2629,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::sexChar "
+%feature("docstring") simuPOP::Individual::sexChar "
 
 Usage:
 
@@ -2641,7 +2641,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::setSex "
+%feature("docstring") simuPOP::Individual::setSex "
 
 Usage:
 
@@ -2653,7 +2653,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::affected "
+%feature("docstring") simuPOP::Individual::affected "
 
 Usage:
 
@@ -2665,7 +2665,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::affectedChar "
+%feature("docstring") simuPOP::Individual::affectedChar "
 
 Usage:
 
@@ -2677,7 +2677,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::setAffected "
+%feature("docstring") simuPOP::Individual::setAffected "
 
 Usage:
 
@@ -2689,15 +2689,15 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::visible() const;
+%ignore simuPOP::Individual::visible() const;
 
-%ignore simuPOP::individual::setVisible(bool visible) const;
+%ignore simuPOP::Individual::setVisible(bool visible) const;
 
-%ignore simuPOP::individual::marked() const;
+%ignore simuPOP::Individual::marked() const;
 
-%ignore simuPOP::individual::setMarked(bool mark=true) const;
+%ignore simuPOP::Individual::setMarked(bool mark=true) const;
 
-%feature("docstring") simuPOP::individual::info "
+%feature("docstring") simuPOP::Individual::info "
 
 Usage:
 
@@ -2711,9 +2711,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::intInfo(const uintString &field) const;
+%ignore simuPOP::Individual::intInfo(const uintString &field) const;
 
-%feature("docstring") simuPOP::individual::__getattr__ "
+%feature("docstring") simuPOP::Individual::__getattr__ "
 
 Usage:
 
@@ -2725,7 +2725,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::__setattr__ "
+%feature("docstring") simuPOP::Individual::__setattr__ "
 
 Usage:
 
@@ -2737,7 +2737,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::setInfo "
+%feature("docstring") simuPOP::Individual::setInfo "
 
 Usage:
 
@@ -2752,21 +2752,21 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::genoBegin() const;
+%ignore simuPOP::Individual::genoBegin() const;
 
-%ignore simuPOP::individual::genoEnd() const;
+%ignore simuPOP::Individual::genoEnd() const;
 
-%ignore simuPOP::individual::genoBegin(UINT p) const;
+%ignore simuPOP::Individual::genoBegin(UINT p) const;
 
-%ignore simuPOP::individual::genoEnd(UINT p) const;
+%ignore simuPOP::Individual::genoEnd(UINT p) const;
 
-%ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const;
+%ignore simuPOP::Individual::genoBegin(UINT p, UINT chrom) const;
 
-%ignore simuPOP::individual::infoBegin() const;
+%ignore simuPOP::Individual::infoBegin() const;
 
-%ignore simuPOP::individual::infoEnd() const;
+%ignore simuPOP::Individual::infoEnd() const;
 
-%feature("docstring") simuPOP::individual::__cmp__ "
+%feature("docstring") simuPOP::Individual::__cmp__ "
 
 Description:
 
@@ -2778,9 +2778,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
+%ignore simuPOP::Individual::swap(Individual &ind, bool swapContent=true);
 
-%ignore simuPOP::individual::display(ostream &out, int width=1, const vectoru &loci=vectoru());
+%ignore simuPOP::Individual::display(ostream &out, int width=1, const vectoru &loci=vectoru());
 
 %feature("docstring") simuPOP::IndividualIterator "
 
@@ -2789,7 +2789,7 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub) Population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    individualIterator *will* iterate through only visible
+    IndividualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
     that all individuals are visible. This is a way to obtain better
     performance in simple cases.
@@ -2858,7 +2858,7 @@ Details:
 
     Create an operator that evaluate a Python expression expr using
     individual information fields as variables. For each eligible
-    individual (individuals in (virtual) subpopulations specified by
+    Individual (individuals in (virtual) subpopulations specified by
     parameter subPops, default to all individuals), its information
     fields are copied either to a temporary namespace (default) or the
     population's local namespace (if usePopVars is True). If exposeInd
@@ -2915,7 +2915,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::InfoEval::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::InfoEval::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::InfoEval::describe "Obsolete or undocumented function."
 
@@ -2952,7 +2952,7 @@ Details:
 
     Create an operator that executes Python statements stmts using
     individual information fields as variables. For each eligible
-    individual (individuals in (virtual) subpopulations specified by
+    Individual (individuals in (virtual) subpopulations specified by
     parameter subPops, default to all individuals), its information
     fields are copied either to a temporary namespace (default) or the
     population's local namespace (if usePopVars is True). If exposeInd
@@ -2961,7 +2961,7 @@ Details:
     usePopVars=True case, any population variable whose name matches
     an information field or exposeInd will be silently overridden.
     One or more python statements (stmts) are executed for each
-    individual. Information fields of these individuals are then
+    Individual. Information fields of these individuals are then
     updated from the corresponding variables. For example, a=1 will
     set information field a of all individuals to 1, a=b will set
     information field a of all individuals to information field b or a
@@ -3013,7 +3013,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::InfoExec::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::InfoExec::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::InfoExec::describe "Obsolete or undocumented function."
 
@@ -3168,7 +3168,7 @@ Usage:
 
 %feature("docstring") simuPOP::InheritTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::InheritTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::InheritTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::InheritTagger::clone "
 
@@ -3575,9 +3575,9 @@ Details:
     This operator is called a 'multi-allele' penetrance operator
     because it groups multiple alleles into two groups: wildtype and
     non-wildtype alleles. Alleles in each allele group are assumed to
-    have the same effect on individual penetrance. If we denote all
+    have the same effect on Individual penetrance. If we denote all
     wildtype alleles as A, and all non-wildtype alleles a, this
-    operator assign individual penetrance according to genotype AA,
+    operator assign Individual penetrance according to genotype AA,
     Aa, aa in the diploid case, and A and a in the haploid case.
 
 "; 
@@ -3630,7 +3630,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MaPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MaPenetrance::penet(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
 
@@ -3692,7 +3692,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MapPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MapPenetrance::penet(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
@@ -3752,7 +3752,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MapSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MapSelector::indFitness(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
 
@@ -3764,7 +3764,7 @@ Details:
     groups multiple alleles into two groups: wildtype and non-wildtype
     alleles. Alleles in each allele group are assumed to have the same
     effect on individual fitness. If we denote all wildtype alleles as
-    A, and all non-wildtype alleles a, this operator assign individual
+    A, and all non-wildtype alleles a, this operator assign Individual
     fitness according to genotype AA, Aa, aa in the diploid case, and
     A and a in the haploid case.
 
@@ -3817,7 +3817,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MaSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MaSelector::indFitness(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
@@ -3994,7 +3994,7 @@ Usage:
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::MendelianGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::MendelianGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter::initialize "
 
@@ -4281,7 +4281,7 @@ Usage:
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter::initialize "Obsolete or undocumented function."
 
-%ignore simuPOP::MitochondrialGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::MitochondrialGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::MixedMutator "
 
@@ -4402,7 +4402,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MlPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MlPenetrance::penet(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
@@ -4412,7 +4412,7 @@ Details:
 
     This selector is created by a list of selectors. When it is
     applied to an individual, it applies these selectors to the
-    individual, obtain a list of fitness values, and compute a
+    Individual, obtain a list of fitness values, and compute a
     combined fitness value from them. ADDITIVE, multiplicative, and a
     heterogeneour multi-locus model are supported.
 
@@ -4461,7 +4461,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MlSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MlSelector::indFitness(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
 
@@ -4502,7 +4502,7 @@ Usage:
 
 %feature("docstring") simuPOP::NoneOp::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::NoneOp::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::NoneOp::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::NoneOp::apply "
 
@@ -4599,7 +4599,7 @@ Usage:
 
 %ignore simuPOP::OffspringGenerator::initialize(const Population &pop, SubPopID subPop);
 
-%ignore simuPOP::OffspringGenerator::generateOffspring(Population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
+%ignore simuPOP::OffspringGenerator::generateOffspring(Population &pop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
 %ignore simuPOP::OffspringGenerator::finalize(const Population &pop);
 
@@ -4798,7 +4798,7 @@ Usage:
 
 %feature("docstring") simuPOP::ParentsTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::ParentsTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::ParentsTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::Pause "
 
@@ -4877,7 +4877,7 @@ Usage:
 Details:
 
     The pedigree class is derived from the population class. Unlike a
-    Population class that emphasizes on individual properties, the
+    Population class that emphasizes on Individual properties, the
     pedigree class emphasizes on relationship between individuals. An
     unique ID for all individuals is needed to create a pedigree
     object from a population object. Compared to the population class,
@@ -4977,7 +4977,7 @@ Usage:
 Details:
 
     This function locates relatives (of type relType) of each
-    individual and store their ID (if idField is specified) or indexes
+    Individual and store their ID (if idField is specified) or indexes
     (if idField is not specified) in information fields relFields. The
     length of relFields determines how many relatives an individual
     can have.  Parameter relType specifies what type of relative to
@@ -5045,11 +5045,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Pedigree::individualsWithRelatives "
+%feature("docstring") simuPOP::Pedigree::IndividualsWithRelatives "
 
 Usage:
 
-    x.individualsWithRelatives(infoFields, sex=[],
+    x.IndividualsWithRelatives(infoFields, sex=[],
       affectionStatus=[], subPops=ALL_AVAIL, ancGen=-1)
 
 Details:
@@ -5132,7 +5132,7 @@ Usage:
 
 %feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::PointMutator "
 
@@ -5295,12 +5295,12 @@ Details:
     subpopulation splitter can be assigned to a population, which
     defines groups of individuals called virtual subpopulations (VSP)
     within each subpopulation.
-    *   Access individuals individually, or through iterators that
+    *   Access individuals Individually, or through iterators that
     iterate through individuals in (virtual) subpopulations.
     *   Access genotype and information fields of individuals at the
     population level. From a population point of view, all genotypes
     are arranged sequentially individual by individual. Please refer
-    to class individual for an introduction to genotype arragement of
+    to class Individual for an introduction to genotype arragement of
     each individual.
     *   Store and access ancestral generations. A population can save
     arbitrary number of ancestral generations. It is possible to
@@ -5716,7 +5716,7 @@ Details:
 
 Usage:
 
-    x.individuals(subPop=[])
+    x.Individuals(subPop=[])
 
 Details:
 
@@ -5801,7 +5801,7 @@ Details:
 
     Rearrange individuals to their new subpopulations according to
     their integer values at information field field (value returned by
-    individual::info(field)). Individuals with negative values at this
+    Individual::info(field)). individuals with negative values at this
     field will be removed. Existing subpopulation names are kept. New
     subpopulations will have empty names.
 
@@ -5835,7 +5835,7 @@ Details:
 
     Remove (virtual) subpopulation(s) subPops and all their
     individuals. This function can be used to remove complete
-    subpopulations (with shifted subpopulation indexes) or individuals
+    subpopulations (with shifted subpopulation indexes) or Individuals
     belonging to virtual subpopulations of a subpopulation. In the
     latter case, the subpopulations are kept even if all individuals
     have been removed. This function only handles the present
@@ -5845,7 +5845,7 @@ Details:
 
 %ignore simuPOP::Population::removeMarkedIndividuals();
 
-%feature("docstring") simuPOP::Population::removeIndividuals "
+%feature("docstring") simuPOP::Population::removeindividuals "
 
 Usage:
 
@@ -5981,7 +5981,7 @@ Usage:
 Details:
 
     Resize Population by giving new subpopulation sizes sizes.
-    Individuals at the end of some subpopulations will be removed if
+    individuals at the end of some subpopulations will be removed if
     the new subpopulation size is smaller than the old one. New
     individuals will be appended to a subpopulation if the new size is
     larger. Their genotypes will be set to zero (default), or be
@@ -6013,7 +6013,7 @@ Details:
     Because each virtual subpopulation becomes a subpopulation, this
     function could be used, for example, to separate male and female
     individuals to two subpopulations ( subPops=[(0,0), (0,1)]). If
-    overlapping (virtual) subpopulations are specified, individuals
+    overlapping (virtual) subpopulations are specified, Individuals
     will be copied multiple times. This function only extract
     individuals from the present generation.
 
@@ -6021,7 +6021,7 @@ Details:
 
 %ignore simuPOP::Population::extractMarkedIndividuals() const;
 
-%feature("docstring") simuPOP::Population::extractIndividuals "
+%feature("docstring") simuPOP::Population::extractindividuals "
 
 Usage:
 
@@ -6646,7 +6646,7 @@ Details:
     true, visiblility of individuals will not be checked. Otherwise, a
     functor will be used to check if indiviudals belong to a specified
     virtual subpopulation.  An instance of this class is returned by
-    Population::individuals() and Population::individuals(subPop)
+    Population::Individuals() and Population::Individuals(subPop)
 
 "; 
 
@@ -6834,7 +6834,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::PyOperator::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::PyOperator::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::PyOperator::describe "Obsolete or undocumented function."
 
@@ -6908,7 +6908,7 @@ Details:
 
     This parents chooser accept a Python generator function that
     repeatedly yields one or two parents, which can be references to
-    individual objects or indexes relative to each subpopulation. The
+    Individual objects or indexes relative to each subpopulation. The
     parent chooser calls the generator function with parental
     Population and a subpopulation index for each subpopulation and
     retrieves parents repeatedly using the iterator interface of the
@@ -6995,10 +6995,10 @@ Details:
     or more of parameters geno, gen, ind, or names of information
     fields. When this operator is applied to a population, it passes
     genotypes at specified loci, generation number, a reference to an
-    individual, and values at specified information fields to
+    Individual, and values at specified information fields to
     respective parameters of this function. The returned penetrance
     values will be used to determine the affection status of each
-    individual.
+    Individual.
 
 "; 
 
@@ -7014,7 +7014,7 @@ Details:
     Create a Python hybrid penetrance operator that passes genotype at
     specified loci, values at specified information fields (if
     requested), and a generation number to a user-defined function
-    func. The return value will be treated as individual penetrance.
+    func. The return value will be treated as Individual penetrance.
 
 "; 
 
@@ -7030,7 +7030,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::PyPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::PyPenetrance::penet(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
 
@@ -7089,7 +7089,7 @@ Details:
     or more of parameters geno, gen, ind, or names of information
     fields. When this operator is applied to a population, it passes
     genotypes at specified loci, generation number, a reference to an
-    individual, and values at specified information fields to
+    Individual, and values at specified information fields to
     respective parameters of this function. The return values will be
     assigned to specified trait fields.
 
@@ -7127,7 +7127,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::PyQuanTrait::qtrait(individual *ind, ULONG gen, vectorf &traits);
+%ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, ULONG gen, vectorf &traits);
 
 %feature("docstring") simuPOP::PyQuanTrait::describe "Obsolete or undocumented function."
 
@@ -7175,7 +7175,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::PySelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::PySelector::indFitness(Individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
 
@@ -7185,7 +7185,7 @@ Details:
 
     A Python tagger takes some information fields from both parents,
     pass them to a user provided Python function and set the offspring
-    individual fields with the return values.
+    Individual fields with the return values.
 
 "; 
 
@@ -7228,7 +7228,7 @@ Usage:
 
 %feature("docstring") simuPOP::PyTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PyTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::PyTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::RandomParentChooser "
 
@@ -7589,7 +7589,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Recombinator::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad, individual *mom);
+%ignore simuPOP::Recombinator::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad, Individual *mom);
 
 %feature("docstring") simuPOP::ResizeSubPops "
 
@@ -7600,7 +7600,7 @@ Function form:
 Details:
 
     This operator resizes subpopulations to specified sizes.
-    Individuals are added or removed depending on the new
+    individuals are added or removed depending on the new
     subpopulation sizes.
 
 "; 
@@ -8027,7 +8027,7 @@ Usage:
 
 %feature("docstring") simuPOP::SelfingGenoTransmitter::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::SelfingGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::SelfingGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::SequentialParentChooser "
 
@@ -8962,7 +8962,7 @@ Details:
     *   CramerV_sp Cramer V statistics for each (virtual)
     subpopulation.association: Parameter association accepts a list of
     loci. At each locus, one or more statistical tests will be
-    performed to test association between this locus and individual
+    performed to test association between this locus and Individual
     affection status. Currently, simuPOP provides the following tests:
     *   An allele-based Chi-square test using alleles counts. This
     test can be applied to loci with more than two alleles, and to
@@ -9673,7 +9673,7 @@ Usage:
 
 %feature("docstring") simuPOP::SummaryTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::SummaryTagger::applyDuringMating(Population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::SummaryTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::SummaryTagger::clone "
 

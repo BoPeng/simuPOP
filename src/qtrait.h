@@ -92,7 +92,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return quantitative trait etc.
 	 */
-	virtual void qtrait(individual *, ULONG gen, vectorf & traits)
+	virtual void qtrait(Individual *, ULONG gen, vectorf & traits)
 	{
 		///
 		throw ValueError("This quantitative trait calculator is not supposed to be called directly");
@@ -104,7 +104,7 @@ public:
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -165,7 +165,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual void qtrait(individual * ind, ULONG gen, vectorf & traits);
+	virtual void qtrait(Individual * ind, ULONG gen, vectorf & traits);
 
 	/// HIDDEN
 	string describe(bool format = true)

@@ -206,7 +206,7 @@ bool InitByFreq::apply(Population & pop)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						it->setAllele(ToAllele(ws.get()), *loc, *p);
 			} else {
-				// identical individuals
+				// identical Individuals
 				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						it->setAllele(ToAllele(left->allele(*loc, *p)), *loc, *p);

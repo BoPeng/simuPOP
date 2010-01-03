@@ -52,7 +52,7 @@ bool BaseSelector::apply(Population & pop)
 }
 
 
-double MapSelector::indFitness(individual * ind, ULONG gen)
+double MapSelector::indFitness(Individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
 
@@ -143,7 +143,7 @@ double MapSelector::indFitness(individual * ind, ULONG gen)
 
 
 // currently assuming diploid
-double MaSelector::indFitness(individual * ind, ULONG gen)
+double MaSelector::indFitness(Individual * ind, ULONG gen)
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -187,7 +187,7 @@ double MaSelector::indFitness(individual * ind, ULONG gen)
 }
 
 
-double MlSelector::indFitness(individual * ind, ULONG gen)
+double MlSelector::indFitness(Individual * ind, ULONG gen)
 {
 	if (m_mode == MULTIPLICATIVE) {
 		double fit = 1;
@@ -213,7 +213,7 @@ double MlSelector::indFitness(individual * ind, ULONG gen)
 }
 
 
-double PySelector::indFitness(individual * ind, ULONG gen)
+double PySelector::indFitness(Individual * ind, ULONG gen)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

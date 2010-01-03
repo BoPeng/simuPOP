@@ -927,7 +927,7 @@ string GenotypeSplitter::name(SubPopID subPop)
 }
 
 
-bool GenotypeSplitter::match(const individual * it, const vectori & alleles) const
+bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
 	int numLoci = m_loci.size();
@@ -947,7 +947,7 @@ bool GenotypeSplitter::match(const individual * it, const vectori & alleles) con
 }
 
 
-bool GenotypeSplitter::matchSingle(const individual * it, const vectori & alleles) const
+bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
 

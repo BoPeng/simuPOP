@@ -1631,7 +1631,7 @@ void SharedVariables::fromString(const string & vars)
 // will be set by // initialize() function
 // DO NOT OWN the dictionaries
 SharedVariables g_main_vars, g_module_vars;
-swig_type_info * g_swigPopType, * g_swigindividual;
+swig_type_info * g_swigPopType, * g_swigIndividual;
 
 SharedVariables & mainVars()
 {
@@ -1653,7 +1653,7 @@ PyObject * pyPopObj(void * p)
 
 PyObject * pyIndObj(void * p)
 {
-	return SWIG_NewPointerObj(p, g_swigindividual, 0);
+	return SWIG_NewPointerObj(p, g_swigIndividual, 0);
 }
 
 
@@ -1661,7 +1661,7 @@ void * pyIndPointer(PyObject * obj)
 {
 	void * ptr = 0;
 
-	SWIG_Python_ConvertPtr(obj, &ptr, g_swigindividual, 0);
+	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
 	return ptr;
 }
 
@@ -3789,13 +3789,13 @@ bool initialize()
     mm = PyImport_AddModule("__main__");
     g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-    // get population and individual type pointer
+    // get population and Individual type pointer
     g_swigPopType = SWIG_TypeQuery(PopSWIGType);
-    g_swigindividual = SWIG_TypeQuery(IndSWIGType);
+    g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
     //
     // g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
-    if (g_swigPopType == NULL || g_swigindividual == NULL)
-		throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
+    if (g_swigPopType == NULL || g_swigIndividual == NULL)
+		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
 
     // load carray function and type
     if (initCustomizedTypes() < 0)

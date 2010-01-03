@@ -39,7 +39,7 @@ namespace simuPOP {
  *  population and be used to reliably reconstruct a Pedigree.
  *
  *  To ensure uniqueness across populations, a single source of ID is used for
- *  this operator. Individual IDs are assigned consecutively starting from 1.
+ *  this operator. individual IDs are assigned consecutively starting from 1.
  *  Value 1 instead of 0 is used because most software applications use 0 as
  *  missing values for parentship. If you would like to reset the sequence or
  *  start from a different number, you can call the \c reset(startID) function
@@ -93,7 +93,7 @@ public:
 	 *  apply the \c IdTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// deep copy of an \c IdTagger
 	virtual BaseOperator * clone() const
@@ -156,7 +156,7 @@ public:
 	 *  apply the \c InheritTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// deep copy of a \c InheritTagger
 	virtual BaseOperator * clone() const
@@ -216,7 +216,7 @@ public:
 	 *  apply the \c SummaryTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// deep copy of a \c SummaryTagger
 	virtual BaseOperator * clone() const
@@ -280,7 +280,7 @@ public:
 	 * apply the \c ParentsTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 };
 
@@ -340,7 +340,7 @@ public:
 	 * apply the \c PedigreeTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 private:
 	string m_idField;
@@ -399,7 +399,7 @@ public:
 	 *  apply the \c PyTagger
 	 */
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 private:
 	pyFunc m_func;

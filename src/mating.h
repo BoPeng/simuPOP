@@ -119,7 +119,7 @@ public:
 	virtual void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(Population & pop, individual * dad, individual * mom,
+	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
@@ -218,7 +218,7 @@ public:
 	void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(Population & pop, individual * dad, individual * mom,
+	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
@@ -264,7 +264,7 @@ private:
 class ParentChooser
 {
 public:
-	typedef std::pair<individual *, individual *> individualPair;
+	typedef std::pair<Individual *, Individual *> IndividualPair;
 
 public:
 	// CPPONLY
@@ -306,9 +306,9 @@ public:
 
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	virtual individualPair chooseParents(RawIndIterator basePtr)
+	virtual IndividualPair chooseParents(RawIndIterator basePtr)
 	{
-		return individualPair(NULL, NULL);
+		return IndividualPair(NULL, NULL);
 	}
 
 
@@ -356,7 +356,7 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	bool m_selection;
@@ -405,7 +405,7 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	/// internal index to female/males.
@@ -465,7 +465,7 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 protected:
 	bool m_replacement;
@@ -530,12 +530,12 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	bool m_replacement;
 
-	individual * m_lastParent;
+	Individual * m_lastParent;
 
 	bool m_selection;
 
@@ -603,7 +603,7 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	Sex m_polySex;
@@ -611,7 +611,7 @@ private:
 
 	UINT m_polyCount;
 
-	individual * m_lastParent;
+	Individual * m_lastParent;
 
 	bool m_selection;
 
@@ -682,7 +682,7 @@ public:
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	Sex m_alphaSex;
@@ -772,7 +772,7 @@ private:
    void initialize(Population & pop, SubPopID sp);
 
    /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-   individualPair chooseParents(RawIndIterator basePtr);
+   IndividualPair chooseParents(RawIndIterator basePtr);
 
    private:
    vectorstr m_infoFields;
@@ -850,7 +850,7 @@ public:
 
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	individualPair chooseParents(RawIndIterator basePtr);
+	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
 #ifndef OPTIMIZED

@@ -119,7 +119,7 @@ public:
 	 *  the destination subpopulations (\e mode = \c BY_PROPORTION), numbers
 	 *  of migrants in the source (virtual) subpopulations (\e mode
 	 *  = \c BY_COUNTS), or ignored completely (\e mode = \c BY_IND_INFO).
-	 *  In the last case, parameter \e subPops is respected (only individuals
+	 *  In the last case, parameter \e subPops is respected (only Individuals
 	 *  in specified (virtual) subpopulations will migrate) but \e toSubPops
 	 *  is ignored.
 	 *
@@ -337,7 +337,7 @@ private:
 };
 
 
-/** This operator resizes subpopulations to specified sizes. Individuals are
+/** This operator resizes subpopulations to specified sizes. individuals are
  *  added or removed depending on the new subpopulation sizes.
  *  <funcForm>resizeSubPops</funcForm>
  */

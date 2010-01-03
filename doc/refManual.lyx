@@ -179,7 +179,7 @@ Permission is granted to make and distribute verbatim copies of this manual
 \end_layout
 
 \begin_layout Abstract
-simuPOP is a general-purpose individual-based forward-time population genetics
+simuPOP is a general-purpose Individual-based forward-time population genetics
  simulation environment.
  Unlike coalescent-based programs, simuPOP evolves populations forward in
  time, subject to arbitrary number of genetic and environmental forces such
@@ -320,7 +320,7 @@ Individual
 status collapsed
 
 \begin_layout Plain Layout
-individual
+Individual
 \end_layout
 
 \end_inset
@@ -373,7 +373,7 @@ GenoStruTraitRef
 
 
 \backslash
-individualRef
+IndividualRef
 \end_layout
 
 \begin_layout Plain Layout

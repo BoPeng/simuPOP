@@ -230,10 +230,10 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-// individual and Population are type names, and can not be used
+// Individual and Population are type names, and can not be used
 // as function name. ind and pop are used instead.
-// at the python level, individual and Population are better.
-%rename(individual) ind(double, vspID);
+// at the python level, Individual and Population are better.
+%rename(Individual) ind(double, vspID);
 %rename(population) pop(UINT) const;
 
 %newobject loadPopulation;
@@ -329,9 +329,9 @@ def unsupportedPedigreeOperation(*args, **kwargs):
     'This function is not supported in the pedigree class'
     raise exceptions.ValueError('Changing pedigree structure using this function is disallowed.')
 
-Pedigree.removeIndividuals = unsupportedPedigreeOperation
+Pedigree.removeindividuals = unsupportedPedigreeOperation
 Pedigree.removeSubPops = unsupportedPedigreeOperation
-Pedigree.extractIndividuals = unsupportedPedigreeOperation
+Pedigree.extractindividuals = unsupportedPedigreeOperation
 Pedigree.extractSubPops = unsupportedPedigreeOperation
 Pedigree.push = unsupportedPedigreeOperation
 Pedigree.setAncestralDepth = unsupportedPedigreeOperation

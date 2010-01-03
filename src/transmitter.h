@@ -67,23 +67,23 @@ public:
 	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
 	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
 	 */
-	void clearChromosome(const individual & ind, int ploidy, int chrom);
+	void clearChromosome(const Individual & ind, int ploidy, int chrom);
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
 	 *  chromosomes of \e offspring. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
 	 */
-	void copyChromosome(const individual & parent, int parPloidy,
-		individual & offspring, int ploidy, int chrom);
+	void copyChromosome(const Individual & parent, int parPloidy,
+		Individual & offspring, int ploidy, int chrom);
 
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
 	 *  Customized chromosomes are not copied. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>.
 	 */
-	void copyChromosomes(const individual & parent, int parPloidy,
-		individual & offspring, int ploidy);
+	void copyChromosomes(const Individual & parent, int parPloidy,
+		Individual & offspring, int ploidy);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -100,8 +100,8 @@ public:
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
 	                       RawIndIterator offspring,
-	                       individual * dad = NULL,
-	                       individual * mom = NULL)
+	                       Individual * dad = NULL,
+	                       Individual * mom = NULL)
 	{
 		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
 	}
@@ -156,8 +156,8 @@ public:
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		Individual * dad = NULL,
+		Individual * mom = NULL);
 
 };
 
@@ -202,8 +202,8 @@ public:
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		Individual * dad = NULL,
+		Individual * mom = NULL);
 
 	/** Initialize a base genotype operator for a population. This function should be
 	 *  called before function \c transmitGenotype is used to transmit genotype.
@@ -215,8 +215,8 @@ public:
 	 *  customized chromosomes and handles sex chromosomes properly, according
 	 *  to offspring sex and \c ploidy.
 	 */
-	void transmitGenotype(const individual & parent,
-		individual & offspring, int ploidy);
+	void transmitGenotype(const Individual & parent,
+		Individual & offspring, int ploidy);
 
 protected:
 	// cache chromBegin, chromEnd for better performance.
@@ -268,8 +268,8 @@ public:
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		Individual * dad = NULL,
+		Individual * mom = NULL);
 
 };
 
@@ -319,8 +319,8 @@ public:
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		Individual * dad = NULL,
+		Individual * mom = NULL);
 
 private:
 	GenoTransmitter m_copier;
@@ -373,8 +373,8 @@ public:
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		Individual * dad = NULL,
+		Individual * mom = NULL);
 
 private:
 	// this is user input.
@@ -537,19 +537,19 @@ public:
 	 *  example, by a customized genotype transmitter to use sex-specific
 	 *  recombination rates to transmit parental genotypes to offspring.
 	 */
-	void transmitGenotype(const individual & parent,
-		individual & offspring, int ploidy);
+	void transmitGenotype(const Individual & parent,
+		Individual & offspring, int ploidy);
 
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		individual * dad, individual * mom);
+		Individual * dad, Individual * mom);
 
 private:
 	/// determine number of markers to convert
-	int markersConverted(size_t index, const individual & ind);
+	int markersConverted(size_t index, const Individual & ind);
 
 private:
 	/// intensity

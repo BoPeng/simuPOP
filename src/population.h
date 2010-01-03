@@ -72,13 +72,13 @@ namespace simuPOP {
  *  subpopulation.
  *
  *  An instance of this class is returned by
- *  population::individuals() and Population::individuals(subPop)
+ *  population::Individuals() and Population::Individuals(subPop)
  */
 class pyIndIterator
 {
 public:
-	pyIndIterator(vector<individual>::iterator const begin,
-		vector<individual>::iterator const end,
+	pyIndIterator(vector<Individual>::iterator const begin,
+		vector<Individual>::iterator const end,
 		bool allInds, vspFunctor func) :
 		m_begin(begin),
 		m_index(begin),
@@ -103,7 +103,7 @@ public:
 	}
 
 
-	individual & next()
+	Individual & next()
 	{
 		// this is the easy (and faster) case
 		if (m_allInds) {
@@ -126,13 +126,13 @@ public:
 
 private:
 	// current (initial individual)
-	vector<individual>::iterator m_begin;
+	vector<Individual>::iterator m_begin;
 
 	// current (initial individual)
-	vector<individual>::iterator m_index;
+	vector<Individual>::iterator m_index;
 
 	// ending idx
-	vector<individual>::iterator m_end;
+	vector<Individual>::iterator m_end;
 
 	//
 	bool m_allInds;
@@ -164,11 +164,11 @@ class Pedigree;
  *    splitter</em> can be assigned to a population, which defines groups of
  *    individuals called <em>virtual subpopulations</em> (VSP) within each
  *    subpopulation.
- *  \li Access individuals individually, or through iterators that iterate
+ *  \li Access individuals Individually, or through iterators that iterate
  *    through individuals in (virtual) subpopulations.
  *  \li Access genotype and information fields of individuals at the population
  *    level. From a population point of view, all genotypes are arranged
- *    sequentially individual by individual. Please refer to class \c individual
+ *    sequentially individual by individual. Please refer to class \c Individual
  *    for an introduction to genotype arragement of each individual.
  *  \li Store and access <em>ancestral generations</em>. A population can save
  *    arbitrary number of ancestral generations. It is possible to directly
@@ -521,15 +521,15 @@ public:
 	 * float \e idx is acceptable as long as it rounds closely to an integer.
 	 * <group>4-ind</group>
 	 */
-	individual & ind(double idx, vspID subPop = vspID())
+	Individual & ind(double idx, vspID subPop = vspID())
 	{
 		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
 
 		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
-			"Individual index has to be integer (or a double round to full iteger).");
+			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
-			"Function individual currently does not support virtual subpopulation");
+			"Function Individual currently does not support virtual subpopulation");
 
 		if (!subPop.valid()) {
 			CHECKRANGEIND(intIdx);
@@ -557,19 +557,19 @@ public:
 	 *  function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
-	individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");
+	Individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
-	const individual & ind(double idx, vspID subPop = vspID()) const
+	const Individual & ind(double idx, vspID subPop = vspID()) const
 	{
 		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
 
 		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
-			"Individual index has to be integer (or a double round to full iteger).");
+			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
-			"Function individual currently does not support virtual subpopulation");
+			"Function Individual currently does not support virtual subpopulation");
 
 		if (!subPop.valid()) {
 			CHECKRANGEIND(intIdx);
@@ -589,19 +589,19 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-	individual & ancestor(double idx, UINT gen, vspID subPop = vspID());
+	Individual & ancestor(double idx, UINT gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-	const individual & ancestor(double idx, UINT gen, vspID subPop = vspID()) const;
+	const Individual & ancestor(double idx, UINT gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
 	 *  subpopulation (<tt>subPop=spID</tt> or <tt>(spID, vspID)</tt>).
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator individuals(vspID subPop = vspID())
+	pyIndIterator Individuals(vspID subPop = vspID())
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
 			"Can not call individuals when there is activated virtual subpopulation");
@@ -643,15 +643,15 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
+	/// CPPONLY Individual iterator: without subPop info
 	IndIterator indIterator()
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(), !hasActivatedVirtualSubPop());
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
-	 *  The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: with subPop info.
+	 *  The iterator will skip invisible Individuals
 	 */
 	IndIterator indIterator(UINT subPop)
 	{
@@ -662,8 +662,8 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
-	 *  The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: without subPop info
+	 *  The iterator will skip invisible Individuals
 	 */
 	ConstIndIterator indIterator() const
 	{
@@ -671,8 +671,8 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
-	 *  The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: with subPop info.
+	 *  The iterator will skip invisible Individuals
 	 */
 	ConstIndIterator indIterator(UINT subPop) const
 	{
@@ -683,7 +683,7 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
+	/** CPPONLY Individual iterator: without subPop info
 	 */
 	RawIndIterator rawIndBegin()
 	{
@@ -691,7 +691,7 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
+	/** CPPONLY Individual iterator: without subPop info
 	 */
 	RawIndIterator rawIndEnd()
 	{
@@ -699,8 +699,8 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
-	 * The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: with subPop info.
+	 * The iterator will skip invisible Individuals
 	 */
 	RawIndIterator rawIndBegin(UINT subPop)
 	{
@@ -710,7 +710,7 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
+	/** CPPONLY Individual iterator: with subPop info.
 	 */
 	RawIndIterator rawIndEnd(UINT subPop)
 	{
@@ -720,8 +720,8 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
-	 * The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: without subPop info
+	 * The iterator will skip invisible Individuals
 	 */
 	ConstRawIndIterator rawIndBegin() const
 	{
@@ -729,7 +729,7 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
+	/** CPPONLY Individual iterator: without subPop info
 	 */
 	ConstRawIndIterator rawIndEnd() const
 	{
@@ -737,8 +737,8 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
-	 * The iterator will skip invisible individuals
+	/** CPPONLY Individual iterator: with subPop info.
+	 * The iterator will skip invisible Individuals
 	 */
 	ConstRawIndIterator rawIndBegin(UINT subPop) const
 	{
@@ -748,7 +748,7 @@ public:
 	}
 
 
-	/** CPPONLY individual iterator: with subPop info.
+	/** CPPONLY Individual iterator: with subPop info.
 	 */
 	ConstRawIndIterator rawIndEnd(UINT subPop) const
 	{
@@ -758,7 +758,7 @@ public:
 	}
 
 
-	/// CPPONLY allele iterator that access a locus across all copies of chromosomes and individual
+	/// CPPONLY allele iterator that access a locus across all copies of chromosomes and Individual
 	/**
 	   \param locus allele access, given locus, return the first allele. ptr++ go the next one.
 	   Default return the beginning of the first subpopulation, also the first of the whole population
@@ -895,7 +895,7 @@ public:
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
-	 *  <tt>individual::info(field)</tt>). Individuals with negative values
+	 *  <tt>Individual::info(field)</tt>). individuals with negative values
 	 *  at this \e field will be removed. Existing subpopulation names are
 	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
@@ -1008,7 +1008,7 @@ public:
 		const vectorstr & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
 	/** Resize Population by giving new subpopulation sizes \e sizes.
-	 *  Individuals at the end of some subpopulations will be removed if the
+	 *  individuals at the end of some subpopulations will be removed if the
 	 *  new subpopulation size is smaller than the old one. New individuals
 	 *  will be appended to a subpopulation if the new size is larger. Their
 	 *  genotypes will be set to zero (default), or be copied from existing
@@ -1167,10 +1167,10 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 
-		// if there is virtual subpop, use individual based iterator
+		// if there is virtual subpop, use Individual based iterator
 		// or
 		// if requires order, but the information is not ordered
-		// use individual based
+		// use Individual based
 		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndInfoIterator(idx, indIterator());
 		else
@@ -1459,7 +1459,7 @@ private:
 #endif
 		DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
 		ar & m_info;
-		DBG_DO(DBG_POPULATION, cerr << "Handling individuals" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
 		ar & m_inds;
 		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
 		ar & m_ancestralGens;
@@ -1566,7 +1566,7 @@ private:
 		DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
 		ar & m_info;
 
-		DBG_DO(DBG_POPULATION, cerr << "Handling individuals" << endl);
+		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
 		ar & m_inds;
 
 		// set genostructure, check duplication
@@ -1659,7 +1659,7 @@ private:
 			// now set pointers
 			popData & p = m_ancestralPops.back();
 			// set pointers
-			vector<individual> & inds = p.m_inds;
+			vector<Individual> & inds = p.m_inds;
 			ULONG ps = inds.size();
 			ptr = p.m_genotype.begin();
 			infoPtr = p.m_info.begin();
@@ -1709,7 +1709,7 @@ private:
 
 	/// individuals.
 	/// only in head node?
-	vector<individual> m_inds;
+	vector<Individual> m_inds;
 
 	int m_ancestralGens;
 
@@ -1724,7 +1724,7 @@ private:
 		vectorstr m_subPopNames;
 		vectora m_genotype;
 		vectorinfo m_info;
-		vector<individual> m_inds;
+		vector<Individual> m_inds;
 		bool m_indOrdered;
 
 		// swap between a popData and existing data.

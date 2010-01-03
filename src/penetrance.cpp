@@ -83,7 +83,7 @@ bool BasePenetrance::apply(Population & pop)
 }
 
 
-bool BasePenetrance::applyToIndividual(individual * ind, ULONG gen)
+bool BasePenetrance::applyToIndividual(Individual * ind, ULONG gen)
 {
 	double p = penet(ind, gen);
 
@@ -96,7 +96,7 @@ bool BasePenetrance::applyToIndividual(individual * ind, ULONG gen)
 
 
 bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                       individual * dad, individual * mom)
+                                       Individual * dad, Individual * mom)
 {
 	double p = penet(&*offspring, pop.gen());
 
@@ -108,7 +108,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offsprin
 
 
 // this function is the same as MapSelector.
-double MapPenetrance::penet(individual * ind, ULONG gen)
+double MapPenetrance::penet(Individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
 
@@ -205,7 +205,7 @@ string MaPenetrance::describe(bool format)
 
 
 // this function is the same as MaSelector.
-double MaPenetrance::penet(individual * ind, ULONG gen)
+double MaPenetrance::penet(Individual * ind, ULONG gen)
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -249,7 +249,7 @@ double MaPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
-double MlPenetrance::penet(individual * ind, ULONG gen)
+double MlPenetrance::penet(Individual * ind, ULONG gen)
 {
 	if (m_mode == MULTIPLICATIVE) {
 		// x1 x2 x3 ...
@@ -279,7 +279,7 @@ double MlPenetrance::penet(individual * ind, ULONG gen)
 
 
 // the same as PySelector
-double PyPenetrance::penet(individual * ind, ULONG gen)
+double PyPenetrance::penet(Individual * ind, ULONG gen)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
