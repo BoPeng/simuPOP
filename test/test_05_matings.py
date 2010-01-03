@@ -145,7 +145,7 @@ class TestMatingSchemes(unittest.TestCase):
             initOps = [InitSex(), InitByFreq([0.5, 0.5])],
             matingScheme = RandomMating(sexMode=(PROB_OF_MALES, 0.3)),
             postOps = [
-                stat(numOfMales=True),
+                Stat(numOfMales=True),
                 # number of male should be variable, but not too much
                 TerminateIf('numOfMales < 2500 or numOfMales > 3500'),
             ],

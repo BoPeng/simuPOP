@@ -23,29 +23,29 @@ try:
 except:
     has_rpy = False
 
-class TestStat(unittest.TestCase):
+class Teststat(unittest.TestCase):
 
     def testPopSize(self):
         'Testing calculation of population (subPopulation) size'
         pop = population(size=[200,800])
         # do not calculate for subpopulations
-        Stat(pop, popSize=1, subPops=[])
+        stat(pop, popSize=1, subPops=[])
         self.assertEqual(pop.dvars().subPopSize, [])
         self.assertEqual(pop.dvars().popSize, 0)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
-        Stat(pop, popSize=1, subPops=1, vars='popSize_sp')
+        stat(pop, popSize=1, subPops=1, vars='popSize_sp')
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(SexSplitter())
         initSex(pop, sex=[MALE, FEMALE])
-        Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
+        stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
         self.assertEqual(pop.dvars().subPopSize, [100, 400, 800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
         self.assertEqual(pop.dvars([1,1]).popSize, 400)
         # test the vars parameter
         pop = population(size=[200,800])
-        Stat(pop, popSize=1, vars='popSize')
+        stat(pop, popSize=1, vars='popSize')
         self.assertEqual(pop.vars().has_key('subPopSize'), False)
         self.assertEqual(pop.dvars().popSize, 1000)
 
@@ -60,12 +60,12 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setSex(FEMALE)
         for i in range(100,800):
             pop.individual(i,1).setSex(FEMALE)
-        Stat(pop, numOfMales=True, vars=['numOfMales', 'numOfFemales'])
+        stat(pop, numOfMales=True, vars=['numOfMales', 'numOfFemales'])
         self.assertEqual(pop.dvars().numOfMales, 200)
         self.assertEqual(pop.dvars().numOfFemales, 800)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         # all subpopulations
-        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfMales_sp', 'propOfFemales_sp'])
+        stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfMales_sp', 'propOfFemales_sp'])
         self.assertEqual(pop.dvars(0).numOfMales, 100)
         self.assertEqual(pop.dvars(0).numOfFemales, 100)
         self.assertEqual(pop.dvars(1).numOfMales, 100)
@@ -74,7 +74,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfFemales, 7./8)
         # test virtual subpopulations
         pop.setVirtualSplitter(ProportionSplitter([0.4, 0.6]))
-        Stat(pop, numOfMales=True, subPops=[(0, 0), (1, 1)], vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfFemales_sp'])
+        stat(pop, numOfMales=True, subPops=[(0, 0), (1, 1)], vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfFemales_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfMales, 80)
         self.assertEqual(pop.dvars([0, 0]).propOfFemales, 0)
@@ -91,7 +91,7 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setAffected(False)
         for i in range(100,800):
             pop.individual(i,1).setAffected(False)
-        Stat(pop, numOfAffected=1, vars=['propOfAffected', 'propOfUnaffected', 'propOfAffected_sp', 'propOfUnaffected_sp',
+        stat(pop, numOfAffected=1, vars=['propOfAffected', 'propOfUnaffected', 'propOfAffected_sp', 'propOfUnaffected_sp',
             'numOfAffected', 'numOfUnaffected', 'numOfAffected_sp', 'numOfUnaffected_sp'])
         self.assertEqual(pop.dvars().numOfAffected, 200)
         self.assertEqual(pop.dvars().numOfUnaffected, 800)
@@ -107,7 +107,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfUnaffected, 7/8.)
         # virtual subpopulation?
         pop.setVirtualSplitter(SexSplitter())
-        Stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)],
+        stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)],
             vars=['numOfAffected_sp', 'propOfUnaffected_sp', 'numOfUnaffected_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
@@ -118,7 +118,7 @@ class TestStat(unittest.TestCase):
         'Testing the default dictionary feature of statistics'
         pop = population(size=1000, loci=[10])
         initByFreq(pop, [0, 0.2, 0.8])
-        Stat(pop, alleleFreq=range(10))
+        stat(pop, alleleFreq=range(10))
         d = pop.dvars().alleleFreq[0]
         if moduleInfo()['alleleType'] == 'binary':
             self.assertEqual(d.keys(), [1])
@@ -135,11 +135,11 @@ class TestStat(unittest.TestCase):
             [0, 100],[100, 600], [600, 1000]]))
         initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
         self.assertEqual(pop.dvars().alleleFreq[0], {0:1230./3200, 1:1970./3200})
         #
-        Stat(pop, alleleFreq=[0], subPops=(0, 1, 2), vars=['alleleFreq_sp', 'alleleNum_sp'])
+        stat(pop, alleleFreq=[0], subPops=(0, 1, 2), vars=['alleleFreq_sp', 'alleleNum_sp'])
         self.assertEqual(pop.dvars(0).alleleNum[0][0], 500)
         self.assertEqual(pop.dvars(0).alleleNum[0][1], 500)
         self.assertEqual(pop.dvars(0).alleleFreq[0][0], 0.5)
@@ -154,12 +154,12 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).alleleNum[0][0], 600)
         self.assertEqual(pop.dvars(2).alleleNum[0][1], 1400)
         pop.vars().clear()
-        Stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'])
+        stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'])
         self.assertEqual(pop.vars().has_key('alleleNum'), True)
         self.assertEqual(pop.vars().has_key('alleleFreq'), False)
         self.assertEqual(pop.vars(0).has_key('alleleNum'), False)
         # Virtual subpopulation?
-        Stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'], subPops=[(0,0), (1,3), (1,4)])
+        stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'], subPops=[(0,0), (1,3), (1,4)])
         self.assertEqual(pop.dvars((0,0)).alleleFreq[0][0], 1)
         self.assertEqual(pop.dvars((1,3)).alleleFreq[0][0], 1)
         self.assertEqual(pop.dvars((1,4)).alleleFreq[0][0], 0.5)
@@ -174,7 +174,7 @@ class TestStat(unittest.TestCase):
         if moduleInfo()['alleleType'] == 'binary':
             initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-            Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
+            stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
                 'homoNum_sp', 'homoFreq_sp'])
             self.assertEqual(pop.dvars().heteroNum[0], 880)
@@ -188,7 +188,7 @@ class TestStat(unittest.TestCase):
         else:
             initByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-            Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
+            stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
                 'homoNum_sp', 'homoFreq_sp'])
             self.assertEqual(pop.dvars().heteroNum[0], 1005)
@@ -208,7 +208,7 @@ class TestStat(unittest.TestCase):
             [0, 100],[100, 600], [600, 1000]]))
         initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-        Stat(pop, genoFreq=[0])
+        stat(pop, genoFreq=[0])
         #print pop.dvars().genoNum[0]
         self.assertEqual(pop.dvars().genoNum[0][(0, 0)], 175)
         self.assertEqual(pop.dvars().genoNum[0][(0, 1)], 880)
@@ -218,7 +218,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().genoFreq[0][(1, 1)], 545./1600)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         #
-        Stat(pop, genoFreq=[0], vars=['genoNum_sp', 'genoFreq_sp'])
+        stat(pop, genoFreq=[0], vars=['genoNum_sp', 'genoFreq_sp'])
         self.assertEqual(pop.dvars(0).genoNum[0][(0, 0)], 125)
         self.assertEqual(pop.dvars(0).genoNum[0][(0, 1)], 250)
         self.assertEqual(pop.dvars(0).genoNum[0][(1, 1)], 125)
@@ -239,7 +239,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).genoFreq[0][(0, 1)], 0.6)
         self.assertEqual(pop.dvars(2).genoFreq[0][(1, 1)], 0.4)
 
-    def testInfoStat(self):
+    def testInfostat(self):
         'Testing summary statistics of information fields'
         import random
         pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
@@ -249,11 +249,11 @@ class TestStat(unittest.TestCase):
         pop.setIndInfo([2], field='x', subPop=(0, 1))
         pop.setIndInfo([random.randint(4, 10) for x in range(500)],
             field='y', subPop=0)
-        Stat(pop, meanOfInfo='x', subPops=0)
+        stat(pop, meanOfInfo='x', subPops=0)
         self.assertEqual(pop.dvars().meanOfInfo['x'], 1.5)
-        Stat(pop, sumOfInfo='x', subPops=[(0, 0)])
+        stat(pop, sumOfInfo='x', subPops=[(0, 0)])
         self.assertEqual(pop.dvars().sumOfInfo['x'], 250)
-        Stat(pop, maxOfInfo='y', minOfInfo='y', subPops=[(0, 0), (0, 1)],
+        stat(pop, maxOfInfo='y', minOfInfo='y', subPops=[(0, 0), (0, 1)],
             vars=['maxOfInfo', 'minOfInfo', 'maxOfInfo_sp', 'minOfInfo_sp'])
         self.assertEqual(pop.dvars((0, 0)).maxOfInfo['y'], 10)
         self.assertEqual(pop.dvars((0, 1)).minOfInfo['y'], 4)
@@ -269,19 +269,19 @@ class TestStat(unittest.TestCase):
             [0, 100],[100, 600], [600, 1000]]))
         initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-        #SaveFstat(simu.population(0), "p1.dat", maxAllele=2)
-        # Fst is compaared with result from Fstat.
+        #SaveFStat(simu.population(0), "p1.dat", maxAllele=2)
+        # Fst is compaared with result from FStat.
         #
         #For locus : loc_0_
         #Allele    Capf	 Theta	Smallf	 Relat	Relatc	 Sig_a	 Sig_b	 Sig_w
         #        1	-0.103	 0.102	-0.229	 0.228
         #        2	-0.103	 0.102	-0.229	 0.228
         #    All	-0.103	 0.102	-0.229	 0.228	 0.373	 0.051	-0.102	 0.550
-        Stat(pop, structure=[0])
+        stat(pop, structure=[0])
         assert pop.vars().has_key('F_st')
         assert not pop.vars().has_key('f_it')
         assert not pop.vars().has_key('f_st')
-        Stat(pop, structure=[0], vars=['f_is', 'f_it', 'f_st', 'F_is', 'F_it'])
+        stat(pop, structure=[0], vars=['f_is', 'f_it', 'f_st', 'F_is', 'F_it'])
         self.assertAlmostEqual(pop.dvars().f_is[0], -0.2290202)
         self.assertAlmostEqual(pop.dvars().f_it[0], -0.1034594)
         self.assertAlmostEqual(pop.dvars().f_st[0],  0.1021633)
@@ -295,7 +295,7 @@ class TestStat(unittest.TestCase):
         pop = population(size=[5000,1000], ploidy=2, loci = [10])
         if moduleInfo()['alleleType'] == 'binary':
             initByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
-            Stat(pop, haploFreq=[[0,1,5],[2,5]])
+            stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05
             assert abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05
@@ -303,7 +303,7 @@ class TestStat(unittest.TestCase):
         else:
             initByValue(pop, value=[[1]*10,[2]*10,[3]*10],
                 proportions=[.2,.3,.5])
-            Stat(pop, haploFreq=[[0,1,5],[2,5]])
+            stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05
@@ -366,16 +366,16 @@ class TestStat(unittest.TestCase):
         pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
         initByFreq(pop, freq)
         # test case with primary alleles specified
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4, 0, 1])
+        stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4, 0, 1])
         self.assertAlmostEqual(LD_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().LD[2][4])
         self.assertAlmostEqual(LD_prime_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().LD_prime[2][4])
         self.assertAlmostEqual(R2_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().R2[2][4])
         #
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4])
+        stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4])
         self.assertAlmostEqual(LD(pop.dvars(), 2, 4), pop.dvars().LD[2][4])
         self.assertAlmostEqual(LD_prime(pop.dvars(), 2, 4), pop.dvars().LD_prime[2][4])
         self.assertAlmostEqual(R2(pop.dvars(), 2, 4), pop.dvars().R2[2][4])
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4],
+        stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4],
             vars=['alleleFreq_sp', 'haploFreq_sp', 'LD_sp', 'LD_prime_sp', 'R2_sp'])
         for sp in range(3):
             self.assertAlmostEqual(LD(pop.dvars(sp), 2, 4), pop.dvars(sp).LD[2][4])
@@ -399,7 +399,7 @@ class TestStat(unittest.TestCase):
         # This has not passed our test yet. (degree of freedom problem?)
         #
         initByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
+        stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
             vars=['LD_ChiSq', 'CramerV', 'alleleNum', 'alleleFreq', 'haploNum', 'haploNum_sp'])
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
@@ -424,7 +424,7 @@ class TestStat(unittest.TestCase):
         if has_rpy:
             self.assertAlmostEqual(ChiSq_P(pop.dvars(), 2, 4), pop.dvars().LD_ChiSq_P[2][4])
         self.assertAlmostEqual(CramerV(pop.dvars(), 2, 4), pop.dvars().CramerV[2][4])
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
+        stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
             vars=['alleleFreq_sp', 'alleleNum_sp', 'haploFreq_sp', 'LD_ChiSq_sp', 'CramerV_sp', 'popSize_sp'])
         for sp in range(3):
             self.assertAlmostEqual(ChiSq(pop.dvars(sp), 2, 4), pop.dvars(sp).LD_ChiSq[2][4])
@@ -435,7 +435,7 @@ class TestStat(unittest.TestCase):
         '''Testing dependency of combined statistics'''
         pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         initByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
+        stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
         assert pop.vars().has_key('alleleFreq')
         assert pop.vars().has_key('LD')
         assert pop.vars().has_key('haploFreq')
@@ -467,17 +467,17 @@ class TestStat(unittest.TestCase):
         initByFreq(pop, [.3, .4, .3])
         pop1 = population(size=[24, 31], ploidy=2, loci=[2, 1, 4])
         initByFreq(pop1, [.3, .7])
-        Stat(pop, neutrality=[0, 1])
+        stat(pop, neutrality=[0, 1])
         self.assertEqual(pop.dvars().Pi, self.pairwiseDiff(pop, loci=[0, 1]))
-        Stat(pop1, neutrality=[0, 1, 2, 3, 4, 5, 6])
+        stat(pop1, neutrality=[0, 1, 2, 3, 4, 5, 6])
         self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[0, 1, 2, 3, 4, 5, 6]))
-        Stat(pop1, neutrality=[1, 4])
+        stat(pop1, neutrality=[1, 4])
         self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[1, 4]))
-        #Stat(pop1, neutrality=[4, 4])
+        #stat(pop1, neutrality=[4, 4])
         #self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[4, 4]))
-        Stat(pop1, neutrality=[6, 1, 3])
+        stat(pop1, neutrality=[6, 1, 3])
         self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[6, 1, 3]))
-        self.assertRaises(exceptions.ValueError, Stat, pop1, neutrality=[5, 4, 3, 5])
+        self.assertRaises(exceptions.ValueError, stat, pop1, neutrality=[5, 4, 3, 5])
 
 if __name__ == '__main__':
     unittest.main()

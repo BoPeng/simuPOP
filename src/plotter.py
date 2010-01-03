@@ -74,7 +74,7 @@ import os
 
 # if under windows, fix a bug with rpy which uses blocking i/o so
 # R figure will not be refreshed in time. See
-#     https://stat.ethz.ch/pipermail/r-devel/2006-January/036049.html
+#     https://Stat.ethz.ch/pipermail/r-devel/2006-January/036049.html
 # for details.
 if os.name == 'nt':
     r.options(windowsBuffered=False)

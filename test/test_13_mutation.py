@@ -122,7 +122,7 @@ class TestMutator(unittest.TestCase):
                 subPops=1)],
             gen = 100)
         pop = simu.extract(0)
-        Stat(pop, alleleFreq=range(5), vars='alleleFreq_sp')
+        stat(pop, alleleFreq=range(5), vars='alleleFreq_sp')
         for loc in [0, 2, 3]:
             self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 1.0)
             self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 1.0)
@@ -140,7 +140,7 @@ class TestMutator(unittest.TestCase):
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
             gen = 1)
         pop = simu.extract(0)
-        Stat(pop, alleleFreq=range(5))
+        stat(pop, alleleFreq=range(5))
         for loc in [0, 2, 3]:
             self.assertEqual(pop.dvars().alleleFreq[loc][0], 1.0)
         for loc in [1, 4]:
@@ -168,7 +168,7 @@ class TestMutator(unittest.TestCase):
                 initOps = [ InitSex(), InitByFreq([.5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
                 postOps = [SnpMutator(u=0.1, loci=[0, 4]),
-                    #stat(alleleFreq=[0, 4]),
+                    #Stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[4][0])')
                 ],
                 gen=100)
@@ -188,7 +188,7 @@ class TestMutator(unittest.TestCase):
                 postOps = [SnpMutator(u=0.1, loci=[0, 4],
                     mapIn=[0, 0, 0, 0, 0, 0, 1],
                     mapOut=[5, 6]),
-                    #stat(alleleFreq=[0, 4]),
+                    #Stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][5], alleleFreq[4][5])')
                 ],
                 gen=100)
@@ -209,7 +209,7 @@ class TestMutator(unittest.TestCase):
             matingScheme = RandomMating(),
                 postOps = [SnpMutator(u=0.1, loci=[0, 4],
                     mapIn=mapIn, mapOut=mapOut),
-                    #stat(alleleFreq=[0, 4]),
+                    #Stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][5], alleleFreq[4][5])')
                 ],
                 gen=100)
@@ -309,7 +309,7 @@ class TestMutator(unittest.TestCase):
             gen = 1
         )
         pop = simu.extract(0)
-        Stat(pop, alleleFreq=(1, 4))
+        stat(pop, alleleFreq=(1, 4))
         # test combined allele frequency
         self.assertAlmostEqual(pop.dvars().alleleFreq[1][1], 0.01, places=2)
         self.assertAlmostEqual(pop.dvars().alleleFreq[4][1], 0.1, places=2)
@@ -343,7 +343,7 @@ class TestMutator(unittest.TestCase):
             pop = population(size=10000, loci=[1])
             initByFreq(pop, [0.6, 0.4])
             snpMutate(pop, u=0.2, v=0.1, loci=0)
-            Stat(pop, alleleFreq=[0])
+            stat(pop, alleleFreq=[0])
             # u = 10000*2*(0.6-0.12+0.04), v = 10000*2*(0.4-0.04+0.12)
             cnt0 += pop.dvars().alleleNum[0][0]
             cnt1 += pop.dvars().alleleNum[0][1]
@@ -357,7 +357,7 @@ class TestMutator(unittest.TestCase):
             pop = population(size=10000, loci=[1])
             # Mutate autosome
             snpMutate(pop, u=0.01, loci=0)
-            Stat(pop, alleleFreq=[0])
+            stat(pop, alleleFreq=[0])
             # 10000 x 2 x 0.01 = 200
             cnt += pop.dvars().alleleNum[0][1]
         self.assertEqual( abs(cnt/50. - 200) < 5, True)
@@ -370,7 +370,7 @@ class TestMutator(unittest.TestCase):
             initSex(pop, sex=[MALE, FEMALE])
             # Mutate X chromosomes
             snpMutate(pop, u=0.01, loci=0)
-            Stat(pop, alleleFreq=[0])
+            stat(pop, alleleFreq=[0])
             # MALE: 5000 x 0.01, FEMALE: 5000 x 2 x 0.01 = 50 + 100
             cnt += pop.dvars().alleleNum[0][1]
         self.assertEqual( abs(cnt/50. - (5000*0.01*2 + 5000*0.01)) < 5, True)
@@ -381,7 +381,7 @@ class TestMutator(unittest.TestCase):
             pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop, sex=[MALE, FEMALE])
             snpMutate(pop, u=0.01, loci=1)
-            Stat(pop, alleleFreq=[1])
+            stat(pop, alleleFreq=[1])
             # MALE: 5000 x 0.01 = 50
             cnt += pop.dvars().alleleNum[1][1]
         self.assertEqual( abs(cnt/50. - 5000*0.01) < 2, True)

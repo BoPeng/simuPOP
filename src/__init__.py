@@ -181,7 +181,7 @@ __all__ = [
     #
     'PyQuanTrait',
     #
-    'stat',
+    'Stat',
     #
     'IdTagger',
     'InheritTagger',
@@ -231,7 +231,7 @@ __all__ = [
     'snpMutate',
     'acgtMutate',
     #
-    'Stat',
+    'stat',
     #
     # Global functions
     'WithArgs',
@@ -817,11 +817,11 @@ def pointMutate(pop, *args, **kwargs):
     'Function form of operator ``PointMutator``'
     PointMutator(*args, **kwargs).apply(pop)
 
-def Stat(pop, *args, **kwargs):
-    '''Apply operator ``stat`` with specified parameters to population ``pop``.
+def stat(pop, *args, **kwargs):
+    '''Apply operator ``Stat`` with specified parameters to population ``pop``.
     Resulting statistics could be accessed from the local namespace of ``pop``
     using functions ``pop.vars()`` or ``pop.dvars()``'''
-    stat(*args, **kwargs).apply(pop)
+    Stat(*args, **kwargs).apply(pop)
 
 def tagID(pop, reset=False, *args, **kwargs):
     '''Apply operator ``IdTagger`` to population ``pop`` to assign a unique ID

@@ -247,7 +247,7 @@ namespace std
 %newobject simuPOP::simulator::clone;
 %newobject simuPOP::BaseOperator::clone;
 %newobject simuPOP::mating::clone;
-%newobject simuPOP::stat::clone;
+%newobject simuPOP::Stat::clone;
 
 // the following load a docstring file extracted from doxgen output.
 // there will also be a bunch of %ignore directives as well
@@ -413,7 +413,7 @@ _new_InitByValue.__doc__ = InitByValue.__init__.__doc__
 del InitByValue.__init__
 InitByValue.__init__ = _new_InitByValue
 
-def _new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
+def _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
@@ -425,11 +425,11 @@ def _new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
     else:
         ld = LD
     cppModule.stat_swiginit(self,
-        cppModule.new_stat(haploFreq=hf, LD=ld, *args, **kwargs))
+        cppModule.new_Stat(haploFreq=hf, LD=ld, *args, **kwargs))
 
-_new_stat.__doc__ = stat.__init__.__doc__
-del stat.__init__
-stat.__init__ = _new_stat
+_new_Stat.__doc__ = Stat.__init__.__doc__
+del Stat.__init__
+Stat.__init__ = _new_Stat
 
 def _new_GenotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     if len(alleles) == 0:

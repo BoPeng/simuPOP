@@ -364,9 +364,9 @@ class TestPerformance(unittest.TestCase):
                 initByFreq(pop, [0.2, 0.8])
                 initByFreq(pop, [0.4, 0.6])
                 initByFreq(pop, [0.5, 0.5])
-                Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
-                Stat(pop, heteroFreq=range(0, pop.totNumLoci()))
-                Stat(pop, genoFreq=range(0, pop.totNumLoci()))
+                stat(pop, alleleFreq=range(0, pop.totNumLoci()))
+                stat(pop, heteroFreq=range(0, pop.totNumLoci()))
+                stat(pop, genoFreq=range(0, pop.totNumLoci()))
             c2 = time.clock()
             print "%.2f" % (c2-c1)
         print
@@ -509,7 +509,7 @@ class TestPerformance(unittest.TestCase):
             pop.addIndFrom(pop1)
         print pop.popSize()
         c1 = time.clock()
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=range(pop.totNumLoci()))
         c2 = time.clock()
         print c2 - c1
         # NOTE that this test is unfair in the sense that it only has two alleles
@@ -528,12 +528,12 @@ class TestPerformance(unittest.TestCase):
         'Testing the performance of calculating LD for a large number of loci'
         pop = loadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         c1 = time.clock()
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=range(pop.totNumLoci()))
         c2 = time.clock()
         print 'Allele freq: %.2f' % (c2 - c1)
         for length in [10000, 20000, 50000, 100000]:
             LD = [[x, x-1] for x in range(1, length)]
-            Stat(pop, LD=LD)
+            stat(pop, LD=LD)
             c3 = time.clock()
             print 'LD: %.2f' % (c3 - c2)
             c2 = c3
@@ -736,7 +736,7 @@ class TestPerformance(unittest.TestCase):
         # conclusion: accept this.
 
     def TestSerialization(self):
-        import stat
+        import Stat
         pop = loadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
         #initByFreq(pop, [.2, .8])
@@ -754,7 +754,7 @@ class TestPerformance(unittest.TestCase):
                 pop.SavePopulation('exp_%s.%s' % (label, format), compress=comp)
                 c2 = time.clock()
                 print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
-                    os.stat('exp_%s.%s' % (label, format) )[stat.ST_SIZE]/1024./1024.)
+                    os.Stat('exp_%s.%s' % (label, format) )[Stat.ST_SIZE]/1024./1024.)
                 c1 = time.clock()
                 pop1 = loadPopulation('exp_%s.%s' % (label, format))
                 self.assertEqual(pop, pop1)

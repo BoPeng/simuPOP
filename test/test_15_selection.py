@@ -310,7 +310,7 @@ class TestSelector(unittest.TestCase):
                 matingScheme = RandomMating(),
                 preOps = sel,
                 postOps = [
-                    stat(alleleFreq=[0]),
+                    Stat(alleleFreq=[0]),
                     TerminateIf('subPop[1]["alleleNum"][0][0] == %d*2' % N),
                     #PyEval(r'"%d\n"%alleleNum[0][0]', step=100)
                 ]
@@ -336,7 +336,7 @@ class TestSelector(unittest.TestCase):
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
+                Stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
                 TerminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
                 TerminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
             ],
@@ -363,7 +363,7 @@ class TestSelector(unittest.TestCase):
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.4'),
                 TerminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
@@ -388,7 +388,7 @@ class TestSelector(unittest.TestCase):
             preOps = MaSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.4'),
                 TerminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
@@ -418,7 +418,7 @@ class TestSelector(unittest.TestCase):
                     fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
                 matingScheme = RandomMating(),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
@@ -450,7 +450,7 @@ class TestSelector(unittest.TestCase):
                     fitness=[1-s1, 1, 1-s2]),
                 matingScheme = RandomMating(),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
@@ -473,7 +473,7 @@ class TestSelector(unittest.TestCase):
                     fitness={(0,0):1, (0,1):0.8, (1,1):1}),
                 matingScheme = RandomMating(),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 # PyEval('alleleFreq[0][0]'),
                 TerminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
                     begin=50),
@@ -501,7 +501,7 @@ class TestSelector(unittest.TestCase):
                     fitness=[1, 0.7, 1]),
                 matingScheme = RandomMating(),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 #PyEval('alleleFreq[0][0]'),
                 TerminateIf('alleleFreq[0][0] > 0.3 and    alleleFreq[0][0]    < 0.7',
                     begin=50)
@@ -596,7 +596,7 @@ class TestSelector(unittest.TestCase):
                 matingScheme = RandomMating(),
             preOps = PySelector(loci=0, func=sel),
             postOps = [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                Stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
@@ -648,7 +648,7 @@ class TestSelector(unittest.TestCase):
             preOps = PySelector(loci=[0], func=sel),
                 matingScheme = RandomMating(),
             postOps = [
-                stat(alleleFreq=[0]),
+                Stat(alleleFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],

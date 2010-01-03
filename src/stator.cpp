@@ -293,7 +293,7 @@ string haploKey(const vectori & seq)
 }
 
 
-stat::stat(
+Stat::Stat(
 	bool popSize,
 	//
 	bool numOfMales,
@@ -350,9 +350,9 @@ stat::stat(
 }
 
 
-string stat::describe(bool format)
+string Stat::describe(bool format)
 {
-	string desc = "<simuPOP.stat> Calculate statistics\n<ul>\n";
+	string desc = "<simuPOP.Stat> Calculate statistics\n<ul>\n";
 	vectorstr descs;
 
 	descs.push_back(m_popSize.describe(false));
@@ -377,7 +377,7 @@ string stat::describe(bool format)
 }
 
 
-bool stat::apply(population & pop)
+bool Stat::apply(population & pop)
 {
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
