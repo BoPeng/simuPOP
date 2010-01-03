@@ -1079,7 +1079,7 @@ Details:
 
 Function form:
 
-    ContextMutate
+    contextMutate
 
 Details:
 
@@ -2306,7 +2306,7 @@ Usage:
 
 Function form:
 
-    TagID
+    tagID
 
 Details:
 
@@ -3508,7 +3508,7 @@ Usage:
 
 Function form:
 
-    KamMutate
+    kamMutate
 
 Details:
 
@@ -3888,7 +3888,7 @@ Usage:
 
 Function form:
 
-    MatrixMutate
+    matrixMutate
 
 Details:
 
@@ -4287,7 +4287,7 @@ Usage:
 
 Function form:
 
-    MixedMutate
+    mixedMutate
 
 Details:
 
@@ -5138,7 +5138,7 @@ Usage:
 
 Function form:
 
-    PointMutate
+    pointMutate
 
 Details:
 
@@ -6686,7 +6686,7 @@ Usage:
 
 Function form:
 
-    PyMutate
+    pyMutate
 
 Details:
 
@@ -8530,7 +8530,7 @@ Usage:
 
 Function form:
 
-    SmmMutate
+    smmMutate
 
 Details:
 

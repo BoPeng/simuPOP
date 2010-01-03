@@ -214,22 +214,22 @@ __all__ = [
     'InfoEval',
     'InfoExec',
     #
-    'TagID',
+    'tagID',
     #
     'Migrate',
     'ResizeSubPops',
     'SplitSubPops',
     'MergeSubPops',
     #
-    'MatrixMutate',
-    'ContextMutate',
-    'KamMutate',
-    'MixedMutate',
-    'PointMutate',
-    'PyMutate',
-    'SmmMutate',
-    'SnpMutate',
-    'AcgtMutate',
+    'matrixMutate',
+    'contextMutate',
+    'kamMutate',
+    'mixedMutate',
+    'pointMutate',
+    'pyMutate',
+    'smmMutate',
+    'snpMutate',
+    'acgtMutate',
     #
     'Stat',
     #
@@ -781,39 +781,39 @@ def ResizeSubPops(pop, *args, **kwargs):
     the operator form of this funciton (``resizeSubPops``) for details'''
     resizeSubPops(*args, **kwargs).apply(pop)
 
-def MatrixMutate(pop, *args, **kwargs):
+def matrixMutate(pop, *args, **kwargs):
     'Function form of operator ``MatrixMutator``'
     MatrixMutator(*args, **kwargs).apply(pop)
 
-def SnpMutate(pop, *args, **kwargs):
+def snpMutate(pop, *args, **kwargs):
     'Function form of operator ``SnpMutator``'
     SnpMutator(*args, **kwargs).apply(pop)
 
-def AcgtMutate(pop, *args, **kwargs):
+def acgtMutate(pop, *args, **kwargs):
     'Function form of operator ``AcgtMutator``'
     AcgtMutator(*args, **kwargs).apply(pop)
 
-def KamMutate(pop, *args, **kwargs):
+def kamMutate(pop, *args, **kwargs):
     'Function form of operator ``KamMutator``'
     KamMutator(*args, **kwargs).apply(pop)
 
-def SmmMutate(pop, *args, **kwargs):
+def smmMutate(pop, *args, **kwargs):
     'Function form of operator ``SmmMutator``'
     SmmMutator(*args, **kwargs).apply(pop)
 
-def PyMutate(pop, *args, **kwargs):
+def pyMutate(pop, *args, **kwargs):
     'Function form of operator ``PyMutator``'
     PyMutator(*args, **kwargs).apply(pop)
 
-def MixedMutate(pop, *args, **kwargs):
+def mixedMutate(pop, *args, **kwargs):
     'Function form of operator ``MixedMutator``'
     MixedMutator(*args, **kwargs).apply(pop)
 
-def ContextMutate(pop, *args, **kwargs):
+def contextMutate(pop, *args, **kwargs):
     'Function form of operator ``ContextMutator``'
     ContextMutator(*args, **kwargs).apply(pop)
 
-def PointMutate(pop, *args, **kwargs):
+def pointMutate(pop, *args, **kwargs):
     'Function form of operator ``PointMutator``'
     PointMutator(*args, **kwargs).apply(pop)
 
@@ -823,7 +823,7 @@ def Stat(pop, *args, **kwargs):
     using functions ``pop.vars()`` or ``pop.dvars()``'''
     stat(*args, **kwargs).apply(pop)
 
-def TagID(pop, reset=False, *args, **kwargs):
+def tagID(pop, reset=False, *args, **kwargs):
     '''Apply operator ``IdTagger`` to population ``pop`` to assign a unique ID
     to all individuals in the population. Individuals ID will starts from a
     system wide index. You can reset this start ID using parameter ``reset``

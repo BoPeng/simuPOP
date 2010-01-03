@@ -4318,7 +4318,7 @@ IdTagger
 \family default
  and its function form 
 \family typewriter
-TagID
+tagID
 \family default
  to set this field.
  Note that this function can be used to look up individuals in the present
@@ -6095,7 +6095,7 @@ e model at high mutation rate if the frequency is lower than the cutoff
  and a low mutation rate otherwise.
  The 
 \family typewriter
-KamMutate
+kamMutate
 \family default
  function is the function form of a mutator 
 \family typewriter
@@ -15132,7 +15132,7 @@ IdTagger
 \family default
  (and its function form 
 \family typewriter
-TagID
+tagID
 \family default
 ) is provided by simuPOP to assign an unique ID to all individuals during
  evolution.
