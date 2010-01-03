@@ -974,6 +974,7 @@ class Doxy2SWIG:
             #print >> out, '\\begin{description}'
             for mem in funcs:
                 print >> out, '\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module.replace('.',''), mem['Name'], module, mem['Name'])
+                print >> out, '\n\\subsection{Function \\texttt{%s}\index{%s}}' % (mem['Name'], mem['Name'])
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     func_name = mem['Usage'].split('(')[0]
                     func_body = mem['Usage'][len(func_name):].lstrip('(').rstrip(')')
@@ -1229,11 +1230,15 @@ class Doxy2SWIG:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), mem['Name'])
                 print 'Writing reference for function ', refName
                 out = open(os.path.join(dir, refName), 'w')
+                funcname = mem['Name']
+                print >> out, '\nFunction %s' % funcname
+                print >> out, '-' * (8 + len(funcname))
+                print >> out
                 print >> out, '\n.. function::',
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     print >> out, mem['Usage']
                 else:
-                    print >> out, '%s()' % mem['Name']
+                    print >> out, '%s()' % funcname
                 print >> out
                 print >> out, self.shiftText(mem['Doc'])
                 if mem.has_key('note') and mem['note'] != '':
@@ -1249,13 +1254,17 @@ class Doxy2SWIG:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), cls['Name'])
                 print 'Writing reference for class ', refName
                 out = open(os.path.join(dir, refName), 'w')
-                print >> out, '.. class:: %s\n' % cls['Name']
+                classname = cls['Name']
+                print >> out, '\nclass %s' % classname
+                print >> out, '-' * (6 + len(classname))
+                print >> out
+                print >> out, '.. class:: %s\n' % classname
                 print >> out, self.shiftText(cls['Doc'])
                 print >> out
                 if cls.has_key('Usage') and cls['Usage'] != '':
-                    print >> out, '   .. method:: %s.%s' % (cls['Name'], cls['Usage'])
+                    print >> out, '   .. method:: %s.%s' % (classname, cls['Usage'])
                 else:
-                    print >> out, '   .. method:: %s.%s()' % (cls['Name'], cls['Name'])
+                    print >> out, '   .. method:: %s.%s()' % (classname, classname)
                 print >> out
                 print >> out, self.shiftText(cls['InitDoc'], ' '*6)
                 print >> out
@@ -1263,9 +1272,9 @@ class Doxy2SWIG:
                 for mem in cls['Members']:
                     usage = self.latex_text(mem['Usage'])
                     if mem.has_key('Usage') and mem['Usage'] != '':
-                        print >> out, '   .. method:: %s.%s' % (cls['Name'], mem['Usage'])
+                        print >> out, '   .. method:: %s.%s' % (classname, mem['Usage'])
                     else:
-                        print >> out, '   .. method:: %s.%s()' % (cls['Name'], mem['Name'])
+                        print >> out, '   .. method:: %s.%s()' % (classname, mem['Name'])
                     print >> out
                     if mem['Doc'] != '':
                         print >> out, self.shiftText(mem['Doc'], ' '*6)
