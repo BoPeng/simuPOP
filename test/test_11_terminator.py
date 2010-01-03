@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Purpose:
-#  testing pause operator
+#  testing Pause operator
 #
 # Author:
 #  Bo Peng (bpeng@rice.edu)

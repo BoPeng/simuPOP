@@ -52,7 +52,7 @@ bool baseSelector::apply(population & pop)
 }
 
 
-double mapSelector::indFitness(individual * ind, ULONG gen)
+double MapSelector::indFitness(individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
 
@@ -143,7 +143,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 
 
 // currently assuming diploid
-double maSelector::indFitness(individual * ind, ULONG gen)
+double MaSelector::indFitness(individual * ind, ULONG gen)
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -180,14 +180,14 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 
 			index = index * 3 + 2 - numWildtype;
 		} else {
-			DBG_FAILIF(true, ValueError, "The maSelector only supports haploid and diploid populations.");
+			DBG_FAILIF(true, ValueError, "The MaSelector only supports haploid and diploid populations.");
 		}
 	}
 	return m_fitness[index];
 }
 
 
-double mlSelector::indFitness(individual * ind, ULONG gen)
+double MlSelector::indFitness(individual * ind, ULONG gen)
 {
 	if (m_mode == MULTIPLICATIVE) {
 		double fit = 1;
@@ -213,7 +213,7 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 }
 
 
-double pySelector::indFitness(individual * ind, ULONG gen)
+double PySelector::indFitness(individual * ind, ULONG gen)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

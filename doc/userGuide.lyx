@@ -5279,7 +5279,7 @@ PyEval
  At the end of the evolution, the population is saved to a file using a
  
 \family typewriter
-savePopulation
+SavePopulation
 \family default
  operator.
  
@@ -5437,7 +5437,7 @@ Operator output *
 \begin_layout Standard
 All operators we have seen, except for the 
 \family typewriter
-savePopulation
+SavePopulation
 \family default
  operator in Example 
 \begin_inset CommandInset ref
@@ -5595,7 +5595,7 @@ reference "hybridOperator"
 \begin_layout Standard
 The 
 \family typewriter
-savePopulation
+SavePopulation
 \family default
  operator in Example 
 \begin_inset CommandInset ref
@@ -8120,7 +8120,7 @@ reference "simuGen"
  of a population if allele 0 at locus 5 is fixed or lost.
  It also shows the application of an interesting operator 
 \family typewriter
-ifElse
+IfElse
 \family default
 , which applies an operator, in this case 
 \family typewriter
@@ -12496,7 +12496,7 @@ reference "PointMutator"
  frequency.
  This example uses two 
 \family typewriter
-ifElse
+IfElse
 \family default
  operators.
  The first one introduces a mutant when there is no mutant in the population,
@@ -13545,7 +13545,7 @@ def pfunc(genotype):
 
 and use this function in an operator 
 \family typewriter
-pySelector(func=pfunc, loci=loci)
+PySelector(func=pfunc, loci=loci)
 \family default
 .
  If your penetrance model depends on genotype as well as some information
@@ -13581,7 +13581,7 @@ def pfunc(genotype, fields):
 
 and use this function in an operator 
 \family typewriter
-pySelector(func=pfunc, loci=loci, paramFields=fields)
+PySelector(func=pfunc, loci=loci, paramFields=fields)
 \family default
 .
  If the function you provide accepts three arguments, 
@@ -13623,7 +13623,7 @@ InfoExec('sex=ind.sex()', exposeInd='ind'
 \family default
 ) and pass this information to the user-defined function (
 \family typewriter
-pySelector(func=func, paramFields='sex')
+PySelector(func=func, paramFields='sex')
 \family default
 ).
 \end_layout
@@ -13632,7 +13632,7 @@ pySelector(func=func, paramFields='sex')
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pySelector"
+reference "PySelector"
 
 \end_inset
 
@@ -13822,7 +13822,7 @@ reference "selectParents"
  gives an example of natural selection.
  In this example, a 
 \family typewriter
-mapSelector
+MapSelector
 \family default
  is used to explicitly assign fitness value to genotypes at the first locus.
  The fitness values are 
@@ -14127,7 +14127,7 @@ These two types of selection scenarios do not have to always yield identical
 \begin_layout Subsection
 Map selector (operator 
 \family typewriter
-mapSelector
+MapSelector
 \family default
 )
 \end_layout
@@ -14138,7 +14138,7 @@ A map selector uses a Python dictionary to provide fitness values for each
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mapSelector"
+reference "MapSelector"
 
 \end_inset
 
@@ -14195,8 +14195,8 @@ which is
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mapSelector.log"
-lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
+filename "log/MapSelector.log"
+lstparams "caption={A selector that uses pre-defined fitness value},label={MapSelector}"
 
 \end_inset
 
@@ -14218,7 +14218,7 @@ The above example assumes that the fitness value for individuals with genotypes
  In that case, you can specify fitness for both types of genotypes.
  The underlying mechanism is that the 
 \family typewriter
-mapSelector
+MapSelector
 \family default
  looks up a genotype in the dictionary first directly, and then without
  phase information if a genotype is not found.
@@ -14240,7 +14240,7 @@ MapPenetrance
 \begin_layout Subsection
 Multi-allele selector (operator 
 \family typewriter
-maSelector
+MaSelector
 \family default
 )
 \end_layout
@@ -14293,7 +14293,7 @@ The default wildtype group contains allele 0 so the two allele groups are
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "maSelector"
+reference "MaSelector"
 
 \end_inset
 
@@ -14301,7 +14301,7 @@ reference "maSelector"
  This example is identical to Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mapSelector"
+reference "MapSelector"
 
 \end_inset
 
@@ -14312,8 +14312,8 @@ reference "mapSelector"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/maSelector.log"
-lstparams "caption={A multi-allele selector},label={maSelector}"
+filename "log/MaSelector.log"
+lstparams "caption={A multi-allele selector},label={MaSelector}"
 
 \end_inset
 
@@ -14323,7 +14323,7 @@ lstparams "caption={A multi-allele selector},label={maSelector}"
 \begin_layout Standard
 Operator 
 \family typewriter
-maSelector
+MaSelector
 \family default
  also supports multiple loci by specifying fitness values for all combination
  of genotype at specified loci.
@@ -14408,15 +14408,15 @@ In general,
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "maSelectorHaploid"
+reference "MaSelectorHaploid"
 
 \end_inset
 
  demonstrates the use of a multi-locus model in a haploid population.
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/maSelectorHaploid.log"
-lstparams "caption={A multi-locus multi-allele selection model in a haploid population},label={maSelectorHaploid}"
+filename "log/MaSelectorHaploid.log"
+lstparams "caption={A multi-locus multi-allele selection model in a haploid population},label={MaSelectorHaploid}"
 
 \end_inset
 
@@ -14426,7 +14426,7 @@ lstparams "caption={A multi-locus multi-allele selection model in a haploid popu
 \begin_layout Subsection
 Multi-locus selection models (operator 
 \family typewriter
-mlSelector
+MlSelector
 \family default
 )
 \end_layout
@@ -14507,7 +14507,7 @@ ility to apply and interpret these models.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mlSelector"
+reference "MlSelector"
 
 \end_inset
 
@@ -14524,8 +14524,8 @@ tly by comparing allele freqency trajectories of these two replicates to
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mlSelector.log"
-lstparams "caption={A multi-loci selector},label={mlSelector}"
+filename "log/MlSelector.log"
+lstparams "caption={A multi-loci selector},label={MlSelector}"
 
 \end_inset
 
@@ -14535,7 +14535,7 @@ lstparams "caption={A multi-loci selector},label={mlSelector}"
 \begin_layout Subsection
 A hybrid selector (operator 
 \family typewriter
-pySelector
+PySelector
 \family default
 )
 \end_layout
@@ -14573,7 +14573,7 @@ def fitness_func(genotype):
 
 and use this function in an operator 
 \family typewriter
-pySelector(func=fitness_func, loci=loci)
+PySelector(func=fitness_func, loci=loci)
 \family default
 .
  If your selection model depends on genotype as well as some information
@@ -14609,7 +14609,7 @@ def fitness_func(genotype, fields):
 
 and use this function in an operator 
 \family typewriter
-pySelector(func=fitness_func, loci=loci, paramFields=fields)
+PySelector(func=fitness_func, loci=loci, paramFields=fields)
 \family default
 .
  It is also possible to use a third parameter 
@@ -14622,7 +14622,7 @@ gen
 \begin_layout Standard
 When a 
 \family typewriter
-pySelector
+PySelector
 \family default
  is used to calculate fitness for an individual (parents if applied pre-mating,
  offspring if applied during-mating), it will collect his or her genotype
@@ -14646,7 +14646,7 @@ InfoExec('sex=ind.sex()', exposeInd='ind'
 \family default
 ) and pass this information to the user-defined function (
 \family typewriter
-pySelector(func=func, paramFields='sex')
+PySelector(func=func, paramFields='sex')
 \family default
 ).
 \end_layout
@@ -14655,13 +14655,13 @@ pySelector(func=func, paramFields='sex')
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pySelector"
+reference "PySelector"
 
 \end_inset
 
  demonstrates how to use a 
 \family typewriter
-pySelector
+PySelector
 \family default
  to specify fitness values according to a fitness table and the smoking
  status of each individual.
@@ -14670,8 +14670,8 @@ pySelector
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pySelector.log"
-lstparams "caption={A hybrid selector},label={pySelector}"
+filename "log/PySelector.log"
+lstparams "caption={A hybrid selector},label={PySelector}"
 
 \end_inset
 
@@ -14749,7 +14749,7 @@ InfoExec
  this genotype - affection status - fitness relationship could be implemented
  using an equivalent 
 \family typewriter
-maSelector
+MaSelector
 \family default
 .
  This method could be extended to 
@@ -17414,7 +17414,7 @@ if hasSelection:
 
 \begin_layout Plain Layout
 
-    sel = mapSelector(loci=[0], fitness=[1, 0.99, 0.98])
+    sel = MapSelector(loci=[0], fitness=[1, 0.99, 0.98])
 \end_layout
 
 \begin_layout Plain Layout
@@ -17556,7 +17556,7 @@ lstparams "caption={Dump the content of a population},label={dumper}"
 \begin_layout Subsection
 Save a population during evolution (operator 
 \family typewriter
-savePopulation
+SavePopulation
 \family default
 )
 \end_layout
@@ -17567,7 +17567,7 @@ Because it is usually not feasible to store all parental generations of
  population during an evolutionary process for further analysis.
  Operator 
 \family typewriter
-savePopulation
+SavePopulation
 \family default
  is designed for this purpose.
  When it is applied to a population, it will save the population to a file
@@ -17596,7 +17596,7 @@ baseOperator
  is used in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "savePopulation"
+reference "SavePopulation"
 
 \end_inset
 
@@ -17610,8 +17610,8 @@ snapshot_5_20.pop
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/savePopulation.log"
-lstparams "caption={Save snapshots of an evolving population},label={savePopulation}"
+filename "log/SavePopulation.log"
+lstparams "caption={Save snapshots of an evolving population},label={SavePopulation}"
 
 \end_inset
 
@@ -17621,7 +17621,7 @@ lstparams "caption={Save snapshots of an evolving population},label={savePopulat
 \begin_layout Subsection
 Conditional operator (operator 
 \family typewriter
-ifElse
+IfElse
 \family default
 ) *
 \end_layout
@@ -17629,7 +17629,7 @@ ifElse
 \begin_layout Standard
 Operator 
 \family typewriter
-ifElse
+IfElse
 \family default
  provides a simple way to conditionally apply an operator.
  The condition can be a fixed condition or a expression that will be evaluated
@@ -17642,7 +17642,7 @@ The first case is used to control the execution of certain operators depending
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ifElseFixed"
+reference "IfElseFixed"
 
 \end_inset
 
@@ -17655,7 +17655,7 @@ verbose
  Note that the applicability of the conditional operators are determined
  by the 
 \family typewriter
-ifElse
+IfElse
 \family default
  operator and individual opearators.
  That is to say, the parameters 
@@ -17688,7 +17688,7 @@ elseOps
 \family default
  are only honored when operator 
 \family typewriter
-ifElse
+IfElse
 \family default
  is applied.
 \end_layout
@@ -17696,8 +17696,8 @@ ifElse
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/ifElseFixed.log"
-lstparams "caption={A conditional opeartor with fixed condition},label={ifElseFixed}"
+filename "log/IfElseFixed.log"
+lstparams "caption={A conditional opeartor with fixed condition},label={IfElseFixed}"
 
 \end_inset
 
@@ -17712,7 +17712,7 @@ The expression form of this operator is more useful.
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ifElse"
+reference "IfElse"
 
 \end_inset
 
@@ -17730,8 +17730,8 @@ pyOperator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/ifElse.log"
-lstparams "caption={A conditional opeartor with dynamic condition},label={ifElse}"
+filename "log/IfElse.log"
+lstparams "caption={A conditional opeartor with dynamic condition},label={IfElse}"
 
 \end_inset
 
@@ -17765,7 +17765,7 @@ reference "expression"
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ifElse"
+reference "IfElse"
 
 \end_inset
 
@@ -17835,7 +17835,7 @@ lstparams "caption={Terminate the evolution of all populations in a simulator},l
 \begin_layout Subsection
 Pause and resume an evolutionary process (operator 
 \family typewriter
-pause
+Pause
 \family default
 ) *
 \end_layout
@@ -17848,7 +17848,7 @@ If you are presenting an evolutinary process in public, you might want to
  to examine the status of the evolution process from time to time.
  These can be done using a 
 \family typewriter
-pause
+Pause
 \family default
  operator.
 \end_layout
@@ -17856,28 +17856,28 @@ pause
 \begin_layout Standard
 The 
 \family typewriter
-pause
+Pause
 \family default
  operator can stop the evolution at specified generations, or when you press
  a key.
- In the first case, you usually specify the generations to pause (e.g.
+ In the first case, you usually specify the generations to Pause (e.g.
  
 \family typewriter
-pause(step=1000)
+Pause(step=1000)
 \family default
 ) so that you can examine the status of a simulation from time to time.
- In the second case, you can apply the operator at each generation and pause
+ In the second case, you can apply the operator at each generation and Pause
  the simulation when you press a key (e.g.
  
 \family typewriter
-pause(stopOnKeyStroke=True)
+Pause(stopOnKeyStroke=True)
 \family default
 ).
  A specific key can be specified so that you can use different keys to stop
  different populations, as shown in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pause"
+reference "Pause"
 
 \end_inset
 
@@ -17887,8 +17887,8 @@ reference "pause"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pause.log"
-lstparams "caption={Pause the evolution of a simulation},label={pause}"
+filename "log/Pause.log"
+lstparams "caption={Pause the evolution of a simulation},label={Pause}"
 
 \end_inset
 
@@ -17896,8 +17896,8 @@ lstparams "caption={Pause the evolution of a simulation},label={pause}"
 \end_layout
 
 \begin_layout Standard
-When a simulation is paused, you are given the options to resume evolution,
- stop the evolution of the paused population or all populations, or enter
+When a simulation is Paused, you are given the options to resume evolution,
+ stop the evolution of the Paused population or all populations, or enter
  an interactive Python shell to examine the status of a population, which
  will be available in the Python shell as 
 \family typewriter
@@ -17918,7 +17918,7 @@ Y
 \begin_layout Subsection
 Measuring execution time of operators (operator 
 \family typewriter
-ticToc
+TicToc
 \family default
 ) *
 \end_layout
@@ -17926,7 +17926,7 @@ ticToc
 \begin_layout Standard
 The 
 \family typewriter
-ticToc
+TicToc
 \family default
  operator can be used to measure the time between two events during an evolution
 ary process.
@@ -17947,7 +17947,7 @@ at
  The latter usage is demonstrated in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ticToc"
+reference "TicToc"
 
 \end_inset
 
@@ -17957,8 +17957,8 @@ reference "ticToc"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/ticToc.log"
-lstparams "caption={Monitor the performance of operators},label={ticToc}"
+filename "log/TicToc.log"
+lstparams "caption={Monitor the performance of operators},label={TicToc}"
 
 \end_inset
 
@@ -21892,7 +21892,7 @@ KamMutator(rates=mu, maxAllele=k)
 Because there are many possible disease alleles, a multi-allelic selector
  (
 \family typewriter
-maSelector
+MaSelector
 \family default
 ) could be used to select against the disease alleles.
  This operator accept a single or a list of wild type alleles (
@@ -21918,7 +21918,7 @@ status open
 
 \begin_layout Plain Layout
 
-maSelector(loci=0, wildtype=0, penetrance=[1, 1, 1-s])
+MaSelector(loci=0, wildtype=0, penetrance=[1, 1, 1-s])
 \end_layout
 
 \end_inset
@@ -21938,7 +21938,7 @@ This example uses a single-locus selection model but the complete script
  values at different loci are combined (multiplied), a multi-locus selection
  model (
 \family typewriter
-mlSelector
+MlSelector
 \family default
 ) could be used as follows:
 \end_layout
@@ -21950,17 +21950,17 @@ status open
 
 \begin_layout Plain Layout
 
-mlSelector([
+MlSelector([
 \end_layout
 
 \begin_layout Plain Layout
 
-    maSelector(loci=loc1, fitness=[1,1,1-s1], wildtype=0),
+    MaSelector(loci=loc1, fitness=[1,1,1-s1], wildtype=0),
 \end_layout
 
 \begin_layout Plain Layout
 
-    maSelector(loci=loc2, fitness=[1,1,1-s2], wildtype=0)],
+    MaSelector(loci=loc2, fitness=[1,1,1-s2], wildtype=0)],
 \end_layout
 
 \begin_layout Plain Layout

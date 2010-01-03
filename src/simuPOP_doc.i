@@ -2394,7 +2394,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse "
+%feature("docstring") simuPOP::IfElse "
 
 Details:
 
@@ -2407,11 +2407,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::ifElse "
+%feature("docstring") simuPOP::IfElse::IfElse "
 
 Usage:
 
-    ifElse(cond, ifOps=[], elseOps=[], output=\">\", begin=0, end=-1,
+    IfElse(cond, ifOps=[], elseOps=[], output=\">\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -2423,13 +2423,13 @@ Details:
     is applied. If a fixed value is given, the condition when the
     operator is created always holds. The applicability of ifOps and
     elseOps are controlled by parameters begin, end, step, at and rep
-    of both the ifElse operator and individual operators but ifOps and
+    of both the IfElse operator and individual operators but ifOps and
     elseOps opeartors does not support negative indexes for replicate
     and generation numbers.
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::~ifElse "
+%feature("docstring") simuPOP::IfElse::~IfElse "
 
 Description:
 
@@ -2437,19 +2437,19 @@ Description:
 
 Usage:
 
-    x.~ifElse()
+    x.~IfElse()
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::IfElse::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ifElse::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::IfElse::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::ifElse::apply "
+%feature("docstring") simuPOP::IfElse::apply "
 
 Description:
 
-    apply the ifElse operator to populationpop.
+    apply the IfElse operator to populationpop.
 
 Usage:
 
@@ -2457,7 +2457,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ifElse::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::IfElse::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::indCompare;
 
@@ -3696,7 +3696,7 @@ Usage:
 
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mapSelector "
+%feature("docstring") simuPOP::MapSelector "
 
 Applicability: all ploidy
 
@@ -3708,11 +3708,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mapSelector::mapSelector "
+%feature("docstring") simuPOP::MapSelector::MapSelector "
 
 Usage:
 
-    mapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
+    MapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
@@ -3732,15 +3732,15 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mapSelector::~mapSelector "
+%feature("docstring") simuPOP::MapSelector::~MapSelector "
 
 Usage:
 
-    x.~mapSelector()
+    x.~MapSelector()
 
 "; 
 
-%feature("docstring") simuPOP::mapSelector::clone "
+%feature("docstring") simuPOP::MapSelector::clone "
 
 Description:
 
@@ -3752,11 +3752,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mapSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MapSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mapSelector::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::maSelector "
+%feature("docstring") simuPOP::MaSelector "
 
 Details:
 
@@ -3770,11 +3770,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::maSelector "
+%feature("docstring") simuPOP::MaSelector::MaSelector "
 
 Usage:
 
-    maSelector(loci, fitness, wildtype=0, begin=0, end=-1, step=1,
+    MaSelector(loci, fitness, wildtype=0, begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
@@ -3797,19 +3797,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::~maSelector "
+%feature("docstring") simuPOP::MaSelector::~MaSelector "
 
 Usage:
 
-    x.~maSelector()
+    x.~MaSelector()
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::clone "
+%feature("docstring") simuPOP::MaSelector::clone "
 
 Description:
 
-    deep copy of a maSelector
+    deep copy of a MaSelector
 
 Usage:
 
@@ -3817,9 +3817,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::maSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MaSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::maSelector::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mating "Obsolete or undocumented function."
 
@@ -4406,7 +4406,7 @@ Usage:
 
 %feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mlSelector "
+%feature("docstring") simuPOP::MlSelector "
 
 Details:
 
@@ -4418,11 +4418,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mlSelector::mlSelector "
+%feature("docstring") simuPOP::MlSelector::MlSelector "
 
 Usage:
 
-    mlSelector(ops, mode=MULTIPLICATIVE, begin=0, end=-1, step=1,
+    MlSelector(ops, mode=MULTIPLICATIVE, begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
@@ -4441,19 +4441,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mlSelector::~mlSelector "
+%feature("docstring") simuPOP::MlSelector::~MlSelector "
 
 Usage:
 
-    x.~mlSelector()
+    x.~MlSelector()
 
 "; 
 
-%feature("docstring") simuPOP::mlSelector::clone "
+%feature("docstring") simuPOP::MlSelector::clone "
 
 Description:
 
-    deep copy of a mlSelector
+    deep copy of a MlSelector
 
 Usage:
 
@@ -4461,9 +4461,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mlSelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::MlSelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mlSelector::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::NoneOp "
 
@@ -4800,35 +4800,35 @@ Usage:
 
 %ignore simuPOP::ParentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::pause "
+%feature("docstring") simuPOP::Pause "
 
 Details:
 
-    This operator pauses the evolution of a simulator at given
+    This operator Pauses the evolution of a simulator at given
     generations or at a key stroke. When a simulator is stopped, you
     can go to a Python shell to examine the status of an evolutionary
     process, resume or stop the evolution.
 
 "; 
 
-%feature("docstring") simuPOP::pause::pause "
+%feature("docstring") simuPOP::Pause::Pause "
 
 Usage:
 
-    pause(stopOnKeyStroke=False, prompt=True, output=\">\", begin=0,
+    Pause(stopOnKeyStroke=False, prompt=True, output=\">\", begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
 
-    Create an operator that pause the evolution of a population when
+    Create an operator that Pause the evolution of a population when
     it is applied to this population. If stopOnKeyStroke is False
-    (default), it will always pause a population when it is applied,
-    if this parameter is set to True, the operator will pause a
+    (default), it will always Pause a population when it is applied,
+    if this parameter is set to True, the operator will Pause a
     population if *any* key has been pressed. If a specific character
     is set, the operator will stop when this key has been pressed.
-    This allows, for example, the use of several pause operators to
-    pause different populations.  After a population has been paused,
+    This allows, for example, the use of several Pause operators to
+    Pause different populations.  After a population has been Paused,
     a message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
@@ -4844,7 +4844,7 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::pause::~pause "
+%feature("docstring") simuPOP::Pause::~Pause "
 
 Description:
 
@@ -4852,17 +4852,17 @@ Description:
 
 Usage:
 
-    x.~pause()
+    x.~Pause()
 
 "; 
 
-%feature("docstring") simuPOP::pause::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Pause::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pause::apply "
+%feature("docstring") simuPOP::Pause::apply "
 
 Description:
 
-    apply the pause operator to one population
+    apply the Pause operator to one population
 
 Usage:
 
@@ -4870,7 +4870,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pause::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Pause::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pedigree "
 
@@ -7131,7 +7131,7 @@ Usage:
 
 %feature("docstring") simuPOP::PyQuanTrait::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pySelector "
+%feature("docstring") simuPOP::PySelector "
 
 Details:
 
@@ -7147,11 +7147,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pySelector::pySelector "
+%feature("docstring") simuPOP::PySelector::PySelector "
 
 Usage:
 
-    pySelector(func, loci=[], begin=0, end=-1, step=1, at=[],
+    PySelector(func, loci=[], begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
@@ -7163,11 +7163,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pySelector::clone "
+%feature("docstring") simuPOP::PySelector::clone "
 
 Description:
 
-    deep copy of a pySelector
+    deep copy of a PySelector
 
 Usage:
 
@@ -7175,9 +7175,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pySelector::indFitness(individual *ind, ULONG gen);
+%ignore simuPOP::PySelector::indFitness(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::pySelector::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyTagger "
 
@@ -7919,7 +7919,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation "
+%feature("docstring") simuPOP::SavePopulation "
 
 Details:
 
@@ -7927,11 +7927,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::savePopulation "
+%feature("docstring") simuPOP::SavePopulation::SavePopulation "
 
 Usage:
 
-    savePopulation(output=\"\", begin=0, end=-1, step=1, at=[],
+    SavePopulation(output=\"\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -7947,7 +7947,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::~savePopulation "
+%feature("docstring") simuPOP::SavePopulation::~SavePopulation "
 
 Description:
 
@@ -7955,15 +7955,15 @@ Description:
 
 Usage:
 
-    x.~savePopulation()
+    x.~SavePopulation()
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::clone "
+%feature("docstring") simuPOP::SavePopulation::clone "
 
 Description:
 
-    Deep copy of a savePopulation operator.
+    Deep copy of a SavePopulation operator.
 
 Usage:
 
@@ -7971,7 +7971,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::apply "
+%feature("docstring") simuPOP::SavePopulation::apply "
 
 Description:
 
@@ -7983,7 +7983,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::savePopulation::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::SavePopulation::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SelfingGenoTransmitter "
 
@@ -9773,7 +9773,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ticToc "
+%feature("docstring") simuPOP::TicToc "
 
 Details:
 
@@ -9786,22 +9786,22 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::ticToc::ticToc "
+%feature("docstring") simuPOP::TicToc::TicToc "
 
 Usage:
 
-    ticToc(output=\">\", begin=0, end=-1, step=1, at=[],
+    TicToc(output=\">\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Create a ticToc operator that outputs the elapsed since the last
+    Create a TicToc operator that outputs the elapsed since the last
     time it was applied, and the overall time since the first time
     this operator is applied.
 
 "; 
 
-%feature("docstring") simuPOP::ticToc::~ticToc "
+%feature("docstring") simuPOP::TicToc::~TicToc "
 
 Description:
 
@@ -9809,15 +9809,15 @@ Description:
 
 Usage:
 
-    x.~ticToc()
+    x.~TicToc()
 
 "; 
 
-%feature("docstring") simuPOP::ticToc::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::TicToc::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::ticToc::apply "Obsolete or undocumented function."
+%feature("docstring") simuPOP::TicToc::apply "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::ticToc::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::TicToc::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::uintList "
 

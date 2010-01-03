@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# This is a unittest file for ifElse operator
+# This is a unittest file for IfElse operator
 #
 # Bo Peng (bpeng@rice.edu)
 #
@@ -17,7 +17,7 @@ import unittest, os, sys, exceptions
 class TestIfElseOperator(unittest.TestCase):
 
     def testIfElseOperator(self):
-        'Testing opeartor ifElse'
+        'Testing opeartor IfElse'
         pop = population(1000, loci=[2])
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         pop.evolve(
@@ -28,10 +28,10 @@ class TestIfElseOperator(unittest.TestCase):
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
-                ifElse('alleleFreq[0][0]<0.2',
+                IfElse('alleleFreq[0][0]<0.2',
                     KamMutator(rates=.6, k=2, loci=[0]) ),
                 # the other way around?
-                ifElse('alleleFreq[0][0]>0.8',
+                IfElse('alleleFreq[0][0]>0.8',
                     KamMutator(rates=.6, k=2, loci=[0]) ),
                 # terminate if
                 TerminateIf('alleleFreq[0][0]<0.1 or alleleFreq[0][0]>0.9')
@@ -41,7 +41,7 @@ class TestIfElseOperator(unittest.TestCase):
         self.assertEqual(pop.dvars().gen, 1000)
 
     def testIfElseOperators(self):
-        'Testing opeartor ifElse with multiple operators'
+        'Testing opeartor IfElse with multiple operators'
         simu = simulator(population(1000, loci=[2]))
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         simu.evolve(
@@ -52,12 +52,12 @@ class TestIfElseOperator(unittest.TestCase):
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
-                ifElse('alleleFreq[0][0]<0.2', ifOps=[
+                IfElse('alleleFreq[0][0]<0.2', ifOps=[
                     KamMutator(rates=.6, k=2, loci=[0]),
                     NoneOp(),
                     ]),
                 # the other way around?
-                ifElse('alleleFreq[0][0]>0.8', ifOps = [
+                IfElse('alleleFreq[0][0]>0.8', ifOps = [
                     KamMutator(rates=.6, k=2, loci=[0]),
                     NoneOp()
                     ]),

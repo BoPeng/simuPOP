@@ -107,7 +107,7 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 }
 
 
-// this function is the same as mapSelector.
+// this function is the same as MapSelector.
 double MapPenetrance::penet(individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
@@ -204,7 +204,7 @@ string MaPenetrance::describe(bool format)
 }
 
 
-// this function is the same as maSelector.
+// this function is the same as MaSelector.
 double MaPenetrance::penet(individual * ind, ULONG gen)
 {
 	UINT index = 0;
@@ -242,7 +242,7 @@ double MaPenetrance::penet(individual * ind, ULONG gen)
 
 			index = index * 3 + 2 - numWildtype;
 		} else {
-			DBG_FAILIF(true, ValueError, "The maSelector only supports haploid and diploid populations.");
+			DBG_FAILIF(true, ValueError, "The MaSelector only supports haploid and diploid populations.");
 		}
 	}
 	return m_penetrance[index];
@@ -278,7 +278,7 @@ double MlPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
-// the same as pySelector
+// the same as PySelector
 double PyPenetrance::penet(individual * ind, ULONG gen)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
