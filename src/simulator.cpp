@@ -1,5 +1,5 @@
 /**
- *  $File: simulator.cpp $
+ *  $File: Simulator.cpp $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -43,12 +43,12 @@ population & pyPopIterator::next()
 }
 
 
-simulator::simulator(PyObject * pops, UINT rep, bool steal)
+Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 {
 	DBG_ASSERT(rep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
 
-	DBG_DO(DBG_SIMULATOR, cerr << "Creating simulator " << endl);
+	DBG_DO(DBG_SIMULATOR, cerr << "Creating Simulator " << endl);
 	m_pops = vector<population *>();
 
 	if (PySequence_Check(pops)) {
@@ -112,11 +112,11 @@ simulator::simulator(PyObject * pops, UINT rep, bool steal)
 		SystemError, "Fail to create scratch population");
 
 	// set generation number for all replicates
-	DBG_DO(DBG_SIMULATOR, cerr << "simulator created" << endl);
+	DBG_DO(DBG_SIMULATOR, cerr << "Simulator created" << endl);
 }
 
 
-simulator::~simulator()
+Simulator::~Simulator()
 {
 	// call the destructor of each replicates
 	delete m_scratchPop;
@@ -126,7 +126,7 @@ simulator::~simulator()
 }
 
 
-simulator::simulator(const simulator & rhs) :
+Simulator::Simulator(const Simulator & rhs) :
 	m_pops(0),
 	m_scratchPop(NULL)
 {
@@ -139,13 +139,13 @@ simulator::simulator(const simulator & rhs) :
 }
 
 
-simulator * simulator::clone() const
+Simulator * Simulator::clone() const
 {
-	return new simulator(*this);
+	return new Simulator(*this);
 }
 
 
-population & simulator::pop(UINT rep) const
+population & Simulator::pop(UINT rep) const
 {
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
@@ -154,7 +154,7 @@ population & simulator::pop(UINT rep) const
 }
 
 
-population & simulator::extract(UINT rep)
+population & Simulator::extract(UINT rep)
 {
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
@@ -165,7 +165,7 @@ population & simulator::extract(UINT rep)
 }
 
 
-void simulator::add(const population & pop, bool steal)
+void Simulator::add(const population & pop, bool steal)
 {
 
 	if (steal) {
@@ -179,13 +179,13 @@ void simulator::add(const population & pop, bool steal)
 }
 
 
-string simulator::describe(bool format)
+string Simulator::describe(bool format)
 {
-	return "<simuPOP.simulator> a simulator with " + toStr(m_pops.size()) + " population" + (m_pops.size() == 1 ? "." : "s.");
+	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size()) + " population" + (m_pops.size() == 1 ? "." : "s.");
 }
 
 
-vectoru simulator::evolve(
+vectoru Simulator::evolve(
                           const opList & initOps,
                           const opList & preOps,
                           const mating & matingScheme,
@@ -386,7 +386,7 @@ vectoru simulator::evolve(
 }
 
 
-bool simulator::apply(const opList & ops)
+bool Simulator::apply(const opList & ops)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
 		// check compatibility of operators
@@ -415,7 +415,7 @@ bool simulator::apply(const opList & ops)
 }
 
 
-int simulator::__cmp__(const simulator & rhs) const
+int Simulator::__cmp__(const Simulator & rhs) const
 {
 	if (numRep() != rhs.numRep())
 		return 1;

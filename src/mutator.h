@@ -48,7 +48,7 @@ public:
 	 *  defines common behaviors of all mutators.
 	 *
 	 *  By default, a mutator mutates all alleles in all populations of a
-	 *  simulator at all generations. A number of parameters can be used to
+	 *  Simulator at all generations. A number of parameters can be used to
 	 *  restrict mutations to certain generations (parameters \e begin, \e end,
 	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
 	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).

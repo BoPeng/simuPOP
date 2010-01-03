@@ -60,7 +60,7 @@ def viewVars(var, gui=None):
 
     var
         A dictionary variable to be viewed. Dictionary wrapper objects returned
-        by ``population.dvars()`` and ``simulator.dvars()`` are also acceptable.
+        by ``population.dvars()`` and ``Simulator.dvars()`` are also acceptable.
 
     gui
         If gui is ``False`` or ``'Tkinter'``, a text presentation (use the
@@ -664,7 +664,7 @@ class trajectory:
     def mutators(self, loci, inds=0, allele=1, *args, **kwargs):
         '''Return a list of ``PointMutator`` operators that introduce mutants
         at the beginning of simulated trajectories. These mutators should be
-        added to the ``ops`` parameter of ``simulator.evolve`` function to
+        added to the ``ops`` parameter of ``Simulator.evolve`` function to
         introduce a mutant at the beginning of a generation with zero allele
         frequency before mating, and a positive allele frequency after mating.
         A parameter ``loci`` is needed to specify actual loci indexes in the
@@ -792,7 +792,7 @@ class trajectory:
         
 
 class trajectorySimulator:
-    '''A trajectory simulator takes basic demographic and genetic (natural
+    '''A trajectory Simulator takes basic demographic and genetic (natural
     selection) information of an evolutionary process of a diploid population
     and allow the simulation of trajectory of allele frequencies of one or
     more loci. Trajectories could be simulated in two ways: forward-time and
@@ -816,7 +816,7 @@ class trajectorySimulator:
     '''
 
     def __init__(self, N, nLoci=1, fitness=None, logger=None):
-        '''Create a trajectory simulator using provided demographic and genetic
+        '''Create a trajectory Simulator using provided demographic and genetic
         (natural selection) parameters. Member functions *simuForward* and
         *simuBackward* can then be used to simulate trajectories within certain
         range of generations. This class accepts the following parameters

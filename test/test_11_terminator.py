@@ -21,7 +21,7 @@ class TestTerminator(unittest.TestCase):
     def testTerminator(self):
         'Testing operator TerminateIf that terminates a replicate'
         pop = population(size=100, loci=[2])
-        simu = simulator(pop, rep=5)
+        simu = Simulator(pop, rep=5)
         gens = simu.evolve(
             initOps = [InitSex(), InitByFreq([0.3, 0.7])],
             matingScheme = RandomMating(),
@@ -41,7 +41,7 @@ class TestTerminator(unittest.TestCase):
     def testTerminateAll(self):
         'Testing operator TerminateIf that terminates all replicates'
         pop = population(size=100, loci=[2])
-        simu = simulator(pop, rep=5)
+        simu = Simulator(pop, rep=5)
         gens = simu.evolve(
             initOps = [InitSex(), InitByFreq([0.3, 0.7])],
             matingScheme = RandomMating(),

@@ -79,7 +79,7 @@ namespace simuPOP {
  *       react to different fitness schemes when they are used in a
  *       heterogeneous mating scheme.
  *  \li You can apply a selector to the offspring generation using the
- *       \e postOps parameter of \c simulator.evolve, these fitness values will
+ *       \e postOps parameter of \c Simulator.evolve, these fitness values will
  *       be used when the offspring generation becomes parental generation in
  *       the next generation.
  *

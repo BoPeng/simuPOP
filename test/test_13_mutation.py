@@ -115,7 +115,7 @@ class TestMutator(unittest.TestCase):
     def testSP(self):
         'Testing the subpop support of mutators'
         pop = population(size=[1000, 2000], ploidy=2, loci=[2, 3])
-        simu = simulator(pop )
+        simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4],
@@ -134,7 +134,7 @@ class TestMutator(unittest.TestCase):
         'Testing the subpops parameter of mutator'
         pop = population(size=2000, ploidy=2, loci=[2, 3])
         pop.setVirtualSplitter(SexSplitter())
-        simu = simulator(pop )
+        simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
@@ -154,7 +154,7 @@ class TestMutator(unittest.TestCase):
 
     def testUntouchedLoci(self):
         'Testing if mutator would mutate irrelevant locus'
-        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]))
+        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]))
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
@@ -163,7 +163,7 @@ class TestMutator(unittest.TestCase):
 
     def testSnpMutator(self):
         'Testing diallelic mutator (SNP mutator)'
-        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
+        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
@@ -180,7 +180,7 @@ class TestMutator(unittest.TestCase):
 
     def testAlleleMapping(self):
         'Testing the allele mapping feature'
-        simu = simulator(population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator(population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
@@ -202,7 +202,7 @@ class TestMutator(unittest.TestCase):
             return allele - 5
         def mapOut(allele):
             return allele + 5
-        simu = simulator(population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator(population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
@@ -223,7 +223,7 @@ class TestMutator(unittest.TestCase):
 
     def testKamMutator(self):
         'Testing k-allele mutator'
-        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(
@@ -232,7 +232,7 @@ class TestMutator(unittest.TestCase):
                 postOps = [ KamMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
-        simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
             initOps = [InitSex()],
@@ -249,14 +249,14 @@ class TestMutator(unittest.TestCase):
         'Testing generalized step-wise mutation mutator'
         if moduleInfo()['alleleType'] == 'binary':
             return
-        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(initOps=[InitSex(), InitByFreq([.2,.8])],
             matingScheme = RandomMating(),
              postOps = [ SmmMutator(rates=0.2)], gen=200)
         # at loci
-        simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
@@ -281,7 +281,7 @@ class TestMutator(unittest.TestCase):
     def testMixedMutator(self):
         'Testing mixed mutator'
         pop = population(1000, loci=[1])
-        simu = simulator(pop)
+        simu = Simulator(pop)
         self.assertRaises(exceptions.ValueError,
             MixedMutator, mutators=[KamMutator(k=10), KamMutator(k=10)],
             prob=[0.2, 0.4])
@@ -291,7 +291,7 @@ class TestMutator(unittest.TestCase):
 
     def testContextMutator(self):
         'Testing context mutator'
-        simu = simulator(population(50000, loci=[3, 3]))
+        simu = Simulator(population(50000, loci=[3, 3]))
         simu.evolve(
             # initialize locus by 0, 0, 0, 1, 0, 1
             initOps = [InitSex(), InitByValue([1, 1], loci=[3, 5])],

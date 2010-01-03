@@ -253,7 +253,7 @@ namespace simuPOP {
  *  number of chromosomes, number and position of loci, names of markers,
  *  chromosomes, and information fields. These properties are stored in this
  *  \c GenoStruTrait class and are accessible from \c individual,
- *  \c population, and \c simulator classes. Currently, a genotypic structure
+ *  \c population, and \c Simulator classes. Currently, a genotypic structure
  *  consists of
  *
  *  \li Ploidy, namely the number of homologous sets of chromosomes, of a

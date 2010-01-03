@@ -28,7 +28,7 @@
 
 /**
    \file
-   \brief head file of class simulator and some other utility functions
+   \brief head file of class Simulator and some other utility functions
  */
 
 #include "utility.h"
@@ -104,13 +104,13 @@ private:
  *  of a \e population forward in time, subject to various \e operators.
  *  Populations in a simulator are created as identical copies of a population
  *  and will become different after evolution. A number of functions are
- *  provided to access simulator properties, access populations and their
+ *  provided to access Simulator properties, access populations and their
  *  variables, copy, save and load a simulator.
  *
  *  The most important member function of a simulator is \c evolve, which
  *  evolves populations forward in time, subject to various operators.
  */
-class simulator
+class Simulator
 {
 public:
 	/** Create a simulator with \e rep (default to \c 1) replicates of
@@ -121,20 +121,20 @@ public:
 	 *  behind. This behavior can be changed by setting \e steal to \c False,
 	 *  in which case populations are copied to the simulator.
 	 */
-	simulator(PyObject * pops, UINT rep = 1, bool steal = true);
+	Simulator(PyObject * pops, UINT rep = 1, bool steal = true);
 
 	// destroy a simulator along with all its populations
-	~simulator();
+	~Simulator();
 
 	/// CPPONLY Copy constructor
-	simulator(const simulator & rhs);
+	Simulator(const Simulator & rhs);
 
 	/** Clone a simulator, along with all its populations. Note that Python
 	 *  assign statement <tt>simu1 = simu</tt> only creates a symbolic link to
-	 *  an existing simulator.
+	 *  an existing Simulator.
 	 *  <group>0-stru</group>
 	 */
-	simulator * clone() const;
+	Simulator * clone() const;
 
 
 	/** Return the number of replicates.
@@ -156,7 +156,7 @@ public:
 	 */
 	population & pop(UINT rep) const;
 
-	/** Add a population \e pop to the end of an existing simulator. This
+	/** Add a population \e pop to the end of an existing Simulator. This
 	 *  function by default moves \c pop to the simulator, leaving an empty
 	 *  population for passed population object. If \c steal is set to \c False,
 	 *  the population will be copied to the simulator, and thus unchanged.
@@ -250,7 +250,7 @@ public:
 
 	/// a Pyton function used to compare the simulator objects
 	/// Note that mating schemes are not tested.
-	int __cmp__(const simulator & rhs) const;
+	int __cmp__(const Simulator & rhs) const;
 
 private:
 	/// access scratch population
@@ -273,7 +273,7 @@ private:
 
 };
 
-/** This function takes the same parameters as \c simulator.evolve and
+/** This function takes the same parameters as \c Simulator.evolve and
  *  output a description of how an evolutionary process will be executed,
  *  basically by calling the \c describe() function of all operators. It
  *  is recommended that you call this function if you have any doubt how

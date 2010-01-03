@@ -20,7 +20,7 @@ class TestMatingSchemes(unittest.TestCase):
     def getFamSize(self, numOffspring, gen=1, N=1000):
         '''Check the number of offspring for each family using
            information field father_idx'''
-        simu = simulator(
+        simu = Simulator(
             population(size=[N], infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = InitSex(),
@@ -117,7 +117,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(abs(mean - (a + b)/2.) < 0.1, True)
 
     def checkSexMode(self, ms):
-        simu = simulator( population(size=[40]))
+        simu = Simulator( population(size=[40]))
         simu.evolve(initOps = InitSex(), matingScheme=ms, gen=1)
         # return individual sex as a string
         return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
@@ -140,7 +140,7 @@ class TestMatingSchemes(unittest.TestCase):
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
         # PROB_OF_MALES
         pop = population(10000)
-        simu = simulator(pop)
+        simu = Simulator(pop)
         simu.evolve(
             initOps = [InitSex(), InitByFreq([0.5, 0.5])],
             matingScheme = RandomMating(sexMode=(PROB_OF_MALES, 0.3)),
@@ -157,7 +157,7 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing monogemous mating scheme'
         pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
         initByFreq(pop, [0.2, 0.3, 0.5])
-        simu = simulator(pop)
+        simu = Simulator(pop)
         simu.evolve(
             initOps = InitSex(sex=(MALE, FEMALE)), 
             matingScheme =  MonogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1),
@@ -223,7 +223,7 @@ class TestMatingSchemes(unittest.TestCase):
         for i in range(100):
             pop.individual(i).setSex(MALE)
             pop.individual(100+i).setSex(FEMALE)
-        simu = simulator(pop)
+        simu = Simulator(pop)
         simu.evolve(
             initOps = [],
             matingScheme = PolygamousMating(polySex=MALE, polyNum=3, numOffspring=2,ops=[MendelianGenoTransmitter(), ParentsTagger()]),

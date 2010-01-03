@@ -99,7 +99,7 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [
                     InitSex(),
@@ -114,7 +114,7 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [
                     InitSex(),
@@ -128,7 +128,7 @@ class TestPerformance(unittest.TestCase):
             # with migr and sel
             pop = population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [
                     InitSex(),
@@ -268,7 +268,7 @@ class TestPerformance(unittest.TestCase):
             # with sel
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [sel],
@@ -281,7 +281,7 @@ class TestPerformance(unittest.TestCase):
             # with sel
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, binomialSelection())
+            simu = Simulator(pop, binomialSelection())
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [sel],
@@ -402,7 +402,7 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [],
@@ -414,7 +414,7 @@ class TestPerformance(unittest.TestCase):
             # with recombination
             pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.0001)],
@@ -425,7 +425,7 @@ class TestPerformance(unittest.TestCase):
             # with high recombination
             pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.5)],
@@ -562,7 +562,7 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, binomialSelection())
+            simu = Simulator(pop, binomialSelection())
             p = 0.4
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
@@ -574,7 +574,7 @@ class TestPerformance(unittest.TestCase):
             print "Random mating"
             pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = simulator(pop, RandomMating())
+            simu = Simulator(pop, RandomMating())
             p = 0.4
             simu.evolve(
                 initOps = [InitByFreq([1-p]+[p/10.]*10)],
@@ -644,7 +644,7 @@ class TestPerformance(unittest.TestCase):
         ''' Testing the performance of different recombination algorithms '''
         # form 0
         c1 = time.clock()
-        simu = simulator(
+        simu = Simulator(
             population(size=[1000]*10, loci=[200]),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
@@ -664,7 +664,7 @@ class TestPerformance(unittest.TestCase):
         ''' Testing the performance of different recombination algorithms '''
         # form 1
         c1 = time.clock()
-        simu = simulator(
+        simu = Simulator(
             population(size=[1000]*10, loci=[200]),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
@@ -684,7 +684,7 @@ class TestPerformance(unittest.TestCase):
     def TestRecombinationAlgorithm2(self):
         # form 2
         c1 = time.clock()
-        simu = simulator(
+        simu = Simulator(
             population(size=[1000]*10, loci=[1]*200),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
@@ -702,7 +702,7 @@ class TestPerformance(unittest.TestCase):
     def TestRecombinationAlgorithm3(self):
         # form 1
         c1 = time.clock()
-        simu = simulator(
+        simu = Simulator(
             population(size=[1000]*10, loci=[200]*10),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
@@ -740,7 +740,7 @@ class TestPerformance(unittest.TestCase):
         pop = loadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
         #initByFreq(pop, [.2, .8])
-        #simu = simulator(pop, RandomMating(), reps=1)
+        #simu = Simulator(pop, RandomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
         #pop = simu.population(0)
         print 'Start saving file'

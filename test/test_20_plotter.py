@@ -85,7 +85,7 @@ class TestPlotter(unittest.TestCase):
         'Testing byRep parameter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
@@ -105,7 +105,7 @@ class TestPlotter(unittest.TestCase):
         'Testing byRep parameter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -130,7 +130,7 @@ class TestPlotter(unittest.TestCase):
         'Testing byDim paramter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
@@ -154,7 +154,7 @@ class TestPlotter(unittest.TestCase):
         'Testing byDim paramter of varPlotter using selected replicates'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=5)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -176,7 +176,7 @@ class TestPlotter(unittest.TestCase):
         'Testing plotting all lines together using varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -201,7 +201,7 @@ class TestPlotter(unittest.TestCase):
         'Testing byDim paramter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
             rep=2)
         migr = Migrator(rate=[[0, .2],[.25, 0]],
@@ -226,7 +226,7 @@ class TestPlotter(unittest.TestCase):
         'Testing saveAs parameter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -254,7 +254,7 @@ class TestPlotter(unittest.TestCase):
         'Testing parameter passing of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=2)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -278,7 +278,7 @@ class TestPlotter(unittest.TestCase):
         'Testing ylim parameter of varPlotter'
         if not hasRPy:
             return True
-        simu = simulator(
+        simu = Simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],

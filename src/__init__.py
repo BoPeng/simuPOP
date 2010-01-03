@@ -93,7 +93,7 @@ __all__ = [
     #
     # Major simuPOP classes
     'population',
-    'simulator',
+    'Simulator',
     'Pedigree',
     # splitters
     'SexSplitter',
@@ -346,14 +346,14 @@ def dvars(self, *args, **kwargs):
     return _dw(self.vars(*args, **kwargs))
 
 population.dvars = dvars
-simulator.dvars = dvars
+Simulator.dvars = dvars
 
 # expose the clone() method to Python copy module.
 def _deepcopy(self, memo):
     return self.clone()
 
 population.__deepcopy__ = _deepcopy
-simulator.__deepcopy__ = _deepcopy
+Simulator.__deepcopy__ = _deepcopy
 BaseOperator.__deepcopy__ = _deepcopy
 
 

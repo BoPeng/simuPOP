@@ -243,8 +243,8 @@ namespace std
 %newobject simuPOP::population::extractSubPops;
 %newobject simuPOP::population::extractIndividuals;
 %newobject simuPOP::population::clone;
-%newobject simuPOP::simulator::extract;
-%newobject simuPOP::simulator::clone;
+%newobject simuPOP::Simulator::extract;
+%newobject simuPOP::Simulator::clone;
 %newobject simuPOP::BaseOperator::clone;
 %newobject simuPOP::mating::clone;
 %newobject simuPOP::Stat::clone;
@@ -355,12 +355,12 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     \e preOps (applied to the parental population at the beginning of each
     life cycle), \e postOps (applied to the offspring population at the end of
     each life cycle) and \e finalOps (applied at the end of evolution). More
-    specifically, this function creates a \e simulator using the current
+    specifically, this function creates a \e Simulator using the current
     population, call its \e evolve function using passed parameters and then
     replace the current population with the evolved population. Please refer to
-    function \c simulator.evolve for more details about each parameter. '''
+    function \c Simulator.evolve for more details about each parameter. '''
     # create a simulator with self
-    simu = simulator(self)
+    simu = Simulator(self)
     # evolve
     gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
     # get the evolved population
