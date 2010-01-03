@@ -1220,7 +1220,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::dumper "
+%feature("docstring") simuPOP::Dumper "
 
 Details:
 
@@ -1232,11 +1232,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::dumper "
+%feature("docstring") simuPOP::Dumper::Dumper "
 
 Usage:
 
-    dumper(genotype=True, structure=True, ancGen=0, width=1,
+    Dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, loci=[], output=\">\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
@@ -1255,11 +1255,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::clone "
+%feature("docstring") simuPOP::Dumper::clone "
 
 Description:
 
-    Deep copy of a dumper operator.
+    Deep copy of a Dumper operator.
 
 Usage:
 
@@ -1267,11 +1267,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::apply "
+%feature("docstring") simuPOP::Dumper::apply "
 
 Description:
 
-    Apply a dumper operator to populationpop.
+    Apply a Dumper operator to populationpop.
 
 Usage:
 
@@ -1279,7 +1279,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::dumper::~dumper "
+%feature("docstring") simuPOP::Dumper::~Dumper "
 
 Description:
 
@@ -1287,11 +1287,11 @@ Description:
 
 Usage:
 
-    x.~dumper()
+    x.~Dumper()
 
 "; 
 
-%feature("docstring") simuPOP::dumper::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Dumper::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Exception "
 

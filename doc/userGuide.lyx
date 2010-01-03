@@ -6433,7 +6433,7 @@ simulator.evolve
  is applied directly to a population.
  For example, multiple calls to 
 \family typewriter
-Dump(pop, output='>>file')
+dump(pop, output='>>file')
 \family default
  will dump pop to 
 \family typewriter
@@ -17463,9 +17463,9 @@ simu.evolve(
 \end_layout
 
 \begin_layout Subsection
-Dump the content of a population (operator 
+dump the content of a population (operator 
 \family typewriter
-dumper
+Dumper
 \family default
 )
 \end_layout
@@ -17473,11 +17473,11 @@ dumper
 \begin_layout Standard
 Operator 
 \family typewriter
-dumper
+Dumper
 \family default
  and its function form 
 \family typewriter
-Dump
+dump
 \family default
  has been used extensively in this guide.
  They are prefect for demonstration and debugging purposes because they
@@ -17537,7 +17537,7 @@ width
  The following example (Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "dumper"
+reference "Dumper"
 
 \end_inset
 
@@ -17545,8 +17545,8 @@ reference "dumper"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/dumper.log"
-lstparams "caption={Dump the content of a population},label={dumper}"
+filename "log/Dumper.log"
+lstparams "caption={dump the content of a population},label={Dumper}"
 
 \end_inset
 

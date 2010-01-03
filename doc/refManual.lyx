@@ -1373,7 +1373,7 @@ NoneOpRef
 
 
 \backslash
-dumperRef
+DumperRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1421,7 +1421,7 @@ status open
 
 
 \backslash
-simuPOPDumpRef
+simuPOPdumpRef
 \end_layout
 
 \begin_layout Plain Layout

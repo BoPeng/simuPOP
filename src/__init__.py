@@ -195,14 +195,14 @@ __all__ = [
     'PyOperator',
     #
     'NoneOp',
-    'dumper',
+    'Dumper',
     'SavePopulation',
     'IfElse',
     'Pause',
     'TicToc',
     #
     # Function form of operators
-    'Dump',
+    'dump',
     #
     'initSex',
     'initInfo',
@@ -712,9 +712,9 @@ def AminoAcidMutator(rate=[], model='general', *args, **kwargs):
 
 #
 # functions to corresponding operators
-def Dump(pop, *args, **kwargs):
-    'Apply operator ``dumper`` to population *pop*.'
-    dumper(*args, **kwargs).apply(pop)
+def dump(pop, *args, **kwargs):
+    'Apply operator ``Dumper`` to population *pop*.'
+    Dumper(*args, **kwargs).apply(pop)
 
 def initSex(pop, *args, **kwargs):
     'Apply operator ``InitSex`` to population *pop*.'
