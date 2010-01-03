@@ -254,7 +254,7 @@ class TestUtility(unittest.TestCase):
         os.remove('test.bin')
 
     def testTrajectorySimulatorInputs(self):
-        'Testing invalid inputs for trajectory simulation functions'
+        'Testing invalid inputs for Trajectory simulation functions'
         # both backward and forward
         self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, fitness=[1, 1.01], beginGen=100, endGen=1000,
@@ -266,7 +266,7 @@ class TestUtility(unittest.TestCase):
             N=1000, fitness=[1]*5, beginGen=0, endGen=1000,
             beginFreq=0.1, endFreq=[0.2, 0.3])
         #
-        # forward trajectory simulation
+        # forward Trajectory simulation
         self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
             N=1000, beginGen=100, endGen=200, beginFreq=0.1, endFreq=0.09)
         self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
@@ -278,7 +278,7 @@ class TestUtility(unittest.TestCase):
             N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.18, 0.09]*2])
         #
-        # backward trajectory simulation
+        # backward Trajectory simulation
         self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
             N=1000, endGen=3000, endFreq=[0.1, 0.2])
         self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
@@ -289,12 +289,12 @@ class TestUtility(unittest.TestCase):
             N=1000, endGen=0, endFreq=0.1)
 
     def testBackTrajectorySimple(self):
-        'Testing backward trajectory simulation with constant population size and no selection'
-        trajSimulator = trajectorySimulator(N=1000)
+        'Testing backward Trajectory simulation with constant population size and no selection'
+        trajSimulator = TrajectorySimulator(N=1000)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0.])
-        # trajectory starts at 0.1
+        # Trajectory starts at 0.1
         self.assertAlmostEqual(traj.freq(3000, 0)[0], 0.1)
         # checking minMutAge and maxMutAge
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1, minMutAge=500)
@@ -308,20 +308,20 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0])), 1)
 
     def testBackTrajectorySubpop(self):
-        'Testing backward trajectory simulation with subpopulations and no selection'
+        'Testing backward Trajectory simulation with subpopulations and no selection'
         # simple with subpopulation
-        trajSimulator = trajectorySimulator(N=[1000, 2000])
+        trajSimulator = TrajectorySimulator(N=[1000, 2000])
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         self.assertNotEqual(traj, None)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0.])
         self.assertEqual(traj.freq(traj._beginGen(), 1), [0.])
         self.assertAlmostEqual(traj.freq(3000, 0)[0], 0.1)
         self.assertAlmostEqual(traj.freq(3000, 1)[0], 0.1)
         # different destination frequency
-        trajSimulator = trajectorySimulator(N=[1000, 2000])
+        trajSimulator = TrajectorySimulator(N=[1000, 2000])
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=[0.1, 0.2])
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0.])
         self.assertEqual(traj.freq(traj._beginGen(), 1), [0.])
         self.assertAlmostEqual(traj.freq(3000, 0)[0], 0.1)
@@ -338,8 +338,8 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0])), 2) 
     
     def testsimulateForwardTrajectorySimple(self):
-        'Testing forward trajectory simulation with constant population size and no selection'
-        trajSimulator = trajectorySimulator(N=1000)
+        'Testing forward Trajectory simulation with constant population size and no selection'
+        trajSimulator = TrajectorySimulator(N=1000)
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
             beginFreq=0.1, endFreq=[0.09, 0.11])
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
@@ -348,10 +348,10 @@ class TestUtility(unittest.TestCase):
         #
 
     def testsimulateForwardTrajectorySubPop(self):
-        'Testing forward trajectory simulation with subpopulations and no selection'
+        'Testing forward Trajectory simulation with subpopulations and no selection'
         # simple with subpopulation
-        trajSimulator = trajectorySimulator(N=[1000, 2000])
-        # simuForward, test trajectory
+        trajSimulator = TrajectorySimulator(N=[1000, 2000])
+        # simuForward, test Trajectory
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
             beginFreq=0.1, endFreq=[0.09, 0.11])
         fq = (traj.freq(200, 0)[0] + traj.freq(200, 1)[0]*2)/3.
@@ -360,7 +360,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0])), 0)
 
     def testForwardSelBySubPop(self):
-        'Testing forward trajectory simulation with subpop specific selection'
+        'Testing forward Trajectory simulation with subpop specific selection'
         def fitness(gen, sp):
             if sp == 0:
                 return [1, 1.001, 1.002]
@@ -374,11 +374,11 @@ class TestUtility(unittest.TestCase):
 
 
     def testBackwardSimpleMultiLoci(self):
-        'Testing backward trajectory simulation of multiple loci with constant population size and no selection'
-        trajSimulator = trajectorySimulator(N=1000, nLoci=2)
+        'Testing backward Trajectory simulation of multiple loci with constant population size and no selection'
+        trajSimulator = TrajectorySimulator(N=1000, nLoci=2)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         self.assertNotEqual(traj, None)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         for gen in range(3000):
             self.assertEqual(len(traj.freq(gen, 0)), 2)
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0., 0.])
@@ -396,9 +396,9 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0, 1])), 2)
 
     def testForwardSimpleMultiLoci(self):
-        'Testing forward trajectory simulation of multiple loci with constant population size and no selection'
-        # test trajectory
-        trajSimulator = trajectorySimulator(N=1000, nLoci=2)
+        'Testing forward Trajectory simulation of multiple loci with constant population size and no selection'
+        # test Trajectory
+        trajSimulator = TrajectorySimulator(N=1000, nLoci=2)
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
             beginFreq=[0.1, 0.13], endFreq=[[0.09, 0.11], [0.11, 0.12]])
         self.assertTrue(traj.freq(200, 0)[0] >= 0.09 and traj.freq(200, 0)[0] <= 0.11)
@@ -410,11 +410,11 @@ class TestUtility(unittest.TestCase):
             endFreq=[[0.09, 0.11]]*2) 
 
     def testBackwardSimpleMultiLociSubPop(self):
-        'Testing backward trajectory simulation of multiple loci with multiple populations and no selection'
-        trajSimulator = trajectorySimulator(N=[1000, 3000], nLoci=2)
+        'Testing backward Trajectory simulation of multiple loci with multiple populations and no selection'
+        trajSimulator = TrajectorySimulator(N=[1000, 3000], nLoci=2)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         self.assertNotEqual(traj, None)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0., 0.])
         # most likely the starting generation will be different (there is three zeros...)
         self.assertTrue(traj.freq(traj._beginGen() + 1, 0).count(0.) > 1)
@@ -430,9 +430,9 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj.mutators(loci=[0,1])), 4)
 
     def testForwardSimpleMultiLociSubPop(self):
-        'Testing forward trajectory simulation of multiple loci with multiple populations and no selection'
-        # test trajectory
-        trajSimulator = trajectorySimulator(N=[1000, 3000], nLoci=2)
+        'Testing forward Trajectory simulation of multiple loci with multiple populations and no selection'
+        # test Trajectory
+        trajSimulator = TrajectorySimulator(N=[1000, 3000], nLoci=2)
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
             beginFreq=[0.1, 0.13], endFreq=[[0.08, 0.13], [0.10, 0.15]])
         f1 = (traj.freq(200, 0)[0] + traj.freq(200, 1)[0]*3)/4.
@@ -448,12 +448,12 @@ class TestUtility(unittest.TestCase):
 
 
     def testTrajectorySimulatorSel(self):
-        'Testing trajectory simulation with constant population size and natural selection'
+        'Testing Trajectory simulation with constant population size and natural selection'
         # invalid input
-        trajSimulator = trajectorySimulator(N=1000, fitness=[1, 1.01, 1.03])
+        trajSimulator = TrajectorySimulator(N=1000, fitness=[1, 1.01, 1.03])
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         self.assertNotEqual(traj, None)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0.])
         self.assertAlmostEqual(traj.freq(3000, 0)[0], 0.1)
         # checking minMutAge and maxMutAge
@@ -470,7 +470,7 @@ class TestUtility(unittest.TestCase):
         traj = simulateBackwardTrajectory(N=1000, fitness=[1, 1.01, 1.03], endGen=3000, endFreq=0.1) 
         #
         # simuForward
-        # test trajectory
+        # test Trajectory
         traj = trajSimulator.simuForward(beginGen=100, endGen=200,
             beginFreq=0.1, endFreq=[0.14, 0.15])
         self.assertTrue(traj.freq(200, 0)[0] >= 0.14 and traj.freq(200, 0)[0] <= 0.15)
@@ -484,11 +484,11 @@ class TestUtility(unittest.TestCase):
         # 
 
     def testTrajectorySimulatorSelMultiLoci(self):
-        'Testing trajectory simulation of multiple loci with constant population size and natural selection'
-        trajSimulator = trajectorySimulator(N=1000, fitness=[1, 1.01, 1.03], nLoci=2)
+        'Testing Trajectory simulation of multiple loci with constant population size and natural selection'
+        trajSimulator = TrajectorySimulator(N=1000, fitness=[1, 1.01, 1.03], nLoci=2)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         self.assertNotEqual(traj, None)
-        # trajectory ends at 0.
+        # Trajectory ends at 0.
         for gen in range(3000):
             self.assertEqual(len(traj.freq(gen, 0)), 2)
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0., 0.])
@@ -524,14 +524,14 @@ class TestUtility(unittest.TestCase):
 
 
     def testSimuCase2(self):
-        'Testing trajectory simulation with interaction'
+        'Testing Trajectory simulation with interaction'
         # 2: dependent case when freq = 0 in backward simulation
         # and [0, 1] in forward simulation. nLoci = 2, constant nSubPop = 3:
         def Nt(gen):
             return [2000] * 3
         def fitness(gen, sp):
             return [1] * 9
-        trajSimulator = trajectorySimulator(N=Nt, fitness=fitness, nLoci = 2)
+        trajSimulator = TrajectorySimulator(N=Nt, fitness=fitness, nLoci = 2)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0)
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0] * 2)
         traj1 = trajSimulator.simuForward(beginGen=0, beginFreq = [0, 1], endFreq = [[0, 1]]*2, endGen = 200)
@@ -539,14 +539,14 @@ class TestUtility(unittest.TestCase):
         
         
     def testSimuCase4(self):
-        'Testing trajectory simulation without selection'
+        'Testing Trajectory simulation without selection'
         # 4: In backward simulation, given a normal set of parameters, if current freq of
         # allele a is very small, the first element of traj[] should be 1/(ploidy * N) and
         # the second element of traj[] should be larger than 1/(ploidy * N):
         # nLoci = 1 and no subpopulation
         fitness = [1,1,1]
         #### ??? N = 101
-        trajSimulator = trajectorySimulator(N=1000, fitness=fitness, nLoci = 1)
+        trajSimulator = TrajectorySimulator(N=1000, fitness=fitness, nLoci = 1)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.01)
         #####
         #print len(traj.freq)
@@ -557,7 +557,7 @@ class TestUtility(unittest.TestCase):
         #   raise ValueError('fail in test number 4 of testSimuBackward.')
         
     def testSimuCase5(self):
-        'Testing backward trajectory Simulator'
+        'Testing backward Trajectory Simulator'
         # 5: test given variable number of subpopulations, if allele frequencies would be
         # recorded in the correct form. nLoci = 3.
         # In a backward simulation, 3 subPops merge when gen = endGen - 5 in backward sense.
@@ -568,7 +568,7 @@ class TestUtility(unittest.TestCase):
                 return [1000] * 3
             else:   # merge from all subpops into one population
                 return 3000
-        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
+        trajSimulator = TrajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
         traj = trajSimulator.simuBackward(endGen=300, endFreq=0.01)
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0] * 3)
         self.assertEqual(len(traj.freq(296, 0)), 3)
@@ -586,7 +586,7 @@ class TestUtility(unittest.TestCase):
                 return 4000
             else:   # merge from all subpops into one population
                 return [1000] * 4
-        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
+        trajSimulator = TrajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
         traj = trajSimulator.simuBackward(endGen=300, endFreq=0.01)
         self.assertEqual(traj.freq(traj._beginGen(), 0), [0] * 3)
         self.assertEqual(len(traj.freq(296, 0)), 3)
@@ -596,27 +596,27 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj1.freq(296, 0)), 3)
 
     def testSimuCase6(self):
-        'Testing backward trajectory Simulator'
-        # 6: given a normal set of parameters, plot a backward trajectory and
-        # another forward trajectory for the case of single locus without
+        'Testing backward Trajectory Simulator'
+        # 6: given a normal set of parameters, plot a backward Trajectory and
+        # another forward Trajectory for the case of single locus without
         # subpopulations.
-        trajSimulator = trajectorySimulator(N=3000, fitness=[1,1,1], nLoci = 1)
+        trajSimulator = TrajectorySimulator(N=3000, fitness=[1,1,1], nLoci = 1)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=0.1)
         #traj.plot()
         traj1 = trajSimulator.simuForward(beginGen=0, endGen=200, beginFreq=0.5, endFreq=[[0,1]])
         #traj1.plot()
         
     def testSimuCase7(self):
-        'Testing backward trajectory Simulator'
+        'Testing backward Trajectory Simulator'
         # 7: given a normal set of parameters, considering changable subpopulation
-        # sizes with mulitiple loci, plot a backward trajectory and another
-        # forward trajectory. nSubPops = 3, nLoci = 2.
+        # sizes with mulitiple loci, plot a backward Trajectory and another
+        # forward Trajectory. nSubPops = 3, nLoci = 2.
         def Nt(gen):
             if gen > 2500:
                 return [1000] * 3
             else:   # merge from all subpops into one population in backward sense
                 return 3000
-        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 2)
+        trajSimulator = TrajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 2)
         traj = trajSimulator.simuBackward(endGen=3000, endFreq=[0.05, 0.1])
         #traj.plot()
         def Nt1(gen):
@@ -624,7 +624,7 @@ class TestUtility(unittest.TestCase):
                 return 3000
             else:   # split from one population into 3 subpops in forward sense
                 return [1000] * 3
-        trajSimulator1 = trajectorySimulator(N=Nt1, fitness=[1,1,1], nLoci = 5)
+        trajSimulator1 = TrajectorySimulator(N=Nt1, fitness=[1,1,1], nLoci = 5)
         traj1 = trajSimulator1.simuForward(beginGen=0, endGen = 200,
             beginFreq = [0.5, 0.6, 0.7, 0.8, 0.9],
             endFreq = [[0,1]]*5)

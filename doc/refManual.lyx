@@ -1657,7 +1657,7 @@ simuOptsetOptionsRef
 
 
 \backslash
-simuOptsimuParamRef
+simuOptSimuParamRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1805,14 +1805,14 @@ simuPOPutilsRef
 
 
 \backslash
-simuPOPutilstrajectoryRef
+simuPOPutilsTrajectoryRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilstrajectorySimulatorRef
+simuPOPutilsTrajectorySimulatorRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1854,7 +1854,7 @@ simuPOPutilsmigrSteppingStoneRatesRef
 
 
 \backslash
-simuPOPutilssimuProgressRef
+simuPOPutilsSimuProgressRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1911,49 +1911,49 @@ simuPOPplottersaveFigureRef
 
 
 \backslash
-simuPOPplotterderivedArgsRef
+simuPOPplotterDerivedArgsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplottervarPlotterRef
+simuPOPplotterVarPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplotterscatterPlotterRef
+simuPOPplotterScatterPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplotterinfoPlotterRef
+simuPOPplotterInfoPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplotterhistPlotterRef
+simuPOPplotterHistPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplotterqqPlotterRef
+simuPOPplotterQQPlotterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPplotterboxPlotterRef
+simuPOPplotterBoxPlotterRef
 \end_layout
 
 \end_inset
@@ -1982,14 +1982,14 @@ simuPOPsamplingRef
 
 
 \backslash
-simuPOPsamplingbaseSamplerRef
+simuPOPsamplingBaseSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsamplingrandomSamplerRef
+simuPOPsamplingRandomSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2010,7 +2010,7 @@ simuPOPsamplingdrawRandomSamplesRef
 
 
 \backslash
-simuPOPsamplingcaseControlSamplerRef
+simuPOPsamplingCaseControlSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2038,7 +2038,7 @@ simuPOPsamplingPedigreeSamplerRef
 
 
 \backslash
-simuPOPsamplingaffectedSibpairSamplerRef
+simuPOPsamplingAffectedSibpairSamplerRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2059,7 +2059,7 @@ simuPOPsamplingdrawAffectedSibpairSamplesRef
 
 
 \backslash
-simuPOPsamplingnuclearFamilySamplerRef
+simuPOPsamplingNuclearFamilySamplerRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2080,7 +2080,7 @@ simuPOPsamplingdrawNuclearFamilySamplesRef
 
 
 \backslash
-simuPOPsamplingthreeGenFamilySamplerRef
+simuPOPsamplingThreeGenFamilySamplerRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2101,7 +2101,7 @@ simuPOPsamplingdrawThreeGenFamilySamplesRef
 
 
 \backslash
-simuPOPsamplingcombinedSamplerRef
+simuPOPsamplingCombinedSamplerRef
 \end_layout
 
 \begin_layout Plain Layout

@@ -28,7 +28,7 @@ class TestPlotter(unittest.TestCase):
         'Testing class derivedARgs'
         pop = Population(0)
         pop.dvars().gen = 100
-        args = derivedArgs(
+        args = DerivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['plot', 'lines', 'par'],
             suffixes = ['rep', 'dim'],
@@ -66,7 +66,7 @@ class TestPlotter(unittest.TestCase):
             ['rep', 'dim'], [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]),
             {'cex': [1, 1, 2, 2, 3, 3], 'lty':[1, 1, 1, 1, 1, 1], 'pch': [5, 6, 5, 6, 5, 6]})
         #
-        args = derivedArgs(
+        args = DerivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['plot', 'lines', 'par'],
             suffixes = ['rep', 'dim'],
@@ -82,7 +82,7 @@ class TestPlotter(unittest.TestCase):
 
 
     def testVarPlotterBase(self):
-        'Testing byRep parameter of varPlotter'
+        'Testing byRep parameter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -94,7 +94,7 @@ class TestPlotter(unittest.TestCase):
             initOps = InitSex(),
             preOps = [stator, migr],
             matingScheme=RandomMating(),
-            postOps = [varPlotter('subPopSize[0]', update=10,
+            postOps = [VarPlotter('subPopSize[0]', update=10,
                 win=10, main="!'Three colorful lines, no legend, win=10, gen=%d' % gen")],
             gen = 30
         )
@@ -102,7 +102,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterByRep(self):
-        'Testing byRep parameter of varPlotter'
+        'Testing byRep parameter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -116,7 +116,7 @@ class TestPlotter(unittest.TestCase):
             preOps = [stator, migr],
             matingScheme=RandomMating(),
             postOps = [
-             varPlotter('subPopSize', byRep=True, lty_dim=[1, 2, 3],
+             VarPlotter('subPopSize', byRep=True, lty_dim=[1, 2, 3],
                 main='3 rep, 3 colorful thick lines, ylabs differ',
                 lwd=2, update=10,
                 ylab_rep=['subPopSize (rep %d)' % x for x in range(3)])
@@ -127,7 +127,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterByDim(self):
-        'Testing byDim paramter of varPlotter'
+        'Testing byDim paramter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -140,7 +140,7 @@ class TestPlotter(unittest.TestCase):
             preOps = [stator, migr], 
             matingScheme=RandomMating(),
             postOps = [
-             varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
+             VarPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  col_rep=['red', 'green'], update=10,
                  byDim=True, win=10, main='win=10, 2 dim, 2 colorful lines, legend',
                  legend=['a', 'b'])
@@ -151,7 +151,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterSelectedRep(self):
-        'Testing byDim paramter of varPlotter using selected replicates'
+        'Testing byDim paramter of VarPlotter using selected replicates'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -164,7 +164,7 @@ class TestPlotter(unittest.TestCase):
             initOps = [InitSex()],
             matingScheme=RandomMating(),
             preOps = [stator, migr],
-            postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
+            postOps = VarPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
                  col_rep=['red', 'green', 'blue'], byDim=True, update=10,
                  main='3 out of 5 reps, 3 dim plots', reps=[0, 2, 3]),
              gen = 30
@@ -173,7 +173,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterTogether(self):
-        'Testing plotting all lines together using varPlotter'
+        'Testing plotting all lines together using VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -186,7 +186,7 @@ class TestPlotter(unittest.TestCase):
             initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=RandomMating(),
-            postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp',
+            postOps = VarPlotter('[x**2 for x in subPopSize]', ylab='sp',
                  col_rep=['red', 'green', 'blue'], update=10,
                  main='9 lines, col rep, lty dim',
                  lty_dim=range(1, 4), ylim=[0, 10000],
@@ -198,7 +198,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterByRepDim(self):
-        'Testing byDim paramter of varPlotter'
+        'Testing byDim paramter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -212,7 +212,7 @@ class TestPlotter(unittest.TestCase):
             preOps = [stator, migr],
             matingScheme=RandomMating(),
             postOps = [
-             varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
+             VarPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  byDim=True, byRep=True, update=10,
                  win=10, main_repdim=['rep dim %d' % x for x in range(4)],
                  col_rep=['red', 'green'], lty_dim=range(1, 3))
@@ -223,7 +223,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterSaveAs(self):
-        'Testing saveAs parameter of varPlotter'
+        'Testing saveAs parameter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -237,7 +237,7 @@ class TestPlotter(unittest.TestCase):
             preOps = [stator, migr],
             matingScheme=RandomMating(),
             postOps = [
-             varPlotter('[x**2 for x in subPopSize]', byRep=True,
+             VarPlotter('[x**2 for x in subPopSize]', byRep=True,
                  win=20, update=10, ylim=[0, 10000],
                  main='Save as, 3 rep, 3 colors', ylab='sp',
                  saveAs='demo.eps')
@@ -251,7 +251,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterPar(self):
-        'Testing parameter passing of varPlotter'
+        'Testing parameter passing of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -265,7 +265,7 @@ class TestPlotter(unittest.TestCase):
             preOps = [stator, migr],
             matingScheme=RandomMating(),
             postOps = [
-             varPlotter('subPopSize', byRep=True, ylim=[0,100],
+             VarPlotter('subPopSize', byRep=True, ylim=[0,100],
                  ylab='sp', win=10, update=10,
                  par_mfrow=[1, 2], main='mfrow=[1, 3]')
              ],
@@ -275,7 +275,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterHook(self):
-        'Testing ylim parameter of varPlotter'
+        'Testing ylim parameter of VarPlotter'
         if not hasRPy:
             return True
         simu = Simulator(
@@ -297,7 +297,7 @@ class TestPlotter(unittest.TestCase):
             initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=RandomMating(),
-            postOps = varPlotter('subPopSize', byRep=True, ylim=[0,100], plot_axes=False,
+            postOps = VarPlotter('subPopSize', byRep=True, ylim=[0,100], plot_axes=False,
                  ylab='sp', col_dim=['red', 'blue', 'black'],
                  update=5, main_rep=['dimension %d' % x for x in range(3)],
                  preHook=setPar,
@@ -309,7 +309,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testScatterPlotter(self):
-        'Testing scatterPlotter'
+        'Testing ScatterPlotter'
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -322,14 +322,14 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x'),
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
-            postOps = scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
+            postOps = ScatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
             gen = 5,
         )
         sleep(1)
         r.dev_off()
 
     def testScatterPlotterSP(self):
-        'Testing scatterPlotter with multiple virtual subpopulations'
+        'Testing ScatterPlotter with multiple virtual subpopulations'
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -343,7 +343,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                scatterPlotter(['x', 'y'],
+                ScatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
                     main='Color, 300 points, left right does not mix'),
             ],
@@ -353,7 +353,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testScatterPlotterSubSet(self):
-        'Testing scatterPlotter with partial individuals'
+        'Testing ScatterPlotter with partial individuals'
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -367,7 +367,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                scatterPlotter(['x', 'y'],
+                ScatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     xlim = [0, 1],
                     main='Twoo colors, 100 points xlim=[0, 1]',
@@ -380,7 +380,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testInfoPlotterBase(self):
-        'Testing basic histogram using infoPlotter'
+        'Testing basic histogram using InfoPlotter'
         import random
         pop = Population([500, 1000], infoFields=['x'])
         initSex(pop)
@@ -388,7 +388,7 @@ class TestPlotter(unittest.TestCase):
         pop.evolve(
             matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
                 InheritTagger(PATERNAL, infoFields='x')]),
-            postOps = histPlotter(infoFields='x', main='histogram of x in green',
+            postOps = HistPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2),
                 #Pause(),
             gen = 5,
@@ -411,7 +411,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                histPlotter(infoFields=['x', 'y'],
+                HistPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_fld=['red', 'green'],
                     density_sp=[5, 20], step=2,
@@ -442,7 +442,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                qqPlotter(infoFields=['x', 'y'],
+                QQPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_fld=['red', 'green'],
                     pch_sp=[1, 2],
@@ -475,7 +475,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                infoPlotter(infoFields=['x', 'y'],
+                InfoPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     plotHook=qqplot, step=2
                 ),
@@ -497,7 +497,7 @@ class TestPlotter(unittest.TestCase):
             matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
                 InheritTagger(PATERNAL, infoFields='x')]),
             postOps = [
-                boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
+                BoxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
                 #Pause(),
             ],
@@ -520,7 +520,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x'),
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
-            postOps = boxPlotter(infoFields=['x', 'y'], step=2),
+            postOps = BoxPlotter(infoFields=['x', 'y'], step=2),
                 #Pause(),
             gen = 5,
         )
@@ -528,7 +528,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testBoxPlotterFieldsAndSubPop(self):
-        'Testing boxPlotter with both fields and subpopulation'
+        'Testing BoxPlotter with both fields and subpopulation'
         import random
         pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
@@ -543,7 +543,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = [
-                boxPlotter(infoFields=['x', 'y'], 
+                BoxPlotter(infoFields=['x', 'y'], 
                     subPops=[(0, 0), (0, 1)], style='quantile',
                     step=2, main='Boxplot with 2 fields x 2 subpops',
                     col='green', horizontal=True,
@@ -556,7 +556,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testBoxPlotterByField(self):
-        'Testing boxPlotter separated by information field'
+        'Testing BoxPlotter separated by information field'
         import random
         pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
@@ -570,7 +570,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x'),
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
-            postOps = boxPlotter(infoFields=['x', 'y'], byField=True,
+            postOps = BoxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
                     step=2, col_fld=['yellow', 'green'],
                 ),
@@ -581,7 +581,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testBoxPlotterBySubPop(self):
-        'Testing boxPlotter separated by subpopulation'
+        'Testing BoxPlotter separated by subpopulation'
         import random
         pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
@@ -594,7 +594,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x'),
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
-            postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
+            postOps = BoxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
                     step=2, horizontal_sp=[True, False],
                 ),
@@ -605,7 +605,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testBoxPlotterByFieldSubPop(self):
-        'Testing boxPlotter separated by both field and subpopulation'
+        'Testing BoxPlotter separated by both field and subpopulation'
         import random
         pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
@@ -618,7 +618,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x'),
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
-            postOps = boxPlotter(infoFields=['x', 'y'], bySubPop=True,
+            postOps = BoxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,
                     step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],
                 ),

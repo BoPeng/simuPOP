@@ -45,13 +45,13 @@ out which parameters are allowed.
 __all__ = [
     'newDevice', 
     'saveFigure',
-    'derivedArgs',
-    'varPlotter',
-    'scatterPlotter',
-    'infoPlotter',
-    'histPlotter',
-    'qqPlotter',
-    'boxPlotter',
+    'DerivedArgs',
+    'VarPlotter',
+    'ScatterPlotter',
+    'InfoPlotter',
+    'HistPlotter',
+    'QQPlotter',
+    'BoxPlotter',
     # export essential piece of rpy so that other modules could use them
     'r',
     'with_mode',
@@ -155,7 +155,7 @@ def saveFigure(file=None, **kwargs):
     r.dev_print(file=file, device=device, **params)
 
 
-class derivedArgs:
+class DerivedArgs:
     '''This class implements the derived keyword argument handling mechanism that
     is used by all classes defined in this module. It is provided for users who
     would like to use this mechanism for their own rpy-related operators.
@@ -315,7 +315,7 @@ class derivedArgs:
         return ret
 
 
-class varPlotter(PyOperator):
+class VarPlotter(PyOperator):
     '''
     This class defines a Python operator that uses R to plot the current and
     historical values of a Python expression (``expr``), which are evaluated
@@ -455,7 +455,7 @@ class varPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.plotHook = plotHook
-        self.args = derivedArgs(
+        self.args = DerivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['par', 'plot', 'lines', 'dev_print', 'legend'],
             suffixes = ['rep', 'dim', 'repdim'],
@@ -661,7 +661,7 @@ class varPlotter(PyOperator):
         return True
 
 
-class scatterPlotter(PyOperator):
+class ScatterPlotter(PyOperator):
     '''
     This class defines a Python operator that uses R to plot individuals in a
     Population, using values at two information fields as their x- and y-axis.
@@ -757,7 +757,7 @@ class scatterPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        self.args = derivedArgs(
+        self.args = DerivedArgs(
             defaultFuncs = ['plot', 'points'],
             allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
             suffixes = ['sp'],
@@ -829,7 +829,7 @@ class scatterPlotter(PyOperator):
         return True
 
 
-class infoPlotter(PyOperator):
+class InfoPlotter(PyOperator):
     '''
     This operator uses a R function such as ``hist`` and ``qqplot`` to plot
     properties of one or more information fields of individuals in one or more
@@ -936,14 +936,14 @@ class infoPlotter(PyOperator):
         self.plotHook = plotHook
         self.subPops = subPops
         if self.func is None:
-            self.args = derivedArgs(
+            self.args = DerivedArgs(
                 defaultFuncs = [],
                 allFuncs = ['par', 'dev_print'],
                 suffixes = ['sp', 'fld', 'spfld'],
                 defaultParams = {},
                 **kwargs)
         else:
-            self.args = derivedArgs(
+            self.args = DerivedArgs(
                 defaultFuncs = [self.func],
                 allFuncs = ['par', self.func, 'dev_print'],
                 suffixes = ['sp', 'fld', 'spfld'],
@@ -1012,27 +1012,27 @@ class infoPlotter(PyOperator):
             saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
-def histPlotter(*args, **kwargs):
+def HistPlotter(*args, **kwargs):
     '''
-    A infoPlotter that uses R function ``hist`` to draw histogram of individual
+    A InfoPlotter that uses R function ``hist`` to draw histogram of individual
     information fields of specified (virtual) subpopulations. Please see
-    ``infoPlotter`` for details.
+    ``InfoPlotter`` for details.
     '''
-    return infoPlotter('hist', *args, **kwargs)
+    return InfoPlotter('hist', *args, **kwargs)
 
-def qqPlotter(*args, **kwargs):
+def QQPlotter(*args, **kwargs):
     '''
-    A infoPlotter that uses R function ``qqnorm`` to draw qq plot of individual
+    A InfoPlotter that uses R function ``qqnorm`` to draw qq plot of individual
     information fields of specified (virtual) subpopulations. Please see
-    ``infoPlotter`` for details.
+    ``InfoPlotter`` for details.
     '''
-    return infoPlotter('qqnorm', *args, **kwargs)
+    return InfoPlotter('qqnorm', *args, **kwargs)
 
-class boxPlotter(PyOperator):
+class BoxPlotter(PyOperator):
     '''
     This operator draws boxplots of one or more information fields of
     individuals in one or more (virtual) subpopulations of a population.
-    Although a ``infoPlotter`` with ``func=boxplot`` could be used to plot
+    Although a ``InfoPlotter`` with ``func=boxplot`` could be used to plot
     boxplots for each information field and/or subpopulation, this class allows
     multiple whiskers to share one plot. How the whiskers are oraganized is
     controlled by parameters ``byField`` and ``bySubPop``.
@@ -1136,7 +1136,7 @@ class boxPlotter(PyOperator):
         self.bySubPop = bySubPop
         if len(self.subPops) <= 1:
             self.bySubPop = False
-        self.args = derivedArgs(
+        self.args = DerivedArgs(
             defaultFuncs = ['boxplot'],
             allFuncs = ['par', 'boxplot', 'dev_print'],
             suffixes = ['sp', 'fld', 'spfld'],

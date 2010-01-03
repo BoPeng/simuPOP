@@ -1572,12 +1572,12 @@ A complete graphical user interface (GUI) for users to interactively construct
  from a parameter specification list, and be used to accept user input if
  class 
 \family typewriter
-simuOpt.simuParam
+simuOpt.SimuParam
 \family default
  is used to handle parameters.
  Other examples include a progress bar 
 \family typewriter
-simuPOP.utils.simuProgress
+simuPOP.utils.SimuProgress
 \family default
  and a dialog used by function 
 \family typewriter
@@ -1595,7 +1595,7 @@ simuOpt.getParam()
 \family default
  will use a terminal to accept user input interactively and 
 \family typewriter
-simuPOP.utils.simuProgress
+simuPOP.utils.SimuProgress
 \family default
  will turn to a text-based progress bar in the non-GUI mode.
 \end_layout
@@ -1693,7 +1693,7 @@ gui
  For example, you could force the use of a text-based progress bar by using
  
 \family typewriter
-simuProgress(gui=False)
+SimuProgress(gui=False)
 \family default
 .
 \end_layout
@@ -18073,7 +18073,7 @@ most options can be set by environmental variables and command line options
 \begin_layout Subsection
 Class 
 \family typewriter
-simuOpt.simuParam
+simuOpt.SimuParam
 \end_layout
 
 \begin_layout Standard
@@ -18083,7 +18083,7 @@ simuOpt
 \family default
  module also provides a class 
 \family typewriter
-simuParam
+SimuParam
 \family default
  to help users handle and manage script parameters.
  There are many other standard or third-party parameter handling modules
@@ -18092,7 +18092,7 @@ simuParam
  methods.
  More specifically, if a script uses the 
 \family typewriter
-simuOpt.simuParam
+simuOpt.SimuParam
 \family default
  class to handle parameters,
 \end_layout
@@ -18155,7 +18155,7 @@ Define a parameter specification list.
 \begin_layout Standard
 A 
 \family typewriter
-simuParam
+SimuParam
 \family default
  object is created from a list of parameter specification dictionaries,
  and optional short and long descriptions of a script.
@@ -18321,7 +18321,7 @@ lstparams "caption={Using simuOpt.param to specify parameters},label={paramFunc}
 \begin_layout Subsection
 Get parameters (function 
 \family typewriter
-simuParam.getParam
+SimuParam.getParam
 \family default
 )
 \end_layout
@@ -18329,13 +18329,13 @@ simuParam.getParam
 \begin_layout Standard
 A 
 \family typewriter
-simuParam
+SimuParam
 \family default
  object can be created from a parameter specification list.
  A few member functions are immediately usable.
  For example, 
 \family typewriter
-simuParam.usage()
+SimuParam.usage()
 \family default
  returns a detailed usage message about the script and all its parameters
  (although the usage message will be displayed automatically if command
@@ -18365,7 +18365,7 @@ par.rate
 \begin_layout Standard
 Function 
 \family typewriter
-simuParam.saveConfig(filename)
+SimuParam.saveConfig(filename)
 \family default
  saves current values of parameters to a configuraiton file 
 \family typewriter
@@ -18396,32 +18396,32 @@ filename
 \begin_layout Standard
 The 
 \family typewriter
-params.simuParam
+params.SimuParam
 \family default
  class provides a number of member functions that allow you to acquire user
  input in a number of ways.
  For example 
 \family typewriter
-simuParam.loadConfig
+SimuParam.loadConfig
 \family default
  reads a configuration file, 
 \family typewriter
-simuParam.processArgs
+SimuParam.processArgs
 \family default
  checks commandline options, 
 \family typewriter
-simuParam.termGetParam
+SimuParam.termGetParam
 \family default
  asks user input interactively, and 
 \family typewriter
-simuParam.guiGetParam
+SimuParam.guiGetParam
 \family default
  generates and uses a parameter input dialog.
  These functions can be used several times, on different sets of parameters.
  In addition, new options could be added programmatically using function
  
 \family typewriter
-simuParam.addOption
+SimuParam.addOption
 \family default
  and allows further flexibility on how parameters are generated.
  Please refer to 
@@ -18453,7 +18453,7 @@ reference "getParam"
  lists some methods to determine parameter values but the last function,
  
 \family typewriter
-simuParam.getParam()
+SimuParam.getParam()
 \family default
 , will be used most of the time.
  This function processes each parameter in the following order:
@@ -18510,7 +18510,7 @@ wxPython
 \begin_layout Standard
 
 \family typewriter
-simuParam.getParam
+SimuParam.getParam
 \family default
  returns 
 \family typewriter
@@ -18538,11 +18538,11 @@ reference "fig:parameter-input-dialog"
 \begin_layout Note
 If 
 \family typewriter
-simuParam.valueValidFile()
+SimuParam.valueValidFile()
 \family default
  or 
 \family typewriter
-simuParam.valueValidDir()
+SimuParam.valueValidDir()
 \family default
  is used to validate a parameter, 
 \series bold
@@ -18655,18 +18655,18 @@ par.rep
 \begin_layout Standard
 When there are a large number of parameters, passing this 
 \family typewriter
-simuParam
+SimuParam
 \family default
  object, instead of tens of parameters, is a good way to provide clean interface
 s.
  Alternatively, you can get a list or a dictionary of parameters using member
  functions 
 \family typewriter
-simuParam.asList()
+SimuParam.asList()
 \family default
  and 
 \family typewriter
-simuParam.asDict()
+SimuParam.asDict()
 \family default
 .
 \end_layout
@@ -18689,7 +18689,7 @@ additional attributes
 \series default
  to a 
 \family typewriter
-simuParam
+SimuParam
 \family default
  object, using either 
 \family typewriter
@@ -18711,7 +18711,7 @@ simuOpt
  object (e.g.
  they are not returned by function 
 \family typewriter
-simuParam.asDict()
+SimuParam.asDict()
 \family default
 ) but could be used just like regular parameters.
  Note that the same operations for 
@@ -18745,7 +18745,7 @@ reference "useSimuOpt"
  are created easily with needed attributes.
  They can be passed to functions where a 
 \family typewriter
-simuParam
+SimuParam
 \family default
  object is needed, although some of the attributes are not real parameters
  (in the sense that they are not created by a parameter specification dictionary
@@ -18777,11 +18777,11 @@ http://simupop.sourceforge.net/cookbook
 \begin_layout Subsection
 Trajectory simulation (classes 
 \family typewriter
-trajectory
+Trajectory
 \family default
  and 
 \family typewriter
-trajectorySimulator
+TrajectorySimulator
 \family default
 )
 \end_layout
@@ -18831,7 +18831,7 @@ key "Peng2007a"
 \end_layout
 
 \begin_layout Standard
-The controlled random mating scheme accepts a user-defined trajectory function
+The controlled random mating scheme accepts a user-defined Trajectory function
  that tells the mating scheme the desired allele frequencies at each generation.
  Example 
 \begin_inset CommandInset ref
@@ -18860,7 +18860,7 @@ key "Peng2007a"
 \end_inset
 
  for a detailed discussion about the theoretical requirements of a valid
- trajectory Simulator.
+ Trajectory Simulator.
 \end_layout
 
 \begin_layout Standard
@@ -18868,11 +18868,11 @@ The
 \family typewriter
 simuUtil
 \family default
- module provides functions and classes that implement two trajectory simulation
+ module provides functions and classes that implement two Trajectory simulation
  methods that can be used in different situations.
  The first class is 
 \family typewriter
-trajectorySimulator
+TrajectorySimulator
 \family default
  which takes a demographic model and a selection model as its input and
  simulates allele frequency trajectories using a forward or backward algorithm.
@@ -18935,7 +18935,7 @@ fitness=[1, 1.001, 1.003, 1, 1, 1.002]
 \end_inset
 
  loci.
- This trajectory Simulator also accepts generation-specific fitness values
+ This Trajectory Simulator also accepts generation-specific fitness values
  by accepting a function that returns fitness values at each generation.
 \end_layout
 
@@ -18943,7 +18943,7 @@ fitness=[1, 1.001, 1.003, 1, 1, 1.002]
 The simulator then simulates trajectories of allele frequencies and return
  them as objects of class 
 \family typewriter
-trajectory
+Trajectory
 \family default
 .
  This object can be used provide a trajectory function that can be used
@@ -18953,7 +18953,7 @@ ControlledRandomMating
 \family default
  mating scheme (function 
 \family typewriter
-trajectory.func()
+Trajectory.func()
 \family default
 ) or provide a list of 
 \family typewriter
@@ -18961,7 +18961,7 @@ PointMutator
 \family default
  to introduce mutants at appropriate generations (function 
 \family typewriter
-trajectory.mutators()
+Trajectory.mutators()
 \family default
 ).
  If a simulation failed after specified number of attempts, a 
@@ -18972,7 +18972,7 @@ None
 \end_layout
 
 \begin_layout Subsubsection
-Forward-time trajectory simulations (function 
+Forward-time Trajectory simulations (function 
 \family typewriter
 simulateForwardTrajectory
 \family default
@@ -18984,7 +18984,7 @@ A forward simulation starts from a specified generation with specified allele
  frequencies at one or more loci.
  The simulator simulates allele frequencies forward-in-time, until it reaches
  a specified ending generation.
- A trajectory object will be returned if the simulated allele frequencies
+ A Trajectory object will be returned if the simulated allele frequencies
  fall into specified ranges.
  Example 
 \begin_inset CommandInset ref
@@ -18994,7 +18994,7 @@ reference "forwardTrajectory"
 \end_inset
 
  demonstrates how to use this simulation method to obtain and use a simulated
- trajectory, for two unlinked loci under different selection pressure.
+ Trajectory, for two unlinked loci under different selection pressure.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -19055,7 +19055,7 @@ Simulated trajectories of one locus in two subpopulations
 \end_layout
 
 \begin_layout Subsubsection
-Backward-time trajectory simulations (function 
+Backward-time Trajectory simulations (function 
 \family typewriter
 simulateBackwardTrajectory
 \family default
@@ -19073,7 +19073,7 @@ n.
 \end_layout
 
 \begin_layout Standard
-This trajectory simulation technique is usually used as follows:
+This Trajectory simulation technique is usually used as follows:
 \end_layout
 
 \begin_layout Enumerate
@@ -19154,7 +19154,7 @@ Simulated trajectories of two unlinked loci
 \end_layout
 
 \begin_layout Standard
-The trajectory is used in a 
+The Trajectory is used in a 
 \family typewriter
 ControlledRandomMating
 \family default
@@ -19175,7 +19175,7 @@ lstparams "caption={Simulation and use of backward-time simulated trajectories.}
 \begin_layout Subsection
 Graphical or text-based progress bar (class 
 \family typewriter
-simuProgress
+SimuProgress
 \family default
 )
 \end_layout
@@ -19185,12 +19185,12 @@ If your simulation takes a while to finish, you could use a progress bar
  to indicate its progress.
  The 
 \family typewriter
-simuProgress
+SimuProgress
 \family default
  class is provided for such a purpose.
  Basically, you create a 
 \family typewriter
-simuProgress
+SimuProgress
 \family default
  project with intended total steps, and calls its 
 \family typewriter
@@ -19210,7 +19210,7 @@ Tkinter
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "simuProgress"
+reference "SimuProgress"
 
 \end_inset
 
@@ -19218,8 +19218,8 @@ reference "simuProgress"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simuProgress.log"
-lstparams "caption={Using a text-based progress bar},label={simuProgress}"
+filename "log/SimuProgress.log"
+lstparams "caption={Using a text-based progress bar},label={SimuProgress}"
 
 \end_inset
 
@@ -19338,7 +19338,7 @@ simuPOP.plotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-plotter.varPlotter
+plotter.VarPlotter
 \family default
 : Plot a dynamically evaluated expression with its history.
  Each expression and its history form a line in the plot.
@@ -19350,7 +19350,7 @@ plotter.varPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-plotter.scatterPlotter
+plotter.ScatterPlotter
 \family default
 : Plot individuals in specified (virtual) subpopulations using values at
  two information fields as x and y axes.
@@ -19361,7 +19361,7 @@ plotter.scatterPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-plotter.infoPlotter
+plotter.InfoPlotter
 \family default
 : Using a R function such as 
 \family typewriter
@@ -19375,11 +19375,11 @@ qqnorm
  subpopulations.
  Two specialized operators 
 \family typewriter
-plotter.histPlotter
+plotter.HistPlotter
 \family default
  and 
 \family typewriter
-plotter.qqPlotter
+plotter.QQPlotter
 \family default
  are provided to plot the histograms and qq plots.
  Other functions could also be used, and it is even possible to draw a figure
@@ -19389,7 +19389,7 @@ plotter.qqPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-plotter.boxPlotter
+plotter.BoxPlotter
 \family default
 : This operator uses R function 
 \family typewriter
@@ -19408,7 +19408,7 @@ PyOperator
  and call R plot functions when they are applied to a population.
  For example, operator 
 \family typewriter
-plotter.varPlotter
+plotter.VarPlotter
 \family default
  collects expression values and use functions 
 \family typewriter
@@ -19530,7 +19530,7 @@ main='Allele frequency at generation 10'
 \begin_layout Subsection
 Plot of expressions and their histories (operator 
 \family typewriter
-plotter.varPlotter
+plotter.VarPlotter
 \family default
 )
 \end_layout
@@ -19538,7 +19538,7 @@ plotter.varPlotter
 \begin_layout Standard
 Class 
 \family typewriter
-plotter.varPlotter
+plotter.VarPlotter
 \family default
  plots the current and historical values of a Python expression (
 \family typewriter
@@ -19620,7 +19620,7 @@ rpy_80.png
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/varPlotter.log"
+filename "log/VarPlotter.log"
 lstparams "caption={Use rpy to plot an expression},label={rpy}"
 
 \end_inset
@@ -19653,7 +19653,7 @@ main
  These parameters are derived keyword arguments because they are not defined
  by 
 \family typewriter
-varPlotter.
+VarPlotter.
 
 \family default
  Parameters without prefix are passed directly to the R functions 
@@ -20065,7 +20065,7 @@ Allele frequency trajectories separated by loci
 \begin_layout Subsection
 Scatter plots (operator 
 \family typewriter
-plotter.scatterPlotter
+plotter.ScatterPlotter
 \family default
 )
 \end_layout
@@ -20073,7 +20073,7 @@ plotter.scatterPlotter
 \begin_layout Standard
 Operator 
 \family typewriter
-plotter.scatterPlotter
+plotter.ScatterPlotter
 \family default
  plots individuals in all or selected (virtual) subpopulations in a 2-D
  plot, using values at two information fields as their x- and y-axis.
@@ -20084,7 +20084,7 @@ status open
 
 \begin_layout Plain Layout
 
-infoPlotter(infoFields=['x', 'y'])
+InfoPlotter(infoFields=['x', 'y'])
 \end_layout
 
 \end_inset
@@ -20119,7 +20119,7 @@ als) by (virtual) subpopulations (VSPs).
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "scatterPlotter"
+reference "ScatterPlotter"
 
 \end_inset
 
@@ -20183,7 +20183,7 @@ where
 \begin_layout Standard
 An 
 \family typewriter
-scatterPlotter
+ScatterPlotter
 \family default
  is used to plot the physical location of all individuals.
  Individual ancestries are divided into five regions (0, 0.2, 0.4, 0.6, 0.8,
@@ -20262,7 +20262,7 @@ VSPs 0 and 4 appear at the beginning of generation 0, VSP 2 appears at the
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:scatterPlotter"
+reference "fig:ScatterPlotter"
 
 \end_inset
 
@@ -20272,8 +20272,8 @@ reference "fig:scatterPlotter"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/scatterPlotter.log"
-lstparams "caption={Use scatterPlotter to plot ancestry of individuals with geographic information.},label={scatterPlotter}"
+filename "log/ScatterPlotter.log"
+lstparams "caption={Use ScatterPlotter to plot ancestry of individuals with geographic information.},label={ScatterPlotter}"
 
 \end_inset
 
@@ -20292,7 +20292,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:scatterPlotter"
+name "fig:ScatterPlotter"
 
 \end_inset
 
@@ -20307,7 +20307,7 @@ Plot of individuals with ancestry marked by different colors
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/scatterPlotter_2_0.png
+	filename log/ScatterPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 
@@ -20324,15 +20324,15 @@ Plot of individuals with ancestry marked by different colors
 \begin_layout Subsection
 Histograms, QQ plots and boxplots (operator 
 \family typewriter
-plotter.infoPlotter
+plotter.InfoPlotter
 \family default
 , 
 \family typewriter
-plotter.histPlotter
+plotter.HistPlotter
 \family default
 , 
 \family typewriter
-plotter.qqPlotter
+plotter.QQPlotter
 \family default
 ).
 \end_layout
@@ -20340,17 +20340,17 @@ plotter.qqPlotter
 \begin_layout Standard
 Class 
 \family typewriter
-plotter.infoPlotter
+plotter.InfoPlotter
 \family default
  can be used to draw figures for information fields of individuals in one
  or more subpopulations.
  
 \family typewriter
-plotter.histPlotter
+plotter.HistPlotter
 \family default
  and 
 \family typewriter
-plotter.qqPlotter
+plotter.QQPlotter
 \family default
  are two special cases of this class that uses functions 
 \family typewriter
@@ -20363,7 +20363,7 @@ qqnorm
  respectively.
  Although an 
 \family typewriter
-infoPlotter
+InfoPlotter
 \family default
  using a 
 \family typewriter
@@ -20371,7 +20371,7 @@ boxplot
 \family default
  function could be used, a specialized 
 \family typewriter
-plotter.boxPlotter
+plotter.BoxPlotter
 \family default
  is defined so that mutliple boxplot whiskers could be drawn in the same
  plot.
@@ -20381,58 +20381,58 @@ plotter.boxPlotter
 Using the same evolutionary process as Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "scatterPlotter"
+reference "ScatterPlotter"
 
 \end_inset
 
 , Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "histPlotter"
+reference "HistPlotter"
 
 \end_inset
 
  uses a 
 \family typewriter
-histPlotter
+HistPlotter
 \family default
  to plot the histograms (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:histPlotter"
+reference "fig:HistPlotter"
 
 \end_inset
 
 ), a 
 \family typewriter
-qqPlotter
+QQPlotter
 \family default
  to plot QQ plot (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:qqPlotter"
+reference "fig:QQPlotter"
 
 \end_inset
 
 ), and a 
 \family typewriter
-boxPlotter
+BoxPlotter
 \family default
  to plot the boxplots (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:boxPlotter"
+reference "fig:BoxPlotter"
 
 \end_inset
 
 ) of individual ancestry values.
  By defining two virtual subpopulations by sex, the 
 \family typewriter
-histPlotter
+HistPlotter
 \family default
  and 
 \family typewriter
-qqPlotter
+QQPlotter
 \family default
  plots two histograms and two QQ plots, one for males and one for females.
  Different colors are used for these figures.
@@ -20447,7 +20447,7 @@ dev_print_file
 \family default
  parameter of the 
 \family typewriter
-boxPlotter
+BoxPlotter
 \family default
 , which overrides the default filename derived from parameter 
 \family typewriter
@@ -20457,8 +20457,8 @@ saveAs
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/histPlotter.log"
-lstparams "caption={Use histPlotter to plot the histogram of individual ancestries.},label={histPlotter}"
+filename "log/HistPlotter.log"
+lstparams "caption={Use HistPlotter to plot the histogram of individual ancestries.},label={HistPlotter}"
 
 \end_inset
 
@@ -20477,7 +20477,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:histPlotter"
+name "fig:HistPlotter"
 
 \end_inset
 
@@ -20492,7 +20492,7 @@ Histogram of individual ancestry values
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/histPlotter_2_0.png
+	filename log/HistPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 
@@ -20518,7 +20518,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:qqPlotter"
+name "fig:QQPlotter"
 
 \end_inset
 
@@ -20533,7 +20533,7 @@ QQ plot of individual ancestry values
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/qqPlotter_2_0.png
+	filename log/QQPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 
@@ -20556,7 +20556,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:boxPlotter"
+name "fig:BoxPlotter"
 
 \end_inset
 
@@ -20669,7 +20669,7 @@ prepareSample
 \begin_layout Subsection
 Sampling individuals randomly (class 
 \family typewriter
-randomSampler
+RandomSampler
 \family default
 , functions 
 \family typewriter
@@ -20739,7 +20739,7 @@ lstparams "caption={Draw random samples from a structured population},label={ran
 \begin_layout Subsection
 Sampling cases and controls (class 
 \family typewriter
-caseControlSampler
+CaseControlSampler
 \family default
 , functions 
 \family typewriter
@@ -20805,11 +20805,11 @@ lstparams "caption={Draw case control samples from a population and perform asso
 \begin_layout Subsection
 Sampling Pedigrees (functions 
 \family typewriter
-IndexToID
+indexToID
 \family default
  and 
 \family typewriter
-PlotPedigree
+plotPedigree
 \family default
 )
 \end_layout
@@ -20885,7 +20885,7 @@ ParentsTagger
  to track indexes of parents in the parental generations.
  Before sampling, you can use function 
 \family typewriter
-sampling.IndexToID
+sampling.indexToID
 \family default
  to add needed information fields and convert index based parental relationship
  to ID based relationshop.
@@ -20905,7 +20905,7 @@ simuPOP.sampling
 \family default
  module provides a function 
 \family typewriter
-PlotPedigree
+plotPedigree
 \family default
  to use this library to plot Pedigrees.
  Example 
@@ -20915,7 +20915,7 @@ reference "plotPedigree"
 
 \end_inset
 
- demonstrates how to use function sampling.IndexToID to prepare a pedigree
+ demonstrates how to use function sampling.indexToID to prepare a pedigree
  and how to use sampling.DrawPedigree to plot it.
  
 \begin_inset CommandInset include
@@ -20986,7 +20986,7 @@ Structure of a small complete pedigree
 \begin_layout Subsection
 Sampling affected sibpairs (class 
 \family typewriter
-affectedSibpairSampler
+AffectedSibpairSampler
 \family default
 , functions 
 \family typewriter
@@ -21091,7 +21091,7 @@ Affected sibpairs drawn from a small pedigree
 \begin_layout Subsection
 Sampling nuclear families (class 
 \family typewriter
-nuclearFamilySampler
+NuclearFamilySampler
 \family default
 , functions 
 \family typewriter
@@ -21198,7 +21198,7 @@ Nuclear families drawn from a small pedigree
 \begin_layout Subsection
 Sampling three-generation families (class 
 \family typewriter
-threeGenFamilySampler
+ThreeGenFamilySampler
 \family default
 , functions 
 \family typewriter
@@ -21317,7 +21317,7 @@ Three generation families drawn from a small pedigree
 \begin_layout Subsection
 Sampling different types of samples (class 
 \family typewriter
-combinedSampler
+CombinedSampler
 \family default
 , functions 
 \family typewriter
@@ -23148,7 +23148,7 @@ PyOperator
  This technique has been used by simuPOP in a number of occasions.
  For example, the 
 \family typewriter
-varPlotter
+VarPlotter
 \family default
  operator defined in 
 \family typewriter
@@ -23213,7 +23213,7 @@ dynaMutator
  advantage over defining a function.
  However, when the operator gets complicated (as in the case for 
 \family typewriter
-varPlotter
+VarPlotter
 \family default
 ), the object oriented implementation will prevail.
 \end_layout
@@ -23613,7 +23613,7 @@ reference "controlledOffGenerator"
 \end_inset
 
  demonstrates the use of such a controlled offspring generator.
- Instead of using a realistic frequency trajectory function, it forces allele
+ Instead of using a realistic frequency Trajectory function, it forces allele
  frequency at locus 5 to increase linearly.
  In contrast, the allele frequency at locus 15 on the second chromosome
  oscillates as a result of genetic drift.

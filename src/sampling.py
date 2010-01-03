@@ -44,7 +44,7 @@ by operator ``IdTagger`` and are stored in information field ``ind_id``).
 Parents of individuals are usually tracked by operator ``PedigreeTagger`` and
 are stored in information fields ``father_id`` and ``mother_id``. If parental
 information is tracked using operator ``ParentsTagger`` and information fields
-``father_idx`` and ``mother_idx``, a function ``sampling.IndexToID`` can be
+``father_idx`` and ``mother_idx``, a function ``sampling.indexToID`` can be
 used to convert index based pedigree to ID based Pedigree. Note that
 ``ParentsTagger`` can not be used to track Pedigrees in age-structured
 populations because they require parents of each individual resides in a
@@ -61,18 +61,18 @@ number of individuals from each subpopulation.
 
 __all__ = [
     #
-    'IndexToID',
-    'PlotPedigree',
+    'indexToID',
+    'plotPedigree',
     # Classes that can be derived to implement more complicated
     # sampling scheme
-    'baseSampler',
-    'randomSampler',
-    'caseControlSampler',
+    'BaseSampler',
+    'RandomSampler',
+    'CaseControlSampler',
     'PedigreeSampler',
-    'affectedSibpairSampler',
-    'nuclearFamilySampler',
-    'threeGenFamilySampler',
-    'combinedSampler',
+    'AffectedSibpairSampler',
+    'NuclearFamilySampler',
+    'ThreeGenFamilySampler',
+    'CombinedSampler',
     # Functions to draw samples
     'drawRandomSample',
     'drawRandomSamples',
@@ -101,7 +101,7 @@ def isSequence(obj):
 def isNumber(obj):
     return isinstance(obj, (int, long, float))
 
-def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mother_id',
+def indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mother_id',
               fatherIndex='father_idx', motherIndex='mother_idx', reset=False):
     '''This function adds information field idField (default to ``'ind_id'``)
     to population ``pop`` and assigns an unique ID to every individual in this
@@ -130,7 +130,7 @@ def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
 
 
 # pedigree drawing
-def PlotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_id',
+def plotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_id',
     motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
     pedigree to a format that is recognizable by R's ``'kinship'`` library.
@@ -144,7 +144,7 @@ def PlotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_
     except ImportError:
         return
     #
-    args = plotter.derivedArgs(
+    args = plotter.DerivedArgs(
         defaultFuncs = ['plot'],
         allFuncs = ['par', 'plot', 'Pedigree', 'dev_print'],
         defaultParams = {'par_xpd': True},
@@ -197,7 +197,7 @@ def PlotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_
 
 # Sampling classes and functions
 
-class baseSampler:
+class BaseSampler:
     '''
     A sampler extracts individuals from a simuPOP population and return them
     as separate populations. This base class defines the common interface of
@@ -243,13 +243,13 @@ class baseSampler:
         return [self.drawSample(pop) for x in range(numOfSamples)]
 
 
-class randomSampler(baseSampler):
+class RandomSampler(BaseSampler):
     '''A sampler that draws individuals randomly.
     '''
     def __init__(self, sizes, subPops=ALL_AVAIL):
         '''Creates a random sampler with specified number of individuals.
         '''
-        baseSampler.__init__(self, subPops)
+        BaseSampler.__init__(self, subPops)
         self.sizes = sizes
 
     def drawSample(self, input_pop):
@@ -290,24 +290,24 @@ def drawRandomSample(pop, sizes, subPops=ALL_AVAIL):
     (default), or from each of the specified (virtual) subpopulations. This
     function returns a population with all extracted individuals.
     '''
-    return randomSampler(sizes=sizes, subPops=subPops).drawSample(pop)
+    return RandomSampler(sizes=sizes, subPops=subPops).drawSample(pop)
 
 
 def drawRandomSamples(pop, sizes, numOfSamples=1, subPops=ALL_AVAIL):
     '''Draw ``numOfSamples`` random samples from a population and return a list of
     populations. Please refer to function ``drawRandomSample`` for more details
     about parameters ``sizes`` and ``subPops``.'''
-    return randomSampler(sizes=sizes, subPops=subPops).drawSamples(pop, numOfSamples=numOfSamples)
+    return RandomSampler(sizes=sizes, subPops=subPops).drawSamples(pop, numOfSamples=numOfSamples)
 
 
-class caseControlSampler(baseSampler):
+class CaseControlSampler(BaseSampler):
     '''A sampler that draws affected and unaffected individuals randomly.
     '''
     def __init__(self, cases, controls, subPops=ALL_AVAIL):
         '''Ceates a case-control sampler with specified number of cases
         and controls.
         '''
-        baseSampler.__init__(self, subPops)
+        BaseSampler.__init__(self, subPops)
         self.cases = cases
         self.controls = controls
         if type(self.cases) != type(controls):
@@ -319,7 +319,7 @@ class caseControlSampler(baseSampler):
     def prepareSample(self, input_pop):
         '''Find out indexes all affected and unaffected individuales.
         '''
-        baseSampler.prepareSample(self, input_pop, isSequence(self.cases))
+        BaseSampler.prepareSample(self, input_pop, isSequence(self.cases))
         if self.pop is None:
             # this will produce self.pop and self.cases and self.controls
             self.prepareSample(input_pop)
@@ -398,7 +398,7 @@ def drawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     specified (virtual) subpopulations. This function returns a population with
     all extracted individuals.
     '''
-    return caseControlSampler(cases, controls, subPops).drawSample(pop) 
+    return CaseControlSampler(cases, controls, subPops).drawSample(pop) 
 
 
 def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL):
@@ -407,10 +407,10 @@ def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVA
     populations. Please refer to function ``drawCaseControlSample`` for a
     detailed descriptions of parameters.
     '''
-    return caseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples) 
+    return CaseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples) 
 
 
-class PedigreeSampler(baseSampler):
+class PedigreeSampler(BaseSampler):
     '''The base class of all pedigree based sampler.
     '''
     def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
@@ -427,7 +427,7 @@ class PedigreeSampler(baseSampler):
             The default value is ALL_AVAIL, which means all available
             subpopulations of a population.
         '''
-        baseSampler.__init__(self, subPops)
+        BaseSampler.__init__(self, subPops)
         self.families = families
         self.idField = idField
         self.fatherField = fatherField
@@ -440,7 +440,7 @@ class PedigreeSampler(baseSampler):
         information fields for this sampler.
         '''
         # create self.pop
-        baseSampler.prepareSample(self, pop, isSequence(self.families))
+        BaseSampler.prepareSample(self, pop, isSequence(self.families))
         # get self.pedigree
         self.pedigree = Pedigree(self.pop, loci, infoFields,
             ancGen, self.idField, self.fatherField, self.motherField)
@@ -505,7 +505,7 @@ class PedigreeSampler(baseSampler):
         return self.pop.extractIndividuals(IDs = list(IDs), idField = self.idField)
 
 
-class affectedSibpairSampler(PedigreeSampler):
+class AffectedSibpairSampler(PedigreeSampler):
     '''A sampler that draws a nuclear family with two affected offspring.
     '''
     def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
@@ -552,7 +552,7 @@ def drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL,
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
-    return affectedSibpairSampler(families, subPops, idField, fatherField,
+    return AffectedSibpairSampler(families, subPops, idField, fatherField,
         motherField).drawSample(pop)
  
 
@@ -566,7 +566,7 @@ def drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL,
         motherField).drawSamples(pop, numOfSamples)
 
 
-class nuclearFamilySampler(PedigreeSampler):
+class NuclearFamilySampler(PedigreeSampler):
     '''A sampler that draws nuclear families with specified number of affected
     parents and offspring.
     '''
@@ -689,7 +689,7 @@ def drawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
-    return nuclearFamilySampler(families, numOffspring, affectedParents,
+    return NuclearFamilySampler(families, numOffspring, affectedParents,
         affectedOffspring, subPops, idField, fatherField, motherField).drawSample(pop)
  
 
@@ -705,7 +705,7 @@ def drawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
         motherField).drawSamples(pop, numOfSamples)
 
 
-class threeGenFamilySampler(PedigreeSampler):
+class ThreeGenFamilySampler(PedigreeSampler):
     '''A sampler that draws three-generation families with specified pedigree
     size and number of affected individuals.
     '''
@@ -841,7 +841,7 @@ def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
     specified (virtual) subpopulations. This function returns a population that
     contains extracted individuals.
     '''
-    return threeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
+    return ThreeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSample(pop)
  
 
@@ -852,11 +852,11 @@ def drawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffecte
     and return a list of populations. Please refer to function
     ``drawThreeGenFamilySample`` for a description of other parameters.
     '''
-    return threeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
+    return ThreeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSamples(pop, numOfSamples)
 
 
-class combinedSampler(baseSampler):
+class CombinedSampler(BaseSampler):
     '''A combined sampler accepts a list of sampler objects, draw samples and
     combine the returned sample into a single population. An id field is
     required to use this sampler, which will be used to remove extra copies of
@@ -867,7 +867,7 @@ class combinedSampler(baseSampler):
         samplers
             A list of samplers
         '''
-        baseSampler.__init__(self)
+        BaseSampler.__init__(self)
         self.samplers = samplers
         self.idField = idField
 
@@ -894,12 +894,12 @@ def drawCombinedSample(pop, samplers, idField='ind_id'):
     is needed to remove duplicated individuals who are drawn multiple
     numOfSamples from these samplers.
     '''
-    return combinedSampler(samplers, idField=idField).drawSample(pop)
+    return CombinedSampler(samplers, idField=idField).drawSample(pop)
 
 def drawCombinedSamples(pop, samplers, numOfSamples=1, idField='ind_id'):
     '''Draw combined samples ``numOfSamples`` numOfSamples and return a list of populations.
     Please refer to function ``drawCombinedSample`` for details about
     parameters ``samplers`` and ``idField``.
     '''
-    return combinedSampler(samplers, idField=idField).drawSamples(pop, numOfSamples)
+    return CombinedSampler(samplers, idField=idField).drawSamples(pop, numOfSamples)
 
