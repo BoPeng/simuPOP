@@ -27,7 +27,7 @@
 #define _PENETRANCE_H
 /**
    \file
-   \brief head file of class penetrance operator:public baseOperator
+   \brief head file of class penetrance operator:public BaseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -65,7 +65,7 @@ namespace simuPOP {
  *  to apply to only ancestral generation younger than \e ancGen. Note that
  *  this parameter is ignored if the operator is applied during mating.
  */
-class basePenetrance : public baseOperator
+class BasePenetrance : public BaseOperator
 {
 public:
 	/** Create a base penetrance operator. If \e ancGen=0 (default), only the
@@ -77,26 +77,26 @@ public:
 	 *  \e reps). If an informatio field is given, penetrance value will be
 	 *  stored in this information field of each individual.
 	 */
-	basePenetrance(int ancGen = 0,
+	BasePenetrance(int ancGen = 0,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_ancGen(ancGen)
 	{
 	}
 
 
 	/// destructor
-	virtual ~basePenetrance()
+	virtual ~BasePenetrance()
 	{
 	}
 
 
 	/// deep copy of a penetrance operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
-		return new basePenetrance(*this);
+		return new BasePenetrance(*this);
 	}
 
 
@@ -142,7 +142,7 @@ private:
  *  <applicability>all ploidy</applicability>
  *  <funcForm>mapPenetrance</funcForm>
  */
-class MapPenetrance : public basePenetrance
+class MapPenetrance : public BasePenetrance
 {
 public:
 	/** Create a penetrance operator that get penetrance value from a
@@ -161,7 +161,7 @@ public:
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		basePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(penetrance)
 	{
 	};
@@ -172,7 +172,7 @@ public:
 
 
 	/// deep copy of a map penetrance operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MapPenetrance(*this);
 	}
@@ -206,7 +206,7 @@ private:
  *  \c A and \c a in the haploid case.
  *  <funcForm>maPenetrance</funcForm>
  */
-class MaPenetrance : public basePenetrance
+class MaPenetrance : public BasePenetrance
 {
 public:
 	/** Creates a multi-allele penetrance operator that groups multiple alleles
@@ -231,7 +231,7 @@ public:
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		basePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_penetrance(penetrance), m_wildtype(wildtype.elems())
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -245,7 +245,7 @@ public:
 
 
 	/// deep copy of a multi-allele penetrance operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MaPenetrance(*this);
 	}
@@ -280,7 +280,7 @@ private:
  *
  *  <funcForm>mlPenetrance</funcForm>
  */
-class MlPenetrance : public basePenetrance
+class MlPenetrance : public BasePenetrance
 {
 public:
 	/** Create a multiple-locus penetrance operator from a list penetrance
@@ -301,7 +301,7 @@ public:
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		basePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_peneOps(ops), m_mode(mode)
 	{
 		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -313,7 +313,7 @@ public:
 
 
 	/// deep copy of a multi-loci penetrance operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		throw ValueError("Multi-loci penetrance operator can not be nested.");
 	}
@@ -351,7 +351,7 @@ private:
  *
  *  <funcForm>pyPenetrance</funcForm>
  */
-class PyPenetrance : public basePenetrance
+class PyPenetrance : public BasePenetrance
 {
 public:
 	/** Create a Python hybrid penetrance operator that passes genotype at
@@ -366,7 +366,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		basePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
@@ -377,7 +377,7 @@ public:
 
 
 	/// deep copy of a Python penetrance operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyPenetrance(*this);
 	}

@@ -65,7 +65,7 @@ public:
 	 *  offspring generator does not have any default during-mating operator
 	 *  but all stock mating schemes use an offspring generator with a default
 	 *  operator. For example, a \c mendelianOffspringGenerator is used by
-	 *  \c randomMating to trasmit genotypes. Note that applicability
+	 *  \c RandomMating to trasmit genotypes. Note that applicability
 	 *  parameters \c begin, \c step, \c end, \c at and \c reps could be used
 	 *  in these operators but negative population and generation indexes are
 	 *  unsupported.
@@ -953,7 +953,7 @@ protected:
  *  pedigree object.
  */
 /*
-   class pedigreeMating : public mating
+   class PedigreeMating : public mating
    {
    public:
  */
@@ -973,7 +973,7 @@ protected:
  *
  *  By default, the pedigree mating scheme does not set offspring sex and
  *  affection status using sex and affection status of corresponding
- *  individuals in the pedigree. However, if such information is valid
+ *  individuals in the Pedigree. However, if such information is valid
  *  in the pedigree object \e ped, you can set parameters \e setSex and/or
  *  \e setAffection to \c True to set sex and/of affection status to
  *  offspring during the evolutionary process. Similarly, you can specify
@@ -983,28 +983,28 @@ protected:
  *  greatest ancestral generation in \e ped).
  */
 /*
-   pedigreeMating(const pedigree & ped, const OffspringGenerator & generator,
+   PedigreeMating(const pedigree & ped, const OffspringGenerator & generator,
    bool setSex = false, bool setAffection = false,
    const vectorstr & copyFields = vectorstr());
 
    /// destructor
-   ~pedigreeMating();
+   ~PedigreeMating();
 
    /// CPPONLY
-   pedigreeMating(const pedigreeMating & rhs);
+   PedigreeMating(const PedigreeMating & rhs);
 
 
    /// deep copy of a Python mating scheme
    virtual mating * clone() const
    {
-   return new pedigreeMating(*this);
+   return new PedigreeMating(*this);
    }
 
 
    /// describe a pedigree mating scheme.
    virtual string describe(bool format = true) const
    {
-   return "<simuPOP.pedigreeMating> A pedigree mating scheme";
+   return "<simuPOP.PedigreeMating> A pedigree mating scheme";
    }
 
 
@@ -1034,7 +1034,7 @@ protected:
  *  heterogeneous mating scheme. In the latter case, it can be applied to a
  *  (virtual) subpopulation.
  */
-class homoMating : public mating
+class HomoMating : public mating
 {
 public:
 	/** Create a homogeneous mating scheme using a parent chooser \e chooser
@@ -1062,16 +1062,16 @@ public:
 	 *  Parameters \e subPops and \e weight are used to determine which (virtual)
 	 *  subpopulations this mating scheme will be applied to, and how many
 	 *  offspring this mating scheme will produce. Please refer to mating scheme
-	 *  \c heteroMating for the use of these two parameters.
+	 *  \c HeteroMating for the use of these two parameters.
 	 */
-	homoMating(ParentChooser & chooser,
+	HomoMating(ParentChooser & chooser,
 		OffspringGenerator & generator,
 		const uintListFunc & subPopSize = uintListFunc(),
 		subPopList subPops = subPopList(),
 		double weight = 0);
 
 	/// destructor
-	~homoMating()
+	~HomoMating()
 	{
 		delete m_ParentChooser;
 		delete m_OffspringGenerator;
@@ -1079,7 +1079,7 @@ public:
 
 
 	/// CPPONLY
-	homoMating(const homoMating & rhs) :
+	HomoMating(const HomoMating & rhs) :
 		mating(rhs), m_subPops(rhs.m_subPops), m_weight(rhs.m_weight)
 	{
 		m_OffspringGenerator = rhs.m_OffspringGenerator->clone();
@@ -1090,7 +1090,7 @@ public:
 	/// Deep copy of a homogeneous mating scheme
 	virtual mating * clone() const
 	{
-		return new homoMating(*this);
+		return new HomoMating(*this);
 	}
 
 
@@ -1128,12 +1128,12 @@ private:
 
 };
 
-typedef std::vector<homoMating *> vectormating;
+typedef std::vector<HomoMating *> vectormating;
 
 /** A heterogeneous mating scheme that applies a list of mating
  *  schemes to different (virtual) subpopulations.
  */
-class heteroMating : public mating
+class HeteroMating : public mating
 {
 public:
 	/** Create a heterogeneous mating scheme that will apply a list of
@@ -1141,7 +1141,7 @@ public:
 	 *  subpopulations. The size of the offspring generation is determined
 	 *  by parameter \e subPopSize, which can be a list of subpopulation sizes
 	 *  or a Python function that returns a list of subpopulation sizes at
-	 *  each generation. Please refer to \c homoMating for a detailed
+	 *  each generation. Please refer to \c HomoMating for a detailed
 	 *  explanation of this parameter.
 	 *
 	 *  Each mating scheme defined in \e matingSchemes can be applied to
@@ -1169,20 +1169,20 @@ public:
 	 *  is not desired, you can turn off offspring shuffling by setting parameter
 	 *  \e shuffleOffspring to \c False.
 	 */
-	heteroMating(const vectormating & matingSchemes,
+	HeteroMating(const vectormating & matingSchemes,
 		const uintListFunc & subPopSize = uintListFunc(),
 		bool shuffleOffspring = true);
 
 	/// destructor
-	~heteroMating();
+	~HeteroMating();
 
 	/// CPPONLY
-	heteroMating(const heteroMating & rhs);
+	HeteroMating(const HeteroMating & rhs);
 
 	/// deep copy of a heterogeneous mating scheme
 	virtual mating * clone() const
 	{
-		return new heteroMating(*this);
+		return new HeteroMating(*this);
 	}
 
 

@@ -30,7 +30,7 @@ class TestSampling(unittest.TestCase):
                  InitByFreq(alleleFreq=[.2, .8]),
                  IdTagger(),
             ],
-            matingScheme=randomMating(
+            matingScheme=RandomMating(
                 numOffspring=(UNIFORM_DISTRIBUTION, 2, 4),
                 ops=[MendelianGenoTransmitter(),
                 IdTagger(),
@@ -56,8 +56,8 @@ class TestSampling(unittest.TestCase):
                  InitByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
                  IdTagger(),
             ],
-            #preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-            matingScheme=randomMating(
+            #preOps = Migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+            matingScheme=RandomMating(
                 numOffspring=(UNIFORM_DISTRIBUTION, 2, 5),
                 ops=[MendelianGenoTransmitter(),
                 IdTagger(),

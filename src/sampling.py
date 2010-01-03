@@ -31,9 +31,9 @@ This module provides classes and functions that could be used to draw samples
 from a simuPOP population. These functions accept a list of parameters such
 as ``subPops`` ((virtual) subpopulations from which samples will be drawn) and
 ``numOfSamples`` (number of samples to draw) and return a list of populations. Both
-independent individuals and dependent individuals (pedigrees) are supported.
+independent individuals and dependent individuals (Pedigrees) are supported.
 
-Independent individuals could be drawn from any population. Pedigree
+Independent individuals could be drawn from any population. pedigree
 information is not necessary and is usually ignored. Unique IDs are not needed
 either although such IDs could help you identify samples in the parent
 population.
@@ -45,8 +45,8 @@ Parents of individuals are usually tracked by operator ``PedigreeTagger`` and
 are stored in information fields ``father_id`` and ``mother_id``. If parental
 information is tracked using operator ``ParentsTagger`` and information fields
 ``father_idx`` and ``mother_idx``, a function ``sampling.IndexToID`` can be
-used to convert index based pedigree to ID based pedigree. Note that
-``ParentsTagger`` can not be used to track pedigrees in age-structured
+used to convert index based pedigree to ID based Pedigree. Note that
+``ParentsTagger`` can not be used to track Pedigrees in age-structured
 populations because they require parents of each individual resides in a
 parental generation.
 
@@ -68,7 +68,7 @@ __all__ = [
     'baseSampler',
     'randomSampler',
     'caseControlSampler',
-    'pedigreeSampler',
+    'PedigreeSampler',
     'affectedSibpairSampler',
     'nuclearFamilySampler',
     'threeGenFamilySampler',
@@ -92,7 +92,7 @@ __all__ = [
 import exceptions
 import random
 
-from simuPOP import ALL_AVAIL, pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
+from simuPOP import ALL_AVAIL, Pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
     MALE, AFFECTED, tagID
 
 def isSequence(obj):
@@ -129,13 +129,13 @@ def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
                 ind.setInfo(mother.info(idField), motherField)
 
 
-# Pedigree drawing
-def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_id',
+# pedigree drawing
+def PlotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_id',
     motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
     pedigree to a format that is recognizable by R's ``'kinship'`` library.
     Aliased arguments could be used to pass parameters to functions
-    ``pedigree``, ``plot`` and ``par``. Please refer to module
+    ``Pedigree``, ``plot`` and ``par``. Please refer to module
     ``simuPOP.plotter`` for details about aliased arguments. This function
     returns silently if rpy is not properly installed.
     '''
@@ -146,7 +146,7 @@ def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_
     #
     args = plotter.derivedArgs(
         defaultFuncs = ['plot'],
-        allFuncs = ['par', 'plot', 'pedigree', 'dev_print'],
+        allFuncs = ['par', 'plot', 'Pedigree', 'dev_print'],
         defaultParams = {'par_xpd': True},
         **kwargs
     )
@@ -159,9 +159,9 @@ def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_
     momid = []
     sex = []
     aff = []
-    for gen in range(pedigree.ancestralGens(), -1, -1):
-        pedigree.useAncestralGen(gen)
-        for ind in pedigree.individuals():
+    for gen in range(Pedigree.ancestralGens(), -1, -1):
+        Pedigree.useAncestralGen(gen)
+        for ind in Pedigree.individuals():
             id.append(int(ind.info(idField)))
             #
             fid = int(ind.info(fatherField))
@@ -187,7 +187,7 @@ def PlotPedigree(pedigree, filename=None, idField='ind_id', fatherField='father_
             else:
                 aff.append(1)
     # create an object of pedigree structure recognizable by R library
-    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
+    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.Pedigree)(
         id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
     # plot the pedigree structure
     plotter.r.par(**args.getArgs('par', None))
@@ -410,7 +410,7 @@ def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVA
     return caseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples) 
 
 
-class pedigreeSampler(baseSampler):
+class PedigreeSampler(baseSampler):
     '''The base class of all pedigree based sampler.
     '''
     def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
@@ -442,10 +442,10 @@ class pedigreeSampler(baseSampler):
         # create self.pop
         baseSampler.prepareSample(self, pop, isSequence(self.families))
         # get self.pedigree
-        self.pedigree = pedigree(self.pop, loci, infoFields,
+        self.pedigree = Pedigree(self.pop, loci, infoFields,
             ancGen, self.idField, self.fatherField, self.motherField)
         # Your prepareSample should define selected_IDs, which should be the
-        # anchor individuals of each pedigree, typically father or grandfather.
+        # anchor individuals of each Pedigree, typically father or grandfather.
         # Other family members will be looked up through function self.family.
         self.selected_IDs = []
 
@@ -454,14 +454,14 @@ class pedigreeSampler(baseSampler):
         return [id]
 
     def drawSample(self, input_pop):
-        'Randomly select pedigrees'
+        'Randomly select Pedigrees'
         if self.pedigree is None:
             # this will give us self.pop, self.pedigree, and self.selectedIDs
             self.prepareSample(input_pop)
         #
         if not isSequence(self.families):
             if self.families > len(self.selectedIDs):
-                print 'Warning: number of requested pedigrees %d is greater than what exists (%d).' \
+                print 'Warning: number of requested Pedigrees %d is greater than what exists (%d).' \
                     % (self.families, len(self.selectedIDs))
             # a tuple might be returned
             self.selectedIDs = list(self.selectedIDs)
@@ -477,13 +477,13 @@ class pedigreeSampler(baseSampler):
                 if cnt == self.families:
                     break
             if cnt != self.families:
-                print 'Warning: not enough non-overlapping pedigrees are found (requested %d, found %d).' \
+                print 'Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
                     % (self.families, cnt)
         else:
             IDs = set()
             for sp in range(self.pop.numSubPop()):
                 if self.families[sp] > len(self.selectedIDs[sp]):
-                    print 'Warning: number of requested pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
+                    print 'Warning: number of requested Pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
                         % (self.families[sp], len(self.selectedIDs[sp]), sp)
                 #
                 # a tuple might be returned
@@ -499,19 +499,19 @@ class pedigreeSampler(baseSampler):
                     if cnt == self.families[sp]:
                         break
                 if cnt != self.families[sp]:
-                    print 'Warning: not enough non-overlapping pedigrees are found (requested %d, found %d).' \
+                    print 'Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
                         % (self.families, cnt)
         # get family members
         return self.pop.extractIndividuals(IDs = list(IDs), idField = self.idField)
 
 
-class affectedSibpairSampler(pedigreeSampler):
+class affectedSibpairSampler(PedigreeSampler):
     '''A sampler that draws a nuclear family with two affected offspring.
     '''
     def __init__(self, families, subPops=ALL_AVAIL, idField='ind_id',
         fatherField='father_id', motherField='mother_id'):
         '''Initialize an affected sibpair sampler.'''
-        pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
+        PedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
     def family(self, id):
         'Return id, its spouse and their children'
@@ -521,7 +521,7 @@ class affectedSibpairSampler(pedigreeSampler):
     def prepareSample(self, input_pop):
         'Find the father or all affected sibpair families'
         # this will give us self.pop and self.pedigree
-        pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
+        PedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
         if isSequence(self.families) and len(self.families) != self.pop.numSubPop():
             raise ValueError('If an list of family counts is given, it should be specified for all subpopulations')
         #
@@ -566,7 +566,7 @@ def drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL,
         motherField).drawSamples(pop, numOfSamples)
 
 
-class nuclearFamilySampler(pedigreeSampler):
+class nuclearFamilySampler(PedigreeSampler):
     '''A sampler that draws nuclear families with specified number of affected
     parents and offspring.
     '''
@@ -631,7 +631,7 @@ class nuclearFamilySampler(pedigreeSampler):
         else:
             raise ValueError('Number of affected offsprings should be a proper integer nubmer or a range of allowed values.')
         #
-        pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
+        PedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
     def family(self, id):
         'Return id, its spouse and their children'
@@ -641,7 +641,7 @@ class nuclearFamilySampler(pedigreeSampler):
 
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
-        pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
+        PedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
         if isSequence(self.families) and len(self.families) != self.pop.numSubPop():
             raise ValueError('If an list of family counts is given, it should be specified for all subpopulations')
         #
@@ -681,7 +681,7 @@ def drawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
     affected parents and number of affected offspring should be specified using
     parameters ``numOffspring``, ``affectedParents`` and ``affectedOffspring``,
     which can all be a single number, or a range ``[a, b]`` (``b`` is incldued).
-    If a single ``families`` is given, pedigrees are drawn randomly from the
+    If a single ``families`` is given, Pedigrees are drawn randomly from the
     whole population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     numbers of families from each subpopulation, which can be all
@@ -705,7 +705,7 @@ def drawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
         motherField).drawSamples(pop, numOfSamples)
 
 
-class threeGenFamilySampler(pedigreeSampler):
+class threeGenFamilySampler(PedigreeSampler):
     '''A sampler that draws three-generation families with specified pedigree
     size and number of affected individuals.
     '''
@@ -720,11 +720,11 @@ class threeGenFamilySampler(pedigreeSampler):
             number of offspring. This can be a fixed number or a range [min, max].
 
         pedSize
-            number of individuals in the pedigree. This can be a fixed number or
+            number of individuals in the Pedigree. This can be a fixed number or
             a range [min, max].
 
         numAfffected
-            number of affected individuals in the pedigree. This can be a fixed number
+            number of affected individuals in the Pedigree. This can be a fixed number
             or a range [min, max]
 
         subPops
@@ -749,7 +749,7 @@ class threeGenFamilySampler(pedigreeSampler):
             self.pedSize = pedSize, pedSize
         elif isSequence(pedSize):
             if len(pedSize) != 2:
-                raise ValueError('Two boundary numbers are needed for the range of number of individuals in a pedigree.')
+                raise ValueError('Two boundary numbers are needed for the range of number of individuals in a Pedigree.')
             self.pedSize = pedSize
         else:
             raise ValueError('Number of affected parents should be an integer number (<= 1) or a range of allowed values.')
@@ -762,12 +762,12 @@ class threeGenFamilySampler(pedigreeSampler):
             if len(numOfAffected) != 2:
                 raise ValueError('Two boundary numbers are needed for the range of number of affected individuals.')
             if numOfAffected[0] > self.pedSize[1]:
-                raise ValueError('Minimum number of affected offsprings cannot be larger than number of individuals in a pedigree.')
+                raise ValueError('Minimum number of affected offsprings cannot be larger than number of individuals in a Pedigree.')
             self.numOfAffected = numOfAffected
         else:
             raise ValueError('Number of affected offsprings should be a proper integer nubmer or a range of allowed values.')
         #
-        pedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
+        PedigreeSampler.__init__(self, families, subPops, idField, fatherField, motherField)
 
     def family(self, id):
         '''Return id, its spouse, their children, children's spouse and grandchildren'''
@@ -783,7 +783,7 @@ class threeGenFamilySampler(pedigreeSampler):
 
     def prepareSample(self, input_pop):
         # this will give us self.pop and self.pedigree
-        pedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
+        PedigreeSampler.prepareSample(self, input_pop, isSequence(self.families))
         if isSequence(self.families) and len(self.families) != self.pop.numSubPop():
             raise ValueError('If an list of family counts is given, it should be specified for all subpopulations')
         #
@@ -833,7 +833,7 @@ def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
     number of affected individuals in a pedigree should be specified using
     parameters ``numOffspring``, ``pedSize`` and ``numOfAffected``, which can all
     be a single number, or a range ``[a, b]`` (``b`` is incldued). If a single
-    ``families`` is given, pedigrees are drawn randomly from the whole
+    ``families`` is given, Pedigrees are drawn randomly from the whole
     population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     numbers of families from each subpopulation, which can be all

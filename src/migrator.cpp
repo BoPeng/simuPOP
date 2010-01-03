@@ -1,5 +1,5 @@
 /**
- *  $File: migrator.cpp $
+ *  $File: Migrator.cpp $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -28,10 +28,10 @@
 
 namespace simuPOP {
 
-migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
+Migrator::Migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_rate(rate), m_mode(mode), m_to(toSubPops)
 {
 	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),
@@ -42,13 +42,13 @@ migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 }
 
 
-string migrator::describe(bool format)
+string Migrator::describe(bool format)
 {
-	return "<simuPOP.migrator>";
+	return "<simuPOP.Migrator>";
 }
 
 
-void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
+void Migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
 {
 	if (mode == BY_IND_INFO)
 		return;
@@ -100,7 +100,7 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru 
 }
 
 
-bool migrator::apply(population & pop)
+bool Migrator::apply(population & pop)
 {
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));

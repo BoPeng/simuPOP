@@ -117,7 +117,7 @@ class TestMutator(unittest.TestCase):
         pop = population(size=[1000, 2000], ploidy=2, loci=[2, 3])
         simu = simulator(pop )
         simu.evolve(initOps = [InitSex()],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4],
                 subPops=1)],
             gen = 100)
@@ -136,7 +136,7 @@ class TestMutator(unittest.TestCase):
         pop.setVirtualSplitter(SexSplitter())
         simu = simulator(pop )
         simu.evolve(initOps = [InitSex()],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
             gen = 1)
         pop = simu.extract(0)
@@ -156,7 +156,7 @@ class TestMutator(unittest.TestCase):
         'Testing if mutator would mutate irrelevant locus'
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]))
         simu.evolve(initOps = [InitSex()],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
         self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
@@ -166,7 +166,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.5, .5], loci=[0, 4])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
                 postOps = [SnpMutator(u=0.1, loci=[0, 4]),
                     #stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[4][0])')
@@ -184,7 +184,7 @@ class TestMutator(unittest.TestCase):
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
                 postOps = [SnpMutator(u=0.1, loci=[0, 4],
                     mapIn=[0, 0, 0, 0, 0, 0, 1],
                     mapOut=[5, 6]),
@@ -206,7 +206,7 @@ class TestMutator(unittest.TestCase):
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
                 postOps = [SnpMutator(u=0.1, loci=[0, 4],
                     mapIn=mapIn, mapOut=mapOut),
                     #stat(alleleFreq=[0, 4]),
@@ -228,7 +228,7 @@ class TestMutator(unittest.TestCase):
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.2,.8])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
                 postOps = [ KamMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
@@ -236,7 +236,7 @@ class TestMutator(unittest.TestCase):
             rep=5)
         simu.evolve(
             initOps = [InitSex()],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.1, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
@@ -253,13 +253,13 @@ class TestMutator(unittest.TestCase):
             rep=5)
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(initOps=[InitSex(), InitByFreq([.2,.8])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
              postOps = [ SmmMutator(rates=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(initOps = [InitSex()],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [ SmmMutator(rates=0.2, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
@@ -295,7 +295,7 @@ class TestMutator(unittest.TestCase):
         simu.evolve(
             # initialize locus by 0, 0, 0, 1, 0, 1
             initOps = [InitSex(), InitByValue([1, 1], loci=[3, 5])],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [
                 ContextMutator(mutators=[
                     SnpMutator(u=0.1),

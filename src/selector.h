@@ -101,30 +101,30 @@ namespace simuPOP {
  *  scheme to different virtual subpopulations, you can use different selectors
  *  in a heterogeneous mating scheme.
  */
-class baseSelector : public baseOperator
+class BaseSelector : public BaseOperator
 {
 public:
 	/** Create a base selector object. This operator should not be created
 	 *  directly.
 	 */
-	baseSelector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	BaseSelector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness"))
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields)
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
 
 	/// destructor
-	virtual ~baseSelector()
+	virtual ~BaseSelector()
 	{
 	}
 
 
 	/// deep copy of a selector
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
-		return new baseSelector(*this);
+		return new BaseSelector(*this);
 	}
 
 
@@ -168,7 +168,7 @@ public:
  *  number of homologous chromosomes.
  *  <applicability>all ploidy</applicability>
  */
-class MapSelector : public baseSelector
+class MapSelector : public BaseSelector
 {
 public:
 	/** Create a selector that assigns individual fitness values using a
@@ -189,7 +189,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		baseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(fitness)
 	{
 	};
@@ -200,7 +200,7 @@ public:
 
 
 	/// deep copy of a map selector
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MapSelector(*this);
 	}
@@ -234,7 +234,7 @@ private:
  *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
  *  \c A and \c a in the haploid case.
  */
-class MaSelector : public baseSelector
+class MaSelector : public BaseSelector
 {
 public:
 	/** Creates a multi-allele selector that groups multiple alleles into a
@@ -259,7 +259,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		baseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
 		DBG_WARNING(m_wildtype.empty(), "No wild type allele is defined.");
@@ -271,7 +271,7 @@ public:
 
 
 	/// deep copy of a \c MaSelector
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MaSelector(*this);
 	}
@@ -305,7 +305,7 @@ private:
  *  fitness values, and compute a combined fitness value from them. ADDITIVE,
  *  multiplicative, and a heterogeneour multi-locus model are supported.
  */
-class MlSelector : public baseSelector
+class MlSelector : public BaseSelector
 {
 public:
 	/** Create a multiple-locus selector from a list selection operator
@@ -325,7 +325,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		baseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_selectors(ops), m_mode(mode)
 	{
 		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one selector.");
@@ -337,7 +337,7 @@ public:
 
 
 	/// deep copy of a \c MlSelector
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MlSelector(*this);
 	}
@@ -373,7 +373,7 @@ private:
  *  respective parameters of this function. The returned penetrance values will
  *  be used to determine the fitness of each individual.
  */
-class PySelector : public baseSelector
+class PySelector : public BaseSelector
 {
 public:
 	/** Create a Python hybrid selector that passes genotype at specified
@@ -385,7 +385,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		baseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
@@ -395,7 +395,7 @@ public:
 
 
 	/// deep copy of a \c PySelector
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PySelector(*this);
 	}

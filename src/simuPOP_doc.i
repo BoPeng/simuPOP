@@ -149,7 +149,7 @@ Details:
     mutations to certain generations (parameters begin, end, step and
     at), replicate populations (parameter rep), (virtual)
     subpopulations (parameter subPops) and loci (parameter loci).
-    Please refer to class baseOperator for a detailed explanation of
+    Please refer to class BaseOperator for a detailed explanation of
     these parameters.  Parameter rate or its equivalence specifies the
     probability that a a mutation event happens. The exact form and
     meaning of rate is mutator-specific. If a single rate is
@@ -236,7 +236,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator "
+%feature("docstring") simuPOP::BaseOperator "
 
 Details:
 
@@ -245,7 +245,7 @@ Details:
     usually managed and applied by a simulator. In the latter case,
     operators are passed to the evolve function of a simulator, and
     are applied repeatedly during the evolution of the simulator.  The
-    baseOperator class is the base class for all operators. It defines
+    BaseOperator class is the base class for all operators. It defines
     a common user interface that specifies at which generations, at
     which stage of a life cycle, to which populations and
     subpopulations an operator is applied. These are achieved by a
@@ -286,11 +286,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator::baseOperator "
+%feature("docstring") simuPOP::BaseOperator::BaseOperator "
 
 Usage:
 
-    baseOperator(output, begin, end, step, at, reps, subPops,
+    BaseOperator(output, begin, end, step, at, reps, subPops,
       infoFields)
 
 Details:
@@ -345,7 +345,7 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator::~baseOperator "
+%feature("docstring") simuPOP::BaseOperator::~BaseOperator "
 
 Description:
 
@@ -353,11 +353,11 @@ Description:
 
 Usage:
 
-    x.~baseOperator()
+    x.~BaseOperator()
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator::clone "
+%feature("docstring") simuPOP::BaseOperator::clone "
 
 Usage:
 
@@ -370,27 +370,27 @@ Details:
 
 "; 
 
-%ignore simuPOP::baseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false);
+%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false);
 
-%ignore simuPOP::baseOperator::isActive(UINT rep, long gen);
+%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen);
 
-%ignore simuPOP::baseOperator::isCompatible(const population &pop);
+%ignore simuPOP::BaseOperator::isCompatible(const population &pop);
 
-%ignore simuPOP::baseOperator::haploidOnly();
+%ignore simuPOP::BaseOperator::haploidOnly();
 
-%ignore simuPOP::baseOperator::diploidOnly();
+%ignore simuPOP::BaseOperator::diploidOnly();
 
-%ignore simuPOP::baseOperator::setHaploidOnly();
+%ignore simuPOP::BaseOperator::setHaploidOnly();
 
-%ignore simuPOP::baseOperator::setDiploidOnly();
+%ignore simuPOP::BaseOperator::setDiploidOnly();
 
-%ignore simuPOP::baseOperator::infoSize();
+%ignore simuPOP::BaseOperator::infoSize();
 
-%ignore simuPOP::baseOperator::infoField(UINT idx);
+%ignore simuPOP::BaseOperator::infoField(UINT idx);
 
-%ignore simuPOP::baseOperator::infoFields();
+%ignore simuPOP::BaseOperator::infoFields();
 
-%feature("docstring") simuPOP::baseOperator::apply "
+%feature("docstring") simuPOP::BaseOperator::apply "
 
 Usage:
 
@@ -403,19 +403,19 @@ Details:
 
 "; 
 
-%ignore simuPOP::baseOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%ignore simuPOP::baseOperator::getOstream(PyObject *dict=NULL, bool readable=false);
+%ignore simuPOP::BaseOperator::getOstream(PyObject *dict=NULL, bool readable=false);
 
-%ignore simuPOP::baseOperator::closeOstream();
+%ignore simuPOP::BaseOperator::closeOstream();
 
-%ignore simuPOP::baseOperator::applicability(bool subPops=true, bool gen=true);
+%ignore simuPOP::BaseOperator::applicability(bool subPops=true, bool gen=true);
 
-%feature("docstring") simuPOP::baseOperator::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::BaseOperator::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::baseOperator::noOutput();
+%ignore simuPOP::BaseOperator::noOutput();
 
-%feature("docstring") simuPOP::baseOperator::initializeIfNeeded "
+%feature("docstring") simuPOP::BaseOperator::initializeIfNeeded "
 
 Usage:
 
@@ -423,11 +423,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::baseOperator::initialize "Obsolete or undocumented function."
+%feature("docstring") simuPOP::BaseOperator::initialize "Obsolete or undocumented function."
 
-%ignore simuPOP::baseOperator::applicableSubPops() const;
+%ignore simuPOP::BaseOperator::applicableSubPops() const;
 
-%feature("docstring") simuPOP::basePenetrance "
+%feature("docstring") simuPOP::BasePenetrance "
 
 Details:
 
@@ -458,11 +458,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::basePenetrance::basePenetrance "
+%feature("docstring") simuPOP::BasePenetrance::BasePenetrance "
 
 Usage:
 
-    basePenetrance(ancGen=0, begin=0, end=-1, step=1, at=[],
+    BasePenetrance(ancGen=0, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -478,7 +478,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::basePenetrance::~basePenetrance "
+%feature("docstring") simuPOP::BasePenetrance::~BasePenetrance "
 
 Description:
 
@@ -486,11 +486,11 @@ Description:
 
 Usage:
 
-    x.~basePenetrance()
+    x.~BasePenetrance()
 
 "; 
 
-%feature("docstring") simuPOP::basePenetrance::clone "
+%feature("docstring") simuPOP::BasePenetrance::clone "
 
 Description:
 
@@ -502,9 +502,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::basePenetrance::penet(individual *, ULONG gen);
+%ignore simuPOP::BasePenetrance::penet(individual *, ULONG gen);
 
-%feature("docstring") simuPOP::basePenetrance::apply "
+%feature("docstring") simuPOP::BasePenetrance::apply "
 
 Description:
 
@@ -517,7 +517,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::basePenetrance::applyToIndividual "
+%feature("docstring") simuPOP::BasePenetrance::applyToIndividual "
 
 Usage:
 
@@ -532,11 +532,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BasePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::basePenetrance::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::BasePenetrance::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::baseQuanTrait "
+%feature("docstring") simuPOP::BaseQuanTrait "
 
 Details:
 
@@ -557,11 +557,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseQuanTrait::baseQuanTrait "
+%feature("docstring") simuPOP::BaseQuanTrait::BaseQuanTrait "
 
 Usage:
 
-    baseQuanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
+    BaseQuanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -576,7 +576,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseQuanTrait::~baseQuanTrait "
+%feature("docstring") simuPOP::BaseQuanTrait::~BaseQuanTrait "
 
 Description:
 
@@ -584,11 +584,11 @@ Description:
 
 Usage:
 
-    x.~baseQuanTrait()
+    x.~BaseQuanTrait()
 
 "; 
 
-%feature("docstring") simuPOP::baseQuanTrait::clone "
+%feature("docstring") simuPOP::BaseQuanTrait::clone "
 
 Description:
 
@@ -600,9 +600,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseQuanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
+%ignore simuPOP::BaseQuanTrait::qtrait(individual *, ULONG gen, vectorf &traits);
 
-%feature("docstring") simuPOP::baseQuanTrait::apply "
+%feature("docstring") simuPOP::BaseQuanTrait::apply "
 
 Description:
 
@@ -614,11 +614,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseQuanTrait::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseQuanTrait::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::baseQuanTrait::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::BaseQuanTrait::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::baseSelector "
+%feature("docstring") simuPOP::BaseSelector "
 
 Details:
 
@@ -688,11 +688,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseSelector::baseSelector "
+%feature("docstring") simuPOP::BaseSelector::BaseSelector "
 
 Usage:
 
-    baseSelector(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+    BaseSelector(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
@@ -702,7 +702,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseSelector::~baseSelector "
+%feature("docstring") simuPOP::BaseSelector::~BaseSelector "
 
 Description:
 
@@ -710,11 +710,11 @@ Description:
 
 Usage:
 
-    x.~baseSelector()
+    x.~BaseSelector()
 
 "; 
 
-%feature("docstring") simuPOP::baseSelector::clone "
+%feature("docstring") simuPOP::BaseSelector::clone "
 
 Description:
 
@@ -726,9 +726,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseSelector::indFitness(individual *, ULONG gen);
+%ignore simuPOP::BaseSelector::indFitness(individual *, ULONG gen);
 
-%feature("docstring") simuPOP::baseSelector::apply "
+%feature("docstring") simuPOP::BaseSelector::apply "
 
 Description:
 
@@ -740,9 +740,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseSelector::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::BaseSelector::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::baseSelector::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::BaseSelector::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::bernulliTrials "
 
@@ -1117,7 +1117,7 @@ Details:
     mapOut, rep, and subPops of mutators specified in parameter
     mutators are ignored. This mutator by default applies to all loci
     unless parameter loci is specified. Please refer to classes
-    mutator and baseOperator for descriptions of other parameters.
+    mutator and BaseOperator for descriptions of other parameters.
 
 "; 
 
@@ -1250,7 +1250,7 @@ Details:
     will be outputed unless parameter loci are used to specify a
     subset of loci. If a list of (virtual) subpopulations are
     specified, this operator will only output individuals in these
-    outputs. Please refer to class baseOperator for a detailed
+    outputs. Please refer to class BaseOperator for a detailed
     explanation for common parameters such as output and stage.
 
 "; 
@@ -2120,7 +2120,7 @@ Usage:
 
 %ignore simuPOP::HaplodiploidGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::heteroMating "
+%feature("docstring") simuPOP::HeteroMating "
 
 Details:
 
@@ -2129,11 +2129,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::heteroMating::heteroMating "
+%feature("docstring") simuPOP::HeteroMating::HeteroMating "
 
 Usage:
 
-    heteroMating(matingSchemes, subPopSize=[],
+    HeteroMating(matingSchemes, subPopSize=[],
       shuffleOffspring=True)
 
 Details:
@@ -2143,7 +2143,7 @@ Details:
     subpopulations. The size of the offspring generation is determined
     by parameter subPopSize, which can be a list of subpopulation
     sizes or a Python function that returns a list of subpopulation
-    sizes at each generation. Please refer to homoMating for a
+    sizes at each generation. Please refer to HomoMating for a
     detailed explanation of this parameter.  Each mating scheme
     defined in matingSchemes can be applied to one or more (virtual)
     subpopulation. If parameter subPops is not specified, a mating
@@ -2170,7 +2170,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::heteroMating::~heteroMating "
+%feature("docstring") simuPOP::HeteroMating::~HeteroMating "
 
 Description:
 
@@ -2178,13 +2178,13 @@ Description:
 
 Usage:
 
-    x.~heteroMating()
+    x.~HeteroMating()
 
 "; 
 
-%ignore simuPOP::heteroMating::heteroMating(const heteroMating &rhs);
+%ignore simuPOP::HeteroMating::HeteroMating(const HeteroMating &rhs);
 
-%feature("docstring") simuPOP::heteroMating::clone "
+%feature("docstring") simuPOP::HeteroMating::clone "
 
 Description:
 
@@ -2196,7 +2196,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::heteroMating::describe "
+%feature("docstring") simuPOP::HeteroMating::describe "
 
 Description:
 
@@ -2208,9 +2208,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::heteroMating::mate(population &pop, population &scratch);
+%ignore simuPOP::HeteroMating::mate(population &pop, population &scratch);
 
-%feature("docstring") simuPOP::homoMating "
+%feature("docstring") simuPOP::HomoMating "
 
 Details:
 
@@ -2222,11 +2222,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::homoMating::homoMating "
+%feature("docstring") simuPOP::HomoMating::HomoMating "
 
 Usage:
 
-    homoMating(chooser, generator, subPopSize=[], subPops=ALL_AVAIL,
+    HomoMating(chooser, generator, subPopSize=[], subPops=ALL_AVAIL,
       weight=0)
 
 Details:
@@ -2254,11 +2254,11 @@ Details:
     and weight are used to determine which (virtual) subpopulations
     this mating scheme will be applied to, and how many offspring this
     mating scheme will produce. Please refer to mating scheme
-    heteroMating for the use of these two parameters.
+    HeteroMating for the use of these two parameters.
 
 "; 
 
-%feature("docstring") simuPOP::homoMating::~homoMating "
+%feature("docstring") simuPOP::HomoMating::~HomoMating "
 
 Description:
 
@@ -2266,13 +2266,13 @@ Description:
 
 Usage:
 
-    x.~homoMating()
+    x.~HomoMating()
 
 "; 
 
-%ignore simuPOP::homoMating::homoMating(const homoMating &rhs);
+%ignore simuPOP::HomoMating::HomoMating(const HomoMating &rhs);
 
-%feature("docstring") simuPOP::homoMating::clone "
+%feature("docstring") simuPOP::HomoMating::clone "
 
 Description:
 
@@ -2284,7 +2284,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::homoMating::describe "
+%feature("docstring") simuPOP::HomoMating::describe "
 
 Description:
 
@@ -2296,11 +2296,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::homoMating::subPops() const;
+%ignore simuPOP::HomoMating::subPops() const;
 
-%ignore simuPOP::homoMating::weight() const;
+%ignore simuPOP::HomoMating::weight() const;
 
-%ignore simuPOP::homoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
+%ignore simuPOP::HomoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
 %feature("docstring") simuPOP::IdTagger "
 
@@ -2313,7 +2313,7 @@ Details:
     An IdTagger gives a unique ID for each individual it is applies
     to. These ID can be used to uniquely identify an individual in a
     multi-generational population and be used to reliably reconstruct
-    a pedigree.  To ensure uniqueness across populations, a single
+    a Pedigree.  To ensure uniqueness across populations, a single
     source of ID is used for this operator. Individual IDs are
     assigned consecutively starting from 1. Value 1 instead of 0 is
     used because most software applications use 0 as missing values
@@ -3535,7 +3535,7 @@ Details:
     mutation rate will be used for all loci if a single value of
     parameter rates is given. Otherwise, a list of mutation rates can
     be specified for each locus in parameter loci. Please refer to
-    classes mutator and baseOperator for descriptions of other
+    classes mutator and BaseOperator for descriptions of other
     parameters.
 
 "; 
@@ -3919,7 +3919,7 @@ Details:
     probabilities. Only one mutation rate matrix can be specified
     which will be used for all loci in the applied population, or loci
     specified by parameter loci. Please refer to classes mutator and
-    baseOperator for detailed explanation of other parameters.
+    BaseOperator for detailed explanation of other parameters.
 
 "; 
 
@@ -4053,7 +4053,7 @@ Details:
     merged. The merged subpopulation will take the name of the first
     subpopulation being merged unless a new name is given.  This
     operator is by default applied pre-mating (parameter stage).
-    Please refer to operator baseOperator for a detailed explanation
+    Please refer to operator BaseOperator for a detailed explanation
     for all parameters.
 
 "; 
@@ -4096,7 +4096,7 @@ Usage:
 
 %feature("docstring") simuPOP::MergeSubPops::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::migrator "
+%feature("docstring") simuPOP::Migrator "
 
 Details:
 
@@ -4148,17 +4148,17 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::migrator "
+%feature("docstring") simuPOP::Migrator::Migrator "
 
 Usage:
 
-    migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,
+    Migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=\"migrate_to\")
 
 Details:
 
-    Create a migrator that moves individuals from source (virtual)
+    Create a Migrator that moves individuals from source (virtual)
     subpopulations subPops (default to migrate from all
     subpopulations) to destination subpopulations toSubPops (default
     to all subpopulations), according to existing values in an
@@ -4176,11 +4176,11 @@ Details:
     (only individuals in specified (virtual) subpopulations will
     migrate) but toSubPops is ignored.  This operator is by default
     applied pre-mating (parameter stage). Please refer to operator
-    baseOperator for a detailed explanation for all parameters.
+    BaseOperator for a detailed explanation for all parameters.
 
 "; 
 
-%feature("docstring") simuPOP::migrator::~migrator "
+%feature("docstring") simuPOP::Migrator::~Migrator "
 
 Description:
 
@@ -4188,15 +4188,15 @@ Description:
 
 Usage:
 
-    x.~migrator()
+    x.~Migrator()
 
 "; 
 
-%feature("docstring") simuPOP::migrator::clone "
+%feature("docstring") simuPOP::Migrator::clone "
 
 Description:
 
-    deep copy of a migrator
+    deep copy of a Migrator
 
 Usage:
 
@@ -4204,7 +4204,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::rate "
+%feature("docstring") simuPOP::Migrator::rate "
 
 Description:
 
@@ -4216,13 +4216,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::migrator::setRates(int mode, const subPopList &fromSubPops, const vectoru &toSubPops);
+%ignore simuPOP::Migrator::setRates(int mode, const subPopList &fromSubPops, const vectoru &toSubPops);
 
-%feature("docstring") simuPOP::migrator::apply "
+%feature("docstring") simuPOP::Migrator::apply "
 
 Description:
 
-    apply the migrator to populaiton pop.
+    apply the Migrator to populaiton pop.
 
 Usage:
 
@@ -4230,7 +4230,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Migrator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter "
 
@@ -4314,7 +4314,7 @@ Details:
     including loci, mapIn, mapOut, rep, and subPops of mutators
     specified in parameter mutators are ignored. This mutator by
     default applies to all loci unless parameter loci is specified.
-    Please refer to classes mutator and baseOperator for descriptions
+    Please refer to classes mutator and BaseOperator for descriptions
     of other parameters.
 
 "; 
@@ -4545,7 +4545,7 @@ Details:
     offspring. This general offspring generator does not have any
     default during-mating operator but all stock mating schemes use an
     offspring generator with a default operator. For example, a
-    mendelianOffspringGenerator is used by randomMating to trasmit
+    mendelianOffspringGenerator is used by RandomMating to trasmit
     genotypes. Note that applicability parameters begin, step, end, at
     and reps could be used in these operators but negative population
     and generation indexes are unsupported.  Parameter numOffspring is
@@ -4872,7 +4872,7 @@ Usage:
 
 %feature("docstring") simuPOP::Pause::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pedigree "
+%feature("docstring") simuPOP::Pedigree "
 
 Details:
 
@@ -4894,11 +4894,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::pedigree "
+%feature("docstring") simuPOP::Pedigree::Pedigree "
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+    Pedigree(pop, loci=[], infoFields=[], ancGen=-1,
       idField=\"ind_id\", fatherField=\"father_id\",
       motherField=\"mother_id\")
 
@@ -4921,13 +4921,13 @@ Details:
     construct parental IDs from index based relationship recorded by
     operator ParentsTagger. A pedigree object could be constructed
     with one or no parent but certain functions such as relative
-    tracking will not be available for such pedigrees.
+    tracking will not be available for such Pedigrees.
 
 "; 
 
-%ignore simuPOP::pedigree::pedigree(const pedigree &rhs);
+%ignore simuPOP::Pedigree::Pedigree(const pedigree &rhs);
 
-%feature("docstring") simuPOP::pedigree::clone "
+%feature("docstring") simuPOP::Pedigree::clone "
 
 Usage:
 
@@ -4935,11 +4935,11 @@ Usage:
 
 Details:
 
-    Create a cloned copy of a pedigree.
+    Create a cloned copy of a Pedigree.
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::indByID "
+%feature("docstring") simuPOP::Pedigree::indByID "
 
 Usage:
 
@@ -4953,7 +4953,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::numParents "
+%feature("docstring") simuPOP::Pedigree::numParents "
 
 Usage:
 
@@ -4967,7 +4967,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::locateRelatives "
+%feature("docstring") simuPOP::Pedigree::locateRelatives "
 
 Usage:
 
@@ -5005,7 +5005,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::traceRelatives "
+%feature("docstring") simuPOP::Pedigree::traceRelatives "
 
 Usage:
 
@@ -5045,7 +5045,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::individualsWithRelatives "
+%feature("docstring") simuPOP::Pedigree::individualsWithRelatives "
 
 Usage:
 
@@ -5168,7 +5168,7 @@ Details:
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
     parameter *subPops* (``AllAvail`` is also accepted). Please refer
-    to class baseOperator for detailed descriptions of other
+    to class BaseOperator for detailed descriptions of other
     parameters.
 
 "; 
@@ -5687,7 +5687,7 @@ Details:
     searching algorithm which tends to be slow. If you need to look
     for multiple individuals from a static population, you might want
     to convert a population object to a pedigree object and use
-    function pedigree.indByID.
+    function Pedigree.indByID.
 
 "; 
 
@@ -6205,7 +6205,7 @@ Usage:
 Details:
 
     Update information fields fields from fromFields of another
-    population (or pedigree) pop. Two populations should have the same
+    population (or Pedigree) pop. Two populations should have the same
     number of individuals. If fromFields is not specified, it is
     assumed to be the same as fields. If ancGen is not -1, only the
     most recent ancGen generations are updated.
@@ -6467,7 +6467,7 @@ Details:
     'pop.individual(0).allele(0)'. The result of expr will be sent to
     an output stream specified by parameter output. The exposed
     population variable will be removed after expr is evaluated.
-    Please refer to class baseOperator for other parameters.
+    Please refer to class BaseOperator for other parameters.
 
 Note:
 
@@ -6555,7 +6555,7 @@ Details:
     exposed in its local namespace as a variable named by exposePop.
     Although multiple statements can be executed, it is recommended
     that you use this operator to execute short statements and use
-    pyOperator for more complex once. Note that exposed population
+    PyOperator for more complex once. Note that exposed population
     variable will be removed after the statements are executed.
 
 "; 
@@ -6719,7 +6719,7 @@ Details:
     specified. A single mutation rate will be used for all loci if a
     single value of parameter rates is given. Otherwise, a list of
     mutation rates can be specified for each locus in parameter loci.
-    Please refer to classes mutator and baseOperator for descriptions
+    Please refer to classes mutator and BaseOperator for descriptions
     of other parameters.
 
 "; 
@@ -6774,7 +6774,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOperator "
+%feature("docstring") simuPOP::PyOperator "
 
 Details:
 
@@ -6789,11 +6789,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyOperator::pyOperator "
+%feature("docstring") simuPOP::PyOperator::PyOperator "
 
 Usage:
 
-    pyOperator(func, param=None, begin=0, end=-1, step=1, at=[],
+    PyOperator(func, param=None, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -6818,9 +6818,9 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyOperator::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyOperator::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pyOperator::apply "
+%feature("docstring") simuPOP::PyOperator::apply "
 
 Usage:
 
@@ -6828,17 +6828,17 @@ Usage:
 
 Details:
 
-    Apply the pyOperator operator to populationpop. Calling this
+    Apply the PyOperator operator to populationpop. Calling this
     function is equivalent to call func with parameter pop and
     optional parameter param.
 
 "; 
 
-%ignore simuPOP::pyOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::PyOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::pyOperator::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyOperator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pyOutput "
+%feature("docstring") simuPOP::PyOutput "
 
 Details:
 
@@ -6847,24 +6847,24 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::pyOutput "
+%feature("docstring") simuPOP::PyOutput::PyOutput "
 
 Usage:
 
-    pyOutput(msg=\"\", output=\">\", begin=0, end=-1, step=1, at=[],
+    PyOutput(msg=\"\", output=\">\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Creates a pyOutput operator that outputs a string msg to output
+    Creates a PyOutput operator that outputs a string msg to output
     (default to standard terminal output) when it is applied to a
-    population. Please refer to class baseOperator for a detailed
+    population. Please refer to class BaseOperator for a detailed
     description of common operator parameters such as stage, begin and
     output.
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::apply "
+%feature("docstring") simuPOP::PyOutput::apply "
 
 Description:
 
@@ -6876,7 +6876,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::~pyOutput "
+%feature("docstring") simuPOP::PyOutput::~PyOutput "
 
 Description:
 
@@ -6884,15 +6884,15 @@ Description:
 
 Usage:
 
-    x.~pyOutput()
+    x.~PyOutput()
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::clone "
+%feature("docstring") simuPOP::PyOutput::clone "
 
 Description:
 
-    Deep copy of a pyOutput operator.
+    Deep copy of a PyOutput operator.
 
 Usage:
 
@@ -6900,7 +6900,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyOutput::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyOutput::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyParentsChooser "
 
@@ -7624,7 +7624,7 @@ Details:
     propagate is set to True (default). In this case, existing
     individuals will be copied sequentially, and repeatedly if needed.
     This operator is by default applied pre-mating (parameter stage).
-    Please refer to operator baseOperator for a detailed explanation
+    Please refer to operator BaseOperator for a detailed explanation
     for all parameters.
 
 "; 
@@ -7942,7 +7942,7 @@ Details:
     '>' characters, and '!expr') but output from different operators
     will always replace existing files (effectively ignore '>'
     specification). Parameter subPops is ignored. Please refer to
-    class baseOperator for a detailed description about common
+    class BaseOperator for a detailed description about common
     operator parameters such as stage and begin.
 
 "; 
@@ -8654,12 +8654,12 @@ Details:
     Because the same set of names will be used for all subpopulations,
     this parameter is not recommended when multiple subpopulations are
     split.  This operator is by default applied pre-mating (parameter
-    stage). Please refer to operator baseOperator for a detailed
+    stage). Please refer to operator BaseOperator for a detailed
     explanation for all parameters.
 
 Note:
 
-    Unlike operator migrator, this operator does not require an
+    Unlike operator Migrator, this operator does not require an
     information field such as migrate_to.
 
 "; 
@@ -8740,7 +8740,7 @@ Details:
     statistics are calculated. Instead, it stores results in the local
     namespace of the population being applied. Other operators can
     retrieve these variables or evalulate expression directly in this
-    local namespace. Please refer to operator baseOperator for a
+    local namespace. Please refer to operator BaseOperator for a
     detailed explanation of these common operator parameters.   stat
     supports parameter subPops. It usually calculate the same set of
     statistics for all subpopulations (subPops=subPopList()). If a
@@ -10324,11 +10324,11 @@ Usage:
 
 "; 
 
-%feature("docstring") _new_migrator "
+%feature("docstring") _new_Migrator "
 
 Usage:
 
-    _new_migrator(self, rate=[], *args, **kwargs)
+    _new_Migrator(self, rate=[], *args, **kwargs)
 
 "; 
 

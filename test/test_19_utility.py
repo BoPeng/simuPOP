@@ -69,7 +69,7 @@ class TestUtility(unittest.TestCase):
     def interactiveTestPauseAtGen(self):
         'Testing resume to simulation'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
-            randomMating(), reps=5)
+            RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
             postOps=[ Pause(at=[10]),
@@ -79,7 +79,7 @@ class TestUtility(unittest.TestCase):
     def interactiveTestExitToShell(self):
         'Testing exit to a shell'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
-            randomMating(), reps=5)
+            RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
         simu.evolve(
@@ -216,10 +216,10 @@ class TestUtility(unittest.TestCase):
             self.assertEqual(num.count(i), 10000 * (i+1))
 
     def TestLargePedigree(self):
-        'Testing getting large pedigree, for simuUtils.ascertainPedigree'
+        'Testing getting large Pedigree, for simuUtils.ascertainPedigree'
         import simuUtil
         pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
-        simu = simulator(pop, randomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
+        simu = simulator(pop, RandomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
         simu.evolve(duringOps=[ParentsTagger()], end=5)
         pop = simu.population(0)
         #

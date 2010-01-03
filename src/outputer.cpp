@@ -26,7 +26,7 @@
 
 namespace simuPOP {
 
-bool pyOutput::apply(population & pop)
+bool PyOutput::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
@@ -36,9 +36,9 @@ bool pyOutput::apply(population & pop)
 }
 
 
-string pyOutput::describe(bool format)
+string PyOutput::describe(bool format)
 {
-	return "<simuPOP.pyOutput> write '" + \
+	return "<simuPOP.PyOutput> write '" + \
 	       (m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
 	       "' to output";
 }

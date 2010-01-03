@@ -86,7 +86,7 @@ if os.name == 'nt':
         r.windows_options(buffered=False)
 
 
-from simuPOP import pyOperator, ALL_AVAIL
+from simuPOP import PyOperator, ALL_AVAIL
 
 def newDevice():
     '''Create a new graphics window and return its device number in R. This
@@ -315,7 +315,7 @@ class derivedArgs:
         return ret
 
 
-class varPlotter(pyOperator):
+class varPlotter(PyOperator):
     '''
     This class defines a Python operator that uses R to plot the current and
     historical values of a Python expression (``expr``), which are evaluated
@@ -479,7 +479,7 @@ class varPlotter(pyOperator):
         self.gen = []
         self.data = []
         # when apply is called, self._plot is called.
-        pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
+        PyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
             at=at, reps=reps, subPops=ALL_AVAIL, infoFields=[])
 
     def __del__(self):
@@ -661,7 +661,7 @@ class varPlotter(pyOperator):
         return True
 
 
-class scatterPlotter(pyOperator):
+class scatterPlotter(PyOperator):
     '''
     This class defines a Python operator that uses R to plot individuals in a
     population, using values at two information fields as their x- and y-axis.
@@ -772,7 +772,7 @@ class scatterPlotter(pyOperator):
                 pch_sp = range(1, len(self.subPops) + 1),
                 col_sp = r.rainbow(len(self.subPops)))
         # when apply is called, self._plot is called.
-        pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
+        PyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, reps=reps)
 
     def __del__(self):
@@ -829,7 +829,7 @@ class scatterPlotter(pyOperator):
         return True
 
 
-class infoPlotter(pyOperator):
+class infoPlotter(PyOperator):
     '''
     This operator uses a R function such as ``hist`` and ``qqplot`` to plot
     properties of one or more information fields of individuals in one or more
@@ -950,7 +950,7 @@ class infoPlotter(pyOperator):
                 defaultParams = {},
                 **kwargs)
         # when apply is called, self._plot is called.
-        pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
+        PyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, reps=reps)
 
     def __del__(self):
@@ -1028,7 +1028,7 @@ def qqPlotter(*args, **kwargs):
     '''
     return infoPlotter('qqnorm', *args, **kwargs)
 
-class boxPlotter(pyOperator):
+class boxPlotter(PyOperator):
     '''
     This operator draws boxplots of one or more information fields of
     individuals in one or more (virtual) subpopulations of a population.
@@ -1144,7 +1144,7 @@ class boxPlotter(pyOperator):
             **kwargs)
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
-        pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
+        PyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, reps=reps)
 
     def __del__(self):

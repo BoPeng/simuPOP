@@ -1,5 +1,5 @@
 /**
- *  $File: pedigree.cpp $
+ *  $File: Pedigree.cpp $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -37,7 +37,7 @@
 
 namespace simuPOP {
 
-pedigree::pedigree(const population & pop, const uintList & loci,
+Pedigree::Pedigree(const population & pop, const uintList & loci,
 	const stringList & infoFields, int ancGen, const string & idField,
 	const string & fatherField, const string & motherField)
 	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
@@ -82,7 +82,7 @@ pedigree::pedigree(const population & pop, const uintList & loci,
 }
 
 
-pedigree::pedigree(const pedigree & rhs) :
+Pedigree::Pedigree(const Pedigree & rhs) :
 	population(rhs),
 	m_idField(rhs.m_idField), m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
 	m_idIdx(rhs.m_idIdx), m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
@@ -90,19 +90,19 @@ pedigree::pedigree(const pedigree & rhs) :
 }
 
 
-pedigree * pedigree::clone() const
+Pedigree * Pedigree::clone() const
 {
-	return new pedigree(*this);
+	return new Pedigree(*this);
 }
 
 
-UINT pedigree::numParents()
+UINT Pedigree::numParents()
 {
 	return static_cast<UINT>(m_fatherIdx != -1) + static_cast<UINT>(m_motherIdx != -1);
 }
 
 
-individual & pedigree::indByID(double fid)
+individual & Pedigree::indByID(double fid)
 {
 	// essentially m_idMap(static_cast<ULONG>(fid))
 	//
@@ -120,7 +120,7 @@ individual & pedigree::indByID(double fid)
 }
 
 
-bool pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
+bool Pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
 {
 	return choice == ANY_SEX ||
 	       (choice == MALE_ONLY && relSex == MALE) ||
@@ -130,7 +130,7 @@ bool pedigree::acceptableSex(Sex mySex, Sex relSex, SexChoice choice)
 }
 
 
-bool pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
+bool Pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
 {
 	return choice == ANY_AFFECTION_STATUS ||
 	       (choice == AFFECTED && affected) ||
@@ -138,7 +138,7 @@ bool pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
 }
 
 
-void pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFields,
+void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFields,
                                SexChoice sexChoice, AffectionStatus affectionChoice, int ancGen)
 {
 	DBG_ASSERT(sexChoice == ANY_SEX || sexChoice == MALE_ONLY || sexChoice == FEMALE_ONLY
@@ -176,7 +176,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 }
 
 
-void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen, bool excludeOutbred)
+void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen, bool excludeOutbred)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -281,7 +281,7 @@ void pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 }
 
 
-void pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -342,7 +342,7 @@ void pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 }
 
 
-void pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -435,7 +435,7 @@ void pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 }
 
 
-void pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -525,7 +525,7 @@ void pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 }
 
 
-void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -618,7 +618,7 @@ void pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 }
 
 
-bool pedigree::traceRelatives(const stringMatrix & fieldPath,
+bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
                               const uintList & sexChoiceList,  const uintList & affectionChoiceList,
                               const stringList & resultFieldList, int ancGen)
 {
@@ -719,7 +719,7 @@ bool pedigree::traceRelatives(const stringMatrix & fieldPath,
 }
 
 
-vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
+vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
                                            const uintList & affectionChoiceList,
                                            const subPopList & subPops, int ancGen)
 {
@@ -814,7 +814,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 
 // const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
 //
-// pedigree::pedigree(int numParents, const string & pedfile)
+// Pedigree::Pedigree(int numParents, const string & pedfile)
 //  : m_numParents(numParents)
 // {
 //  DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
@@ -824,14 +824,14 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //      load(pedfile);
 // }
 ////
-// vectoru pedigree::subPopSizes(ULONG gen)
+// vectoru Pedigree::subPopSizes(ULONG gen)
 // {
 //  CHECK_GEN(gen);
 //  return m_pedSize[gen];
 // }
 //
 //
-// ULONG pedigree::subPopSize(ULONG gen, SubPopID subPop)
+// ULONG Pedigree::subPopSize(ULONG gen, SubPopID subPop)
 // {
 //  CHECK_GEN(gen);
 //  CHECK_SUBPOP(gen, subPop);
@@ -840,7 +840,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::addGen(const vectoru & sizes)
+// void Pedigree::addGen(const vectoru & sizes)
 // {
 //  ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
 //
@@ -857,7 +857,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::load(const string & filename)
+// void Pedigree::load(const string & filename)
 // {
 //  m_paternal.clear();
 //  m_maternal.clear();
@@ -925,7 +925,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::loadInfo(const string & filename, const string & name)
+// void Pedigree::loadInfo(const string & filename, const string & name)
 // {
 //  vectorstr names(1, name);
 //
@@ -933,11 +933,11 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::loadInfo(const string & filename, const vectorstr & names)
+// void Pedigree::loadInfo(const string & filename, const vectorstr & names)
 // {
 //  ifstream afs(filename.c_str());
 //
-//  DBG_FAILIF(!afs, SystemError, "Can not open auxiliary information pedigree" + filename + " to read");
+//  DBG_FAILIF(!afs, SystemError, "Can not open auxiliary information Pedigree" + filename + " to read");
 //  size_t gen = 0;
 //  size_t numInfo = names.size();
 //
@@ -957,7 +957,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //          input >> ws;
 //      }
 //      DBG_FAILIF(gen >= m_paternal.size(), ValueError,
-//          "Information pedigree is larger than parental pedigree");
+//          "Information pedigree is larger than parental Pedigree");
 //      ULONG size = m_paternal[gen].size();
 //
 //      DBG_FAILIF(numInfo * size != values.size(), ValueError,
@@ -968,7 +968,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //      if (m_info.size() <= gen)
 //          m_info.push_back(vector<vectorf>(size));
 //      DBG_FAILIF(m_info.size() < gen + 1, ValueError,
-//          "Error loading information pedigree");
+//          "Error loading information Pedigree");
 //      size_t idx = 0;
 //      for (size_t i = 0; i < size; ++i)
 //          for (size_t j = 0; j < numInfo; ++j, ++idx)
@@ -980,7 +980,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::addInfo(const string & name, double init)
+// void Pedigree::addInfo(const string & name, double init)
 // {
 //  DBG_ASSERT(find(m_infoNames.begin(), m_infoNames.end(), name) == m_infoNames.end(),
 //      ValueError, "Information " + name + " has already been loaded");
@@ -991,14 +991,14 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //      if (m_info.size() <= gen)
 //          m_info.push_back(vector<vectorf>(size));
 //      DBG_FAILIF(m_info.size() < gen + 1, ValueError,
-//          "Error loading information pedigree");
+//          "Error loading information Pedigree");
 //      for (size_t i = 0; i < size; ++i)
 //          m_info[gen][i].push_back(init);
 //  }
 // }
 //
 //
-// void pedigree::save(const string & filename)
+// void Pedigree::save(const string & filename)
 // {
 //  ofstream ofs(filename.c_str());
 //
@@ -1028,7 +1028,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::saveInfo(const string & filename, const string & name)
+// void Pedigree::saveInfo(const string & filename, const string & name)
 // {
 //  vectorstr names(1, name);
 //
@@ -1036,7 +1036,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::saveInfo(const string & filename, const vectorstr & names)
+// void Pedigree::saveInfo(const string & filename, const vectorstr & names)
 // {
 //  vectoru idx;
 //
@@ -1065,10 +1065,10 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::selectIndividuals(const vectoru & inds)
+// void Pedigree::selectIndividuals(const vectoru & inds)
 // {
 //  DBG_FAILIF(m_paternal.empty(), ValueError,
-//      "Can not select individuals from an empty pedigree");
+//      "Can not select individuals from an empty Pedigree");
 //
 //  size_t size = m_paternal.back().size();
 //  vector<bool> used(size, false);
@@ -1088,7 +1088,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::markUnrelated()
+// void Pedigree::markUnrelated()
 // {
 //  if (m_paternal.size() <= 1)
 //      return;
@@ -1115,7 +1115,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 // }
 //
 //
-// void pedigree::removeUnrelated(bool shift_index)
+// void Pedigree::removeUnrelated(bool shift_index)
 // {
 //  if (m_paternal.size() <= 1)
 //      return;
@@ -1176,7 +1176,7 @@ vectoru pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //              l_pat.push_back(m_paternal[gen][idx]);
 //              if (m_numParents == 2) {
 //                  DBG_ASSERT(m_maternal[gen][idx] != UnusedIndividual,
-//                      ValueError, "Inconsistent maternal and matermal pedigree");
+//                      ValueError, "Inconsistent maternal and matermal Pedigree");
 //                  l_mat.push_back(m_maternal[gen][idx]);
 //              }
 //              if (!m_info.empty())

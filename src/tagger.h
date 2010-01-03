@@ -27,7 +27,7 @@
 #define _TAGGER_H
 /**
    \file
-   \brief head file of class tagger: public baseOperator
+   \brief head file of class tagger: public BaseOperator
  */
 #include "operator.h"
 
@@ -36,7 +36,7 @@ namespace simuPOP {
 
 /** An IdTagger gives a unique ID for each individual it is applies to. These
  *  ID can be used to uniquely identify an individual in a multi-generational
- *  population and be used to reliably reconstruct a pedigree.
+ *  population and be used to reliably reconstruct a Pedigree.
  *
  *  To ensure uniqueness across populations, a single source of ID is used for
  *  this operator. Individual IDs are assigned consecutively starting from 1.
@@ -52,7 +52,7 @@ namespace simuPOP {
  *  initial ID to a population.
  *  <funcForm>tagID</funcForm>
  */
-class IdTagger : public baseOperator
+class IdTagger : public BaseOperator
 {
 public:
 	/** Create an \c IdTagger that assign an unique ID for each individual it
@@ -66,7 +66,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields)
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 		DBG_FAILIF(infoFields.elems().size() != 1, ValueError,
 			"One and only one information field is needed for IdTagger.");
@@ -96,7 +96,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of an \c IdTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new IdTagger(*this);
 	}
@@ -110,7 +110,7 @@ public:
  *  parents of a sexual mating event, a parameter \e mode is used to specify
  *  how to assign offspring information fields.
  */
-class InheritTagger : public baseOperator
+class InheritTagger : public BaseOperator
 {
 public:
 	/** Creates an inheritance tagger that passes values of parental
@@ -136,7 +136,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
 	};
 
@@ -159,7 +159,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c InheritTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InheritTagger(*this);
 	}
@@ -173,7 +173,7 @@ private:
  *  to another information field of an offspring. If mating is sexual, two sets
  *  of parental values will be involved.
  */
-class SummaryTagger : public baseOperator
+class SummaryTagger : public BaseOperator
 {
 public:
 	/** Creates a summary tagger that summarize values of one or more parental
@@ -194,7 +194,7 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields), m_mode(mode)
 	{
 		DBG_FAILIF(infoFields.elems().size() < 2, ValueError,
 			"Please specify at least one parental field and one offspring field.");
@@ -219,7 +219,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c SummaryTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new SummaryTagger(*this);
 	}
@@ -238,7 +238,7 @@ private:
  *  intended to be used to look up parents of each individual in
  *  multi-generational population.
  */
-class ParentsTagger : public baseOperator
+class ParentsTagger : public BaseOperator
 {
 public:
 	/** Create a parents tagger that records the indexes of parents of each
@@ -256,7 +256,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
 		const stringList & infoFields = stringList("father_idx", "mother_idx")) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields)
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	};
 
@@ -266,7 +266,7 @@ public:
 
 
 	/// deep copy of a \c ParentsTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new ParentsTagger(*this);
 	}
@@ -292,7 +292,7 @@ public:
  *  recorded by this operator is intended to be used to record full pedigree
  *  information of an evolutionary process.
  */
-class PedigreeTagger : public baseOperator
+class PedigreeTagger : public BaseOperator
 {
 public:
 	/** Create a pedigree tagger that records the ID of parents of each
@@ -316,7 +316,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("father_id", "mother_id")) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_idField(idField)
 	{
 	};
@@ -327,7 +327,7 @@ public:
 
 
 	/// deep copy of a \c PedigreeTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PedigreeTagger(*this);
 	}
@@ -351,7 +351,7 @@ private:
  *  to a user provided Python function and set the offspring individual fields
  *  with the return values.
  */
-class PyTagger : public baseOperator
+class PyTagger : public BaseOperator
 {
 public:
 	/** Create a hybrid tagger that provides an user provided function \e func
@@ -370,7 +370,7 @@ public:
 	PyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "", const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_ASSERT(infoSize() == 0, ValueError,
@@ -382,7 +382,7 @@ public:
 
 
 	/// deep copy of a \c PyTagger
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyTagger(*this);
 	}

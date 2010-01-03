@@ -31,13 +31,13 @@ class TestPyOperator(unittest.TestCase):
     def testSimpleFunc(self):
         'Testing Python operator'
         initByFreq(self.pop, [.2, .3, .5])
-        self.pop.evolve( postOps = pyOperator(self.myFunc),
-            matingScheme=randomMating(),
+        self.pop.evolve( postOps = PyOperator(self.myFunc),
+            matingScheme=RandomMating(),
             gen=20)
 
     def testCopyClone(self):
         'Testing copy of python operator'
-        op = pyOperator(self.myFunc)
+        op = PyOperator(self.myFunc)
         op1 = op
         op2 = op.clone()
         initByFreq(self.pop, [.2, .3, .5])
@@ -56,10 +56,10 @@ class TestPyOperator(unittest.TestCase):
         'Testing python operator with parameters'
         initByFreq(self.pop, [.2, .8])
         self.pop.evolve( postOps=[
-            pyOperator(func=self.myFuncWithParam, param=(0,.2)),
-            pyOperator(func=self.myFuncWithParam, param=(1,.8)),
+            PyOperator(func=self.myFuncWithParam, param=(0,.2)),
+            PyOperator(func=self.myFuncWithParam, param=(1,.8)),
             ],
-            matingScheme=randomMating(),
+            matingScheme=RandomMating(),
             gen=2
         )
 
@@ -73,8 +73,8 @@ class TestPyOperator(unittest.TestCase):
         'Testing hybrid terminator'
         simu = simulator(self.pop)
         simu.evolve(initOps = [InitSex()],
-            postOps = pyOperator(self.myFuncAsTerminator),
-            matingScheme=randomMating(),
+            postOps = PyOperator(self.myFuncAsTerminator),
+            matingScheme=RandomMating(),
             gen = 10 )
         assert simu.dvars(0).gen == 4
 
@@ -108,9 +108,9 @@ class TestPyOperator(unittest.TestCase):
             initOps = [
                 InitByFreq( [.6, .4], loci=[0,2,4]),
                 InitByFreq( [.8, .2], loci=[1,3]) ],
-            matingScheme=randomMating(),
+            matingScheme=RandomMating(),
             postOps = [
-                pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
+                PyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
                 stat(alleleFreq=range(5)),
                 TerminateIf( 'alleleFreq[0][1] < 0.2' )
                 ],

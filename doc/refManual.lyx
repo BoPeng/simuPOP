@@ -340,7 +340,7 @@ population
 status open
 
 \begin_layout Plain Layout
-pedigree
+Pedigree
 \end_layout
 
 \end_inset
@@ -387,7 +387,7 @@ populationRef
 
 
 \backslash
-pedigreeRef
+PedigreeRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -500,21 +500,21 @@ status open
 
 
 \backslash
-homoMatingRef
+HomoMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-heteroMatingRef
+HeteroMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 %
 \backslash
-pedigreeMatingRef
+PedigreeMatingRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -611,7 +611,7 @@ simuPOPRandomSelectionRef
 
 
 \backslash
-simuPOPrandomMatingRef
+simuPOPRandomMatingRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -673,7 +673,7 @@ status open
 
 
 \backslash
-simuPOPwithArgsRef
+simuPOPWithArgsRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -773,7 +773,7 @@ status open
 
 
 \backslash
-baseOperatorRef
+BaseOperatorRef
 \end_layout
 
 \end_inset
@@ -844,7 +844,7 @@ status open
 
 
 \backslash
-pyOutputRef
+PyOutputRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -886,7 +886,7 @@ Demographic models
 status collapsed
 
 \begin_layout Plain Layout
-migrator
+Migrator
 \end_layout
 
 \end_inset
@@ -902,7 +902,7 @@ status open
 
 
 \backslash
-migratorRef
+MigratorRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1108,7 +1108,7 @@ status open
 
 
 \backslash
-basePenetranceRef
+BasePenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1166,7 +1166,7 @@ status open
 
 
 \backslash
-baseQuanTraitRef
+BaseQuanTraitRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1203,7 +1203,7 @@ status open
 
 
 \backslash
-baseSelectorRef
+BaseSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1346,7 +1346,7 @@ status open
 
 
 \backslash
-pyOperatorRef
+PyOperatorRef
 \end_layout
 
 \end_inset
@@ -2031,7 +2031,7 @@ simuPOPsamplingdrawCaseControlSamplesRef
 
 
 \backslash
-simuPOPsamplingpedigreeSamplerRef
+simuPOPsamplingPedigreeSamplerRef
 \end_layout
 
 \begin_layout Plain Layout

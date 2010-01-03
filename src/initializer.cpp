@@ -139,7 +139,7 @@ InitByFreq::InitByFreq(const matrix & alleleFreq, const uintList & loci,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
-	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_alleleFreq(alleleFreq), m_identicalInds(identicalInds),
 	m_loci(loci), m_ploidy(ploidy)
 {
@@ -223,7 +223,7 @@ InitByValue::InitByValue(intMatrix value, const uintList & loci, const uintList 
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
-	: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_value(value), m_proportion(proportions.elems()), m_frequencies(frequencies.elems()),
 	m_loci(loci), m_ploidy(ploidy)
 {

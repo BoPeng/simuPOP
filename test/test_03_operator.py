@@ -23,7 +23,7 @@ def genRecorder(pop):
     return True
 
 def opRecorder(*args, **kwargs):
-    return pyOperator(func=genRecorder, *args, **kwargs)
+    return PyOperator(func=genRecorder, *args, **kwargs)
 
 class TestOperator(unittest.TestCase):
 
@@ -79,7 +79,7 @@ class TestOperator(unittest.TestCase):
     def testOutput(self):
         'Testing output specifications'
         simu = simulator( population(), rep=5)
-        simu.evolve(postOps = pyOutput("a", output=">a.txt"),
+        simu.evolve(postOps = PyOutput("a", output=">a.txt"),
             matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
@@ -90,7 +90,7 @@ class TestOperator(unittest.TestCase):
         # you can ignore >
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output="a.txt"),
+        simu.evolve(postOps = PyOutput("a", output="a.txt"),
             gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -100,7 +100,7 @@ class TestOperator(unittest.TestCase):
         # >>
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output=">>a.txt"),
+        simu.evolve(postOps = PyOutput("a", output=">>a.txt"),
             gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*50)
@@ -109,7 +109,7 @@ class TestOperator(unittest.TestCase):
         # rep = ...
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output=">>a.txt", reps=-1),
+        simu.evolve(postOps = PyOutput("a", output=">>a.txt", reps=-1),
             gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*10)
@@ -119,7 +119,7 @@ class TestOperator(unittest.TestCase):
         'Testing the usage of output expression'
         simu = simulator( population(), rep=5)
         # each replicate
-        simu.evolve(postOps = pyOutput("a", output="!'rep%d.txt'%rep"),
+        simu.evolve(postOps = PyOutput("a", output="!'rep%d.txt'%rep"),
             matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
@@ -131,7 +131,7 @@ class TestOperator(unittest.TestCase):
         # you can ignore >
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output="!'>rep%d.txt'%rep"),
+        simu.evolve(postOps = PyOutput("a", output="!'>rep%d.txt'%rep"),
             matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
@@ -143,7 +143,7 @@ class TestOperator(unittest.TestCase):
         # >>
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output="!'>>rep%d.txt'%rep"),
+        simu.evolve(postOps = PyOutput("a", output="!'>>rep%d.txt'%rep"),
             matingScheme=CloneMating(),
             gen=10)
         # a is appended 1 rep * 11 generations
@@ -153,7 +153,7 @@ class TestOperator(unittest.TestCase):
         # each generation?
         for pop in simu.populations():
             pop.dvars().gen = 0
-        simu.evolve(postOps = pyOutput("a", output="!'>>gen%d.txt'%gen"),
+        simu.evolve(postOps = PyOutput("a", output="!'>>gen%d.txt'%gen"),
             matingScheme=CloneMating(),
             gen=10)
         # a is appended 1 rep * 11 generations
@@ -172,8 +172,8 @@ class TestOperator(unittest.TestCase):
         simu.evolve(
             matingScheme=CloneMating(),
             postOps = [
-            pyOutput("func1", output=func1),
-            pyOutput("func2", output=func2),
+            PyOutput("func1", output=func1),
+            PyOutput("func2", output=func2),
         ], gen=10)
 
     def testInfoEval(self):
@@ -216,7 +216,7 @@ class TestOperator(unittest.TestCase):
             postOps = [
                 InfoEval(r"'\t%.1f' % b", output=''),
                 InfoExec('b+=1', output=''),
-                pyOutput('\n', output=''),
+                PyOutput('\n', output=''),
             ],
             gen = 4
         )

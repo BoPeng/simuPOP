@@ -27,7 +27,7 @@
 #define _MUTATOR_H
 /**
    \file
-   \brief head file of class mutator:public baseOperator
+   \brief head file of class mutator:public BaseOperator
  */
 /// for hybrid mutator
 #include "operator.h"
@@ -40,7 +40,7 @@ namespace simuPOP {
  *  allele. Alleles can be changed before and after mutation if existing allele
  *  numbers do not match those of a mutation model.
  */
-class baseMutator : public baseOperator
+class baseMutator : public BaseOperator
 {
 public:
 	/** A mutator mutates alleles from one state to another with given
@@ -52,7 +52,7 @@ public:
 	 *  restrict mutations to certain generations (parameters \e begin, \e end,
 	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
 	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).
-	 *  Please refer to class \c baseOperator for a detailed explanation of
+	 *  Please refer to class \c BaseOperator for a detailed explanation of
 	 *  these parameters.
 	 *
 	 *  Parameter \e rate or its equivalence specifies the probability that a
@@ -101,7 +101,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci), m_mapIn(mapIn), m_mapOut(mapOut),
 		m_context(context * 2)
 	{
@@ -122,7 +122,7 @@ public:
 
 
 	/// deep copy of a \c mutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new baseMutator(*this);
 	}
@@ -206,7 +206,7 @@ public:
 	 *  automatically determined by other probabilities. Only one mutation rate
 	 *  matrix can be specified which will be used for all loci in the applied
 	 *  population, or loci specified by parameter \e loci. Please refer to
-	 *  classes \c mutator and \c baseOperator for detailed explanation of
+	 *  classes \c mutator and \c BaseOperator for detailed explanation of
 	 *  other parameters.
 	 */
 	MatrixMutator(const matrix & rate, const uintList & loci = uintList(),
@@ -226,7 +226,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c MatrixMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MatrixMutator(*this);
 	}
@@ -258,7 +258,7 @@ public:
 	 *  mutation rate will be used for all loci if a single value of parameter
 	 *  \e rates is given. Otherwise, a list of mutation rates can be specified
 	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
-	 *  and \c baseOperator for descriptions of other parameters.
+	 *  and \c BaseOperator for descriptions of other parameters.
 	 */
 	KamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
@@ -284,7 +284,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c KamMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new KamMutator(*this);
 	}
@@ -357,7 +357,7 @@ public:
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c SmmMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new SmmMutator(*this);
 	}
@@ -400,7 +400,7 @@ public:
 	 *  used for all loci if a single value of parameter \e rates is given.
 	 *  Otherwise, a list of mutation rates can be specified for each locus in
 	 *  parameter \e loci. Please refer to classes \c mutator and
-	 *  \c baseOperator for descriptions of other parameters.
+	 *  \c BaseOperator for descriptions of other parameters.
 	 */
 	PyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
@@ -416,7 +416,7 @@ public:
 
 
 	/// deep copy of a \c PyMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyMutator(*this);
 	}
@@ -454,7 +454,7 @@ public:
 	 *  including \e loci, \e mapIn, \e mapOut, \e rep, and \e subPops of
 	 *  mutators specified in parameter \e mutators are ignored. This mutator
 	 *  by default applies to all loci unless parameter \e loci is specified.
-	 *  Please refer to classes \c mutator and \c baseOperator for descriptions
+	 *  Please refer to classes \c mutator and \c BaseOperator for descriptions
 	 *  of other parameters.
 	 */
 	MixedMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
@@ -477,7 +477,7 @@ public:
 
 
 	/// deep copy of a \c MixedMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MixedMutator(*this);
 	}
@@ -529,7 +529,7 @@ public:
 	 *  \e rep, and \e subPops of mutators specified in parameter \e mutators
 	 *  are ignored. This mutator by default applies to all loci unless
 	 *  parameter \e loci is specified. Please refer to classes \c mutator and
-	 *  \c baseOperator for descriptions of other parameters.
+	 *  \c BaseOperator for descriptions of other parameters.
 	 */
 	ContextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
@@ -556,7 +556,7 @@ public:
 
 
 	/// deep copy of a \c context-dependentMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new ContextMutator(*this);
 	}
@@ -589,7 +589,7 @@ private:
  *  This mutator is usually used to introduce a mutant to a population.
  *  <funcForm>pointMutate</funcForm>
  */
-class PointMutator : public baseOperator
+class PointMutator : public BaseOperator
 {
 public:
 	/** Create a point mutator that mutates alleles at specified \e loci to
@@ -599,7 +599,7 @@ public:
 	 *  \e ploidy. This operator is by default applied to individuals in the
 	 *  first subpopulation but you can apply it to a different or more than
 	 *  one (virtual) subpopulations using parameter *subPops* (``AllAvail`` is
-	 *  also accepted). Please refer to class \c baseOperator for detailed
+	 *  also accepted). Please refer to class \c BaseOperator for detailed
 	 *  descriptions of other parameters.
 	 */
 	PointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
@@ -607,7 +607,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
 		const stringList & infoFields = vectorstr())
-		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
 	}
@@ -620,7 +620,7 @@ public:
 
 
 	/// deep copy of a \c PointMutator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PointMutator(*this);
 	}
