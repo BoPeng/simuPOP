@@ -339,7 +339,7 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 {
 	// only allow for MaxTraitIndex-1 different genotype structures
 	// As a matter of fact, most simuPOP scripts have only one
-	// population type.
+	// Population type.
 	if (s_genoStruRepository.size() + 1 == MaxTraitIndex) {
 		throw SystemError("This simuPOP library only allows " + toStr(MaxTraitIndex - 1)
 			+ " different genotype structures. \n" +

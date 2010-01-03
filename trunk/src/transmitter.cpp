@@ -30,7 +30,7 @@ using std::max;
 
 namespace simuPOP {
 
-void GenoTransmitter::initialize(const population & pop)
+void GenoTransmitter::initialize(const Population & pop)
 {
 	m_hasCustomizedChroms = !pop.customizedChroms().empty();
 	m_lociToCopy.clear();
@@ -107,7 +107,7 @@ string CloneGenoTransmitter::describe(bool format)
 }
 
 
-bool CloneGenoTransmitter::applyDuringMating(population & pop,
+bool CloneGenoTransmitter::applyDuringMating(Population & pop,
                                              RawIndIterator offspring,
                                              individual * dad,
                                              individual * mom)
@@ -159,7 +159,7 @@ bool CloneGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void MendelianGenoTransmitter::initialize(const population & pop)
+void MendelianGenoTransmitter::initialize(const Population & pop)
 {
 	GenoTransmitter::initialize(pop);
 	m_chromX = pop.chromX();
@@ -249,7 +249,7 @@ void MendelianGenoTransmitter::transmitGenotype(const individual & parent,
 }
 
 
-bool MendelianGenoTransmitter::applyDuringMating(population & pop,
+bool MendelianGenoTransmitter::applyDuringMating(Population & pop,
                                                  RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
@@ -265,7 +265,7 @@ bool MendelianGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-bool SelfingGenoTransmitter::applyDuringMating(population & pop,
+bool SelfingGenoTransmitter::applyDuringMating(Population & pop,
                                                RawIndIterator offspring, individual * dad, individual * mom)
 {
 	//
@@ -284,7 +284,7 @@ bool SelfingGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void HaplodiploidGenoTransmitter::initialize(const population & pop)
+void HaplodiploidGenoTransmitter::initialize(const Population & pop)
 {
 	DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
 		"Haplodiploid populations do not use sex chromosomes");
@@ -292,7 +292,7 @@ void HaplodiploidGenoTransmitter::initialize(const population & pop)
 }
 
 
-bool HaplodiploidGenoTransmitter::applyDuringMating(population & pop,
+bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop,
                                                     RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
@@ -310,7 +310,7 @@ bool HaplodiploidGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void MitochondrialGenoTransmitter::initialize(const population & pop)
+void MitochondrialGenoTransmitter::initialize(const Population & pop)
 {
 	GenoTransmitter::initialize(pop);
 	if (m_chroms.empty()) {
@@ -341,7 +341,7 @@ void MitochondrialGenoTransmitter::initialize(const population & pop)
 }
 
 
-bool MitochondrialGenoTransmitter::applyDuringMating(population & pop,
+bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop,
                                                      RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL, ValueError,
@@ -445,7 +445,7 @@ int Recombinator::markersConverted(size_t index, const individual & ind)
 }
 
 
-void Recombinator::initialize(const population & pop)
+void Recombinator::initialize(const Population & pop)
 {
 	GenoTransmitter::initialize(pop);
 
@@ -836,7 +836,7 @@ void Recombinator::transmitGenotype(const individual & parent,
 }
 
 
-bool Recombinator::applyDuringMating(population & pop,
+bool Recombinator::applyDuringMating(Population & pop,
                                      RawIndIterator offspring,
                                      individual * dad,
                                      individual * mom)

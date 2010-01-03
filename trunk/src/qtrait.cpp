@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-bool BaseQuanTrait::apply(population & pop)
+bool BaseQuanTrait::apply(Population & pop)
 {
 	vectoru infoIdx(infoSize());
 
@@ -76,7 +76,7 @@ bool BaseQuanTrait::apply(population & pop)
 }
 
 
-bool BaseQuanTrait::applyDuringMating(population & pop, RawIndIterator offspring,
+bool BaseQuanTrait::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 
 {

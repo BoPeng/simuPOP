@@ -183,7 +183,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
  simulation environment.
  Unlike coalescent-based programs, simuPOP evolves populations forward in
  time, subject to arbitrary number of genetic and environmental forces such
- as mutation, recombination, migration and population/subpopulation size
+ as mutation, recombination, migration and Population/subpopulation size
  changes.
  In contrast to competing applications that use command-line options or
  configuration files to direct the execution of a limited number of predefined
@@ -197,7 +197,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
 
 \begin_layout Abstract
 simuPOP is provided as a number of Python modules, which consist of a large
- number of Python objects and functions, including population, mating schemes,
+ number of Python objects and functions, including Population, mating schemes,
  operators (objects that manipulate populations) and Simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
@@ -325,12 +325,12 @@ individual
 
 \end_inset
 
-, population
+, Population
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-population
+Population
 \end_layout
 
 \end_inset
@@ -380,7 +380,7 @@ individualRef
 
 
 \backslash
-populationRef
+PopulationRef
 \end_layout
 
 \begin_layout Plain Layout

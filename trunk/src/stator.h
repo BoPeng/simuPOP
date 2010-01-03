@@ -101,10 +101,10 @@ public:
 	/** Evaluate the expression and optional statements in the local namespace
 	 *  of population \e pop and return its result as a string.
 	 */
-	string evaluate(population & pop);
+	string evaluate(Population & pop);
 
 	/// Apply the \c PyEval operator to population \e pop.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -233,9 +233,9 @@ public:
 
 	// check all alleles in vector allele if they are fixed.
 	/// apply the \c InfoEval operator
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
@@ -323,9 +323,9 @@ public:
 
 	// check all alleles in vector allele if they are fixed.
 	/// apply the \c InfoExec operator
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
@@ -348,7 +348,7 @@ public:
 	statPopSize(bool popSize, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 	string describe(bool format = true);
 
@@ -378,7 +378,7 @@ public:
 	statNumOfMales(bool numOfMales, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 	string describe(bool format = true);
 
@@ -409,7 +409,7 @@ public:
 
 	string describe(bool format = true);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// whether or not to apply number of affected
@@ -445,7 +445,7 @@ public:
 	}
 
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// which alleles?
@@ -476,7 +476,7 @@ public:
 
 	string describe(bool format = true);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// heteroFreq
@@ -503,7 +503,7 @@ public:
 
 	string describe(bool format = true);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// which genotypes
@@ -535,7 +535,7 @@ public:
 	}
 
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	// key string (in the format of a tuple)
@@ -580,7 +580,7 @@ public:
 	}
 
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	vectorstr m_sumOfInfo;
@@ -629,7 +629,7 @@ public:
 	string describe(bool format = true);
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	typedef map<UINT, UINT> ALLELECNT;
@@ -643,7 +643,7 @@ private:
 		vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
 		vectorf & CramerV);
 
-	void outputVar(population & pop, const string & name, const vectorf & value);
+	void outputVar(Population & pop, const string & name, const vectorf & value);
 
 private:
 	/// LD
@@ -684,7 +684,7 @@ public:
 	string describe(bool format = true);
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	void alleleChiSqTest(const ALLELECNT & caseCnt,
@@ -721,7 +721,7 @@ public:
 	string describe(bool format = true);
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	typedef vector<vectora> HAPLOLIST;
@@ -757,7 +757,7 @@ public:
 
 	string describe(bool format = true);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	typedef map<UINT, float> FREQ;
@@ -801,7 +801,7 @@ public:
 
 	string describe(bool format = true);
 
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	vectoru mapToCount(const GENOCNT & cnt);
@@ -844,15 +844,15 @@ public:
 	 *
 	 *  Calculated statistics are saved as variables in a population's local
 	 *  namespace. These variables can be numbers, lists or dictionaries and
-	 *  can be retrieved using functions <tt>population.vars()</tt> or
-	 *  <tt>population.dvars()</tt>. A special default dictionary (\c defdict)
+	 *  can be retrieved using functions <tt>Population.vars()</tt> or
+	 *  <tt>Population.dvars()</tt>. A special default dictionary (\c defdict)
 	 *  is used for dictionaries whose keys are determined dynamically.
 	 *  Accessing elements of such a dictionary with an invalid key will yield
 	 *  value 0 instead of a \c KeyError. If the same variables are calculated
 	 *  for one or more (virtual) subpopulation, the variables are stored in
 	 *  <tt>vars()['subPop'][sp]['var']</tt> where sp is a subpopulation ID
 	 *  (\c sp) or a tuple of virtual subpopulation ID (<tt>(sp, vsp)</tt>).
-	 *  <tt>population.vars(sp)</tt> and <tt>population.dvars(sp)</tt> provide
+	 *  <tt>Population.vars(sp)</tt> and <tt>Population.dvars(sp)</tt> provide
 	 *  shortcuts to these variables.
 	 *
 	 *  Operator \e Stat outputs a number of most useful variables for each
@@ -990,7 +990,7 @@ public:
 	 *  dictionaries (with haplotypes as keys) such as
 	 *  <tt>haploFreq[(1,2,4)][(1,1,0)]</tt> (frequency of haplotype
 	 *  <tt>(1,1,0)</tt> at loci <tt>(1,2,3)</tt>). This statistic works for
-	 *  all population types. Number of haplotypes for each individual equals
+	 *  all Population types. Number of haplotypes for each individual equals
 	 *  to his/her ploidy number. Haplodiploid populations are supported in
 	 *  the sense that the second homologous copy of the haplotype is not
 	 *  counted for male individuals. This statistic outputs the following
@@ -1129,14 +1129,14 @@ public:
 	 *  This parameter currently supports the following statistics:
 	 *  \li Weir and Cockerham's Fst (1984). This is the most widely used
 	 *       estimator of Wright's fixation index and can be used to measure
-	 *       population differentiation. However, this method is designed to
+	 *       Population differentiation. However, this method is designed to
 	 *       estimate Fst from samples of larger populations and might not be
 	 *       appropriate for the calculation of Fst of large populations.
 	 *  \li Nei's Gst (1973). The Gst estimator is another estimator for
 	 *       Wright's fixation index but it is extended for multi-allele (more
 	 *       than two alleles) and multi-loci cases. This statistics should
 	 *       be used if you would like to obtain a \e true Fst value of a large
-	 *       population.
+	 *       Population.
 	 *  \li \c F_st (default) The WC84 \e Fst statistic estimated for all
 	 *       specified loci.
 	 *  \li \c F_is The WC84 \e Fis statistic estimated for all specified loci.
@@ -1216,7 +1216,7 @@ public:
 	// use m_alleles etc to save (potentially) time to
 	// resize all these variables.
 	/// apply the \c Stat operator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 private:
 	statPopSize m_popSize;

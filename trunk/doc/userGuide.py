@@ -471,7 +471,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-# create a sim.Population with two generations. The current generation has values
+# create a sim.population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
 pop = sim.Population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
 pop.setIndInfo(range(11, 20), 'x')
@@ -2090,7 +2090,7 @@ sim.initByFreq(pop, [0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
 sim.infoEval(pop, 'a', subPops=[(0, 0)]);print
 sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
-# use sim.Population variables
+# use sim.population variables
 pop.dvars().b = 5
 sim.infoEval(pop, '"%d " % (a+b)', usePopVars=True);print
 #end_file
@@ -3949,7 +3949,7 @@ traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
     col_loc=['red', 'blue'], plot_main='Simulated trajectory (backward-time)')
 print 'Trajectory simulated with length %s ' % len(traj.traj)
 pop = sim.Population(size=Nt(0), loci=[1]*2)
-# save trajectory function in the sim.Population's local namespace
+# save trajectory function in the sim.population's local namespace
 # so that the sim.PyEval operator can access it.
 pop.dvars().traj = traj.func()
 pop.evolve(
@@ -4564,7 +4564,7 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     N0:   Initial sim.population size.
     N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of sim.Population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     def ins_expansion(gen):
         if gen < G0:
@@ -4648,7 +4648,7 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     N0:   Initial sim.population size.
     N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of sim.Population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
     def ins_expansion(gen):
@@ -4738,7 +4738,7 @@ simuOpt.setOptions(quiet=True)
 #
 '''
 Simulation the evolution of allelic spectra (number and frequencies
-of alleles at a locus), under the influence of sim.Population expansion,
+of alleles at a locus), under the influence of sim.population expansion,
 mutation, and natural selection.
 '''
 import simuOpt
@@ -4764,7 +4764,7 @@ options = [
      'default': 100000,
      'label': 'Final sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'description': 'Ending sim.population size (after sim.Population expansion)',
+     'description': 'Ending sim.population size (after sim.population expansion)',
      'validate': simuOpt.valueGT(0)
     }, 
     {'longarg': 'G0=',
@@ -4778,7 +4778,7 @@ options = [
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
-     'description': 'Number of geneartions of the sim.Population expansion stage',
+     'description': 'Number of geneartions of the sim.population expansion stage',
      'validate': simuOpt.valueGT(0)
     },
     {'longarg': 'spec=',
@@ -4820,7 +4820,7 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
     N0:   Initial sim.population size.
     N1:   Ending sim.population size.
     G0:   Length of burn-in stage.
-    G1:   Length of sim.Population expansion stage.
+    G1:   Length of sim.population expansion stage.
     '''
     rate = (math.log(N1) - math.log(N0))/G1
     def ins_expansion(gen):

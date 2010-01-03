@@ -222,7 +222,7 @@ void BaseOperator::setFlags()
 }
 
 
-void BaseOperator::initializeIfNeeded(const population & pop)
+void BaseOperator::initializeIfNeeded(const Population & pop)
 {
 	if (m_lastPop != pop.genoStruIdx()) {
 		initialize(pop);
@@ -231,7 +231,7 @@ void BaseOperator::initializeIfNeeded(const population & pop)
 }
 
 
-bool BaseOperator::apply(population & pop)
+bool BaseOperator::apply(Population & pop)
 {
 	DBG_FAILIF(true, RuntimeError,
 		"This operator can only be applied during mating.");
@@ -239,7 +239,7 @@ bool BaseOperator::apply(population & pop)
 }
 
 
-bool BaseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
+bool BaseOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                      individual * dad, individual * mom)
 {
 	DBG_FAILIF(true, RuntimeError,
@@ -351,7 +351,7 @@ string Pause::describe(bool format)
 }
 
 
-bool Pause::apply(population & pop)
+bool Pause::apply(Population & pop)
 {
 	// call initialize if needed.
 	initializeIfNeeded(pop);
@@ -471,7 +471,7 @@ string IfElse::describe(bool format)
 }
 
 
-bool IfElse::applyDuringMating(population & pop, RawIndIterator offspring,
+bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
                                individual * dad, individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
@@ -504,7 +504,7 @@ bool IfElse::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-bool IfElse::apply(population & pop)
+bool IfElse::apply(Population & pop)
 {
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
@@ -546,7 +546,7 @@ string TerminateIf::describe(bool format)
 }
 
 
-bool TerminateIf::apply(population & pop)
+bool TerminateIf::apply(Population & pop)
 {
 	// experssion return true
 	m_expr.setLocalDict(pop.dict());
@@ -571,7 +571,7 @@ string TicToc::describe(bool format)
 }
 
 
-bool TicToc::apply(population & pop)
+bool TicToc::apply(Population & pop)
 {
 	if (m_startTime == 0)
 		m_startTime = clock();
@@ -618,7 +618,7 @@ string PyOperator::describe(bool format)
 }
 
 
-bool PyOperator::apply(population & pop)
+bool PyOperator::apply(Population & pop)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -643,7 +643,7 @@ bool PyOperator::apply(population & pop)
 }
 
 
-bool PyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
@@ -676,7 +676,7 @@ bool PyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               population * pop, int dad, int mom, ULONG off)
+                               Population * pop, int dad, int mom, ULONG off)
 {
 	BaseOperator * opPtr = op.clone();
 

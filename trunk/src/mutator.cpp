@@ -46,7 +46,7 @@ double baseMutator::mutRate(UINT loc)
 }
 
 
-void baseMutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT locus)
+void baseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus)
 {
 	// chromosome?
 	UINT chrom = pop.chromLocusPair(locus).first;
@@ -83,7 +83,7 @@ void baseMutator::fillContext(const population & pop, IndAlleleIterator ptr, UIN
 }
 
 
-bool baseMutator::apply(population & pop)
+bool baseMutator::apply(Population & pop)
 {
 	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
@@ -349,7 +349,7 @@ void PyMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void MixedMutator::initialize(population & pop)
+void MixedMutator::initialize(Population & pop)
 {
 	baseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
@@ -368,7 +368,7 @@ void MixedMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-void ContextMutator::initialize(population & pop)
+void ContextMutator::initialize(Population & pop)
 {
 	baseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
@@ -408,7 +408,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-bool PointMutator::apply(population & pop)
+bool PointMutator::apply(Population & pop)
 {
 	subPopList subPops = applicableSubPops();
 

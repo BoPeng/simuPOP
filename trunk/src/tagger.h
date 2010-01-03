@@ -87,12 +87,12 @@ public:
 	void reset(ULONG startID = 1);
 
 	/** Set an unique ID to all individuals with zero ID. */
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/** CPPONLY
 	 *  apply the \c IdTagger
 	 */
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of an \c IdTagger
@@ -155,7 +155,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c InheritTagger
 	 */
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c InheritTagger
@@ -215,7 +215,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c SummaryTagger
 	 */
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c SummaryTagger
@@ -236,7 +236,7 @@ private:
  *  should be specified if an asexsual mating scheme is used so there is one
  *  parent for each offspring. Information recorded by this operator is
  *  intended to be used to look up parents of each individual in
- *  multi-generational population.
+ *  multi-generational Population.
  */
 class ParentsTagger : public BaseOperator
 {
@@ -279,7 +279,7 @@ public:
 	/** CPPONLY
 	 * apply the \c ParentsTagger
 	 */
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 };
@@ -339,7 +339,7 @@ public:
 	/** CPPONLY
 	 * apply the \c PedigreeTagger
 	 */
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 private:
@@ -398,7 +398,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c PyTagger
 	 */
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 private:

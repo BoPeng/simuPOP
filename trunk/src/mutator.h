@@ -154,7 +154,7 @@ public:
 	/// These is certainly more efficient if it is squeezed in the apply function,
 	/// with a number of flags defined in the initialization stage. However, for
 	/// a rarely used feature, performance should be a secondary consideration.
-	void fillContext(const population & pop, IndAlleleIterator ptr, UINT locus);
+	void fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus);
 
 	/// CPPONLY
 	void setContext(int context)
@@ -171,7 +171,7 @@ public:
 
 
 	/// Apply a mutator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 protected:
 	/// mutation rates
@@ -270,7 +270,7 @@ public:
 	{
 #ifndef BINARYALLELE
 		if (m_k > 1 && static_cast<ULONG>(m_k - 1) > ModuleMaxAllele)
-			throw ValueError("maxAllele exceeds population max allele.");
+			throw ValueError("maxAllele exceeds Population max allele.");
 #endif
 	}
 
@@ -484,7 +484,7 @@ public:
 
 
 	/// CPPONLY: initialize all passed mutators
-	void initialize(population & pop);
+	void initialize(Population & pop);
 
 
 	/// CPPONLY
@@ -563,7 +563,7 @@ public:
 
 
 	/// CPPONLY: initialize all passed mutators
-	void initialize(population & pop);
+	void initialize(Population & pop);
 
 
 	/// CPPONLY
@@ -627,7 +627,7 @@ public:
 
 
 	/// apply a \c PointMutator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true)

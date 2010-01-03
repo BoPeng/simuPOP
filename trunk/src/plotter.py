@@ -664,7 +664,7 @@ class varPlotter(PyOperator):
 class scatterPlotter(PyOperator):
     '''
     This class defines a Python operator that uses R to plot individuals in a
-    population, using values at two information fields as their x- and y-axis.
+    Population, using values at two information fields as their x- and y-axis.
 
     Arbitrary keyword parameters could be specified and be passed to the
     underlying R drawing functions ``plot`` and ``points``. These parameters

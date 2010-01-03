@@ -193,7 +193,7 @@ public:
 	//@{
 
 	/// CPPONLY
-	virtual bool isCompatible(const population & pop)
+	virtual bool isCompatible(const Population & pop)
 	{
 		return true;
 	}
@@ -257,11 +257,11 @@ public:
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 
@@ -305,10 +305,10 @@ public:
 	}
 
 
-	void initializeIfNeeded(const population & pop);
+	void initializeIfNeeded(const Population & pop);
 
 	/// HIDDEN Initialize an operator against a population.
-	virtual void initialize(const population & pop) {}
+	virtual void initialize(const Population & pop) {}
 
 	/// CPPONLY
 	subPopList applicableSubPops() const { return m_subPops; }
@@ -498,7 +498,7 @@ public:
 
 
 	/// apply the \c Pause operator to one population
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -542,7 +542,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL)
 	{
 		return true;
@@ -550,7 +550,7 @@ public:
 
 
 	/// apply the \c NoneOp operator to one population
-	virtual bool apply(population & pop)
+	virtual bool apply(Population & pop)
 	{
 		return true;
 	}
@@ -606,11 +606,11 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// apply the \c IfElse operator to population \e pop.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -666,7 +666,7 @@ public:
 
 
 	// check all alleles in vector allele if they are fixed.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	virtual ~TerminateIf()
 	{
@@ -722,7 +722,7 @@ public:
 
 
 	/// HIDDEN
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -782,10 +782,10 @@ public:
 	 *  function is equivalent to call \e func with parameter \e pop and
 	 *  optional parameter \e param.
 	 */
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN
@@ -806,7 +806,7 @@ private:
  *  If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	population * pop, int dad, int mom, ULONG off);
+	Population * pop, int dad, int mom, ULONG off);
 
 }
 #endif

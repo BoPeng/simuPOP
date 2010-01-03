@@ -561,7 +561,7 @@ class TestUtility(unittest.TestCase):
         # 5: test given variable number of subpopulations, if allele frequencies would be
         # recorded in the correct form. nLoci = 3.
         # In a backward simulation, 3 subPops merge when gen = endGen - 5 in backward sense.
-        # In another Forward simulation, a single Population splits into 3 subPops when 
+        # In another Forward simulation, a single population splits into 3 subPops when 
         # gen = endGen - 5 in forward sense. 
         def Nt(gen):
             if gen > 295:

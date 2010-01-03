@@ -230,19 +230,19 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-// individual and population are type names, and can not be used
+// individual and Population are type names, and can not be used
 // as function name. ind and pop are used instead.
-// at the python level, individual and population are better.
+// at the python level, individual and Population are better.
 %rename(individual) ind(double, vspID);
-%rename(population) pop(UINT) const;
+%rename(Population) pop(UINT) const;
 
 %newobject loadPopulation;
 %newobject LoadSimulator;
 
-// %newobject simuPOP::population::extract;
-%newobject simuPOP::population::extractSubPops;
-%newobject simuPOP::population::extractIndividuals;
-%newobject simuPOP::population::clone;
+// %newobject simuPOP::Population::extract;
+%newobject simuPOP::Population::extractSubPops;
+%newobject simuPOP::Population::extractIndividuals;
+%newobject simuPOP::Population::clone;
 %newobject simuPOP::Simulator::extract;
 %newobject simuPOP::Simulator::clone;
 %newobject simuPOP::BaseOperator::clone;
@@ -356,7 +356,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     life cycle), \e postOps (applied to the offspring population at the end of
     each life cycle) and \e finalOps (applied at the end of evolution). More
     specifically, this function creates a \e Simulator using the current
-    population, call its \e evolve function using passed parameters and then
+    Population, call its \e evolve function using passed parameters and then
     replace the current population with the evolved population. Please refer to
     function \c Simulator.evolve for more details about each parameter. '''
     # create a simulator with self
@@ -367,7 +367,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     self.swap(simu.population(0))
     return gen[0]
 
-population.evolve = evolve_pop
+Population.evolve = evolve_pop
 
 def _new_Migrator(self, rate=[], *args, **kwargs):
     # parameter rate
@@ -424,7 +424,7 @@ def _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs):
         ld = [LD]
     else:
         ld = LD
-    cppModule.stat_swiginit(self,
+    cppModule.Stat_swiginit(self,
         cppModule.new_Stat(haploFreq=hf, LD=ld, *args, **kwargs))
 
 _new_Stat.__doc__ = Stat.__init__.__doc__

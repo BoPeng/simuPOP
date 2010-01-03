@@ -26,7 +26,7 @@
 
 namespace simuPOP {
 
-bool PyOutput::apply(population & pop)
+bool PyOutput::apply(Population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
@@ -44,7 +44,7 @@ string PyOutput::describe(bool format)
 }
 
 
-void Dumper::displayStructure(const population & pop, ostream & out)
+void Dumper::displayStructure(const Population & pop, ostream & out)
 {
 	out << "Ploidy: " << pop.ploidy()
 	    << " (" << pop.ploidyName() << ")" << endl;
@@ -96,7 +96,7 @@ void Dumper::displayStructure(const population & pop, ostream & out)
 }
 
 
-UINT Dumper::displayGenotype(const population & pop, const subPopList & subPops, ostream & out)
+UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops, ostream & out)
 {
 	UINT count = 0;
 	subPopList::const_iterator sp = subPops.begin();
@@ -104,11 +104,11 @@ UINT Dumper::displayGenotype(const population & pop, const subPopList & subPops,
 
 	for ( ; sp != spEnd; ++sp) {
 		ULONG spSize = pop.subPopSize(*sp);
-		out << "Subpopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
+		out << "SubPopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
 		    << toStr(spSize) << " individuals:" << endl;
 
-		const_cast<population &>(pop).activateVirtualSubPop(*sp);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
+		const_cast<Population &>(pop).activateVirtualSubPop(*sp);
+		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for ( ; ind.valid(); ++ind, ++count) {
 			out << setw(4) << (&*ind - &*pop.rawIndBegin()) << ": ";
 			ind->display(out, m_width, m_loci);
@@ -116,13 +116,13 @@ UINT Dumper::displayGenotype(const population & pop, const subPopList & subPops,
 			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
 				break;
 		}
-		const_cast<population &>(pop).deactivateVirtualSubPop(sp->subPop());
+		const_cast<Population &>(pop).deactivateVirtualSubPop(sp->subPop());
 	}
 	return count;
 }
 
 
-bool Dumper::apply(population & pop)
+bool Dumper::apply(Population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
@@ -171,7 +171,7 @@ string SavePopulation::describe(bool format)
 }
 
 
-bool SavePopulation::apply(population & pop)
+bool SavePopulation::apply(Population & pop)
 {
 	string filename;
 

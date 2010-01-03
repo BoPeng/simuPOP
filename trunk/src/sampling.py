@@ -33,10 +33,10 @@ as ``subPops`` ((virtual) subpopulations from which samples will be drawn) and
 ``numOfSamples`` (number of samples to draw) and return a list of populations. Both
 independent individuals and dependent individuals (Pedigrees) are supported.
 
-Independent individuals could be drawn from any population. pedigree
+Independent individuals could be drawn from any Population. pedigree
 information is not necessary and is usually ignored. Unique IDs are not needed
 either although such IDs could help you identify samples in the parent
-population.
+Population.
 
 Pedigrees could be drawn from multi-generational populations or age-structured
 populations. All individuals are required to have a unique ID (usually tracked
@@ -105,7 +105,7 @@ def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
               fatherIndex='father_idx', motherIndex='mother_idx', reset=False):
     '''This function adds information field idField (default to ``'ind_id'``)
     to population ``pop`` and assigns an unique ID to every individual in this
-    population. It then adds information fields fatherField (default to
+    Population. It then adds information fields fatherField (default to
     ``'fatherField'``) and motherField (default to ``'motherField'``) and set
     their values with IDs according to the established index based
     parents-children relationship. Existing information fields will be used if
@@ -208,7 +208,7 @@ class baseSampler:
         to prepare population for sampling. ``subPops`` should be a list of
         (virtual) subpopulations from which samples are drawn. The default
         value is ALL_AVAIL, which means all available subpopulations of a
-        population.
+        Population.
         '''
         self.subPops=subPops
         self.pop = None
@@ -216,9 +216,9 @@ class baseSampler:
     def prepareSample(self, pop, rearrange):
         '''Prepare passed population object for sampling according to parameter
         ``subPops``. If samples are drawn from the whole population, a
-        population will be trimmed if only selected (virtual) subpopulations
+        Population will be trimmed if only selected (virtual) subpopulations
         are used. If samples are drawn separately from specified subpopulations,
-        population ``pop`` will be rearranged (if ``rearrange==True``) so that
+        Population ``pop`` will be rearranged (if ``rearrange==True``) so that
         each subpoulation corresponds to one element in parameter ``subPops``.
         '''
         if self.subPops == ALL_AVAIL:
@@ -391,7 +391,7 @@ def drawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     '''Draw a case-control samples from a population with ``cases``
     affected and ``controls`` unaffected individuals. If single ``cases`` and
     ``controls`` are given, individuals are drawn randomly from the whole
-    population or from specified (virtual) subpopulations (parameter
+    Population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     number of cases and controls from each subpopulation, which can be all
     subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
@@ -834,7 +834,7 @@ def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
     parameters ``numOffspring``, ``pedSize`` and ``numOfAffected``, which can all
     be a single number, or a range ``[a, b]`` (``b`` is incldued). If a single
     ``families`` is given, Pedigrees are drawn randomly from the whole
-    population or from specified (virtual) subpopulations (parameter
+    Population or from specified (virtual) subpopulations (parameter
     ``subPops``). Otherwise, a list of numbers should be used to specify
     numbers of families from each subpopulation, which can be all
     subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
@@ -889,7 +889,7 @@ class combinedSampler(baseSampler):
 
 def drawCombinedSample(pop, samplers, idField='ind_id'):
     '''Draw different types of samples using a list of ``samplers``. A
-    population consists of all individuals from these samples will
+    Population consists of all individuals from these samples will
     be returned. An ``idField`` that stores an unique ID for all individuals
     is needed to remove duplicated individuals who are drawn multiple
     numOfSamples from these samplers.

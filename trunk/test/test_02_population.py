@@ -2,7 +2,7 @@
 #
 # Purpose:
 #
-# This is a unittest file for Population object
+# This is a unittest file for population object
 #
 # Bo Peng (bpeng@rice.edu)
 #

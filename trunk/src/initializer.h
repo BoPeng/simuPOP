@@ -93,7 +93,7 @@ public:
 
 
 	/// apply this operator to population \e pop
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 protected:
 	/// sex frequency
@@ -151,7 +151,7 @@ public:
 	string describe(bool format = true);
 
 	/// apply this operator to population \e pop
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 protected:
 	/// specify sex
@@ -205,7 +205,7 @@ public:
 
 
 	/// apply this operator to population \e pop
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// allele frequencies (assume all loci are the same for a subPop
@@ -269,7 +269,7 @@ public:
 
 
 	/// apply this operator to population \e pop
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 private:
 	/// allele frequencies (assume all loci are the same

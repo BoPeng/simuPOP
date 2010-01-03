@@ -183,7 +183,7 @@ class TestOperator(unittest.TestCase):
         # information field b is NOT updated
         self.assertEqual(pop.indInfo('b'), tuple([0]*10))
         #
-        # use Population variable
+        # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
         self.assertRaises(exceptions.RuntimeError, infoEval, pop, 'c+4')
@@ -201,7 +201,7 @@ class TestOperator(unittest.TestCase):
         # this will not do anything because there is no c to be updated.
         infoExec(pop, 'c=a+b')
         #
-        # use Population variable
+        # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
         self.assertRaises(exceptions.RuntimeError, infoExec, pop, 'b=c+4')

@@ -95,10 +95,10 @@ public:
 	/** Initialize a base genotype operator for a population. This function should be
 	 *  called before any other functions are used to transmit genotype.
 	 */
-	void initialize(const population & pop);
+	void initialize(const Population & pop);
 
 	/// CPPONLY
-	bool applyDuringMating(population & pop,
+	bool applyDuringMating(Population & pop,
 	                       RawIndIterator offspring,
 	                       individual * dad = NULL,
 	                       individual * mom = NULL)
@@ -154,7 +154,7 @@ public:
 
 
 	/// CPPONLY
-	bool applyDuringMating(population & pop,
+	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
@@ -200,7 +200,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop,
+	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
@@ -208,7 +208,7 @@ public:
 	/** Initialize a base genotype operator for a population. This function should be
 	 *  called before function \c transmitGenotype is used to transmit genotype.
 	 */
-	void initialize(const population & pop);
+	void initialize(const Population & pop);
 
 	/** Transmit genotype from parent to offspring, and fill the \e ploidy
 	 *  homologous set of chromosomes. This function does not set genotypes of
@@ -266,7 +266,7 @@ public:
 
 
 	/// CPPONLY
-	bool applyDuringMating(population & pop,
+	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
@@ -314,10 +314,10 @@ public:
 
 
 	/// HIDDEN
-	void initialize(const population & pop);
+	void initialize(const Population & pop);
 
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop,
+	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
@@ -368,10 +368,10 @@ public:
 
 
 	/// HIDDEN
-	void initialize(const population & pop);
+	void initialize(const Population & pop);
 
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop,
+	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
@@ -530,7 +530,7 @@ public:
 	 *  \e pop. This function should be called before a Recombinator is
 	 *  explicitly applied to a population.
 	 */
-	void initialize(const population & pop);
+	void initialize(const Population & pop);
 
 	/** This function transmits genotypes from a \e parent to the \e ploidy-th
 	 *  homologous set of chromosomes of an \e offspring. It can be used, for
@@ -543,7 +543,7 @@ public:
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
-	virtual bool applyDuringMating(population & pop,
+	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		individual * dad, individual * mom);
 

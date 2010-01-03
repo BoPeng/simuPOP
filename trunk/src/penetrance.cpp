@@ -28,7 +28,7 @@
 namespace simuPOP {
 
 // set pentrance to all individuals and record penetrance if requested.
-bool BasePenetrance::apply(population & pop)
+bool BasePenetrance::apply(Population & pop)
 {
 	bool savePene = infoSize() > 0;
 	UINT infoIdx = 0;
@@ -95,7 +95,7 @@ bool BasePenetrance::applyToIndividual(individual * ind, ULONG gen)
 }
 
 
-bool BasePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
+bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
 	double p = penet(&*offspring, pop.gen());
