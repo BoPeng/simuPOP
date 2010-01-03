@@ -601,7 +601,7 @@ public:
 	 *  subpopulation (<tt>subPop=spID</tt> or <tt>(spID, vspID)</tt>).
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator Individuals(vspID subPop = vspID())
+	pyIndIterator individuals(vspID subPop = vspID())
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
 			"Can not call individuals when there is activated virtual subpopulation");

@@ -186,7 +186,7 @@ public:
 	 *  will be considered invalid.
 	 *  <group>4-locate</group>
 	 */
-	vectoru IndividualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
+	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
