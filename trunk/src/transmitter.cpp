@@ -695,7 +695,7 @@ void recombinator::transmitGenotype(const individual & parent,
 		// if there is some recombination
 		int convCount = -1;
 		size_t convEnd;
-		if (pos != bernulliTrials::npos) {
+		if (pos != Bernullitrials::npos) {
 			// first piece
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
@@ -709,7 +709,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = m_bt.probNextSucc(pos)) != bernulliTrials::npos) {
+			while ((pos = m_bt.probNextSucc(pos)) != Bernullitrials::npos) {
 				// copy from last to this recombination point, but
 				// there might be a conversion event in between
 				gtEnd = m_recBeforeLoci[pos];
@@ -762,7 +762,7 @@ void recombinator::transmitGenotype(const individual & parent,
 		// if there is some recombination
 		int convCount = -1;
 		size_t convEnd;
-		if (pos != bernulliTrials::npos) {
+		if (pos != Bernullitrials::npos) {
 			// first piece
 			gtEnd = m_recBeforeLoci[pos];
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
@@ -776,7 +776,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = m_bt.probNextSucc(pos)) != bernulliTrials::npos) {
+			while ((pos = m_bt.probNextSucc(pos)) != Bernullitrials::npos) {
 				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;

@@ -122,13 +122,13 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(sum > 4900)
 
 
-    def testbernulliTrials(self):
+    def testBernullitrials(self):
         'Testing bernullitrials'
         import math
         rg = getRNG()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
-        bt = bernulliTrials(rg, p, N)
+        bt = Bernullitrials(rg, p, N)
         bt.doTrial()
         for i in range(len(p)):
             prop = bt.trialSuccRate(i)
@@ -137,7 +137,7 @@ class TestUtility(unittest.TestCase):
             self.assertTrue(prop > p[i] - 3*std and prop < p[i] + 3*std)
         # another test, for each trail
         for pi in p:
-            bt = bernulliTrials(rg, [pi]*N, 10)
+            bt = Bernullitrials(rg, [pi]*N, 10)
             bt.doTrial()
             for i in range(10):
                 bt.trial();
@@ -147,7 +147,7 @@ class TestUtility(unittest.TestCase):
                 self.assertTrue(prop > pi - 3*std and prop < pi + 3*std, "We are testing if the proportion falls within three standard deviation of SD. This test may fail from time to time.")
 
         # test find_first and find_next
-        bt = bernulliTrials(rg, p, N)
+        bt = Bernullitrials(rg, p, N)
         bt.doTrial()
         for i in range(len(p)):
             pos = bt.trialFirstSucc(i)
@@ -200,14 +200,14 @@ class TestUtility(unittest.TestCase):
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
-        sampler = weightedSampler(getRNG(), [1, 2, 3, 4])
+        sampler = Weightedsampler(getRNG(), [1, 2, 3, 4])
         num = []
         for i in range(100000):
             num.append(sampler.get())
         for i in range(4):
             self.assertAlmostEqual(num.count(i) / 100000., 0.1 * (i+1), 2)
         # the proportion version
-        sampler = weightedSampler(getRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
+        sampler = Weightedsampler(getRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
         num = []
         for i in range(100000):
             num.append(sampler.get())

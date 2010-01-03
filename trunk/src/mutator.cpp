@@ -103,7 +103,7 @@ bool baseMutator::apply(population & pop)
 	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
-	bernulliTrials bt(getRNG());
+	Bernullitrials bt(getRNG());
 
 	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate or rates.");
 	// all use the same rate
@@ -139,7 +139,7 @@ bool baseMutator::apply(population & pop)
 			size_t pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
 			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
-			if (pos != bernulliTrials::npos) {
+			if (pos != Bernullitrials::npos) {
 				do {
 					ptr += pos - lastPos;
 					lastPos = pos;
@@ -169,7 +169,7 @@ bool baseMutator::apply(population & pop)
 						}
 					}
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated to " << int(*ptr) << endl);
-				} while ( (pos = bt.trialNextSucc(i, pos)) != bernulliTrials::npos);
+				} while ( (pos = bt.trialNextSucc(i, pos)) != Bernullitrials::npos);
 			}                                                                                           // succ.any
 		}
 
@@ -225,7 +225,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 		}
 		rateMatrix[i][i] = 1 - sum / mu;
 		DBG_DO(DBG_MUTATOR, cerr << "Setting weight for allele " << i << " to " << rateMatrix[i] << endl);
-		m_sampler.push_back(weightedSampler(getRNG(), rateMatrix[i]));
+		m_sampler.push_back(Weightedsampler(getRNG(), rateMatrix[i]));
 	}
 }
 

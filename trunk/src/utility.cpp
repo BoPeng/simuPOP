@@ -2770,7 +2770,7 @@ string formatText(const string & text)
 }
 
 
-void weightedSampler::set(const vectorf & weight)
+void Weightedsampler::set(const vectorf & weight)
 {
 	m_N = weight.size();
 	// no weight (wrong case)
@@ -2866,7 +2866,7 @@ void weightedSampler::set(const vectorf & weight)
 }
 
 
-void weightedSampler::set(const vectorf & weight, ULONG N)
+void Weightedsampler::set(const vectorf & weight, ULONG N)
 {
 	m_algorithm = 4;
 
@@ -2897,7 +2897,7 @@ void weightedSampler::set(const vectorf & weight, ULONG N)
 }
 
 
-ULONG weightedSampler::get()
+ULONG Weightedsampler::get()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
@@ -2934,17 +2934,17 @@ ULONG weightedSampler::get()
 }
 
 
-// this is used for bernulliTrials and copyGenotype
+// this is used for Bernullitrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
 
-bernulliTrials::bernulliTrials(RNG & rng)
+Bernullitrials::Bernullitrials(RNG & rng)
 	: m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
 	m_cur(npos)
 {
 }
 
 
-bernulliTrials::bernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
+Bernullitrials::Bernullitrials(RNG & rng, const vectorf & prob, ULONG trials)
 	: m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
 	m_cur(npos)
 {
@@ -2963,12 +2963,12 @@ bernulliTrials::bernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
 
 
 //
-bernulliTrials::~bernulliTrials()
+Bernullitrials::~Bernullitrials()
 {
 }
 
 
-void bernulliTrials::setParameter(const vectorf & prob, ULONG trials)
+void Bernullitrials::setParameter(const vectorf & prob, ULONG trials)
 {
 	m_N = trials;
 	m_prob = prob;
@@ -2990,7 +2990,7 @@ void bernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 
 
 // utility function.
-void bernulliTrials::setAll(size_t idx, bool v)
+void Bernullitrials::setAll(size_t idx, bool v)
 {
 	WORDTYPE * ptr = m_pointer[idx];
 
@@ -3023,7 +3023,7 @@ void bernulliTrials::setAll(size_t idx, bool v)
 // use a != 0 to avoid compiler warning
 #define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
 
-void bernulliTrials::doTrial()
+void Bernullitrials::doTrial()
 {
     DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
@@ -3109,7 +3109,7 @@ void bernulliTrials::doTrial()
 }
 
 
-UINT bernulliTrials::curTrial()
+UINT Bernullitrials::curTrial()
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return m_cur;
@@ -3117,7 +3117,7 @@ UINT bernulliTrials::curTrial()
 
 
 // get a trial corresponding to m_prob.
-void bernulliTrials::trial()
+void Bernullitrials::trial()
 {
     if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
 		doTrial();
@@ -3127,20 +3127,20 @@ void bernulliTrials::trial()
 }
 
 
-bool bernulliTrials::trialSucc(size_t idx) const
+bool Bernullitrials::trialSucc(size_t idx) const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return getBit(m_pointer[idx], m_cur);
 }
 
 
-bool bernulliTrials::trialSucc(size_t idx, size_t cur) const
+bool Bernullitrials::trialSucc(size_t idx, size_t cur) const
 {
     return getBit(m_pointer[idx], cur);
 }
 
 
-size_t bernulliTrials::probFirstSucc() const
+size_t Bernullitrials::probFirstSucc() const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     size_t i = 0;
@@ -3151,7 +3151,7 @@ size_t bernulliTrials::probFirstSucc() const
 }
 
 
-size_t bernulliTrials::probNextSucc(size_t pos) const
+size_t Bernullitrials::probNextSucc(size_t pos) const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     const size_t sz = probSize();
@@ -3165,7 +3165,7 @@ size_t bernulliTrials::probNextSucc(size_t pos) const
 }
 
 
-size_t bernulliTrials::trialFirstSucc(size_t idx) const
+size_t Bernullitrials::trialFirstSucc(size_t idx) const
 {
     size_t blk = m_N / WORDBIT;
     WORDTYPE * ptr = m_pointer[idx];
@@ -3188,7 +3188,7 @@ size_t bernulliTrials::trialFirstSucc(size_t idx) const
 }
 
 
-size_t bernulliTrials::trialNextSucc(size_t idx, size_t pos) const
+size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 {
     const BitSet & bs = m_table[idx];
 
@@ -3233,7 +3233,7 @@ size_t bernulliTrials::trialNextSucc(size_t idx, size_t pos) const
 }
 
 
-void bernulliTrials::setTrialSucc(size_t idx, bool succ)
+void Bernullitrials::setTrialSucc(size_t idx, bool succ)
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     if (succ)
@@ -3243,7 +3243,7 @@ void bernulliTrials::setTrialSucc(size_t idx, bool succ)
 }
 
 
-double bernulliTrials::trialSuccRate(UINT index) const
+double Bernullitrials::trialSuccRate(UINT index) const
 {
     // efficiency is not considered here
     size_t count = 0;
@@ -3255,7 +3255,7 @@ double bernulliTrials::trialSuccRate(UINT index) const
 }
 
 
-double bernulliTrials::probSuccRate() const
+double Bernullitrials::probSuccRate() const
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     UINT count = 0;

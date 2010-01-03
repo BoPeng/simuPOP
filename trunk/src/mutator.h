@@ -240,7 +240,7 @@ public:
 
 
 private:
-	vector<weightedSampler> m_sampler;
+	vector<Weightedsampler> m_sampler;
 };
 
 /** This mutator implements a \e k-allele mutation model that assumes \e k
@@ -500,7 +500,7 @@ public:
 private:
 	opList m_mutators;
 
-	weightedSampler m_sampler;
+	Weightedsampler m_sampler;
 };
 
 

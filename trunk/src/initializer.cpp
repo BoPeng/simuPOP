@@ -54,7 +54,7 @@ bool initSex::apply(population & pop)
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
 	for (; sp != sp_end; ++sp) {
-		weightedSampler ws(getRNG());
+		Weightedsampler ws(getRNG());
 		if (m_maleProp >= 0) {
 			vectorf prop(2, m_maleProp);
 			prop[1] = 1 - prop[0];
@@ -190,8 +190,8 @@ bool initByFreq::apply(population & pop)
 		//
 		vectorf & alleleFreq = m_alleleFreq.size() == 1 ? m_alleleFreq[0] : m_alleleFreq[idx];
 
-		// weightedSampler ws(getRNG(), incFreq);
-		weightedSampler ws(getRNG(), alleleFreq);
+		// Weightedsampler ws(getRNG(), incFreq);
+		Weightedsampler ws(getRNG(), alleleFreq);
 
 		DBG_ASSERT(fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
 			SystemError, "Allele frequecies should add up to one.");
@@ -283,7 +283,7 @@ bool initByValue::apply(population & pop)
 	subPopList::iterator sp_end = subPops.end();
 	for (size_t idx = 0; sp != sp_end; ++sp, ++idx) {
 		//
-		weightedSampler ws(getRNG());
+		Weightedsampler ws(getRNG());
 		if (!m_proportion.empty())
 			ws.set(m_proportion, pop.subPopSize(*sp) * ploidy.size());
 		if (!m_frequencies.empty())

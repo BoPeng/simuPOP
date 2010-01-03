@@ -160,7 +160,7 @@ bool migrator::apply(population & pop)
 					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
 			}
 		} else if (m_mode == BY_PROBABILITY) {
-			weightedSampler ws(getRNG(), m_rate[from]);
+			Weightedsampler ws(getRNG(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
 			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
