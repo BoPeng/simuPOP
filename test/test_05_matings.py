@@ -23,7 +23,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu = simulator(
             population(size=[N], infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
-            initOps = initSex(),
+            initOps = InitSex(),
             matingScheme=randomMating(numOffspring=numOffspring,
                 ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen=gen)
@@ -52,7 +52,7 @@ class TestMatingSchemes(unittest.TestCase):
 
         pop = population(size=[500, 1000], infoFields=['migrate_to'])
         pop.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme = randomMating(subPopSize=demo),
             postOps = pyOperator(func=demoSize),
             gen = 100
@@ -118,7 +118,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def checkSexMode(self, ms):
         simu = simulator( population(size=[40]))
-        simu.evolve(initOps = initSex(), matingScheme=ms, gen=1)
+        simu.evolve(initOps = InitSex(), matingScheme=ms, gen=1)
         # return individual sex as a string
         return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
@@ -142,7 +142,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(10000)
         simu = simulator(pop)
         simu.evolve(
-            initOps = [initSex(), initByFreq([0.5, 0.5])],
+            initOps = [InitSex(), InitByFreq([0.5, 0.5])],
             matingScheme = randomMating(sexMode=(PROB_OF_MALES, 0.3)),
             postOps = [
                 stat(numOfMales=True),
@@ -156,10 +156,10 @@ class TestMatingSchemes(unittest.TestCase):
     def testMonoMating(self):
         'Testing monogemous mating scheme'
         pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
-        InitByFreq(pop, [0.2, 0.3, 0.5])
+        initByFreq(pop, [0.2, 0.3, 0.5])
         simu = simulator(pop)
         simu.evolve(
-            initOps = initSex(sex=(MALE, FEMALE)), 
+            initOps = InitSex(sex=(MALE, FEMALE)), 
             matingScheme =  MonogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1),
                 ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 5)
@@ -172,7 +172,7 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing heterogeneous mating schemes'
         pop = population(size=[10000, 10000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         pop.evolve(
-            initOps = initSex(),
+            initOps = InitSex(),
             matingScheme=heteroMating(
                 [randomMating(numOffspring=2, subPops=0, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
                 randomMating(numOffspring=4, subPops=1, ops=[MendelianGenoTransmitter(), ParentsTagger()])]),
@@ -194,7 +194,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size =[20000, 20000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         pop.setVirtualSplitter(ProportionSplitter([0.2, 0.8]))
         pop.evolve(
-            initOps = initSex(),
+            initOps = InitSex(),
             matingScheme = heteroMating(
                 matingSchemes = [
                 randomMating(numOffspring=1, subPops=[(0,0)], ops=[MendelianGenoTransmitter(), ParentsTagger()]),
@@ -218,7 +218,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'
         pop = population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
-        InitByFreq(pop, [0.2, 0.3, 0.5])
+        initByFreq(pop, [0.2, 0.3, 0.5])
         # exactly 100 males and 100 females
         for i in range(100):
             pop.individual(i).setSex(MALE)
@@ -242,7 +242,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[100, 100], loci=[2, 5], ancGen=-1,
             infoFields=['father_idx', 'mother_idx'])
         pop.evolve(
-            initOps = initSex(),
+            initOps = InitSex(),
             matingScheme=randomMating(ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 20
         )
@@ -250,7 +250,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testSequentialParentsChooser(self):
         'Testing sequential parent chooser'
         pop = population(size=[100, 200], infoFields=['parent_idx'])
-        InitByFreq(pop, [.3, .7])
+        initByFreq(pop, [.3, .7])
         pop.evolve(
             matingScheme = homoMating(
                 SequentialParentsChooser(),
@@ -265,7 +265,7 @@ class TestMatingSchemes(unittest.TestCase):
         def traj(gen):
             return [0.5 + gen*0.01]
         pop = population(size=[1000, 2000], infoFields=['parent_idx'])
-        InitByFreq(pop, [.2, .8])
+        initByFreq(pop, [.2, .8])
         pop.evolve(
             matingScheme= homoMating(
                 RandomParentChooser(),
@@ -323,9 +323,9 @@ class TestMatingSchemes(unittest.TestCase):
             chromTypes=[CUSTOMIZED]*5)
         pop.setVirtualSplitter(SexSplitter())
         pop.evolve(
-            initOps = [initSex(),
+            initOps = [InitSex(),
                 # female has [1]
-                initByValue([1]*25, subPops=[(0, 1), (1, 1)]),
+                InitByValue([1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
             matingScheme=randomMating(ops=[MitochondrialGenoTransmitter()]),
             gen = 1

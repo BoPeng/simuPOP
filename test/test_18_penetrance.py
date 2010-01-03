@@ -24,12 +24,12 @@ class TestPenetrance(unittest.TestCase):
         self.pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(self.pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initByValue(self.pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
 
     def testMapPenetrance(self):
         'Testing map penetrance'
-        MapPenetrance(self.pop, loci = 0,
+        mapPenetrance(self.pop, loci = 0,
             penetrance={(0,0):0, (0,1):1, (1,1):1})
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertEqual(self.pop.dvars().numOfAffected, 1425)
@@ -38,7 +38,7 @@ class TestPenetrance(unittest.TestCase):
         self.assertEqual(self.pop.dvars(2).numOfAffected, 1000)
         #
         # imcomlete penetrance
-        MapPenetrance(self.pop, loci = 0,
+        mapPenetrance(self.pop, loci = 0,
             penetrance={(0,0):0, (0,1):.3, (1,1):.5})
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
@@ -55,10 +55,10 @@ class TestPenetrance(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #
-        MapPenetrance(pop, loci = 0,
+        mapPenetrance(pop, loci = 0,
             penetrance={(0,0):0, (0,1):1, (1,1):1},
             infoFields=['penetrance'])
         Stat(pop, numOfAffected=1)
@@ -69,7 +69,7 @@ class TestPenetrance(unittest.TestCase):
 
     def testMaPenetrance(self):
         'Testing multi-allele penetrance'
-        MaPenetrance(self.pop, loci = 0, wildtype=0, penetrance=[0, 1, 1])
+        maPenetrance(self.pop, loci = 0, wildtype=0, penetrance=[0, 1, 1])
         Stat(self.pop, numOfAffected=True, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertEqual(self.pop.dvars().numOfAffected, 1425)
         self.assertEqual(self.pop.dvars(0).numOfAffected, 375)
@@ -78,7 +78,7 @@ class TestPenetrance(unittest.TestCase):
         #
         # imcomlete penetrance
         self.pop.dvars().clear()
-        MaPenetrance(self.pop, loci = 0,    wildtype=0,
+        maPenetrance(self.pop, loci = 0,    wildtype=0,
             penetrance=[0, .3, .5])
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
@@ -87,33 +87,33 @@ class TestPenetrance(unittest.TestCase):
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) < 50
 
 
-    def testMultiLocusMaPenetrance(self):
-        'Testing the multi-locus version of maPenetrance'
+    def testMultiLocusmaPenetrance(self):
+        'Testing the multi-locus version of MaPenetrance'
         pop = population(1000, loci=[3,5], infoFields=['penetrance'])
-        InitByFreq(pop, [.3, .7])
+        initByFreq(pop, [.3, .7])
         #
-        MaPenetrance(pop, loci=[3,5], wildtype=0,
+        maPenetrance(pop, loci=[3,5], wildtype=0,
             penetrance=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
 
 
     def testMlPenetrance(self):
         'Testing multi-locus penetrance'
         pop = population(1000, loci=[3,5], infoFields=['penetrance'])
-        InitByFreq(pop, [.3, .7])
+        initByFreq(pop, [.3, .7])
         #
-        MlPenetrance(pop, [
-            maPenetrance(loci = 0,    wildtype=0,
+        mlPenetrance(pop, [
+            MaPenetrance(loci = 0,    wildtype=0,
                 penetrance=[0, .3, .5]),
-            mapPenetrance(loci = 1,
+            MapPenetrance(loci = 1,
                 penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
             mode=ADDITIVE
         )
         #
-        MlPenetrance(pop, [
-            maPenetrance(loci = 2,    wildtype=0,
+        mlPenetrance(pop, [
+            MaPenetrance(loci = 2,    wildtype=0,
                 penetrance=[0, .3, .5]),
-            mapPenetrance(loci = 4,
+            MapPenetrance(loci = 4,
                 penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
             mode=MULTIPLICATIVE
@@ -130,7 +130,7 @@ class TestPenetrance(unittest.TestCase):
                 return 0.5
             else:
                 return 1
-        PyPenetrance(self.pop, loci = 0, func=pen)
+        pyPenetrance(self.pop, loci = 0, func=pen)
         Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected -  880*0.5 - 545) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) < 30

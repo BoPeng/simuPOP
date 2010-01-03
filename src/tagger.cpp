@@ -72,7 +72,7 @@ bool IdTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,
 		"Matental ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
-		"Parental IDs are not unique (forgot initInfo?)");
+		"Parental IDs are not unique (forgot InitInfo?)");
 
 	offspring->setInfo(g_indID++, idx);
 	return true;

@@ -19,7 +19,7 @@ class TestPyOperator(unittest.TestCase):
     def setUp(self):
         self.pop = population(size=10000, ploidy=2,
             loci=[2, 3])
-        InitSex(self.pop)
+        initSex(self.pop)
 
     # define a function
     def myFunc(self, pop):
@@ -30,7 +30,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testSimpleFunc(self):
         'Testing Python operator'
-        InitByFreq(self.pop, [.2, .3, .5])
+        initByFreq(self.pop, [.2, .3, .5])
         self.pop.evolve( postOps = pyOperator(self.myFunc),
             matingScheme=randomMating(),
             gen=20)
@@ -40,7 +40,7 @@ class TestPyOperator(unittest.TestCase):
         op = pyOperator(self.myFunc)
         op1 = op
         op2 = op.clone()
-        InitByFreq(self.pop, [.2, .3, .5])
+        initByFreq(self.pop, [.2, .3, .5])
         # all copied version are working fine.
         op.apply(self.pop)
         op1.apply(self.pop)
@@ -54,7 +54,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testFuncWithParam(self):
         'Testing python operator with parameters'
-        InitByFreq(self.pop, [.2, .8])
+        initByFreq(self.pop, [.2, .8])
         self.pop.evolve( postOps=[
             pyOperator(func=self.myFuncWithParam, param=(0,.2)),
             pyOperator(func=self.myFuncWithParam, param=(1,.8)),
@@ -72,7 +72,7 @@ class TestPyOperator(unittest.TestCase):
     def testTerminator(self):
         'Testing hybrid terminator'
         simu = simulator(self.pop)
-        simu.evolve(initOps = [initSex()],
+        simu.evolve(initOps = [InitSex()],
             postOps = pyOperator(self.myFuncAsTerminator),
             matingScheme=randomMating(),
             gen = 10 )
@@ -106,8 +106,8 @@ class TestPyOperator(unittest.TestCase):
         simu = simulator(self.pop)
         simu.evolve(
             initOps = [
-                initByFreq( [.6, .4], loci=[0,2,4]),
-                initByFreq( [.8, .2], loci=[1,3]) ],
+                InitByFreq( [.6, .4], loci=[0,2,4]),
+                InitByFreq( [.8, .2], loci=[1,3]) ],
             matingScheme=randomMating(),
             postOps = [
                 pyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),

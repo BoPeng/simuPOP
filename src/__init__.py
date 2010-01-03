@@ -134,21 +134,21 @@ __all__ = [
     #
     # Operators
     #
-    'initSex',
-    'initByFreq',
-    'initByValue',
-    'initInfo',
+    'InitSex',
+    'InitByFreq',
+    'InitByValue',
+    'InitInfo',
     #
     'pyOutput',
-    'pyEval',
-    'pyExec',
-    'infoEval',
-    'infoExec',
+    'PyEval',
+    'PyExec',
+    'InfoEval',
+    'InfoExec',
     #
     'migrator',
-    'mergeSubPops',
-    'splitSubPops',
-    'resizeSubPops',
+    'MergeSubPops',
+    'SplitSubPops',
+    'ResizeSubPops',
     #
     'GenoTransmitter',
     'HaplodiploidGenoTransmitter',
@@ -174,12 +174,12 @@ __all__ = [
     'mlSelector',
     'pySelector',
     #
-    'maPenetrance',
-    'mapPenetrance',
-    'mlPenetrance',
-    'pyPenetrance',
+    'MaPenetrance',
+    'MapPenetrance',
+    'MlPenetrance',
+    'PyPenetrance',
     #
-    'pyQuanTrait',
+    'PyQuanTrait',
     #
     'stat',
     #
@@ -204,22 +204,22 @@ __all__ = [
     # Function form of operators
     'Dump',
     #
-    'InitSex',
-    'InitInfo',
-    'InitByFreq',
-    'InitByValue',
+    'initSex',
+    'initInfo',
+    'initByFreq',
+    'initByValue',
     #
-    'PyEval',
-    'PyExec',
-    'InfoEval',
-    'InfoExec',
+    'pyEval',
+    'pyExec',
+    'infoEval',
+    'infoExec',
     #
     'tagID',
     #
     'Migrate',
-    'ResizeSubPops',
-    'SplitSubPops',
-    'MergeSubPops',
+    'resizeSubPops',
+    'splitSubPops',
+    'mergeSubPops',
     #
     'matrixMutate',
     'contextMutate',
@@ -247,12 +247,12 @@ __all__ = [
     'turnOffDebug',
     'turnOnDebug',
     #
-    'MaPenetrance',
-    'MapPenetrance',
-    'MlPenetrance',
-    'PyPenetrance',
+    'maPenetrance',
+    'mapPenetrance',
+    'mlPenetrance',
+    'pyPenetrance',
     #
-    'PyQuanTrait',
+    'pyQuanTrait',
     #
     # For testing only
     'applyDuringMatingOperator',
@@ -716,23 +716,23 @@ def Dump(pop, *args, **kwargs):
     'Apply operator ``dumper`` to population *pop*.'
     dumper(*args, **kwargs).apply(pop)
 
-def InitSex(pop, *args, **kwargs):
-    'Apply operator ``initSex`` to population *pop*.'
-    initSex(*args, **kwargs).apply(pop)
+def initSex(pop, *args, **kwargs):
+    'Apply operator ``InitSex`` to population *pop*.'
+    InitSex(*args, **kwargs).apply(pop)
 
-def InitInfo(pop, *args, **kwargs):
-    'Apply operator ``initInfo`` to population *pop*.'
-    initInfo(*args, **kwargs).apply(pop)
+def initInfo(pop, *args, **kwargs):
+    'Apply operator ``InitInfo`` to population *pop*.'
+    InitInfo(*args, **kwargs).apply(pop)
 
-def InitByFreq(pop, *args, **kwargs):
-    'Apply operator ``initByFreq`` to population *pop*.'
-    initByFreq(*args, **kwargs).apply(pop)
+def initByFreq(pop, *args, **kwargs):
+    'Apply operator ``InitByFreq`` to population *pop*.'
+    InitByFreq(*args, **kwargs).apply(pop)
 
-def InitByValue(pop, *args, **kwargs):
-    'Apply operator ``initByValue`` to population *pop*.'
-    initByValue(*args, **kwargs).apply(pop)
+def initByValue(pop, *args, **kwargs):
+    'Apply operator ``InitByValue`` to population *pop*.'
+    InitByValue(*args, **kwargs).apply(pop)
 
-def PyEval(pop, *args, **kwargs):
+def pyEval(pop, *args, **kwargs):
     '''Evaluate statements *stmts* (optional) and expression *expr* in
     population *pop*\ 's local namespace and return the result of *expr*.
     If *exposePop* is given, population *pop* will be exposed in its local
@@ -740,46 +740,46 @@ def PyEval(pop, *args, **kwargs):
     operator counterpart, this function returns the result of *expr* rather
     than writting it to an output.
     '''
-    return pyEval(*args, **kwargs).evaluate(pop)
+    return PyEval(*args, **kwargs).evaluate(pop)
 
-def PyExec(pop, *args, **kwargs):
+def pyExec(pop, *args, **kwargs):
     '''Execute *stmts* in population *pop*\ 's local namespace.'''
-    pyExec(*args, **kwargs).apply(pop)
+    PyExec(*args, **kwargs).apply(pop)
 
-def InfoEval(pop, *args, **kwargs):
+def infoEval(pop, *args, **kwargs):
     '''Evaluate *expr* for each individual, using information fields as variables.
-    Please refer to operator ``infoEval`` for details.
+    Please refer to operator ``InfoEval`` for details.
     '''
-    infoEval(*args, **kwargs).apply(pop)
+    InfoEval(*args, **kwargs).apply(pop)
 
-def InfoExec(pop, *args, **kwargs):
+def infoExec(pop, *args, **kwargs):
     '''Execute *stmts* for each individual, using information fields as variables.
-    Please refer to operator ``infoExec`` for details.
+    Please refer to operator ``InfoExec`` for details.
     '''
-    infoExec(*args, **kwargs).apply(pop)
+    InfoExec(*args, **kwargs).apply(pop)
 
 def Migrate(pop, *args, **kwargs):
     'Function form of operator ``migrator``.'
     migrator(*args, **kwargs).apply(pop)
 
-def SplitSubPops(pop, *args, **kwargs):
+def splitSubPops(pop, *args, **kwargs):
     '''Split subpopulations (*subPops*) of population *pop* according to either
     *sizes* or *proportions* of the resulting subpopulations, or an information
     field. Please refer to the operator form of this function (``splitSubPop``)
     for details.'''
-    splitSubPops(*args, **kwargs).apply(pop)
+    SplitSubPops(*args, **kwargs).apply(pop)
 
-def MergeSubPops(pop, *args, **kwargs):
+def mergeSubPops(pop, *args, **kwargs):
     '''Merge subpopulations *subPops* of population *pop* into a single
     subpopulation. Please refer to the operator form of this funciton
-    (``mergeSubPops``) for details'''
-    mergeSubPops(*args, **kwargs).apply(pop)
+    (``MergeSubPops``) for details'''
+    MergeSubPops(*args, **kwargs).apply(pop)
 
-def ResizeSubPops(pop, *args, **kwargs):
+def resizeSubPops(pop, *args, **kwargs):
     '''Resize subpopulations *subPops* of population *pop* into new sizes
     *size*. Individuals will be added or removed accordingly. Please refer to
-    the operator form of this funciton (``resizeSubPops``) for details'''
-    resizeSubPops(*args, **kwargs).apply(pop)
+    the operator form of this funciton (``ResizeSubPops``) for details'''
+    ResizeSubPops(*args, **kwargs).apply(pop)
 
 def matrixMutate(pop, *args, **kwargs):
     'Function form of operator ``MatrixMutator``'
@@ -834,35 +834,35 @@ def tagID(pop, reset=False, *args, **kwargs):
         IdTagger().reset(reset)
     IdTagger(*args, **kwargs).apply(pop)
 
-def MapPenetrance(pop, loci, penetrance, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
+def mapPenetrance(pop, loci, penetrance, ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    mapPenetrance(loci, penetrance, ancGen, *args, **kwargs).apply(pop)
+    MapPenetrance(loci, penetrance, ancGen, *args, **kwargs).apply(pop)
 
-def MaPenetrance(pop, loci, penetrance, wildtype=0, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``maPenetrance`` to population ``pop``. Unlike the
+def maPenetrance(pop, loci, penetrance, wildtype=0, ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``MaPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    maPenetrance(loci, penetrance, wildtype, ancGen, *args, **kwargs).apply(pop)
+    MaPenetrance(loci, penetrance, wildtype, ancGen, *args, **kwargs).apply(pop)
 
-def MlPenetrance(pop, ops, mode, ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
+def mlPenetrance(pop, ops, mode, ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    mlPenetrance(ops, mode, ancGen, *args, **kwargs).apply(pop)
+    MlPenetrance(ops, mode, ancGen, *args, **kwargs).apply(pop)
 
-def PyPenetrance(pop, func, loci=[], ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``mapPenetrance`` to population ``pop``. Unlike the
+def pyPenetrance(pop, func, loci=[], ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    pyPenetrance(func, loci, ancGen, *args, **kwargs).apply(pop)
+    PyPenetrance(func, loci, ancGen, *args, **kwargs).apply(pop)
 
-def PyQuanTrait(pop, func, loci=[], ancGen = -1, *args, **kwargs):
-    '''Apply opertor ``pyQuanTrait`` to population ``pop``. Unlike the
+def pyQuanTrait(pop, func, loci=[], ancGen = -1, *args, **kwargs):
+    '''Apply opertor ``PyQuanTrait`` to population ``pop``. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    pyQuanTrait(func, loci, ancGen, *args, **kwargs).apply(pop)
+    PyQuanTrait(func, loci, ancGen, *args, **kwargs).apply(pop)
 
 
 

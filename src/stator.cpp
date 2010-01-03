@@ -30,17 +30,17 @@ using std::ostringstream;
 
 namespace simuPOP {
 
-string pyEval::describe(bool format)
+string PyEval::describe(bool format)
 {
 	string desc = m_expr.expr();
 
 	if (desc.size() > 50)
 		desc = desc.substr(0, 50) + "... ";
-	return "<simuPOP.pyEval> evalulate expression \"" + desc + "\"";
+	return "<simuPOP.PyEval> evalulate expression \"" + desc + "\"";
 }
 
 
-string pyEval::evaluate(population & pop)
+string PyEval::evaluate(population & pop)
 {
 	if (!m_exposePop.empty()) {
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -59,23 +59,23 @@ string pyEval::evaluate(population & pop)
 }
 
 
-string pyExec::describe(bool format)
+string PyExec::describe(bool format)
 {
 	string desc = m_expr.stmts();
 
 	if (desc.size() > 50)
 		desc = desc.substr(0, 50) + "... ";
-	return "<simuPOP.pyExec> execute statements " + desc;
+	return "<simuPOP.PyExec> execute statements " + desc;
 }
 
 
-string infoEval::describe(bool format)
+string InfoEval::describe(bool format)
 {
-	return "<simuPOP.infoEval> evaluate expression " + m_expr.expr() + " using information fields as variables.";
+	return "<simuPOP.InfoEval> evaluate expression " + m_expr.expr() + " using information fields as variables.";
 }
 
 
-bool pyEval::apply(population & pop)
+bool PyEval::apply(population & pop)
 {
 	string res = evaluate(pop);
 
@@ -88,7 +88,7 @@ bool pyEval::apply(population & pop)
 }
 
 
-string infoEval::evalInfo(individual * ind, bool update)
+string InfoEval::evalInfo(individual * ind, bool update)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -158,7 +158,7 @@ string infoEval::evalInfo(individual * ind, bool update)
 }
 
 
-bool infoEval::apply(population & pop)
+bool InfoEval::apply(population & pop)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -185,7 +185,7 @@ bool infoEval::apply(population & pop)
 }
 
 
-bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InfoEval::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
@@ -201,13 +201,13 @@ bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-string infoExec::describe(bool format)
+string InfoExec::describe(bool format)
 {
-	return "<simuPOP.infoExec> execute statement " + m_expr.stmts() + " using information fields as variables.";
+	return "<simuPOP.InfoExec> execute statement " + m_expr.stmts() + " using information fields as variables.";
 }
 
 
-bool infoExec::apply(population & pop)
+bool InfoExec::apply(population & pop)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -263,7 +263,7 @@ bool infoExec::apply(population & pop)
 }
 
 
-bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InfoExec::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();

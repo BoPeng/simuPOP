@@ -38,7 +38,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(SexSplitter())
-        InitSex(pop, sex=[MALE, FEMALE])
+        initSex(pop, sex=[MALE, FEMALE])
         Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
         self.assertEqual(pop.dvars().subPopSize, [100, 400, 800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
@@ -83,7 +83,7 @@ class TestStat(unittest.TestCase):
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
         pop = population(size=[200, 800])
-        InitSex(pop, sex=[MALE, FEMALE])
+        initSex(pop, sex=[MALE, FEMALE])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
             pop.individual(i,1).setAffected(True)
@@ -117,7 +117,7 @@ class TestStat(unittest.TestCase):
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'
         pop = population(size=1000, loci=[10])
-        InitByFreq(pop, [0, 0.2, 0.8])
+        initByFreq(pop, [0, 0.2, 0.8])
         Stat(pop, alleleFreq=range(10))
         d = pop.dvars().alleleFreq[0]
         if moduleInfo()['alleleType'] == 'binary':
@@ -133,7 +133,7 @@ class TestStat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, alleleFreq=[0])
         self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
@@ -172,7 +172,7 @@ class TestStat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         if moduleInfo()['alleleType'] == 'binary':
-            InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
@@ -186,7 +186,7 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroNum[0], 600)
             self.assertEqual(pop.dvars(2).heteroFreq[0], 0.6)
         else:
-            InitByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
+            initByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
@@ -206,7 +206,7 @@ class TestStat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, genoFreq=[0])
         #print pop.dvars().genoNum[0]
@@ -243,7 +243,7 @@ class TestStat(unittest.TestCase):
         'Testing summary statistics of information fields'
         import random
         pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
-        InitSex(pop, sex=[MALE, FEMALE])
+        initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         pop.setIndInfo([1], field='x', subPop=(0, 0))
         pop.setIndInfo([2], field='x', subPop=(0, 1))
@@ -267,7 +267,7 @@ class TestStat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #SaveFstat(simu.population(0), "p1.dat", maxAllele=2)
         # Fst is compaared with result from Fstat.
@@ -294,14 +294,14 @@ class TestStat(unittest.TestCase):
         # test haplotype frequency
         pop = population(size=[5000,1000], ploidy=2, loci = [10])
         if moduleInfo()['alleleType'] == 'binary':
-            InitByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
+            initByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05
             assert abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05
         else:
-            InitByValue(pop, value=[[1]*10,[2]*10,[3]*10],
+            initByValue(pop, value=[[1]*10,[2]*10,[3]*10],
                 proportions=[.2,.3,.5])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05
@@ -364,7 +364,7 @@ class TestStat(unittest.TestCase):
                     R2 += p*q*R2_single(var, loc1, loc2, allele1, allele2)
             return R2
         pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
-        InitByFreq(pop, freq)
+        initByFreq(pop, freq)
         # test case with primary alleles specified
         Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4, 0, 1])
         self.assertAlmostEqual(LD_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().LD[2][4])
@@ -394,11 +394,11 @@ class TestStat(unittest.TestCase):
         # In this test, we use and assume consecutive alleles, i.e. allele 0, 1 and 2
         # In simuPOP, these alleles can be discrete, i.e. something like
         #
-        #    InitByFreq(pop, [0, 0, .2, .3, .5])
+        #    initByFreq(pop, [0, 0, .2, .3, .5])
         #
         # This has not passed our test yet. (degree of freedom problem?)
         #
-        InitByFreq(pop, [.2, .3, .5])
+        initByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
             vars=['LD_ChiSq', 'CramerV', 'alleleNum', 'alleleFreq', 'haploNum', 'haploNum_sp'])
         def ChiSq(var, loc1, loc2):
@@ -434,7 +434,7 @@ class TestStat(unittest.TestCase):
     def testCombinedStats(self):
         '''Testing dependency of combined statistics'''
         pop = population(size=[500,100,1000], ploidy=2, loci = [5])
-        InitByFreq(pop, [.2, .3, .5])
+        initByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
         assert pop.vars().has_key('alleleFreq')
         assert pop.vars().has_key('LD')
@@ -464,9 +464,9 @@ class TestStat(unittest.TestCase):
     def testNeutrality(self):
         '''Testing the calculation of Tajima's Pi'''
         pop = population(size=1, ploidy=1, loci=[1, 1])
-        InitByFreq(pop, [.3, .4, .3])
+        initByFreq(pop, [.3, .4, .3])
         pop1 = population(size=[24, 31], ploidy=2, loci=[2, 1, 4])
-        InitByFreq(pop1, [.3, .7])
+        initByFreq(pop1, [.3, .7])
         Stat(pop, neutrality=[0, 1])
         self.assertEqual(pop.dvars().Pi, self.pairwiseDiff(pop, loci=[0, 1]))
         Stat(pop1, neutrality=[0, 1, 2, 3, 4, 5, 6])

@@ -108,7 +108,7 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 
 
 // this function is the same as mapSelector.
-double mapPenetrance::penet(individual * ind, ULONG gen)
+double MapPenetrance::penet(individual * ind, ULONG gen)
 {
 	vectoru chromTypes;
 
@@ -198,14 +198,14 @@ double mapPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
-string maPenetrance::describe(bool format)
+string MaPenetrance::describe(bool format)
 {
-	return "<simuPOP.maPenetrance> multiple-alleles penetrance" ;
+	return "<simuPOP.MaPenetrance> multiple-alleles penetrance" ;
 }
 
 
 // this function is the same as maSelector.
-double maPenetrance::penet(individual * ind, ULONG gen)
+double MaPenetrance::penet(individual * ind, ULONG gen)
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -249,7 +249,7 @@ double maPenetrance::penet(individual * ind, ULONG gen)
 }
 
 
-double mlPenetrance::penet(individual * ind, ULONG gen)
+double MlPenetrance::penet(individual * ind, ULONG gen)
 {
 	if (m_mode == MULTIPLICATIVE) {
 		// x1 x2 x3 ...
@@ -279,7 +279,7 @@ double mlPenetrance::penet(individual * ind, ULONG gen)
 
 
 // the same as pySelector
-double pyPenetrance::penet(individual * ind, ULONG gen)
+double PyPenetrance::penet(individual * ind, ULONG gen)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

@@ -21,7 +21,7 @@ class TestSelector(unittest.TestCase):
     def testMapSelector(self):
         'Testing a map selector'
         pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'])
-        InitByFreq(pop, [.2, .8])
+        initByFreq(pop, [.2, .8])
         mapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,1):0.25}).apply(pop)
         for ind in pop.individuals():
             if ind.genotype() == (0,0):
@@ -34,7 +34,7 @@ class TestSelector(unittest.TestCase):
                 self.assertEqual(ind.fitness, 0.25)
         #
         if moduleInfo()['alleleType'] == 'binary':
-            InitByFreq(pop, [.2, .8])
+            initByFreq(pop, [.2, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():
                 if ind.genotype() == (0,0):
@@ -48,7 +48,7 @@ class TestSelector(unittest.TestCase):
             #
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=1)
-            InitByFreq(pop, [.2, 0, .8])
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):1, (1,):0.9}).apply(pop)
             for ind in pop.individuals():
                 if ind.genotype() == (0,):
@@ -58,8 +58,8 @@ class TestSelector(unittest.TestCase):
             # haplodiploid population
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=HAPLODIPLOID)
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25,
                 (0,):0.8, (1,):0.9}).apply(pop)
             for ind in pop.individuals():
@@ -81,8 +81,8 @@ class TestSelector(unittest.TestCase):
             # sex chromosome
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):0.9, (1,):0.8, (0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():
                 if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
@@ -109,8 +109,8 @@ class TestSelector(unittest.TestCase):
             # multiple loci
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0,1], fitness={(0,0):1, (0,1):0.5, (1,0):0.3, (1,1):0.25}).apply(pop)
             for ind in pop.individuals():
                 if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
@@ -130,7 +130,7 @@ class TestSelector(unittest.TestCase):
                 elif (ind.allele(0,0),ind.allele(1,1)) == (1,1) and ind.sex() == FEMALE:
                     self.assertEqual(ind.fitness, 0.25)
         else:
-            InitByFreq(pop, [.2, 0, .8])
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25}).apply(pop)
             for ind in pop.individuals():
                 if ind.genotype() == (0,0):
@@ -144,7 +144,7 @@ class TestSelector(unittest.TestCase):
             #
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=1)
-            InitByFreq(pop, [.2, 0, .8])
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):1, (2,):0.9}).apply(pop)
             for ind in pop.individuals():
                 if ind.genotype() == (0,):
@@ -154,8 +154,8 @@ class TestSelector(unittest.TestCase):
             # haplodiploid population
             pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=HAPLODIPLOID)
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25,
                 (0,):0.8, (2,):0.9}).apply(pop)
             for ind in pop.individuals():
@@ -177,8 +177,8 @@ class TestSelector(unittest.TestCase):
             # sex chromosome
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0], fitness={(0,):0.9, (2,):0.8, (0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25}).apply(pop)
             for ind in pop.individuals():
                 if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
@@ -205,8 +205,8 @@ class TestSelector(unittest.TestCase):
             # multiple loci
             pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
-            InitSex(pop)
-            InitByFreq(pop, [.2, 0, .8])
+            initSex(pop)
+            initByFreq(pop, [.2, 0, .8])
             mapSelector(loci=[0,1], fitness={(0,0):1, (0,2):0.5, (2,0):0.3, (2,2):0.25}).apply(pop)
             for ind in pop.individuals():
                 if (ind.allele(0,0),ind.allele(0,1)) == (0,0) and ind.sex() == FEMALE:
@@ -230,7 +230,7 @@ class TestSelector(unittest.TestCase):
     def testMaSelector(self):
         'Testing multi-allele selector'
         pop = population(size=10, loci=[1], infoFields=['a', 'fitness', 'b'])
-        InitByFreq(pop, [.2, .8])
+        initByFreq(pop, [.2, .8])
         maSelector(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
             if ind.genotype() == (0,0):
@@ -244,7 +244,7 @@ class TestSelector(unittest.TestCase):
         #
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        InitByFreq(pop, [.2, 0, .3, .4, .1])
+        initByFreq(pop, [.2, 0, .3, .4, .1])
         # other than 1 alleles
         maSelector(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
@@ -253,7 +253,7 @@ class TestSelector(unittest.TestCase):
                 assert ind.info('fitness') > 0.25
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
-        InitByFreq(pop, [.2, 0, .3, .4, .1])
+        initByFreq(pop, [.2, 0, .3, .4, .1])
         # more than one wild type
         maSelector(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2]).apply(pop)
         for ind in pop.individuals():
@@ -306,13 +306,13 @@ class TestSelector(unittest.TestCase):
             pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
             simu = simulator(pop)
             simu.evolve(
-                initOps = [initSex(), initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitSex(), InitByFreq([1-p]+[p/10.]*10)],
                 matingScheme = randomMating(),
                 preOps = sel,
                 postOps = [
                     stat(alleleFreq=[0]),
                     TerminateIf('subPop[1]["alleleNum"][0][0] == %d*2' % N),
-                    #pyEval(r'"%d\n"%alleleNum[0][0]', step=100)
+                    #PyEval(r'"%d\n"%alleleNum[0][0]', step=100)
                 ]
             )
             print i, simu.dvars(0).gen
@@ -331,7 +331,7 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5, .5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5, .5])],
                 matingScheme = randomMating(),
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
@@ -358,7 +358,7 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            initOps =[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps =[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
                 matingScheme = randomMating(),
             preOps = mapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
@@ -383,7 +383,7 @@ class TestSelector(unittest.TestCase):
         #     w11 > w12 > w22
         #    p -> 1
         simu.evolve(
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
                 matingScheme = randomMating(),
             preOps = maSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
@@ -422,7 +422,7 @@ class TestSelector(unittest.TestCase):
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -454,7 +454,7 @@ class TestSelector(unittest.TestCase):
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -474,11 +474,11 @@ class TestSelector(unittest.TestCase):
                 matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                # pyEval('alleleFreq[0][0]'),
+                # PyEval('alleleFreq[0][0]'),
                 TerminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
                     begin=50),
             ],
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -502,11 +502,11 @@ class TestSelector(unittest.TestCase):
                 matingScheme = randomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                #pyEval('alleleFreq[0][0]'),
+                #PyEval('alleleFreq[0][0]'),
                 TerminateIf('alleleFreq[0][0] > 0.3 and    alleleFreq[0][0]    < 0.7',
                     begin=50)
             ],
-            initOps=[ initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
         # simulation did not terminate unexpectedly
@@ -521,7 +521,7 @@ class TestSelector(unittest.TestCase):
             preOps = maSelector(loci=[3,6], wildtype=0,
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]),
                 matingScheme = randomMating(),
-            initOps=[initSex(), initByFreq(alleleFreq=[.5,.5])],
+            initOps=[InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
 
@@ -529,7 +529,7 @@ class TestSelector(unittest.TestCase):
         'Testing multiple loci map selector.'
         pop = population(10, loci=[2],
             infoFields=['fitness'])
-        InitByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
+        initByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
         #MapSelector(pop, loci=[0,1],
         #    fitness={(0,0,0,0):0, (1,1,1,1):0.25, (0,1,0,1):0.5, (1,0,1,0):0.75})
         # there is only one field, so fitness is continuous
@@ -591,8 +591,8 @@ class TestSelector(unittest.TestCase):
         #    p_ = s2/ (s1+s2)
         simu.evolve(
             initOps = [
-                initSex(),
-                initByFreq(alleleFreq=[.5,.5])],
+                InitSex(),
+                InitByFreq(alleleFreq=[.5,.5])],
                 matingScheme = randomMating(),
             preOps = pySelector(loci=0, func=sel),
             postOps = [
@@ -643,8 +643,8 @@ class TestSelector(unittest.TestCase):
         #    p_ = s2/ (s1+s2)
         simu.evolve(
             initOps = [
-                initSex(),
-                initByFreq(alleleFreq=[.5,.5])],
+                InitSex(),
+                InitByFreq(alleleFreq=[.5,.5])],
             preOps = pySelector(loci=[0], func=sel),
                 matingScheme = randomMating(),
             postOps = [
@@ -670,7 +670,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = sel,
                 matingScheme = randomMating(),
-            initOps = [ initSex(), initByFreq(alleleFreq=[.2,.8])],
+            initOps = [ InitSex(), InitByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
         #
@@ -681,7 +681,7 @@ class TestSelector(unittest.TestCase):
                 ], mode=MULTIPLICATIVE),
             ],
                 matingScheme = randomMating(),
-            initOps=[ initSex(), initByFreq(alleleFreq=[.2,.8])],
+            initOps=[ InitSex(), InitByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
 
@@ -695,7 +695,7 @@ class TestSelector(unittest.TestCase):
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
         simu.evolve(
-            initOps = [initSex(), initByFreq([.4, .6])],
+            initOps = [InitSex(), InitByFreq([.4, .6])],
             preOps = [
                 mapSelector(loci = 1, fitness = {(0,0):1.,(0,1):1.,(1,1):.8}, subPops=[1]),
                 pyOperator(func=testFitness, param=([0, 2],)),
@@ -708,7 +708,7 @@ class TestSelector(unittest.TestCase):
             population(size=[20, 30, 40], loci=[2],
                 infoFields=['fitness']))
         simu.evolve(
-            initOps = [initSex(), initByFreq([.4, .6])],
+            initOps = [InitSex(), InitByFreq([.4, .6])],
             preOps = [
                 maSelector(loci=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
                     subPops=1),

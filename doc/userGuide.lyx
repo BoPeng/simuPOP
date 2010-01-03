@@ -583,20 +583,20 @@ evolve()
  function evolves the population using a random mating scheme and four operators.
  Operators 
 \family typewriter
-initSex
+InitSex
 \family default
  and 
 \family typewriter
-initByValue
+InitByValue
 \family default
  are applied at the beginning of the evolutionary process.
  Operator 
 \family typewriter
-initSex
+InitSex
 \family default
  initializes individual sex randomly and 
 \family typewriter
-initByValue
+InitByValue
 \family default
  initializes all individuals with the same genotype 
 \family typewriter
@@ -630,7 +630,7 @@ stat
  population.
  The last operator 
 \family typewriter
-pyEval
+PyEval
 \family default
  outputs calculated linkage disequilibrium values with a trailing new line.
  The result represents the decay of linkage disequilibrium of this population
@@ -1074,7 +1074,7 @@ loadPopulation()
  capital characters (e.g.
  
 \family typewriter
-InitInfo()
+initInfo()
 \family default
 ).
  This is how you can differ an operator from its function version.
@@ -1928,7 +1928,7 @@ pop = population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-InitSex(pop, sex=[MALE, FEMALE])
+initSex(pop, sex=[MALE, FEMALE])
 \end_layout
 
 \end_inset
@@ -2525,7 +2525,7 @@ smoking
 \family default
  so operator 
 \family typewriter
-pyPenetrance
+PyPenetrance
 \family default
  will pass genotype at specified loci and value at information field 
 \family typewriter
@@ -4754,7 +4754,7 @@ operator!stat
  Python dictionary.
  Other operators such as the 
 \family typewriter
-pyEval
+PyEval
 \family default
  and 
 \family typewriter
@@ -4851,7 +4851,7 @@ local namespace
  This is the basis of how expression-based operators work.
  For example, the 
 \family typewriter
-pyEval 
+PyEval 
 \family default
 operator in example 
 \begin_inset CommandInset ref
@@ -4876,11 +4876,11 @@ stmts
 \family default
  parameter of the 
 \family typewriter
-pyEval
+PyEval
 \family default
  or 
 \family typewriter
-pyExec
+PyExec
 \family default
  operator.
  Example 
@@ -5056,7 +5056,7 @@ finalOps
  operators are applied after an evolutionary process.
  Examples of such operators include 
 \family typewriter
-mergeSubPops
+MergeSubPops
 \family default
  to merge subpopulations and 
 \family typewriter
@@ -5207,7 +5207,7 @@ reference "applicableGen"
  In this example, a population is initialized before evolution using an
  
 \family typewriter
-initByFreq
+InitByFreq
 \family default
  operator.
  allele frequency at locus 
@@ -5233,7 +5233,7 @@ initByFreq
 .
  A 
 \family typewriter
-pyEval
+PyEval
 \family default
  operator outputs generation number and allele frequency at the end of generatio
 n 
@@ -5247,7 +5247,7 @@ n
 .
  Another 
 \family typewriter
-pyEval
+PyEval
 \family default
  operator outputs similar information at generation 
 \family typewriter
@@ -6133,7 +6133,7 @@ reference "sequentialSelfing"
  demonstrates how to use this operator.
  It first initializes the population using two 
 \family typewriter
-initByFreq
+InitByFreq
 \family default
  operators that initialize loci with different allele frequencies.
  It applies a 
@@ -6169,7 +6169,7 @@ pyOperator
  is applied at to the parental generation so allele frequencies have to
  be recalculated to be used by post-mating operator 
 \family typewriter
-pyEval
+PyEval
 \family default
 .
 \end_layout
@@ -6299,7 +6299,7 @@ Operators are usually applied to populations through a simulator but they
  can also be applied to a population directly.
  For example, it is possible to create an 
 \family typewriter
-initByFreq
+InitByFreq
 \family default
  operator and apply to a population as follows:
 \end_layout
@@ -6311,7 +6311,7 @@ status open
 
 \begin_layout Plain Layout
 
-initByFreq([.3, .2, .5]).apply(pop)
+InitByFreq([.3, .2, .5]).apply(pop)
 \end_layout
 
 \end_inset
@@ -6334,7 +6334,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyPenetrance(func=myPenetrance, loci=[10, 30, 50]).apply(pop)
+PyPenetrance(func=myPenetrance, loci=[10, 30, 50]).apply(pop)
 \end_layout
 
 \end_inset
@@ -6347,11 +6347,11 @@ This usage is used so often that it deserves some simplification.
  Equivalent functions are defined for most operators.
  For example, function 
 \family typewriter
-InitByFreq
+initByFreq
 \family default
  is defined for operator 
 \family typewriter
-initByFreq
+InitByFreq
 \family default
  as follows
 \end_layout
@@ -6359,8 +6359,8 @@ initByFreq
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/funcInitByFreq.log"
-lstparams "caption={The function form of operator \\texttt{initByFreq}},label={funcInitByFreq}"
+filename "log/funcinitByFreq.log"
+lstparams "caption={The function form of operator \\texttt{InitByFreq}},label={funcinitByFreq}"
 
 \end_inset
 
@@ -6379,7 +6379,7 @@ status open
 
 \begin_layout Plain Layout
 
-InitByFreq(pop, [.3, .2, .5])
+initByFreq(pop, [.3, .2, .5])
 \end_layout
 
 \end_inset
@@ -6394,7 +6394,7 @@ status open
 
 \begin_layout Plain Layout
 
-PyPenetrance(pop, func=myPenetrance, loci=[10, 30, 50])
+pyPenetrance(pop, func=myPenetrance, loci=[10, 30, 50])
 \end_layout
 
 \end_inset
@@ -6687,7 +6687,7 @@ stat
 \family default
  and 
 \family typewriter
-pyEval
+PyEval
 \family default
  are applied both before and after mating.
  It is clear that subpopulation sizes changes before mating as a result
@@ -6760,7 +6760,7 @@ reference "advancedDemoFunc"
  uses a demographic function to split populations at certain generation.
  The advantage of this method over the use of a 
 \family typewriter
-splitSubPops
+SplitSubPops
 \family default
  operator (for example as in Example 
 \begin_inset CommandInset ref
@@ -7183,7 +7183,7 @@ reference "monogamous"
  be exhausted.
  The sex initializer 
 \family typewriter
-initSex
+InitSex
 \family default
  assigns exactly 10 males and 10 females to the initial population.
  Because of the use of 
@@ -8124,7 +8124,7 @@ ifElse
 \family default
 , which applies an operator, in this case 
 \family typewriter
-pyEval
+PyEval
 \family default
 , only when an expression returns 
 \family typewriter
@@ -8697,7 +8697,7 @@ simuPOP provides three operators to initialize individual sex and genotype.
 \begin_layout Subsection
 Initialize individual sex (operator 
 \family typewriter
-initSex
+InitSex
 \family default
 )
 \end_layout
@@ -8705,11 +8705,11 @@ initSex
 \begin_layout Standard
 Operator 
 \family typewriter
-initSex()
+InitSex()
 \family default
  and function 
 \family typewriter
-InitSex()
+initSex()
 \family default
  initialize individual sex either randomly or using a given sequence.
  In the first case, individuals are assigned 
@@ -8745,20 +8745,20 @@ Female
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "initSex"
+reference "InitSex"
 
 \end_inset
 
  uses two 
 \family typewriter
-initSex
+InitSex
 \family default
  operators to initialize two subpopulations.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initSex.log"
-lstparams "caption={Initialize individual sex},label={initSex}"
+filename "log/InitSex.log"
+lstparams "caption={Initialize individual sex},label={InitSex}"
 
 \end_inset
 
@@ -8768,7 +8768,7 @@ lstparams "caption={Initialize individual sex},label={initSex}"
 \begin_layout Subsection
 Initialize by allele frequency (operator 
 \family typewriter
-initByFreq
+InitByFreq
 \family default
 )
 \end_layout
@@ -8776,11 +8776,11 @@ initByFreq
 \begin_layout Standard
 Operator 
 \family typewriter
-initByFreq
+InitByFreq
 \family default
  (and its function form 
 \family typewriter
-InitByFreq
+initByFreq
 \family default
 ) initialize individual genotype by 
 \series bold
@@ -8813,8 +8813,8 @@ subPops
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initByFreq.log"
-lstparams "caption={Initialize by allele frequency},label={initByFreq}"
+filename "log/InitByFreq.log"
+lstparams "caption={Initialize by allele frequency},label={InitByFreq}"
 
 \end_inset
 
@@ -8835,7 +8835,7 @@ identicalInds
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "initByFreqIdenticalInds"
+reference "InitByFreqIdenticalInds"
 
 \end_inset
 
@@ -8845,8 +8845,8 @@ reference "initByFreqIdenticalInds"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initByFreqIdenticalInds.log"
-lstparams "caption={Initialize by allele frequency with identical individuals in each subpopulation},label={initByFreqIdenticalInds}"
+filename "log/InitByFreqIdenticalInds.log"
+lstparams "caption={Initialize by allele frequency with identical individuals in each subpopulation},label={InitByFreqIdenticalInds}"
 
 \end_inset
 
@@ -8856,7 +8856,7 @@ lstparams "caption={Initialize by allele frequency with identical individuals in
 \begin_layout Subsection
 Initialize by haplotype (operator 
 \family typewriter
-initByValue
+InitByValue
 \family default
 )
 \end_layout
@@ -8864,11 +8864,11 @@ initByValue
 \begin_layout Standard
 Operator 
 \family typewriter
-initByValue
+InitByValue
 \family default
  (and its function form 
 \family typewriter
-InitByValue
+initByValue
 \family default
 ) initializes individual genotypes using given haplotypes.
  The simplest form of this operator is to specify genotype on one or all
@@ -8876,7 +8876,7 @@ InitByValue
  For example, all individuals in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "initByValue"
+reference "InitByValue"
 
 \end_inset
 
@@ -8886,8 +8886,8 @@ reference "initByValue"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initByValue.log"
-lstparams "caption={initialize by haplotype},label={initByValue}"
+filename "log/InitByValue.log"
+lstparams "caption={initialize by haplotype},label={InitByValue}"
 
 \end_inset
 
@@ -8924,7 +8924,7 @@ frequencies
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "initByValueProp"
+reference "InitByValueProp"
 
 \end_inset
 
@@ -8934,8 +8934,8 @@ reference "initByValueProp"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initByValueProp.log"
-lstparams "caption={initialize by haplotypes with given proportion},label={initByValueProp}"
+filename "log/InitByValueProp.log"
+lstparams "caption={initialize by haplotypes with given proportion},label={InitByValueProp}"
 
 \end_inset
 
@@ -8945,7 +8945,7 @@ lstparams "caption={initialize by haplotypes with given proportion},label={initB
 \begin_layout Subsection
 Initialize information fields (operator 
 \family typewriter
-initInfo
+InitInfo
 \family default
 )
 \end_layout
@@ -8953,11 +8953,11 @@ initInfo
 \begin_layout Standard
 Operator 
 \family typewriter
-initInfo
+InitInfo
 \family default
  and its function form 
 \family typewriter
-InitInfo
+initInfo
 \family default
  initialize one or more information fields of all individuals or individuals
  in selected (virtual) subpopulations using either a list of values or a
@@ -8966,7 +8966,7 @@ InitInfo
  values of specified information fields of all applicable individuals.
  For example, 
 \family typewriter
-InitInfo(pop, values=1, infoFields='x')
+initInfo(pop, values=1, infoFields='x')
 \family default
  will assign value 
 \family typewriter
@@ -8983,7 +8983,7 @@ status open
 
 \begin_layout Plain Layout
 
-InitInfo(pop, values=[1, 2, 3], infoFields='x', subPops=[(0,1)])
+initInfo(pop, values=[1, 2, 3], infoFields='x', subPops=[(0,1)])
 \end_layout
 
 \end_inset
@@ -9041,7 +9041,7 @@ status open
 
 \begin_layout Plain Layout
 
-InitInfo(pop, lambda : random.randint(2, 5), infoFields=['x', 'y'])
+initInfo(pop, lambda : random.randint(2, 5), infoFields=['x', 'y'])
 \end_layout
 
 \end_inset
@@ -9062,7 +9062,7 @@ pop
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "initInfo"
+reference "InitInfo"
 
 \end_inset
 
@@ -9072,8 +9072,8 @@ reference "initInfo"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/initInfo.log"
-lstparams "caption={initialize information fields},label={initInfo}"
+filename "log/InitInfo.log"
+lstparams "caption={initialize information fields},label={InitInfo}"
 
 \end_inset
 
@@ -9108,7 +9108,7 @@ n', at=200)
 \family default
 ) or output separators to beautify outputs from 
 \family typewriter
-pyEval
+PyEval
 \family default
  outputs (e.g.
  
@@ -9123,7 +9123,7 @@ n', rep=-1)
 \begin_layout Subsection
 Execute Python statements (operator 
 \family typewriter
-pyExec
+PyExec
 \family default
 )
 \end_layout
@@ -9131,7 +9131,7 @@ pyExec
 \begin_layout Standard
 Operator 
 \family typewriter
-pyExec
+PyExec
 \family default
  executes Python statements in a population's local namespace when it is
  applied to that population.
@@ -9143,13 +9143,13 @@ pyExec
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyExec"
+reference "PyExec"
 
 \end_inset
 
  uses two 
 \family typewriter
-pyExec
+PyExec
 \family default
  operators to create and use a variable 
 \family typewriter
@@ -9164,15 +9164,15 @@ stat
 \family default
 ) and appended to this variable (operator 
 \family typewriter
-pyExec
+PyExec
 \family default
 ).
  The result is a trajectory of allele frequencies during evolution.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyExec.log"
-lstparams "caption={Execute Python statements during evolution},label={pyExec}"
+filename "log/PyExec.log"
+lstparams "caption={Execute Python statements during evolution},label={PyExec}"
 
 \end_inset
 
@@ -9182,7 +9182,7 @@ lstparams "caption={Execute Python statements during evolution},label={pyExec}"
 \begin_layout Subsection
 Evaluate and output Python expressions (operator 
 \family typewriter
-pyEval
+PyEval
 \family default
 )
 \end_layout
@@ -9190,7 +9190,7 @@ pyEval
 \begin_layout Standard
 Operator 
 \family typewriter
-pyEval
+PyEval
 \family default
  evaluate a given Python expression in a population's local namespace and
  output its return value.
@@ -9244,7 +9244,7 @@ exposePop
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyEval"
+reference "PyEval"
 
 \end_inset
 
@@ -9266,8 +9266,8 @@ numMother
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyEval.log"
-lstparams "caption={Evaluate a expression and statements in a population's local namespace.},label={pyEval}"
+filename "log/PyEval.log"
+lstparams "caption={Evaluate a expression and statements in a population's local namespace.},label={PyEval}"
 
 \end_inset
 
@@ -9277,7 +9277,7 @@ lstparams "caption={Evaluate a expression and statements in a population's local
 \begin_layout Standard
 Note that the function form of this operator (
 \family typewriter
-PyEval
+pyEval
 \family default
 ) returns the result of the expression rather than writting it to an output.
 \end_layout
@@ -9286,11 +9286,11 @@ PyEval
 Expression and statement involving individual information fields (operator
  
 \family typewriter
-infoEval
+InfoEval
 \family default
  and 
 \family typewriter
-infoExec
+InfoExec
 \family default
 ) *
 \end_layout
@@ -9298,20 +9298,20 @@ infoExec
 \begin_layout Standard
 Operators 
 \family typewriter
-pyEval
+PyEval
 \family default
  and 
 \family typewriter
-pyExec
+PyExec
 \family default
  work at the population level, using the local namespace of populations.
  Operator 
 \family typewriter
-infoEval
+InfoEval
 \family default
  and 
 \family typewriter
-infoExec
+InfoExec
 \family default
 , on the contraray, work at the individual level, using individual information
  fields.
@@ -9342,21 +9342,21 @@ exposeInd
 \begin_layout Standard
 Operator 
 \family typewriter
-infoEval
+InfoEval
 \family default
  evaluates an expression and outputs its value.
  Operator 
 \family typewriter
-infoExec
+InfoExec
 \family default
  executes one or more statements and does not produce any output.
  The major difference between them is that 
 \family typewriter
-infoEval
+InfoEval
 \family default
  does not change individual information fields while 
 \family typewriter
-infoExec
+InfoExec
 \family default
  update individual information fields from the namespace after the statements
  are executed.
@@ -9365,7 +9365,7 @@ infoExec
 \begin_layout Standard
 Operator 
 \family typewriter
-infoEval
+InfoEval
 \family default
  is usually used to output individual information fields and properties
  in batch mode.
@@ -9377,7 +9377,7 @@ infoEval
 \begin_layout Itemize
 
 \family typewriter
-infoEval(r'
+InfoEval(r'
 \begin_inset Quotes erd
 \end_inset
 
@@ -9396,7 +9396,7 @@ t
 \begin_layout Itemize
 
 \family typewriter
-infoEval('ind.sexChar()', exposeInd='ind')
+InfoEval('ind.sexChar()', exposeInd='ind')
 \family default
  outputs the sex of all individuals using an exposed individual object 
 \family typewriter
@@ -9408,7 +9408,7 @@ ind
 \begin_layout Itemize
 
 \family typewriter
-infoEval('a+b**2')
+InfoEval('a+b**2')
 \family default
  outputs 
 \begin_inset Formula $a+b^{2}$
@@ -9429,7 +9429,7 @@ infoEval('a+b**2')
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "infoEval"
+reference "InfoEval"
 
 \end_inset
 
@@ -9439,8 +9439,8 @@ reference "infoEval"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/infoEval.log"
-lstparams "caption={Evaluate expressions using individual information fields},label={infoEval}"
+filename "log/InfoEval.log"
+lstparams "caption={Evaluate expressions using individual information fields},label={InfoEval}"
 
 \end_inset
 
@@ -9450,7 +9450,7 @@ lstparams "caption={Evaluate expressions using individual information fields},la
 \begin_layout Standard
 Operator 
 \family typewriter
-infoExec
+InfoExec
 \family default
  is usually used to set individual information fields.
  For example
@@ -9459,7 +9459,7 @@ infoExec
 \begin_layout Itemize
 
 \family typewriter
-infoExec('age += 1')
+InfoExec('age += 1')
 \family default
  increases the age of all individuals by one.
 \end_layout
@@ -9467,7 +9467,7 @@ infoExec('age += 1')
 \begin_layout Itemize
 
 \family typewriter
-infoExec('risk = 2 if packPerYear > 10 else 1.5')
+InfoExec('risk = 2 if packPerYear > 10 else 1.5')
 \family default
  sets information field 
 \family typewriter
@@ -9497,7 +9497,7 @@ packPerYear
 \begin_layout Itemize
 
 \family typewriter
-infoExec('a = b*c')
+InfoExec('a = b*c')
 \family default
  sets the value of information field 
 \family typewriter
@@ -9518,13 +9518,13 @@ c
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "infoExec"
+reference "InfoExec"
 
 \end_inset
 
  demonstrates the use of this operator, using its function form 
 \family typewriter
-InfoExec
+infoExec
 \family default
 .
 \end_layout
@@ -9532,8 +9532,8 @@ InfoExec
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/infoExec.log"
-lstparams "caption={Execute statements using individual information fields},label={infoExec}"
+filename "log/InfoExec.log"
+lstparams "caption={Execute statements using individual information fields},label={InfoExec}"
 
 \end_inset
 
@@ -9543,11 +9543,11 @@ lstparams "caption={Execute statements using individual information fields},labe
 \begin_layout Note
 Except for the local (temporary) namespace, operator 
 \family typewriter
-infoEval
+InfoEval
 \family default
  and 
 \family typewriter
-infoExec
+InfoExec
 \family default
  can also access variables and functions in a global namespace, which is
  the module namespace of your script.
@@ -10181,7 +10181,7 @@ Individuals with an invalid destination subpopulation ID (e.g.
 \begin_layout Subsection
 Split subpopulations (operators 
 \family typewriter
-splitSubPops
+SplitSubPops
 \family default
 )
 \end_layout
@@ -10189,12 +10189,12 @@ splitSubPops
 \begin_layout Standard
 Operator 
 \family typewriter
-splitSubPops
+SplitSubPops
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-splitSubPops
+SplitSubPops
 \end_layout
 
 \end_inset
@@ -10229,7 +10229,7 @@ lstparams "caption={Split subpopulations by size},label={splitBySize}"
 \begin_layout Standard
 Operator 
 \family typewriter
-splitSubPops
+SplitSubPops
 \family default
  splits a subpopulation by sizes of the resulting subpopulations.
  It is often easier to do so with proportions.
@@ -10238,7 +10238,7 @@ splitSubPops
  any generation.
  One way of doing this is to apply a 
 \family typewriter
-splitSubPops
+SplitSubPops
 \family default
  operator at the right generation.
  Example 
@@ -10294,7 +10294,7 @@ reference "splitByInfo"
 
  where the function form of operator 
 \family typewriter
-splitSubPops
+SplitSubPops
 \family default
  is used.
 \end_layout
@@ -10313,7 +10313,7 @@ lstparams "caption={Split subpopulations by individual information field},label=
 \begin_layout Subsection
 Merge subpopulations (operator 
 \family typewriter
-mergeSubPops
+MergeSubPops
 \family default
 )
 \end_layout
@@ -10321,7 +10321,7 @@ mergeSubPops
 \begin_layout Standard
 Operator 
 \family typewriter
-mergeSubPops
+MergeSubPops
 \family default
  merges specified subpopulations into a single subpopulation.
  This operator can be used to simulate admixed populations where two or
@@ -10330,7 +10330,7 @@ mergeSubPops
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mergeSubPops"
+reference "MergeSubPops"
 
 \end_inset
 
@@ -10348,8 +10348,8 @@ reference "splitByProp"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mergeSubPops.log"
-lstparams "caption={Merge multiple subpopulations into a single subpopulation},label={mergeSubPops}"
+filename "log/MergeSubPops.log"
+lstparams "caption={Merge multiple subpopulations into a single subpopulation},label={MergeSubPops}"
 
 \end_inset
 
@@ -10359,7 +10359,7 @@ lstparams "caption={Merge multiple subpopulations into a single subpopulation},l
 \begin_layout Subsection
 Resize subpopulations (operator 
 \family typewriter
-resizeSubPops
+ResizeSubPops
 \family default
 )
 \end_layout
@@ -10376,7 +10376,7 @@ Whenever possible, it is recommended that subpopulation sizes are changed
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "resizeSubPops"
+reference "ResizeSubPops"
 
 \end_inset
 
@@ -10387,8 +10387,8 @@ reference "resizeSubPops"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/resizeSubPops.log"
-lstparams "caption={Resize subpopulation sizes},label={resizeSubPops}"
+filename "log/ResizeSubPops.log"
+lstparams "caption={Resize subpopulation sizes},label={ResizeSubPops}"
 
 \end_inset
 
@@ -13089,11 +13089,11 @@ A penetrance operator can be applied before or after mating, to assign affection
  using the function form of a penetrance operator (e.g.
  function 
 \family typewriter
-MapPenetrance
+mapPenetrance
 \family default
  for operator 
 \family typewriter
-mapPenetrance
+MapPenetrance
 \family default
 ).
  Compared the penetrance operators that assign affection status to only
@@ -13115,7 +13115,7 @@ A penetrance operator usually do not store the penetrance values.
 \begin_layout Subsection
 Map penetrance model (operator 
 \family typewriter
-mapPenetrance
+MapPenetrance
 \family default
 )
 \end_layout
@@ -13126,7 +13126,7 @@ A map penetrance opertor uses a Python dictionary to provide penetrance
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mapPenetrance"
+reference "MapPenetrance"
 
 \end_inset
 
@@ -13148,8 +13148,8 @@ reference "mapPenetrance"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mapPenetrance.log"
-lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
+filename "log/MapPenetrance.log"
+lstparams "caption={A penetrance model that uses pre-defined fitness value},label={MapPenetrance}"
 
 \end_inset
 
@@ -13171,7 +13171,7 @@ The above example assumes that penetrance for individuals with genotypes
  In that case, you can specify fitness for both types of genotypes.
  The underlying mechanism is that the 
 \family typewriter
-mapPenetrance
+MapPenetrance
 \family default
  looks up a genotype in the dictionary first directly, and then without
  phase information if a genotype is not found.
@@ -13233,7 +13233,7 @@ keys
 \begin_layout Subsection
 Multi-allele penetrance model (operator 
 \family typewriter
-maPenetrance
+MaPenetrance
 \family default
 )
 \end_layout
@@ -13295,7 +13295,7 @@ The default wildtype group contains allele 0 so the two allele groups are
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "maPenetrance"
+reference "MaPenetrance"
 
 \end_inset
 
@@ -13306,8 +13306,8 @@ reference "maPenetrance"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/maPenetrance.log"
-lstparams "caption={A multi-allele penetrance model},label={maPenetrance}"
+filename "log/MaPenetrance.log"
+lstparams "caption={A multi-allele penetrance model},label={MaPenetrance}"
 
 \end_inset
 
@@ -13317,7 +13317,7 @@ lstparams "caption={A multi-allele penetrance model},label={maPenetrance}"
 \begin_layout Standard
 Operator 
 \family typewriter
-maPenetrance
+MaPenetrance
 \family default
  also supports multiple loci by specifying fitness values for all combination
  of genotype at specified loci.
@@ -13404,7 +13404,7 @@ In general,
 \begin_layout Subsection
 Multi-loci penetrance model (operator 
 \family typewriter
-mlPenetrance
+MlPenetrance
 \family default
 )
 \end_layout
@@ -13484,7 +13484,7 @@ mode=HETEROGENEITY
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mlPenetrance"
+reference "MlPenetrance"
 
 \end_inset
 
@@ -13496,8 +13496,8 @@ reference "mlPenetrance"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mlPenetrance.log"
-lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
+filename "log/MlPenetrance.log"
+lstparams "caption={A multi-loci penetrance model},label={MlPenetrance}"
 
 \end_inset
 
@@ -13507,7 +13507,7 @@ lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
 \begin_layout Subsection
 Hybrid penetrance model (operator 
 \family typewriter
-pyPenetrance
+PyPenetrance
 \family default
 )
 \end_layout
@@ -13586,7 +13586,7 @@ pySelector(func=pfunc, loci=loci, paramFields=fields)
 .
  If the function you provide accepts three arguments, 
 \family typewriter
-pyPenetrance
+PyPenetrance
 \family default
  will pass generation number as the third argument so that you could implement
  generation-specific penetrance models (e.g.
@@ -13600,7 +13600,7 @@ pfunc(genotype, fields, gen)
 \begin_layout Standard
 When a 
 \family typewriter
-pyPenetrance
+PyPenetrance
 \family default
  operator is used to calculate penetrance for an individual, it will collect
  his or her genotype at specified loci, optional values at specified information
@@ -13619,7 +13619,7 @@ sex
 , synchronize its value with individual sex (e.g.
  using operator 
 \family typewriter
-infoExec('sex=ind.sex()', exposeInd='ind'
+InfoExec('sex=ind.sex()', exposeInd='ind'
 \family default
 ) and pass this information to the user-defined function (
 \family typewriter
@@ -13638,7 +13638,7 @@ reference "pySelector"
 
  demonstrates how to use a 
 \family typewriter
-pyPenetrance
+PyPenetrance
 \family default
  to specify penetrance values according to a fitness table and the smoking
  status of each individual.
@@ -13649,8 +13649,8 @@ pyPenetrance
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyPenetrance.log"
-lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
+filename "log/PyPenetrance.log"
+lstparams "caption={A hybrid penetrance model},label={PyPenetrance}"
 
 \end_inset
 
@@ -13676,7 +13676,7 @@ l.
 \begin_layout Subsection
 A hybrid quantitative trait operator (operator 
 \family typewriter
-pyQuanTrait
+PyQuanTrait
 \family default
 )
 \end_layout
@@ -13684,7 +13684,7 @@ pyQuanTrait
 \begin_layout Standard
 Operator 
 \family typewriter
-pyQuanTrait
+PyQuanTrait
 \family default
  accepts a user defined function that returns quantitative trait values
  for specified information fields.
@@ -13724,7 +13724,7 @@ A quantitative trait operator can be applied before or after mating and
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyQuanTrait"
+reference "PyQuanTrait"
 
 \end_inset
 
@@ -13742,8 +13742,8 @@ trait2
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyQuanTrait.log"
-lstparams "caption={A hybrid quantitative trait model},label={pyQuanTrait}"
+filename "log/PyQuanTrait.log"
+lstparams "caption={A hybrid quantitative trait model},label={PyQuanTrait}"
 
 \end_inset
 
@@ -14232,7 +14232,7 @@ y keys with different lengths.
  keys, this operator can act on multiple loci.
  Please refer to 
 \family typewriter
-mapPenetrance
+MapPenetrance
 \family default
  for details.
 \end_layout
@@ -14642,7 +14642,7 @@ sex
 , synchronize its value with individual sex (e.g.
  using operator 
 \family typewriter
-infoExec('sex=ind.sex()', exposeInd='ind'
+InfoExec('sex=ind.sex()', exposeInd='ind'
 \family default
 ) and pass this information to the user-defined function (
 \family typewriter
@@ -14734,12 +14734,12 @@ reference "peneSelector"
  disease are excluded from producing offspring.
  In this example, a penetrance model (operator 
 \family typewriter
-maPenetrance
+MaPenetrance
 \family default
 ) is applied to the parental generation to determine who will be affected.
  An 
 \family typewriter
-infoExec
+InfoExec
 \family default
  operator is used to set individual fitness to 1 if he or she is unaffected,
  and 0 if he or she is affected.
@@ -14754,11 +14754,11 @@ maSelector
 .
  This method could be extended to 
 \family typewriter
-infoExec('fitness = 1 - 0.01*ind.affected()', exposeInd='ind')
+InfoExec('fitness = 1 - 0.01*ind.affected()', exposeInd='ind')
 \family default
  to select against, but not remove, affected parents, and similarly 
 \family typewriter
-infoExec('fitness = 1 - 0.01*(LDL > 250)')
+InfoExec('fitness = 1 - 0.01*(LDL > 250)')
 \family default
  to select against individuals according to a quantitative trait.
 \end_layout
@@ -15339,7 +15339,7 @@ on to this field and pass the genotype information in the form of information
  field.
  Operator 
 \family typewriter
-infoExec
+InfoExec
 \family default
  could be helpful in this case.
  Example 
@@ -15361,7 +15361,7 @@ SummaryTagger
  could be used to count the number of affected parents.
  Two 
 \family typewriter
-maPenetrance
+MaPenetrance
 \family default
  operators are used both before and after mating to assign affection status
  to both parental and offspring generations.
@@ -15438,11 +15438,11 @@ stat
 \family default
  operator is usually used in conjunction with a 
 \family typewriter
-pyEval
+PyEval
 \family default
  or 
 \family typewriter
-pyExec
+PyExec
 \family default
  operator which execute Python statements and/or expressions in a population's
  local namespace.
@@ -15463,7 +15463,7 @@ ops = [
 
 \begin_layout Plain Layout
 
-    pyEval("'%.2f' % alleleFreq[0][0]")
+    PyEval("'%.2f' % alleleFreq[0][0]")
 \end_layout
 
 \begin_layout Plain Layout
@@ -15487,7 +15487,7 @@ simulator.evolve
  The second operator formats and outputs one of the variables.
  Because of the flexiblity of the 
 \family typewriter
-pyEval
+PyEval
 \family default
  operator, you can output statistics, even simple derived statistics, in
  any format.
@@ -15502,7 +15502,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval("'H_exp=%.2f' % (1-sum([x*x for x in alleleFreq[0].values()]))")
+PyEval("'H_exp=%.2f' % (1-sum([x*x for x in alleleFreq[0].values()]))")
 \end_layout
 
 \end_inset
@@ -22028,7 +22028,7 @@ stat(alleleFreq=[0,1]),
 
 \begin_layout Plain Layout
 
-pyEval(r'"%.2f" % (1-alleleFreq[0][0])')
+PyEval(r'"%.2f" % (1-alleleFreq[0][0])')
 \end_layout
 
 \end_inset
@@ -22081,7 +22081,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval('1./sum([(alleleFreq[0][x]/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0].
+PyEval('1./sum([(alleleFreq[0][x]/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0].
 keys() if x != 0])')
 \end_layout
 
@@ -22099,7 +22099,7 @@ stmts
 \family default
  parameter of 
 \family typewriter
-pyEval
+PyEval
 \family default
 , which will be evaluated before parameter 
 \family typewriter
@@ -22115,7 +22115,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval(stmts='''if alleleFreq[0][0] == 1:
+PyEval(stmts='''if alleleFreq[0][0] == 1:
 \end_layout
 
 \begin_layout Plain Layout
@@ -22258,7 +22258,7 @@ pyOperator(func=ne, param=[0], step=5)
 
 \begin_layout Plain Layout
 
-pyEval(r'"%.3f" % ne[0]', step=5)
+PyEval(r'"%.3f" % ne[0]', step=5)
 \end_layout
 
 \end_inset
@@ -22270,7 +22270,7 @@ would calculate effective number of alleles at locus 0 and output it.
 \begin_layout Standard
 The biggest difference between 
 \family typewriter
-pyEval
+PyEval
 \family default
  and 
 \family typewriter

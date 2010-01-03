@@ -49,15 +49,15 @@ using std::setprecision;
 namespace simuPOP {
 
 
-/** A \c pyEval operator evaluates a Python expression in a population's local
+/** A \c PyEval operator evaluates a Python expression in a population's local
  *  namespace when it is applied to this population. The result is written to
  *  an output specified by parameter \e output.
- *  <funcForm>PyEval</funcForm>
+ *  <funcForm>pyEval</funcForm>
  */
-class pyEval : public baseOperator
+class PyEval : public baseOperator
 {
 public:
-	/** Crete a \c pyEval operator that evaluates a Python expression \e expr
+	/** Crete a \c PyEval operator that evaluates a Python expression \e expr
 	 *  in a population's local namespace when it is applied to this population.
 	 *  If Python statements \e stmts is given (a single or multi-line string),
 	 *  the statement will be executed before \e expr. If \e exposePop is set
@@ -76,7 +76,7 @@ public:
 	 *  mixed use of local and global variables is, however, strongly
 	 *  discouraged.
 	 */
-	pyEval(const string & expr = string(), const string & stmts = string(),
+	PyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
@@ -86,15 +86,15 @@ public:
 	}
 
 
-	~pyEval()
+	~PyEval()
 	{
 	}
 
 
-	/// deep copy of a \c pyEval operator
+	/// deep copy of a \c PyEval operator
 	virtual baseOperator * clone() const
 	{
-		return new pyEval(*this);
+		return new PyEval(*this);
 	}
 
 
@@ -103,7 +103,7 @@ public:
 	 */
 	string evaluate(population & pop);
 
-	/// Apply the \c pyEval operator to population \e pop.
+	/// Apply the \c PyEval operator to population \e pop.
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
@@ -120,12 +120,12 @@ protected:
 
 /** This operator executes given Python statements in a population's local
  *  namespace when it is applied to this population.
- *  <funcForm>PyExec</funcForm>
+ *  <funcForm>pyExec</funcForm>
  */
-class pyExec : public pyEval
+class PyExec : public PyEval
 {
 public:
-	/** Create a \c pyExec operator that executes statements \e stmts in a
+	/** Create a \c PyExec operator that executes statements \e stmts in a
 	 *  population's local namespace when it is applied to this population.
 	 *  If \e exposePop is given, current population will be exposed in
 	 *  its local namespace as a variable named by \e exposePop. Although
@@ -134,24 +134,24 @@ public:
 	 *  more complex once. Note that exposed population variable will be
 	 *  removed after the statements are executed.
 	 */
-	pyExec(const string & stmts = string(), const string & exposePop = string(),
+	PyExec(const string & stmts = string(), const string & exposePop = string(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: pyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
+		: PyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
 
-	~pyExec()
+	~PyExec()
 	{
 	}
 
 
-	/// deep copy of a \c pyExec operator
+	/// deep copy of a \c PyExec operator
 	virtual baseOperator * clone() const
 	{
-		return new pyExec(*this);
+		return new PyExec(*this);
 	}
 
 
@@ -162,23 +162,23 @@ public:
 };
 
 
-/** Unlike operator \c pyEval and \c pyExec that work at the population level,
- *  in a population's local namespace, operator \c infoEval works at the
+/** Unlike operator \c PyEval and \c PyExec that work at the population level,
+ *  in a population's local namespace, operator \c InfoEval works at the
  *  individual level, working with individual information fields. When this
  *  operator is applied to a population, information fields of eligible
  *  individuals are put into either a temporary dictionary or in the local
  *  namespace of the population. A Python expression is then evaluated for
  *  each individual. The result is written to an output.
  *
- *  \note Unlike operator ``infoExec``, individual information fields are not
+ *  \note Unlike operator ``InfoExec``, individual information fields are not
  *  updated after this operator is applied to a population.
  *
  *  \note This operator tends to generate a large amount of output so use it
  *  is with caution.
  *
- *  <funcForm>InfoEval</funcForm>
+ *  <funcForm>infoEval</funcForm>
  */
-class infoEval : public baseOperator
+class InfoEval : public baseOperator
 {
 public:
 	/** Create an operator that evaluate a Python expression \e expr using
@@ -207,7 +207,7 @@ public:
 	 *  the module namespace of your script. However, using module level
 	 *  variables and functions in this operator is discouraged.
 	 */
-	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
+	InfoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
 		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
@@ -217,22 +217,22 @@ public:
 	}
 
 
-	~infoEval()
+	~InfoEval()
 	{
 		if (!m_usePopVars && m_dict != NULL)
 			Py_DECREF(m_dict);
 	}
 
 
-	/// deep copy of a \c infoEval operator
+	/// deep copy of a \c InfoEval operator
 	virtual baseOperator * clone() const
 	{
-		return new infoEval(*this);
+		return new InfoEval(*this);
 	}
 
 
 	// check all alleles in vector allele if they are fixed.
-	/// apply the \c infoEval operator
+	/// apply the \c InfoEval operator
 	bool apply(population & pop);
 
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
@@ -254,7 +254,7 @@ protected:
 	PyObject * m_dict;
 };
 
-/** Operator \c infoExec is similar to \c infoEval in that it works at the
+/** Operator \c InfoExec is similar to \c InfoEval in that it works at the
  *  individual level, using individual information fields as variables. The
  *  difference is that instead of evaluating an expression and outputing its
  *  result, this operator execute one or more statements and <bf>update
@@ -264,9 +264,9 @@ protected:
  *  not through functions (e.g. <tt>"ind.setInfo(5, 'a')"</tt> with individuals
  *  exposed as \c "ind" will not work).
  *
- *  <funcForm>InfoExec</funcForm>
+ *  <funcForm>infoExec</funcForm>
  */
-class infoExec : public infoEval
+class InfoExec : public InfoEval
 {
 public:
 	/** Create an operator that executes Python statements \e stmts using
@@ -300,29 +300,29 @@ public:
 	 *  the module namespace of your script. However, using module level
 	 *  variables and functions in \e stmts is discouraged.
 	 */
-	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
+	InfoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: infoEval(string(), stmts, usePopVars, exposeInd, output, begin, end, step, at, reps, subPops, infoFields),
+		: InfoEval(string(), stmts, usePopVars, exposeInd, output, begin, end, step, at, reps, subPops, infoFields),
 		m_simpleStmt(stmts, exposeInd)
 	{
 	}
 
 
-	~infoExec()
+	~InfoExec()
 	{
 	}
 
 
-	/// deep copy of a \c infoExec operator
+	/// deep copy of a \c InfoExec operator
 	virtual baseOperator * clone() const
 	{
-		return new infoExec(*this);
+		return new InfoExec(*this);
 	}
 
 
 	// check all alleles in vector allele if they are fixed.
-	/// apply the \c infoExec operator
+	/// apply the \c InfoExec operator
 	bool apply(population & pop);
 
 	bool applyDuringMating(population & pop, RawIndIterator offspring,

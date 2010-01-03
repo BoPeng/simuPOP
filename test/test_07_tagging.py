@@ -22,7 +22,7 @@ class TestTagger(unittest.TestCase):
             population(size=[50,150], ploidy=2, loci=[2,4],
                     infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme = randomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 1
         )
@@ -48,7 +48,7 @@ class TestTagger(unittest.TestCase):
         simu = simulator(pop)
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1)
         pop = simu.population(0)
@@ -72,7 +72,7 @@ class TestTagger(unittest.TestCase):
         simu = simulator( pop)
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1
         )
@@ -96,7 +96,7 @@ class TestTagger(unittest.TestCase):
         #
         simu = simulator(pop)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme = randomMating(ops=[MendelianGenoTransmitter(), 
                 PyTagger(func=myfunc),
             ]),
@@ -112,7 +112,7 @@ class TestTagger(unittest.TestCase):
     def TestPedigree(self):
         'Testing the handling of pedigrees (FIXME)'
         pop = population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
-        InitByFreq(pop, [0.2, 0.8])
+        initByFreq(pop, [0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]
         simu = simulator(pop)

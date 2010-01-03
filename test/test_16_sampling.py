@@ -26,8 +26,8 @@ class TestSampling(unittest.TestCase):
                 infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex'])
         self.pop.evolve(
             initOps = [
-                 initSex(),
-                 initByFreq(alleleFreq=[.2, .8]),
+                 InitSex(),
+                 InitByFreq(alleleFreq=[.2, .8]),
                  IdTagger(),
             ],
             matingScheme=randomMating(
@@ -38,7 +38,7 @@ class TestSampling(unittest.TestCase):
                 ParentsTagger(),
             ]),
             postOps = [
-                mapPenetrance(loci=0,
+                MapPenetrance(loci=0,
                     penetrance={(0,0):0.1,(0,1):.7,(1,1):1}),
             ],
             gen = 4
@@ -51,9 +51,9 @@ class TestSampling(unittest.TestCase):
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id'])
         self.largepop.evolve(
             initOps=[
-                 initSex(),
-                 initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
+                 InitSex(),
+                 InitByFreq(alleleFreq=[.2, .8], loci=[0]),
+                 InitByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
                  IdTagger(),
             ],
             #preOps = migrator(rate=[[0.1,0.1],[0.1,0.1]]),
@@ -66,7 +66,7 @@ class TestSampling(unittest.TestCase):
                 ]),
             postOps = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
-                mapPenetrance(loci=0,
+                MapPenetrance(loci=0,
                     penetrance={(0,0):0.1, (0,1):.7, (1,1):1}),
             ],
             gen = 10

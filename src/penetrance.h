@@ -140,9 +140,9 @@ private:
 /** This penetrance operator assigns individual affection status using a
  *  user-specified penetrance dictionary.
  *  <applicability>all ploidy</applicability>
- *  <funcForm>MapPenetrance</funcForm>
+ *  <funcForm>mapPenetrance</funcForm>
  */
-class mapPenetrance : public basePenetrance
+class MapPenetrance : public basePenetrance
 {
 public:
 	/** Create a penetrance operator that get penetrance value from a
@@ -157,7 +157,7 @@ public:
 	 *  these cases, only valid genotypes should be used to generator the
 	 *  dictionary keys.
 	 */
-	mapPenetrance(const uintList & loci, const tupleDict & penetrance,
+	MapPenetrance(const uintList & loci, const tupleDict & penetrance,
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -166,7 +166,7 @@ public:
 	{
 	};
 
-	virtual ~mapPenetrance()
+	virtual ~MapPenetrance()
 	{
 	}
 
@@ -174,7 +174,7 @@ public:
 	/// deep copy of a map penetrance operator
 	virtual baseOperator * clone() const
 	{
-		return new mapPenetrance(*this);
+		return new MapPenetrance(*this);
 	}
 
 
@@ -185,7 +185,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.mapPenetrance> map penetrance";
+		return "<simuPOP.MapPenetrance> map penetrance";
 	}
 
 
@@ -204,9 +204,9 @@ private:
  *  non-wildtype alleles \c a, this operator assign individual penetrance
  *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
  *  \c A and \c a in the haploid case.
- *  <funcForm>MaPenetrance</funcForm>
+ *  <funcForm>maPenetrance</funcForm>
  */
-class maPenetrance : public basePenetrance
+class MaPenetrance : public basePenetrance
 {
 public:
 	/** Creates a multi-allele penetrance operator that groups multiple alleles
@@ -227,7 +227,7 @@ public:
 	 *  This operator does not support haplodiploid populations and sex
 	 *  chromosomes.
 	 */
-	maPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
+	MaPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -239,7 +239,7 @@ public:
 			ValueError, "Please specify penetrance for each combination of genotype.");
 	};
 
-	virtual ~maPenetrance()
+	virtual ~MaPenetrance()
 	{
 	}
 
@@ -247,7 +247,7 @@ public:
 	/// deep copy of a multi-allele penetrance operator
 	virtual baseOperator * clone() const
 	{
-		return new maPenetrance(*this);
+		return new MaPenetrance(*this);
 	}
 
 
@@ -278,9 +278,9 @@ private:
  *  supported. Please refer to Neil Rish (1989) "Linkage Strategies for
  *  Genetically Complex Traits" for some analysis of these models.
  *
- *  <funcForm>MlPenetrance</funcForm>
+ *  <funcForm>mlPenetrance</funcForm>
  */
-class mlPenetrance : public basePenetrance
+class MlPenetrance : public basePenetrance
 {
 public:
 	/** Create a multiple-locus penetrance operator from a list penetrance
@@ -297,7 +297,7 @@ public:
 	 *  0 or 1 will be returned if the combined penetrance value is less than
 	 *  zero or greater than 1.
 	 */
-	mlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
+	MlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -307,7 +307,7 @@ public:
 		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one penetrance operator.");
 	};
 
-	virtual ~mlPenetrance()
+	virtual ~MlPenetrance()
 	{
 	}
 
@@ -327,7 +327,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.mlPenetrance> multiple-loci penetrance>" ;
+		return "<simuPOP.MlPenetrance> multiple-loci penetrance>" ;
 	}
 
 
@@ -349,9 +349,9 @@ private:
  *  The returned penetrance values will be used to determine the affection
  *  status of each individual.
  *
- *  <funcForm>PyPenetrance</funcForm>
+ *  <funcForm>pyPenetrance</funcForm>
  */
-class pyPenetrance : public basePenetrance
+class PyPenetrance : public basePenetrance
 {
 public:
 	/** Create a Python hybrid penetrance operator that passes genotype at
@@ -359,7 +359,7 @@ public:
 	 *  requested), and a generation number to a user-defined function \e func.
 	 *  The return value will be treated as individual penetrance.
 	 */
-	pyPenetrance(PyObject * func,
+	PyPenetrance(PyObject * func,
 		const uintList & loci = vectoru(),
 		int ancGen = 0,
 		int begin = 0, int end = -1, int step = 1,
@@ -379,7 +379,7 @@ public:
 	/// deep copy of a Python penetrance operator
 	virtual baseOperator * clone() const
 	{
-		return new pyPenetrance(*this);
+		return new PyPenetrance(*this);
 	}
 
 
@@ -391,7 +391,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.pyPenetrance> python penetrance>" ;
+		return "<simuPOP.PyPenetrance> python penetrance>" ;
 	}
 
 

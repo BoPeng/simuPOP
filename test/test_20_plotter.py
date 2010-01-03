@@ -91,7 +91,7 @@ class TestPlotter(unittest.TestCase):
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = initSex(),
+            initOps = InitSex(),
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = [varPlotter('subPopSize[0]', update=10,
@@ -112,7 +112,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = [
@@ -136,7 +136,7 @@ class TestPlotter(unittest.TestCase):
         migr = migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr], 
             matingScheme=randomMating(),
             postOps = [
@@ -161,7 +161,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             matingScheme=randomMating(),
             preOps = [stator, migr],
             postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
@@ -183,7 +183,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = varPlotter('[x**2 for x in subPopSize]', ylab='sp',
@@ -208,7 +208,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = [
@@ -233,7 +233,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = [
@@ -261,7 +261,7 @@ class TestPlotter(unittest.TestCase):
             mode=BY_PROBABILITY)
         stator = stat(popSize=1)
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = [
@@ -294,7 +294,7 @@ class TestPlotter(unittest.TestCase):
             r.grid()
         #
         simu.evolve(
-            initOps = [initSex()],
+            initOps = [InitSex()],
             preOps = [stator, migr],
             matingScheme=randomMating(),
             postOps = varPlotter('subPopSize', byRep=True, ylim=[0,100], plot_axes=False,
@@ -312,7 +312,7 @@ class TestPlotter(unittest.TestCase):
         'Testing scatterPlotter'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -332,7 +332,7 @@ class TestPlotter(unittest.TestCase):
         'Testing scatterPlotter with multiple virtual subpopulations'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -356,7 +356,7 @@ class TestPlotter(unittest.TestCase):
         'Testing scatterPlotter with partial individuals'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -383,7 +383,7 @@ class TestPlotter(unittest.TestCase):
         'Testing basic histogram using infoPlotter'
         import random
         pop = population([500, 1000], infoFields=['x'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
             matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
@@ -400,7 +400,7 @@ class TestPlotter(unittest.TestCase):
         'Testing stat plotter with multiple fields and subpopulations'
         import random
         pop = population([500, 1000], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -429,7 +429,7 @@ class TestPlotter(unittest.TestCase):
         'Testing barplotter with multiple fields and subpopulations'
         import random
         pop = population([500, 100], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -461,7 +461,7 @@ class TestPlotter(unittest.TestCase):
         'Testing the stat plotter when no function is specified'
         import random
         pop = population([500, 100], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -491,7 +491,7 @@ class TestPlotter(unittest.TestCase):
         'Testing the base boxplotter'
         import random
         pop = population([500, 100], infoFields=['x'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
             matingScheme=randomMating(ops=[MendelianGenoTransmitter(),
@@ -510,7 +510,7 @@ class TestPlotter(unittest.TestCase):
         'Testing barplotter with multiple fields and subpopulations'
         import random
         pop = population([500, 100], infoFields=['x', 'y'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -532,7 +532,7 @@ class TestPlotter(unittest.TestCase):
         import random
         pop = population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -560,7 +560,7 @@ class TestPlotter(unittest.TestCase):
         import random
         pop = population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -584,7 +584,7 @@ class TestPlotter(unittest.TestCase):
         'Testing boxPlotter separated by subpopulation'
         import random
         pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
@@ -608,7 +608,7 @@ class TestPlotter(unittest.TestCase):
         'Testing boxPlotter separated by both field and subpopulation'
         import random
         pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
-        InitSex(pop)
+        initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
