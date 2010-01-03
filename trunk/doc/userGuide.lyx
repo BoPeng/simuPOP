@@ -724,7 +724,7 @@ e.g.
  gene conversion (uniform or nonuniform), selection (single-locus, additive,
  multiplicative or hybrid multi-locus models, support selection of both
  parents and offspring), penetrance (single, multi-locus or hybrid), ascertainme
-nt (case–control, affected sibpairs, random, nuclear and large pedigrees),
+nt (case–control, affected sibpairs, random, nuclear and large Pedigrees),
  statistics calculation (including but not limited to allele, genotype,
  haplotype, heterozygote number and frequency; linkage disequilibrium measures,
  Hardy-Weinberg test), pedigree tracing, visualization (using R or other
@@ -1806,7 +1806,7 @@ begin, end, step, at
 etc are shared by all operators, and are explained in details only in class
  
 \family typewriter
-baseOperator.
+BaseOperator.
 \end_layout
 
 \end_deeper
@@ -1855,7 +1855,7 @@ pop = population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-simu = simulator(pop, randomMating())
+simu = simulator(pop, RandomMating())
 \end_layout
 
 \end_inset
@@ -1880,7 +1880,7 @@ pop = simuPOP.population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-simu = simuPOP.simulator(pop, simuPOP.randomMating())
+simu = simuPOP.simulator(pop, simuPOP.RandomMating())
 \end_layout
 
 \end_inset
@@ -2109,7 +2109,7 @@ def func():
 
 \begin_layout Plain Layout
 
-    simu = simulator(population(10), randomMating(), rep=5)
+    simu = simulator(population(10), RandomMating(), rep=5)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2455,7 +2455,7 @@ lstparams "caption={Ranges and iterators},label={iterator}"
 \begin_layout Subsection
 User-defined functions and the 
 \family typewriter
-withArgs
+WithArgs
 \family default
  function *
 \end_layout
@@ -2473,7 +2473,7 @@ simuPOP uses parameter names to determine which information should be passed
  to such a function.
  For example, a 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  will pass a reference to each offspring to a function defined with parameter
  
@@ -2561,7 +2561,7 @@ numOffspring
  is a parameter.
  In this case, you can use a wrapper function 
 \family typewriter
-withArgs(func, args)
+WithArgs(func, args)
 \family default
  and list passed arguments in 
 \family typewriter
@@ -2570,7 +2570,7 @@ args
  (e.g.
  
 \family typewriter
-withArgs(func, args=['geno', 'off' + str(numOffspring)]
+WithArgs(func, args=['geno', 'off' + str(numOffspring)]
 \family default
 ).
  As long as simuPOP knows which arguments to pass, your function can be
@@ -2579,7 +2579,7 @@ withArgs(func, args=['geno', 'off' + str(numOffspring)]
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "withArgs"
+reference "WithArgs"
 
 \end_inset
 
@@ -2589,8 +2589,8 @@ reference "withArgs"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/withArgs.log"
-lstparams "caption={Specify arguments of user-provided function using function withArgs},label={withArgs}"
+filename "log/WithArgs.log"
+lstparams "caption={Specify arguments of user-provided function using function WithArgs},label={WithArgs}"
 
 \end_inset
 
@@ -3392,7 +3392,7 @@ fitness
  to store evaluated fitness values for each individual.
  Operator 
 \family typewriter
-migrator
+Migrator
 \family default
  uses information field 
 \family typewriter
@@ -5319,7 +5319,7 @@ reps
  This technique has been widely used to produce table-like output where
  a 
 \family typewriter
-pyOutput
+PyOutput
 \family default
  outputs a newline when it is applied to the last replicate of a simulator.
  Example 
@@ -5762,7 +5762,7 @@ reference "output"
  are applied before or after mating.
  There is, however, a hidden during-mating operator that is called by 
 \family typewriter
-randomMating()
+RandomMating()
 \family default
 .
  This operator is called 
@@ -6016,7 +6016,7 @@ Python operators *
 If hybrid operators are still not flexible enough, you can always resort
  to a pure-Python operator 
 \family typewriter
-pyOperator
+PyOperator
 \family default
 .
  This operator has full access to the evolving population (or parents and
@@ -6027,7 +6027,7 @@ pyOperator
 \begin_layout Standard
 A 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  that is applied pre- or post- mating expects a function with one or both
  parameters 
@@ -6048,7 +6048,7 @@ param
 \family default
  is optional, depending on whether or not a parameter is passed to the 
 \family typewriter
-pyOperator()
+PyOperator()
 \family default
  constructor.
  Function 
@@ -6084,7 +6084,7 @@ TerminateIf
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyOperator"
+reference "PyOperator"
 
 \end_inset
 
@@ -6114,8 +6114,8 @@ reference "sub:Function-form"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyOperator.py"
-lstparams "caption={A frequency dependent mutation operator},label={pyOperator},lastline=15"
+filename "log/PyOperator.py"
+lstparams "caption={A frequency dependent mutation operator},label={PyOperator},lastline=15"
 
 \end_inset
 
@@ -6138,7 +6138,7 @@ InitByFreq
  operators that initialize loci with different allele frequencies.
  It applies a 
 \family typewriter
-pyOperator 
+PyOperator 
 \family default
 with function 
 \family typewriter
@@ -6164,7 +6164,7 @@ dynaMutator
 .
  Note that this 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  is applied at to the parental generation so allele frequencies have to
  be recalculated to be used by post-mating operator 
@@ -6177,8 +6177,8 @@ PyEval
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyOperator.log"
-lstparams "caption={Use a pyOperator during evolution},firstline=17,label={usePyOperator}"
+filename "log/PyOperator.log"
+lstparams "caption={Use a PyOperator during evolution},firstline=17,label={usePyOperator}"
 
 \end_inset
 
@@ -6188,7 +6188,7 @@ lstparams "caption={Use a pyOperator during evolution},firstline=17,label={usePy
 \begin_layout Standard
 An 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  can also be applied during-mating.
  They can be used to filter out unwanted offspring (by returning 
@@ -6246,7 +6246,7 @@ reference "duringMatingPyOperator"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyDuringMatingOperator.log"
-lstparams "caption={Use a during-mating pyOperator},label={duringMatingPyOperator}"
+lstparams "caption={Use a during-mating PyOperator},label={duringMatingPyOperator}"
 
 \end_inset
 
@@ -6256,7 +6256,7 @@ lstparams "caption={Use a during-mating pyOperator},label={duringMatingPyOperato
 \begin_layout Standard
 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  is the most powerful operator in simuPOP and has been widely used, for
  example, to calculate statistics and is not supported by the 
@@ -6267,7 +6267,7 @@ stat()
 ns for a special mating scheme.
  However, because 
 \family typewriter
-pyOperator 
+PyOperator 
 \family default
 works in the Python interpreter, it is expected that it runs slower than
  operators that are implemented at the C/C++ level.
@@ -6598,7 +6598,7 @@ A mating scheme goes through each subpopulation and populates the subpopulations
 A simuPOP mating scheme, by default, produces an offspring generation that
  has the same subpopulation sizes as the parental generation.
  This does not guarantee a constant population size because some operators,
- such as a migrator, can change population or subpopulation sizes.
+ such as a Migrator, can change population or subpopulation sizes.
 \end_layout
 
 \begin_layout Itemize
@@ -6653,7 +6653,7 @@ reference "migrSize"
 
  uses a default 
 \family typewriter
-randomMating()
+RandomMating()
 \family default
  scheme that keeps parental subpopulation sizes.
  Because migration between two subpopulations are asymmetric, the size of
@@ -6678,7 +6678,7 @@ reference "migrFixedSize"
 
 \end_inset
 
- uses the same migrator to move individuals between two subpopulations.
+ uses the same Migrator to move individuals between two subpopulations.
  Because a constant subpopulation size is specified, the offspring generation
  always has 500 and 1000 individuals in its two subpopulations.
  Note that operators 
@@ -7515,7 +7515,7 @@ Different groups of individuals in a population may have different mating
 \begin_layout Standard
 A heterogeneous mating scheme (
 \family typewriter
-heteroMating
+HeteroMating
 \family default
 ) accepts a list of mating schemes that are applied to different subpopulation
  or virtual subpopulations.
@@ -7596,7 +7596,7 @@ reference "hateroMatingSP"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/heteroMatingSP.log"
+filename "log/HeteroMatingSP.log"
 lstparams "caption={Applying different mating schemes to different subpopulations },label={hateroMatingSP}"
 
 \end_inset
@@ -7649,7 +7649,7 @@ shuffleOffspring=False
 \family default
  in 
 \family typewriter
-heteroMating
+HeteroMating
 \family default
 ().
  Because the number of offspring that are produced by each mating scheme
@@ -7661,7 +7661,7 @@ heteroMating
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/heteroMatingVSP.log"
+filename "log/HeteroMatingVSP.log"
 lstparams "caption={Applying different mating schemes to different virtual subpopulations },label={hateroMatingVSP}"
 
 \end_inset
@@ -7682,7 +7682,7 @@ status open
 
 \begin_layout Plain Layout
 
-heteroMating(
+HeteroMating(
 \end_layout
 
 \begin_layout Plain Layout
@@ -7697,7 +7697,7 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        randomMating(subPops=0)
+        RandomMating(subPops=0)
 \end_layout
 
 \begin_layout Plain Layout
@@ -7712,7 +7712,7 @@ heteroMating(
 
 \end_inset
 
-will apply SelfMating to the first 20% individuals, and randomMating will
+will apply SelfMating to the first 20% individuals, and RandomMating will
  be applied to all individuals.
  Similarly,
 \begin_inset listings
@@ -7721,7 +7721,7 @@ status open
 
 \begin_layout Plain Layout
 
-heteroMating(
+HeteroMating(
 \end_layout
 
 \begin_layout Plain Layout
@@ -7736,7 +7736,7 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        randomMating(subPops=0)
+        RandomMating(subPops=0)
 \end_layout
 
 \begin_layout Plain Layout
@@ -7757,7 +7757,7 @@ SelfMating
 \family default
  and 
 \family typewriter
-randomMating
+RandomMating
 \family default
 .
 \end_layout
@@ -7880,7 +7880,7 @@ If there are mixed positive and negative weights, the negative weights are
 The last case is demonstrated in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "heteroMatingWeight"
+reference "HeteroMatingWeight"
 
 \end_inset
 
@@ -7918,8 +7918,8 @@ reference "heteroMatingWeight"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/heteroMatingWeight.log"
-lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},label={heteroMatingWeight}"
+filename "log/HeteroMatingWeight.log"
+lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},label={HeteroMatingWeight}"
 
 \end_inset
 
@@ -8442,7 +8442,7 @@ Pedigrees
 \begin_layout Standard
 A 
 \family typewriter
-pedigree
+Pedigree
 \family default
  object is basically a static population object that is used to track relationsh
 ip between individuals.
@@ -8450,7 +8450,7 @@ ip between individuals.
 \family typewriter
 simuPOP.sampling
 \family default
- module to identify eligible pedigrees but future development will allow
+ module to identify eligible Pedigrees but future development will allow
  a mating scheme to follow a complete pedigree constructed manually or saved
  from a previous evolutionary process.
  This will allow, for example, to repeat the same evolutionary process for
@@ -8485,7 +8485,7 @@ A pedigree object provides several functions for you to identify spouse,
  For example, if you would like to know the offspring of all individuals,
  you can call function 
 \family typewriter
-pedigree.locateRelatives
+Pedigree.locateRelatives
 \family default
  as follows:
 \end_layout
@@ -8531,7 +8531,7 @@ resultFields
 More distant relationship can be derived from these relationship using function
  
 \family typewriter
-pedigree.traceRelatives
+Pedigree.traceRelatives
 \family default
 .
  This function accepts a path of information fields and follows the path
@@ -8612,7 +8612,7 @@ reference "locateRelative"
 \family typewriter
 population.extractIndividuals()
 \family default
- could be used to extract pedigrees from a population.
+ could be used to extract Pedigrees from a population.
  This is basically how 
 \family typewriter
 simuPOP.sampling
@@ -9087,7 +9087,7 @@ Expressions and statements
 \begin_layout Subsection
 Output a Python string (operator 
 \family typewriter
-pyOutput
+PyOutput
 \family default
 )
 \end_layout
@@ -9095,14 +9095,14 @@ pyOutput
 \begin_layout Standard
 Operator 
 \family typewriter
-pyOutput
+PyOutput
 \family default
  is a simple operator that prints a Python string when it is applied to
  a population.
  It is commonly used to print the progress of a simulation (e.g.
  
 \family typewriter
-pyOutput('start migration
+PyOutput('start migration
 \backslash
 n', at=200)
 \family default
@@ -9113,7 +9113,7 @@ PyEval
  outputs (e.g.
  
 \family typewriter
-pyOutput('
+PyOutput('
 \backslash
 n', rep=-1)
 \family default
@@ -9633,7 +9633,7 @@ This section will introduce several operators that allow you to move individuals
 \begin_layout Subsection
 Migration (operator 
 \family typewriter
-migrator
+Migrator
 \family default
 )
 \end_layout
@@ -9645,7 +9645,7 @@ Migration by probability
 \begin_layout Standard
 Operator 
 \family typewriter
-migrator
+Migrator
 \family default
  (and its function form 
 \family typewriter
@@ -9732,7 +9732,7 @@ reference "migrateByProb"
 
  demonstrate the use of a 
 \family typewriter
-migrator
+Migrator
 \family default
  to migrate individuals between three subpopulations.
  Note that 
@@ -9741,7 +9741,7 @@ migrator
 \begin_layout Itemize
 Operator 
 \family typewriter
-migrator
+Migrator
 \family default
  relies on an information field 
 \family typewriter
@@ -9805,7 +9805,7 @@ mode
 \family default
  of operator 
 \family typewriter
-migrator
+Migrator
 \family default
  to 
 \family typewriter
@@ -10135,7 +10135,7 @@ migrate_to
 ).
  You can then call the 
 \family typewriter
-migrator
+Migrator
 \family default
  using 
 \family typewriter
@@ -10152,7 +10152,7 @@ reference "manualMigration"
  shows how to manually move individuals around.
  This example uses the function form of 
 \family typewriter
-migrator
+Migrator
 \family default
 .
  You usually need to use a Python operator to set destination subpopulations
@@ -10479,7 +10479,7 @@ MendelianGenoTransmitter
 : Copy genotypes from two parents (a male and a female) to an offspring
  following Mendel's laws, used by mating scheme 
 \family typewriter
-randomMating.
+RandomMating.
 \family default
 This genotype transmitter can only be applied to 
 \series bold
@@ -10558,7 +10558,7 @@ Recombinator
 \family default
  is provided for such purposes, and can be used with 
 \family typewriter
-randomMating
+RandomMating
 \family default
  and 
 \family typewriter
@@ -13857,7 +13857,7 @@ fitness
  before mating happens.
  The 
 \family typewriter
-randomMating
+RandomMating
 \family default
  mating scheme then selects parents according to parental fitness values.
 \end_layout
@@ -14712,7 +14712,7 @@ False
 \family default
 , a 
 \family typewriter
-pyOperator(func=func)
+PyOperator(func=func)
 \family default
  with a function in the form of 
 \family typewriter
@@ -14817,7 +14817,7 @@ reference "vspSelector"
  to females in the first subpopulation and males in the second subpopulation
  is, strictly speaking, not needed because 
 \family typewriter
-randomMating
+RandomMating
 \family default
  performs naturally selection separately in males and females so females
  will be handled correctly in the first subpopulation if their fitness values
@@ -14841,7 +14841,7 @@ Natural selection in heterogeneous mating schemes **
 Multiple mating schemes could be applied to the same subpopulation in a
  heterogeneous mating scheme (
 \family typewriter
-heteroMating
+HeteroMating
 \family default
 ).
  These mating schemes may or may not support natural selection, may be applied
@@ -15203,7 +15203,7 @@ lstparams "caption={Assign unique IDs to individuals},label={IdTagger}"
 \end_layout
 
 \begin_layout Subsection
-Tracking pedigrees (operator 
+Tracking Pedigrees (operator 
 \family typewriter
 PedigreeTagger
 \family default
@@ -15327,7 +15327,7 @@ If the way how parental information fields pass to their offspring is affected
  by parental genotype, sex, or affection status, you could use a Python
  operator (
 \family typewriter
-pyOperator
+PyOperator
 \family default
 ) during mating to explicitly obtain parental information and set offspring
  information fields.
@@ -16905,7 +16905,7 @@ Genetic association refers to association between individual genotype (alleles
  or genotype) and phenotype (affection status).
  There are a large number of statistics tests based on different study designs
  (e.g.
- case-control, pedigree, longitudinal) with different covariate variables.
+ case-control, Pedigree, longitudinal) with different covariate variables.
  Although specialized software applications should be used for sophisticated
  statistical analysis, simuPOP provides a number of simple genetic association
  tests for convenience.
@@ -17444,7 +17444,7 @@ simu.evolve(
 
 \begin_layout Plain Layout
 
-    matingScheme=randomMating(),
+    matingScheme=RandomMating(),
 \end_layout
 
 \begin_layout Plain Layout
@@ -17586,7 +17586,7 @@ output
 \family default
  needs to be used (see operator 
 \family typewriter
-baseOperator
+BaseOperator
 \family default
  for details).
  For example, expression 
@@ -17722,7 +17722,7 @@ reference "IfElse"
  met.
  If more complicated logic is involved, a Python operator (
 \family typewriter
-pyOperator
+PyOperator
 \family default
 ) should be used.
 \end_layout
@@ -19095,7 +19095,7 @@ ControlledRandomMating
 \family default
  scheme instead of the usual 
 \family typewriter
-randomMating
+RandomMating
 \family default
  scheme should be used.
  
@@ -19403,7 +19403,7 @@ boxplot
 \begin_layout Standard
 These operators are derived from class 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  and call R plot functions when they are applied to a population.
  For example, operator 
@@ -20803,7 +20803,7 @@ lstparams "caption={Draw case control samples from a population and perform asso
 \end_layout
 
 \begin_layout Subsection
-Sampling pedigrees (functions 
+Sampling Pedigrees (functions 
 \family typewriter
 IndexToID
 \family default
@@ -20837,7 +20837,7 @@ two information fields (usually
 'mother_id'
 \family default
 ) that stores the ID of parents of each individual.
- Although simuPOP supports one-parent pedigrees, this feature will not be
+ Although simuPOP supports one-parent Pedigrees, this feature will not be
  discussed in this guide.
 \end_layout
 
@@ -20855,7 +20855,7 @@ father_id
 \family typewriter
 mother_id
 \family default
- to a population and track ID based pedigrees during evolution.
+ to a population and track ID based Pedigrees during evolution.
  More specifically, you can use operators 
 \family typewriter
 IdTagger
@@ -20898,7 +20898,7 @@ If you have R and rpy installed on your system, you can install the
 \family typewriter
 kinship
 \family default
- library of R and use it to analyze pedigree.
+ library of R and use it to analyze Pedigree.
  The 
 \family typewriter
 simuPOP.sampling
@@ -20907,7 +20907,7 @@ simuPOP.sampling
 \family typewriter
 PlotPedigree
 \family default
- to use this library to plot pedigrees.
+ to use this library to plot Pedigrees.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -20921,7 +20921,7 @@ reference "plotPedigree"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/plotPedigree.log"
-lstparams "caption={Prepare and plot pedigrees},label={plotPedigree}"
+lstparams "caption={Prepare and plot Pedigrees},label={plotPedigree}"
 
 \end_inset
 
@@ -20932,7 +20932,7 @@ lstparams "caption={Prepare and plot pedigrees},label={plotPedigree}"
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:pedigree"
+reference "fig:Pedigree"
 
 \end_inset
 
@@ -20954,7 +20954,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:pedigree"
+name "fig:Pedigree"
 
 \end_inset
 
@@ -20969,7 +20969,7 @@ Structure of a small complete pedigree
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/pedigree.png
+	filename log/Pedigree.png
 	lyxscale 40
 	width 60text%
 
@@ -21221,7 +21221,7 @@ drawThreeGenFamilySamples
 \family default
  to draw such families from a population, with restrictions on number of
  offspring, total number of individuals and number of affected individuals
- in the pedigree.
+ in the Pedigree.
  These parameters (
 \family typewriter
 numOffspring
@@ -22253,7 +22253,7 @@ status open
 
 \begin_layout Plain Layout
 
-pyOperator(func=ne, param=[0], step=5)
+PyOperator(func=ne, param=[0], step=5)
 \end_layout
 
 \begin_layout Plain Layout
@@ -22274,11 +22274,11 @@ PyEval
 \family default
  and 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  is that 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  is no longer evaluated in the population's local namespace.
  You will have to get the variables explicitly using the 
@@ -22294,7 +22294,7 @@ The final implementation, as a way to demonstrate how to define a new statistics
  that hides all the details, defines a new operator by inheriting a class
  from 
 \family typewriter
-pyOperator
+PyOperator
 \family default
 .
  The resulting operator could be used as a regular operator (e.g., 
@@ -23090,7 +23090,7 @@ reference "debug"
  demonstrates how to turn on debug information conditionally and turn it
  off afterwards, using operator 
 \family typewriter
-pyOperator
+PyOperator
 \family default
 .
  It also demonstrates how to redirect debug output to a file but redefining
@@ -23132,7 +23132,7 @@ Define your own operators *
 \begin_layout Standard
 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  is a Python class so you can derive your own operator from this operator.
  The tricky part is that the constructor of the derived operator needs to
@@ -23142,7 +23142,7 @@ __init__
 \family default
  function of 
 \family typewriter
-pyOperator
+PyOperator
 \family default
  will proper functions.
  This technique has been used by simuPOP in a number of occasions.
@@ -23156,7 +23156,7 @@ plotter.py
 \family default
  is derived from 
 \family typewriter
-pyOperator
+PyOperator
 \family default
 .
  This class encapsulates several different plot class that uses 
@@ -23166,7 +23166,7 @@ rpy
  to plot python expressions.
  One of the plotters is passed to the func parameter of 
 \family typewriter
-pyOperator.__init__
+PyOperator.__init__
 \family default
  so that it can be called when this operator is applied.
 \end_layout
@@ -23186,7 +23186,7 @@ dynaMutator
  defined in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyOperator"
+reference "PyOperator"
 
 \end_inset
 
@@ -23202,7 +23202,7 @@ mutate
 \family default
  is defined and is passed to the constructor of 
 \family typewriter
-pyOperator
+PyOperator
 \family default
 .
  Other than making 
@@ -23326,14 +23326,14 @@ selfingOffspringGenerator
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "randomMating"
+reference "RandomMating"
 
 \end_inset
 
  demonstrates how the most commonly used mating scheme, the diploid sexual
  
 \family typewriter
-randomMating
+RandomMating
 \family default
  mating scheme is defined in 
 \family typewriter
@@ -23346,8 +23346,8 @@ simuPOP.py
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/randomMating.py"
-lstparams "caption={Define a random mating scheme},firstline=2,label={randomMating}"
+filename "log/RandomMating.py"
+lstparams "caption={Define a random mating scheme},firstline=2,label={RandomMating}"
 
 \end_inset
 
@@ -23357,7 +23357,7 @@ lstparams "caption={Define a random mating scheme},firstline=2,label={randomMati
 \begin_layout Subsection
 
 \family typewriter
-homoMating
+HomoMating
 \family default
  mating scheme *
 \end_layout
@@ -23365,7 +23365,7 @@ homoMating
 \begin_layout Standard
 
 \family typewriter
-homoMating
+HomoMating
 \family default
  is used to define all pre-defined homogeneous mating schemes.
  It takes five parameters: 
@@ -23544,13 +23544,13 @@ MendelianGenoTransmitter
  in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "randomMating"
+reference "RandomMating"
 
 \end_inset
 
  is passed to the offspring generator used in 
 \family typewriter
-randomMating
+RandomMating
 \family default
 ).
  Note that you need to specify all needed operators if you use parameter
@@ -23561,7 +23561,7 @@ ops
  to change the operators used in a mating scheme (see Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "heteroMatingWeight"
+reference "HeteroMatingWeight"
 
 \end_inset
 
@@ -23762,15 +23762,15 @@ n.
 
 \begin_layout Standard
 A customized genotype transmitter is only a Python during-mating operator.
- Although it is possible to define a function and use a pyOperator directly
+ Although it is possible to define a function and use a PyOperator directly
  (Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyOperator"
+reference "PyOperator"
 
 \end_inset
 
-), it is much better to derive an operator from pyOperator, as the case
+), it is much better to derive an operator from PyOperator, as the case
  in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -23798,7 +23798,7 @@ sexSpecificRecombinator
  female parents.
  The key statement is the 
 \family typewriter
-pyOperator.__init__
+PyOperator.__init__
 \family default
  line which initializes a Python operator with given function 
 \family typewriter
@@ -24335,7 +24335,7 @@ CloneMating
 \family default
  mating scheme is used to copy surviving individuals and a 
 \family typewriter
-randomMating
+RandomMating
 \family default
  mating scheme is used to produce offspring.
 \end_layout
@@ -24355,7 +24355,7 @@ ops
 \family default
  parameter of 
 \family typewriter
-randomMating
+RandomMating
 \family default
  because only new offspring should have a new ID and record parental IDs.
  If you use these operators in the 
@@ -24374,7 +24374,7 @@ CloneMating
 \end_layout
 
 \begin_layout Itemize
-The resulting population is age-structured so pedigrees could be extracted
+The resulting population is age-structured so Pedigrees could be extracted
  from such a population.
 \end_layout
 

@@ -27,7 +27,7 @@
 #define _QTRAIT_H
 /**
    \file
-   \brief head file of class selector:public baseOperator
+   \brief head file of class selector:public BaseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -54,7 +54,7 @@ namespace simuPOP {
  *  \e ancGen. Note that this parameter is ignored if the operator is applied
  *  during mating.
  */
-class baseQuanTrait : public baseOperator
+class BaseQuanTrait : public BaseOperator
 {
 public:
 	/** Create a base quantitative trait operator. If \e ancGen=0 (default),
@@ -65,10 +65,10 @@ public:
 	 *  specified (virtual) subpopulations (parameter \e subPops) and
 	 *  replicates (parameter \e reps).
 	 */
-	baseQuanTrait(int ancGen = -1,  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	BaseQuanTrait(int ancGen = -1,  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_ancGen(ancGen)
 	{
 		DBG_ASSERT(infoSize() >= 1, ValueError,
@@ -77,15 +77,15 @@ public:
 
 
 	/// destructor
-	virtual ~baseQuanTrait()
+	virtual ~BaseQuanTrait()
 	{
 	}
 
 
 	/// deep copy of a quantitative trait operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
-		return new baseQuanTrait(*this);
+		return new BaseQuanTrait(*this);
 	}
 
 
@@ -109,7 +109,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.baseQuanTrait> quantitative trait>" ;
+		return "<simuPOP.BaseQuanTrait> quantitative trait>" ;
 	}
 
 
@@ -131,7 +131,7 @@ private:
  *
  *  <funcForm>pyQuanTrait</funcForm>
  */
-class PyQuanTrait : public baseQuanTrait
+class PyQuanTrait : public BaseQuanTrait
 {
 public:
 	/** Create a Python hybrid quantitative trait operator that passes genotype
@@ -146,7 +146,7 @@ public:
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseQuanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BaseQuanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
@@ -156,7 +156,7 @@ public:
 	};
 
 	/// deep copy of a Python quantitative trait operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyQuanTrait(*this);
 	}

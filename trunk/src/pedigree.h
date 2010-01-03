@@ -27,7 +27,7 @@
 #define _PEDIGREE_H
 /**
    \file
-   \brief head file of class pedigree
+   \brief head file of class Pedigree
  */
 #include "population.h"
 
@@ -50,7 +50,7 @@ namespace simuPOP {
  *  evolutionary process. Depending on how a pedigree is saved, sex and
  *  affection status information may be missing.
  */
-class pedigree : public population
+class Pedigree : public population
 {
 public:
 	/** Create a pedigree object from a population, using a subset of loci
@@ -71,18 +71,18 @@ public:
 	 *  could be constructed with one or no parent but certain functions such
 	 *  as relative tracking will not be available for such pedigrees.
 	 */
-	pedigree(const population & pop, const uintList & loci = vectoru(),
+	Pedigree(const population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
 		const string & idField = "ind_id", const string & fatherField = "father_id",
 		const string & motherField = "mother_id");
 
 	/// CPPONLY copy constructor
-	pedigree(const pedigree & rhs);
+	Pedigree(const Pedigree & rhs);
 
-	/** Create a cloned copy of a pedigree.
+	/** Create a cloned copy of a Pedigree.
 	 *  <group>1-ped</group>
 	 */
-	pedigree * clone() const;
+	Pedigree * clone() const;
 
 	/** Return a reference to individual with \e id. An \c IndexError will be
 	 *  raised if no individual with \e id is found. An float \e id is
@@ -225,7 +225,7 @@ private:
 
 // /// A pedigree manipulation class
 // /**
-//    A pedigree has all the pedigree information that is needed to look at parent
+//    A pedigree.has all the pedigree information that is needed to look at parent
 //    offspring relationship in a multi-generation population.
 //
 //    Conceptually, there are n generations with the latest generation being
@@ -253,13 +253,13 @@ private:
 //
 //  typedef vector<vectoru> Pedigree;
 //  // pedigree subpopulation size information ...
-//  typedef Pedigree PedSize;
+//  typedef pedigree PedSize;
 //  typedef vector<vector<vectorf> > PedInfo;
 //
 // public:
-//  /// create a pedigree. If a filename \c pedfile is given, the pedgree
+//  /// create a Pedigree. If a filename \c pedfile is given, the pedgree
 //  /// will be loaded from this file.
-//  pedigree(int numParents = 2, const string & pedfile = string());
+//  Pedigree(int numParents = 2, const string & pedfile = string());
 //
 //  /// population size at generation \c gen
 //  ULONG popSize(ULONG gen)
@@ -284,7 +284,7 @@ private:
 //      return m_paternal.size();
 //  }
 //
-////  /// Add a generation to the existing pedigree, with given subpopulation sizes
+////  /// Add a generation to the existing Pedigree, with given subpopulation sizes
 //  /// \c subPopSize . All parental indexes and information will be set to zero
 //  /// for the new generation.
 //  void addGen(const vectoru & subPopSize);
@@ -298,7 +298,7 @@ private:
 //  /// Make a copy of this pedigree
 //  pedigree * clone()
 //  {
-//      return new pedigree();
+//      return new Pedigree();
 //  }
 //
 //
@@ -307,18 +307,18 @@ private:
 //  void load(const string & filename);
 //
 //  /// load information \c name from a information pedigree file and add to this pedigree
-//  /// Information \c name should not have existed in the pedigree. The information
+//  /// Information \c name should not have existed in the Pedigree. The information
 //  /// pedigree file \c filename is usually produced by taggers such as \c sexTagger
 //  /// \c affectionTagger, \c PyTagger and \c infoTagger.
 //  void loadInfo(const string & filename, const string & name);
 //
 //  /// load information \c names from a information pedigree file and add to this pedigree
-//  /// Information names in \c names should not have existed in the pedigree.
+//  /// Information names in \c names should not have existed in the Pedigree.
 //  /// pedigree file \c filename is usually produced by taggers such as \c sexTagger
 //  /// \c affectionTagger, \c PyTagger and \c infoTagger.
 //  void loadInfo(const string & filename, const vectorstr & names);
 //
-//  /// add an information field to the pedigree, with given initial value
+//  /// add an information field to the Pedigree, with given initial value
 //  void addInfo(const string & name, double init = 0);
 //
 //  /// Write the pedigree to a file
@@ -335,7 +335,7 @@ private:
 //  void selectIndividuals(const vectoru & inds);
 //
 //  /// mark individuals that are unrelated to the visible individuals at the
-//  /// last generation (not marked by selectIndividuals) from the pedigree.
+//  /// last generation (not marked by selectIndividuals) from the Pedigree.
 //  void markUnrelated();
 //
 //  /// remove individuals that are unrelated to the last generation from the pedigree
@@ -346,9 +346,9 @@ private:
 // private:
 //  int m_numParents;
 //
-//  Pedigree m_paternal;
+//  pedigree m_paternal;
 //  ///
-//  Pedigree m_maternal;
+//  pedigree m_maternal;
 //  ///
 //  PedSize m_pedSize;
 //  ///

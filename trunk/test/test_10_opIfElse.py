@@ -23,7 +23,7 @@ class TestIfElseOperator(unittest.TestCase):
         pop.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
             initOps = [ InitSex(), InitByFreq([.5,.5]) ],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),
@@ -47,7 +47,7 @@ class TestIfElseOperator(unittest.TestCase):
         simu.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
             initOps = [ InitSex(), InitByFreq([.5,.5]) ],
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [
                 # count number of allels at this locus
                 stat(alleleFreq=[0]),

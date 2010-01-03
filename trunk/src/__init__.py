@@ -94,7 +94,7 @@ __all__ = [
     # Major simuPOP classes
     'population',
     'simulator',
-    'pedigree',
+    'Pedigree',
     # splitters
     'SexSplitter',
     'AffectionSplitter',
@@ -105,9 +105,9 @@ __all__ = [
     'GenotypeSplitter',
     'RangeSplitter',
     # mating schemes
-    'heteroMating',
-    'homoMating',
-    #'pedigreeMating',
+    'HeteroMating',
+    'HomoMating',
+    #'PedigreeMating',
     'OffspringGenerator',
     'ControlledOffspringGenerator',
     'RandomParentChooser',
@@ -120,7 +120,7 @@ __all__ = [
     'ParentChooser',
     'PolyParentsChooser',
     #
-    'randomMating',
+    'RandomMating',
     'RandomSelection',
     'MonogamousMating',
     'SelfMating',
@@ -139,13 +139,13 @@ __all__ = [
     'InitByValue',
     'InitInfo',
     #
-    'pyOutput',
+    'PyOutput',
     'PyEval',
     'PyExec',
     'InfoEval',
     'InfoExec',
     #
-    'migrator',
+    'Migrator',
     'MergeSubPops',
     'SplitSubPops',
     'ResizeSubPops',
@@ -192,7 +192,7 @@ __all__ = [
     #
     'TerminateIf',
     #
-    'pyOperator',
+    'PyOperator',
     #
     'NoneOp',
     'dumper',
@@ -234,7 +234,7 @@ __all__ = [
     'Stat',
     #
     # Global functions
-    'withArgs',
+    'WithArgs',
     # RNG Related
     'RNG',
     'getRNG',
@@ -354,10 +354,10 @@ def _deepcopy(self, memo):
 
 population.__deepcopy__ = _deepcopy
 simulator.__deepcopy__ = _deepcopy
-baseOperator.__deepcopy__ = _deepcopy
+BaseOperator.__deepcopy__ = _deepcopy
 
 
-class withArgs:
+class WithArgs:
     '''This class wraps around a function ``func`` and provides an attribute
     ``args`` so that simuPOP knows which parameters to send to the function.
     ``args`` should be a list of parameter names.
@@ -376,14 +376,14 @@ def CloneMating(numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
     a clone offspring generator. Please refer to class ``OffspringGenerator``
-    for parameters *ops* and *numOffspring*, and to class ``homoMating`` for
+    for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
     parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
     *selectionField* are ignored because this mating scheme does not support
     natural selection, and ``CloneGenoTransmitter`` copies sex from parents
     to offspring. Note that ``CloneGenoTransmitter`` by default also copies
     all parental information fields to offspring.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = SequentialParentChooser(),
         generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
         subPopSize = subPopSize,
@@ -399,11 +399,11 @@ def RandomSelection(numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter
     but it can also be applied to diploid populations. Please refer to class
     ``RandomParentChooser`` for parameter *selectionField*, to class
     ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
-    class ``homoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+    class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
     Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
     sex from parents to offspring.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = RandomParentChooser(True, selectionField),
         generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
         subPopSize = subPopSize,
@@ -411,17 +411,17 @@ def RandomSelection(numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter
         weight = weight)
 
 
-def randomMating(numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+def RandomMating(numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
     widely used to simulate diploid sexual Wright-Fisher random mating.
     Please refer to class ``RandomParentsChooser`` for parameter
     *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
-    *sexMode* and *numOffspring*, and to class ``homoMating`` for parameters
+    *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
     *subPopSize*, *subPops* and *weight*.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = RandomParentsChooser(True, selectionField),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -436,11 +436,11 @@ def MonogamousMating(numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGeno
     random mating scheme in that each parent can mate only once so there is no
     half-sibling in the population. Please refer to class ``OffspringGenerator``
     for parameters *ops*, *sexMode* and *numOffspring*, and to class
-    ``homoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+    ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
     Parameter *selectionField* is ignored because this mating scheme does not
     support natural selection.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = RandomParentsChooser(replacement=False),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -457,9 +457,9 @@ def PolygamousMating(polySex=MALE, polyNum=1, numOffspring = 1,
     spouses. Please refer to class ``PolyParentsChooser`` for parameters
     *polySex*, *polyNum* and *selectionField*, to class ``OffspringGenerator``
     for parameters *ops*,  *sexMode* and *numOffspring*, and to class
-    ``homoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+    ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = PolyParentsChooser(polySex, polyNum),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -479,10 +479,10 @@ def AlphaMating(alphaSex=MALE, alphaNum=0, alphaField='', numOffspring = 1,
     few alpha individuals have the right to mate. Please refer to class
     ``AlphaParentsChooser`` for parameters *alphaSex*, *alphaNum*, *alphaField*
     and *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
-    *sexMode* and *numOffspring*, and to class ``homoMating`` for parameters
+    *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
     *subPopSize*, *subPops* and *weight*.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = AlphaParentsChooser(alphaSex, alphaNum, alphaField, selectionField),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -498,10 +498,10 @@ def HaplodiploidMating(numOffspring = 1., sexMode = RANDOM_SEX,
     in a haplodiploid population where male individuals only have one set
     of homologous chromosomes. Please refer to class ``RandomParentsChooser``
     for parameter *selectionField*, to class ``OffspringGenerator`` for
-    parameters *ops*, *sexMode* and *numOffspring*, and to class ``homoMating``
+    parameters *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating``
     for parameters *subPopSize*, *subPops* and *weight*.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = RandomParentsChooser(True, selectionField),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -518,10 +518,10 @@ def SelfMating(replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
     in certain plant populations. Please refer to class ``RandomParentChooser``
     for parameter *replacement* and  *selectionField*, to class
     ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-    and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
+    and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
     *weight*.
     '''
-    return homoMating(
+    return HomoMating(
         chooser = RandomParentChooser(replacement, selectionField),
         generator = OffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -541,10 +541,10 @@ def SelfMating(replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
 ##     saved indexes. Please refer to class ``infoParentsChooser`` for parameters
 ##     *infoFields*, *func*, *param* and  *selectionField*, to class
 ##     ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-##     and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
+##     and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
 ##     *weight*.
 ##     '''
-##     return homoMating(
+##     return HomoMating(
 ##         chooser = infoParentsChooser(infoFields, func, param, selectionField),
 ##         generator = OffspringGenerator(ops, numOffspring, sexMode),
 ##         subPopSize = subPopSize,
@@ -562,24 +562,24 @@ def ControlledRandomMating(loci=[], alleles=[], freqFunc=None,
     *loci*. The controlled offspring generator will control the acceptance of
     offspring so that the generation reaches desired allele frequencies at
     these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
-    scheme works identically to a ``randomMating scheme``. Rationals and
+    scheme works identically to a ``RandomMating scheme``. Rationals and
     applications of this mating scheme is described in details in a paper *Peng
     et al, 2007 (PLoS Genetics)*. Please refer to class ``RandomParentsChooser``
     for parameters *selectionField*, to class ``ControlledOffspringGenerator``
     for parameters *loci*, *alleles*, *freqFunc*, to class
     ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-    and to class ``homoMating`` for parameters *subPopSize*, *subPops* and
+    and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
     *weight*.
     '''
     if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
-        return homoMating(
+        return HomoMating(
             chooser = RandomParentsChooser(True, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
             subPopSize = subPopSize,
             subPops = subPops,
             weight = weight)
     else:
-        return homoMating(
+        return HomoMating(
             chooser = RandomParentsChooser(True, selectionField),
             generator = ControlledOffspringGenerator(loci, alleles, freqFunc,
                 ops, numOffspring, sexMode),
@@ -759,8 +759,8 @@ def infoExec(pop, *args, **kwargs):
     InfoExec(*args, **kwargs).apply(pop)
 
 def Migrate(pop, *args, **kwargs):
-    'Function form of operator ``migrator``.'
-    migrator(*args, **kwargs).apply(pop)
+    'Function form of operator ``Migrator``.'
+    Migrator(*args, **kwargs).apply(pop)
 
 def splitSubPops(pop, *args, **kwargs):
     '''Split subpopulations (*subPops*) of population *pop* according to either

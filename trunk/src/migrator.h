@@ -27,7 +27,7 @@
 #define _MIGRATOR_H
 /**
    \file
-   \brief head file of class migrator:public baseOperator
+   \brief head file of class Migrator:public BaseOperator
  */
 #include "operator.h"
 #include <list>
@@ -101,10 +101,10 @@ namespace simuPOP {
  *  Unexpected results may happen if individuals migrate from overlapping
  *  virtual subpopulations.
  */
-class migrator : public baseOperator
+class Migrator : public BaseOperator
 {
 public:
-	/** Create a migrator that moves individuals from source (virtual)
+	/** Create a Migrator that moves individuals from source (virtual)
 	 *  subpopulations \e subPops (default to migrate from all subpopulations)
 	 *  to destination subpopulations \e toSubPops (default to all
 	 *  subpopulations), according to existing values in an information field
@@ -124,10 +124,10 @@ public:
 	 *  is ignored.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
-	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	migrator(const matrix & rate = matrix(), int mode = BY_PROBABILITY,
+	Migrator(const matrix & rate = matrix(), int mode = BY_PROBABILITY,
 		const uintList & toSubPops = uintList(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
@@ -135,14 +135,14 @@ public:
 		const stringList & infoFields = vectorstr(1, "migrate_to"));
 
 	/// destructor
-	virtual ~migrator()
+	virtual ~Migrator()
 	{
 	};
 
-	/// deep copy of a migrator
-	virtual baseOperator * clone() const
+	/// deep copy of a Migrator
+	virtual BaseOperator * clone() const
 	{
-		return new migrator(*this);
+		return new Migrator(*this);
 	}
 
 
@@ -157,7 +157,7 @@ public:
 	 */
 	void setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops);
 
-	/// apply the migrator to populaiton \e pop.
+	/// apply the Migrator to populaiton \e pop.
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
@@ -182,7 +182,7 @@ protected:
  *  original subpopulation.
  *  <funcForm>splitSubPops</funcForm>
  */
-class SplitSubPops : public baseOperator
+class SplitSubPops : public BaseOperator
 {
 
 public:
@@ -218,17 +218,17 @@ public:
 	 *  split.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
-	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 *
-	 *  \note Unlike operator \c migrator, this operator does not require an
+	 *  \note Unlike operator \c Migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
 	SplitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = vectorstr(), bool randomize = true,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
@@ -248,7 +248,7 @@ public:
 
 
 	/// deep copy of a \c SplitSubPops operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new SplitSubPops(*this);
 	}
@@ -283,7 +283,7 @@ private:
  *  subpopulations are not allowed in \e subPops.
  *  <funcForm>mergeSubPops</funcForm>
  */
-class MergeSubPops : public baseOperator
+class MergeSubPops : public BaseOperator
 {
 
 public:
@@ -293,13 +293,13 @@ public:
 	 *  subpopulation being merged unless a new \e name is given.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
-	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
 	MergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_name(name)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
@@ -316,7 +316,7 @@ public:
 
 
 	/// deep copy of a \c MergeSubPops operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new MergeSubPops(*this);
 	}
@@ -341,7 +341,7 @@ private:
  *  added or removed depending on the new subpopulation sizes.
  *  <funcForm>resizeSubPops</funcForm>
  */
-class ResizeSubPops : public baseOperator
+class ResizeSubPops : public BaseOperator
 {
 
 public:
@@ -355,7 +355,7 @@ public:
 	 *  copied sequentially, and repeatedly if needed.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
-	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
 	ResizeSubPops(const subPopList & subPops = subPopList(),
@@ -363,7 +363,7 @@ public:
 		bool propagate = true,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
@@ -388,7 +388,7 @@ public:
 
 
 	/// deep copy of a \c ResizeSubPops operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new ResizeSubPops(*this);
 	}

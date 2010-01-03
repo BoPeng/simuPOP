@@ -27,7 +27,7 @@
 #define _OUTPUTER_H
 /**
    \file
-   \brief head file of class outputer: public baseOperator
+   \brief head file of class outputer: public BaseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -42,21 +42,21 @@ namespace simuPOP {
 
 /** This operator outputs a given string when it is applied to a population.
  */
-class pyOutput : public baseOperator
+class PyOutput : public BaseOperator
 {
 
 public:
-	/** Creates a \c pyOutput operator that outputs a string \e msg to
+	/** Creates a \c PyOutput operator that outputs a string \e msg to
 	 *  \e output (default to standard terminal output) when it is applied
-	 *  to a population. Please refer to class \c baseOperator for a detailed
+	 *  to a population. Please refer to class \c BaseOperator for a detailed
 	 *  description of common operator parameters such as \e stage, \e begin
 	 *  and \e output.
 	 */
-	pyOutput(const string & msg = string(), const stringFunc & output = ">",
+	PyOutput(const string & msg = string(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_string(msg)
 	{
 	}
@@ -66,15 +66,15 @@ public:
 	virtual bool apply(population & pop);
 
 	/// destructor
-	virtual ~pyOutput()
+	virtual ~PyOutput()
 	{
 	}
 
 
-	/// Deep copy of a \e pyOutput operator.
-	virtual baseOperator * clone() const
+	/// Deep copy of a \e PyOutput operator.
+	virtual BaseOperator * clone() const
 	{
-		return new pyOutput(*this);
+		return new PyOutput(*this);
 	}
 
 
@@ -91,7 +91,7 @@ private:
  *  to simuPOP, this operator is usually used to dump a small population to a
  *  terminal for demonstration and debugging purposes.
  */
-class dumper : public baseOperator
+class dumper : public BaseOperator
 {
 public:
 	/** Create a operator that dumps the genotype structure (if \e structure is
@@ -102,7 +102,7 @@ public:
 	 *  will be outputed unless parameter \e loci are used to specify a subset
 	 *  of loci. If a list of (virtual) subpopulations are specified, this
 	 *  operator will only output individuals in these outputs. Please refer to
-	 *  class \c baseOperator for a detailed explanation for common parameters
+	 *  class \c BaseOperator for a detailed explanation for common parameters
 	 *  such as \e output and \e stage.
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
@@ -110,7 +110,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_loci(loci.elems()), m_max(max)
 	{
@@ -118,7 +118,7 @@ public:
 
 
 	/// Deep copy of a dumper operator.
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new dumper(*this);
 	}
@@ -167,7 +167,7 @@ private:
 
 /** An operator that save populations to specified files.
  */
-class SavePopulation : public baseOperator
+class SavePopulation : public BaseOperator
 {
 public:
 	/** Create an operator that saves a population to \e output when it is
@@ -176,13 +176,13 @@ public:
 	 *  or more '>' characters, and \c '!expr') but output from different
 	 *  operators will always replace existing files (effectively ignore
 	 *  '>' specification). Parameter \e subPops is ignored. Please refer to
-	 *  class \c baseOperator for a detailed description about common operator
+	 *  class \c BaseOperator for a detailed description about common operator
 	 *  parameters such as \e stage and \e begin.
 	 */
 	SavePopulation(const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_filename(output.value())
 	{
 		if (output.empty())
@@ -197,7 +197,7 @@ public:
 
 
 	/// Deep copy of a SavePopulation operator.
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new SavePopulation(*this);
 	}

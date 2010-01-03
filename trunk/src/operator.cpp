@@ -78,7 +78,7 @@ subPopList::subPopList(const vectorvsp & subPops)
 }
 
 
-bool baseOperator::isActive(UINT rep, long gen)
+bool BaseOperator::isActive(UINT rep, long gen)
 {
 	if (!m_reps.match(rep))
 		return false;
@@ -119,7 +119,7 @@ bool baseOperator::isActive(UINT rep, long gen)
 }
 
 
-bool baseOperator::isActive(UINT rep, long gen, long end,
+bool BaseOperator::isActive(UINT rep, long gen, long end,
                             const vector<bool> & activeRep, bool repOnly)
 {
 	// rep does not match
@@ -195,7 +195,7 @@ bool baseOperator::isActive(UINT rep, long gen, long end,
 }
 
 
-void baseOperator::setFlags()
+void BaseOperator::setFlags()
 {
 	RESETFLAG(m_flags, m_flagAtAllGen);
 	RESETFLAG(m_flags, m_flagOnlyAtBegin);
@@ -222,7 +222,7 @@ void baseOperator::setFlags()
 }
 
 
-void baseOperator::initializeIfNeeded(const population & pop)
+void BaseOperator::initializeIfNeeded(const population & pop)
 {
 	if (m_lastPop != pop.genoStruIdx()) {
 		initialize(pop);
@@ -231,7 +231,7 @@ void baseOperator::initializeIfNeeded(const population & pop)
 }
 
 
-bool baseOperator::apply(population & pop)
+bool BaseOperator::apply(population & pop)
 {
 	DBG_FAILIF(true, RuntimeError,
 		"This operator can only be applied during mating.");
@@ -239,7 +239,7 @@ bool baseOperator::apply(population & pop)
 }
 
 
-bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
+bool BaseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
                                      individual * dad, individual * mom)
 {
 	DBG_FAILIF(true, RuntimeError,
@@ -248,7 +248,7 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-string baseOperator::applicability(bool subPops, bool gen)
+string BaseOperator::applicability(bool subPops, bool gen)
 {
 	string desc;
 
@@ -312,7 +312,7 @@ opList::opList(const vectorop & ops) : m_elems(0)
 }
 
 
-opList::opList(const baseOperator & op) : m_elems(0)
+opList::opList(const BaseOperator & op) : m_elems(0)
 {
 	m_elems.push_back(op.clone());
 }
@@ -425,7 +425,7 @@ IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
-	baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_cond(), m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
 	if (PyString_Check(cond))
@@ -597,11 +597,11 @@ bool TicToc::apply(population & pop)
 }
 
 
-pyOperator::pyOperator(PyObject * func, PyObject * param,
+PyOperator::PyOperator(PyObject * func, PyObject * param,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
-	baseOperator(">", begin, end, step, at, reps, subPops, infoFields),
+	BaseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_param(param, true)
 {
 	if (!m_func.isValid())
@@ -612,13 +612,13 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 }
 
 
-string pyOperator::describe(bool format)
+string PyOperator::describe(bool format)
 {
-	return "<simuPOP.pyOperator> calling a Python function " + m_func.name();
+	return "<simuPOP.PyOperator> calling a Python function " + m_func.name();
 }
 
 
-bool pyOperator::apply(population & pop)
+bool PyOperator::apply(population & pop)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -643,7 +643,7 @@ bool pyOperator::apply(population & pop)
 }
 
 
-bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
@@ -675,10 +675,10 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-void applyDuringMatingOperator(const baseOperator & op,
+void applyDuringMatingOperator(const BaseOperator & op,
                                population * pop, int dad, int mom, ULONG off)
 {
-	baseOperator * opPtr = op.clone();
+	BaseOperator * opPtr = op.clone();
 
 	opPtr->applyDuringMating(*pop, pop->rawIndBegin() + off,
 		dad < 0 ? NULL : &pop->ind(dad),

@@ -245,7 +245,7 @@ namespace std
 %newobject simuPOP::population::clone;
 %newobject simuPOP::simulator::extract;
 %newobject simuPOP::simulator::clone;
-%newobject simuPOP::baseOperator::clone;
+%newobject simuPOP::BaseOperator::clone;
 %newobject simuPOP::mating::clone;
 %newobject simuPOP::stat::clone;
 
@@ -286,7 +286,7 @@ namespace std
 %include "population.h"
 
 namespace std {
-    %template()    vector<simuPOP::baseOperator * >;
+    %template()    vector<simuPOP::BaseOperator * >;
 }
 
 %include "operator.h"
@@ -294,7 +294,7 @@ namespace std {
 namespace std
 {
     %template()    vector<PyObject*>;
-    %template()    vector<simuPOP::homoMating * >;
+    %template()    vector<simuPOP::HomoMating * >;
 }
 
 
@@ -329,23 +329,23 @@ def unsupportedPedigreeOperation(*args, **kwargs):
     'This function is not supported in the pedigree class'
     raise exceptions.ValueError('Changing pedigree structure using this function is disallowed.')
 
-pedigree.removeIndividuals = unsupportedPedigreeOperation
-pedigree.removeSubPops = unsupportedPedigreeOperation
-pedigree.extractIndividuals = unsupportedPedigreeOperation
-pedigree.extractSubPops = unsupportedPedigreeOperation
-pedigree.push = unsupportedPedigreeOperation
-pedigree.setAncestralDepth = unsupportedPedigreeOperation
-pedigree.addChrom = unsupportedPedigreeOperation
-pedigree.addChromFrom = unsupportedPedigreeOperation
-pedigree.addIndFrom = unsupportedPedigreeOperation
-pedigree.addLoci = unsupportedPedigreeOperation
-pedigree.addLociFrom = unsupportedPedigreeOperation
-pedigree.mergeSubPops = unsupportedPedigreeOperation
-pedigree.recodeAlleles = unsupportedPedigreeOperation
-pedigree.removeLoci = unsupportedPedigreeOperation
-pedigree.resize = unsupportedPedigreeOperation
-pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
-pedigree.splitSubPop = unsupportedPedigreeOperation
+Pedigree.removeIndividuals = unsupportedPedigreeOperation
+Pedigree.removeSubPops = unsupportedPedigreeOperation
+Pedigree.extractIndividuals = unsupportedPedigreeOperation
+Pedigree.extractSubPops = unsupportedPedigreeOperation
+Pedigree.push = unsupportedPedigreeOperation
+Pedigree.setAncestralDepth = unsupportedPedigreeOperation
+Pedigree.addChrom = unsupportedPedigreeOperation
+Pedigree.addChromFrom = unsupportedPedigreeOperation
+Pedigree.addIndFrom = unsupportedPedigreeOperation
+Pedigree.addLoci = unsupportedPedigreeOperation
+Pedigree.addLociFrom = unsupportedPedigreeOperation
+Pedigree.mergeSubPops = unsupportedPedigreeOperation
+Pedigree.recodeAlleles = unsupportedPedigreeOperation
+Pedigree.removeLoci = unsupportedPedigreeOperation
+Pedigree.resize = unsupportedPedigreeOperation
+Pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
+Pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
 def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
@@ -369,7 +369,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
 
 population.evolve = evolve_pop
 
-def _new_migrator(self, rate=[], *args, **kwargs):
+def _new_Migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
@@ -378,12 +378,12 @@ def _new_migrator(self, rate=[], *args, **kwargs):
     if type(rate) in [types.ListType, types.TupleType, types.FloatType] and \
         (len(rate) == 0 or type(rate[0]) in [types.IntType, types.LongType, types.FloatType]):
         r = [rate]
-    cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(r, *args, **kwargs))
+    cppModule.Migrator_swiginit(self,
+        cppModule.new_Migrator(r, *args, **kwargs))
 
-_new_migrator.__doc__ = migrator.__init__.__doc__
-del migrator.__init__
-migrator.__init__ = _new_migrator
+_new_Migrator.__doc__ = Migrator.__init__.__doc__
+del Migrator.__init__
+Migrator.__init__ = _new_Migrator
 
 
 def _new_InitByFreq(self, alleleFreq=[], *args, **kwargs):

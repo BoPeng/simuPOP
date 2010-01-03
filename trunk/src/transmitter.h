@@ -27,7 +27,7 @@
 #define _TRANSMITTER_H
 /**
    \file
-   \brief head file of class Recombinator:public baseOperator
+   \brief head file of class Recombinator:public BaseOperator
  */
 #include "operator.h"
 
@@ -42,7 +42,7 @@ namespace simuPOP {
  *  that can be used by derived transmitters, and by customized Python
  *  during mating operators.
  */
-class GenoTransmitter : public baseOperator
+class GenoTransmitter : public BaseOperator
 {
 public:
 	/** Create a base genotype transmitter.
@@ -50,14 +50,14 @@ public:
 	GenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
 	}
 
 
 	/// Deep copy of a base genotype transmitter.
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new GenoTransmitter(*this);
 	}
@@ -143,7 +143,7 @@ public:
 
 
 	/// Deep copy of a clone genotype transmitter.
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new CloneGenoTransmitter(*this);
 	}
@@ -186,7 +186,7 @@ public:
 
 
 	/// Deep copy of a Mendelian genotype transmitter.
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new MendelianGenoTransmitter(*this);
 	}
@@ -252,7 +252,7 @@ public:
 
 
 	/// Deep copy of a selfing genotype transmitter
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new SelfingGenoTransmitter(*this);
 	}
@@ -300,7 +300,7 @@ public:
 
 
 	/// Deep copy of a haplodiploid transmitter.
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new HaplodiploidGenoTransmitter(*this);
 	}
@@ -354,7 +354,7 @@ public:
 
 
 	/// Deep copy of a mitochondrial genotype transmitter.
-	baseOperator * clone() const
+	BaseOperator * clone() const
 	{
 		return new MitochondrialGenoTransmitter(*this);
 	}
@@ -511,7 +511,7 @@ public:
 
 
 	/// deep copy of a Recombinator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new Recombinator(*this);
 	}

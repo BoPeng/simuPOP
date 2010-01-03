@@ -23,7 +23,7 @@ class TestTagger(unittest.TestCase):
                     infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = [InitSex()],
-            matingScheme = randomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
+            matingScheme = RandomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 1
         )
         pop = simu.population(0)
@@ -49,7 +49,7 @@ class TestTagger(unittest.TestCase):
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [InitSex()],
-            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
+            matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1)
         pop = simu.population(0)
         # we only know subpopulation 0 can not have tag 2
@@ -73,7 +73,7 @@ class TestTagger(unittest.TestCase):
         # other mode include mode=MATERNAL, TAG_Both
         simu.evolve(
             initOps = [InitSex()],
-            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
+            matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1
         )
         pop = simu.extract(0)
@@ -97,7 +97,7 @@ class TestTagger(unittest.TestCase):
         simu = simulator(pop)
         simu.evolve(
             initOps = [InitSex()],
-            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), 
+            matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), 
                 PyTagger(func=myfunc),
             ]),
             gen = 4)
@@ -110,21 +110,21 @@ class TestTagger(unittest.TestCase):
 
 
     def TestPedigree(self):
-        'Testing the handling of pedigrees (FIXME)'
+        'Testing the handling of Pedigrees (FIXME)'
         pop = population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
         initByFreq(pop, [0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]
         simu = simulator(pop)
         simu.evolve(
-            matingScheme = randomMating(ops=[MendelianGenoTransmitter(), 
-                ParentsTagger(output='>>pedigree.dat', infoFields=[]),
+            matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), 
+                ParentsTagger(output='>>Pedigree.dat', infoFields=[]),
                 PyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
                 ]),
             end=10
         )
         return
-        ped = pedigree(pedfile='pedigree.dat')
+        ped = Pedigree(pedfile='Pedigree.dat')
         ped.loadInfo('affection.dat', 'affection')
         ped.saveInfo('aff1.dat', 'affection')
         ped.loadInfo('info.dat', ['x', 'y'])

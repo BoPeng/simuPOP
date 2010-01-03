@@ -56,7 +56,7 @@ namespace simuPOP {
  *  passed to the \c evolve function of a simulator, and are applied repeatedly
  *  during the evolution of the simulator.
  *
- *  The \e baseOperator class is the base class for all operators. It defines
+ *  The \e BaseOperator class is the base class for all operators. It defines
  *  a common user interface that specifies at which generations, at which stage
  *  of a life cycle, to which populations and subpopulations an operator is
  *  applied. These are achieved by a common set of parameters such as \c begin,
@@ -96,7 +96,7 @@ namespace simuPOP {
  *  As an advanced feature, a Python function can be assigned to this
  *  parameter. Output strings will be sent to this function for processing.
  */
-class baseOperator
+class BaseOperator
 {
 public:
 	/** @name constructor and destructor */
@@ -140,7 +140,7 @@ public:
 	 *    operators that use information fields usually have default values for
 	 *    this parameter.
 	 */
-	baseOperator(const stringFunc & output, int begin, int end, int step, const intList & at,
+	BaseOperator(const stringFunc & output, int begin, int end, int step, const intList & at,
 		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
@@ -154,7 +154,7 @@ public:
 
 
 	/// destroy an operator
-	virtual ~baseOperator()
+	virtual ~BaseOperator()
 	{
 	}
 
@@ -162,9 +162,9 @@ public:
 	/** Return a cloned copy of an operator. This function is available to all
 	 *  operators.
 	 */
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
-		return new baseOperator(*this);
+		return new BaseOperator(*this);
 	}
 
 
@@ -364,7 +364,7 @@ private:
 
 };
 
-typedef std::vector< baseOperator * > vectorop;
+typedef std::vector< BaseOperator * > vectorop;
 
 class opList
 {
@@ -375,12 +375,12 @@ public:
 public:
 	opList(const vectorop & ops = vectorop());
 
-	opList(const baseOperator & op);
+	opList(const BaseOperator & op);
 
 	/// CPPONLY
 	opList(const opList & rhs);
 
-	baseOperator * operator[](size_t idx) const
+	BaseOperator * operator[](size_t idx) const
 	{
 		DBG_ASSERT(idx < m_elems.size(), IndexError,
 			"Operator index out of range");
@@ -449,7 +449,7 @@ protected:
  *  shell to examine the status of an evolutionary process, resume or stop the
  *  evolution.
  */
-class Pause : public baseOperator
+class Pause : public BaseOperator
 {
 
 public:
@@ -478,7 +478,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
 	}
@@ -491,7 +491,7 @@ public:
 
 
 	/// HIDDEN
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new Pause(*this);
 	}
@@ -514,7 +514,7 @@ private:
 /** This operator does nothing when it is applied to a population. It is
  *  usually used as a placeholder when an operator is needed syntactically.
  */
-class NoneOp : public baseOperator
+class NoneOp : public BaseOperator
 {
 
 public:
@@ -523,7 +523,7 @@ public:
 	NoneOp(const stringFunc & output = ">",
 		int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator("", begin, end, step, at, reps, subPops, infoFields)
+		BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -535,7 +535,7 @@ public:
 
 
 	/// HIDDEN
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new NoneOp(*this);
 	}
@@ -571,7 +571,7 @@ public:
  *  applied. If a value is passed directly, it will be considered as a fixed
  *  condition upon which one of \e ifOps or \e elseOps will be called.
  */
-class IfElse : public baseOperator
+class IfElse : public BaseOperator
 {
 
 public:
@@ -599,7 +599,7 @@ public:
 
 
 	/// HIDDEN
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new IfElse(*this);
 	}
@@ -632,7 +632,7 @@ private:
  *  <em>evolved generations</em> (return value from <tt>simulator::evolve</tt>)
  *  if termination happens after mating.
  */
-class TerminateIf : public baseOperator
+class TerminateIf : public BaseOperator
 {
 
 public:
@@ -648,14 +648,14 @@ public:
 		const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
-		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{
 	}
 
 
 	/// deep copy of a \c TerminateIf terminator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new TerminateIf(*this);
 	}
@@ -692,7 +692,7 @@ private:
  *  of measuring the duration between several generations by setting \c step
  *  parameter.
  */
-class TicToc : public baseOperator
+class TicToc : public BaseOperator
 {
 public:
 	/** Create a \c TicToc operator that outputs the elapsed since the last
@@ -703,7 +703,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		baseOperator(">", begin, end, step, at, reps, subPops, infoFields), m_startTime(0), m_lastTime(0)
+		BaseOperator(">", begin, end, step, at, reps, subPops, infoFields), m_startTime(0), m_lastTime(0)
 	{
 	}
 
@@ -715,7 +715,7 @@ public:
 
 
 	/// HIDDEN
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new TicToc(*this);
 	}
@@ -741,7 +741,7 @@ private:
  *  \e param is given. In the during-mating case, parameters \c pop,
  *  \c dad and \c mom can be ignored if \e offspringOnly is set to \c True.
  */
-class pyOperator : public baseOperator
+class PyOperator : public BaseOperator
 {
 public:
 	/** Create a pure-Python operator that calls a user-defined function when
@@ -766,19 +766,19 @@ public:
 	 *  other operators through parameter \e output is undetermined during
 	 *  evolution, they should not be open or closed in this Python operator.
 	 */
-	pyOperator(PyObject * func, PyObject * param = NULL,
+	PyOperator(PyObject * func, PyObject * param = NULL,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	/// HIDDEN
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
-		return new pyOperator(*this);
+		return new PyOperator(*this);
 	}
 
 
-	/** Apply the \c pyOperator operator to population \e pop. Calling this
+	/** Apply the \c PyOperator operator to population \e pop. Calling this
 	 *  function is equivalent to call \e func with parameter \e pop and
 	 *  optional parameter \e param.
 	 */
@@ -805,7 +805,7 @@ private:
  *  operator \e op to \e dad, \e mom and \e off of population \e pop.
  *  If index of dad or mom is negative, NULL will be passed.
  */
-void applyDuringMatingOperator(const baseOperator & op,
+void applyDuringMatingOperator(const BaseOperator & op,
 	population * pop, int dad, int mom, ULONG off);
 
 }

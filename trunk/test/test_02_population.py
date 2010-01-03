@@ -1297,7 +1297,7 @@ class TestPopulation(unittest.TestCase):
     def testPedigreeFunc(self):
         'Testing unsupported functions of the pedigree class'
         pop = population(10, infoFields='ind_id')
-        ped = pedigree(pop, fatherField = '', motherField = '')
+        ped = Pedigree(pop, fatherField = '', motherField = '')
         self.assertRaises(exceptions.ValueError, ped.removeIndividuals, 0)
         self.assertRaises(exceptions.ValueError, ped.removeSubPops)
         self.assertRaises(exceptions.ValueError, ped.extractIndividuals)

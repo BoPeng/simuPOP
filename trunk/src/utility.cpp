@@ -488,13 +488,13 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 		"Passed parameter should be None or a Python function");
 
 	if (PyObject_HasAttrString(obj, "args") && PyObject_HasAttrString(obj, "func")) {
-		// in this case, a withArgs object must have been passed.
+		// in this case, a WithArgs object must have been passed.
 		PyObject * args = PyObject_GetAttrString(obj, "args");
 		m_numArgs = PySequence_Size(args);
 		for (int i = 0; i < m_numArgs; ++i) {
 			PyObject * item = PySequence_GetItem(args, i);
 			DBG_ASSERT(PyString_Check(item), ValueError,
-				"Attribute args in a simuPOP withArgs object should be a list of strings");
+				"Attribute args in a simuPOP WithArgs object should be a list of strings");
 			m_args.push_back(string(PyString_AsString(item)));
 			Py_DECREF(item);
 		}

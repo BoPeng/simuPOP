@@ -105,7 +105,7 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(2) - 3500) < 100
 
     def testMigrateFromTo(self):
-        'Testing parameter from and to of migrators'
+        'Testing parameter from and to of Migrators'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=BY_PROBABILITY,

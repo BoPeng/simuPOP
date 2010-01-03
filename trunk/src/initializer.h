@@ -27,7 +27,7 @@
 #define _INITIALIZER_H
 /**
    \file
-   \brief head file of class initializer:public baseOperator
+   \brief head file of class initializer:public BaseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -42,7 +42,7 @@ namespace simuPOP {
  *  of sexes.
  *  <funcForm>initSex</funcForm>
  */
-class InitSex : public baseOperator
+class InitSex : public BaseOperator
 {
 public:
 	/** Create an operator that initialize individual sex to \c MALE or
@@ -63,7 +63,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_maleFreq(maleFreq), m_maleProp(maleProp), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
@@ -82,7 +82,7 @@ public:
 
 
 	/// deep copy of an \c InitSex operator.
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InitSex(*this);
 	}
@@ -110,7 +110,7 @@ protected:
  *  values, or a user-provided function such as \c random.random.
  *  <funcForm>initInfo</funcForm>
  */
-class InitInfo : public baseOperator
+class InitInfo : public BaseOperator
 {
 public:
 	/** Create an operator that initialize individual information fields
@@ -127,7 +127,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_values(values)
 	{
 		DBG_FAILIF(m_values.empty() && !m_values.func().isValid(), ValueError, "Please specify a list of values or a Python function.");
@@ -141,7 +141,7 @@ public:
 
 
 	/// deep copy of an \c InitInfo operator.
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InitInfo(*this);
 	}
@@ -164,7 +164,7 @@ protected:
  *  to all individuals in the same (virtual) subpopulations.
  *  <funcForm>initByFreq</funcForm>
  */
-class InitByFreq : public baseOperator
+class InitByFreq : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -194,7 +194,7 @@ public:
 
 
 	/// deep copy of the operator \c InitByFreq
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InitByFreq(*this);
 	}
@@ -224,7 +224,7 @@ private:
 /** This operator initialize individuals by given values.
  *  <funcForm>initByValue</funcForm>
  */
-class InitByValue : public baseOperator
+class InitByValue : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -255,7 +255,7 @@ public:
 
 
 	/// deep copy of the operator \c InitByValue
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InitByValue(*this);
 	}

@@ -307,7 +307,7 @@ class TestSelector(unittest.TestCase):
             simu = simulator(pop)
             simu.evolve(
                 initOps = [InitSex(), InitByFreq([1-p]+[p/10.]*10)],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
                 preOps = sel,
                 postOps = [
                     stat(alleleFreq=[0]),
@@ -332,7 +332,7 @@ class TestSelector(unittest.TestCase):
         #    p -> 1
         simu.evolve(
             initOps=[ InitSex(), InitByFreq(alleleFreq=[.5, .5])],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
@@ -359,7 +359,7 @@ class TestSelector(unittest.TestCase):
         #    p -> 1
         simu.evolve(
             initOps =[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             postOps = [
@@ -384,7 +384,7 @@ class TestSelector(unittest.TestCase):
         #    p -> 1
         simu.evolve(
             initOps=[ InitSex(), InitByFreq(alleleFreq=[.5,.5])],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             preOps = MaSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
             postOps = [
@@ -416,7 +416,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -448,7 +448,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = MaSelector(loci=0, wildtype=0,
                     fitness=[1-s1, 1, 1-s2]),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -471,7 +471,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = MapSelector(loci=0,
                     fitness={(0,0):1, (0,1):0.8, (1,1):1}),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 # PyEval('alleleFreq[0][0]'),
@@ -499,7 +499,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = MaSelector(loci=0, wildtype=0,
                     fitness=[1, 0.7, 1]),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
                 #PyEval('alleleFreq[0][0]'),
@@ -520,7 +520,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = MaSelector(loci=[3,6], wildtype=0,
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             initOps=[InitSex(), InitByFreq(alleleFreq=[.5,.5])],
             gen=100
         )
@@ -593,7 +593,7 @@ class TestSelector(unittest.TestCase):
             initOps = [
                 InitSex(),
                 InitByFreq(alleleFreq=[.5,.5])],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             preOps = PySelector(loci=0, func=sel),
             postOps = [
                 stat( alleleFreq=[0], genoFreq=[0]),
@@ -646,7 +646,7 @@ class TestSelector(unittest.TestCase):
                 InitSex(),
                 InitByFreq(alleleFreq=[.5,.5])],
             preOps = PySelector(loci=[0], func=sel),
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             postOps = [
                 stat(alleleFreq=[0]),
                 TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
@@ -669,7 +669,7 @@ class TestSelector(unittest.TestCase):
                 ], mode=ADDITIVE),
         simu.evolve(
             preOps = sel,
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             initOps = [ InitSex(), InitByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
@@ -680,7 +680,7 @@ class TestSelector(unittest.TestCase):
                     MaSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=MULTIPLICATIVE),
             ],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             initOps=[ InitSex(), InitByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
@@ -698,9 +698,9 @@ class TestSelector(unittest.TestCase):
             initOps = [InitSex(), InitByFreq([.4, .6])],
             preOps = [
                 MapSelector(loci = 1, fitness = {(0,0):1.,(0,1):1.,(1,1):.8}, subPops=[1]),
-                pyOperator(func=testFitness, param=([0, 2],)),
+                PyOperator(func=testFitness, param=([0, 2],)),
                 ],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             gen = 5
         )
         # subPop is also allowed
@@ -714,9 +714,9 @@ class TestSelector(unittest.TestCase):
                     subPops=1),
                 MaSelector(loci=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
                     subPops=2),
-                pyOperator(func=testFitness, param=([0],)),
+                PyOperator(func=testFitness, param=([0],)),
                 ],
-                matingScheme = randomMating(),
+                matingScheme = RandomMating(),
             gen = 5
         )
 

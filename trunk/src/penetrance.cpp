@@ -28,7 +28,7 @@
 namespace simuPOP {
 
 // set pentrance to all individuals and record penetrance if requested.
-bool basePenetrance::apply(population & pop)
+bool BasePenetrance::apply(population & pop)
 {
 	bool savePene = infoSize() > 0;
 	UINT infoIdx = 0;
@@ -83,7 +83,7 @@ bool basePenetrance::apply(population & pop)
 }
 
 
-bool basePenetrance::applyToIndividual(individual * ind, ULONG gen)
+bool BasePenetrance::applyToIndividual(individual * ind, ULONG gen)
 {
 	double p = penet(ind, gen);
 
@@ -95,7 +95,7 @@ bool basePenetrance::applyToIndividual(individual * ind, ULONG gen)
 }
 
 
-bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
+bool BasePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
 	double p = penet(&*offspring, pop.gen());
@@ -256,21 +256,21 @@ double MlPenetrance::penet(individual * ind, ULONG gen)
 		double pen = 1;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= static_cast<basePenetrance *>(*s)->penet(ind, gen);
+			pen *= static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen;
 	} else if (m_mode == ADDITIVE) {
 		// x1 + x2 + x3
 		double pen = 0;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen += static_cast<basePenetrance *>(*s)->penet(ind, gen);
+			pen += static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 1 : pen;
 	} else if (m_mode == HETEROGENEITY) {
 		// 1-(1-x1)(1-x2)
 		double pen = 1;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= 1 - static_cast<basePenetrance *>(*s)->penet(ind, gen);
+			pen *= 1 - static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 0 : 1 - pen;
 	}
 

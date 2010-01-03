@@ -141,7 +141,7 @@ private:
 };
 
 
-class pedigree;
+class Pedigree;
 
 
 /**
@@ -554,7 +554,7 @@ public:
 	 *  uses a dynamic searching algorithm which tends to be slow. If you need
 	 *  to look for multiple individuals from a static population, you might
 	 *  want to convert a population object to a pedigree object and use
-	 *  function <tt>pedigree.indByID</tt>.
+	 *  function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
 	individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");
@@ -1269,7 +1269,7 @@ public:
 
 
 	/** Update information fields \e fields from \e fromFields of another
-	 *  population (or pedigree) \e pop. Two populations should have the same
+	 *  population (or Pedigree) \e pop. Two populations should have the same
 	 *  number of individuals. If \e fromFields is not specified, it is assumed
 	 *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
 	 *  recent \e ancGen generations are updated.

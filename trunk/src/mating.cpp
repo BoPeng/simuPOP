@@ -1245,7 +1245,7 @@ void mating::submitScratch(population & pop, population & scratch)
 
 
 /*
-   pedigreeMating::pedigreeMating(const pedigree & ped,
+   PedigreeMating::PedigreeMating(const pedigree & ped,
     const OffspringGenerator & generator, bool setSex, bool setAffection,
     const vectorstr & copyFields)
     : mating(uintListFunc()), m_ped(ped),
@@ -1255,39 +1255,39 @@ void mating::submitScratch(population & pop, population & scratch)
    }
 
 
-   pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
+   PedigreeMating::PedigreeMating(const PedigreeMating & rhs)
     : mating(rhs), m_ped(rhs.m_ped), m_setSex(rhs.m_setSex),
     m_setAffection(rhs.m_setAffection), m_copyFields(rhs.m_copyFields)
    {
     m_generator = rhs.m_generator->clone();
     DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
-        "Passed pedigree has no ancestral generation.");
+        "Passed pedigree.has no ancestral generation.");
     // scroll to the greatest generation, but this generation
     // should have no parental generation.
     m_ped.useAncestralGen(m_ped.ancestralGens());
    }
 
 
-   pedigreeMating::~pedigreeMating()
+   PedigreeMating::~PedigreeMating()
    {
     delete m_generator;
    }
 
 
-   bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
+   bool PedigreeMating::prepareScratchPop(population & pop, population & scratch)
    {
     if (scratch.genoStruIdx() != pop.genoStruIdx())
         scratch.fitGenoStru(pop.genoStruIdx());
 
     DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
-        "Evolving generation does not have the same number of subpopulation as the pedigree.");
+        "Evolving generation does not have the same number of subpopulation as the Pedigree.");
     for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
         DBG_WARNING(pop.subPopSize(sp) > m_ped.subPopSize(sp),
-            "Giving population has more individuals than the pedigree."
+            "Giving population has more individuals than the Pedigree."
             "Some of the parents will be ignored");
         DBG_FAILIF(pop.subPopSize(sp) < m_ped.subPopSize(sp), ValueError,
             "Given population has less individuals in subpopulation " + toStr(sp)
- + " than the pedigree. PedigreeMating cannot continue.");
+ + " than the Pedigree. PedigreeMating cannot continue.");
     }
     if (m_ped.curAncestralGen() == 0)
         return false;
@@ -1319,7 +1319,7 @@ void mating::submitScratch(population & pop, population & scratch)
    }
 
 
-   bool pedigreeMating::mate(population & pop, population & scratch)
+   bool PedigreeMating::mate(population & pop, population & scratch)
    {
     // scrtach will have the right structure.
     if (!prepareScratchPop(pop, scratch))
@@ -1365,7 +1365,7 @@ void mating::submitScratch(population & pop, population & scratch)
                 it, itEnd);
             (void)numOff;
             DBG_FAILIF(numOff != 1, RuntimeError,
-                "Generation of offspring must succeed in pedigreeMating");
+                "Generation of offspring must succeed in PedigreeMating");
         }
         m_generator->finalize(pop);
     }
@@ -1375,7 +1375,7 @@ void mating::submitScratch(population & pop, population & scratch)
    }
  */
 
-homoMating::homoMating(ParentChooser & chooser,
+HomoMating::HomoMating(ParentChooser & chooser,
 	OffspringGenerator & generator,
 	const uintListFunc & subPopSize,
 	subPopList subPops, double weight)
@@ -1386,9 +1386,9 @@ homoMating::homoMating(ParentChooser & chooser,
 }
 
 
-string homoMating::describe(bool format) const
+string HomoMating::describe(bool format) const
 {
-	string desc = "<simuPOP.homoMating> a homogeneous mating scheme that uses\n<ul>\n<li>"
+	string desc = "<simuPOP.HomoMating> a homogeneous mating scheme that uses\n<ul>\n<li>"
 	              + m_ParentChooser->describe(false) + "\n<li>"
 	              + m_OffspringGenerator->describe(false) + "</ul>\n";
 
@@ -1396,7 +1396,7 @@ string homoMating::describe(bool format) const
 }
 
 
-bool homoMating::mateSubPop(population & pop, SubPopID subPop,
+bool HomoMating::mateSubPop(population & pop, SubPopID subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
@@ -1428,7 +1428,7 @@ bool homoMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-heteroMating::heteroMating(const vectormating & matingSchemes,
+HeteroMating::HeteroMating(const vectormating & matingSchemes,
 	const uintListFunc & subPopSize,
 	bool shuffleOffspring)
 	: mating(subPopSize),
@@ -1438,19 +1438,19 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 	vectormating::const_iterator it_end = matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
+		m_matingSchemes.push_back(dynamic_cast<HomoMating *>((*it)->clone()));
 }
 
 
-string heteroMating::describe(bool format) const
+string HeteroMating::describe(bool format) const
 {
-	string desc = "<simuPOP.heteroMating> a heterogeneous mating scheme with " +
+	string desc = "<simuPOP.HeteroMating> a heterogeneous mating scheme with " +
 	              toStr(m_matingSchemes.size()) + " homogeneous mating schemes:\n<ul>\n";
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 
 	for (; it != it_end; ++it) {
-		desc += "<li>" + dynamic_cast<homoMating *>(*it)->describe(false) +
+		desc += "<li>" + dynamic_cast<HomoMating *>(*it)->describe(false) +
 		        "<indent>in ";
 		subPopList subPops = (*it)->subPops();
 		if (subPops.allAvail())
@@ -1474,7 +1474,7 @@ string heteroMating::describe(bool format) const
 }
 
 
-heteroMating::~heteroMating()
+HeteroMating::~HeteroMating()
 {
 	vectormating::iterator it = m_matingSchemes.begin();
 	vectormating::iterator it_end = m_matingSchemes.end();
@@ -1484,22 +1484,22 @@ heteroMating::~heteroMating()
 }
 
 
-heteroMating::heteroMating(const heteroMating & rhs) :
+HeteroMating::HeteroMating(const HeteroMating & rhs) :
 	mating(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring)
 {
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
 	for (; it != it_end; ++it) {
-		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
-		DBG_WARNING(dynamic_cast<homoMating *>(*it)->subPopSizeSpecified(),
-			"Parameter subPopSize of a homoMating is ignored when this mating"
+		m_matingSchemes.push_back(dynamic_cast<HomoMating *>((*it)->clone()));
+		DBG_WARNING(dynamic_cast<HomoMating *>(*it)->subPopSizeSpecified(),
+			"Parameter subPopSize of a HomoMating is ignored when this mating"
 			" scheme is used in a heterogeneous mating scheme.");
 	}
 }
 
 
-bool heteroMating::mate(population & pop, population & scratch)
+bool HeteroMating::mate(population & pop, population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))

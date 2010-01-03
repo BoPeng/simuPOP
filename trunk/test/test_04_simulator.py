@@ -21,7 +21,7 @@ class TestSimulator(unittest.TestCase):
         simu = simulator(pop, rep = 3)
         simu.evolve(
             initOps = [InitSex(), InitByFreq([0.3, .7])],
-            matingScheme=randomMating(),
+            matingScheme=RandomMating(),
             postOps = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
         )
@@ -34,7 +34,7 @@ class TestSimulator(unittest.TestCase):
         # test if a cloned simulator can evolve again
         simu1.evolve(
             initOps = [InitSex()],
-            matingScheme=randomMating(),
+            matingScheme=RandomMating(),
             postOps = stat(alleleFreq=range(pop.totNumLoci())),
             gen = 20
         )
@@ -49,7 +49,7 @@ class TestSimulator(unittest.TestCase):
         pop = population(size=[200, 80], loci=[3])
         pop.evolve(
             initOps = [InitSex(), InitByFreq([0.2, 0.8])],
-            matingScheme=randomMating(ops = Recombinator(rates=0.001)),
+            matingScheme=RandomMating(ops = Recombinator(rates=0.001)),
             postOps = stat(alleleFreq=[1]),
             finalOps = stat(),
             gen=10
@@ -146,7 +146,7 @@ class TestSimulator(unittest.TestCase):
         simu.evolve(initOps=[InitSex()], 
             matingScheme=CloneMating(), gen=1)
         simu.evolve(initOps=[InitSex()],
-            matingScheme=randomMating(), gen=1)
+            matingScheme=RandomMating(), gen=1)
 
     def testVars(self):
         'Testing simulator::vars(rep), vars(rep, subPop), dvars(rep), dvars(rep, subPop)'

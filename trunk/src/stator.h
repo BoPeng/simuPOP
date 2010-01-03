@@ -27,7 +27,7 @@
 #define _STATOR_H
 /**
    \file
-   \brief head file of class baseOperator:public baseOperator
+   \brief head file of class BaseOperator:public BaseOperator
  */
 #include "utility.h"
 #include "population.h"
@@ -54,7 +54,7 @@ namespace simuPOP {
  *  an output specified by parameter \e output.
  *  <funcForm>pyEval</funcForm>
  */
-class PyEval : public baseOperator
+class PyEval : public BaseOperator
 {
 public:
 	/** Crete a \c PyEval operator that evaluates a Python expression \e expr
@@ -66,7 +66,7 @@ public:
 	 *  execution of expressions such as <tt>'pop.individual(0).allele(0)'</tt>.
 	 *  The result of \e expr will be sent to an output stream specified by
 	 *  parameter \c output. The exposed population variable will be removed
-	 *  after \e expr is evaluated. Please refer to class \c baseOperator for
+	 *  after \e expr is evaluated. Please refer to class \c BaseOperator for
 	 *  other parameters.
 	 *
 	 *  \note Although the statements and expressions are evaluated in a
@@ -80,7 +80,7 @@ public:
 		const string & exposePop = string(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
 	}
@@ -92,7 +92,7 @@ public:
 
 
 	/// deep copy of a \c PyEval operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyEval(*this);
 	}
@@ -130,7 +130,7 @@ public:
 	 *  If \e exposePop is given, current population will be exposed in
 	 *  its local namespace as a variable named by \e exposePop. Although
 	 *  multiple statements can be executed, it is recommended that you use
-	 *  this operator to execute short statements and use \c pyOperator for
+	 *  this operator to execute short statements and use \c PyOperator for
 	 *  more complex once. Note that exposed population variable will be
 	 *  removed after the statements are executed.
 	 */
@@ -149,7 +149,7 @@ public:
 
 
 	/// deep copy of a \c PyExec operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new PyExec(*this);
 	}
@@ -178,7 +178,7 @@ public:
  *
  *  <funcForm>infoEval</funcForm>
  */
-class InfoEval : public baseOperator
+class InfoEval : public BaseOperator
 {
 public:
 	/** Create an operator that evaluate a Python expression \e expr using
@@ -211,7 +211,7 @@ public:
 		const string & exposeInd = string(),
 		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
 	{
 	}
@@ -225,7 +225,7 @@ public:
 
 
 	/// deep copy of a \c InfoEval operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InfoEval(*this);
 	}
@@ -315,7 +315,7 @@ public:
 
 
 	/// deep copy of a \c InfoExec operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new InfoExec(*this);
 	}
@@ -820,7 +820,7 @@ private:
  *  namespace after \c stat is applied.
  *  <funcForm>Stat</funcForm>
  */
-class stat : public baseOperator
+class stat : public BaseOperator
 {
 public:
 	/** Create a \c stat operator that calculates specified statistics of a
@@ -832,7 +832,7 @@ public:
 	 *  are calculated. Instead, it stores results in the local namespace of
 	 *  the population being applied. Other operators can retrieve these
 	 *  variables or evalulate expression directly in this local namespace.
-	 *  Please refer to operator \c baseOperator for a detailed explanation of
+	 *  Please refer to operator \c BaseOperator for a detailed explanation of
 	 *  these common operator parameters.
 	 *
 	 *  \c stat supports parameter \e subPops. It usually calculate the same
@@ -1206,7 +1206,7 @@ public:
 
 
 	/// deep copy of a \c stat operator
-	virtual baseOperator * clone() const
+	virtual BaseOperator * clone() const
 	{
 		return new stat(*this);
 	}
