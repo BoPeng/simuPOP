@@ -26,7 +26,7 @@ class TestIfElseOperator(unittest.TestCase):
             matingScheme = RandomMating(),
             postOps = [
                 # count number of allels at this locus
-                stat(alleleFreq=[0]),
+                Stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
                 IfElse('alleleFreq[0][0]<0.2',
                     KamMutator(rates=.6, k=2, loci=[0]) ),
@@ -50,7 +50,7 @@ class TestIfElseOperator(unittest.TestCase):
             matingScheme = RandomMating(),
             postOps = [
                 # count number of allels at this locus
-                stat(alleleFreq=[0]),
+                Stat(alleleFreq=[0]),
                 # inject 50% of allele 2 if this allele get low freq
                 IfElse('alleleFreq[0][0]<0.2', ifOps=[
                     KamMutator(rates=.6, k=2, loci=[0]),

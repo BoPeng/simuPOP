@@ -623,7 +623,7 @@ step
 ).
  Operator 
 \family typewriter
-stat
+Stat
 \family default
  calculates linkage disequilibrium between the first and second loci.
  The results of this operator are stored in a local variable space of the
@@ -4602,7 +4602,7 @@ reference "extract"
  The allele frequency at each generation is calculated and displayed, both
  during evolution using a 
 \family typewriter
-stat
+Stat
 \family default
  operator, and after evolution using the function form this operator.
  Note that setting the ancestral depth at the end of an evolutionary process
@@ -4738,12 +4738,12 @@ Each simuPOP population has a Python dictionary that can be used to store
  between them.
  For example, the 
 \family typewriter
-stat
+Stat
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-operator!stat
+operator!Stat
 \end_layout
 
 \end_inset
@@ -6261,7 +6261,7 @@ PyOperator
  is the most powerful operator in simuPOP and has been widely used, for
  example, to calculate statistics and is not supported by the 
 \family typewriter
-stat()
+Stat()
 \family default
  operator, to examine population property during evolution, or prepare populatio
 ns for a special mating scheme.
@@ -6683,7 +6683,7 @@ reference "migrFixedSize"
  always has 500 and 1000 individuals in its two subpopulations.
  Note that operators 
 \family typewriter
-stat
+Stat
 \family default
  and 
 \family typewriter
@@ -9160,7 +9160,7 @@ traj
  During evolution, the frequency of allele 1 at locus 0 is calcuated (operator
  
 \family typewriter
-stat
+Stat
 \family default
 ) and appended to this variable (operator 
 \family typewriter
@@ -14981,7 +14981,7 @@ x
 x
 \family default
  is inherited regardless of the sex of parents.
- A stat operator is used to calculate the number of offspring having this
+ A Stat operator is used to calculate the number of offspring having this
  tag in each subpopulation.
  The results show that some tagged ancestors have many offspring, and some
  have none.
@@ -15383,7 +15383,7 @@ lstparams "caption={Tagging that involves other parental information},label={oth
 \begin_layout Section
 Statistics calculation (operator 
 \family typewriter
-stat
+Stat
 \family default
 )
 \end_layout
@@ -15395,7 +15395,7 @@ How statistics calculation works
 \begin_layout Standard
 A 
 \family typewriter
-stat
+Stat
 \family default
  operator calculates specified statistics of a population when it is applied
  to this population.
@@ -15434,7 +15434,7 @@ output
 \begin_layout Standard
 The 
 \family typewriter
-stat
+Stat
 \family default
  operator is usually used in conjunction with a 
 \family typewriter
@@ -15458,7 +15458,7 @@ ops = [
 
 \begin_layout Plain Layout
 
-    stat(alleleFreq=[0]),
+    Stat(alleleFreq=[0]),
 \end_layout
 
 \begin_layout Plain Layout
@@ -15544,7 +15544,7 @@ dvars().alleleFreq
 ).
  This method is usually used when the function form of the 
 \family typewriter
-stat
+Stat
 \family default
  operator is used.
  For example,
@@ -15554,7 +15554,7 @@ status open
 
 \begin_layout Plain Layout
 
-Stat(pop, alleleFreq=[0])
+stat(pop, alleleFreq=[0])
 \end_layout
 
 \begin_layout Plain Layout
@@ -15566,7 +15566,7 @@ H_exp = 1 - sum([x*x for x in pop.dvars().alleleFreq[0].values()])
 
 uses the 
 \family typewriter
-Stat
+stat
 \family default
  function (note the capital S) to count frequencies of alleles for a given
  population and calculates expected heterozygosity using these variables.
@@ -15721,7 +15721,7 @@ Support for virtual subpopulations
 \begin_layout Standard
 The 
 \family typewriter
-stat
+Stat
 \family default
  operator supports parameter 
 \emph on
@@ -15735,7 +15735,7 @@ status open
 
 \begin_layout Plain Layout
 
-stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
+Stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
 \end_layout
 
 \end_inset
@@ -15759,7 +15759,7 @@ subPops
 \begin_layout Standard
 Although many statistics could be calculated and outputted, the 
 \family typewriter
-stat
+Stat
 \family default
  operator by default outputs a selected number of variables for each statisic
  calculated.
@@ -15786,7 +15786,7 @@ status open
 
 \begin_layout Plain Layout
 
-stat(alleleFreq=[0], subPops=[0, (1, 0)], vars=['alleleFreq_sp', 'alleleNum_sp']
+Stat(alleleFreq=[0], subPops=[0, (1, 0)], vars=['alleleFreq_sp', 'alleleNum_sp']
 )
 \end_layout
 
@@ -15838,7 +15838,7 @@ subPops
  parameter.
  This can be a problem if multiple 
 \family typewriter
-stat
+Stat
 \family default
  operators are used to calculate the same statistics for different sets
  of subpopulations.
@@ -15846,7 +15846,7 @@ stat
 \emph on
 suffix
 \emph default
- to add a suffix to all variables outputted by a stat operator.
+ to add a suffix to all variables outputted by a Stat operator.
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -15856,7 +15856,7 @@ reference "statSuffix"
 
  uses 4 
 \family typewriter
-stat
+Stat
 \family default
  operators to calculate overall and pairwise 
 \begin_inset Formula $F_{ST}$
@@ -15875,7 +15875,7 @@ stat
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/statSuffix.log"
-lstparams "caption={Add suffixes to variables set by multiple stat operators},label={statSuffix}"
+lstparams "caption={Add suffixes to variables set by multiple Stat operators},label={statSuffix}"
 
 \end_inset
 
@@ -15885,7 +15885,7 @@ lstparams "caption={Add suffixes to variables set by multiple stat operators},la
 \begin_layout Note
 The 
 \family typewriter
-stat
+Stat
 \family default
  opeartor accepts overlapping or even duplicate virtual subpopulations.
  During the calculation of summary statistics, these subpopulations are
@@ -15900,7 +15900,7 @@ status open
 
 \begin_layout Plain Layout
 
-stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
+Stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
 \end_layout
 
 \end_inset
@@ -15986,7 +15986,7 @@ reference "statCount"
 
  demonstrates how to use these parameters in operator 
 \family typewriter
-stat
+Stat
 \family default
 .
  It defines four VSPs by sex and affection status (using a 
@@ -16098,7 +16098,7 @@ reference "statAlleleFreq"
  During evolution, a multi-allele penetrance operator is used to determine
  individual affection status and a 
 \family typewriter
-stat
+Stat
 \family default
  operator is used to calculate allele frequencies in these two virtual subpopula
 tions, and in the whole population.
@@ -16181,11 +16181,11 @@ reference "statGenoFreq"
  1 and a common allele 2.
  A function 
 \family typewriter
-Stat
+stat
 \family default
  (the function form of operator 
 \family typewriter
-stat
+Stat
 \family default
 ) is used to count the available genotypes.
  Note that 
@@ -16453,7 +16453,7 @@ anc
  is the mean of parental ancestry values.
  A 
 \family typewriter
-stat
+Stat
 \family default
  operator is used to calculate the mean and variance of individual ancestry
  values, and the number of individuals in five ancestry groups.
@@ -17349,7 +17349,7 @@ If you need other statistics, a popular approach is to define them using
  If your statistics is based on existing statistics such as allele frequency,
  it is a good idea to calculate existing statistics using a 
 \family typewriter
-Stat
+stat
 \family default
  function and derive your statistics from population variables.
  Please refer to the last chapter of this guide on an example.
@@ -20788,7 +20788,7 @@ reference "caseControlSample"
  demonstrates how to draw multiple case-control samples from a population,
  and perform case-control assocition tests using the 
 \family typewriter
-Stat
+stat
 \family default
  function.
  
@@ -21994,12 +21994,12 @@ Output statistics
 We first want to output total disease allele frequency of each locus.
  This is easy because 
 \family typewriter
-stat()
+Stat()
 \family default
  operator can calculate allele frequency for us.
  What we need to do is use a 
 \family typewriter
-stat()
+Stat()
 \family default
  operator to calculate allele frequency and get the result from population
  variable 
@@ -22023,7 +22023,7 @@ status open
 
 \begin_layout Plain Layout
 
-stat(alleleFreq=[0,1]),
+Stat(alleleFreq=[0,1]),
 \end_layout
 
 \begin_layout Plain Layout
@@ -22175,7 +22175,7 @@ def ne(pop, loci):
 
 \begin_layout Plain Layout
 
-    Stat(pop, alleleFreq=loci)
+    stat(pop, alleleFreq=loci)
 \end_layout
 
 \begin_layout Plain Layout
@@ -22310,15 +22310,15 @@ Ne
  The code is listed in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "reichStat"
+reference "reichstat"
 
 \end_inset
 
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/reichStat.log"
-lstparams "caption={A customized operator to calculate effective number of alleles},label={reichStat}"
+filename "log/reichstat.log"
+lstparams "caption={A customized operator to calculate effective number of alleles},label={reichstat}"
 
 \end_inset
 

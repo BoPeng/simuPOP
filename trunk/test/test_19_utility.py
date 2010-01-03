@@ -235,12 +235,12 @@ class TestUtility(unittest.TestCase):
         # run this and see if memory usage goes up continuously
         pop = population(100, loci=[400])
         initByFreq(pop, [0.2, 0.8])
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=range(pop.totNumLoci()))
         pop.save('test.bin')
         for i in range(4):
             pop = loadPopulation('test.bin')
             #pop = population(100, loci=[1000]*10)
-            Stat(pop, alleleFreq=range(pop.totNumLoci()))
+            stat(pop, alleleFreq=range(pop.totNumLoci()))
             #print pop.dvars().alleleFreq[100][0]
             if i < 2:
                 # let m0 stablize

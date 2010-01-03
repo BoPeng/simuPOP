@@ -456,7 +456,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops = Recombinator(rates = 0.1)),
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
@@ -471,7 +471,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
-        simu.evolve( postOps= stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps= Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3])),
             gen=1 )
         # 0.5
@@ -502,7 +502,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop)
-        simu.evolve( postOps =stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps =Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3, 8])),
             gen=1 )
         # 0.5
@@ -535,7 +535,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=[a1]*7+[a2]*7)
         rec = Recombinator(rates = 0.4, convMode = (NUM_MARKERS, 1, 1), loci=[1,3])
         simu = simulator(pop)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=rec),
             gen=1 )
         #print simu.dvars(0).haploFreq
@@ -572,7 +572,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating( ops=Recombinator(rates = 0.4, convMode = (NUM_MARKERS, 1, 2), loci=[1,3])),
             gen=1 )
         #
@@ -608,7 +608,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop)
         simu.evolve(
-            postOps = stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+            postOps = Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=Recombinator(rates = 0.4, convMode=(NUM_MARKERS, 1, 2), loci=[1,3,8]) ),
             gen=1 )
         #
@@ -650,7 +650,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
         simu.evolve(
-            postOps = stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+            postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=Recombinator(rates = [0.1,0.15,0.3], loci=[0,2,5] )),
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
@@ -674,7 +674,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme = RandomMating(ops=Recombinator(intensity = 0.1) ),
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
@@ -696,7 +696,7 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             matingScheme =  RandomMating(ops=Recombinator(intensity = 0.1, loci=[2,5]) ),
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
@@ -719,7 +719,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=geno)
         simu = simulator(pop)
         simu.evolve(  gen=100, matingScheme=RandomMating(ops=Recombinator(rates = 0.4)))
-        Stat(simu.population(0), alleleFreq=range(0,7))
+        stat(simu.population(0), alleleFreq=range(0,7))
         for i in range(7):
             self.assertEqual(simu.dvars(0).alleleFreq[i][geno[i]], 1.)
 
@@ -735,7 +735,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop)
         #turnOnDebug(DBG_RECOMBINATOR)
-        simu.evolve( postOps = stat( haploFreq = [[0,1], [2,3], [2,4], [5,6], [0,2], [0,6], [3,6]]),
+        simu.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [2,4], [5,6], [0,2], [0,6], [3,6]]),
             matingScheme = RandomMating(ops=Recombinator(rates = 0) ),
             gen=1 )
         self.assertEqual(simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2), 0), 0.)
@@ -761,7 +761,7 @@ class TestTransmitters(unittest.TestCase):
             initSex(pop)
             initByValue(pop, value=genoDad[i]+genoMom[i])
             simu = simulator(pop)
-            simu.evolve(postOps = stat(haploFreq=[0,1]),
+            simu.evolve(postOps = Stat(haploFreq=[0,1]),
                 matingScheme = RandomMating(ops=Recombinator(rates=r)),
                     gen=1)
             hf = simu.dvars(0).haploFreq[(0,1)]
@@ -787,7 +787,7 @@ class TestTransmitters(unittest.TestCase):
         initByValue(pop, value=[a1,a1,a2,a2])
         simu = simulator(pop)
         simu.evolve(
-            finalOps = stat(LD=[0,1]),
+            finalOps = Stat(LD=[0,1]),
             matingScheme = RandomMating(ops=Recombinator(rates=r) ),
             gen=9)
         # check the change of LD, hopefully, the variation is not too high.

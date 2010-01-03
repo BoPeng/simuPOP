@@ -183,7 +183,7 @@ class TestMigrator(unittest.TestCase):
         # 3900 male
         # 3900 male
         self.assertEqual(pop.subPopSizes(), (2200, 3900, 3900))
-        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
+        stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
         self.assertEqual(pop.dvars(0).numOfMales, 200)
         self.assertEqual(pop.dvars(0).numOfFemales, 2000)
         self.assertEqual(pop.dvars(1).numOfMales, 3900)
@@ -245,13 +245,13 @@ class TestMigrator(unittest.TestCase):
         'Testing that migration does not change allele frequency'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         initByFreq(pop, [.2, .8])
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         af = pop.dvars().alleleFreq[0][1]    # ~.2
         # migrate and check if allele frequency changes
         migrate(pop, mode=BY_PROBABILITY,
             subPops = [0], toSubPops = [1,2],
             rate = [.05, .05] )
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         assert pop.dvars().alleleFreq[0][1] == af
         migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .05, .05],

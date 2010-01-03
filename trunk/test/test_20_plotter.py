@@ -89,7 +89,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = InitSex(),
             preOps = [stator, migr],
@@ -110,7 +110,7 @@ class TestPlotter(unittest.TestCase):
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr],
@@ -134,7 +134,7 @@ class TestPlotter(unittest.TestCase):
             population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr], 
@@ -159,7 +159,7 @@ class TestPlotter(unittest.TestCase):
             rep=5)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             matingScheme=RandomMating(),
@@ -181,7 +181,7 @@ class TestPlotter(unittest.TestCase):
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr],
@@ -206,7 +206,7 @@ class TestPlotter(unittest.TestCase):
             rep=2)
         migr = Migrator(rate=[[0, .2],[.25, 0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr],
@@ -231,7 +231,7 @@ class TestPlotter(unittest.TestCase):
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr],
@@ -259,7 +259,7 @@ class TestPlotter(unittest.TestCase):
             rep=2)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         simu.evolve(
             initOps = [InitSex()],
             preOps = [stator, migr],
@@ -283,7 +283,7 @@ class TestPlotter(unittest.TestCase):
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
-        stator = stat(popSize=1)
+        stator = Stat(popSize=1)
         def setPar(r):
             r.par(mar=[2]*4)
         def mtext(r):
@@ -397,7 +397,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testInfoPlotterFields(self):
-        'Testing stat plotter with multiple fields and subpopulations'
+        'Testing Stat plotter with multiple fields and subpopulations'
         import random
         pop = population([500, 1000], infoFields=['x', 'y'])
         initSex(pop)
@@ -458,7 +458,7 @@ class TestPlotter(unittest.TestCase):
         r.dev_off()
 
     def testInfoPlotterNoFunc(self):
-        'Testing the stat plotter when no function is specified'
+        'Testing the Stat plotter when no function is specified'
         import random
         pop = population([500, 100], infoFields=['x', 'y'])
         initSex(pop)

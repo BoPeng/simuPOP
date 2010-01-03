@@ -23,7 +23,7 @@ class TestPyOperator(unittest.TestCase):
 
     # define a function
     def myFunc(self, pop):
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         # allelic frequency was assigned to be 0.2
         assert abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05
         return True
@@ -48,7 +48,7 @@ class TestPyOperator(unittest.TestCase):
 
     def myFuncWithParam(self, pop, param):
         ' para is (allele, freq) pair '
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         assert abs(pop.dvars().alleleFreq[0][param[0]] - param[1]) < 0.05
         return True
 
@@ -84,7 +84,7 @@ class TestPyOperator(unittest.TestCase):
         bring allele frequency of these loci at an equal level.'''
         # unpack parameter
         (cutoff, mu1, mu2) = param;
-        Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
+        stat(pop, alleleFreq=range( pop.totNumLoci() ) )
         if moduleInfo()['alleleType'] == 'binary':
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
@@ -111,7 +111,7 @@ class TestPyOperator(unittest.TestCase):
             matingScheme=RandomMating(),
             postOps = [
                 PyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
-                stat(alleleFreq=range(5)),
+                Stat(alleleFreq=range(5)),
                 TerminateIf( 'alleleFreq[0][1] < 0.2' )
                 ],
             gen = 30

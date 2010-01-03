@@ -26,14 +26,14 @@ class TestTerminator(unittest.TestCase):
             initOps = [InitSex(), InitByFreq([0.3, 0.7])],
             matingScheme = RandomMating(),
             postOps = [
-                stat(alleleFreq=[0]),
+                Stat(alleleFreq=[0]),
                 TerminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200')
             ]
         )
         # it is very unlikely that gens are equal
         self.assertEqual(gens[0] == gens[1] == gens[2] == gens[3] == gens[4], False)
         for pop in simu.populations():
-            Stat(pop, alleleFreq=[0])
+            stat(pop, alleleFreq=[0])
             self.assertEqual(pop.dvars().alleleFreq[0][0] == 0 or \
                 pop.dvars().alleleFreq[0][0] == 1, True)
 
@@ -46,7 +46,7 @@ class TestTerminator(unittest.TestCase):
             initOps = [InitSex(), InitByFreq([0.3, 0.7])],
             matingScheme = RandomMating(),
             postOps = [
-                stat(alleleFreq=[0]),
+                Stat(alleleFreq=[0]),
                 TerminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)
             ]
         )
@@ -59,7 +59,7 @@ class TestTerminator(unittest.TestCase):
             if gens[rep+1] < gens[rep]:
                 pop = simu.population(rep)
                 break
-        Stat(pop, alleleFreq=[0])
+        stat(pop, alleleFreq=[0])
         self.assertEqual(pop.dvars().alleleFreq[0][0] == 0 or \
             pop.dvars().alleleFreq[0][0] == 1, True)
 

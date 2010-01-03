@@ -56,7 +56,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSizes(), (20, 80) )
         self.assertEqual(pop.subPopIndPair(21), (1, 1) )
         self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
-        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
+        stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
         pop.setVirtualSplitter(SexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
@@ -982,7 +982,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('a'), pop1.indInfo('a'))
         self.assertEqual(pop.indInfo('b'), pop1.indInfo('b'))
         #
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=range(pop.totNumLoci()))
         a = pop.dvars().alleleFreq[0][1]
         pop.save("popout")
         pop1 = loadPopulation("popout")
@@ -995,7 +995,7 @@ class TestPopulation(unittest.TestCase):
         pop = self.getPop(size=1000, loci=[2, 4])
         initSex(pop)
         initByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=range(0, 6))
+        stat(pop, alleleFreq=range(0, 6))
         pop1 = pop.clone()
         self.assertEqual(len(pop.vars()["alleleFreq"]), 6)
         self.assertEqual(len(pop.dvars().alleleFreq), 6)
@@ -1005,7 +1005,7 @@ class TestPopulation(unittest.TestCase):
         pop = self.getPop(size=[20, 80], loci=[2, 4])
         initSex(pop)
         initByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=range(0, 6), vars='alleleFreq_sp')
+        stat(pop, alleleFreq=range(0, 6), vars='alleleFreq_sp')
         pop1 = pop.clone()
         self.assertEqual(len(pop.vars(0)["alleleFreq"]), 6)
         self.assertEqual(len(pop.dvars(1).alleleFreq), 6)
@@ -1017,7 +1017,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[20, 80])
         initSex(pop)
         initByFreq(pop, [0.4, 0.6])
-        Stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
+        stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp'])
         pop.setVirtualSplitter(SexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMales)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemales)
@@ -1049,7 +1049,7 @@ class TestPopulation(unittest.TestCase):
         initSex(pop)
         initByFreq(pop, [0.4, 0.6])
         maPenetrance(pop, loci=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
-        Stat(pop, numOfAffected=True, vars=['numOfAffected_sp', 'numOfUnaffected_sp'])
+        stat(pop, numOfAffected=True, vars=['numOfAffected_sp', 'numOfUnaffected_sp'])
         pop.setVirtualSplitter(AffectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfUnaffected)
@@ -1155,7 +1155,7 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals([0, 1]):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
-        Stat(pop, genoFreq=[1])
+        stat(pop, genoFreq=[1])
         self.assertEqual(pop.subPopSize([0, 0]), pop.dvars().genoNum[1][(0,0)])
         self.assertEqual(pop.subPopSize([0, 1]), pop.dvars().genoNum[1][(1,0)])
         # non-phased case
@@ -1214,7 +1214,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.sex(), MALE)
         for ind in pop.individuals([0, 3]):
             self.assertEqual(ind.sex(), FEMALE)
-        Stat(pop, numOfMales=True, vars='numOfFemales_sp')
+        stat(pop, numOfMales=True, vars='numOfFemales_sp')
         self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemales)
         #
         # combined splitter with vspMap
@@ -1277,7 +1277,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
             self.assertEqual(ind.sex(), FEMALE)
-        Stat(pop, numOfMales=True)
+        stat(pop, numOfMales=True)
         for x in range(8):
             self.assertTrue(pop.subPopSize([0,x]) > 0)
         self.assertEqual(sum([pop.subPopSize([0,x]) for x in range(0, 8, 2)]), pop.dvars().numOfMales)

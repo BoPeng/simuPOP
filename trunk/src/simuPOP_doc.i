@@ -8702,26 +8702,26 @@ Usage:
 
 %feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::stat "
+%feature("docstring") simuPOP::Stat "
 
 Function form:
 
-    Stat
+    stat
 
 Details:
 
-    Operator stat calculates various statistics of the population
+    Operator Stat calculates various statistics of the population
     being applied and sets variables in its local namespace. Other
     operators or functions can retrieve results from or evalulate
-    expressions in this local namespace after stat is applied.
+    expressions in this local namespace after Stat is applied.
 
 "; 
 
-%feature("docstring") simuPOP::stat::stat "
+%feature("docstring") simuPOP::Stat::Stat "
 
 Usage:
 
-    stat(popSize=False, numOfMales=False, numOfAffected=False,
+    Stat(popSize=False, numOfMales=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
@@ -8731,7 +8731,7 @@ Usage:
 
 Details:
 
-    Create a stat operator that calculates specified statistics of a
+    Create a Stat operator that calculates specified statistics of a
     population when it is applied to this population. This operator is
     by default applied after mating (parameter stage) and can be
     applied to specified replicates (parameter rep) at specified
@@ -8741,7 +8741,7 @@ Details:
     namespace of the population being applied. Other operators can
     retrieve these variables or evalulate expression directly in this
     local namespace. Please refer to operator BaseOperator for a
-    detailed explanation of these common operator parameters.   stat
+    detailed explanation of these common operator parameters.   Stat
     supports parameter subPops. It usually calculate the same set of
     statistics for all subpopulations (subPops=subPopList()). If a
     list of (virtual) subpopulations are specified, statistics for
@@ -8760,7 +8760,7 @@ Details:
     vars()['subPop'][sp]['var'] where sp is a subpopulation ID (sp) or
     a tuple of virtual subpopulation ID ((sp, vsp)).
     population.vars(sp) and population.dvars(sp) provide shortcuts to
-    these variables.  Operator stat outputs a number of most useful
+    these variables.  Operator Stat outputs a number of most useful
     variables for each type of statistic. For example, alleleFreq
     calculates both allele counts and allele frequencies and it by
     default sets variable alleleFreq (dvars().alleleFreq) for all or
@@ -8774,7 +8774,7 @@ Details:
     allele count. An optional suffix (parameter suffix) can be used to
     append a suffix to default parameter names. This parameter can be
     used, for example, to calculate and store the same statistics for
-    different subpopulations (e.g. pairwise Fst).  Operator stat
+    different subpopulations (e.g. pairwise Fst).  Operator Stat
     supports the following statistics:  popSize: If popSize=True,
     number of individuals in all or specified subpopulations
     (parameter subPops) will be set to the following variables:
@@ -9043,21 +9043,21 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::stat::~stat "
+%feature("docstring") simuPOP::Stat::~Stat "
 
 Usage:
 
-    x.~stat()
+    x.~Stat()
 
 "; 
 
-%feature("docstring") simuPOP::stat::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Stat::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::stat::clone "
+%feature("docstring") simuPOP::Stat::clone "
 
 Description:
 
-    deep copy of a stat operator
+    deep copy of a Stat operator
 
 Usage:
 
@@ -9065,11 +9065,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::stat::apply "
+%feature("docstring") simuPOP::Stat::apply "
 
 Description:
 
-    apply the stat operator
+    apply the Stat operator
 
 Usage:
 
@@ -10348,11 +10348,11 @@ Usage:
 
 "; 
 
-%feature("docstring") _new_stat "
+%feature("docstring") _new_Stat "
 
 Usage:
 
-    _new_stat(self, haploFreq=[], LD=[], *args, **kwargs)
+    _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs)
 
 "; 
 

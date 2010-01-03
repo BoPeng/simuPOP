@@ -814,16 +814,16 @@ private:
 };
 
 
-/** Operator \c stat calculates various statistics of the population being
+/** Operator \c Stat calculates various statistics of the population being
  *  applied and sets variables in its local namespace. Other operators or
  *  functions can retrieve results from or evalulate expressions in this local
- *  namespace after \c stat is applied.
- *  <funcForm>Stat</funcForm>
+ *  namespace after \c Stat is applied.
+ *  <funcForm>stat</funcForm>
  */
-class stat : public BaseOperator
+class Stat : public BaseOperator
 {
 public:
-	/** Create a \c stat operator that calculates specified statistics of a
+	/** Create a \c Stat operator that calculates specified statistics of a
 	 *  population when it is applied to this population. This operator is
 	 *  by default applied after mating (parameter \e stage) and can be applied
 	 *  to specified replicates (parameter \e rep) at specified generations
@@ -835,7 +835,7 @@ public:
 	 *  Please refer to operator \c BaseOperator for a detailed explanation of
 	 *  these common operator parameters.
 	 *
-	 *  \c stat supports parameter \e subPops. It usually calculate the same
+	 *  \c Stat supports parameter \e subPops. It usually calculate the same
 	 *  set of statistics for all subpopulations (<tt>subPops=subPopList()</tt>).
 	 *  If a list of (virtual) subpopulations are specified, statistics for
 	 *  only specified subpopulations will be calculated. However, different
@@ -855,7 +855,7 @@ public:
 	 *  <tt>population.vars(sp)</tt> and <tt>population.dvars(sp)</tt> provide
 	 *  shortcuts to these variables.
 	 *
-	 *  Operator \e stat outputs a number of most useful variables for each
+	 *  Operator \e Stat outputs a number of most useful variables for each
 	 *  type of statistic. For example, <tt>alleleFreq</tt> calculates both
 	 *  allele counts and allele frequencies and it by default sets
 	 *  variable \c alleleFreq (<tt>dvars().alleleFreq</tt>) for all or
@@ -871,7 +871,7 @@ public:
 	 *  used, for example, to calculate and store the same statistics for
 	 *  different subpopulations (e.g. pairwise \c Fst).
 	 *
-	 *  Operator \c stat supports the following statistics:
+	 *  Operator \c Stat supports the following statistics:
 	 *
 	 *  <b>popSize</b>: If \e popSize=True, number of individuals in all or
 	 *  specified subpopulations (parameter \e subPops) will be set to the
@@ -1157,7 +1157,7 @@ public:
 	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
 	 *       in each (virtual) subpopulation.
 	 **/
-	stat(bool popSize = false,
+	Stat(bool popSize = false,
 		//
 		bool numOfMales = false,
 		//
@@ -1196,7 +1196,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
-	~stat()
+	~Stat()
 	{
 	}
 
@@ -1205,17 +1205,17 @@ public:
 	string describe(bool format = true);
 
 
-	/// deep copy of a \c stat operator
+	/// deep copy of a \c Stat operator
 	virtual BaseOperator * clone() const
 	{
-		return new stat(*this);
+		return new Stat(*this);
 	}
 
 
 	// count various statistics.
 	// use m_alleles etc to save (potentially) time to
 	// resize all these variables.
-	/// apply the \c stat operator
+	/// apply the \c Stat operator
 	virtual bool apply(population & pop);
 
 private:

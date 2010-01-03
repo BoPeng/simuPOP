@@ -31,7 +31,7 @@ class TestPenetrance(unittest.TestCase):
         'Testing map penetrance'
         mapPenetrance(self.pop, loci = 0,
             penetrance={(0,0):0, (0,1):1, (1,1):1})
-        Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
+        stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertEqual(self.pop.dvars().numOfAffected, 1425)
         self.assertEqual(self.pop.dvars(0).numOfAffected, 375)
         self.assertEqual(self.pop.dvars(1).numOfAffected, 50)
@@ -40,7 +40,7 @@ class TestPenetrance(unittest.TestCase):
         # imcomlete penetrance
         mapPenetrance(self.pop, loci = 0,
             penetrance={(0,0):0, (0,1):.3, (1,1):.5})
-        Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
+        stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) < 15
@@ -61,7 +61,7 @@ class TestPenetrance(unittest.TestCase):
         mapPenetrance(pop, loci = 0,
             penetrance={(0,0):0, (0,1):1, (1,1):1},
             infoFields=['penetrance'])
-        Stat(pop, numOfAffected=1)
+        stat(pop, numOfAffected=1)
         self.assertEqual(pop.dvars().numOfAffected, 1425)
         self.assertEqual(sum(pop.indInfo('penetrance')), 1425)
 
@@ -70,7 +70,7 @@ class TestPenetrance(unittest.TestCase):
     def testMaPenetrance(self):
         'Testing multi-allele penetrance'
         maPenetrance(self.pop, loci = 0, wildtype=0, penetrance=[0, 1, 1])
-        Stat(self.pop, numOfAffected=True, vars=['numOfAffected', 'numOfAffected_sp'])
+        stat(self.pop, numOfAffected=True, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertEqual(self.pop.dvars().numOfAffected, 1425)
         self.assertEqual(self.pop.dvars(0).numOfAffected, 375)
         self.assertEqual(self.pop.dvars(1).numOfAffected, 50)
@@ -80,7 +80,7 @@ class TestPenetrance(unittest.TestCase):
         self.pop.dvars().clear()
         maPenetrance(self.pop, loci = 0,    wildtype=0,
             penetrance=[0, .3, .5])
-        Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
+        stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) < 15
@@ -131,7 +131,7 @@ class TestPenetrance(unittest.TestCase):
             else:
                 return 1
         pyPenetrance(self.pop, loci = 0, func=pen)
-        Stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
+        stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         assert abs(self.pop.dvars().numOfAffected -  880*0.5 - 545) < 100
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) < 30
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) < 15
