@@ -62,11 +62,11 @@ namespace simuPOP {
  *       the same fitness values (e.g. 0), the mating scheme selects parents
  *       randomly.
  *  \li Multiple selectors can be applied to the same parental generation.
- *       Individual fitness is determined by the last fitness value it is
+ *       individual fitness is determined by the last fitness value it is
  *       assigned.
  *  \li A selection operator can be applied to virtual subpopulations and set
  *       fitness values only to part of the individuals.
- *  \li Individuals with zero fitness in a subpopulation with anyone having a
+ *  \li individuals with zero fitness in a subpopulation with anyone having a
  *       positive fitness value will not be selected to produce offspring. This
  *       can sometimes lead to unexpected behaviors. For example, if you only
  *       assign fitness value to part of the individuals in a subpopulation,
@@ -89,7 +89,7 @@ namespace simuPOP {
  *  survive. This process uses the fact that an individual will be discarded
  *  when any of the during mating operators returns \e False. It is important
  *  to remember that:
- *  \li Individual fitness needs to be between 0 and 1 in this case.
+ *  \li individual fitness needs to be between 0 and 1 in this case.
  *  \li This method applies natural selection to offspring instead of parents.
  *       These two implementation can be identical or different depending on
  *       the mating scheme used.
@@ -129,7 +129,7 @@ public:
 
 
 	/// CPPONLY
-	virtual double indFitness(individual *, ULONG gen)
+	virtual double indFitness(Individual *, ULONG gen)
 	{
 		///
 		throw ValueError("This selector is not supposed to be called directly");
@@ -142,7 +142,7 @@ public:
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-	                       individual * dad = NULL, individual * mom = NULL)
+	                       Individual * dad = NULL, Individual * mom = NULL)
 	{
 		double fitness = indFitness(&*offspring, pop.gen());
 
@@ -209,7 +209,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -279,7 +279,7 @@ public:
 
 	/// CPPONLY
 	/// calculate/return the fitness value, currently assuming diploid
-	virtual double indFitness(individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -346,7 +346,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -404,7 +404,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)

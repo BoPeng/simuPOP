@@ -240,7 +240,7 @@ bool BaseOperator::apply(Population & pop)
 
 
 bool BaseOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                     individual * dad, individual * mom)
+                                     Individual * dad, Individual * mom)
 {
 	DBG_FAILIF(true, RuntimeError,
 		"This operator cannot be applied during mating.");
@@ -472,7 +472,7 @@ string IfElse::describe(bool format)
 
 
 bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
-                               individual * dad, individual * mom)
+                               Individual * dad, Individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
@@ -644,7 +644,7 @@ bool PyOperator::apply(Population & pop)
 
 
 bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                   individual * dad, individual * mom)
+                                   Individual * dad, Individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

@@ -75,7 +75,7 @@ Population::Population(const uintList & size,
 		loci.elems(), chromTypes.elems(), fcmp_eq(ploidy, HAPLODIPLOID), lociPos.elems(),
 		chromNames.elems(), alleleNames.elems(), lociNames.elems(), infoFields.elems());
 
-	DBG_DO(DBG_DEVEL, cerr	<< "individual size is " << sizeof(individual) << '+'
+	DBG_DO(DBG_DEVEL, cerr	<< "individual size is " << sizeof(Individual) << '+'
 		                    << sizeof(Allele) << '*' << genoSize() << endl
 		                    << ", infoPtr: " << sizeof(double *)
 		                    << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
@@ -137,7 +137,7 @@ Population::Population(const Population & rhs) :
 	setGenoStruIdx(rhs.genoStruIdx());
 	incGenoStruRef();   // inc ref to the new
 
-	// copy genotype one by one so individual genoPtr will not
+	// copy genotype one by one so Individual genoPtr will not
 	// point outside of subpopulation region.
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
@@ -151,15 +151,15 @@ Population::Population(const Population & rhs) :
 
 	// copy ancestral populations
 	try {
-		// copy all. individual will be shallow copied
+		// copy all. Individual will be shallow copied
 		m_ancestralPops = rhs.m_ancestralPops;
 		// need to setGenoPtr
 		for (size_t ap = 0; ap < m_ancestralPops.size(); ++ap) {
 			popData & lp = m_ancestralPops[ap];
 			const popData & rp = rhs.m_ancestralPops[ap];
 
-			vector<individual> & linds = lp.m_inds;
-			const vector<individual> & rinds = rp.m_inds;
+			vector<Individual> & linds = lp.m_inds;
+			const vector<Individual> & rinds = rp.m_inds;
 
 			GenoIterator lg = lp.m_genotype.begin();
 			ConstGenoIterator rg = rp.m_genotype.begin();
@@ -327,7 +327,7 @@ int Population::__cmp__(const Population & rhs) const
 		const_cast<Population &>(rhs).useAncestralGen(depth);
 		for (ULONG i = 0, iEnd = popSize(); i < iEnd; ++i)
 			if (m_inds[i] != rhs.m_inds[i]) {
-				DBG_DO(DBG_POPULATION, cerr << "Individuals are different" << endl);
+				DBG_DO(DBG_POPULATION, cerr << "individuals are different" << endl);
 				const_cast<Population *>(this)->useAncestralGen(curGen);
 				const_cast<Population &>(rhs).useAncestralGen(rhsCurGen);
 				return 1;
@@ -340,12 +340,12 @@ int Population::__cmp__(const Population & rhs) const
 }
 
 
-individual & Population::indByID(double fid, int ancGen, const string & idField)
+Individual & Population::indByID(double fid, int ancGen, const string & idField)
 {
 	ULONG id = static_cast<ULONG>(fid + 0.5);
 
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
-		"Individual ID has to be integer (or a double round to full iteger).");
+		"individual ID has to be integer (or a double round to full iteger).");
 
 	UINT idx = infoIdx(idField);
 
@@ -353,7 +353,7 @@ individual & Population::indByID(double fid, int ancGen, const string & idField)
 		// only search specific generation
 		if (ancGen != -1 && static_cast<UINT>(ancGen) != gen)
 			continue;
-		vector<individual> * inds = NULL;
+		vector<Individual> * inds = NULL;
 		// search in current, not necessarily the present generation
 		if (gen == m_curAncestralGen)
 			inds = &m_inds;
@@ -362,7 +362,7 @@ individual & Population::indByID(double fid, int ancGen, const string & idField)
 		// first try our luck
 		ULONG startID = (*inds)[0].intInfo(idx);
 		if (idx >= startID && startID + (*inds).size() > id) {
-			individual & ind = (*inds)[id - startID];
+			Individual & ind = (*inds)[id - startID];
 			if (static_cast<ULONG>(ind.intInfo(idx)) == id)
 				return ind;
 		}
@@ -383,12 +383,12 @@ individual & Population::indByID(double fid, int ancGen, const string & idField)
 }
 
 
-individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
+Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 {
 	ULONG idx = static_cast<ULONG>(fidx + 0.5);
 
 	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
-		"Individual index has to be integer (or a double round to full iteger).");
+		"individual index has to be integer (or a double round to full iteger).");
 
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
@@ -400,7 +400,7 @@ individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 			return this->ind(idx);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
-			IndexError, "Individual index out of range");
+			IndexError, "individual index out of range");
 		return m_ancestralPops[genIdx].m_inds[idx];
 	} else {
 		SubPopID subPop = vsp.subPop();
@@ -410,7 +410,7 @@ individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
-			IndexError, "Individual index out of range");
+			IndexError, "individual index out of range");
 		ULONG shift = 0;
 		if (subPop > 0) {
 			for (int i = 0; i < subPop; ++i)
@@ -421,12 +421,12 @@ individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 }
 
 
-const individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
+const Individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 {
 	ULONG idx = static_cast<ULONG>(fidx + 0.5);
 
 	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
-		"Individual index has to be integer (or a double round to full iteger).");
+		"individual index has to be integer (or a double round to full iteger).");
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
 
@@ -437,7 +437,7 @@ const individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 			return this->ind(idx);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
-			IndexError, "Individual index out of range");
+			IndexError, "individual index out of range");
 		return m_ancestralPops[genIdx].m_inds[idx];
 	} else {
 		SubPopID subPop = vsp.subPop();
@@ -447,7 +447,7 @@ const individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
-			IndexError, "Individual index out of range");
+			IndexError, "individual index out of range");
 		ULONG shift = 0;
 		if (subPop > 0) {
 			for (int i = 0; i < subPop; ++i)
@@ -462,10 +462,10 @@ IndAlleleIterator Population::alleleIterator(UINT locus)
 {
 	CHECKRANGEABSLOCUS(locus);
 
-	// if there is virtual subpop, use individual based iterator
+	// if there is virtual subpop, use Individual based iterator
 	// or
 	// if requires order, but the alleles are not ordered
-	// use individual based
+	// use Individual based
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || (ct != AUTOSOME && ct != CUSTOMIZED) || isHaplodiploid())
@@ -712,7 +712,7 @@ void Population::setSubPopByIndInfo(const string & field)
 		// allocate new genotype and inds
 		vectora newGenotype(genoSize() * newPopSize);
 		vectorinfo newInfo(newPopSize * infoSize());
-		vector<individual> newInds(newPopSize);
+		vector<Individual> newInds(newPopSize);
 
 		// assign genotype location and set structure information for individuals
 		GenoIterator ptr = newGenotype.begin();
@@ -965,7 +965,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		markIndividuals(vspID(), false);
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
-				"Individual index out of range.");
+				"individual index out of range.");
 			ind(indexes[i]).setMarked(true);
 		}
 		removeMarkedIndividuals();
@@ -973,7 +973,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	}
 	// remove by ID
 	// first, build a map
-	std::map<ULONG, const individual *> idMap;
+	std::map<ULONG, const Individual *> idMap;
 	UINT idIdx = infoIdx(idField);
 
 	int curGen = m_curAncestralGen;
@@ -985,7 +985,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		for (; it != itEnd; ++it) {
 			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
 			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
-				"Individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
+				"individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
 			idMap[id] = &*it;
 		}
 	}
@@ -996,7 +996,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 			"No individuals with ID " + toStr(id) + " is found.");
 		idMap[id]->setMarked(true);
 	}
-	// remove these individuals
+	// remove these Individuals
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		removeMarkedIndividuals();
@@ -1073,7 +1073,7 @@ UINT Population::mergeSubPops(const uintList & subPops, const string & name)
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
-	vector<individual> new_inds;
+	vector<Individual> new_inds;
 	vectora new_genotype;
 	vectorinfo new_info;
 	new_inds.reserve(popSize());
@@ -1159,7 +1159,7 @@ void Population::addChromFrom(const Population & pop)
 void Population::addIndFrom(const Population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
-		"Cannot add individual from a population with different genotypic structure.");
+		"Cannot add Individual from a population with different genotypic structure.");
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Two populations should have the same number of ancestral generations.");
 	// genotype pointers may be reset so this is needed.
@@ -1376,7 +1376,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	ULONG newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
 	// prepare new Population
-	vector<individual> newInds(newPopSize);
+	vector<Individual> newInds(newPopSize);
 	vectora newGenotype(genoSize() * newPopSize);
 	vectorinfo newInfo(newPopSize * infoSize());
 	// iterators ready
@@ -1440,7 +1440,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
 
-	vector<individual> new_inds;
+	vector<Individual> new_inds;
 	vectora new_genotype;
 	vectorinfo new_info;
 
@@ -1599,7 +1599,7 @@ Population & Population::extractMarkedIndividuals() const
 		if (it->marked())
 			++sz;
 
-	vector<individual> new_inds(sz);
+	vector<Individual> new_inds(sz);
 	vectora new_genotype(sz * step);
 	vectorinfo new_info(sz * infoStep);
 
@@ -1653,7 +1653,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 	const vectorf & IDs = IDList.elems();
 
 	if (IDs.empty() && indexes.empty()) {
-		// extract these individuals
+		// extract these Individuals
 		Population & pop = *new Population();
 		pop.setGenoStruIdx(genoStruIdx());
 		incGenoStruRef();
@@ -1669,14 +1669,14 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		markIndividuals(vspID(), false);
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
-				"Individual index " + toStr(indexes[i]) + " out of range of 0 ~ " + toStr(m_popSize) + ".");
+				"individual index " + toStr(indexes[i]) + " out of range of 0 ~ " + toStr(m_popSize) + ".");
 			ind(indexes[i]).setMarked(true);
 		}
 		return extractMarkedIndividuals();
 	}
 	// extract by ID
 	// first, build a map
-	std::map<ULONG, const individual *> idMap;
+	std::map<ULONG, const Individual *> idMap;
 	UINT idIdx = infoIdx(idField);
 
 	int curGen = m_curAncestralGen;
@@ -1686,7 +1686,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
 			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
 			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
-				"Individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
+				"individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
 			idMap[id] = &*it;
 		}
 	}
@@ -1829,7 +1829,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			markIndividuals(vspID(), false);
 			for (size_t i = 0; i < subPops.size(); ++i)
 				markIndividuals(subPops[i], true);
-			// select individuals
+			// select Individuals
 			for (ULONG sp = 0; sp < numSubPop(); ++sp) {
 				ULONG spBegin = subPopBegin(sp);
 				for (size_t i = 0; i < subPopSize(sp); ++i) {
@@ -1843,7 +1843,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			DBG_DO(DBG_POPULATION, cerr << "New subpopulation size " << spSizes << endl);
 		}
 
-		vector<individual> new_inds;
+		vector<Individual> new_inds;
 		vectora new_genotype;
 		vectorinfo new_info;
 

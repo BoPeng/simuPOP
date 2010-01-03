@@ -103,7 +103,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
 	 */
-	virtual double penet(individual *, ULONG gen)
+	virtual double penet(Individual *, ULONG gen)
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
 		return 1.;
@@ -118,12 +118,12 @@ public:
 	 *  penetrance model is generation-dependent. This function returns the
 	 *  affection status.
 	 */
-	virtual bool applyToIndividual(individual * ind, ULONG gen = 0);
+	virtual bool applyToIndividual(Individual * ind, ULONG gen = 0);
 
 	/// set penetrance to all individuals
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		individual * dad = NULL, individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -180,7 +180,7 @@ public:
 
 	/// currently assuming diploid
 	/// CPPONLY
-	virtual double penet(individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -201,7 +201,7 @@ private:
  *  groups multiple alleles into two groups: wildtype and non-wildtype alleles.
  *  Alleles in each allele group are assumed to have the same effect on
  *  individual penetrance. If we denote all wildtype alleles as \c A, and all
- *  non-wildtype alleles \c a, this operator assign individual penetrance
+ *  non-wildtype alleles \c a, this operator assign Individual penetrance
  *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
  *  \c A and \c a in the haploid case.
  *  <funcForm>maPenetrance</funcForm>
@@ -254,7 +254,7 @@ public:
 	/** CPPONLY
 	 * currently assuming diploid
 	 */
-	virtual double penet(individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -322,7 +322,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -357,7 +357,7 @@ public:
 	/** Create a Python hybrid penetrance operator that passes genotype at
 	 *  specified \e loci, values at specified information fields (if
 	 *  requested), and a generation number to a user-defined function \e func.
-	 *  The return value will be treated as individual penetrance.
+	 *  The return value will be treated as Individual penetrance.
 	 */
 	PyPenetrance(PyObject * func,
 		const uintList & loci = vectoru(),
@@ -386,7 +386,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen);
 
 	/// HIDDEN
 	string describe(bool format = true)

@@ -91,7 +91,7 @@ void Dumper::displayStructure(const Population & pop, ostream & out)
 		if (pop.subPopName(i) != UnnamedSubPop)
 			out << " (" << pop.subPopName(i) << ")";
 	}
-	out << " individuals)" << endl;
+	out << " Individuals)" << endl;
 	out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
 }
 
@@ -105,7 +105,7 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 	for ( ; sp != spEnd; ++sp) {
 		ULONG spSize = pop.subPopSize(*sp);
 		out << "SubPopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
-		    << toStr(spSize) << " individuals:" << endl;
+		    << toStr(spSize) << " Individuals:" << endl;
 
 		const_cast<Population &>(pop).activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());

@@ -144,7 +144,7 @@ const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
 const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 #define PopSWIGType "simuPOP::Population *"
-#define IndSWIGType "simuPOP::individual *"
+#define IndSWIGType "simuPOP::Individual *"
 
 // For genotypic structure
 enum Sex {

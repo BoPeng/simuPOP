@@ -1,5 +1,5 @@
 /**
- *  $File: individual.cpp $
+ *  $File: Individual.cpp $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -31,7 +31,7 @@ using std::setprecision;
 namespace simuPOP {
 
 
-individual & individual::operator=(const individual & rhs)
+Individual & Individual::operator=(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
 	setGenoPtr(rhs.genoPtr());
@@ -42,7 +42,7 @@ individual & individual::operator=(const individual & rhs)
 }
 
 
-individual & individual::copyFrom(const individual & rhs)
+Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
@@ -53,7 +53,7 @@ individual & individual::copyFrom(const individual & rhs)
 }
 
 
-bool individual::operator==(const individual & rhs) const
+bool Individual::operator==(const Individual & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
 		DBG_DO(DBG_POPULATION, cerr << "Geno stru different" << endl);
@@ -82,13 +82,13 @@ bool individual::operator==(const individual & rhs) const
 }
 
 
-int individual::__cmp__(const individual & rhs) const
+int Individual::__cmp__(const Individual & rhs) const
 {
 	return (*this == rhs) ? 0 : 1;
 }
 
 
-bool individual::validIndex(UINT idx) const
+bool Individual::validIndex(UINT idx) const
 {
 	UINT cnt = totNumLoci();
 
@@ -96,14 +96,14 @@ bool individual::validIndex(UINT idx) const
 }
 
 
-bool individual::validIndex(UINT idx, UINT p) const
+bool Individual::validIndex(UINT idx, UINT p) const
 {
 	std::pair<UINT, UINT> chIdx = chromLocusPair(idx);
 	return validIndex(chIdx.second, p, chIdx.first);
 }
 
 
-bool individual::validIndex(UINT idx, UINT p, UINT ch) const
+bool Individual::validIndex(UINT idx, UINT p, UINT ch) const
 {
 	// well, this might change later.
 	if (ploidy() != 2)
@@ -123,7 +123,7 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 }
 
 
-UINT individual::allele(UINT idx, int p, int chrom) const
+UINT Individual::allele(UINT idx, int p, int chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -143,7 +143,7 @@ UINT individual::allele(UINT idx, int p, int chrom) const
 }
 
 
-string individual::alleleChar(UINT idx, int p, int chrom) const
+string Individual::alleleChar(UINT idx, int p, int chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -164,7 +164,7 @@ string individual::alleleChar(UINT idx, int p, int chrom) const
 }
 
 
-PyObject * individual::genotype(int p, int chrom)
+PyObject * Individual::genotype(int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -183,7 +183,7 @@ PyObject * individual::genotype(int p, int chrom)
 }
 
 
-PyObject * individual::genoAtLoci(const vectoru & loci)
+PyObject * Individual::genoAtLoci(const vectoru & loci)
 {
 	vectoru chromTypes;
 
@@ -217,7 +217,7 @@ PyObject * individual::genoAtLoci(const vectoru & loci)
 }
 
 
-void individual::setAllele(Allele allele, UINT idx, int p, int chrom)
+void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -237,7 +237,7 @@ void individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 }
 
 
-void individual::setGenotype(const vectora & geno, int p, int chrom)
+void Individual::setGenotype(const vectora & geno, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -265,7 +265,7 @@ void individual::setGenotype(const vectora & geno, int p, int chrom)
 }
 
 
-void individual::swap(individual & ind, bool swapContent)
+void Individual::swap(Individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx() )
 		throw SystemError("Can only swap individuals with different geno structure.");
@@ -285,7 +285,7 @@ void individual::swap(individual & ind, bool swapContent)
 }
 
 
-void individual::display(ostream & out, int width, const vectoru & loci)
+void Individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << sexChar() << affectedChar() << " ";
 	UINT pEnd = ploidy();

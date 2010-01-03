@@ -74,7 +74,7 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 			ULONG id = static_cast<ULONG>(it->info(m_idIdx) + 0.5);
 			DBG_WARNING(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Different individuals share the same ID " + toStr(id) +
-				"so only the latest individual will be used. If this is an "
+				"so only the latest Individual will be used. If this is an "
 				"age-structured population, you may want to remove parental generations.");
 			m_idMap[id] = &*it;
 		}
@@ -102,16 +102,16 @@ UINT Pedigree::numParents()
 }
 
 
-individual & Pedigree::indByID(double fid)
+Individual & Pedigree::indByID(double fid)
 {
 	// essentially m_idMap(static_cast<ULONG>(fid))
 	//
 	ULONG id = static_cast<ULONG>(fid + 0.5);
 
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
-		"Individual ID has to be integer (or a double round to full iteger).");
+		"individual ID has to be integer (or a double round to full iteger).");
 
-	std::map<ULONG, individual *>::iterator it = m_idMap.find(id);
+	std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
 	// if still cannot be found, raise an IndexError.
 	if (it == m_idMap.end())
 		throw IndexError("No individual with ID " + toStr(id) + " could be found.");
@@ -182,7 +182,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 		"This relative only exists when there are two parents for each indidivual");
 
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
-		"Please provide at least one information field to store SPOUSE individuals");
+		"Please provide at least one information field to store SPOUSE Individuals");
 
 	DBG_FAILIF(sexChoice == SAME_SEX, ValueError, "Can not locate spouses with the same sex");
 
@@ -242,8 +242,8 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 		ULONG m = couples[i].second;
 		try {
 			// but these guys might not be in the population...
-			individual & fa = indByID(p);
-			individual & ma = indByID(m);
+			Individual & fa = indByID(p);
+			Individual & ma = indByID(m);
 			DBG_ASSERT(ma.sex() == FEMALE && fa.sex() == MALE, RuntimeError,
 				"Sex of parents appear to be wrong.");
 			if (numSpouse[p] < maxSpouse && sexChoice != MALE_ONLY
@@ -317,8 +317,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 				// but the parents might not exist
 				ULONG pp = static_cast<ULONG>(p);
 				ULONG mm = static_cast<ULONG>(m);
-				individual & fa = indByID(pp);
-				individual & ma = indByID(mm);
+				Individual & fa = indByID(pp);
+				Individual & ma = indByID(mm);
 				// add child as father's offspring
 				if (numOffspring[pp] < maxOffspring &&
 				    acceptableSex(MALE, ind(i).sex(), sexChoice) &&
@@ -385,12 +385,12 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 			continue;
 		for (size_t i = 0; i < sibs.size(); ++i) {
 			try {
-				individual & child = indByID(sibs[i]);
+				Individual & child = indByID(sibs[i]);
 				for (size_t j = 0; j < sibs.size(); ++j) {
 					if (i == j)
 						continue;
 					try {
-						individual & sibling = indByID(sibs[j]);
+						Individual & sibling = indByID(sibs[j]);
 
 						if (numSibling[sibs[i]] < maxSibling &&
 						    acceptableSex(child.sex(), sibling.sex(), sexChoice) &&
@@ -480,11 +480,11 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 			continue;
 		for (size_t i = 0; i < sibs.size(); ++i) {
 			try {
-				individual & child = indByID(sibs[i]);
+				Individual & child = indByID(sibs[i]);
 				for (size_t j = 0; j < sibs.size(); ++j) {
 					if (i == j)
 						continue;
-					individual & sibling = indByID(sibs[j]);
+					Individual & sibling = indByID(sibs[j]);
 
 					if (numSibling[sibs[i]] < maxSibling &&
 					    acceptableSex(child.sex(), sibling.sex(), sexChoice) &&
@@ -574,8 +574,8 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 		// these guys share two parents
 		const vectoru & offspring = it->second;
 		try {
-			individual & fa = indByID(p);
-			individual & ma = indByID(m);
+			Individual & fa = indByID(p);
+			Individual & ma = indByID(m);
 			// spouse
 			double fa_spouse = fa.info(spouseIdx);
 			double ma_spouse = ma.info(spouseIdx);
@@ -586,7 +586,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 			// offspring
 			for (size_t j = 0; j < offspring.size(); ++j) {
 				try {
-					individual & child = indByID(offspring[j]);
+					Individual & child = indByID(offspring[j]);
 					bool valid = acceptableSex(MALE, child.sex(), sexChoice) &&
 					             acceptableAffectionStatus(child.affected(), affectionChoice);
 					// duplicate child
@@ -695,7 +695,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 						double sID = indByID(inds[i]).info(fields[s]);
 						if (sID < 0)
 							continue;
-						individual & sind = indByID(sID);
+						Individual & sind = indByID(sID);
 						if (!acceptableSex(mySex, sind.sex(), sex))
 							continue;
 						if (!acceptableAffectionStatus(sind.affected(), affection))
@@ -719,7 +719,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 }
 
 
-vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
+vectoru Pedigree::IndividualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
                                            const uintList & affectionChoiceList,
                                            const subPopList & subPops, int ancGen)
 {
@@ -757,7 +757,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
-	// mark eligible individuals
+	// mark eligible Individuals
 	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
 	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
@@ -791,7 +791,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 				}
 				try {
 					// valid?
-					individual & rind = indByID(rel);
+					Individual & rind = indByID(rel);
 					if (!rind.marked() ||
 					    !acceptableSex(ind->sex(), rind.sex(), sexes[i]) ||
 					    !acceptableAffectionStatus(ind->affected(), affections[i])) {
@@ -818,7 +818,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //  : m_numParents(numParents)
 // {
 //  DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
-//      "Individuals in a pedigree can have one or two parents");
+//      "individuals in a pedigree can have one or two parents");
 //
 //  if (!pedfile.empty())
 //      load(pedfile);
@@ -901,7 +901,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 //          m_numParents = values.size() / popSize;
 //      DBG_ASSERT(m_numParents * popSize == values.size(), ValueError,
 //          "Number of parents does not match subpopulation sizes.\n"
-//          "Line: " + toStr(m_paternal.size() + 1) + ", Individuals read: "
+//          "Line: " + toStr(m_paternal.size() + 1) + ", individuals read: "
 //          + toStr(values.size()) +
 //          ", Pop size: " + toStr(popSize));
 //      m_pedSize.push_back(vectoru());

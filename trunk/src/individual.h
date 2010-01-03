@@ -28,7 +28,7 @@
 
 /**
    \file
-   \brief class individual, individualWithAge etc.
+   \brief class Individual, IndividualWithAge etc.
  */
 
 #include "utility.h"
@@ -60,10 +60,10 @@ using std::pair;
 namespace simuPOP {
 /**
  *  A \c Population consists of individuals with the same genotypic structure.
- *  An \c individual object cannot be created independently, but refences to
+ *  An \c Individual object cannot be created independently, but refences to
  *  inidividuals can be retrieved using member functions of a \c Population
  *  object. In addition to structural information shared by all individuals in
- *  a population (provided by class \c genoStruTrait), the \c individual class
+ *  a population (provided by class \c genoStruTrait), the \c Individual class
  *  provides member functions to get and set \e genotype, \e sex, <em>affection
  *  status</em> and <em>information fields</em> of an individual.
  *
@@ -76,11 +76,11 @@ namespace simuPOP {
  *  followed by alleles on the second homologous set of the chromosomes for
  *  a diploid individual. A consequence of this memory layout is that alleles
  *  at the same locus of a non-haploid individual are separated by
- *  <tt>individual::totNumLoci()</tt> loci. It is worth noting that access to
+ *  <tt>Individual::totNumLoci()</tt> loci. It is worth noting that access to
  *  invalid chromosomes, such as the Y chromosomes of female individuals, are
  *  not restricted.
  */
-class individual : public GenoStruTrait
+class Individual : public GenoStruTrait
 {
 
 protected:
@@ -103,17 +103,17 @@ public:
 	//@{
 	///
 	/**
-	 * An \c individual object cannot be created directly. It has to be accessed
+	 * An \c Individual object cannot be created directly. It has to be accessed
 	 * from a \c Population object using functions such as
-	 * <tt>Population::individual(idx)</tt>.
+	 * <tt>Population::Individual(idx)</tt>.
 	 */
-	individual() : m_flags(m_flagVisible)
+	Individual() : m_flags(m_flagVisible)
 	{
 	}
 
 
 	/// CPPONLY
-	individual(const individual & ind) :
+	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
 		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
@@ -122,7 +122,7 @@ public:
 
 
 	/// destructor. Do nothing.
-	~individual()
+	~Individual()
 	{
 	}
 
@@ -142,10 +142,10 @@ public:
 
 
 	/// shallow copy of an individual class
-	individual & operator=(const individual & rhs);
+	Individual & operator=(const Individual & rhs);
 
 	/// CPPONLY deep copy of an individual class
-	individual & copyFrom(const individual & rhs);
+	Individual & copyFrom(const Individual & rhs);
 
 	//@}
 	/// @name readonly structural info
@@ -455,10 +455,10 @@ public:
 	/// @name copy, comparison, swap operations to objects.
 	//@{
 	/// compare if two individuals are the same used in case of serialization etc.
-	bool operator==(const individual & rhs) const;
+	bool operator==(const Individual & rhs) const;
 
 	/// compare if two individuals are not the same used in case of serialization etc.
-	bool operator!=(const individual & rhs) const
+	bool operator!=(const Individual & rhs) const
 	{
 		return !(*this == rhs);
 	}
@@ -467,10 +467,10 @@ public:
 	// allow compaison of individuals in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the individual objects
-	int __cmp__(const individual & rhs) const;
+	int __cmp__(const Individual & rhs) const;
 
 
-	/// CPPONLY swap individuals
+	/// CPPONLY swap Individuals
 	/**
 	   The default behavior is swapping all info, but not the
 	   position of genotypic info. If swapContent is false,
@@ -483,7 +483,7 @@ public:
 	   swap pointers. (There is no order right now within
 	   subpopulation so the later case is rare, at best.)
 	 */
-	void swap(individual & ind, bool swapContent = true);
+	void swap(Individual & ind, bool swapContent = true);
 
 	//@}
 	/// @name misc (only relevant to developers)
@@ -555,7 +555,7 @@ public:
 	// accept the index to an information field
 	indCompare(UINT idx) : m_field(idx) {}
 
-	bool operator()(const individual & lhs, const individual & rhs)
+	bool operator()(const Individual & lhs, const Individual & rhs)
 	{
 		return lhs.info(m_field) < rhs.info(m_field);
 	}
@@ -570,7 +570,7 @@ private:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    individualIterator *will* iterate through only visible individuals, and
+    IndividualIterator *will* iterate through only visible individuals, and
     allInds is only provided when we know in advance that all individuals are
     visible. This is a way to obtain better performance in simple cases.
  */
@@ -593,7 +593,7 @@ public:
 		: m_it(it), m_end(end), m_allInds(allInds)
 	{
 		// m_it need to point to the first valid
-		// individual. otherwise *it will fail.
+		// Individual. otherwise *it will fail.
 		if (!allInds)
 			while (m_it < m_end && !m_it->visible())
 				++m_it;
@@ -780,8 +780,8 @@ private:
 };
 
 //
-typedef vector<individual>::iterator RawIndIterator;
-typedef vector<individual>::const_iterator ConstRawIndIterator;
+typedef vector<Individual>::iterator RawIndIterator;
+typedef vector<Individual>::const_iterator ConstRawIndIterator;
 
 typedef IndividualIterator<RawIndIterator> IndIterator;
 typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
@@ -880,7 +880,7 @@ private:
 	UINT m_info;
 	///
 	bool m_useGappedIterator;
-	// individual iterator
+	// Individual iterator
 	IndividualIterator<T> m_it;
 	//
 	InfoType * m_ptr;
@@ -1011,14 +1011,14 @@ public:
 			} else {
 				// male, no X1.
 				DBG_ASSERT(p == 0, SystemError,
-					"Male individual only has the first homologous copy of chromosome X");
-				// next individual, ploidy 0, sex does not matter.
+					"Male Individual only has the first homologous copy of chromosome X");
+				// next Individual, ploidy 0, sex does not matter.
 				++it;
 				valid = it.valid();
 			}
 		} else if (m_chromType == CHROMOSOME_Y) {
 			DBG_ASSERT(it->sex() == MALE, SystemError,
-				"There is no chromosome Y for FEMALE individuals");
+				"There is no chromosome Y for FEMALE Individuals");
 			while (it.valid())
 				if ((++it)->sex() == MALE)
 					break;
@@ -1130,7 +1130,7 @@ private:
 	UINT m_size;
 	//
 	// The second iteration method
-	// individual iterator
+	// Individual iterator
 	IndividualIterator<T> m_it;
 	// index of the locus
 	UINT m_index;
@@ -1154,7 +1154,7 @@ typedef CombinedAlleleIterator<ConstRawIndIterator> ConstIndAlleleIterator;
 #ifndef SWIG
 // set version for individual class
 // version 0: base (reset for version 1.0)
-BOOST_CLASS_VERSION(simuPOP::individual, 0)
+BOOST_CLASS_VERSION(simuPOP::Individual, 0)
 #endif
 
 #endif

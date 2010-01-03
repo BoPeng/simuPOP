@@ -180,7 +180,7 @@ Permission is granted to make and distribute verbatim copies of this manual
 \end_layout
 
 \begin_layout Abstract
-simuPOP is a general-purpose individual-based forward-time population genetics
+simuPOP is a general-purpose Individual-based forward-time population genetics
  simulation environment.
  Unlike coalescent-based programs, simuPOP evolves populations forward in
  time, subject to arbitrary number of genetic and environmental forces such
@@ -316,7 +316,7 @@ What is simuPOP?
 \begin_layout Standard
 simuPOP is a 
 \series bold
-general-purpose individual-based forward-time population genetics simulation
+general-purpose Individual-based forward-time population genetics simulation
  environment
 \series default
  based on Python, a dynamic object-oriented programming language that has
@@ -403,7 +403,7 @@ Population
 \series default
  consists of 
 \series bold
-individuals
+Individuals
 \series default
  of the same 
 \series bold
@@ -412,7 +412,7 @@ genotype structure
 , which include properties such as number of homologous sets of chromosomes
  (ploidy), number of chromosomes, and names and locations of markers on
  each chromosome.
- Individuals can be divided into 
+ individuals can be divided into 
 \series bold
 subpopulations
 \series default
@@ -1059,7 +1059,7 @@ Population.subPopSize()
 \family default
 , 
 \family typewriter
-individual.setInfo()
+Individual.setInfo()
 \family default
 ).
 \end_layout
@@ -1601,7 +1601,7 @@ simuPOP.utils.simuProgress
 \end_layout
 
 \begin_layout Standard
-The use of GUI can be controlled either globally or individually.
+The use of GUI can be controlled either globally or Individually.
  First, a global GUI parameter could be set by environmental variable 
 \family typewriter
 SIMUGUI
@@ -1779,7 +1779,7 @@ Population
 \family default
  and 
 \family typewriter
-individual
+Individual
 \family default
  are both derived from class 
 \family typewriter
@@ -2269,7 +2269,7 @@ All arrays in simuPOP start at index 0
 .
  This conforms to Python and C++ indexes.
  To avoid confusion, I will refer the first locus as locus zero, the second
- locus as locus one; the first individual in a population as individual
+ locus as locus one; the first individual in a population as Individual
  zero, and so on.
 \end_layout
 
@@ -2422,7 +2422,7 @@ A number of simuPOP functions return Python iterators that can be used to
  iterate through an internal array of objects.
  For example, 
 \family typewriter
-Population.individuals([subPop])
+Population.Individuals([subPop])
 \family default
  returns an iterator iterates through all individuals, or all individuals
  in a (virtual) subpoulation.
@@ -3004,7 +3004,7 @@ Alleles in different individuals could be interpretted differently.
 \begin_layout Itemize
 In an implementation of an infinite-sites model, 
 \series bold
-individual loci are used to store mutation events
+Individual loci are used to store mutation events
 \series default
 .
  In this example (Example 
@@ -3034,7 +3034,7 @@ In summary, the exact meaning of loci and their alleles are user defined.
 \begin_layout Standard
 A genotypic structure can be retrieved from 
 \emph on
-individual
+Individual
 \emph default
  and 
 \emph on
@@ -3322,7 +3322,7 @@ Inheritance of different types of chromosomes in a diploid population
 \end_layout
 
 \begin_layout Plain Layout
-Individuals in this population have five chromosomes, one autosome (A),
+individuals in this population have five chromosomes, one autosome (A),
  one X chromosome (X), one Y chromosome (Y) and two customized chromosomes
  (C).
  The customized chromosomes model multiple copies of mitochondrial chromosomes
@@ -3354,13 +3354,13 @@ name "sub:stru-infoFields"
 
 \begin_layout Standard
 Different kinds of simulations require different kinds of individuals.
- Individuals with only genotype information are sufficient to simulate the
+ individuals with only genotype information are sufficient to simulate the
  basic Wright-Fisher model.
  Sex is needed to simulate such a model in diploid populations with sex.
- Individual fitness may be needed if selection is induced, and age may be
+ individual fitness may be needed if selection is induced, and age may be
  needed if the population is age-structured.
  In addition, different types of quantitative traits or affection status
- may be needed to study the impact of genotype on individual phenotype.
+ may be needed to study the impact of genotype on Individual phenotype.
  Because it is infeasible to provide all such information to an individual,
  simuPOP keeps genotype, sex (
 \family typewriter
@@ -3472,7 +3472,7 @@ After evolution, the population is extracted from the simulator, and the
 mother_idx
 \family default
  of all individuals are printed.
- The next several statements get the first individual from the population,
+ The next several statements get the first Individual from the population,
  and his mother from the parental generation using the indexes stored in
  this individual's information fields.
  Genotypes at the first homologous copy of this individual's chromosome
@@ -3485,14 +3485,14 @@ mother_idx
 Information fields can only be added or removed at the population level
 \series default
  because all individuals need to have the same set of fields.
- Values of information fields could be accessed at individual or Population
+ Values of information fields could be accessed at Individual or Population
  levels, using functions such as 
 \family typewriter
-individual.info
+Individual.info
 \family default
 , 
 \family typewriter
-individual.setInfo
+Individual.setInfo
 \family default
 , 
 \family typewriter
@@ -3522,7 +3522,7 @@ Individual
 \end_layout
 
 \begin_layout Standard
-Individuals are building blocks of a population.
+individuals are building blocks of a population.
  An individual object cannot be created independently, but references to
  inidividuals can be retrieved using member functions of a population object.
 \end_layout
@@ -3546,7 +3546,7 @@ s set is followed by alleles at other loci on the same chromosome, then
  A consequence of this memory layout is that alleles at the same locus of
  a non-haploid individual are separated by 
 \family typewriter
-individual.totNumLoci()
+Individual.totNumLoci()
 \family default
  loci.
  The memory layout of a diploid individual with two chromosomes is illustrated
@@ -3604,20 +3604,20 @@ Memory layout of individual genotype
 simuPOP provides several functions to read/write individual genotype.
  For example, 
 \family typewriter
-individual.allele()
+Individual.allele()
 \family default
  and 
 \family typewriter
-individual.setAllele()
+Individual.setAllele()
 \family default
  can be used to read and write single alleles.
  You could also access alleles in batch mode using functions 
 \family typewriter
-individual.genotype()
+Individual.genotype()
 \family default
  and 
 \family typewriter
-individual.setGenotype()
+Individual.setGenotype()
 \family default
 .
  It is worth noting that, instead of copying genotypes of an individual
@@ -3650,7 +3650,7 @@ list()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "individual_genotype"
+reference "Individual_genotype"
 
 \end_inset
 
@@ -3658,8 +3658,8 @@ reference "individual_genotype"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/individual_genotype.log"
-lstparams "caption={Access individual genotype},label={individual_genotype}"
+filename "log/Individual_genotype.log"
+lstparams "caption={Access individual genotype},label={Individual_genotype}"
 
 \end_inset
 
@@ -3675,7 +3675,7 @@ Population.genotype()
 \end_layout
 
 \begin_layout Subsection
-Individual sex, affection status and information fields
+individual sex, affection status and information fields
 \end_layout
 
 \begin_layout Standard
@@ -3700,7 +3700,7 @@ information fields
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "individuals"
+reference "Individuals"
 
 \end_inset
 
@@ -3733,8 +3733,8 @@ ind.age = 35
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/individual.log"
-lstparams "caption={Access Individual properties},label={individuals}"
+filename "log/Individual.log"
+lstparams "caption={Access Individual properties},label={Individuals}"
 
 \end_inset
 
@@ -3777,11 +3777,11 @@ From a user's point of view, genotypes of all individuals in a population
  are arranged sequentially.
  Similar to functions 
 \family typewriter
-individual.genotype()
+Individual.genotype()
 \family default
  and 
 \family typewriter
-individual.setGenotype()
+Individual.setGenotype()
 \family default
 , genotypes of a population can be accessed in batch using functions 
 \family typewriter
@@ -4127,7 +4127,7 @@ ProductSplitter
 \family default
  as an intersection splitter that defines new VSPs as intersections of existing
  VSPs, you may wonder how to define unions of VSPs.
- For example, you can make a case where you want to consider individuals
+ For example, you can make a case where you want to consider Individuals
  with information field a < 0 or a > 100 together.
  A regular 
 \family typewriter
@@ -4218,7 +4218,7 @@ Access individuals and their properties
 There are many ways to access individuals of a population.
  For example, function 
 \family typewriter
-Population.individual(idx)
+Population.Individual(idx)
 \family default
  returns a reference to the 
 \family typewriter
@@ -4244,7 +4244,7 @@ subPop
 If you would like to access a group of individuals, either from a whole
  Population, a subpopulation, or from a virtual subpopulation, 
 \family typewriter
-Population.individuals([subPop])
+Population.Individuals([subPop])
 \family default
  is easier to use.
  This function returns a Python iterator that can be used to iterate through
@@ -4253,8 +4253,8 @@ Population.individuals([subPop])
 \family typewriter
 subPop 
 \family default
-can be a virtual subpopulation which makes it easy to iterate through individual
-s with certain properties (such as all male individuals).
+can be a virtual subpopulation which makes it easy to iterate through Individual
+s with certain properties (such as all male Individuals).
 \end_layout
 
 \begin_layout Standard
@@ -4262,7 +4262,7 @@ If more than one generations are stored in a population, function
 \family typewriter
 ancestor(idx, [subPop], gen)
 \family default
- can be used to access individual from an ancestral generation (see Section
+ can be used to access Individual from an ancestral generation (see Section
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4286,7 +4286,7 @@ current
 \emph default
  generation, and use 
 \family typewriter
-Population.individuals
+Population.Individuals
 \family default
 .
  Note that ancestor() function can always access individuals at a certain
@@ -4298,7 +4298,7 @@ reference "batchAccess"
 
 \end_inset
 
- demonstrates how to use all these individual-access functions.
+ demonstrates how to use all these Individual-access functions.
 \end_layout
 
 \begin_layout Standard
@@ -4380,7 +4380,7 @@ reference "batchAccess"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/batchAccess.log"
-lstparams "caption={Access individual properties in batch mode},label={batchAccess}"
+lstparams "caption={Access Individual properties in batch mode},label={batchAccess}"
 
 \end_inset
 
@@ -7093,7 +7093,7 @@ NumOfFemales
 \family default
  are useful in theoretical studies where the sex ratio of a population needs
  to be controlled strictly, or in special mating schemes, usually for animal
- populations, where only a certain number of male or female individuals
+ populations, where only a certain number of male or female Individuals
  are allowed in a family.
  It worth noting that a genotype transmitter can override specified offspring
  sex.
@@ -7317,7 +7317,7 @@ RandomSelection
 parentTagger
 \family default
  is used to track the parent of each individual.
- Although sex information is not used in this mating scheme, individual
+ Although sex information is not used in this mating scheme, Individual
  sexes are initialized and passed to offspring.
 \end_layout
 
@@ -8405,7 +8405,7 @@ Most operators do not change the genotypic structure of populations during
  the same genotypic structure.
  That is to say, if you are inserting a new locus to an individual, all
  individuals in this population should have it.
- This is why there is no individual-level structure-modification functions.
+ This is why there is no Individual-level structure-modification functions.
 \end_layout
 
 \begin_layout Standard
@@ -8724,7 +8724,7 @@ Female
 \emph on
 maleFreq
 \emph default
- is used to specify the probability of having a male individual.
+ is used to specify the probability of having a male Individual.
  Alternatively, parameter 
 \emph on
 maleProp
@@ -8828,7 +8828,7 @@ It is sometimes desired to create identical individuals with random genotype.
 identicalInds
 \family default
  can be used for this purpose.
- When this parameter is set to true, a random individual will be created
+ When this parameter is set to true, a random Individual will be created
  for each subpopulation (using different allele frequencies if a list of
  allelic spectra are given), and be copied to all other individuals in the
  subpopulation.
@@ -8959,7 +8959,7 @@ InitInfo
 \family typewriter
 initInfo
 \family default
- initialize one or more information fields of all individuals or individuals
+ initialize one or more information fields of all individuals or Individuals
  in selected (virtual) subpopulations using either a list of values or a
  Python function.
  If a value or a list of value is given, it will be used repeatedly to assign
@@ -9318,8 +9318,8 @@ InfoExec
 \end_layout
 
 \begin_layout Standard
-Because there is no individual-specific namespace, these two operators make
- use of either a temporary namespace for every individual, or the population
+Because there is no Individual-specific namespace, these two operators make
+ use of either a temporary namespace for every Individual, or the population
  namespace (parameter 
 \emph on
 usePopVars
@@ -9625,7 +9625,7 @@ Mating happens strictly within each subpopulation.
 \end_layout
 
 \begin_layout Standard
-This section will introduce several operators that allow you to move individuals
+This section will introduce several operators that allow you to move Individuals
  across the boundary of subpopulations (migration), and change the number
  of subpopulations during evolution (split and merge).
 \end_layout
@@ -10172,7 +10172,7 @@ lstparams "caption={Manual migration},label={manualMigration}"
 \end_layout
 
 \begin_layout Note
-Individuals with an invalid destination subpopulation ID (e.g.
+individuals with an invalid destination subpopulation ID (e.g.
  an negative number) will be discarded silently.
  Although not recommended, this feature can be used to remove individuals
  from a subpopulation.
@@ -12567,7 +12567,7 @@ lstparams "caption={Applying mutation to virtual subpopulations.},label={mutator
 \begin_layout Standard
 At the beginning of a simulation, all individuals have 50 copies of a tandem
  repeat and the mutation follows a standard neutral stepwise mutation model.
- Individuals with more than 50 repeats will have an increasing probability
+ individuals with more than 50 repeats will have an increasing probability
  to develop a disease (
 \begin_inset Formula $\mbox{Pr}\left(\mbox{affected}\mid n\right)=\left(n-50\right)*0.05$
 \end_inset
@@ -13421,7 +13421,7 @@ only one penetrance value is used to determine a person's affection status
 
 \begin_layout Standard
 This multi-loci penetrance model applies several penetrance models to each
- individual and computes an overall penetrance value from the penetrance
+ Individual and computes an overall penetrance value from the penetrance
  values provided by these operators.
  Although this selector is designed to obtain multi-loci penetrance values
  from several single-locus penetrance models, any penetrance operator, including
@@ -13431,7 +13431,7 @@ This multi-loci penetrance model applies several penetrance models to each
 \family typewriter
 mode
 \family default
- to control how individual penetrance values are combined.
+ to control how Individual penetrance values are combined.
  More specifically, if 
 \begin_inset Formula $f_{i}$
 \end_inset
@@ -13642,7 +13642,7 @@ PyPenetrance
 \family default
  to specify penetrance values according to a fitness table and the smoking
  status of each individual.
- In this example, individual risk is doubled when he or she smokes.
+ In this example, Individual risk is doubled when he or she smokes.
  The disease prevalence is therefore much higher in smokers than in non-smokers.
 \end_layout
 
@@ -13778,7 +13778,7 @@ fitness
 \begin_layout Itemize
 When mating happens, parents are chosen with probabilities that are proportional
  to their fitness values.
- For example, assuming that a parental population consists of four individuals
+ For example, assuming that a parental population consists of four Individuals
  with fitness values 1, 2, 3, and 4, respectively, the probability that
  they are picked to produce offspring are 
 \begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
@@ -14845,7 +14845,7 @@ HeteroMating
 \family default
 ).
  These mating schemes may or may not support natural selection, may be applied
- to different virtual subpopulations of population, and they may see individuals
+ to different virtual subpopulations of population, and they may see Individuals
  differently in terms of individual fitness.
  Parameter 
 \family typewriter
@@ -14971,7 +14971,7 @@ reference "InheritTagger"
 \end_inset
 
  tags the first individuals of ten subpopulations of size 1000.
- Individuals in the offspring generation inherits the maximum value of field
+ individuals in the offspring generation inherits the maximum value of field
  
 \family typewriter
 x
@@ -15109,7 +15109,7 @@ As long as parental generations do not change after the offspring generation
  However, in certain applications when parental generations change (e.g.
  to draw a pedigree from a large population), or when individuals can not
  be looked up easily using indexes (e.g.
- after individuals are saved to a file), giving every individual an unique
+ after individuals are saved to a file), giving every Individual an unique
  ID and refer to them using ID will be a better choice.
 \end_layout
 
@@ -15147,7 +15147,7 @@ ind_id
 .
  To ensure uniqueness across populations, a single source of ID is used
  for this operator.
- Individual IDs are assigned consecutively starting from 0.
+ individual IDs are assigned consecutively starting from 0.
  If you would like to reset the sequence or start from a different number,
  you can call the 
 \family typewriter
@@ -15740,7 +15740,7 @@ Stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
 
 \end_inset
 
-will calculate the frequencies of alleles at locus 0, among individuals
+will calculate the frequencies of alleles at locus 0, among Individuals
  in two virtual subpopulations.
  If the virtual subpopulation is defined by sex (using a 
 \family typewriter
@@ -15925,7 +15925,7 @@ numOfMales
 \emph on
 numOfAffected
 \emph default
- provide basic individual counting statistics.
+ provide basic Individual counting statistics.
  They count the number of all, male/female, affected/unaffected individuals
  in all or specified (virtual) subpopulations, and set variables such as
  
@@ -17657,7 +17657,7 @@ verbose
 \family typewriter
 IfElse
 \family default
- operator and individual opearators.
+ operator and Individual opearators.
  That is to say, the parameters 
 \family typewriter
 begin
@@ -19354,7 +19354,7 @@ plotter.scatterPlotter
 \family default
 : Plot individuals in specified (virtual) subpopulations using values at
  two information fields as x and y axes.
- Individuals belonging to different (virtual) subpopulations will be plotted
+ individuals belonging to different (virtual) subpopulations will be plotted
  with different colors and shapes.
 \end_layout
 
@@ -20141,7 +20141,7 @@ y
 \family typewriter
 anc
 \family default
- to record individual ancestry and assign 0 and 1 each to half of the population.
+ to record Individual ancestry and assign 0 and 1 each to half of the population.
  During evolution,
 \end_layout
 
@@ -21210,7 +21210,7 @@ drawThreeGenFamilySample and drawThreeGenFamilySamples
 \begin_layout Standard
 A three-generation family consists of two parents, their common offspring,
  offspring's spouses, and their common offspring (grandchidren).
- Individuals in sampled families have either no or two parents.
+ individuals in sampled families have either no or two parents.
  Functions 
 \family typewriter
 drawThreeGenFamilySample
@@ -22956,7 +22956,7 @@ status open
 
 \begin_layout Standard
 It is unclear why this simple command causes us trouble, instead of outputting
- the genotype of the only individual of this population.
+ the genotype of the only Individual of this population.
  However, the reason is clear if you turn on debug information:
 \end_layout
 
@@ -23744,7 +23744,7 @@ Although simuPOP provides a number of genotype transmitters, they may still
  For example, a Recombinator can be used to recombine parental chromosomes
  but it is well known that male and female individuals differ in recombination
  rates.
- How can you apply two different Recombinators to male and female individuals
+ How can you apply two different Recombinators to male and female Individuals
  separately?
 \end_layout
 

@@ -88,7 +88,7 @@ bool PyEval::apply(Population & pop)
 }
 
 
-string InfoEval::evalInfo(individual * ind, bool update)
+string InfoEval::evalInfo(Individual * ind, bool update)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -186,7 +186,7 @@ bool InfoEval::apply(Population & pop)
 
 
 bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 individual * dad, individual * mom)
+                                 Individual * dad, Individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -264,7 +264,7 @@ bool InfoExec::apply(Population & pop)
 
 
 bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 individual * dad, individual * mom)
+                                 Individual * dad, Individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -461,7 +461,7 @@ statNumOfMales::statNumOfMales(bool numOfMales, const subPopList & subPops, cons
 
 string statNumOfMales::describe(bool format)
 {
-	return m_isActive ? "count number of male individuals" : "";
+	return m_isActive ? "count number of male Individuals" : "";
 }
 
 

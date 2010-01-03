@@ -448,7 +448,7 @@ bool PointMutator::apply(Population & pop)
 					}
 				}
 			}   // ploidy
-		}       // individual
+		}       // Individual
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 	}       // subpopulation
