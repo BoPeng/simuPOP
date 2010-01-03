@@ -719,7 +719,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 }
 
 
-vectoru Pedigree::IndividualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
+vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
                                            const uintList & affectionChoiceList,
                                            const subPopList & subPops, int ancGen)
 {
