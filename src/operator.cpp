@@ -538,15 +538,15 @@ bool ifElse::apply(population & pop)
 }
 
 
-string terminateIf::describe(bool format)
+string TerminateIf::describe(bool format)
 {
-	return string("<simuPOP.terminateIf> terminate the evolution of ") +
+	return string("<simuPOP.TerminateIf> terminate the evolution of ") +
 	       (m_stopAll ? "all populations" : "the current population") +
 	       " if expression \"" + m_expr.expr() + "\" is evalated to be True";
 }
 
 
-bool terminateIf::apply(population & pop)
+bool TerminateIf::apply(population & pop)
 {
 	// experssion return true
 	m_expr.setLocalDict(pop.dict());

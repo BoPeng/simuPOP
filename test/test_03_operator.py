@@ -57,7 +57,7 @@ class TestOperator(unittest.TestCase):
         simu = simulator(population(), rep=3)
         simu.evolve(
             postOps = opRecorder(reps=-1),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10
         )
         try:
@@ -80,7 +80,7 @@ class TestOperator(unittest.TestCase):
         'Testing output specifications'
         simu = simulator( population(), rep=5)
         simu.evolve(postOps = pyOutput("a", output=">a.txt"),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -120,7 +120,7 @@ class TestOperator(unittest.TestCase):
         simu = simulator( population(), rep=5)
         # each replicate
         simu.evolve(postOps = pyOutput("a", output="!'rep%d.txt'%rep"),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -132,7 +132,7 @@ class TestOperator(unittest.TestCase):
         for pop in simu.populations():
             pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>rep%d.txt'%rep"),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -144,7 +144,7 @@ class TestOperator(unittest.TestCase):
         for pop in simu.populations():
             pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>>rep%d.txt'%rep"),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(5):
@@ -154,7 +154,7 @@ class TestOperator(unittest.TestCase):
         for pop in simu.populations():
             pop.dvars().gen = 0
         simu.evolve(postOps = pyOutput("a", output="!'>>gen%d.txt'%gen"),
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(10):
@@ -170,7 +170,7 @@ class TestOperator(unittest.TestCase):
             self.assertEqual(msg, 'func2')
         # each replicate
         simu.evolve(
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             postOps = [
             pyOutput("func1", output=func1),
             pyOutput("func2", output=func2),
@@ -212,7 +212,7 @@ class TestOperator(unittest.TestCase):
         # as an operator
         pop.evolve(
             initOps = [infoExec('b=0')],
-            matingScheme=cloneMating(),
+            matingScheme=CloneMating(),
             postOps = [
                 infoEval(r"'\t%.1f' % b", output=''),
                 infoExec('b+=1', output=''),

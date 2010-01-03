@@ -421,56 +421,56 @@ vspSplitterRef
 
 
 \backslash
-sexSplitterRef
+SexSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-affectionSplitterRef
+AffectionSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-infoSplitterRef
+InfoSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-proportionSplitterRef
+ProportionSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-rangeSplitterRef
+RangeSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-genotypeSplitterRef
+GenotypeSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-combinedSplitterRef
+CombinedSplitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-productSplitterRef
+ProductSplitterRef
 \end_layout
 
 \end_inset
@@ -521,63 +521,63 @@ pedigreeMatingRef
 
 
 \backslash
-sequentialParentChooserRef
+SequentialParentChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-sequentialParentsChooserRef
+SequentialParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-randomParentChooserRef
+RandomParentChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-randomParentsChooserRef
+RandomParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-polyParentsChooserRef
+PolyParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-alphaParentsChooserRef
+AlphaParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pyParentsChooserRef
+PyParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-offspringGeneratorRef
+OffspringGeneratorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-controlledOffspringGeneratorRef
+ControlledOffspringGeneratorRef
 \end_layout
 
 \end_inset
@@ -597,14 +597,14 @@ status open
 
 
 \backslash
-simuPOPcloneMatingRef
+simuPOPCloneMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPrandomSelectionRef
+simuPOPRandomSelectionRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -618,42 +618,42 @@ simuPOPrandomMatingRef
 
 
 \backslash
-simuPOPmonogamousMatingRef
+simuPOPMonogamousMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPpolygamousMatingRef
+simuPOPPolygamousMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPalphaMatingRef
+simuPOPAlphaMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPhaplodiploidMatingRef
+simuPOPHaplodiploidMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPselfMatingRef
+simuPOPSelfMatingRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPcontrolledRandomMatingRef
+simuPOPControlledRandomMatingRef
 \end_layout
 
 \end_inset
@@ -943,49 +943,49 @@ status open
 
 
 \backslash
-genoTransmitterRef
+GenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-cloneGenoTransmitterRef
+CloneGenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mendelianGenoTransmitterRef
+MendelianGenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-selfingGenoTransmitterRef
+SelfingGenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-haplodiploidGenoTransmitterRef
+HaplodiploidGenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mitochondrialGenoTransmitterRef
+MitochondrialGenoTransmitterRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-recombinatorRef
+RecombinatorRef
 \end_layout
 
 \end_inset
@@ -1022,63 +1022,63 @@ baseMutatorRef
 
 
 \backslash
-matrixMutatorRef
+MatrixMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-kamMutatorRef
+KamMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-smmMutatorRef
+SmmMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pyMutatorRef
+PyMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mixedMutatorRef
+MixedMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-contextMutatorRef
+ContextMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pointMutatorRef
+PointMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsnpMutatorRef
+simuPOPSnpMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPacgtMutatorRef
+simuPOPAcgtMutatorRef
 \end_layout
 
 \end_inset
@@ -1271,42 +1271,42 @@ status open
 
 
 \backslash
-idTaggerRef
+IdTaggerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-inheritTaggerRef
+InheritTaggerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-summaryTaggerRef
+SummaryTaggerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-parentsTaggerRef
+ParentsTaggerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pedigreeTaggerRef
+PedigreeTaggerRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pyTaggerRef
+PyTaggerRef
 \end_layout
 
 \end_inset
@@ -1326,7 +1326,7 @@ status open
 
 
 \backslash
-terminateIfRef
+TerminateIfRef
 \end_layout
 
 \end_inset
@@ -1366,7 +1366,7 @@ status open
 
 
 \backslash
-noneOpRef
+NoneOpRef
 \end_layout
 
 \begin_layout Plain Layout

@@ -30,7 +30,7 @@ using std::max;
 
 namespace simuPOP {
 
-void genoTransmitter::initialize(const population & pop)
+void GenoTransmitter::initialize(const population & pop)
 {
 	m_hasCustomizedChroms = !pop.customizedChroms().empty();
 	m_lociToCopy.clear();
@@ -44,7 +44,7 @@ void genoTransmitter::initialize(const population & pop)
 }
 
 
-void genoTransmitter::clearChromosome(const individual & ind, int ploidy, int chrom)
+void GenoTransmitter::clearChromosome(const individual & ind, int ploidy, int chrom)
 {
 #ifdef BINARYALLELE
 	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
@@ -56,7 +56,7 @@ void genoTransmitter::clearChromosome(const individual & ind, int ploidy, int ch
 }
 
 
-void genoTransmitter::copyChromosome(const individual & parent, int parPloidy,
+void GenoTransmitter::copyChromosome(const individual & parent, int parPloidy,
                                      individual & offspring, int ploidy, int chrom)
 {
 #ifdef BINARYALLELE
@@ -73,7 +73,7 @@ void genoTransmitter::copyChromosome(const individual & parent, int parPloidy,
 }
 
 
-void genoTransmitter::copyChromosomes(const individual & parent,
+void GenoTransmitter::copyChromosomes(const individual & parent,
                                       int parPloidy, individual & offspring, int ploidy)
 {
 	// troublesome ...
@@ -101,13 +101,13 @@ void genoTransmitter::copyChromosomes(const individual & parent,
 }
 
 
-string cloneGenoTransmitter::describe(bool format)
+string CloneGenoTransmitter::describe(bool format)
 {
-	return "<simuPOP.cloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
+	return "<simuPOP.CloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
 }
 
 
-bool cloneGenoTransmitter::applyDuringMating(population & pop,
+bool CloneGenoTransmitter::applyDuringMating(population & pop,
                                              RawIndIterator offspring,
                                              individual * dad,
                                              individual * mom)
@@ -159,16 +159,16 @@ bool cloneGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void mendelianGenoTransmitter::initialize(const population & pop)
+void MendelianGenoTransmitter::initialize(const population & pop)
 {
-	genoTransmitter::initialize(pop);
+	GenoTransmitter::initialize(pop);
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
 	m_numChrom = pop.numChrom();
 }
 
 
-void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
+void MendelianGenoTransmitter::transmitGenotype(const individual & parent,
                                                 individual & offspring, int ploidy)
 {
 	// current parental ploidy (copy from which chromosome copy)
@@ -249,7 +249,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 }
 
 
-bool mendelianGenoTransmitter::applyDuringMating(population & pop,
+bool MendelianGenoTransmitter::applyDuringMating(population & pop,
                                                  RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
@@ -265,14 +265,14 @@ bool mendelianGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-bool selfingGenoTransmitter::applyDuringMating(population & pop,
+bool SelfingGenoTransmitter::applyDuringMating(population & pop,
                                                RawIndIterator offspring, individual * dad, individual * mom)
 {
 	//
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Selfing genotype transmitter requires at least one valid parents");
 
-	// call mendelianGenoTransmitter::initialize if needed.
+	// call MendelianGenoTransmitter::initialize if needed.
 	initializeIfNeeded(pop);
 
 	individual * parent = mom != NULL ? mom : dad;
@@ -284,15 +284,15 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void haplodiploidGenoTransmitter::initialize(const population & pop)
+void HaplodiploidGenoTransmitter::initialize(const population & pop)
 {
 	DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
 		"Haplodiploid populations do not use sex chromosomes");
-	mendelianGenoTransmitter::initialize(pop);
+	MendelianGenoTransmitter::initialize(pop);
 }
 
 
-bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
+bool HaplodiploidGenoTransmitter::applyDuringMating(population & pop,
                                                     RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
@@ -310,9 +310,9 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-void mitochondrialGenoTransmitter::initialize(const population & pop)
+void MitochondrialGenoTransmitter::initialize(const population & pop)
 {
-	genoTransmitter::initialize(pop);
+	GenoTransmitter::initialize(pop);
 	if (m_chroms.empty()) {
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
 			if (pop.chromType(ch) == CUSTOMIZED)
@@ -341,11 +341,11 @@ void mitochondrialGenoTransmitter::initialize(const population & pop)
 }
 
 
-bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
+bool MitochondrialGenoTransmitter::applyDuringMating(population & pop,
                                                      RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL, ValueError,
-		"mitochondrialGenoTransmitter requires valid female parent.");
+		"MitochondrialGenoTransmitter requires valid female parent.");
 
 	// call initialize if needed.
 	initializeIfNeeded(pop);
@@ -375,12 +375,12 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
-recombinator::recombinator(const floatList & rates, double intensity,
+Recombinator::Recombinator(const floatList & rates, double intensity,
 	const uintList & loci, const floatList & convMode,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	:
-	genoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
+	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
 	m_bt(getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
@@ -399,15 +399,15 @@ recombinator::recombinator(const floatList & rates, double intensity,
 };
 
 
-string recombinator::describe(bool format)
+string Recombinator::describe(bool format)
 {
-	string desc = "<simuPOP.recombinator> genetic recombination.";
+	string desc = "<simuPOP.Recombinator> genetic recombination.";
 
 	return desc;
 }
 
 
-int recombinator::markersConverted(size_t index, const individual & ind)
+int Recombinator::markersConverted(size_t index, const individual & ind)
 {
 	int mode = static_cast<int>(m_convMode[0]);
 
@@ -445,9 +445,9 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 }
 
 
-void recombinator::initialize(const population & pop)
+void Recombinator::initialize(const population & pop)
 {
-	genoTransmitter::initialize(pop);
+	GenoTransmitter::initialize(pop);
 
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
@@ -567,7 +567,7 @@ void recombinator::initialize(const population & pop)
 }
 
 
-void recombinator::transmitGenotype(const individual & parent,
+void Recombinator::transmitGenotype(const individual & parent,
                                     individual & offspring, int ploidy)
 {
 	// use which copy of chromosome
@@ -836,7 +836,7 @@ void recombinator::transmitGenotype(const individual & parent,
 }
 
 
-bool recombinator::applyDuringMating(population & pop,
+bool Recombinator::applyDuringMating(population & pop,
                                      RawIndIterator offspring,
                                      individual * dad,
                                      individual * mom)
@@ -848,7 +848,7 @@ bool recombinator::applyDuringMating(population & pop,
 	initializeIfNeeded(pop);
 
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
-		"Uninitialized recombinator");
+		"Uninitialized Recombinator");
 
 	if (infoSize() == 1 && !noOutput() )
 		m_debugOutput = &getOstream(pop.dict());

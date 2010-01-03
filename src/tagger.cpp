@@ -32,22 +32,22 @@ namespace simuPOP {
 ULONG g_indID = 1;
 
 
-void idTagger::reset(ULONG startID)
+void IdTagger::reset(ULONG startID)
 {
 	DBG_FAILIF(startID == 0, ValueError, "Individual ID must start from 1.");
 	g_indID = startID;
 }
 
 
-string idTagger::describe(bool format)
+string IdTagger::describe(bool format)
 {
-	return "<simuPOP.idTagger> assign an unique ID to individuals" ;
+	return "<simuPOP.IdTagger> assign an unique ID to individuals" ;
 }
 
 
-bool idTagger::apply(population & pop)
+bool IdTagger::apply(population & pop)
 {
-	DBG_DO(DBG_TAGGER, cerr << "Applying idTagger with current ID " << g_indID << endl);
+	DBG_DO(DBG_TAGGER, cerr << "Applying IdTagger with current ID " << g_indID << endl);
 
 	UINT idx = pop.infoIdx(infoField(0));
 
@@ -62,7 +62,7 @@ bool idTagger::apply(population & pop)
 }
 
 
-bool idTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool IdTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	UINT idx = pop.infoIdx(infoField(0));
@@ -79,7 +79,7 @@ bool idTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InheritTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	UINT sz = infoSize();
@@ -126,11 +126,11 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-bool summaryTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool SummaryTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
-		"Invalid father and mother for summaryTagger.");
+		"Invalid father and mother for SummaryTagger.");
 
 	UINT sz = infoSize();
 
@@ -204,20 +204,20 @@ bool summaryTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-string parentsTagger::describe(bool format)
+string ParentsTagger::describe(bool format)
 {
 	if (infoSize() == 1)
-		return "<simuPOP.parentsTagger> record index of parent in the parental generation "
+		return "<simuPOP.ParentsTagger> record index of parent in the parental generation "
 		       " to information field " + infoField(0) + " of each offspring.";
 	else
-		return "<simuPOP.parentsTagger> record indexes of parents in the parental generation "
+		return "<simuPOP.ParentsTagger> record indexes of parents in the parental generation "
 		       " to information fields " + infoField(0) + " and " + infoField(1) + " of each offspring.";
 	// avoid warning
 	return "";
 }
 
 
-bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool ParentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -238,14 +238,14 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-string pedigreeTagger::describe(bool format)
+string PedigreeTagger::describe(bool format)
 {
-	return "<simuPOP.pedigreeTagger> record parental IDs (" + infoField(0) + " and "
+	return "<simuPOP.PedigreeTagger> record parental IDs (" + infoField(0) + " and "
 	       + infoField(1) + ") to field " + m_idField + " of each offspring.";
 }
 
 
-bool pedigreeTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PedigreeTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -277,7 +277,7 @@ bool pedigreeTagger::applyDuringMating(population & pop, RawIndIterator offsprin
 }
 
 
-bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());

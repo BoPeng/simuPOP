@@ -34,7 +34,7 @@
 namespace simuPOP {
 
 
-/** An idTagger gives a unique ID for each individual it is applies to. These
+/** An IdTagger gives a unique ID for each individual it is applies to. These
  *  ID can be used to uniquely identify an individual in a multi-generational
  *  population and be used to reliably reconstruct a pedigree.
  *
@@ -43,36 +43,36 @@ namespace simuPOP {
  *  Value 1 instead of 0 is used because most software applications use 0 as
  *  missing values for parentship. If you would like to reset the sequence or
  *  start from a different number, you can call the \c reset(startID) function
- *  of any \c idTagger.
+ *  of any \c IdTagger.
  *
- *  An \c idTagger is usually used during-mating to assign ID to each offspring.
+ *  An \c IdTagger is usually used during-mating to assign ID to each offspring.
  *  However, if it is applied directly to a population, it will assign unique
  *  IDs to all individuals in this population. This property is usually used
  *  in the \c preOps parameter of function \c simulator.evolve to assign
  *  initial ID to a population.
  *  <funcForm>TagID</funcForm>
  */
-class idTagger : public baseOperator
+class IdTagger : public baseOperator
 {
 public:
-	/** Create an \c idTagger that assign an unique ID for each individual it
+	/** Create an \c IdTagger that assign an unique ID for each individual it
 	 *  is applied to. The IDs are created sequentially and are stored in an
 	 *  information field specified in parameter \e infoFields (default to
 	 *  \c ind_id). This operator is considered a during-mating operator but it
 	 *  can be used to set ID for all individuals of a population when it is
 	 *  directly applied to the population.
 	 */
-	idTagger(int begin = 0, int end = -1, int step = 1,
+	IdTagger(int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
 		const stringList & infoFields = vectorstr(1, "ind_id")) :
 		baseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 		DBG_FAILIF(infoFields.elems().size() != 1, ValueError,
-			"One and only one information field is needed for idTagger.");
+			"One and only one information field is needed for IdTagger.");
 	};
 
-	virtual ~idTagger()
+	virtual ~IdTagger()
 	{
 	}
 
@@ -81,7 +81,7 @@ public:
 	string describe(bool format = true);
 
 
-	/** Reset the global individual ID number so that idTaggers will start
+	/** Reset the global individual ID number so that IdTaggers will start
 	 *  from id (default to 1) again.
 	 */
 	void reset(ULONG startID = 1);
@@ -90,15 +90,15 @@ public:
 	virtual bool apply(population & pop);
 
 	/** CPPONLY
-	 *  apply the \c idTagger
+	 *  apply the \c IdTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// deep copy of an \c idTagger
+	/// deep copy of an \c IdTagger
 	virtual baseOperator * clone() const
 	{
-		return new idTagger(*this);
+		return new IdTagger(*this);
 	}
 
 
@@ -110,7 +110,7 @@ public:
  *  parents of a sexual mating event, a parameter \e mode is used to specify
  *  how to assign offspring information fields.
  */
-class inheritTagger : public baseOperator
+class InheritTagger : public baseOperator
 {
 public:
 	/** Creates an inheritance tagger that passes values of parental
@@ -131,7 +131,7 @@ public:
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	inheritTagger(InheritanceType mode = PATERNAL,
+	InheritTagger(InheritanceType mode = PATERNAL,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
@@ -140,7 +140,7 @@ public:
 	{
 	};
 
-	virtual ~inheritTagger()
+	virtual ~InheritTagger()
 	{
 	}
 
@@ -148,20 +148,20 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.inheritTagger>" ;
+		return "<simuPOP.InheritTagger>" ;
 	}
 
 
 	/** CPPONLY
-	 *  apply the \c inheritTagger
+	 *  apply the \c InheritTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// deep copy of a \c inheritTagger
+	/// deep copy of a \c InheritTagger
 	virtual baseOperator * clone() const
 	{
-		return new inheritTagger(*this);
+		return new InheritTagger(*this);
 	}
 
 
@@ -173,7 +173,7 @@ private:
  *  to another information field of an offspring. If mating is sexual, two sets
  *  of parental values will be involved.
  */
-class summaryTagger : public baseOperator
+class SummaryTagger : public baseOperator
 {
 public:
 	/** Creates a summary tagger that summarize values of one or more parental
@@ -189,7 +189,7 @@ public:
 	 *  This operator does not support parameter \e subPops and does not output
 	 *  any information.
 	 */
-	summaryTagger(InheritanceType mode = MEAN,
+	SummaryTagger(InheritanceType mode = MEAN,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
@@ -200,7 +200,7 @@ public:
 			"Please specify at least one parental field and one offspring field.");
 	};
 
-	virtual ~summaryTagger()
+	virtual ~SummaryTagger()
 	{
 	}
 
@@ -208,20 +208,20 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.summaryTagger>" ;
+		return "<simuPOP.SummaryTagger>" ;
 	}
 
 
 	/** CPPONLY
-	 *  apply the \c summaryTagger
+	 *  apply the \c SummaryTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// deep copy of a \c summaryTagger
+	/// deep copy of a \c SummaryTagger
 	virtual baseOperator * clone() const
 	{
-		return new summaryTagger(*this);
+		return new SummaryTagger(*this);
 	}
 
 
@@ -238,7 +238,7 @@ private:
  *  intended to be used to look up parents of each individual in
  *  multi-generational population.
  */
-class parentsTagger : public baseOperator
+class ParentsTagger : public baseOperator
 {
 public:
 	/** Create a parents tagger that records the indexes of parents of each
@@ -251,7 +251,7 @@ public:
 	 *  (father if both parents are valid). This operator ignores parameters
 	 *  \e stage, \e output, and \e subPops.
 	 */
-	parentsTagger(int begin = 0, int end = -1,
+	ParentsTagger(int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
@@ -260,15 +260,15 @@ public:
 	{
 	};
 
-	virtual ~parentsTagger()
+	virtual ~ParentsTagger()
 	{
 	}
 
 
-	/// deep copy of a \c parentsTagger
+	/// deep copy of a \c ParentsTagger
 	virtual baseOperator * clone() const
 	{
-		return new parentsTagger(*this);
+		return new ParentsTagger(*this);
 	}
 
 
@@ -277,7 +277,7 @@ public:
 
 
 	/** CPPONLY
-	 * apply the \c parentsTagger
+	 * apply the \c ParentsTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
@@ -292,7 +292,7 @@ public:
  *  recorded by this operator is intended to be used to record full pedigree
  *  information of an evolutionary process.
  */
-class pedigreeTagger : public baseOperator
+class PedigreeTagger : public baseOperator
 {
 public:
 	/** Create a pedigree tagger that records the ID of parents of each
@@ -312,7 +312,7 @@ public:
 	 *  be ignored if only one parent is involved. This operator ignores
 	 *  parameter \e stage, and \e subPops.
 	 */
-	pedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
+	PedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("father_id", "mother_id")) :
@@ -321,15 +321,15 @@ public:
 	{
 	};
 
-	virtual ~pedigreeTagger()
+	virtual ~PedigreeTagger()
 	{
 	}
 
 
-	/// deep copy of a \c pedigreeTagger
+	/// deep copy of a \c PedigreeTagger
 	virtual baseOperator * clone() const
 	{
-		return new pedigreeTagger(*this);
+		return new PedigreeTagger(*this);
 	}
 
 
@@ -337,7 +337,7 @@ public:
 	string describe(bool format = true);
 
 	/** CPPONLY
-	 * apply the \c pedigreeTagger
+	 * apply the \c PedigreeTagger
 	 */
 	bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
@@ -351,7 +351,7 @@ private:
  *  to a user provided Python function and set the offspring individual fields
  *  with the return values.
  */
-class pyTagger : public baseOperator
+class PyTagger : public baseOperator
 {
 public:
 	/** Create a hybrid tagger that provides an user provided function \e func
@@ -367,7 +367,7 @@ public:
 	 *  information field is specified. This operator ignores parameters
 	 *  \e stage, \e output and \e subPops.
 	 */
-	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
+	PyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "", const stringList & infoFields = vectorstr()) :
 		baseOperator(output, begin, end, step, at, reps, subPops, infoFields),
@@ -381,22 +381,22 @@ public:
 	};
 
 
-	/// deep copy of a \c pyTagger
+	/// deep copy of a \c PyTagger
 	virtual baseOperator * clone() const
 	{
-		return new pyTagger(*this);
+		return new PyTagger(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.pyTagger>" ;
+		return "<simuPOP.PyTagger>" ;
 	}
 
 
 	/** CPPONLY
-	 *  apply the \c pyTagger
+	 *  apply the \c PyTagger
 	 */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);

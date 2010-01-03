@@ -431,18 +431,18 @@ _new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__
 stat.__init__ = _new_stat
 
-def _new_genotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
+def _new_GenotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     if len(alleles) == 0:
         raise exceptions.ValueError("Please specify alleles at each locus")
     if type(alleles[0]) in [type(0), type(0L)]:
         als = [alleles]
     else:
         als = alleles
-    cppModule.genotypeSplitter_swiginit(self,
-        cppModule.new_genotypeSplitter(loci, als, *args, **kwargs))
+    cppModule.GenotypeSplitter_swiginit(self,
+        cppModule.new_GenotypeSplitter(loci, als, *args, **kwargs))
 
-_new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
-del genotypeSplitter.__init__
-genotypeSplitter.__init__ = _new_genotypeSplitter
+_new_GenotypeSplitter.__doc__ = GenotypeSplitter.__init__.__doc__
+del GenotypeSplitter.__init__
+GenotypeSplitter.__init__ = _new_GenotypeSplitter
 
 %}

@@ -535,7 +535,7 @@ During-mating operators
 \series default
  such as 
 \emph on
-recombinator
+Recombinator
 \emph default
  can be applied by a mating scheme to transmit parental genotype to offspring.
  After an offspring population is populated, 
@@ -607,7 +607,7 @@ initByValue
  A random mating scheme is used to generate offspring.
  Instead of using the default Mendelian genotype transmitter, a 
 \family typewriter
-recombinator
+Recombinator
 \family default
  (during-mating operator) is used to recombine parental chromosomes with
  the given recombination rate 
@@ -2650,7 +2650,7 @@ loci=[1]
 \begin_layout Itemize
 
 \family typewriter
-recombinator(loci=[])
+Recombinator(loci=[])
 \family default
  recombine at no locus, and
 \end_layout
@@ -2658,7 +2658,7 @@ recombinator(loci=[])
 \begin_layout Itemize
 
 \family typewriter
-recombinator(loci=1)
+Recombinator(loci=1)
 \family default
  recombine at locus 1
 \end_layout
@@ -2666,7 +2666,7 @@ recombinator(loci=1)
 \begin_layout Itemize
 
 \family typewriter
-recombinator(loci=[1,2,4])
+Recombinator(loci=[1,2,4])
 \family default
  recombine at loci 1, 2, and 4
 \end_layout
@@ -2681,11 +2681,11 @@ ALL_AVAIL
  or subpopulations.
  That is to say, 
 \family typewriter
-recombinator()
+Recombinator()
 \family default
  or 
 \family typewriter
-recombinator(loci=ALL_AVAIL)
+Recombinator(loci=ALL_AVAIL)
 \family default
  will recombine at all applicable loci, which will vary from population
  to population.
@@ -3450,7 +3450,7 @@ reference "sub:Ancestral-populations"
  to recombination at rate 0.01.
  Parents of each individual are recorded, by operator 
 \family typewriter
-parentsTagger
+ParentsTagger
 \family default
 , to information fields 
 \family typewriter
@@ -3924,12 +3924,12 @@ VSPs are defined by virtual splitters.
  sizes of these VSPs vary across subpopulations due to subpopulation differences.
  For example, a 
 \family typewriter
-sexSplitter()
+SexSplitter()
 \family default
  defines two VSPs, the first with all male individuals and the second with
  all female individuals, and a 
 \family typewriter
-infoSplitter(field='x', values=[1, 2, 4])
+InfoSplitter(field='x', values=[1, 2, 4])
 \family default
  defines three VSPs whose members have values 
 \family typewriter
@@ -4027,7 +4027,7 @@ simuPOP provides a number of virtual splitters that can define VSPs using
  specified properties.
  For example, 
 \family typewriter
-infoSplitter(field='a', values=[1,2,3])
+InfoSplitter(field='a', values=[1,2,3])
 \family default
  defines three VSPs whose individuals have values 
 \family typewriter
@@ -4047,11 +4047,11 @@ a
 \family default
 , respectively; 
 \family typewriter
-sexSplitter()
+SexSplitter()
 \family default
  defines two VSPs of male and female individuals, respectively; and 
 \family typewriter
-rangeSplitter(ranges=[[0, 2000], [2000, 5000]])
+RangeSplitter(ranges=[[0, 2000], [2000, 5000]])
 \family default
  defines two VSPs using two blocks of individuals.
 \end_layout
@@ -4059,7 +4059,7 @@ rangeSplitter(ranges=[[0, 2000], [2000, 5000]])
 \begin_layout Standard
 A 
 \family typewriter
-combinedSplitter
+CombinedSplitter
 \family default
  can be used if your simulation needs more than one sets of VSPs.
  For example, you may want to split your subpopulations both by sex and
@@ -4071,18 +4071,18 @@ status open
 
 \begin_layout Plain Layout
 
-combinedSplitter(splitters=[sexSplitter(), affectionSplitter()])
+CombinedSplitter(splitters=[SexSplitter(), AffectionSplitter()])
 \end_layout
 
 \end_inset
 
 This splitter simply stacks VSPs defined in 
 \family typewriter
-affectionSplitter()
+AffectionSplitter()
 \family default
  after 
 \family typewriter
-sexSplitter()
+SexSplitter()
 \family default
  so that unaffected and affected VSPs are now VSPs 2 and 3 (0 and 1 are
  used for male and female VSPs).
@@ -4096,7 +4096,7 @@ ls belonging to more than one VSPs.
  females with certain value at an information field.
  In this case, a 
 \family typewriter
-productSplitter
+ProductSplitter
 \family default
  can be used to define VSPs using interactions of several VSPs.
  For example,
@@ -4106,14 +4106,14 @@ status open
 
 \begin_layout Plain Layout
 
-productSplitter(splitters=[sexSplitter(), affectionSplitter()])
+ProductSplitter(splitters=[SexSplitter(), AffectionSplitter()])
 \end_layout
 
 \end_inset
 
 defines 4 subpopulations by splitting VSPs defined by 
 \family typewriter
-sexSplitter()
+SexSplitter()
 \family default
  with affection status.
  These four VSPs will then have unaffected male, affected male, unaffected
@@ -4123,7 +4123,7 @@ sexSplitter()
 \begin_layout Standard
 If you consider 
 \family typewriter
-productSplitter
+ProductSplitter
 \family default
  as an intersection splitter that defines new VSPs as intersections of existing
  VSPs, you may wonder how to define unions of VSPs.
@@ -4131,7 +4131,7 @@ productSplitter
  with information field a < 0 or a > 100 together.
  A regular 
 \family typewriter
-infoSplitter(field='a', cutoff=[0, 100])
+InfoSplitter(field='a', cutoff=[0, 100])
 \family default
  cannot do that because it defines three VSPs with 
 \begin_inset Formula $a<0$
@@ -4152,7 +4152,7 @@ vspMap
 \family default
  of a 
 \family typewriter
-combinedSplitter
+CombinedSplitter
 \family default
 .
  If this parameter is defined, multiple VSPs could be groups or reordered
@@ -4164,7 +4164,7 @@ status open
 
 \begin_layout Plain Layout
 
-combinedSplitter(splitters=[infoSplitter(field='a', cutoff=[0, 100])], vspMap=[[
+CombinedSplitter(splitters=[InfoSplitter(field='a', cutoff=[0, 100])], vspMap=[[
 0,2], [1]])
 \end_layout
 
@@ -4172,7 +4172,7 @@ combinedSplitter(splitters=[infoSplitter(field='a', cutoff=[0, 100])], vspMap=[[
 
  defines two VSPs using VSPs 0 and 2, and VSP 1 defined by the 
 \family typewriter
-infoSplitter
+InfoSplitter
 \family default
  so that the first VSP contains individuals with 
 \begin_inset Formula $a<0$
@@ -4314,7 +4314,7 @@ ind_id
 \family default
  and you can use operator 
 \family typewriter
-idTagger
+IdTagger
 \family default
  and its function form 
 \family typewriter
@@ -4758,7 +4758,7 @@ pyEval
 \family default
  and 
 \family typewriter
-terminateIf 
+TerminateIf 
 \family default
 read from this dictionary and act upon its information.
 \end_layout
@@ -5060,7 +5060,7 @@ mergeSubPops
 \family default
  to merge subpopulations and 
 \family typewriter
-smmMutator
+SmmMutator
 \family default
  to mutate individuals using a stepwise mutation model.
 \end_layout
@@ -5080,12 +5080,12 @@ ops
  to offspring.
  Examples of such operators include 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
  that transmit parental genotype to offspring according to Mendelian laws
  and 
 \family typewriter
-parentsTagger
+ParentsTagger
 \family default
  that record the indexes of parents in the parental population to each offspring.
 \end_layout
@@ -5094,7 +5094,7 @@ parentsTagger
 Some mutators could be applied both to populations and individuals.
  For example, an 
 \family typewriter
-idTagger
+IdTagger
 \family default
  could be applied to a whole population and assign an unique ID to all individua
 ls, or to offspring during mating.
@@ -5767,7 +5767,7 @@ randomMating()
 .
  This operator is called 
 \family typewriter
-mendelianGenoTransmitter()
+MendelianGenoTransmitter()
 \family default
  and is responsible for transmitting genotype from parents to offspring
  according to Mendel's laws.
@@ -5819,7 +5819,7 @@ reps
  different generations.
  For example, a 
 \family typewriter
-recombinator
+Recombinator
 \family default
  is used in Example 
 \begin_inset CommandInset ref
@@ -5831,7 +5831,7 @@ reference "transmitter"
  to transmit parental genotypes to offspring after generation 30 while the
  
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
  is applied before that.
 \end_layout
@@ -6075,7 +6075,7 @@ The evolution of pop will be stopped if this function returns False.
 \series default
  This is essentially how operator 
 \family typewriter
-terminateIf
+TerminateIf
 \family default
  works.
 \end_layout
@@ -6099,7 +6099,7 @@ KamMutate
 \family default
  function is the function form of a mutator 
 \family typewriter
-kamMutator
+KamMutator
 \family default
  (see Section 
 \begin_inset CommandInset ref
@@ -6567,7 +6567,7 @@ ion or a virtual subpopulation, and population part or all of the corresponding
  A parent chooser is used to choose one or two parents from the parental
  generation, and pass it to an offspring generator, which produces one or
  more offspring.
- During mating operators such as taggers and recombinator can be applied
+ During mating operators such as taggers and Recombinator can be applied
  when offspring is generated.
 \end_layout
 
@@ -7099,7 +7099,7 @@ NumOfFemales
  sex.
  This is the case for 
 \family typewriter
-cloneGenoTransmitter
+CloneGenoTransmitter
 \family default
  where an offspring inherits both genotype and sex from his/her parent.
  
@@ -7156,7 +7156,7 @@ t, they have only one spouse during their life time so that all siblings
 \begin_layout Standard
 simuPOP provides a diploid sexual monogamous mating scheme 
 \family typewriter
-monogamousMating
+MonogamousMating
 \family default
 .
  However, without careful planning, this mating scheme can easily stop working
@@ -7165,7 +7165,7 @@ monogamousMating
  mating events can happen and result in 40 offspring in the offspring generation.
  
 \family typewriter
-monogamousMating
+MonogamousMating
 \family default
  will exit if the offspring generation is larger than 40.
 \end_layout
@@ -7232,7 +7232,7 @@ numOffspring
 \family default
 , mating scheme 
 \family typewriter
-polygamousMating
+PolygamousMating
 \family default
  accepts parameters 
 \family typewriter
@@ -7288,7 +7288,7 @@ Asexual random mating
 \begin_layout Standard
 Mating scheme 
 \family typewriter
-randomSelection
+RandomSelection
 \family default
  implements an asexual random mating scheme.
  It randomly select parents from a parental population (with replacement)
@@ -7303,13 +7303,13 @@ randomSelection
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "randomSelection"
+reference "RandomSelection"
 
 \end_inset
 
  applies a 
 \family typewriter
-randomSelection
+RandomSelection
 \family default
  mating scheme to a haploid population with 100 sequences.
  A 
@@ -7324,8 +7324,8 @@ parentTagger
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/randomSelection.log"
-lstparams "caption={Asexual random mating},label={randomSelection}"
+filename "log/RandomSelection.log"
+lstparams "caption={Asexual random mating},label={RandomSelection}"
 
 \end_inset
 
@@ -7339,7 +7339,7 @@ Mating with alpha individuals *
 \begin_layout Standard
 The 
 \family typewriter
-alphaMating
+AlphaMating
 \family default
  mating scheme is intended to simulate animal populations in which only
  individuals with alpha status have the power to mate.
@@ -7365,7 +7365,7 @@ alphaField
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "alphaMating"
+reference "AlphaMating"
 
 \end_inset
 
@@ -7408,8 +7408,8 @@ a
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/alphaMating.log"
-lstparams "caption={Random mating with alpha individuals},label={alphaMating}"
+filename "log/AlphaMating.log"
+lstparams "caption={Random mating with alpha individuals},label={AlphaMating}"
 
 \end_inset
 
@@ -7436,7 +7436,7 @@ haplodiplodMating
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "haplodiploidMating"
+reference "HaplodiploidMating"
 
 \end_inset
 
@@ -7446,8 +7446,8 @@ reference "haplodiploidMating"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/haplodiploidMating.log"
-lstparams "caption={Random mating in haplodiploid populations},label={haplodiploidMating}"
+filename "log/HaplodiploidMating.log"
+lstparams "caption={Random mating in haplodiploid populations},label={HaplodiploidMating}"
 
 \end_inset
 
@@ -7456,7 +7456,7 @@ lstparams "caption={Random mating in haplodiploid populations},label={haplodiplo
 
 \begin_layout Standard
 Note that this mating scheme does not support recombination and the standard
- recombinator does not work with haplodiploid populations.
+ Recombinator does not work with haplodiploid populations.
  Please refer to the next Chapter for how to define a customized genotype
  transmitter to handle such a situation.
 \end_layout
@@ -7471,15 +7471,15 @@ Some plant populations evolve through self-fertilization.
  offspring (seeds).
  In a 
 \family typewriter
-selfMating
+SelfMating
 \family default
  mating scheme, parents are chosen randomly (one at a time), and are used
  twice to produce two homologous sets of offspring chromosomes.
- The standard recombinator can be used with this mating scheme.
+ The standard Recombinator can be used with this mating scheme.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "selfMating"
+reference "SelfMating"
 
 \end_inset
 
@@ -7490,8 +7490,8 @@ reference "selfMating"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/selfMating.log"
-lstparams "caption={Selfing mating scheme},label={selfMating}"
+filename "log/SelfMating.log"
+lstparams "caption={Selfing mating scheme},label={SelfMating}"
 
 \end_inset
 
@@ -7692,7 +7692,7 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        selfMating(subPops=[(0, 0)]),
+        SelfMating(subPops=[(0, 0)]),
 \end_layout
 
 \begin_layout Plain Layout
@@ -7712,7 +7712,7 @@ heteroMating(
 
 \end_inset
 
-will apply selfMating to the first 20% individuals, and randomMating will
+will apply SelfMating to the first 20% individuals, and randomMating will
  be applied to all individuals.
  Similarly,
 \begin_inset listings
@@ -7731,7 +7731,7 @@ heteroMating(
 
 \begin_layout Plain Layout
 
-        selfMating(subPops=0),
+        SelfMating(subPops=0),
 \end_layout
 
 \begin_layout Plain Layout
@@ -7753,7 +7753,7 @@ heteroMating(
 
 will allow all individuals to be involved in both 
 \family typewriter
-selfMating
+SelfMating
 \family default
  and 
 \family typewriter
@@ -8106,7 +8106,7 @@ to terminate the evolution of a population.
  The easiest method to do this is to use population variables to track the
  status of a population, and use a 
 \family typewriter
-terminateIf
+TerminateIf
 \family default
  operator to terminate the evolution according to the value of an expression.
  Example 
@@ -10409,27 +10409,27 @@ name "sec:Genotype-transmitters"
 \begin_layout Subsection
 Generic genotype transmitters (operators 
 \family typewriter
-genoTransmitter
+GenoTransmitter
 \family default
 , 
 \family typewriter
-cloneGenoTransmitter
+CloneGenoTransmitter
 \family default
 , 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
 , 
 \family typewriter
-selfingGenoTransmitter
+SelfingGenoTransmitter
 \family default
 , 
 \family typewriter
-haplodiploidGenoTransmitter
+HaplodiploidGenoTransmitter
 \family default
 , and 
 \family typewriter
-mitochondrialGenoTransmitter
+MitochondrialGenoTransmitter
 \family default
 ) *
 \end_layout
@@ -10444,7 +10444,7 @@ A number of during-mating operators are defined to transmit genotype from
 \begin_layout Itemize
 
 \family typewriter
-genoTransmitter
+GenoTransmitter
 \family default
 : This genotype transmitter is usually used by customized genotype transmitters
  because it provides some utility functions that are more efficient than
@@ -10454,14 +10454,14 @@ genoTransmitter
 \begin_layout Itemize
 
 \family typewriter
-cloneGenoTransmitter
+CloneGenoTransmitter
 \family default
 : Copy all genotype from a parent to an offspring.
  It also copies parental sex to the offspring because sex can be genotype
  determined.
  This genotype transmitter is used by mating scheme 
 \family typewriter
-cloneMating
+CloneMating
 \family default
 .
  This genotype transmitter can be applied to populations of 
@@ -10474,7 +10474,7 @@ any ploidy
 \begin_layout Itemize
 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
 : Copy genotypes from two parents (a male and a female) to an offspring
  following Mendel's laws, used by mating scheme 
@@ -10491,12 +10491,12 @@ diploid
 \begin_layout Itemize
 
 \family typewriter
-selfingGenoTransmitter
+SelfingGenoTransmitter
 \family default
 : Copy genotypes from one parent to an offspring using self-fertilization,
  used by mating scheme 
 \family typewriter
-selfMating
+SelfMating
 \family default
 .
  This genotype transmitter can only be applied to 
@@ -10509,12 +10509,12 @@ diploid
 \begin_layout Itemize
 
 \family typewriter
-haplodiploidGenoTransmitter
+HaplodiploidGenoTransmitter
 \family default
 : Set genotype to male and female offspring differently in a haplodiploid
  population, used by mating scheme 
 \family typewriter
-haplodiploidMating
+HaplodiploidMating
 \family default
 .
  This genotype transmitter can only be applied to 
@@ -10527,7 +10527,7 @@ haplodiploid
 \begin_layout Itemize
 
 \family typewriter
-mitochondrialGenoTransmitter
+MitochondrialGenoTransmitter
 \family default
 : Treat all customized chromosomes or specified chromosomes as mitochondrial
  chromosomes and transmit maternal mitochondrial chromosomes randomly to
@@ -10545,7 +10545,7 @@ any ploidy
 \begin_layout Subsection
 Recombination (Operator 
 \family typewriter
-recombinator
+Recombinator
 \family default
 )
 \end_layout
@@ -10554,7 +10554,7 @@ recombinator
 The generic genotype transmitters do not handle genetic recombination.
  A genotype transmitter 
 \family typewriter
-recombinator
+Recombinator
 \family default
  is provided for such purposes, and can be used with 
 \family typewriter
@@ -10562,15 +10562,15 @@ randomMating
 \family default
  and 
 \family typewriter
-selfMating
+SelfMating
 \family default
  (replace 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
  and 
 \family typewriter
-selfingGenoTransmitter
+SelfingGenoTransmitter
 \family default
  used in these mating schemes).
 \end_layout
@@ -10585,7 +10585,7 @@ between adjacent markers
  how far apart they are located on a chromosome.
  In practise, a 
 \family typewriter
-recombinator
+Recombinator
 \family default
  goes along chromosomes and determine, between each adjacent loci, whether
  or not a recombination happens.
@@ -10618,7 +10618,7 @@ status open
 
 \begin_layout Plain Layout
 
-recombinator(rates=0.1, loci=[2, 5])
+Recombinator(rates=0.1, loci=[2, 5])
 \end_layout
 
 \end_inset
@@ -10643,7 +10643,7 @@ status open
 
 \begin_layout Plain Layout
 
-recombinator(rates=[0.1, 0.05], loci=[2, 5])
+Recombinator(rates=[0.1, 0.05], loci=[2, 5])
 \end_layout
 
 \end_inset
@@ -10675,7 +10675,7 @@ status open
 
 \begin_layout Plain Layout
 
-recombinator(intensity=0.1)
+Recombinator(intensity=0.1)
 \end_layout
 
 \end_inset
@@ -10730,9 +10730,9 @@ reference "recRate"
  demonstrates how to specify recombination rates for all loci or for specified
  loci.
  In this example, two replicates of a population are evolved, subject to
- two different recombinators.
- The first recombinator applies the same recombination rate between all
- adjacent loci, and the second recombinator recombines only after loci 50
+ two different Recombinators.
+ The first Recombinator applies the same recombination rate between all
+ adjacent loci, and the second Recombinator recombines only after loci 50
  - 59.
  Because there is no recombination event between loci 60 and 70 for the
  second replicate, linkage disequilibrium values between these two loci
@@ -10781,7 +10781,7 @@ reference "sexSpecificRec"
 
 \end_inset
 
- uses two recombinators to implement sex-specific recombination.
+ uses two Recombinators to implement sex-specific recombination.
 \end_layout
 
 \begin_layout Note
@@ -10793,7 +10793,7 @@ Both loci positions and recombination intensity are unitless.
 \begin_layout Subsection
 Gene conversion (Operator 
 \family typewriter
-recombinator
+Recombinator
 \family default
 ) *
 \end_layout
@@ -10845,7 +10845,7 @@ The probability at which gene conversion happens, and how tract length is
 \family typewriter
 convMode
 \family default
- of a recombinator.
+ of a Recombinator.
  This parameter can be
 \end_layout
 
@@ -10970,10 +10970,10 @@ reference "conversion"
 
 \end_inset
 
- compares two recombinators.
- The first recombinator is a regular recombinator that recombine between
+ compares two Recombinators.
+ The first Recombinator is a regular Recombinator that recombine between
  loci 50 and 51.
- The second recombinator is a conversion operator because every recombination
+ The second Recombinator is a conversion operator because every recombination
  event will become a conversion event (prob=1).
  Because a second recombination event will surely happen between loci 60
  and 61, there will be either no or double recombination events between
@@ -11004,23 +11004,23 @@ To understand the evolutionary history of a simulated population, it is
 l so that you could make sense of the dumped recombination events.
  Although this is routinely done using operator 
 \family typewriter
-idTagger
+IdTagger
 \family default
  (see example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "idTagger"
+reference "IdTagger"
 
 \end_inset
 
  for details), it is a little tricky here because you need to place the
  during-mating 
 \family typewriter
-idTagger
+IdTagger
 \family default
  before a 
 \family typewriter
-recombinator
+Recombinator
 \family default
  in the 
 \family typewriter
@@ -11041,7 +11041,7 @@ infoField
 \family default
  parameter of a 
 \family typewriter
-recombinator
+Recombinator
 \family default
 , it can dump a list of recombinatin events (loci after which recombinatin
  events happened) for each set of homologous chromosomes of an offspring.
@@ -11136,7 +11136,7 @@ rates=0.01
 \begin_layout Subsection
 Mutation models specified by rate matrixes (
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
 ) 
 \end_layout
@@ -11191,7 +11191,7 @@ mutation rate matrix
 \begin_layout Standard
 A 
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
  is defined to mutate between alleles 0, 1, ..., 
 \begin_inset Formula $n-1$
@@ -11221,7 +11221,7 @@ matrixMutator
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "matrixMutator"
+reference "MatrixMutator"
 
 \end_inset
 
@@ -11234,8 +11234,8 @@ reference "matrixMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/matrixMutator.log"
-lstparams "caption={General mutator specified by a mutation rate matrix},label={matrixMutator}"
+filename "log/MatrixMutator.log"
+lstparams "caption={General mutator specified by a mutation rate matrix},label={MatrixMutator}"
 
 \end_inset
 
@@ -11245,7 +11245,7 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 \begin_layout Subsection
 k-allele mutation model (
 \family typewriter
-kamMutator
+KamMutator
 \family default
 )
 \end_layout
@@ -11284,11 +11284,11 @@ The only parameter
 \begin_layout Standard
 This mutation model is a special case of the 
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
  but a specialized 
 \family typewriter
-kamMutator
+KamMutator
 \family default
  is recommended because it provides better performance, especially when
  
@@ -11307,7 +11307,7 @@ kamMutator
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "kamMutator"
+reference "KamMutator"
 
 \end_inset
 
@@ -11327,8 +11327,8 @@ loci
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/kamMutator.log"
-lstparams "caption={A k-allele mutation model},label={kamMutator}"
+filename "log/KamMutator.log"
+lstparams "caption={A k-allele mutation model},label={KamMutator}"
 
 \end_inset
 
@@ -11338,7 +11338,7 @@ lstparams "caption={A k-allele mutation model},label={kamMutator}"
 \begin_layout Subsection
 Diallelic mutation models (
 \family typewriter
-snpMutator
+SnpMutator
 \family default
 )
 \end_layout
@@ -11346,11 +11346,11 @@ snpMutator
 \begin_layout Standard
 
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
  and 
 \family typewriter
-kamMutator
+KamMutator
 \family default
  are general purpose mutators in the sense that they do not assume a type
  for the mutated alleles.
@@ -11364,7 +11364,7 @@ If there are only two alleles at a locus, a diallelic mutation model should
  Because single nucleotide polymorphisms (SNPs) are the most widely avaiable
  diallelic markers, a 
 \family typewriter
-snpMutator
+SnpMutator
 \family default
  is provided to mutate such markers using a mutate rate matrix
 \end_layout
@@ -11399,7 +11399,7 @@ Despite of its name, this mutator can be used in many theoretical models
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "snpMutator"
+reference "SnpMutator"
 
 \end_inset
 
@@ -11412,8 +11412,8 @@ reference "snpMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/snpMutator.log"
-lstparams "caption={A diallelic directional mutation model},label={snpMutator}"
+filename "log/SnpMutator.log"
+lstparams "caption={A diallelic directional mutation model},label={SnpMutator}"
 
 \end_inset
 
@@ -11423,7 +11423,7 @@ lstparams "caption={A diallelic directional mutation model},label={snpMutator}"
 \begin_layout Subsection
 Nucleotide mutation models (
 \family typewriter
-acgtMutator
+AcgtMutator
 \family default
 )
 \end_layout
@@ -11433,7 +11433,7 @@ Mutations in these models assume alleles 0, 1, 2, 3 as nucleotides A, C,
  G, and T.
  The operator is named 
 \family typewriter
-acgtMutator
+AcgtMutator
 \family default
  to remind you the alphabetic order of these nucleotides.
  This mutation model is specified by a rate matrix
@@ -11470,7 +11470,7 @@ status open
 
 \begin_layout Plain Layout
 
-acgtMutator(rate=[1e-5, 0.5], model='K80')
+AcgtMutator(rate=[1e-5, 0.5], model='K80')
 \end_layout
 
 \end_inset
@@ -11957,7 +11957,7 @@ It is not surprising that all other models are implemented as special cases
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "acgtMutator"
+reference "AcgtMutator"
 
 \end_inset
 
@@ -11968,8 +11968,8 @@ reference "acgtMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/acgtMutator.log"
-lstparams "caption={A Kimura's 2 parameter mutation model},label={acgtMutator}"
+filename "log/AcgtMutator.log"
+lstparams "caption={A Kimura's 2 parameter mutation model},label={AcgtMutator}"
 
 \end_inset
 
@@ -11985,7 +11985,7 @@ status open
 \series bold
 Amino acid mutation models (
 \family typewriter
-aminoAcidMutator
+AminoAcidMutator
 \family default
 , not yet implemented)
 \end_layout
@@ -11996,7 +11996,7 @@ Amino acid mutation models assume alleles 0, 1, 2, 3, ..., 19 as 20 amino acids
  This mutation model is specified by a 20 by 20 rate matrix.
  The mutator should work similarly to 
 \family typewriter
-acgtMutator
+AcgtMutator
 \family default
  but it is more tedious.
  I will implement popular mutation matrixes if there is a demonstrated need
@@ -12012,7 +12012,7 @@ acgtMutator
 \begin_layout Subsection
 Mutation model for microsatellite markers (
 \family typewriter
-smmMutator
+SmmMutator
 \family default
 )
 \end_layout
@@ -12041,7 +12041,7 @@ key "Ohta1973"
 \begin_layout Standard
 A 
 \family typewriter
-smmMutator
+SmmMutator
 \family default
  assumes that alleles at a locus are the number of tandem repeats and mutates
  them by increasing or decreasing the number of repeats during a mutation
@@ -12067,13 +12067,13 @@ generalized stepwise mutation models
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "smmMutator"
+reference "SmmMutator"
 
 \end_inset
 
  uses two 
 \family typewriter
-smmMutator
+SmmMutator
 \family default
  to mutate two microsatellite markers, using a standard and a generalized
  model where a geometric distribution is used to determine the number of
@@ -12083,8 +12083,8 @@ smmMutator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/smmMutator.log"
-lstparams "caption={A standard and a generalized stepwise mutation model},label={smmMutator}"
+filename "log/SmmMutator.log"
+lstparams "caption={A standard and a generalized stepwise mutation model},label={SmmMutator}"
 
 \end_inset
 
@@ -12094,7 +12094,7 @@ lstparams "caption={A standard and a generalized stepwise mutation model},label=
 \begin_layout Subsection
 Simulating arbitrary mutation models using a hybrid mutator (
 \family typewriter
-pyMutator
+PyMutator
 \family default
 )*
 \end_layout
@@ -12102,7 +12102,7 @@ pyMutator
 \begin_layout Standard
 A hybrid mutator 
 \family typewriter
-pyMutator
+PyMutator
 \family default
  mutates random alleles at selected loci (parameter 
 \family typewriter
@@ -12130,7 +12130,7 @@ ned function and use it return values as the mutated alleles.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyMutator"
+reference "PyMutator"
 
 \end_inset
 
@@ -12143,8 +12143,8 @@ reference "pyMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyMutator.log"
-lstparams "caption={A hybrid mutation model},label={pyMutator}"
+filename "log/PyMutator.log"
+lstparams "caption={A hybrid mutation model},label={PyMutator}"
 
 \end_inset
 
@@ -12154,7 +12154,7 @@ lstparams "caption={A hybrid mutation model},label={pyMutator}"
 \begin_layout Subsection
 Mixed mutation models (
 \family typewriter
-mixedMutator
+MixedMutator
 \family default
 ) **
 \end_layout
@@ -12175,7 +12175,7 @@ Mixed mutation models are sometimes used to model real data.
 \begin_layout Standard
 A 
 \family typewriter
-mixedMutator
+MixedMutator
 \family default
  is constructed by a list of mutators and their respective probabilities.
  It accepts regular mutator parameters such as 
@@ -12200,7 +12200,7 @@ mapIn and mapOut
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mixedMutator"
+reference "MixedMutator"
 
 \end_inset
 
@@ -12214,8 +12214,8 @@ reference "mixedMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/mixedMutator.log"
-lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMutator}"
+filename "log/MixedMutator.log"
+lstparams "caption={A mixed k-allele and stepwise mutation model},label={MixedMutator}"
 
 \end_inset
 
@@ -12226,7 +12226,7 @@ lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMu
 When a mutation event happens, mutators in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "mixedMutator"
+reference "MixedMutator"
 
 \end_inset
 
@@ -12234,24 +12234,24 @@ reference "mixedMutator"
  If different mutation rates are specified, the overall mutation rates would
  be the product of mutation rate of 
 \family typewriter
-mixedMutator
+MixedMutator
 \family default
  and the passed mutators.
  However, it is extremely important to understand that although 
 \family typewriter
-mixedMutator(rates=mu)
+MixedMutator(rates=mu)
 \family default
  with 
 \family typewriter
-smmMutator(rates=1)
+SmmMutator(rates=1)
 \family default
  and 
 \family typewriter
-mixedMutator(rates=1) 
+MixedMutator(rates=1) 
 \family default
 with 
 \family typewriter
-smmMutator(rates=mu)
+SmmMutator(rates=mu)
 \family default
  mutate alleles at the same mutation rate, the former is much more efficient
  because it triggers far less mutation events.
@@ -12260,7 +12260,7 @@ smmMutator(rates=mu)
 \begin_layout Subsection
 Context-dependent mutation models (
 \family typewriter
-contextMutator
+ContextMutator
 \family default
 )**
 \end_layout
@@ -12283,7 +12283,7 @@ All mutation models we have seen till now are context independent.
 \begin_layout Standard
 A 
 \family typewriter
-contextMutator
+ContextMutator
 \family default
  can be used to mutate an allele depending on its surrounding loci.
  This mutator is constructed by a list of mutators and their respective
@@ -12311,13 +12311,13 @@ mapIn and mapOut
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "contextMutator"
+reference "ContextMutator"
 
 \end_inset
 
  applies two 
 \family typewriter
-snpMutator
+SnpMutator
 \family default
  at different rates under different contexts.
 \end_layout
@@ -12325,8 +12325,8 @@ snpMutator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/contextMutator.log"
-lstparams "caption={A context-dependent mutation model},label={contextMutator}"
+filename "log/ContextMutator.log"
+lstparams "caption={A context-dependent mutation model},label={ContextMutator}"
 
 \end_inset
 
@@ -12337,17 +12337,17 @@ status open
 
 \begin_layout Plain Layout
 
-contextMutator(mutators=[
+ContextMutator(mutators=[
 \end_layout
 
 \begin_layout Plain Layout
 
-    snpMutator(u=0.1),
+    SnpMutator(u=0.1),
 \end_layout
 
 \begin_layout Plain Layout
 
-    snpMutator(u=1)],
+    SnpMutator(u=1)],
 \end_layout
 
 \begin_layout Plain Layout
@@ -12374,17 +12374,17 @@ status open
 
 \begin_layout Plain Layout
 
-contextMutator(mutators=[
+ContextMutator(mutators=[
 \end_layout
 
 \begin_layout Plain Layout
 
-    snpMutator(u=0.001),
+    SnpMutator(u=0.001),
 \end_layout
 
 \begin_layout Plain Layout
 
-    snpMutator(u=0.01)],
+    SnpMutator(u=0.01)],
 \end_layout
 
 \begin_layout Plain Layout
@@ -12406,7 +12406,7 @@ contextMutator(mutators=[
 
 both apply two 
 \family typewriter
-snpMutator
+SnpMutator
 \family default
  at mutation rates 
 \family typewriter
@@ -12422,7 +12422,7 @@ snpMutator
 \begin_layout Standard
 Context-dependent mutator can also be implemented by a 
 \family typewriter
-pyMutator
+PyMutator
 \family default
 .
  When a non-zero parameter 
@@ -12445,13 +12445,13 @@ reference "pyContextMutator"
  applies the same mutation model as Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "contextMutator"
+reference "ContextMutator"
 
 \end_inset
 
  using a 
 \family typewriter
-pyMutator
+PyMutator
 \family default
 .
 \end_layout
@@ -12470,7 +12470,7 @@ lstparams "caption={A hybrid context-dependent mutation model},label={pyContextM
 \begin_layout Subsection
 Manually-introduced mutations (
 \family typewriter
-pointMutator
+PointMutator
 \family default
 )
 \end_layout
@@ -12478,7 +12478,7 @@ pointMutator
 \begin_layout Standard
 Operator 
 \family typewriter
-pointMutator
+PointMutator
 \family default
  is different from all other mutators in that it mutates specified alleles
  of specified individuals.
@@ -12487,7 +12487,7 @@ pointMutator
  allele, the following example (Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pointMutator"
+reference "PointMutator"
 
 \end_inset
 
@@ -12507,8 +12507,8 @@ ifElse
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pointMutator.log"
-lstparams "caption={Use a point mutator to introduce a disease predisposing allele},label={pointMutator}"
+filename "log/PointMutator.log"
+lstparams "caption={Use a point mutator to introduce a disease predisposing allele},label={PointMutator}"
 
 \end_inset
 
@@ -12616,7 +12616,7 @@ mapOut
  mutation model.
  For example, an 
 \family typewriter
-acgtMutator
+AcgtMutator
 \family default
  mutator assumes alleles 
 \family typewriter
@@ -12687,7 +12687,7 @@ T(3)->T(3)
 \family default
 ) to alleles 
 \family typewriter
-acgtMutator
+AcgtMutator
 \family default
  assumes, and then map mutated alleles (
 \family typewriter
@@ -12739,7 +12739,7 @@ ing mapped-in or out allele for a given allele.
 \begin_layout Subsection
 Mutation rate and transition matrix of a 
 \family typewriter
-matrixMutator 
+MatrixMutator 
 \family default
 **
 \end_layout
@@ -12747,13 +12747,13 @@ matrixMutator
 \begin_layout Standard
 A 
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
  is specified by a mutation rate matrix.
  Although mutation rates of this mutator is typically allele-dependent,
  the 
 \family typewriter
-matrixMutator
+MatrixMutator
 \family default
  is implemented as a two-step process where mutation events are triggered
  independent to allelic states.
@@ -12764,11 +12764,11 @@ maxtrixMutator
 \family default
  in a 
 \family typewriter
-mixedMutator
+MixedMutator
 \family default
  or 
 \family typewriter
-contextMutator
+ContextMutator
 \family default
 , and would like to factor out an allele-independent mutation rate to the
  wrapper mutator.
@@ -14908,7 +14908,7 @@ ions, you can use them in the homogeneous mating schemes of a heterogeneous
 \begin_layout Subsection
 Inheritance tagger (operator 
 \family typewriter
-inheritTagger
+InheritTagger
 \family default
 )
 \end_layout
@@ -14916,7 +14916,7 @@ inheritTagger
 \begin_layout Standard
 An inheritance tagger passes values of parental information field(s) to
  the corresponding offspring information field(s).
- Depending on the parameters, an inheritTagger can 
+ Depending on the parameters, an InheritTagger can 
 \end_layout
 
 \begin_layout Itemize
@@ -14966,7 +14966,7 @@ This can be used to track the spread of certain information during evolution.
  For example, Example
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "inheritTagger"
+reference "InheritTagger"
 
 \end_inset
 
@@ -14992,8 +14992,8 @@ x
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/inheritTagger.log"
-lstparams "caption={Use an inherit tagger to track offspring of individuals},label={inheritTagger}"
+filename "log/InheritTagger.log"
+lstparams "caption={Use an inherit tagger to track offspring of individuals},label={InheritTagger}"
 
 \end_inset
 
@@ -15003,13 +15003,13 @@ lstparams "caption={Use an inherit tagger to track offspring of individuals},lab
 \begin_layout Subsection
 Summarize parental informatin fields (operator 
 \family typewriter
-summaryTagger)
+SummaryTagger)
 \end_layout
 
 \begin_layout Standard
 A 
 \family typewriter
-summaryTagger
+SummaryTagger
 \family default
  summarize values of one or more parental information fields and place the
  result in an offspring information field.
@@ -15039,12 +15039,12 @@ MULTIPLICATION
  of each offspring.
  For example, a 
 \family typewriter
-summaryTagger
+SummaryTagger
 \family default
  is used in  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "summaryTagger"
+reference "SummaryTagger"
 
 \end_inset
 
@@ -15061,8 +15061,8 @@ avgFitness
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/summaryTagger.log"
-lstparams "caption={Using a summary tagger to calculate mean fitness of parents.},label={summaryTagger}"
+filename "log/SummaryTagger.log"
+lstparams "caption={Using a summary tagger to calculate mean fitness of parents.},label={SummaryTagger}"
 
 \end_inset
 
@@ -15072,7 +15072,7 @@ lstparams "caption={Using a summary tagger to calculate mean fitness of parents.
 \begin_layout Subsection
 Tracking parents (operator 
 \family typewriter
-parentsTagger
+ParentsTagger
 \family default
 )
 \end_layout
@@ -15116,7 +15116,7 @@ As long as parental generations do not change after the offspring generation
 \begin_layout Subsection
 Assign unique IDs to individuals (operator 
 \family typewriter
-idTagger
+IdTagger
 \family default
 )
 \end_layout
@@ -15128,7 +15128,7 @@ Although it is possible to use generation number and individual indexes
  analyze an evolutionary process outside of simuPOP.
  An operator 
 \family typewriter
-idTagger
+IdTagger
 \family default
  (and its function form 
 \family typewriter
@@ -15155,7 +15155,7 @@ reset(startID)
 \family default
  function of any 
 \family typewriter
-idTagger
+IdTagger
 \family default
 .
 \end_layout
@@ -15163,7 +15163,7 @@ idTagger
 \begin_layout Standard
 An 
 \family typewriter
-idTagger
+IdTagger
 \family default
  is usually used during-mating to assign ID to each offspring.
  However, if it is applied directly to a population, it will assign unique
@@ -15179,12 +15179,12 @@ simulator.evolve
  to assign initial ID to a population.
  For example, three 
 \family typewriter
-idTagger
+IdTagger
 \family default
  operators are used in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "idTagger"
+reference "IdTagger"
 
 \end_inset
 
@@ -15194,8 +15194,8 @@ s.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/idTagger.log"
-lstparams "caption={Assign unique IDs to individuals},label={idTagger}"
+filename "log/IdTagger.log"
+lstparams "caption={Assign unique IDs to individuals},label={IdTagger}"
 
 \end_inset
 
@@ -15205,7 +15205,7 @@ lstparams "caption={Assign unique IDs to individuals},label={idTagger}"
 \begin_layout Subsection
 Tracking pedigrees (operator 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
 )
 \end_layout
@@ -15213,11 +15213,11 @@ pedigreeTagger
 \begin_layout Standard
 A 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  is similar to a 
 \family typewriter
-parentsTagger
+ParentsTagger
 \family default
  in that it records parental information in offspring's information fields.
  However, instead of indexes of parents, this operator records an unique
@@ -15237,7 +15237,7 @@ mother_id
 \begin_layout Standard
 By default, the 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  does not produce any output.
  However, if a valid output string (or function) is specified, it will output
@@ -15250,25 +15250,25 @@ ary process.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pedigreeTagger"
+reference "PedigreeTagger"
 
 \end_inset
 
  demonstrates how to output the complete pedigree of an evolutionary process.
  Note that 
 \family typewriter
-idTagger
+IdTagger
 \family default
  has to be applied before 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  so that IDs of offspring could be assigned before they are outputted.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pedigreeTagger.log"
-lstparams "caption={Output a complete pedigree of an evolutionary process},label={pedigreeTagger}"
+filename "log/PedigreeTagger.log"
+lstparams "caption={Output a complete pedigree of an evolutionary process},label={PedigreeTagger}"
 
 \end_inset
 
@@ -15282,7 +15282,7 @@ lstparams "caption={Output a complete pedigree of an evolutionary process},label
 \begin_layout Subsection
 A hybrid tagger (operator 
 \family typewriter
-pyTagger
+PyTagger
 \family default
 )
 \end_layout
@@ -15290,7 +15290,7 @@ pyTagger
 \begin_layout Standard
 A 
 \family typewriter
-pyTagger
+PyTagger
 \family default
  uses a user-defined function to pass parental information fields to offspring.
  When a mating event happens, this operator collect values of specified
@@ -15301,7 +15301,7 @@ pyTagger
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyTagger"
+reference "PyTagger"
 
 \end_inset
 
@@ -15310,8 +15310,8 @@ reference "pyTagger"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyTagger.log"
-lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={pyTagger}"
+filename "log/PyTagger.log"
+lstparams "caption={Use of a hybrid tagger to pass parental information to offspring},label={PyTagger}"
 
 \end_inset
 
@@ -15356,7 +15356,7 @@ reference "otherTagging"
  The affection status is then copied to an information field affected so
  that operator 
 \family typewriter
-summaryTagger
+SummaryTagger
 \family default
  could be used to count the number of affected parents.
  Two 
@@ -15744,7 +15744,7 @@ will calculate the frequencies of alleles at locus 0, among individuals
  in two virtual subpopulations.
  If the virtual subpopulation is defined by sex (using a 
 \family typewriter
-sexSplitter
+SexSplitter
 \family default
 ), the above operator will calculate allele frequency among all males in
  the first and second subpopulations.
@@ -17270,7 +17270,7 @@ subPops
 \family typewriter
 subPops=[(0,0), (0,1)]
 \family default
- if a sexSplitter is used to define two virtual subpopulations with male
+ if a SexSplitter is used to define two virtual subpopulations with male
  and female individuals respectively.
 \end_layout
 
@@ -17370,7 +17370,7 @@ Miscellaneous operators
 \begin_layout Subsection
 An operator that does nothing (operator 
 \family typewriter
-noneOp
+NoneOp
 \family default
 )
 \end_layout
@@ -17378,14 +17378,14 @@ noneOp
 \begin_layout Standard
 Operator 
 \family typewriter
-noneOp
+NoneOp
 \family default
  does nothing when it is applied to a population.
  It provides a placeholder when an operator is needed but no action is required.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "noneOp"
+reference "NoneOp"
 
 \end_inset
 
@@ -17395,7 +17395,7 @@ reference "noneOp"
 \begin_layout Standard
 \begin_inset CommandInset label
 LatexCommand label
-name "noneOp"
+name "NoneOp"
 
 \end_inset
 
@@ -17424,7 +17424,7 @@ else:
 
 \begin_layout Plain Layout
 
-    sel = noneOp()
+    sel = NoneOp()
 \end_layout
 
 \begin_layout Plain Layout
@@ -17741,13 +17741,13 @@ lstparams "caption={A conditional opeartor with dynamic condition},label={ifElse
 \begin_layout Subsection
 Conditionally terminate an evolutionary process (operator 
 \family typewriter
-terminateIf
+TerminateIf
 \family default
 )
 \end_layout
 
 \begin_layout Standard
-Operator terminateIf has been described and used in several examples such
+Operator TerminateIf has been described and used in several examples such
  as Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -17783,7 +17783,7 @@ True
 \begin_layout Standard
 If a 
 \family typewriter
-terminateIf
+TerminateIf
 \family default
  operator is applied to the offspring generation (post-mating, default),
  the evolutionary cycle is considered to be completed.
@@ -17796,7 +17796,7 @@ terminateIf
 \begin_layout Standard
 A less-known feature of operator 
 \family typewriter
-terminateIf
+TerminateIf
 \family default
  is its ability to terminate the evolution of all replicates, using parameter
  
@@ -17807,7 +17807,7 @@ stopAll=True
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "terminateIf"
+reference "TerminateIf"
 
 \end_inset
 
@@ -17824,8 +17824,8 @@ n being fixed.
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/terminateIf.log"
-lstparams "caption={Terminate the evolution of all populations in a simulator},label={terminateIf}"
+filename "log/TerminateIf.log"
+lstparams "caption={Terminate the evolution of all populations in a simulator},label={TerminateIf}"
 
 \end_inset
 
@@ -18809,11 +18809,11 @@ d frequencies of disease predisposing alleles, the simulated populations
 \begin_layout Standard
 simuPOP provides a special offspring generator 
 \family typewriter
-controlledOffspringGenerator
+ControlledOffspringGenerator
 \family default
  and an associated mating scheme called 
 \family typewriter
-controlledRandomMating
+ControlledRandomMating
 \family default
  that can be used to generate offspring generations conditioning on frequencies
  of one or more alleles.
@@ -18949,7 +18949,7 @@ trajectory
  This object can be used provide a trajectory function that can be used
  directly in a 
 \family typewriter
-controlledRandomMating
+ControlledRandomMating
 \family default
  mating scheme (function 
 \family typewriter
@@ -18957,7 +18957,7 @@ trajectory.func()
 \family default
 ) or provide a list of 
 \family typewriter
-pointMutator
+PointMutator
 \family default
  to introduce mutants at appropriate generations (function 
 \family typewriter
@@ -19091,7 +19091,7 @@ Evolve a population forward-in-time, using designed demographic and selection
  models.
  A 
 \family typewriter
-controlledRandomMating
+ControlledRandomMating
 \family default
  scheme instead of the usual 
 \family typewriter
@@ -19156,7 +19156,7 @@ Simulated trajectories of two unlinked loci
 \begin_layout Standard
 The trajectory is used in a 
 \family typewriter
-controlledRandomMating
+ControlledRandomMating
 \family default
  scheme in the following evolutionary scenario:
 \end_layout
@@ -20203,7 +20203,7 @@ setIndInfo
 \begin_layout Itemize
 Define virtual subpopulations using a 
 \family typewriter
-infoSplitter
+InfoSplitter
 \family default
 .
 \end_layout
@@ -20211,7 +20211,7 @@ infoSplitter
 \begin_layout Itemize
 Use 
 \family typewriter
-pyTagger
+PyTagger
 \family default
  to calculate offspring information fields from parental fields.
 \end_layout
@@ -20858,11 +20858,11 @@ mother_id
  to a population and track ID based pedigrees during evolution.
  More specifically, you can use operators 
 \family typewriter
-idTagger
+IdTagger
 \family default
  and 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  to assign IDs and record parental IDs of each offspring during mating.
  This method supports age-structured population when parents and offspring
@@ -20880,7 +20880,7 @@ mother_idx
 \family default
  and operator 
 \family typewriter
-parentsTagger
+ParentsTagger
 \family default
  to track indexes of parents in the parental generations.
  Before sampling, you can use function 
@@ -21870,7 +21870,7 @@ A
 
 -allele model can be simulated using the 
 \family typewriter
-kamMutator
+KamMutator
 \family default
  operator which accepts a mutation rate and a maximum allelic state as parameter
 s.
@@ -21880,7 +21880,7 @@ status open
 
 \begin_layout Plain Layout
 
-kamMutator(rates=mu, maxAllele=k)
+KamMutator(rates=mu, maxAllele=k)
 \end_layout
 
 \end_inset
@@ -23308,12 +23308,12 @@ selfingMating
 \family default
  mating scheme uses a 
 \family typewriter
-randomParentChooser
+RandomParentChooser
 \family default
  to choose a parent randomly from a population, possibly according to individual
  fitness, it uses a standard 
 \family typewriter
-offspringGenerator
+OffspringGenerator
 \family default
  that uses a 
 \family typewriter
@@ -23441,15 +23441,15 @@ weight
 s can be combined to define a large number of homogeneous mating schemes.
  For example, the standard 
 \family typewriter
-selfMating
+SelfMating
 \family default
  mating scheme uses a 
 \family typewriter
-randomParentChooser
+RandomParentChooser
 \family default
  but you can easily use a 
 \family typewriter
-sequentialParentChooser
+SequentialParentChooser
 \family default
  to choose parents sequentially and self-fertilize parents one by one.
  This is demonstrated in Example 
@@ -23488,7 +23488,7 @@ Offspring generators *
 \begin_layout Standard
 An 
 \family typewriter
-offspringGenerator
+OffspringGenerator
 \family default
  accepts a parameters 
 \family typewriter
@@ -23532,14 +23532,14 @@ ops
  fields.
  The standard 
 \family typewriter
-offspringGenerator
+OffspringGenerator
 \family default
  does not have any default operator so no genotype will be transmitted by
  default.
  All stock mating schemes use a default genotype transmitter.
  (e,g, a 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
  in Example 
 \begin_inset CommandInset ref
@@ -23568,15 +23568,15 @@ reference "heteroMatingWeight"
 ).
  That is to say, you can use 
 \family typewriter
-ops=recombinator()
+ops=Recombinator()
 \family default
  to replace a default 
 \family typewriter
-mendelianGenoTransmitter()
+MendelianGenoTransmitter()
 \family default
 , but you have to use 
 \family typewriter
-ops=[idTagger(), mendelianGenoTransmitter()]
+ops=[IdTagger(), MendelianGenoTransmitter()]
 \family default
  if you would like to add a during-mating operator to the default one.
 \end_layout
@@ -23585,7 +23585,7 @@ ops=[idTagger(), mendelianGenoTransmitter()]
 Another offspring generator is provided in simuPOP.
  This 
 \family typewriter
-controlledOffspringGenerator 
+ControlledOffspringGenerator 
 \family default
 is used to control an evolutionary process so that the allele frequencies
  at certain loci follows some pre-simulated 
@@ -23620,7 +23620,7 @@ reference "controlledOffGenerator"
  Note that the random mating version of this mating scheme is defined in
  simuPOP as 
 \family typewriter
-controlledRandomMating
+ControlledRandomMating
 \family default
 .
 \end_layout
@@ -23659,7 +23659,7 @@ genotype transmitters
 \series default
 .
  simuPOP provides a number of genotype transmitters including clone, Mendelian,
- selfing, haplodiploid, genotype transmitter, and a recombinator.
+ selfing, haplodiploid, genotype transmitter, and a Recombinator.
  They are usually used implicitly in a mating scheme, but they can also
  be used explicitly.
 \end_layout
@@ -23683,7 +23683,7 @@ CHROMOSOME_Y
  In case that Customized chromosomes are treated as mitochondrial chromosomes,
  a 
 \family typewriter
-mitochondrialGenoTransmitter
+MitochondrialGenoTransmitter
 \family default
  can be used to transmit customized chromosomes randomly from mother to
  offspring.
@@ -23696,16 +23696,16 @@ reference "mitochondrial.log"
 
  demonstrates the use of a 
 \family typewriter
-recombinator
+Recombinator
 \family default
  to recombine an autosome and two sex chromosomes, and a 
 \family typewriter
-mitochondrialGenoTransmitter
+MitochondrialGenoTransmitter
 \family default
  to transmit mitochondrial chromosomes.
  Note that the default 
 \family typewriter
-mendelianGenoTransmitter
+MendelianGenoTransmitter
 \family default
  is replaced by these two operators.
  It will be (wastefully) applied if the new during-mating operators are
@@ -23741,10 +23741,10 @@ name "sub:Customized-genotype-transmitter"
 \begin_layout Standard
 Although simuPOP provides a number of genotype transmitters, they may still
  be cases where customized genotype transmitter is needed.
- For example, a recombinator can be used to recombine parental chromosomes
+ For example, a Recombinator can be used to recombine parental chromosomes
  but it is well known that male and female individuals differ in recombination
  rates.
- How can you apply two different recombinators to male and female individuals
+ How can you apply two different Recombinators to male and female individuals
  separately?
 \end_layout
 
@@ -23753,7 +23753,7 @@ An immediate thought can be the use of virtual subpopulations.
  If you apply two random mating schemes to two virtual subpopulations defined
  by sex, 
 \family typewriter
-randomParentsChooser
+RandomParentsChooser
 \family default
  will not work because no opposite sex can be found in each virtual subpopulatio
 n.
@@ -23794,7 +23794,7 @@ reference "sexSpecificRec"
 \family typewriter
 sexSpecificRecombinator
 \family default
- that uses, internally, two different recombinators to recombine male and
+ that uses, internally, two different Recombinators to recombine male and
  female parents.
  The key statement is the 
 \family typewriter
@@ -23813,7 +23813,7 @@ The actual function to transmit parental genotype is
 self.transmitGenotype
 \family default
 .
- This function initializes two recombinators if they have not been initialized
+ This function initializes two Recombinators if they have not been initialized
  and uses them to transmit parental genotypes.
  Example 
 \begin_inset CommandInset ref
@@ -23873,7 +23873,7 @@ A parent choosing scheme can be quite complicated in reality.
  This behavior cannot be readily simulated using any pre-define parent choosers
  so a hybrid parent chooser 
 \family typewriter
-pyParentsChooser()
+PyParentsChooser()
 \family default
  should be used.
 \end_layout
@@ -23881,7 +23881,7 @@ pyParentsChooser()
 \begin_layout Standard
 A 
 \family typewriter
-pyParentsChooser
+PyParentsChooser
 \family default
  accepts a user-defined Python generator function, instead of a normal python
  function, that returns a parent, or a pair of parents repeatedly.
@@ -23942,7 +23942,7 @@ lstparams "caption={A sample generator function},label={generator}"
 \begin_layout Standard
 A 
 \family typewriter
-pyParentsChooser
+PyParentsChooser
 \family default
  accepts a parent generator function, which takes a population and a subpopulati
 on index as parameters.
@@ -23955,7 +23955,7 @@ references to individual objects or indexes relative to a subpopulation
 ).
  Note that 
 \family typewriter
-pyParentsChooser
+PyParentsChooser
 \family default
  does not support virtual subpopulation but you can mimic the effect by
  returning only parents from certain virtual subpopulations.
@@ -23965,7 +23965,7 @@ pyParentsChooser
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyParentsChooser"
+reference "PyParentsChooser"
 
 \end_inset
 
@@ -23988,8 +23988,8 @@ es with the same social status.
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyParentsChooser.log"
-lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={pyParentsChooser}"
+filename "log/PyParentsChooser.log"
+lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={PyParentsChooser}"
 
 \end_inset
 
@@ -24022,7 +24022,7 @@ ntly, it may be worthwhile to write the parent chooser in C++.
 Although it is feasible, and sometimes easier to derive a class from class
  
 \family typewriter
-parentChooser
+ParentChooser
 \family default
  in mating.h (.cpp), modifying simuPOP source code is not recommended because
  you would have to modify a new version of simuPOP whenever you upgrade
@@ -24219,7 +24219,7 @@ reference "parentChooseHeader"
  It uses the same Python parent chooser interface as in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pyParentsChooser"
+reference "PyParentsChooser"
 
 \end_inset
 
@@ -24278,11 +24278,11 @@ Define a virtual splitter that splits the parental population into several
  such as males between age 20 - 40 and females between age 15-30 (use a
  
 \family typewriter
-productSplitter
+ProductSplitter
 \family default
  to split subpopulations by sex and age, and then a 
 \family typewriter
-combinedSplitter
+CombinedSplitter
 \family default
  to join several smaller VSPs together).
 \end_layout
@@ -24319,11 +24319,11 @@ mother_id
 \family default
  and operators 
 \family typewriter
-idTagger
+IdTagger
 \family default
  and 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  are used to track pedigree information during evolution.
 \end_layout
@@ -24331,7 +24331,7 @@ pedigreeTagger
 \begin_layout Itemize
 A 
 \family typewriter
-cloneMating
+CloneMating
 \family default
  mating scheme is used to copy surviving individuals and a 
 \family typewriter
@@ -24343,11 +24343,11 @@ randomMating
 \begin_layout Itemize
 
 \family typewriter
-idTagger
+IdTagger
 \family default
  and 
 \family typewriter
-pedigreeTagger
+PedigreeTagger
 \family default
  are used in the 
 \family typewriter
@@ -24368,7 +24368,7 @@ evolve
 \family default
  function, individuals copied by 
 \family typewriter
-cloneMating
+CloneMating
 \family default
  will have a new ID, and a missing parental ID.
 \end_layout

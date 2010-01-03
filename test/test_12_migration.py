@@ -66,7 +66,7 @@ class TestMigrator(unittest.TestCase):
         # virtual subpopulations?
         pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
         InitSex(pop, sex=[MALE, FEMALE])
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         # only get male out of the second subpopulation
         Migrate(pop, mode=BY_IND_INFO, subPops=[(1, 0)])
         self.assertEqual(pop.subPopSizes(), (4000, 2000, 4000))
@@ -132,7 +132,7 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=0, subPops=[0])
         InitSex(pop, maleFreq=1, subPops=[1])
         InitSex(pop, maleFreq=1, subPops=[2])
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [0, 0, 0],
@@ -171,7 +171,7 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=0, subPops=[0])
         InitSex(pop, maleFreq=1, subPops=[1])
         InitSex(pop, maleFreq=1, subPops=[2])
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .05, .05],
@@ -212,7 +212,7 @@ class TestMigrator(unittest.TestCase):
         InitSex(pop, maleFreq=0, subPops=[0])
         InitSex(pop, maleFreq=1, subPops=[1])
         InitSex(pop, maleFreq=1, subPops=[2])
-        pop.setVirtualSplitter(sexSplitter())
+        pop.setVirtualSplitter(SexSplitter())
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .1, .1],

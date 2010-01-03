@@ -116,7 +116,7 @@ class TestInitialization(unittest.TestCase):
         pop = population(size=[500, 1000], loci=[1], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
         InitSex(pop, sex=[MALE, FEMALE, FEMALE], subPops=[[0,0],[1,0]])
         idx = 0
         for sp in range(2):
@@ -178,7 +178,7 @@ class TestInitialization(unittest.TestCase):
         pop = population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
         InitByFreq(pop, [[0.2, 0.3, 0.5], [0.2,0.8], [0.5, 0.5]], 
             subPops=[[0,0],[1,1], [2,0]], loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55], 
@@ -211,7 +211,7 @@ class TestInitialization(unittest.TestCase):
         pop = population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
         # can initialize an invidiausl
         InitByValue(pop, [0]*5 + [2]*3 + [3]*5 +[4]*3)
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*pop.popSize())

@@ -51,7 +51,7 @@ import exceptions, operator, types, os, sys, re
 
 from simuOpt import simuOptions
 
-from simuPOP import MALE, FEMALE, pointMutator, getRNG
+from simuPOP import MALE, FEMALE, PointMutator, getRNG
 
 def viewVars(var, gui=None):
     '''
@@ -595,8 +595,8 @@ class trajectory:
     The ``trajectory`` object provides several member functions to facilitate
     the use of trajectory-simulation techiniques. For example,
     ``trajectory.func()`` returns a trajectory function that can be provided
-    directly to a ``controlledOffspringGenerator``; ``trajectory.mutators()``
-    provides a list of ``pointMutator`` that insert mutants at the right
+    directly to a ``ControlledOffspringGenerator``; ``trajectory.mutators()``
+    provides a list of ``PointMutator`` that insert mutants at the right
     generations to initialize a trajectory.
 
     For more information about trajectory simulation techniques and related
@@ -648,9 +648,9 @@ class trajectory:
         frequencies are arranged in the order of ``loc0_sp0``, ``loc1_sp0``,
         ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on. The returned function
         can be supplied directly to the ``freqFunc`` parameter of a controlled
-        random mating scheme (``controlledRandomMating``) or a homogeneous
+        random mating scheme (``ControlledRandomMating``) or a homogeneous
         mating scheme that uses a controlled offspring generator
-        (``controlledOffspringGenerator``).
+        (``ControlledOffspringGenerator``).
         '''
         def trajFunc(gen):
             if not self.traj.has_key(gen):
@@ -662,7 +662,7 @@ class trajectory:
         return trajFunc
     
     def mutators(self, loci, inds=0, allele=1, *args, **kwargs):
-        '''Return a list of ``pointMutator`` operators that introduce mutants
+        '''Return a list of ``PointMutator`` operators that introduce mutants
         at the beginning of simulated trajectories. These mutators should be
         added to the ``ops`` parameter of ``simulator.evolve`` function to
         introduce a mutant at the beginning of a generation with zero allele
@@ -688,10 +688,10 @@ class trajectory:
                         if type(loci) in [type(()), type([])]:
                             if len(loci) != self.nLoci:
                                 raise exceptions.ValueError('%d loci is expected' % self.nLoci)
-                            mut.append(pointMutator(inds=inds, loci=loci[loc], allele=allele,
+                            mut.append(PointMutator(inds=inds, loci=loci[loc], allele=allele,
                                 subPops=sp, at=gen + 1, *args, **kwargs))
                         elif self.nLoci == 1 and type(loci) == type(0):
-                            mut.append(pointMutator(inds=inds, loci=loci, allele=allele,
+                            mut.append(PointMutator(inds=inds, loci=loci, allele=allele,
                                 subPops=sp, at=gen + 1, *args, **kwargs))
                         else:
                             raise exceptions.ValueError('Invalid parameter loci')

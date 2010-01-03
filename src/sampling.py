@@ -40,13 +40,13 @@ population.
 
 Pedigrees could be drawn from multi-generational populations or age-structured
 populations. All individuals are required to have a unique ID (usually tracked
-by operator ``idTagger`` and are stored in information field ``ind_id``).
-Parents of individuals are usually tracked by operator ``pedigreeTagger`` and
+by operator ``IdTagger`` and are stored in information field ``ind_id``).
+Parents of individuals are usually tracked by operator ``PedigreeTagger`` and
 are stored in information fields ``father_id`` and ``mother_id``. If parental
-information is tracked using operator ``parentsTagger`` and information fields
+information is tracked using operator ``ParentsTagger`` and information fields
 ``father_idx`` and ``mother_idx``, a function ``sampling.IndexToID`` can be
 used to convert index based pedigree to ID based pedigree. Note that
-``parentsTagger`` can not be used to track pedigrees in age-structured
+``ParentsTagger`` can not be used to track pedigrees in age-structured
 populations because they require parents of each individual resides in a
 parental generation.
 
