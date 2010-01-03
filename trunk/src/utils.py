@@ -146,7 +146,7 @@ def migrHierarchicalIslandRates(r1, r2, n):
     For individuals in an island, the probability that it remains in the same
     island is 1-r1-r2 (r1, r2 might vary by island groups), that it migrates
     to another island in the same group is r1 and migrates to another island
-    outside of the group is r2. Migrate rate to a specific island depends on
+    outside of the group is r2. migrate rate to a specific island depends on
     the size of group.
     '''
     if type(n) not in [type(()), type([])]:

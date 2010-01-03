@@ -2230,7 +2230,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population([10]*2, infoFields='migrate_to')
 pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
-sim.Migrate(pop, mode=sim.BY_IND_INFO)
+sim.migrate(pop, mode=sim.BY_IND_INFO)
 pop.subPopSizes()
 #end_file
 
