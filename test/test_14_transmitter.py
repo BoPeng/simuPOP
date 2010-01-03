@@ -17,7 +17,7 @@ import unittest, os, sys, exceptions
 class TestTransmitters(unittest.TestCase):
     def getPop(self, *args, **kwargs):
         'Create a population for testing.'
-        pop = population(*args, **kwargs)
+        pop = Population(*args, **kwargs)
         initSex(pop)
         initByFreq(pop, [0.4] + [0.1]*6)
         return pop
@@ -452,7 +452,7 @@ class TestTransmitters(unittest.TestCase):
         'Testing to see if we actually recombine at this rate '
         a1, a2 = 0, 1
 
-        pop = population(10000, loci=[2,3,2])
+        pop = Population(10000, loci=[2,3,2])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -467,7 +467,7 @@ class TestTransmitters(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
         assert abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) < 0.01
         # compare to the next test
-        pop = population(10000, loci=[3,4])
+        pop = Population(10000, loci=[3,4])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -498,7 +498,7 @@ class TestTransmitters(unittest.TestCase):
         #
         # alrorithm 0?
         #
-        pop = population(10000, loci=[3,10])
+        pop = Population(10000, loci=[3,10])
         initSex(pop)
         initByValue(pop, value=[a1]*13+[a2]*13)
         simu = Simulator(pop)
@@ -530,7 +530,7 @@ class TestTransmitters(unittest.TestCase):
     def testConversionRate(self):
         'Testing to see if we actually convert at this rate '
         a1, a2 = 0, 1
-        pop = population(10000, loci=[3,4])
+        pop = Population(10000, loci=[3,4])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         rec = Recombinator(rates = 0.4, convMode = (NUM_MARKERS, 1, 1), loci=[1,3])
@@ -568,7 +568,7 @@ class TestTransmitters(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) < 0.01
         #
         # length 2
-        pop = population(10000, loci=[3,4])
+        pop = Population(10000, loci=[3,4])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -603,7 +603,7 @@ class TestTransmitters(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) < 0.01
         #
         # algorithm 0??
-        pop = population(10000, loci=[3,10])
+        pop = Population(10000, loci=[3,10])
         initSex(pop)
         initByValue(pop, value=[a1]*13+[a2]*13)
         simu = Simulator(pop)
@@ -645,7 +645,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
-        pop = population(10000, loci=[2,3,2])
+        pop = Population(10000, loci=[2,3,2])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -670,7 +670,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
-        pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
+        pop = Population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -692,7 +692,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
-        pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
+        pop = Population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -714,7 +714,7 @@ class TestTransmitters(unittest.TestCase):
             geno = [x%2 for x in [1,2,3,4,5,6,7] ]
         else:
             geno = [1,2,3,4,5,6,7]
-        pop = population(1000, loci=[2,3,2])
+        pop = Population(1000, loci=[2,3,2])
         initSex(pop)
         initByValue(pop, value=geno)
         simu = Simulator(pop)
@@ -730,7 +730,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
-        pop = population(100000, loci=[2,3,2])
+        pop = Population(100000, loci=[2,3,2])
         initSex(pop)
         initByValue(pop, value=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -757,7 +757,7 @@ class TestTransmitters(unittest.TestCase):
             [0.5-r/2, r/2, r/2, 0.5-r/2], [0, 1, 0, 0], [r/2, .5-r/2, .5-r/2, r/2],
             [0, .5, 0, .5], [0, 0, 1, 0], [0, 0, .5, .5], [0, 0, 0, 1] ]
         for i in range(0, len(genoDad)):
-            pop = population(size=N, loci=[2])
+            pop = Population(size=N, loci=[2])
             initSex(pop)
             initByValue(pop, value=genoDad[i]+genoMom[i])
             simu = Simulator(pop)
@@ -777,7 +777,7 @@ class TestTransmitters(unittest.TestCase):
         'Testing formula Dn=(1-r)^n D0 '
         r = 0.1
         N = 10000
-        pop = population(size=N, loci=[2])
+        pop = Population(size=N, loci=[2])
         # genotype 11/22, with LD=1
         if moduleInfo()['alleleType'] == 'binary':
             a1, a2 = 0, 1
@@ -806,7 +806,7 @@ class TestTransmitters(unittest.TestCase):
 #             a1, a2, a3 = 0, 1, 1
 #         else:
 #             a1, a2, a3 = 1, 2, 3
-#         pop = population(size=N, loci=[2,5], sexChrom=True)
+#         pop = Population(size=N, loci=[2,5], sexChrom=True)
 #         # male     1 3
 #         # female 1 2
 #         initByValue(pop, indRange=[0,N/2], sex=[MALE]*(N/2), atPloidy=0, value=[a1]*7)
@@ -832,7 +832,7 @@ class TestTransmitters(unittest.TestCase):
 
     def testHaplodiploid(self):
         'Testing recombination in haplodiploid populations'
-        pop = population(size=[20, 20], ploidy=HAPLODIPLOID, loci=[3,5])
+        pop = Population(size=[20, 20], ploidy=HAPLODIPLOID, loci=[3,5])
         simu = Simulator(pop)
         simu.evolve(
             initOps = [

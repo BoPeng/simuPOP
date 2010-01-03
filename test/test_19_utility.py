@@ -68,7 +68,7 @@ class TestUtility(unittest.TestCase):
 
     def interactiveTestPauseAtGen(self):
         'Testing resume to simulation'
-        simu = Simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
@@ -78,7 +78,7 @@ class TestUtility(unittest.TestCase):
 
     def interactiveTestExitToShell(self):
         'Testing exit to a shell'
-        simu = Simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
@@ -218,7 +218,7 @@ class TestUtility(unittest.TestCase):
     def TestLargePedigree(self):
         'Testing getting large Pedigree, for simuUtils.ascertainPedigree'
         import simuUtil
-        pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
+        pop = Population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
         simu = Simulator(pop, RandomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
         simu.evolve(duringOps=[ParentsTagger()], end=5)
         pop = simu.population(0)
@@ -233,13 +233,13 @@ class TestUtility(unittest.TestCase):
     def testMemoryLeakloadPopulation(self):
         'Testing if loadPopulation leaks memory'
         # run this and see if memory usage goes up continuously
-        pop = population(100, loci=[400])
+        pop = Population(100, loci=[400])
         initByFreq(pop, [0.2, 0.8])
         stat(pop, alleleFreq=range(pop.totNumLoci()))
         pop.save('test.bin')
         for i in range(4):
             pop = loadPopulation('test.bin')
-            #pop = population(100, loci=[1000]*10)
+            #pop = Population(100, loci=[1000]*10)
             stat(pop, alleleFreq=range(pop.totNumLoci()))
             #print pop.dvars().alleleFreq[100][0]
             if i < 2:
@@ -561,7 +561,7 @@ class TestUtility(unittest.TestCase):
         # 5: test given variable number of subpopulations, if allele frequencies would be
         # recorded in the correct form. nLoci = 3.
         # In a backward simulation, 3 subPops merge when gen = endGen - 5 in backward sense.
-        # In another Forward simulation, a single population splits into 3 subPops when 
+        # In another Forward simulation, a single Population splits into 3 subPops when 
         # gen = endGen - 5 in forward sense. 
         def Nt(gen):
             if gen > 295:

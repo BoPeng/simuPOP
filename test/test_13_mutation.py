@@ -114,7 +114,7 @@ class TestMutator(unittest.TestCase):
 
     def testSP(self):
         'Testing the subpop support of mutators'
-        pop = population(size=[1000, 2000], ploidy=2, loci=[2, 3])
+        pop = Population(size=[1000, 2000], ploidy=2, loci=[2, 3])
         simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
@@ -132,7 +132,7 @@ class TestMutator(unittest.TestCase):
 
     def testVSP(self):
         'Testing the subpops parameter of mutator'
-        pop = population(size=2000, ploidy=2, loci=[2, 3])
+        pop = Population(size=2000, ploidy=2, loci=[2, 3])
         pop.setVirtualSplitter(SexSplitter())
         simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
@@ -154,7 +154,7 @@ class TestMutator(unittest.TestCase):
 
     def testUntouchedLoci(self):
         'Testing if mutator would mutate irrelevant locus'
-        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]))
+        simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]))
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
             postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
@@ -163,7 +163,7 @@ class TestMutator(unittest.TestCase):
 
     def testSnpMutator(self):
         'Testing diallelic mutator (SNP mutator)'
-        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
+        simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
@@ -180,7 +180,7 @@ class TestMutator(unittest.TestCase):
 
     def testAlleleMapping(self):
         'Testing the allele mapping feature'
-        simu = Simulator(population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator(Population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
@@ -202,7 +202,7 @@ class TestMutator(unittest.TestCase):
             return allele - 5
         def mapOut(allele):
             return allele + 5
-        simu = Simulator(population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator(Population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
@@ -223,7 +223,7 @@ class TestMutator(unittest.TestCase):
 
     def testKamMutator(self):
         'Testing k-allele mutator'
-        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(
@@ -232,7 +232,7 @@ class TestMutator(unittest.TestCase):
                 postOps = [ KamMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
-        simu = Simulator( population(size=10000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(
             initOps = [InitSex()],
@@ -249,14 +249,14 @@ class TestMutator(unittest.TestCase):
         'Testing generalized step-wise mutation mutator'
         if moduleInfo()['alleleType'] == 'binary':
             return
-        simu = Simulator( population(size=1000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(initOps=[InitSex(), InitByFreq([.2,.8])],
             matingScheme = RandomMating(),
              postOps = [ SmmMutator(rates=0.2)], gen=200)
         # at loci
-        simu = Simulator( population(size=10000, ploidy=2, loci=[2, 3]),
+        simu = Simulator( Population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
@@ -271,7 +271,7 @@ class TestMutator(unittest.TestCase):
 
     def testPyMutator(self):
         'Testing the hybrid PyMutator'
-        pop = population(size=10, loci=[2])
+        pop = Population(size=10, loci=[2])
         # cutom mutator
         def mut(x):
             return 1
@@ -280,7 +280,7 @@ class TestMutator(unittest.TestCase):
 
     def testMixedMutator(self):
         'Testing mixed mutator'
-        pop = population(1000, loci=[1])
+        pop = Population(1000, loci=[1])
         simu = Simulator(pop)
         self.assertRaises(exceptions.ValueError,
             MixedMutator, mutators=[KamMutator(k=10), KamMutator(k=10)],
@@ -291,7 +291,7 @@ class TestMutator(unittest.TestCase):
 
     def testContextMutator(self):
         'Testing context mutator'
-        simu = Simulator(population(50000, loci=[3, 3]))
+        simu = Simulator(Population(50000, loci=[3, 3]))
         simu.evolve(
             # initialize locus by 0, 0, 0, 1, 0, 1
             initOps = [InitSex(), InitByValue([1, 1], loci=[3, 5])],
@@ -325,7 +325,7 @@ class TestMutator(unittest.TestCase):
     def testPointMutator(self):
         'Testing point mutator'
         # test point mutator
-        pop = population(size=10, ploidy=2, loci=[5])
+        pop = Population(size=10, ploidy=2, loci=[5])
         initByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
         pointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
         self.assertEqual(pop.individual(1).allele(1,0), 0)
@@ -340,7 +340,7 @@ class TestMutator(unittest.TestCase):
         cnt0 = 0
         cnt1 = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1])
+            pop = Population(size=10000, loci=[1])
             initByFreq(pop, [0.6, 0.4])
             snpMutate(pop, u=0.2, v=0.1, loci=0)
             stat(pop, alleleFreq=[0])
@@ -354,7 +354,7 @@ class TestMutator(unittest.TestCase):
         'Testing mutation rate'
         cnt = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1])
+            pop = Population(size=10000, loci=[1])
             # Mutate autosome
             snpMutate(pop, u=0.01, loci=0)
             stat(pop, alleleFreq=[0])
@@ -366,7 +366,7 @@ class TestMutator(unittest.TestCase):
         'Testing mutation on chromosome X'
         cnt = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+            pop = Population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop, sex=[MALE, FEMALE])
             # Mutate X chromosomes
             snpMutate(pop, u=0.01, loci=0)
@@ -378,7 +378,7 @@ class TestMutator(unittest.TestCase):
         # Mutate Y chromosomes
         cnt = 0
         for i in range(50):
-            pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+            pop = Population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop, sex=[MALE, FEMALE])
             snpMutate(pop, u=0.01, loci=1)
             stat(pop, alleleFreq=[1])

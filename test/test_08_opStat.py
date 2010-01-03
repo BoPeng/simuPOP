@@ -26,8 +26,8 @@ except:
 class Teststat(unittest.TestCase):
 
     def testPopSize(self):
-        'Testing calculation of population (subPopulation) size'
-        pop = population(size=[200,800])
+        'Testing calculation of population (subpopulation) size'
+        pop = Population(size=[200,800])
         # do not calculate for subpopulations
         stat(pop, popSize=1, subPops=[])
         self.assertEqual(pop.dvars().subPopSize, [])
@@ -44,7 +44,7 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
         self.assertEqual(pop.dvars([1,1]).popSize, 400)
         # test the vars parameter
-        pop = population(size=[200,800])
+        pop = Population(size=[200,800])
         stat(pop, popSize=1, vars='popSize')
         self.assertEqual(pop.vars().has_key('subPopSize'), False)
         self.assertEqual(pop.dvars().popSize, 1000)
@@ -52,7 +52,7 @@ class Teststat(unittest.TestCase):
 
     def testNumOfMales(self):
         'Testing counting number of male'
-        pop = population(size=[200, 800])
+        pop = Population(size=[200, 800])
         for i in range(100):
             pop.individual(i,0).setSex(MALE)
             pop.individual(i,1).setSex(MALE)
@@ -82,7 +82,7 @@ class Teststat(unittest.TestCase):
 
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
-        pop = population(size=[200, 800])
+        pop = Population(size=[200, 800])
         initSex(pop, sex=[MALE, FEMALE])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
@@ -116,7 +116,7 @@ class Teststat(unittest.TestCase):
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'
-        pop = population(size=1000, loci=[10])
+        pop = Population(size=1000, loci=[10])
         initByFreq(pop, [0, 0.2, 0.8])
         stat(pop, alleleFreq=range(10))
         d = pop.dvars().alleleFreq[0]
@@ -129,7 +129,7 @@ class Teststat(unittest.TestCase):
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
-        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop = Population(size=[500,100,1000], ploidy=2, loci = [1])
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
@@ -166,7 +166,7 @@ class Teststat(unittest.TestCase):
 
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'
-        pop = population(size=[500,100,1000],
+        pop = Population(size=[500,100,1000],
             ploidy=2, loci = [1])
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -202,7 +202,7 @@ class Teststat(unittest.TestCase):
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
-        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop = Population(size=[500,100,1000], ploidy=2, loci = [1])
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
@@ -242,7 +242,7 @@ class Teststat(unittest.TestCase):
     def testInfostat(self):
         'Testing summary statistics of information fields'
         import random
-        pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
+        pop = Population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         pop.setIndInfo([1], field='x', subPop=(0, 0))
@@ -262,7 +262,7 @@ class Teststat(unittest.TestCase):
 
     def testFst(self):
         'Testing calculation of Fst value'
-        pop = population(size=[500,100,1000],
+        pop = Population(size=[500,100,1000],
             ploidy=2, loci = [1])
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -292,7 +292,7 @@ class Teststat(unittest.TestCase):
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
         # test haplotype frequency
-        pop = population(size=[5000,1000], ploidy=2, loci = [10])
+        pop = Population(size=[5000,1000], ploidy=2, loci = [10])
         if moduleInfo()['alleleType'] == 'binary':
             initByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             stat(pop, haploFreq=[[0,1,5],[2,5]])
@@ -363,7 +363,7 @@ class Teststat(unittest.TestCase):
                     q = var.alleleFreq[loc2][allele2]
                     R2 += p*q*R2_single(var, loc1, loc2, allele1, allele2)
             return R2
-        pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
+        pop = Population(size=[500, 100, 1000], ploidy=2, loci = [5])
         initByFreq(pop, freq)
         # test case with primary alleles specified
         stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4, 0, 1])
@@ -387,7 +387,7 @@ class Teststat(unittest.TestCase):
         self.TestLD([.2, .8])
         self.TestLD([.2, .3, .5])
         #turnOnDebug('DBG_STATOR')
-        pop = population(size=[500,100,1000], ploidy=2, loci = [5])
+        pop = Population(size=[500,100,1000], ploidy=2, loci = [5])
         #
         # FIXME:
         #
@@ -433,7 +433,7 @@ class Teststat(unittest.TestCase):
 
     def testCombinedStats(self):
         '''Testing dependency of combined statistics'''
-        pop = population(size=[500,100,1000], ploidy=2, loci = [5])
+        pop = Population(size=[500,100,1000], ploidy=2, loci = [5])
         initByFreq(pop, [.2, .3, .5])
         stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
         assert pop.vars().has_key('alleleFreq')
@@ -463,9 +463,9 @@ class Teststat(unittest.TestCase):
 
     def testNeutrality(self):
         '''Testing the calculation of Tajima's Pi'''
-        pop = population(size=1, ploidy=1, loci=[1, 1])
+        pop = Population(size=1, ploidy=1, loci=[1, 1])
         initByFreq(pop, [.3, .4, .3])
-        pop1 = population(size=[24, 31], ploidy=2, loci=[2, 1, 4])
+        pop1 = Population(size=[24, 31], ploidy=2, loci=[2, 1, 4])
         initByFreq(pop1, [.3, .7])
         stat(pop, neutrality=[0, 1])
         self.assertEqual(pop.dvars().Pi, self.pairwiseDiff(pop, loci=[0, 1]))

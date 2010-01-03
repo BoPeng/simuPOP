@@ -21,7 +21,7 @@ import unittest, os, sys, exceptions
 class TestSampling(unittest.TestCase):
 
     def setUp(self):
-        self.pop = population(size=[1000,2000], loci=[5,10],
+        self.pop = Population(size=[1000,2000], loci=[5,10],
                 ancGen=1,
                 infoFields=['father_idx', 'mother_idx', 'father_id', 'mother_id', 'ind_id', 'oldindex'])
         self.pop.evolve(
@@ -47,7 +47,7 @@ class TestSampling(unittest.TestCase):
             self.pop.useAncestralGen(gen)
             self.pop.setIndInfo(range(self.pop.popSize()), 'oldindex')
         # more complicated one
-        self.largepop = population(size=[5000, 20000], ploidy=2, loci=[5,10],
+        self.largepop = Population(size=[5000, 20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id'])
         self.largepop.evolve(
             initOps=[
@@ -136,7 +136,7 @@ class TestSampling(unittest.TestCase):
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
 		# FIXME: testing sharing of parents
-		# (father_idx and mother_idx of original and sample population,
+		# (father_idx and mother_idx of original and sample Population,
 		# and if the parents are the same.)
         s = drawAffectedSibpairSample(self.pop, families = [2, 3])
         self.assertEqual(s.subPopSize(0), 4)

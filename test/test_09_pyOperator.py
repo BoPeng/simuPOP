@@ -17,7 +17,7 @@ import unittest, time, exceptions
 class TestPyOperator(unittest.TestCase):
 
     def setUp(self):
-        self.pop = population(size=10000, ploidy=2,
+        self.pop = Population(size=10000, ploidy=2,
             loci=[2, 3])
         initSex(self.pop)
 

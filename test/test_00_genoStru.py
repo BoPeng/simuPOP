@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions
 class TestGenoStru(unittest.TestCase):
     # define a function to create basic populations
     def getPop(self):
-        pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
+        pop = Population(size=[20, 80], ploidy=2, loci=[5, 7],
             lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
             alleleNames=['_', 'A', 'C', 'T', 'G'],
             infoFields=['a', 'b'])
@@ -28,15 +28,15 @@ class TestGenoStru(unittest.TestCase):
 
     def testLociPos(self):
         'Testing the specification of loci position'
-        pop = population(loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 5, 4, 3, 2])
+        pop = Population(loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 5, 4, 3, 2])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 1, 2, 3, 4, 5))
-        self.assertRaises(exceptions.ValueError, population, loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 3, 4, 3, 2])
+        self.assertRaises(exceptions.ValueError, Population, loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 3, 4, 3, 2])
         #
-        pop = population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5], lociNames=['1', '2', '3', '4', '5', '6'])
+        pop = Population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5], lociNames=['1', '2', '3', '4', '5', '6'])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
         self.assertEqual(pop.lociNames(), ('1', '3', '2', '4', '6', '5'))
         #
-        pop = population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5],
+        pop = Population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5],
             alleleNames=[['1', 'x'], ['2', 'a'], ['3', 'y', 'z'], ['4', 'b'], ['5', 'd'], ['6', 'c']])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
         self.assertEqual(pop.alleleNames(0), ('1', 'x'))
@@ -51,7 +51,7 @@ class TestGenoStru(unittest.TestCase):
 
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
-        pop = population(size=2, loci=[2, 1])
+        pop = Population(size=2, loci=[2, 1])
         initByValue(pop, [1, 2, 3])
         arr = pop.genotype()
         arr[:] = [0, 1, 2]*4
@@ -136,17 +136,17 @@ class TestGenoStru(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.ploidyName(), 'diploid')
-        pop = population(size=100, ploidy=HAPLODIPLOID, loci=[5, 7])
+        pop = Population(size=100, ploidy=HAPLODIPLOID, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'haplodiploid')
-        pop = population(size=100, ploidy=1, loci=[5, 7])
+        pop = Population(size=100, ploidy=1, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'haploid')
-        pop = population(size=100, ploidy=3, loci=[5, 7])
+        pop = Population(size=100, ploidy=3, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'triploid')
-        pop = population(size=100, ploidy=4, loci=[5, 7])
+        pop = Population(size=100, ploidy=4, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), 'tetraploid')
-        pop = population(size=100, ploidy=5, loci=[5, 7])
+        pop = Population(size=100, ploidy=5, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), '5-ploid')
-        self.assertRaises(exceptions.ValueError, population, size=[20, 20], ploidy=0)
+        self.assertRaises(exceptions.ValueError, Population, size=[20, 20], ploidy=0)
 
     def testChromBeginEnd(self):
         'Testing genoStruTrait::ChromBegin(chrom), chromEnd(chrom)'
@@ -161,10 +161,10 @@ class TestGenoStru(unittest.TestCase):
 
     def testChromName(self):
         'Testing genoStruTrait::chromByName(name), chromName(chrom), chromNames()'
-        pop = population(size=100, ploidy=2, loci=[5, 7])
+        pop = Population(size=100, ploidy=2, loci=[5, 7])
         self.assertEqual(pop.chromName(0), '')
         self.assertEqual(pop.chromName(1), '')
-        pop = population(size=100, ploidy=2, loci=[5, 7], chromNames=["c1", "c2"])
+        pop = Population(size=100, ploidy=2, loci=[5, 7], chromNames=["c1", "c2"])
         self.assertEqual(pop.chromName(0), 'c1')
         self.assertEqual(pop.chromName(1), 'c2')
         self.assertEqual(pop.chromNames(), ('c1', 'c2'))
@@ -174,13 +174,13 @@ class TestGenoStru(unittest.TestCase):
 
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
-        pop = population(size=100, ploidy=2, loci=[2, 3, 2, 4],
+        pop = Population(size=100, ploidy=2, loci=[2, 3, 2, 4],
         chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
         self.assertEqual(pop.chromType(0), AUTOSOME)
         self.assertEqual(pop.chromType(1), CHROMOSOME_X)
         self.assertEqual(pop.chromType(2), CHROMOSOME_Y)
         self.assertEqual(pop.chromType(3), CUSTOMIZED)
-        self.assertRaises(exceptions.ValueError, population, ploidy=4,
+        self.assertRaises(exceptions.ValueError, Population, ploidy=4,
             chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
 
     def testNumChrom(self):
@@ -207,7 +207,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.locusName(0), '')
         self.assertEqual(pop.locusName(1), '')
         self.assertEqual(pop.locusName(2), '')
-        pop = population(loci=[1, 2], lociNames=['la', 'lb', 'lc'])
+        pop = Population(loci=[1, 2], lociNames=['la', 'lb', 'lc'])
         self.assertEqual(pop.locusName(0), 'la')
         self.assertEqual(pop.locusName(1), 'lb')
         self.assertEqual(pop.locusName(2), 'lc')
@@ -244,7 +244,7 @@ class TestGenoStru(unittest.TestCase):
 
     def testAlleleName(self):
         'Testing genoStruTrait::AlleleName(allele), alleleNames()'
-        pop = population(size=[20, 80], ploidy=2, loci=[5, 7])
+        pop = Population(size=[20, 80], ploidy=2, loci=[5, 7])
         self.assertEqual(pop.alleleName(0), '0')
         self.assertEqual(pop.alleleName(1), '1')
         pop = self.getPop()
@@ -260,7 +260,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
             moduleInfo()['maxAllele']+1)
         # test locus-specific allele names
-        pop = population(size=[20, 80], ploidy=2, loci=[1, 2],
+        pop = Population(size=[20, 80], ploidy=2, loci=[1, 2],
             alleleNames = [['A1', 'A2'], ['B1', 'B2', 'B3'], ['C1', 'C2', 'C3', 'C4']])
         self.assertEqual(pop.alleleName(0), 'A1')
         self.assertEqual(pop.alleleName(1), 'A2')
@@ -278,7 +278,7 @@ class TestGenoStru(unittest.TestCase):
 
     def testInfoField(self):
         'Testing genoStruTrait::infoField(idx), infoFields(), infoIdx(name)'
-        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
+        pop = Population(10, infoFields=['age', 'fitness', 'trait1'])
         self.assertEqual(pop.infoField(0), 'age')
         self.assertEqual(pop.infoField(2), 'trait1')
         self.assertEqual(pop.infoIdx('age'), 0)

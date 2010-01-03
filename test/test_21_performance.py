@@ -31,11 +31,11 @@ class TestPerformance(unittest.TestCase):
     def TestGetinfo(self):
         '''Comparing two ways to access info fields '''
         # There are two ways to get infomation from a population
-        # From individual or from population as a whole
+        # From individual or from Population as a whole
         # Let us see which one is faster
         for N in [10000, 100000, 1000000]:
             print "N=%d" % N
-            pop = population(N, loci=[1], infoFields=['a', 'b'])
+            pop = Population(N, loci=[1], infoFields=['a', 'b'])
             c1 = time.clock()
             for rep in range(100):
                 testGetinfoFromInd(pop)
@@ -97,7 +97,7 @@ class TestPerformance(unittest.TestCase):
         p = 0.4
         for N in [10000, 100000, 1000000]:
             print "N=%d" % N
-            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -112,7 +112,7 @@ class TestPerformance(unittest.TestCase):
             #
             # with sel
             print "N=%d" % N
-            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -126,7 +126,7 @@ class TestPerformance(unittest.TestCase):
             c2 = time.clock()
             print "From ind (sel): %f " % (c2 - c1)
             # with migr and sel
-            pop = population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
+            pop = Population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -266,7 +266,7 @@ class TestPerformance(unittest.TestCase):
         p = 0.4
         for N in [10000, 100000, 1000000]:
             # with sel
-            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -279,7 +279,7 @@ class TestPerformance(unittest.TestCase):
         print
         for N in [10000, 100000, 1000000]:
             # with sel
-            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, binomialSelection())
             simu.evolve(
@@ -292,7 +292,7 @@ class TestPerformance(unittest.TestCase):
         print
         for N in [10000, 100000, 1000000]:
             # with sel
-            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             for i in range(200):
                 maPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
@@ -360,7 +360,7 @@ class TestPerformance(unittest.TestCase):
         for N in [10000, 100000, 1000000]:
             c1 = time.clock()
             for i in range(10):
-                pop = population(N, loci=[20,40])
+                pop = Population(N, loci=[20,40])
                 initByFreq(pop, [0.2, 0.8])
                 initByFreq(pop, [0.4, 0.6])
                 initByFreq(pop, [0.5, 0.5])
@@ -400,7 +400,7 @@ class TestPerformance(unittest.TestCase):
         p = 0.4
         for N in [10000]:
             print "N=%d" % N
-            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -412,7 +412,7 @@ class TestPerformance(unittest.TestCase):
             print "Random mating: %f " % (c2 - c1)
             #
             # with recombination
-            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -423,7 +423,7 @@ class TestPerformance(unittest.TestCase):
             c2 = time.clock()
             print "Low recombination: %f " % (c2 - c1)
             # with high recombination
-            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
@@ -560,7 +560,7 @@ class TestPerformance(unittest.TestCase):
         sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         for N in [40000, 400000]:
             print "N=%d" % N
-            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, binomialSelection())
             p = 0.4
@@ -572,7 +572,7 @@ class TestPerformance(unittest.TestCase):
             c2 = time.clock()
             print "From ind: %f " % (c2 - c1)
             print "Random mating"
-            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             p = 0.4
@@ -645,7 +645,7 @@ class TestPerformance(unittest.TestCase):
         # form 0
         c1 = time.clock()
         simu = Simulator(
-            population(size=[1000]*10, loci=[200]),
+            Population(size=[1000]*10, loci=[200]),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
@@ -665,7 +665,7 @@ class TestPerformance(unittest.TestCase):
         # form 1
         c1 = time.clock()
         simu = Simulator(
-            population(size=[1000]*10, loci=[200]),
+            Population(size=[1000]*10, loci=[200]),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
@@ -685,7 +685,7 @@ class TestPerformance(unittest.TestCase):
         # form 2
         c1 = time.clock()
         simu = Simulator(
-            population(size=[1000]*10, loci=[1]*200),
+            Population(size=[1000]*10, loci=[1]*200),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
@@ -703,7 +703,7 @@ class TestPerformance(unittest.TestCase):
         # form 1
         c1 = time.clock()
         simu = Simulator(
-            population(size=[1000]*10, loci=[200]*10),
+            Population(size=[1000]*10, loci=[200]*10),
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
@@ -738,7 +738,7 @@ class TestPerformance(unittest.TestCase):
     def TestSerialization(self):
         import Stat
         pop = loadPopulation('exp3_0_9.txt')
-        #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
+        #pop = Population(size=100000, loci=[10]*8, ancestralDepth=2)
         #initByFreq(pop, [.2, .8])
         #simu = Simulator(pop, RandomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
@@ -796,7 +796,7 @@ class TestPerformance(unittest.TestCase):
         '''Comparing the time for genotype and arrGenotype '''
         for N in [100, 1000, 10000]:
             print "N=%d" % N
-            pop = population(10000, loci=[N])
+            pop = Population(10000, loci=[N])
             c1 = time.clock()
             for ind in pop.individuals():
 				ind.setGenotype([1]*(pop.totNumLoci()*2))

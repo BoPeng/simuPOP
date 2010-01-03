@@ -26,7 +26,7 @@ except exceptions.ImportError:
 class TestPlotter(unittest.TestCase):
     def testDerivedArgs(self):
         'Testing class derivedARgs'
-        pop = population(0)
+        pop = Population(0)
         pop.dvars().gen = 100
         args = derivedArgs(
             defaultFuncs = ['plot', 'lines'],
@@ -86,7 +86,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]], mode=BY_PROBABILITY)
         stator = Stat(popSize=1)
@@ -106,7 +106,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -131,7 +131,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2],[.25,0]], mode=BY_PROBABILITY)
         stator = Stat(popSize=1)
@@ -155,7 +155,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=5)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -177,7 +177,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -202,7 +202,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
+            Population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
             rep=2)
         migr = Migrator(rate=[[0, .2],[.25, 0]],
             mode=BY_PROBABILITY)
@@ -227,7 +227,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -255,7 +255,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
+            Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=2)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -279,7 +279,7 @@ class TestPlotter(unittest.TestCase):
         if not hasRPy:
             return True
         simu = Simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
+            Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=3)
         migr = Migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=BY_PROBABILITY)
@@ -311,7 +311,7 @@ class TestPlotter(unittest.TestCase):
     def testScatterPlotter(self):
         'Testing scatterPlotter'
         import random
-        pop = population([100, 200], infoFields=['x', 'y'])
+        pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -331,7 +331,7 @@ class TestPlotter(unittest.TestCase):
     def testScatterPlotterSP(self):
         'Testing scatterPlotter with multiple virtual subpopulations'
         import random
-        pop = population([100, 200], infoFields=['x', 'y'])
+        pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -355,7 +355,7 @@ class TestPlotter(unittest.TestCase):
     def testScatterPlotterSubSet(self):
         'Testing scatterPlotter with partial individuals'
         import random
-        pop = population([100, 200], infoFields=['x', 'y'])
+        pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -382,7 +382,7 @@ class TestPlotter(unittest.TestCase):
     def testInfoPlotterBase(self):
         'Testing basic histogram using infoPlotter'
         import random
-        pop = population([500, 1000], infoFields=['x'])
+        pop = Population([500, 1000], infoFields=['x'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
@@ -399,7 +399,7 @@ class TestPlotter(unittest.TestCase):
     def testInfoPlotterFields(self):
         'Testing Stat plotter with multiple fields and subpopulations'
         import random
-        pop = population([500, 1000], infoFields=['x', 'y'])
+        pop = Population([500, 1000], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -428,7 +428,7 @@ class TestPlotter(unittest.TestCase):
     def testInfoPlotterQQplot(self):
         'Testing barplotter with multiple fields and subpopulations'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'])
+        pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -460,7 +460,7 @@ class TestPlotter(unittest.TestCase):
     def testInfoPlotterNoFunc(self):
         'Testing the Stat plotter when no function is specified'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'])
+        pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -490,7 +490,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterBase(self):
         'Testing the base boxplotter'
         import random
-        pop = population([500, 100], infoFields=['x'])
+        pop = Population([500, 100], infoFields=['x'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x')
         pop.evolve(
@@ -509,7 +509,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterFields(self):
         'Testing barplotter with multiple fields and subpopulations'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'])
+        pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -530,7 +530,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterFieldsAndSubPop(self):
         'Testing boxPlotter with both fields and subpopulation'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'],
+        pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
@@ -558,7 +558,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterByField(self):
         'Testing boxPlotter separated by information field'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'],
+        pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
@@ -583,7 +583,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterBySubPop(self):
         'Testing boxPlotter separated by subpopulation'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -607,7 +607,7 @@ class TestPlotter(unittest.TestCase):
     def testBoxPlotterByFieldSubPop(self):
         'Testing boxPlotter separated by both field and subpopulation'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)

@@ -19,14 +19,14 @@ class TestTagger(unittest.TestCase):
     def testParentsTagger(self):
         'Testing parents tagger.'
         simu = Simulator(
-            population(size=[50,150], ploidy=2, loci=[2,4],
+            Population(size=[50,150], ploidy=2, loci=[2,4],
                     infoFields=['father_idx', 'mother_idx']))
         simu.evolve(
             initOps = [InitSex()],
             matingScheme = RandomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 1
         )
-        pop = simu.population(0)
+        pop = simu.Population(0)
         # check if all siblings have the same parents
         for sp in range(pop.numSubPop()):
             for i in range(pop.subPopSize(sp)/2):
@@ -41,7 +41,7 @@ class TestTagger(unittest.TestCase):
         # this operator pass tag from one or both parents to offspring
         # the game is not:
         # who is the offspring of one parent?
-        pop = population(size=[50,150], ploidy=2, loci=[2,4],
+        pop = Population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         pop.individual(0).setInfo(1, 'paternal_tag')
         pop.individual(50).setInfo(2, 'paternal_tag')
@@ -51,7 +51,7 @@ class TestTagger(unittest.TestCase):
             initOps = [InitSex()],
             matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1)
-        pop = simu.population(0)
+        pop = simu.Population(0)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
@@ -59,11 +59,11 @@ class TestTagger(unittest.TestCase):
         for i in range(pop.subPopSize(1)):
             self.assertNotEqual(pop.individual(i,1).info('paternal_tag'), 1)
         # from this test, we can see that genetic drift
-        # can easily remove a signal (tag) from population.
+        # can easily remove a signal (tag) from Population.
 
     def testInheritTaggerToFile(self):
         'Testing inherit tagger that record indexes to a file'
-        pop = population(size=[50,150], ploidy=2, loci=[2,4],
+        pop = Population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         for ind in pop.individuals(0):
             ind.setInfo(1, 'paternal_tag')
@@ -87,7 +87,7 @@ class TestTagger(unittest.TestCase):
  
     def testPyTagger(self):
         'Testing python tagger (pass trait from parents to offspring)'
-        pop = population(size=[50,150], ploidy=2, loci=[2,4],
+        pop = Population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['trait1', 'trait2'])
         pop.setIndInfo([1], 'trait1')
         pop.setIndInfo([2], 'trait2')
@@ -101,7 +101,7 @@ class TestTagger(unittest.TestCase):
                 PyTagger(func=myfunc),
             ]),
             gen = 4)
-        pop = simu.population(0)
+        pop = simu.Population(0)
         for ind in pop.individuals():
             # 1 + 1 = 2, 2 + 2 = 4, ...
             self.assertEqual(ind.info('trait1'), 16)
@@ -111,7 +111,7 @@ class TestTagger(unittest.TestCase):
 
     def TestPedigree(self):
         'Testing the handling of Pedigrees (FIXME)'
-        pop = population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
+        pop = Population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
         initByFreq(pop, [0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]

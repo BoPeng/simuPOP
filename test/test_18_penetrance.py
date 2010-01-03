@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions
 class TestPenetrance(unittest.TestCase):
 
     def setUp(self):
-        self.pop = population(size=[500,100,1000],
+        self.pop = Population(size=[500,100,1000],
             ploidy=2, loci = [1])
         self.pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -50,7 +50,7 @@ class TestPenetrance(unittest.TestCase):
 
     def testNoInfoField(self):
         'Testing info field for penetrance opeartors'
-        pop = population(size=[500,100,1000],
+        pop = Population(size=[500,100,1000],
             ploidy=2, loci = [1], infoFields=['penetrance'])
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -89,7 +89,7 @@ class TestPenetrance(unittest.TestCase):
 
     def testMultiLocusmaPenetrance(self):
         'Testing the multi-locus version of MaPenetrance'
-        pop = population(1000, loci=[3,5], infoFields=['penetrance'])
+        pop = Population(1000, loci=[3,5], infoFields=['penetrance'])
         initByFreq(pop, [.3, .7])
         #
         maPenetrance(pop, loci=[3,5], wildtype=0,
@@ -98,7 +98,7 @@ class TestPenetrance(unittest.TestCase):
 
     def testMlPenetrance(self):
         'Testing multi-locus penetrance'
-        pop = population(1000, loci=[3,5], infoFields=['penetrance'])
+        pop = Population(1000, loci=[3,5], infoFields=['penetrance'])
         initByFreq(pop, [.3, .7])
         #
         mlPenetrance(pop, [
