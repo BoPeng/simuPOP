@@ -31,7 +31,7 @@ class TestOperator(unittest.TestCase):
         'Testing active generation specifications'
         def getActiveGens(endGen=20, *args, **kwargs):
             d = opRecorder(*args, **kwargs)
-            simu = simulator(population())
+            simu = Simulator(population())
             simu.evolve(postOps=d, gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10),
@@ -54,7 +54,7 @@ class TestOperator(unittest.TestCase):
 
     def testReplicate(self):
         'Testing replicate related functions'
-        simu = simulator(population(), rep=3)
+        simu = Simulator(population(), rep=3)
         simu.evolve(
             postOps = opRecorder(reps=-1),
             matingScheme=CloneMating(),
@@ -78,7 +78,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutput(self):
         'Testing output specifications'
-        simu = simulator( population(), rep=5)
+        simu = Simulator( population(), rep=5)
         simu.evolve(postOps = PyOutput("a", output=">a.txt"),
             matingScheme=CloneMating(),
             gen=10)
@@ -117,7 +117,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutputExpr(self):
         'Testing the usage of output expression'
-        simu = simulator( population(), rep=5)
+        simu = Simulator( population(), rep=5)
         # each replicate
         simu.evolve(postOps = PyOutput("a", output="!'rep%d.txt'%rep"),
             matingScheme=CloneMating(),
@@ -163,7 +163,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutputFunc(self):
         '''Testing output to a function'''
-        simu = simulator(population(), rep=5)
+        simu = Simulator(population(), rep=5)
         def func1(msg):
             self.assertEqual(msg, 'func1')
         def func2(msg):

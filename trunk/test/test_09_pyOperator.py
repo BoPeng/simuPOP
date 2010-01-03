@@ -71,7 +71,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testTerminator(self):
         'Testing hybrid terminator'
-        simu = simulator(self.pop)
+        simu = Simulator(self.pop)
         simu.evolve(initOps = [InitSex()],
             postOps = PyOperator(self.myFuncAsTerminator),
             matingScheme=RandomMating(),
@@ -103,7 +103,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testDynaMutator(self):
         'Testing dynamic mutator (an example)'
-        simu = simulator(self.pop)
+        simu = Simulator(self.pop)
         simu.evolve(
             initOps = [
                 InitByFreq( [.6, .4], loci=[0,2,4]),

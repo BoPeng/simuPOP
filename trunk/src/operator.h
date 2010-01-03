@@ -178,7 +178,7 @@ public:
 	/**
 	   Determine if this operator is active under the conditions such as the current
 	   replicate, current generation, ending generation etc.
-	   \note This function will be called by simulators before applying.
+	   \note This function will be called by Simulators before applying.
 	 */
 	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false);
 
@@ -625,11 +625,11 @@ private:
 
 
 /** This operator evaluates an expression in a population's local namespace
- *  and terminate the evolution of this population, or the whole simulator,
+ *  and terminate the evolution of this population, or the whole Simulator,
  *  if the return value of this expression is \c True. Termination caused by
  *  an operator will stop the execution of all operators after it. The
  *  generation at which the population is terminated will be counted in the
- *  <em>evolved generations</em> (return value from <tt>simulator::evolve</tt>)
+ *  <em>evolved generations</em> (return value from <tt>Simulator::evolve</tt>)
  *  if termination happens after mating.
  */
 class TerminateIf : public BaseOperator

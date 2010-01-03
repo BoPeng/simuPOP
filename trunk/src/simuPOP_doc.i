@@ -255,7 +255,7 @@ Details:
     be applied during mating so it ignores the stage parameter.  An
     operator can be applied to all or part of the generations during
     the evolution of a simulator. At the beginning of an evolution, a
-    simulator is usually at the beginning of generation 0. If it
+    Simulator is usually at the beginning of generation 0. If it
     evolves 10 generations, it evolves generations 0, 1, ,,,., and 9
     (10 generations) and stops at the begging of generation 10. A
     negative generation number a has generation number 10 + a, with -1
@@ -666,7 +666,7 @@ Details:
     can react to different fitness schemes when they are used in a
     heterogeneous mating scheme.
     *   You can apply a selector to the offspring generation using the
-    postOps parameter of simulator.evolve, these fitness values will
+    postOps parameter of Simulator.evolve, these fitness values will
     be used when the offspring generation becomes parental generation
     in the next generation. Alternatively, a selector can be used as a
     during mating operator. In this case, it caculates fitness value
@@ -1445,7 +1445,7 @@ Details:
     properties such as number of chromosomes, number and position of
     loci, names of markers, chromosomes, and information fields. These
     properties are stored in this GenoStruTrait class and are
-    accessible from individual, population, and simulator classes.
+    accessible from individual, population, and Simulator classes.
     Currently, a genotypic structure consists of
     *   Ploidy, namely the number of homologous sets of chromosomes,
     of a population. HAPLODIPLOID population is also supported.
@@ -2323,7 +2323,7 @@ Details:
     assign ID to each offspring. However, if it is applied directly to
     a population, it will assign unique IDs to all individuals in this
     population. This property is usually used in the preOps parameter
-    of function simulator.evolve to assign initial ID to a population.
+    of function Simulator.evolve to assign initial ID to a population.
 
 "; 
 
@@ -8320,7 +8320,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::simulator "
+%feature("docstring") simuPOP::Simulator "
 
 Details:
 
@@ -8328,19 +8328,19 @@ Details:
     replicates of a population forward in time, subject to various
     operators. Populations in a simulator are created as identical
     copies of a population and will become different after evolution.
-    A number of functions are provided to access simulator properties,
+    A number of functions are provided to access Simulator properties,
     access populations and their variables, copy, save and load a
-    simulator.  The most important member function of a simulator is
+    Simulator.  The most important member function of a simulator is
     evolve, which evolves populations forward in time, subject to
     various operators.
 
 "; 
 
-%feature("docstring") simuPOP::simulator::simulator "
+%feature("docstring") simuPOP::Simulator::Simulator "
 
 Usage:
 
-    simulator(pops, rep=1, steal=True)
+    Simulator(pops, rep=1, steal=True)
 
 Details:
 
@@ -8354,17 +8354,17 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::~simulator "
+%feature("docstring") simuPOP::Simulator::~Simulator "
 
 Usage:
 
-    x.~simulator()
+    x.~Simulator()
 
 "; 
 
-%ignore simuPOP::simulator::simulator(const simulator &rhs);
+%ignore simuPOP::Simulator::Simulator(const Simulator &rhs);
 
-%feature("docstring") simuPOP::simulator::clone "
+%feature("docstring") simuPOP::Simulator::clone "
 
 Usage:
 
@@ -8374,11 +8374,11 @@ Details:
 
     Clone a simulator, along with all its populations. Note that
     Python assign statement simu1 = simu only creates a symbolic link
-    to an existing simulator.
+    to an existing Simulator.
 
 "; 
 
-%feature("docstring") simuPOP::simulator::numRep "
+%feature("docstring") simuPOP::Simulator::numRep "
 
 Usage:
 
@@ -8390,7 +8390,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::pop "
+%feature("docstring") simuPOP::Simulator::pop "
 
 Usage:
 
@@ -8402,12 +8402,12 @@ Details:
     reference will become invalid once the simulator starts evolving
     or becomes invalid (removed). Modifying the returned object is
     discouraged because it will change the population within the
-    simulator. If an independent copy of the population is needed, use
+    Simulator. If an independent copy of the population is needed, use
     simu.population(rep). clone().
 
 "; 
 
-%feature("docstring") simuPOP::simulator::add "
+%feature("docstring") simuPOP::Simulator::add "
 
 Usage:
 
@@ -8415,7 +8415,7 @@ Usage:
 
 Details:
 
-    Add a populationpop to the end of an existing simulator. This
+    Add a populationpop to the end of an existing Simulator. This
     function by default moves pop to the simulator, leaving an empty
     population for passed population object. If steal is set to False,
     the population will be copied to the simulator, and thus
@@ -8423,7 +8423,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::extract "
+%feature("docstring") simuPOP::Simulator::extract "
 
 Usage:
 
@@ -8436,7 +8436,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::populations "
+%feature("docstring") simuPOP::Simulator::populations "
 
 Usage:
 
@@ -8449,9 +8449,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::simulator::describe(bool format=true);
+%ignore simuPOP::Simulator::describe(bool format=true);
 
-%feature("docstring") simuPOP::simulator::evolve "
+%feature("docstring") simuPOP::Simulator::evolve "
 
 Usage:
 
@@ -8487,7 +8487,7 @@ Details:
     operator fails.  Parameter gen can be set to a positive number,
     which is the number of generations to evolve. Because a simulator
     always starts at the beginning of a generation g (e.g. 0), a
-    simulator will stop at the beginning (instead of the end) of
+    Simulator will stop at the beginning (instead of the end) of
     generation g + gen (e.g. gen). If gen is negative (default), the
     evolution will continue indefinitely, until all replicates are
     stopped by operators that return False at some point (these
@@ -8498,9 +8498,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::simulator::apply(const opList &ops);
+%ignore simuPOP::Simulator::apply(const opList &ops);
 
-%feature("docstring") simuPOP::simulator::vars "
+%feature("docstring") simuPOP::Simulator::vars "
 
 Usage:
 
@@ -8513,7 +8513,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::__cmp__ "
+%feature("docstring") simuPOP::Simulator::__cmp__ "
 
 Description:
 
@@ -9709,11 +9709,11 @@ Details:
 
     This operator evaluates an expression in a population's local
     namespace and terminate the evolution of this population, or the
-    whole simulator, if the return value of this expression is True.
+    whole Simulator, if the return value of this expression is True.
     Termination caused by an operator will stop the execution of all
     operators after it. The generation at which the population is
     terminated will be counted in the evolved generations (return
-    value from simulator::evolve) if termination happens after mating.
+    value from Simulator::evolve) if termination happens after mating.
 
 "; 
 
@@ -9732,7 +9732,7 @@ Details:
     applied to this population. If the return value of condition is
     True, the evolution of the population will be terminated. If
     stopAll is set to True, the evolution of all replicates of the
-    simulator will be terminated. If this operator is allowed to write
+    Simulator will be terminated. If this operator is allowed to write
     to an output (default to \"\"), the generation number, proceeded
     with an optional message.
 
@@ -10109,7 +10109,7 @@ Usage:
 
 Details:
 
-    This function takes the same parameters as simulator.evolve and
+    This function takes the same parameters as Simulator.evolve and
     output a description of how an evolutionary process will be
     executed, basically by calling the describe() function of all
     operators. It is recommended that you call this function if you
@@ -10203,7 +10203,7 @@ Details:
 
     Output files specified by '>' are closed immediately after they
     are written. Those specified by '>>' and '>>>' are closed by a
-    simulator after simulator.evolve(). However, these files will be
+    Simulator after Simulator.evolve(). However, these files will be
     kept open if the operators are applied directly to a population
     using the operators' function form. In this case, function
     closeOutput can be used to close a specific file output, and close
@@ -10311,10 +10311,10 @@ Description:
     beginning of each life cycle), \\e postOps (applied to the
     offspring population at the end of each life cycle) and \\e
     finalOps (applied at the end of evolution). More specifically,
-    this function creates a \\e simulator using the current population,
+    this function creates a \\e Simulator using the current population,
     call its \\e evolve function using passed parameters and then
     replace the current population with the evolved population. Please
-    refer to function \\c simulator.evolve for more details about each
+    refer to function \\c Simulator.evolve for more details about each
     parameter.
 
 Usage:
@@ -10378,7 +10378,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::dvars "
+%feature("docstring") simuPOP::Simulator::dvars "
 
 Usage:
 
@@ -10406,10 +10406,10 @@ Details:
     beginning of each life cycle), \\e postOps (applied to the
     offspring population at the end of each life cycle) and \\e
     finalOps (applied at the end of evolution). More specifically,
-    this function creates a \\e simulator using the current population,
+    this function creates a \\e Simulator using the current population,
     call its \\e evolve function using passed parameters and then
     replace the current population with the evolved population. Please
-    refer to function \\c simulator.evolve for more details about each
+    refer to function \\c Simulator.evolve for more details about each
     parameter.
 
 "; 

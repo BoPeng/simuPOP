@@ -124,7 +124,7 @@ const char * g_debugCodes[] = {
 	"DBG_UTILITY",              // utility classes and modules
 	"DBG_POPULATION",           // debug information related to population
 	"DBG_OPERATOR",             // debug information related to operators in general
-	"DBG_SIMULATOR",            // debug information related to simulators
+	"DBG_SIMULATOR",            // debug information related to Simulators
 	"DBG_INDIVIDUAL",           // debug information related to individuals
 	"DBG_MUTATOR",              // debug information related to mutators
 	"DBG_TRANSMITTER",          // debug information related to genotype transmitters

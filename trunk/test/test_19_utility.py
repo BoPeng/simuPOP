@@ -68,7 +68,7 @@ class TestUtility(unittest.TestCase):
 
     def interactiveTestPauseAtGen(self):
         'Testing resume to simulation'
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
@@ -78,7 +78,7 @@ class TestUtility(unittest.TestCase):
 
     def interactiveTestExitToShell(self):
         'Testing exit to a shell'
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = Simulator( population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
@@ -219,7 +219,7 @@ class TestUtility(unittest.TestCase):
         'Testing getting large Pedigree, for simuUtils.ascertainPedigree'
         import simuUtil
         pop = population(100, ancestralDepth=2, infoFields=['father_idx', 'mother_idx'])
-        simu = simulator(pop, RandomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
+        simu = Simulator(pop, RandomMating(numOffspring=0.3, mode=MATE_GeometricDistribution))
         simu.evolve(duringOps=[ParentsTagger()], end=5)
         pop = simu.population(0)
         #
@@ -557,7 +557,7 @@ class TestUtility(unittest.TestCase):
         #   raise ValueError('fail in test number 4 of testSimuBackward.')
         
     def testSimuCase5(self):
-        'Testing backward trajectory simulator'
+        'Testing backward trajectory Simulator'
         # 5: test given variable number of subpopulations, if allele frequencies would be
         # recorded in the correct form. nLoci = 3.
         # In a backward simulation, 3 subPops merge when gen = endGen - 5 in backward sense.
@@ -596,7 +596,7 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(traj1.freq(296, 0)), 3)
 
     def testSimuCase6(self):
-        'Testing backward trajectory simulator'
+        'Testing backward trajectory Simulator'
         # 6: given a normal set of parameters, plot a backward trajectory and
         # another forward trajectory for the case of single locus without
         # subpopulations.
@@ -607,7 +607,7 @@ class TestUtility(unittest.TestCase):
         #traj1.plot()
         
     def testSimuCase7(self):
-        'Testing backward trajectory simulator'
+        'Testing backward trajectory Simulator'
         # 7: given a normal set of parameters, considering changable subpopulation
         # sizes with mulitiple loci, plot a backward trajectory and another
         # forward trajectory. nSubPops = 3, nLoci = 2.

@@ -699,7 +699,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(100, loci=1), rep=5)
+simu = sim.Simulator(sim.population(100, loci=1), rep=5)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -779,7 +779,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(100, loci=[20]), 5)
+simu = sim.Simulator(sim.population(100, loci=[20]), 5)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -806,7 +806,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(size=1000, loci=2), rep=3)
+simu = sim.Simulator(sim.population(size=1000, loci=2), rep=3)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -1467,7 +1467,7 @@ marks.count(0.)
 marks.count(1.)
 marks.count(2.)
 #end_file
-#begin_file log/simulator.py
+#begin_file log/Simulator.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1478,7 +1478,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(100, loci=10)
 # five copies of the same population
-simu = sim.simulator(pop, rep=5)
+simu = sim.Simulator(pop, rep=5)
 simu.numRep()
 # evolve for ten generations and save the populations
 simu.evolve(
@@ -1490,8 +1490,8 @@ simu.evolve(
     finalOps=sim.SavePopulation('!"pop%d.pop"%rep'),
     gen=10
 )
-# load the population and create another simulator
-simu = sim.simulator([sim.loadPopulation('pop%d.pop' % x) for x in range(5)])
+# load the population and create another Simulator
+simu = sim.Simulator([sim.loadPopulation('pop%d.pop' % x) for x in range(5)])
 # continue to evolve
 simu.evolve(
     matingScheme=sim.RandomMating(),
@@ -1524,7 +1524,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(50, loci=[10], ploidy=1),
+simu = sim.Simulator(sim.population(50, loci=[10], ploidy=1),
     rep=3)
 simu.evolve(gen = 5)
 simu.dvars(0).gen
@@ -1648,7 +1648,7 @@ def mutator(pop, param):
     return True
 
 # The sim.populations start with no loci at all.
-simu = sim.simulator(sim.population(1000, loci=[]), rep=3)
+simu = sim.Simulator(sim.population(1000, loci=[]), rep=3)
 simu.evolve(
     initOps=sim.InitSex(),
     matingScheme=sim.RandomMating(),
@@ -1858,7 +1858,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(100, loci=2),
+simu = sim.Simulator(sim.population(100, loci=2),
     rep=5)
 simu.evolve(
     initOps=[
@@ -1918,7 +1918,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(
+simu = sim.Simulator(
     sim.population(size=1000, loci=1),
     rep=4)
 simu.evolve(
@@ -1954,7 +1954,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(
+simu = sim.Simulator(
     sim.population(size=100, loci=1),
     rep=10)
 simu.evolve(
@@ -1981,7 +1981,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(100), rep=10)
+simu = sim.Simulator(sim.population(100), rep=10)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -2002,7 +2002,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(10000, loci=[100]*5), rep=2)
+simu = sim.Simulator(sim.population(10000, loci=[100]*5), rep=2)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -2026,7 +2026,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(100, loci=1),
+simu = sim.Simulator(sim.population(100, loci=1),
     rep=2)
 simu.evolve(
     initOps=[
@@ -2352,7 +2352,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(size=[1000], loci=[100]),
+simu = sim.Simulator(sim.population(size=[1000], loci=[100]),
     rep=2)
 simu.evolve(
     initOps=[
@@ -2405,7 +2405,7 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-simu = sim.simulator(sim.population(size=[1000], loci=[100]),
+simu = sim.Simulator(sim.population(size=[1000], loci=[100]),
     rep=2)
 simu.evolve(
     initOps=[
@@ -3191,7 +3191,7 @@ import simuPOP as sim
 sim.getRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import migrIslandRates
-simu = sim.simulator(sim.population([5000]*3, loci=10, infoFields='migrate_to'),
+simu = sim.Simulator(sim.population([5000]*3, loci=10, infoFields='migrate_to'),
     rep=2)
 simu.evolve(
     initOps=[
@@ -3608,7 +3608,7 @@ import simuPOP as sim
 sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(4000, loci=1, infoFields='fitness')
-simu = sim.simulator(pop, rep=3)
+simu = sim.Simulator(pop, rep=3)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -3636,7 +3636,7 @@ import simuPOP as sim
 sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(10000, loci=1)
-simu = sim.simulator(pop, rep=3)
+simu = sim.Simulator(pop, rep=3)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -4019,7 +4019,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 from simuPOP.plotter import varPlotter
 pop = sim.population(size=1000, loci=2)
-simu = sim.simulator(pop, rep=3)
+simu = sim.Simulator(pop, rep=3)
 simu.evolve(
     initOps=[
         sim.InitSex(),
@@ -4050,7 +4050,7 @@ sim.getRNG().setSeed(12345)
 import simuPOP as sim
 from simuPOP.plotter import varPlotter
 pop = sim.population(size=1000, loci=1*4)
-simu = sim.simulator(pop, rep=3)
+simu = sim.Simulator(pop, rep=3)
 simu.evolve(
     initOps=[sim.InitSex()] +
         [sim.InitByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
@@ -4081,7 +4081,7 @@ sim.getRNG().setSeed(12345)
 import simuPOP as sim
 from simuPOP.plotter import varPlotter
 pop = sim.population(size=1000, loci=1*4)
-simu = sim.simulator(pop, rep=3)
+simu = sim.Simulator(pop, rep=3)
 def drawFrame(r, dim=None, **kwargs):
     '''Draw a frame around subplot dim. Parameter r is defined in the rpy
     module and is used for calling R functions. Parameter dim is the dimension
@@ -4971,7 +4971,7 @@ debugOutput = open('debug.txt', 'w')
 old_stderr = sys.stderr
 sys.stderr = debugOutput
 # start simulation
-simu = sim.simulator(sim.population(100, loci=1), rep=5)
+simu = sim.Simulator(sim.population(100, loci=1), rep=5)
 simu.evolve(
     initOps=[
         sim.InitSex(),

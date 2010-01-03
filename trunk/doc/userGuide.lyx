@@ -199,7 +199,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
 \begin_layout Abstract
 simuPOP is provided as a number of Python modules, which consist of a large
  number of Python objects and functions, including population, mating schemes,
- operators (objects that manipulate populations) and simulators to coordinate
+ operators (objects that manipulate populations) and Simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
  pieces together and form a simulation.
@@ -327,7 +327,7 @@ general-purpose individual-based forward-time population genetics simulation
 \begin_layout Itemize
 simuPOP is a 
 \series bold
-population genetics simulator
+population genetics Simulator
 \series default
  that simulates the evolution of populations.
  It uses a discrete generation model although overlapping generations could
@@ -359,7 +359,7 @@ simuPOP is a
 \series bold
 general-purpose
 \series default
- simulator that is designed to simulate arbitrary evolutionary processes.
+ Simulator that is designed to simulate arbitrary evolutionary processes.
  In contrast to competing applications that use command-line options or
  configuration files to direct the execution of a limited number of predefined
  evolutionary scenarios, users of simuPOP’s scripting interface could make
@@ -374,7 +374,7 @@ general-purpose
 \begin_layout Standard
 simuPOP is provided as a number of Python modules, which consist of a large
  number of Python objects and functions, including population, mating schemes,
- operators (objects that manipulate populations) and simulators to coordinate
+ operators (objects that manipulate populations) and Simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
  pieces together and form a simulation.
@@ -1855,7 +1855,7 @@ pop = population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-simu = simulator(pop, RandomMating())
+simu = Simulator(pop, RandomMating())
 \end_layout
 
 \end_inset
@@ -1880,7 +1880,7 @@ pop = simuPOP.population(size=100, loci=[5])
 
 \begin_layout Plain Layout
 
-simu = simuPOP.simulator(pop, simuPOP.RandomMating())
+simu = simuPOP.Simulator(pop, simuPOP.RandomMating())
 \end_layout
 
 \end_inset
@@ -2109,7 +2109,7 @@ def func():
 
 \begin_layout Plain Layout
 
-    simu = simulator(population(10), RandomMating(), rep=5)
+    simu = Simulator(population(10), RandomMating(), rep=5)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2180,7 +2180,7 @@ return simu.population(0).clone()
 \end_inset
 
 although in this specific case, extracting the first population from the
- simulator using the 
+ Simulator using the 
 \family typewriter
 extract
 \family default
@@ -2210,7 +2210,7 @@ clone()
 \family default
  function exists for all simuPOP classes (objects) such as 
 \emph on
-simulator
+Simulator
 \emph default
 , 
 \emph on
@@ -2428,7 +2428,7 @@ population.individuals([subPop])
  in a (virtual) subpoulation.
  
 \family typewriter
-simulator.populations()
+Simulator.populations()
 \family default
  can be used to iterate through all populations in a simulator.
  Example 
@@ -5152,7 +5152,7 @@ at
 at
 \family default
  is specified.
- It is worth noting that, if the simulator has an ending generation, negative
+ It is worth noting that, if the simulator.has an ending generation, negative
  generations numbers are allowed.
  They are counted backward from the ending generation.
 \end_layout
@@ -5298,7 +5298,7 @@ Applicable populations and (virtual) subpopulations
 \end_layout
 
 \begin_layout Standard
-A simulator can evolve multiple replicates of a population simultaneously.
+A Simulator can evolve multiple replicates of a population simultaneously.
  Different operators can be applied to different replicates of this population.
  This allows side by side comparison between simulations.
 \end_layout
@@ -6427,7 +6427,7 @@ Whereas output files specified by
  are not closed after the operator is applied to a population.
  This is not a problem when operators are used in a simulator because 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  closes all files opened by operators, but can cause trouble when the operator
  is applied directly to a population.
@@ -7945,7 +7945,7 @@ Add, access and remove populations from a simulator
 \end_layout
 
 \begin_layout Standard
-A simulator could be created by one or more replicates of a list of populations.
+A Simulator could be created by one or more replicates of a list of populations.
  For example, you could create a simulator from five replicates of a population
  using 
 \begin_inset listings
@@ -7954,7 +7954,7 @@ status open
 
 \begin_layout Plain Layout
 
-simulator(pop, rep=5)
+Simulator(pop, rep=5)
 \end_layout
 
 \end_inset
@@ -7966,7 +7966,7 @@ status open
 
 \begin_layout Plain Layout
 
-simulator([pop, pop1, pop2])
+Simulator([pop, pop1, pop2])
 \end_layout
 
 \end_inset
@@ -7992,11 +7992,11 @@ False
 \begin_layout Standard
 Populations in a simulator can be added or removed using functions 
 \family typewriter
-simulator.add()
+Simulator.add()
 \family default
  and 
 \family typewriter
-simulator.extract(idx)
+Simulator.extract(idx)
 \family default
 .
  The
@@ -8011,11 +8011,11 @@ simulator.extract(idx)
 When a simulator is created, you can access populations in this simulator
  using function 
 \family typewriter
-simulator.population(idx)
+Simulator.population(idx)
 \family default
  or iterate through all populations using function 
 \family typewriter
-simulator.populations()
+Simulator.populations()
 \family default
 .
  These functions return references to the populations so that you can access
@@ -8030,7 +8030,7 @@ simulator.populations()
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "simulator"
+reference "Simulator"
 
 \end_inset
 
@@ -8041,8 +8041,8 @@ reference "simulator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simulator.log"
-lstparams "caption={Create a simulator and access populations},label={simulator}"
+filename "log/Simulator.log"
+lstparams "caption={Create a simulator and access populations},label={Simulator}"
 
 \end_inset
 
@@ -8054,7 +8054,7 @@ Number of generations to evolve
 \end_layout
 
 \begin_layout Standard
-A simulator usually evolves a specific number of generations according to
+A Simulator usually evolves a specific number of generations according to
  parameter 
 \family typewriter
 gen
@@ -8146,7 +8146,7 @@ gen
 \family default
 .You can access these numbers from a simulator using function 
 \family typewriter
-simulator.dvars(idx)
+Simulator.dvars(idx)
 \family default
  or from a population using function 
 \family typewriter
@@ -8184,7 +8184,7 @@ initOps
 \family default
  of function 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  will be applied to the initial population before evolution, subject to
  replicate applicability restraint specified by parameter 
@@ -8201,7 +8201,7 @@ preOps
 \family default
  of function 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  will be applied to the parental population at each generation, subject
  to replicate and generation applicability restraint specified by parameters
@@ -8263,7 +8263,7 @@ reps
 \begin_layout Itemize
 Operators specified in parameter postOps of function 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  will be applied to the offspring population at each generation, subject
  to replicate and generation applicability restraint specified by parameters
@@ -8297,7 +8297,7 @@ finalOps
 \family default
  of function 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  will be applied to the final population after evolution, subject to replicate
  applicability restraint specified by parameter 
@@ -8375,7 +8375,7 @@ describe()
 .
  This function takes the same set of parameters as 
 \family typewriter
-simulator.evolve()
+Simulator.evolve()
 \family default
  and returns a description of the evolution process, which might help you
  identify misuse of operators.
@@ -15174,7 +15174,7 @@ preOps
 \family default
  parameter of function 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  to assign initial ID to a population.
  For example, three 
@@ -15479,7 +15479,7 @@ ops
 \family default
  parameter of the 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  function will be applied to populations during evolution.
  The first operator calculates allele frequency at the first locus and store
@@ -18860,7 +18860,7 @@ key "Peng2007a"
 \end_inset
 
  for a detailed discussion about the theoretical requirements of a valid
- trajectory simulator.
+ trajectory Simulator.
 \end_layout
 
 \begin_layout Standard
@@ -18935,7 +18935,7 @@ fitness=[1, 1.001, 1.003, 1, 1, 1.002]
 \end_inset
 
  loci.
- This trajectory simulator also accepts generation-specific fitness values
+ This trajectory Simulator also accepts generation-specific fitness values
  by accepting a function that returns fitness values at each generation.
 \end_layout
 
@@ -23711,7 +23711,7 @@ MendelianGenoTransmitter
  It will be (wastefully) applied if the new during-mating operators are
  used in the 
 \family typewriter
-simulator.evolve
+Simulator.evolve
 \family default
  function.
 \end_layout

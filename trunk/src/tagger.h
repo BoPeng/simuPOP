@@ -48,7 +48,7 @@ namespace simuPOP {
  *  An \c IdTagger is usually used during-mating to assign ID to each offspring.
  *  However, if it is applied directly to a population, it will assign unique
  *  IDs to all individuals in this population. This property is usually used
- *  in the \c preOps parameter of function \c simulator.evolve to assign
+ *  in the \c preOps parameter of function \c Simulator.evolve to assign
  *  initial ID to a population.
  *  <funcForm>tagID</funcForm>
  */
