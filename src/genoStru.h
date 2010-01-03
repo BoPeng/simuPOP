@@ -111,7 +111,7 @@ public:
 
 
 	/// CPPONLY
-	// population::mergePopulationByLoci needs to hanle this
+	// Population::mergePopulationByLoci needs to hanle this
 	double locusPos(UINT locus) const
 	{
 		return m_lociPos[locus];
@@ -119,7 +119,7 @@ public:
 
 
 	/// CPPONLY
-	// population::mergePopulationByLoci needs to hanle this
+	// Population::mergePopulationByLoci needs to hanle this
 	const size_t chromIndex(UINT ch) const
 	{
 		return m_chromIndex[ch];
@@ -253,11 +253,11 @@ namespace simuPOP {
  *  number of chromosomes, number and position of loci, names of markers,
  *  chromosomes, and information fields. These properties are stored in this
  *  \c GenoStruTrait class and are accessible from \c individual,
- *  \c population, and \c Simulator classes. Currently, a genotypic structure
+ *  \c Population, and \c Simulator classes. Currently, a genotypic structure
  *  consists of
  *
  *  \li Ploidy, namely the number of homologous sets of chromosomes, of a
- *      population. HAPLODIPLOID population is also supported.
+ *      Population. HAPLODIPLOID Population is also supported.
  *  \li Number of chromosomes and number of loci on each chromosome.
  *  \li Positions of loci, which determine the relative distance between loci
  *      on the same chromosome. No unit is assumed so these positions can be
@@ -278,7 +278,7 @@ class GenoStruTrait
 {
 public:
 	/**
-	 * A \c GenoStruTrait object is created with the creation of a \c population
+	 * A \c GenoStruTrait object is created with the creation of a \c Population
 	 * so it cannot be initialized directly.
 	 */
 	GenoStruTrait() : m_genoStruIdx(MaxTraitIndex)
@@ -391,7 +391,7 @@ public:
 
 
 	/** return the number of homologous sets of chromosomes, specified by the
-	 *  \e ploidy parameter of the \c population function. Return 2 for a
+	 *  \e ploidy parameter of the \c Population function. Return 2 for a
 	 *  haplodiploid population because two sets of chromosomes are stored
 	 *  for both males and females in such a population.
 	 *  <group>1-ploidy</group>
@@ -518,7 +518,7 @@ public:
 
 
 	/** return the position of locus \e locus specified by the \e lociPos
-	 *  parameter of the \c population function.
+	 *  parameter of the \c Population function.
 	 *  <group>3-locus</group>
 	 */
 	double locusPos(UINT locus) const
@@ -532,7 +532,7 @@ public:
 
 
 	/** return the positions of all loci, specified by the \e lociPos prameter
-	 *  of the \c population function. The default positions are 1, 2, 3, 4, ...
+	 *  of the \c Population function. The default positions are 1, 2, 3, 4, ...
 	 *  on each chromosome.
 	 *  <group>3-locus</group>
 	 */
@@ -673,7 +673,7 @@ public:
 
 
 	/** return the name of allele \e allele at \e lcous specified by the
-	 *  \e alleleNames parameter of the \c population function. \e locus could
+	 *  \e alleleNames parameter of the \c Population function. \e locus could
 	 *  be ignored if alleles at all loci share the same names. If the name of
 	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
 	 *  returned.
@@ -691,7 +691,7 @@ public:
 
 
 	/** return a list of allele names at \locus given by the \e alleleNames
-	 *  parameter of the \c population function. \e locus could be ignored if
+	 *  parameter of the \c Population function. \e locus could be ignored if
 	 *  alleles at all loci share the same names. This list does not have to
 	 *  cover all possible allele states of a population so
 	 *  <tt>alleleNames()[</tt><em>allele</em><tt>]</tt> might fail
@@ -701,7 +701,7 @@ public:
 	vectorstr alleleNames(const UINT locus = 0) const;
 
 	/** return the name of locus \e locus specified by the \e lociNames parameter of
-	 *  the \c population function. An empty string will be returned if no name
+	 *  the \c Population function. An empty string will be returned if no name
 	 *  has been given to locus \e locus.
 	 *  <group>3-locus</group>
 	 */
@@ -717,7 +717,7 @@ public:
 
 
 	/** return the names of all loci specified by the \e lociNames parameter of
-	 *  the \c population function. An empty list will be returned if
+	 *  the \c Population function. An empty list will be returned if
 	 *  \e lociNames was not specified.
 	 *  <group>3-locus</group>
 	 */
@@ -803,7 +803,7 @@ public:
 
 	/// CPPONLY add a new information field
 	/**
-	   \note Should only be called by population::requestInfoField.
+	   \note Should only be called by Population::requestInfoField.
 	   Right now, do not allow dynamic addition of these fields.
 	 */
 	GenoStructure & gsAddInfoFields(const vectorstr & fields);

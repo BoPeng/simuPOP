@@ -45,7 +45,7 @@ string IdTagger::describe(bool format)
 }
 
 
-bool IdTagger::apply(population & pop)
+bool IdTagger::apply(Population & pop)
 {
 	DBG_DO(DBG_TAGGER, cerr << "Applying IdTagger with current ID " << g_indID << endl);
 
@@ -62,7 +62,7 @@ bool IdTagger::apply(population & pop)
 }
 
 
-bool IdTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	UINT idx = pop.infoIdx(infoField(0));
@@ -79,7 +79,7 @@ bool IdTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-bool InheritTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	UINT sz = infoSize();
@@ -126,7 +126,7 @@ bool InheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-bool SummaryTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool SummaryTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
@@ -217,7 +217,7 @@ string ParentsTagger::describe(bool format)
 }
 
 
-bool ParentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool ParentsTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -245,7 +245,7 @@ string PedigreeTagger::describe(bool format)
 }
 
 
-bool PedigreeTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -277,7 +277,7 @@ bool PedigreeTagger::applyDuringMating(population & pop, RawIndIterator offsprin
 }
 
 
-bool PyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+bool PyTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());

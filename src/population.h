@@ -27,7 +27,7 @@
 
 /**
    \file
-   \brief head file of class population
+   \brief head file of class Population
  */
 
 #include "utility.h"
@@ -45,7 +45,7 @@ using std::equal_to;
 using std::ifstream;
 using std::ofstream;
 
-// used to save history population
+// used to save history Population
 // 0 (first parental) 1, ...., n
 #include <deque>
 using std::deque;
@@ -72,7 +72,7 @@ namespace simuPOP {
  *  subpopulation.
  *
  *  An instance of this class is returned by
- *  population::individuals() and population::individuals(subPop)
+ *  population::individuals() and Population::individuals(subPop)
  */
 class pyIndIterator
 {
@@ -180,7 +180,7 @@ class Pedigree;
  *    <em>local namespace</em>.
  *  \li Save and load a population.
  */
-class population : public GenoStruTrait
+class Population : public GenoStruTrait
 {
 public:
 #define HAPLODIPLOID 2.5
@@ -198,7 +198,7 @@ public:
 	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
 	 *    the same number of homologous sets, even if some customized
 	 *    chromosomes or some individuals (e.g. males in a haplodiploid
-	 *    population) have different numbers of homologous sets. The first
+	 *    Population) have different numbers of homologous sets. The first
 	 *    case is handled by setting \e chromTypes of each chromosome. Only
 	 *    the haplodiploid populations are handled for the second case, for
 	 *    which <tt>ploidy=HAPLODIPLOID</tt> should be used.
@@ -246,7 +246,7 @@ public:
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 */
-	population(const uintList & size = vectoru(),
+	Population(const uintList & size = vectoru(),
 		float ploidy = 2,
 		const uintList & loci = vectoru(),
 		const uintList & chromTypes = vectoru(),
@@ -259,20 +259,20 @@ public:
 		const stringList & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor
-	population(const population & rhs);
+	Population(const Population & rhs);
 
 	/** Create a cloned copy of a population. Note that Python statement
 	 *  <tt>pop1 = pop</tt> only creates a reference to an existing population
 	 *  \c pop.
 	 *  <group>8-pop</group>
 	 */
-	population * clone() const;
+	Population * clone() const;
 
 	/** HIDDEN (do not see a need to expose this function yet.)
 	 *  swap the content of two populations
 	 *  <group>1-pop</group>
 	 */
-	void swap(population & rhs)
+	void swap(Population & rhs)
 	{
 		GenoStruTrait::swap(rhs);
 		std::swap(m_popSize, rhs.m_popSize);
@@ -292,7 +292,7 @@ public:
 
 
 	/// destroy a population
-	~population();
+	~Population();
 
 	/** CPPONLY
 	 * Validate if a population is in good shape. This is mostly used
@@ -354,7 +354,7 @@ public:
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the population objects
-	int __cmp__(const population & rhs) const;
+	int __cmp__(const Population & rhs) const;
 
 	/** HIDDEN
 	 *  adapt the current population to anther population structure.
@@ -408,7 +408,7 @@ public:
 
 	/** Return the "spName - vspName" (virtual named subpopulation), "" (unnamed
 	 *  non-virtual subpopulation), "spName" (named subpopulation) or "vspName"
-	 *  (unnamed virtual subpopulation), depending on whether subPopulation is
+	 *  (unnamed virtual subpopulation), depending on whether subpopulation is
 	 *  named or if \e subPop is virtual.
 	 *  <group>2-subpopname</group>
 	 */
@@ -959,25 +959,25 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-	void addIndFrom(const population & pop);
+	void addIndFrom(const Population & pop);
 
 	/** Add chromosomes in population \e pop to the current population.
-	 *  Population \e pop should have the same number of individuals as the
+	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
 	 *  This function merges genotypes on the
 	 *  new chromosomes from population \c pop individual by individual.
 	 *  <group>7-manipulate</group>
 	 */
-	void addChromFrom(const population & pop);
+	void addChromFrom(const Population & pop);
 
 	/** Add loci from population \e pop, chromosome by chromosome. Added
 	 *  loci will be inserted according to their position. Their position
 	 *  and names should not overlap with any locus in the current population.
-	 *  Population \e pop should have the same number of individuals as the
+	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void addLociFrom(const population & pop);
+	void addLociFrom(const Population & pop);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
@@ -1007,7 +1007,7 @@ public:
 	vectoru addLoci(const uintList & chrom, const floatList & pos,
 		const vectorstr & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
-	/** Resize population by giving new subpopulation sizes \e sizes.
+	/** Resize Population by giving new subpopulation sizes \e sizes.
 	 *  Individuals at the end of some subpopulations will be removed if the
 	 *  new subpopulation size is smaller than the old one. New individuals
 	 *  will be appended to a subpopulation if the new size is larger. Their
@@ -1038,16 +1038,16 @@ public:
 	 *  This function only extract individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-	population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
+	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
 
 
 	/// CPPONLY
-	population & extractMarkedIndividuals() const;
+	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
 	 *  or IDs (\e IDs, stored in information field \e idField, default to
 	 *  \c ind_id). If a list of absolute indexes are specified, the present
-	 *  generation will be extracted and form a one-generational population.
+	 *  generation will be extracted and form a one-generational Population.
 	 *  If a list of IDs are specified, this function will look through all
 	 *  ancestral generations and extract individuals with given ID. Extracted
 	 *  individuals will be in their original ancestral generations
@@ -1056,7 +1056,7 @@ public:
 	 *  if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
 	 */
-	population & extractIndividuals(const uintList & indexes = vectoru(),
+	Population & extractIndividuals(const uintList & indexes = vectoru(),
 		const floatList & IDs = vectorf(), const string & idField = "ind_id") const;
 
 	/** Extract subsets of individuals, loci and/or information fields from the
@@ -1076,7 +1076,7 @@ public:
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-	population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
+	Population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
 		const subPopList & subPops = subPopList(), int ancGen = -1) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
@@ -1110,11 +1110,11 @@ public:
 	 *  one. If \e ancestralDepth is positive and there are already
 	 *  \e ancestralDepth ancestral generations (see also:
 	 *  <tt>ancestralGens()</tt>), the greatest ancestral generation will be
-	 *  discarded. In any case, population \e pop becomes invalid as all its
+	 *  discarded. In any case, Population \e pop becomes invalid as all its
 	 *  individuals are absorbed by the current population.
 	 *  <group>6-ancestral</group>
 	 */
-	void push(population & pop);
+	void push(Population & pop);
 
 	/** CPPONLY
 	 *  Return the current ancestral generation number.
@@ -1275,7 +1275,7 @@ public:
 	 *  recent \e ancGen generations are updated.
 	 *  <group>8-info</group>
 	 */
-	void updateInfoFieldsFrom(const stringList & fields, const population & pop,
+	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
 		const stringList & fromFields = vectorstr(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
@@ -1289,7 +1289,7 @@ public:
 
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the
-	 *  current generation. This is an efficient way to access population
+	 *  current generation. This is an efficient way to access Population
 	 *  properties of an ancestral generation. <tt>useAncestralGen(0)</tt>
 	 *  should always be called afterward to restore the correct order of
 	 *  ancestral generations.
@@ -1315,7 +1315,7 @@ public:
 	 */
 	void save(const string & filename) const;
 
-	/** CPPONLY load population from file \e filename
+	/** CPPONLY load Population from file \e filename
 	 *  <group>8-pop</group>
 	 */
 	void load(const string & filename);
@@ -1347,7 +1347,7 @@ public:
 		try {
 			return m_vars.getVarAsInt("gen");
 		} catch (...) {
-			const_cast<population *>(this)->setGen(0);
+			const_cast<Population *>(this)->setGen(0);
 			return 0;
 		}
 	}
@@ -1430,7 +1430,7 @@ private:
 	void save(Archive & ar, const UINT version) const
 	{
 		// deep adjustment: everyone in order
-		const_cast<population *>(this)->sortIndividuals();
+		const_cast<Population *>(this)->sortIndividuals();
 
 		ar & ModuleMaxAllele;
 
@@ -1466,9 +1466,9 @@ private:
 		size_t sz = m_ancestralPops.size();
 		ar & sz;
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
-			const_cast<population *>(this)->useAncestralGen(i + 1);
+			const_cast<Population *>(this)->useAncestralGen(i + 1);
 			// need to make sure ancestral pop also in order
-			const_cast<population *>(this)->sortIndividuals();
+			const_cast<Population *>(this)->sortIndividuals();
 			ar & m_subPopSize;
 			ar & m_subPopNames;
 #ifdef BINARYALLELE
@@ -1490,7 +1490,7 @@ private:
 			ar & m_info;
 			ar & m_inds;
 		}
-		const_cast<population *>(this)->useAncestralGen(0);
+		const_cast<Population *>(this)->useAncestralGen(0);
 
 		// save shared variables as string.
 		// note that many format are not supported.
@@ -1728,7 +1728,7 @@ private:
 		bool m_indOrdered;
 
 		// swap between a popData and existing data.
-		void swap(population & pop);
+		void swap(Population & pop);
 
 	};
 
@@ -1745,7 +1745,7 @@ private:
 
 /** load a population from a file.
  */
-population & loadPopulation(const string & file);
+Population & loadPopulation(const string & file);
 
 }
 
@@ -1753,7 +1753,7 @@ population & loadPopulation(const string & file);
 #ifndef SWIG
 #  ifndef _NO_SERIALIZATION_
 // version 0: base (reset for version 1.0)
-BOOST_CLASS_VERSION(simuPOP::population, 0)
+BOOST_CLASS_VERSION(simuPOP::Population, 0)
 #  endif
 #endif
 #endif

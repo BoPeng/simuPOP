@@ -138,10 +138,10 @@ public:
 
 
 	/// set fitness to all individuals. No selection will happen!
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 	/// CPPONLY
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 	                       individual * dad = NULL, individual * mom = NULL)
 	{
 		double fitness = indFitness(&*offspring, pop.gen());

@@ -100,10 +100,10 @@ public:
 
 
 	/// set \c qtrait to all individual
-	bool apply(population & pop);
+	bool apply(Population & pop);
 
 	/// CPPONLY
-	bool applyDuringMating(population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN

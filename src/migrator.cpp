@@ -100,7 +100,7 @@ void Migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru 
 }
 
 
-bool Migrator::apply(population & pop)
+bool Migrator::apply(Population & pop)
 {
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));
@@ -240,7 +240,7 @@ struct compareVSP
 
 };
 
-bool SplitSubPops::apply(population & pop)
+bool SplitSubPops::apply(Population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -294,7 +294,7 @@ bool SplitSubPops::apply(population & pop)
 }
 
 
-bool MergeSubPops::apply(population & pop)
+bool MergeSubPops::apply(Population & pop)
 {
 	subPopList sp = applicableSubPops();
 
@@ -312,7 +312,7 @@ bool MergeSubPops::apply(population & pop)
 }
 
 
-bool ResizeSubPops::apply(population & pop)
+bool ResizeSubPops::apply(Population & pop)
 {
 	vectoru newSizes = pop.subPopSizes();
 

@@ -34,7 +34,7 @@ using std::ostringstream;
 
 namespace simuPOP {
 
-population & pyPopIterator::next()
+Population & pyPopIterator::next()
 {
 	if (m_index == m_end)
 		throw StopIteration("");
@@ -49,7 +49,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		"Number of replicates should be greater than or equal one.");
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating Simulator " << endl);
-	m_pops = vector<population *>();
+	m_pops = vector<Population *>();
 
 	if (PySequence_Check(pops)) {
 		UINT size = PySequence_Size(pops);
@@ -58,12 +58,12 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 			void * pop = pyPopPointer(item);
 			DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 			if (steal) {
-				population * tmp = new population();
-				tmp->swap(*reinterpret_cast<population *>(pop));
+				Population * tmp = new Population();
+				tmp->swap(*reinterpret_cast<Population *>(pop));
 				m_pops.push_back(tmp);
 			} else {
 				try {
-					m_pops.push_back(reinterpret_cast<population *>(pop)->clone());
+					m_pops.push_back(reinterpret_cast<Population *>(pop)->clone());
 					DBG_FAILIF(m_pops.back() == NULL,
 						SystemError, "Fail to create new replicate");
 				} catch (...) {
@@ -76,12 +76,12 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		void * pop = pyPopPointer(pops);
 		DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 		if (steal) {
-			population * tmp = new population();
-			tmp->swap(*reinterpret_cast<population *>(pop));
+			Population * tmp = new Population();
+			tmp->swap(*reinterpret_cast<Population *>(pop));
 			m_pops.push_back(tmp);
 		} else {
 			try {
-				m_pops.push_back(reinterpret_cast<population *>(pop)->clone());
+				m_pops.push_back(reinterpret_cast<Population *>(pop)->clone());
 				DBG_FAILIF(m_pops.back() == NULL,
 					SystemError, "Fail to create new replicate");
 			} catch (...) {
@@ -105,8 +105,8 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 	// set var "rep"
 	for (UINT i = 0; i < m_pops.size(); ++i)
 		m_pops[i]->setRep(i);
-	// create replicates of given population
-	m_scratchPop = new population();
+	// create replicates of given Population
+	m_scratchPop = new Population();
 
 	DBG_FAILIF(m_scratchPop == NULL,
 		SystemError, "Fail to create scratch population");
@@ -131,7 +131,7 @@ Simulator::Simulator(const Simulator & rhs) :
 	m_scratchPop(NULL)
 {
 	m_scratchPop = rhs.m_scratchPop->clone();
-	m_pops = vector<population *>(rhs.m_pops.size());
+	m_pops = vector<Population *>(rhs.m_pops.size());
 	for (size_t i = 0; i < m_pops.size(); ++i) {
 		m_pops[i] = rhs.m_pops[i]->clone();
 		m_pops[i]->setRep(i);
@@ -145,7 +145,7 @@ Simulator * Simulator::clone() const
 }
 
 
-population & Simulator::pop(UINT rep) const
+Population & Simulator::pop(UINT rep) const
 {
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
@@ -154,34 +154,34 @@ population & Simulator::pop(UINT rep) const
 }
 
 
-population & Simulator::extract(UINT rep)
+Population & Simulator::extract(UINT rep)
 {
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
 
-	population * pop = m_pops[rep];
+	Population * pop = m_pops[rep];
 	m_pops.erase(m_pops.begin() + rep);
 	return *pop;
 }
 
 
-void Simulator::add(const population & pop, bool steal)
+void Simulator::add(const Population & pop, bool steal)
 {
 
 	if (steal) {
-		population * tmp = new population();
-		const_cast<population &>(pop).swap(*tmp);
+		Population * tmp = new Population();
+		const_cast<Population &>(pop).swap(*tmp);
 		m_pops.push_back(tmp);
 	} else
-		m_pops.push_back(new population(pop));
+		m_pops.push_back(new Population(pop));
 	DBG_FAILIF(m_pops.back() == NULL,
-		RuntimeError, "Fail to add new population.");
+		RuntimeError, "Fail to add new Population.");
 }
 
 
 string Simulator::describe(bool format)
 {
-	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size()) + " population" + (m_pops.size() == 1 ? "." : "s.");
+	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size()) + " Population" + (m_pops.size() == 1 ? "." : "s.");
 }
 
 
@@ -243,7 +243,7 @@ vectoru Simulator::evolve(
 #endif
 
 		for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
-			population & curPop = *m_pops[curRep];
+			Population & curPop = *m_pops[curRep];
 			int curGen = curPop.gen();
 			int end = -1;
 			if (gens > 0)
@@ -301,7 +301,7 @@ vectoru Simulator::evolve(
 				continue;
 			// start mating:
 			try {
-				if (!const_cast<mating &>(matingScheme).mate(curPop, scratchpopulation())) {
+				if (!const_cast<mating &>(matingScheme).mate(curPop, scratchPopulation())) {
 					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " + toStr(curRep) << endl);
 
 					numStopped++;
@@ -396,7 +396,7 @@ bool Simulator::apply(const opList & ops)
 
 	// really apply
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
-		population & curPop = *m_pops[curRep];
+		Population & curPop = *m_pops[curRep];
 		size_t it;
 
 		// apply pre-mating ops to current gen
@@ -444,7 +444,7 @@ string describe(const opList & initOps,
 		ostringstream desc;
 
 		if (initOps.empty())
-			desc << "No operator is used to initialize population (initOps).\n";
+			desc << "No operator is used to initialize Population (initOps).\n";
 		else {
 			desc << "Apply pre-evolution operators to the initial population (initOps).\n<ul>\n";
 			for (size_t it = 0; it < initOps.size(); ++it)

@@ -43,7 +43,7 @@ string InitSex::describe(bool format)
 }
 
 
-bool InitSex::apply(population & pop)
+bool InitSex::apply(Population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -96,7 +96,7 @@ string InitInfo::describe(bool format)
 }
 
 
-bool InitInfo::apply(population & pop)
+bool InitInfo::apply(Population & pop)
 {
 	vectoru infoIdx(infoSize());
 
@@ -162,7 +162,7 @@ string InitByFreq::describe(bool format)
 }
 
 
-bool InitByFreq::apply(population & pop)
+bool InitByFreq::apply(Population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -241,7 +241,7 @@ InitByValue::InitByValue(intMatrix value, const uintList & loci, const uintList 
 }
 
 
-bool InitByValue::apply(population & pop)
+bool InitByValue::apply(Population & pop)
 {
 #ifndef OPTIMIZED
 	UINT gSz = m_value[0].size();

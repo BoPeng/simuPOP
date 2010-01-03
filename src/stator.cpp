@@ -40,7 +40,7 @@ string PyEval::describe(bool format)
 }
 
 
-string PyEval::evaluate(population & pop)
+string PyEval::evaluate(Population & pop)
 {
 	if (!m_exposePop.empty()) {
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -75,7 +75,7 @@ string InfoEval::describe(bool format)
 }
 
 
-bool PyEval::apply(population & pop)
+bool PyEval::apply(Population & pop)
 {
 	string res = evaluate(pop);
 
@@ -158,7 +158,7 @@ string InfoEval::evalInfo(individual * ind, bool update)
 }
 
 
-bool InfoEval::apply(population & pop)
+bool InfoEval::apply(Population & pop)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -170,7 +170,7 @@ bool InfoEval::apply(population & pop)
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
 		pop.activateVirtualSubPop(*sp);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
+		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			string res = evalInfo(&*ind, false) ;
 			if (!this->noOutput() ) {
@@ -185,7 +185,7 @@ bool InfoEval::apply(population & pop)
 }
 
 
-bool InfoEval::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
@@ -207,7 +207,7 @@ string InfoExec::describe(bool format)
 }
 
 
-bool InfoExec::apply(population & pop)
+bool InfoExec::apply(Population & pop)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -226,7 +226,7 @@ bool InfoExec::apply(population & pop)
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
 		pop.activateVirtualSubPop(*sp);
-		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop());
+		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case simpleStmt::NoOperation:
@@ -263,7 +263,7 @@ bool InfoExec::apply(population & pop)
 }
 
 
-bool InfoExec::applyDuringMating(population & pop, RawIndIterator offspring,
+bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
@@ -377,7 +377,7 @@ string Stat::describe(bool format)
 }
 
 
-bool Stat::apply(population & pop)
+bool Stat::apply(Population & pop)
 {
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
@@ -413,7 +413,7 @@ string statPopSize::describe(bool format)
 }
 
 
-bool statPopSize::apply(population & pop)
+bool statPopSize::apply(Population & pop)
 {
 	if (!m_isActive)
 		return true;
@@ -465,7 +465,7 @@ string statNumOfMales::describe(bool format)
 }
 
 
-bool statNumOfMales::apply(population & pop)
+bool statNumOfMales::apply(Population & pop)
 {
 	if (!m_isActive)
 		return true;
@@ -547,7 +547,7 @@ string statNumOfAffected::describe(bool format)
 }
 
 
-bool statNumOfAffected::apply(population & pop)
+bool statNumOfAffected::apply(Population & pop)
 {
 	if (!m_isActive)
 		return true;
@@ -634,7 +634,7 @@ string statAlleleFreq::describe(bool format)
 }
 
 
-bool statAlleleFreq::apply(population & pop)
+bool statAlleleFreq::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -787,7 +787,7 @@ string statHeteroFreq::describe(bool format)
 }
 
 
-bool statHeteroFreq::apply(population & pop)
+bool statHeteroFreq::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -915,7 +915,7 @@ string statGenoFreq::describe(bool format)
 }
 
 
-bool statGenoFreq::apply(population & pop)
+bool statGenoFreq::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -1067,7 +1067,7 @@ string statHaploFreq::dictKey(const vectori & loci)
 }
 
 
-bool statHaploFreq::apply(population & pop)
+bool statHaploFreq::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -1271,7 +1271,7 @@ string statInfo::describe(bool format)
 }
 
 
-bool statInfo::apply(population & pop)
+bool statInfo::apply(Population & pop)
 {
 	if (m_sumOfInfo.empty() && m_meanOfInfo.empty() && m_varOfInfo.empty()
 	    && m_maxOfInfo.empty() && m_minOfInfo.empty())
@@ -1687,7 +1687,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 }
 
 
-void statLD::outputVar(population & pop, const string & name, const vectorf & value)
+void statLD::outputVar(Population & pop, const string & name, const vectorf & value)
 {
 	if (value.empty())
 		return;
@@ -1707,7 +1707,7 @@ void statLD::outputVar(population & pop, const string & name, const vectorf & va
 }
 
 
-bool statLD::apply(population & pop)
+bool statLD::apply(Population & pop)
 {
 	if (m_LD.empty())
 		return true;
@@ -2032,7 +2032,7 @@ double statAssociation::armitageTest(const GENOCNT & caseCnt,
 }
 
 
-bool statAssociation::apply(population & pop)
+bool statAssociation::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -2252,7 +2252,7 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 }
 
 
-bool statNeutrality::apply(population & pop)
+bool statNeutrality::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -2467,7 +2467,7 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 }
 
 
-bool statStructure::apply(population & pop)
+bool statStructure::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;
@@ -2620,7 +2620,7 @@ vectoru statHWE::mapToCount(const GENOCNT & cnt)
 }
 
 
-bool statHWE::apply(population & pop)
+bool statHWE::apply(Population & pop)
 {
 	if (m_loci.empty())
 		return true;

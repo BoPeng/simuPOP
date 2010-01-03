@@ -158,7 +158,7 @@ public:
 	void setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops);
 
 	/// apply the Migrator to populaiton \e pop.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);
@@ -255,7 +255,7 @@ public:
 
 
 	/// apply a \c SplitSubPops operator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -323,7 +323,7 @@ public:
 
 
 	/// apply a \c MergeSubPops operator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -395,7 +395,7 @@ public:
 
 
 	/// apply a \c ResizeSubPops operator
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 
 	/// HIDDEN

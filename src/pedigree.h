@@ -38,7 +38,7 @@ namespace simuPOP {
  *  population class that emphasizes on individual properties, the pedigree
  *  class emphasizes on relationship between individuals. An unique ID for
  *  all individuals is needed to create a pedigree object from a population
- *  object. Compared to the \c population class, a \c pedigree object is
+ *  object. Compared to the \c Population class, a \c pedigree object is
  *  optimized for access individuals by their IDs, regardless of population
  *  structure and ancestral generations. Note that although the pedigree class
  *  is derived from the population class so most of the population member
@@ -50,7 +50,7 @@ namespace simuPOP {
  *  evolutionary process. Depending on how a pedigree is saved, sex and
  *  affection status information may be missing.
  */
-class Pedigree : public population
+class Pedigree : public Population
 {
 public:
 	/** Create a pedigree object from a population, using a subset of loci
@@ -71,7 +71,7 @@ public:
 	 *  could be constructed with one or no parent but certain functions such
 	 *  as relative tracking will not be available for such pedigrees.
 	 */
-	Pedigree(const population & pop, const uintList & loci = vectoru(),
+	Pedigree(const Population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), int ancGen = -1,
 		const string & idField = "ind_id", const string & fatherField = "father_id",
 		const string & motherField = "mother_id");
@@ -226,7 +226,7 @@ private:
 // /// A pedigree manipulation class
 // /**
 //    A pedigree.has all the pedigree information that is needed to look at parent
-//    offspring relationship in a multi-generation population.
+//    offspring relationship in a multi-generation Population.
 //
 //    Conceptually, there are n generations with the latest generation being
 //    generation 0. The number of generations (c.f. gen()) is the number of

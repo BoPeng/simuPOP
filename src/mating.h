@@ -116,15 +116,15 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	virtual void initialize(const population & pop, SubPopID subPop);
+	virtual void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
+	virtual UINT generateOffspring(Population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
 	/// CPPONLY
-	virtual void finalize(const population & pop)
+	virtual void finalize(const Population & pop)
 	{
 		m_initialized = false;
 	}
@@ -215,10 +215,10 @@ public:
 	ControlledOffspringGenerator(const ControlledOffspringGenerator & rhs);
 
 	/// CPPONLY
-	void initialize(const population & pop, SubPopID subPop);
+	void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
+	virtual UINT generateOffspring(Population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
@@ -233,7 +233,7 @@ public:
 	virtual string describe(bool format = true) const;
 
 private:
-	void getExpectedAlleles(const population & pop, vectorf & expFreq);
+	void getExpectedAlleles(const Population & pop, vectorf & expFreq);
 
 	/// locus at which mating is controlled.
 	vectoru m_loci;
@@ -282,10 +282,10 @@ public:
 
 
 	/// CPPONLY
-	virtual void initialize(population & pop, SubPopID subPop) { }
+	virtual void initialize(Population & pop, SubPopID subPop) { }
 
 	/// CPPONLY
-	virtual void finalize(population & pop, SubPopID subPop)
+	virtual void finalize(Population & pop, SubPopID subPop)
 	{
 		m_initialized = false;
 	}
@@ -353,7 +353,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -402,7 +402,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -462,7 +462,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -527,7 +527,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -600,7 +600,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -679,7 +679,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
@@ -769,7 +769,7 @@ private:
 
 
    /// CPPONLY
-   void initialize(population & pop, SubPopID sp);
+   void initialize(Population & pop, SubPopID sp);
 
    /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
    individualPair chooseParents(RawIndIterator basePtr);
@@ -836,10 +836,10 @@ public:
 
 
 	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
+	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY
-	void finalize(population & pop, SubPopID sp);
+	void finalize(Population & pop, SubPopID sp);
 
 	/// destructor
 	~PyParentsChooser()
@@ -876,7 +876,7 @@ public:
 	/** CPPONLY
 	 *  check if the mating type is compatible with the population structure.
 	 */
-	virtual bool isCompatible(const population & pop) const
+	virtual bool isCompatible(const Population & pop) const
 	{
 		return true;
 	}
@@ -909,12 +909,12 @@ public:
 
 	/** CPPONLY
 	 */
-	virtual void submitScratch(population & pop, population & scratch);
+	virtual void submitScratch(Population & pop, Population & scratch);
 
 	/** CPPONLY
 	 *  mate a subpopulation, called by mate().
 	 */
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd)
 	{
 		return true;
@@ -925,12 +925,12 @@ public:
 	 *  Generate an offspring population \e scratch from parental population
 	 *  \e pop.
 	 */
-	virtual bool mate(population & pop, population & scratch);
+	virtual bool mate(Population & pop, Population & scratch);
 
 	/** CPPONLY
 	 *  Prepare a scratch population \e scratch.
 	 */
-	bool prepareScratchPop(population & pop, population & scratch);
+	bool prepareScratchPop(Population & pop, Population & scratch);
 
 	/** CPPONLY
 	 *  Use to generate a warning when subPopSize is specified in a homogeneous
@@ -1009,10 +1009,10 @@ protected:
 
 
    /// CPPONLY
-   bool prepareScratchPop(population & pop, population & scratch);
+   bool prepareScratchPop(Population & pop, Population & scratch);
 
    /// CPPONLY
-   virtual bool mate(population & pop, population & scratch);
+   virtual bool mate(Population & pop, Population & scratch);
 
    private:
    pedigree m_ped;
@@ -1113,7 +1113,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, SubPopID subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:
@@ -1192,7 +1192,7 @@ public:
 	/** CPPONLY Call each homogeneous mating scheme to populate offspring
 	 *  generation.
 	 */
-	bool mate(population & pop, population & scratch);
+	bool mate(Population & pop, Population & scratch);
 
 private:
 	vectormating m_matingSchemes;

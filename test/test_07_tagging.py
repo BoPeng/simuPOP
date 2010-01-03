@@ -26,7 +26,7 @@ class TestTagger(unittest.TestCase):
             matingScheme = RandomMating(numOffspring=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 1
         )
-        pop = simu.Population(0)
+        pop = simu.population(0)
         # check if all siblings have the same parents
         for sp in range(pop.numSubPop()):
             for i in range(pop.subPopSize(sp)/2):
@@ -51,7 +51,7 @@ class TestTagger(unittest.TestCase):
             initOps = [InitSex()],
             matingScheme = RandomMating(ops=[MendelianGenoTransmitter(), InheritTagger(mode=PATERNAL)]),
             gen = 1)
-        pop = simu.Population(0)
+        pop = simu.population(0)
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
@@ -59,7 +59,7 @@ class TestTagger(unittest.TestCase):
         for i in range(pop.subPopSize(1)):
             self.assertNotEqual(pop.individual(i,1).info('paternal_tag'), 1)
         # from this test, we can see that genetic drift
-        # can easily remove a signal (tag) from Population.
+        # can easily remove a signal (tag) from population.
 
     def testInheritTaggerToFile(self):
         'Testing inherit tagger that record indexes to a file'
@@ -101,7 +101,7 @@ class TestTagger(unittest.TestCase):
                 PyTagger(func=myfunc),
             ]),
             gen = 4)
-        pop = simu.Population(0)
+        pop = simu.population(0)
         for ind in pop.individuals():
             # 1 + 1 = 2, 2 + 2 = 4, ...
             self.assertEqual(ind.info('trait1'), 16)

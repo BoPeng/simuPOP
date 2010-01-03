@@ -37,10 +37,10 @@
 namespace simuPOP {
 
 class individual;
-class population;
+class Population;
 
 /**
- * A class to specify virtual subpopulation, which is composed of a subPopulation
+ * A class to specify virtual subpopulation, which is composed of a subpopulation
  * ID and a virtual subpopulation ID.
  *
  */
@@ -197,7 +197,7 @@ public:
 
 
 	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
-	void useSubPopsFrom(const population & pop);
+	void useSubPopsFrom(const Population & pop);
 
 private:
 	vectorvsp m_subPops;
@@ -214,7 +214,7 @@ private:
  *
  *  Each VSP has a name. A default name is determined by each splitter but you
  *  can also assign a name to each VSP. The name of a VSP can be retrieved by
- *  function \c population.subPopName.
+ *  function \c Population.subPopName.
  *
  *  Only one VSP splitter can be assigned to a population, which defined VSPs
  *  for all its subpopulations. If different splitters are needed for different
@@ -252,7 +252,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	virtual ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const = 0;
+	virtual ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const = 0;
 
 	/** Return the number of VSPs defined by this splitter.
 	 */
@@ -262,11 +262,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	virtual bool contains(const population & pop, ULONG ind, vspID vsp) const = 0;
+	virtual bool contains(const Population & pop, ULONG ind, vspID vsp) const = 0;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	virtual void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop) = 0;
+	virtual void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) = 0;
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -283,7 +283,7 @@ public:
 	virtual string name(SubPopID vsp) = 0;
 
 protected:
-	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
+	ULONG countVisibleInds(const Population & pop, SubPopID sp) const;
 
 	vectorstr m_names;
 
@@ -302,7 +302,7 @@ public:
 	vspFunctor() : m_pop(NULL), m_splitter(NULL), m_vsp()
 	{}
 
-	vspFunctor(const population & pop, const vspSplitter * splitter, vspID vsp)
+	vspFunctor(const Population & pop, const vspSplitter * splitter, vspID vsp)
 		: m_pop(&pop), m_splitter(splitter), m_vsp(vsp)
 	{
 	}
@@ -315,7 +315,7 @@ public:
 
 
 private:
-	const population * m_pop;
+	const Population * m_pop;
 	const vspSplitter * m_splitter;
 	vspID m_vsp;
 };
@@ -356,7 +356,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
@@ -371,11 +371,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
 	 *  of the combined splitters unless a new set of names is specified.
@@ -421,7 +421,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
@@ -436,12 +436,12 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return the name of a VSP \e vsp, which is the names of indivdual VSPs
 	 *  separated by a comma, unless a new set of names is specified for each
@@ -486,7 +486,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return \c 2.
 	UINT numVirtualSubPop()
@@ -499,12 +499,12 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 
 	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
@@ -540,7 +540,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return 2.
 	UINT numVirtualSubPop()
@@ -553,12 +553,12 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 
 	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
@@ -604,7 +604,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/** Return the number of VSPs defined by this splitter, which is the length
 	 *  parameter \e values or the length of \e cutoff plus one, depending on
@@ -616,11 +616,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 
 	/** Return the name of a VSP \e vsp, which is <tt>field = value</tt> if VSPs
@@ -664,7 +664,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/** Return the number of VSPs defined by this splitter, which is the length
 	 *  of parameter \e proportions.
@@ -675,11 +675,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return the name of VSP \e vsp, which is <tt>"Prop p"</tt> where
 	 *  <tt>p=propotions[vsp]</tt>. A user specified name will be returned if
@@ -718,7 +718,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/** Return the number of VSPs, which is the number of ranges defined in
 	 *  parameter \e ranges.
@@ -729,11 +729,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b]"</tt> where
 	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>. A user specified name
@@ -797,7 +797,7 @@ public:
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
-	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
@@ -806,11 +806,11 @@ public:
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
 	 *  CPPONLY
 	 */
-	bool contains(const population & pop, ULONG ind, vspID vsp) const;
+	bool contains(const Population & pop, ULONG ind, vspID vsp) const;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
-	void activate(const population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
 	 *  as defined by parameters \e loci and \e alleles. A user provided name

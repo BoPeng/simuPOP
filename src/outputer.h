@@ -63,7 +63,7 @@ public:
 
 
 	/// simply output some info
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// destructor
 	virtual ~PyOutput()
@@ -125,7 +125,7 @@ public:
 
 
 	/// Apply a Dumper operator to population \e pop.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// destructor.
 	virtual ~Dumper()
@@ -140,9 +140,9 @@ public:
 
 
 private:
-	void displayStructure(const population & pop, ostream & out);
+	void displayStructure(const Population & pop, ostream & out);
 
-	UINT displayGenotype(const population & pop, const subPopList & subPops, ostream & out);
+	UINT displayGenotype(const Population & pop, const subPopList & subPops, ostream & out);
 
 private:
 	///
@@ -204,7 +204,7 @@ public:
 
 
 	/// Apply operator to population \e pop.
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/// HIDDEN
 	string describe(bool format = true);

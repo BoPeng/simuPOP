@@ -59,9 +59,9 @@ using std::pair;
 
 namespace simuPOP {
 /**
- *  A \c population consists of individuals with the same genotypic structure.
+ *  A \c Population consists of individuals with the same genotypic structure.
  *  An \c individual object cannot be created independently, but refences to
- *  inidividuals can be retrieved using member functions of a \c population
+ *  inidividuals can be retrieved using member functions of a \c Population
  *  object. In addition to structural information shared by all individuals in
  *  a population (provided by class \c genoStruTrait), the \c individual class
  *  provides member functions to get and set \e genotype, \e sex, <em>affection
@@ -104,8 +104,8 @@ public:
 	///
 	/**
 	 * An \c individual object cannot be created directly. It has to be accessed
-	 * from a \c population object using functions such as
-	 * <tt>population::individual(idx)</tt>.
+	 * from a \c Population object using functions such as
+	 * <tt>Population::individual(idx)</tt>.
 	 */
 	individual() : m_flags(m_flagVisible)
 	{
@@ -306,7 +306,7 @@ public:
 	/** CPPONLY
 	 *  check if an individual is marked. This is a temporary flag that is
 	 *  usually used to mark individuals for removal or extraction. It might be
-	 *  be reset with any population operation.
+	 *  be reset with any Population operation.
 	 *  <group>5-mark</group>
 	 */
 	bool marked() const

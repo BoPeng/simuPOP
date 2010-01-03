@@ -123,7 +123,7 @@ Sex OffspringGenerator::getSex(int count)
 }
 
 
-void OffspringGenerator::initialize(const population & pop, SubPopID subPop)
+void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
 	m_initialized = true;
 }
@@ -142,7 +142,7 @@ string OffspringGenerator::describe(bool format) const
 }
 
 
-UINT OffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+UINT OffspringGenerator::generateOffspring(Population & pop, individual * dad, individual * mom,
                                            RawIndIterator & it,
                                            RawIndIterator & itEnd)
 {
@@ -223,7 +223,7 @@ string ControlledOffspringGenerator::describe(bool format) const
 }
 
 
-void ControlledOffspringGenerator::getExpectedAlleles(const population & pop,
+void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
                                                       vectorf & expFreq)
 {
 	// determine expected number of alleles of each allele
@@ -253,7 +253,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			vectorf curFreq(numSP, 0);
 			bool hasAllele = false;
 			for (size_t sp = 0, n = 0; sp < numSP; ++sp) {
-				IndAlleleIterator a = const_cast<population &>(pop).alleleIterator(locus, sp);
+				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a)
 					if (AlleleUnsigned(*a) == allele)
 						n++;
@@ -292,7 +292,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				Allele allele = ToAllele(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
-				IndAlleleIterator a = const_cast<population &>(pop).alleleIterator(locus, sp);
+				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a) {
 					if (AlleleUnsigned(*a) == allele)
 						n++;
@@ -313,7 +313,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const population & pop,
 }
 
 
-void ControlledOffspringGenerator::initialize(const population & pop, SubPopID subPop)
+void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
 	OffspringGenerator::initialize(pop, subPop);
 
@@ -374,7 +374,7 @@ void ControlledOffspringGenerator::initialize(const population & pop, SubPopID s
 
 
 /// CPPONLY
-UINT ControlledOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+UINT ControlledOffspringGenerator::generateOffspring(Population & pop, individual * dad, individual * mom,
                                                      RawIndIterator & offBegin,
                                                      RawIndIterator & offEnd)
 {
@@ -461,7 +461,7 @@ UINT ControlledOffspringGenerator::generateOffspring(population & pop, individua
 }
 
 
-void SequentialParentChooser::initialize(population & pop, SubPopID sp)
+void SequentialParentChooser::initialize(Population & pop, SubPopID sp)
 {
 	m_begin = pop.indIterator(sp);
 	m_ind = m_begin;
@@ -477,7 +477,7 @@ ParentChooser::individualPair SequentialParentChooser::chooseParents(RawIndItera
 }
 
 
-void SequentialParentsChooser::initialize(population & pop, SubPopID subPop)
+void SequentialParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -527,7 +527,7 @@ ParentChooser::individualPair SequentialParentsChooser::chooseParents(RawIndIter
 }
 
 
-void RandomParentChooser::initialize(population & pop, SubPopID sp)
+void RandomParentChooser::initialize(Population & pop, SubPopID sp)
 {
 	m_index.clear();
 
@@ -589,7 +589,7 @@ ParentChooser::individualPair RandomParentChooser::chooseParents(RawIndIterator 
 }
 
 
-void RandomParentsChooser::initialize(population & pop, SubPopID subPop)
+void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -693,7 +693,7 @@ ParentChooser::individualPair RandomParentsChooser::chooseParents(RawIndIterator
 }
 
 
-void PolyParentsChooser::initialize(population & pop, SubPopID subPop)
+void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -799,7 +799,7 @@ ParentChooser::individualPair PolyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void AlphaParentsChooser::initialize(population & pop, SubPopID subPop)
+void AlphaParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -932,13 +932,13 @@ ParentChooser::individualPair AlphaParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-   void infoParentsChooser::initialize(population & pop, SubPopID sp)
+   void infoParentsChooser::initialize(Population & pop, SubPopID sp)
    {
     if (m_func.isValid()) {
         PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
         // if pop is valid?
         if (popObj == NULL)
-            throw SystemError("Could not pass population to the provided function. \n"
+            throw SystemError("Could not pass Population to the provided function. \n"
                               "Compiled with the wrong version of SWIG?");
 
         // parammeter list, ref count increased
@@ -1054,7 +1054,7 @@ PyParentsChooser::PyParentsChooser(PyObject * pc)
 }
 
 
-void PyParentsChooser::initialize(population & pop, SubPopID sp)
+void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
@@ -1072,7 +1072,7 @@ void PyParentsChooser::initialize(population & pop, SubPopID sp)
 	m_popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?
 	DBG_FAILIF(m_popObj == NULL, SystemError,
-		"Could not pass population to the provided function. \n"
+		"Could not pass Population to the provided function. \n"
 		"Compiled with the wrong version of SWIG?");
 
 	m_generator = m_func("(Oi)", m_popObj, sp);
@@ -1154,7 +1154,7 @@ ParentChooser::individualPair PyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void PyParentsChooser::finalize(population & pop, SubPopID sp)
+void PyParentsChooser::finalize(Population & pop, SubPopID sp)
 {
 	DBG_FAILIF(m_popObj == NULL || m_parIterator == NULL || m_generator == NULL,
 		SystemError, "Python generator is not properly initialized.");
@@ -1174,7 +1174,7 @@ mating::mating(const uintListFunc & subPopSize)
 }
 
 
-bool mating::prepareScratchPop(population & pop, population & scratch)
+bool mating::prepareScratchPop(Population & pop, Population & scratch)
 {
 	if (scratch.genoStruIdx() != pop.genoStruIdx())
 		scratch.fitGenoStru(pop.genoStruIdx());
@@ -1222,7 +1222,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 }
 
 
-bool mating::mate(population & pop, population & scratch)
+bool mating::mate(Population & pop, Population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1236,7 +1236,7 @@ bool mating::mate(population & pop, population & scratch)
 }
 
 
-void mating::submitScratch(population & pop, population & scratch)
+void mating::submitScratch(Population & pop, Population & scratch)
 {
 	// use scratch population,
 	pop.push(scratch);
@@ -1274,7 +1274,7 @@ void mating::submitScratch(population & pop, population & scratch)
    }
 
 
-   bool PedigreeMating::prepareScratchPop(population & pop, population & scratch)
+   bool PedigreeMating::prepareScratchPop(Population & pop, Population & scratch)
    {
     if (scratch.genoStruIdx() != pop.genoStruIdx())
         scratch.fitGenoStru(pop.genoStruIdx());
@@ -1319,7 +1319,7 @@ void mating::submitScratch(population & pop, population & scratch)
    }
 
 
-   bool PedigreeMating::mate(population & pop, population & scratch)
+   bool PedigreeMating::mate(Population & pop, Population & scratch)
    {
     // scrtach will have the right structure.
     if (!prepareScratchPop(pop, scratch))
@@ -1396,7 +1396,7 @@ string HomoMating::describe(bool format) const
 }
 
 
-bool HomoMating::mateSubPop(population & pop, SubPopID subPop,
+bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
@@ -1499,7 +1499,7 @@ HeteroMating::HeteroMating(const HeteroMating & rhs) :
 }
 
 
-bool HeteroMating::mate(population & pop, population & scratch)
+bool HeteroMating::mate(Population & pop, Population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1622,7 +1622,7 @@ bool HeteroMating::mate(population & pop, population & scratch)
 		vectoru::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
-			"Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
+			"SubPopulation " + toStr(sp) + " has activated virtual subpopulation.");
 		for (UINT idx = 0; idx < m.size(); ++idx, ++itSize) {
 			if (sps[idx].isVirtual())
 				pop.activateVirtualSubPop(sps[idx]);

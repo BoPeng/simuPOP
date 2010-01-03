@@ -111,7 +111,7 @@ public:
 
 
 	/// set penetrance to all individuals and record penetrance if requested
-	virtual bool apply(population & pop);
+	virtual bool apply(Population & pop);
 
 	/** Apply the penetrance operator to a single individual \e ind and set his
 	 *  or her affection status. A generation number \e gen is needed if the
@@ -122,7 +122,7 @@ public:
 
 	/// set penetrance to all individuals
 	/// CPPONLY
-	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/// HIDDEN

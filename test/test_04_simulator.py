@@ -121,7 +121,7 @@ class TestSimulator(unittest.TestCase):
             for idx in range(simu.population(rep).popSize()):
                 simu.population(rep).individual(idx).setAllele(1, 0)
                 self.assertEqual(simu.population(rep).individual(idx).allele(0), 1)
-        # reference to the rep-th Population
+        # reference to the rep-th population
         for rep in range(5):
             pop = simu.population(rep)
             for idx in range(pop.popSize()):

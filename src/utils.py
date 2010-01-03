@@ -60,7 +60,7 @@ def viewVars(var, gui=None):
 
     var
         A dictionary variable to be viewed. Dictionary wrapper objects returned
-        by ``population.dvars()`` and ``Simulator.dvars()`` are also acceptable.
+        by ``Population.dvars()`` and ``Simulator.dvars()`` are also acceptable.
 
     gui
         If gui is ``False`` or ``'Tkinter'``, a text presentation (use the
@@ -678,7 +678,7 @@ class trajectory:
             return []
         mut = []
         for gen in gens[:-1]:
-            # no introduction of mutants with population merge or split.
+            # no introduction of mutants with Population merge or split.
             if len(self.traj[gen]) != len(self.traj[gen + 1]):
                 continue
             # we may need to introduce mutant at each subpopulation.
@@ -824,7 +824,7 @@ class trajectorySimulator:
         N
             Parameter *N* accepts either a constant number for population size
             (e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
-            or a demographic function that returns population or subpopulation
+            or a demographic function that returns Population or subpopulation
             sizes at each generation. During the evolution, multiple
             subpopulations can be merged into one, and one population can be
             split into several subpopulations. The number of subpopulation is

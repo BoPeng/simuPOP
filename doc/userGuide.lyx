@@ -184,7 +184,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
  simulation environment.
  Unlike coalescent-based programs, simuPOP evolves populations forward in
  time, subject to arbitrary number of genetic and environmental forces such
- as mutation, recombination, migration and population/subpopulation size
+ as mutation, recombination, migration and Population/subpopulation size
  changes.
  In contrast to competing applications that use command-line options or
  configuration files to direct the execution of a limited number of predefined
@@ -198,7 +198,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
 
 \begin_layout Abstract
 simuPOP is provided as a number of Python modules, which consist of a large
- number of Python objects and functions, including population, mating schemes,
+ number of Python objects and functions, including Population, mating schemes,
  operators (objects that manipulate populations) and Simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
@@ -351,7 +351,7 @@ Unlike coalescent-based programs, simuPOP evolves populations
 forward in time
 \series default
 , subject to arbitrary number of genetic and environmental forces such as
- mutation, recombination, migration and population/subpopulation size changes.
+ mutation, recombination, migration and Population/subpopulation size changes.
 \end_layout
 
 \begin_layout Itemize
@@ -373,7 +373,7 @@ general-purpose
 
 \begin_layout Standard
 simuPOP is provided as a number of Python modules, which consist of a large
- number of Python objects and functions, including population, mating schemes,
+ number of Python objects and functions, including Population, mating schemes,
  operators (objects that manipulate populations) and Simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
@@ -399,7 +399,7 @@ An overview of simuPOP concepts
 \begin_layout Standard
 A simuPOP 
 \series bold
-population
+Population
 \series default
  consists of 
 \series bold
@@ -627,7 +627,7 @@ Stat
 \family default
  calculates linkage disequilibrium between the first and second loci.
  The results of this operator are stored in a local variable space of the
- population.
+ Population.
  The last operator 
 \family typewriter
 PyEval
@@ -1044,18 +1044,18 @@ Before we dive into the details of simuPOP, it is helpful to know a few
 All classes (e.g.
  
 \family typewriter
-population()
+Population()
 \family default
 ), member functions (e.g.
  
 \family typewriter
-population.vars()
+Population.vars()
 \family default
 ) and parameter names start with small character and use capital character
  for the first character of each word afterward (e.g.
  
 \family typewriter
-population.subPopSize()
+Population.subPopSize()
 \family default
 , 
 \family typewriter
@@ -1108,7 +1108,7 @@ simuPOP uses the abbreviated form of the following words in function and
 \family typewriter
 pop
 \family default
- (population), 
+ (Population), 
 \family typewriter
 pops
 \family default
@@ -1232,7 +1232,7 @@ infoFields=['x']
 The same rules also hold for function names.
  For example, 
 \family typewriter
-population.addInfoFields()
+Population.addInfoFields()
 \family default
  accept a list of information fields but 
 \family typewriter
@@ -1531,7 +1531,7 @@ Use of optimized simuPOP modules
 
 \begin_layout Plain Layout
 
->>> pop = sim.population(10, loci=[2])
+>>> pop = sim.Population(10, loci=[2])
 \end_layout
 
 \begin_layout Plain Layout
@@ -1711,7 +1711,7 @@ the simuPOP reference manual
  For example, after you install and import the simuPOP module, you can use
  
 \family typewriter
-help(population.addInfoField) 
+help(Population.addInfoField) 
 \family default
 to view the help information of member function 
 \family typewriter
@@ -1719,7 +1719,7 @@ addInfoField
 \family default
  of class 
 \family typewriter
-population
+Population
 \family default
 .
 \end_layout
@@ -1748,7 +1748,7 @@ __init__
  That is to say, you should use the following command to display the help
  information of the constructor of class 
 \family typewriter
-population
+Population
 \family default
 : 
 \end_layout
@@ -1761,7 +1761,7 @@ status open
 
 \begin_layout Plain Layout
 
->>> help(population.__init__)
+>>> help(Population.__init__)
 \end_layout
 
 \end_inset
@@ -1775,7 +1775,7 @@ Some classes are derived from other classes and have access to member functions
  of their base classes.
  For example, class 
 \family typewriter
-population
+Population
 \family default
  and 
 \family typewriter
@@ -1850,7 +1850,7 @@ from simuPOP import *
 
 \begin_layout Plain Layout
 
-pop = population(size=100, loci=[5])
+pop = Population(size=100, loci=[5])
 \end_layout
 
 \begin_layout Plain Layout
@@ -1875,7 +1875,7 @@ import simuPOP
 
 \begin_layout Plain Layout
 
-pop = simuPOP.population(size=100, loci=[5])
+pop = simuPOP.Population(size=100, loci=[5])
 \end_layout
 
 \begin_layout Plain Layout
@@ -1923,7 +1923,7 @@ from myModule import *
 
 \begin_layout Plain Layout
 
-pop = population(size=100, loci=[5])
+pop = Population(size=100, loci=[5])
 \end_layout
 
 \begin_layout Plain Layout
@@ -1957,11 +1957,11 @@ import simuPOP
  style.
  This saves some keystrokes by referring simuPOP functions as 
 \family typewriter
-sim.population()
+sim.Population()
 \family default
  instead of 
 \family typewriter
-simuPOP.population()
+simuPOP.Population()
 \family default
 .
  Note that simuPOP has a number of submodules, which are not imported by
@@ -2014,7 +2014,7 @@ status open
 
 \begin_layout Plain Layout
 
-pop = population()
+pop = Population()
 \end_layout
 
 \begin_layout Plain Layout
@@ -2050,7 +2050,7 @@ pop
 pop1
 \family default
 .
- For example, a reference to the first population in a simulator is returned
+ For example, a reference to the first Population in a simulator is returned
  from function 
 \family typewriter
 func()
@@ -2058,7 +2058,7 @@ func()
  in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "lst:Reference-to-population"
+reference "lst:Reference-to-Population"
 
 \end_inset
 
@@ -2095,7 +2095,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "lst:Reference-to-population"
+name "lst:Reference-to-Population"
 
 \end_inset
 
@@ -2109,12 +2109,12 @@ def func():
 
 \begin_layout Plain Layout
 
-    simu = Simulator(population(10), RandomMating(), rep=5)
+    simu = Simulator(Population(10), RandomMating(), rep=5)
 \end_layout
 
 \begin_layout Plain Layout
 
-    # return a reference to the first population in the simulator
+    # return a reference to the first Population in the simulator
 \end_layout
 
 \begin_layout Plain Layout
@@ -2133,7 +2133,7 @@ pop = func()
 
 \begin_layout Plain Layout
 
-# simuPOP will crash because pop refers to an invalid population.
+# simuPOP will crash because pop refers to an invalid Population.
 \end_layout
 
 \begin_layout Plain Layout
@@ -2156,7 +2156,7 @@ clone()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "lst:Reference-to-population"
+reference "lst:Reference-to-Population"
 
 \end_inset
 
@@ -2179,7 +2179,7 @@ return simu.population(0).clone()
 
 \end_inset
 
-although in this specific case, extracting the first population from the
+although in this specific case, extracting the first Population from the
  Simulator using the 
 \family typewriter
 extract
@@ -2422,7 +2422,7 @@ A number of simuPOP functions return Python iterators that can be used to
  iterate through an internal array of objects.
  For example, 
 \family typewriter
-population.individuals([subPop])
+Population.individuals([subPop])
 \family default
  returns an iterator iterates through all individuals, or all individuals
  in a (virtual) subpoulation.
@@ -3038,7 +3038,7 @@ individual
 \emph default
  and 
 \emph on
-population
+Population
 \emph default
  objects.
  
@@ -3047,7 +3047,7 @@ Because a population consists of individuals of the same type, genotypic
  information can only be changed for all individuals at the population level
 \series default
 .
- Populations in a simulator usually have the same genotypic structure because
+ populations in a simulator usually have the same genotypic structure because
  they are created by as replicates, but their structure may change during
  evolution.
  Example 
@@ -3134,7 +3134,7 @@ Haploid, diploid and haplodiploid populations
 
 \begin_layout Standard
 simuPOP is most widely used to study human (diploid) populations.
- A large number of mating schemes, operators and population statistics are
+ A large number of mating schemes, operators and Population statistics are
  designed around the evolution of such a population.
  simuPOP also supports haploid and haplodiploid populations although there
  are fewer choices of mating schemes and operators.
@@ -3485,7 +3485,7 @@ mother_idx
 Information fields can only be added or removed at the population level
 \series default
  because all individuals need to have the same set of fields.
- Values of information fields could be accessed at individual or population
+ Values of information fields could be accessed at individual or Population
  levels, using functions such as 
 \family typewriter
 individual.info
@@ -3496,11 +3496,11 @@ individual.setInfo
 \family default
 , 
 \family typewriter
-population.indInfo
+Population.indInfo
 \family default
 , 
 \family typewriter
-population.setIndInfo
+Population.setIndInfo
 \family default
 .
  These functions will be introduced in their respective classes.
@@ -3669,7 +3669,7 @@ lstparams "caption={Access individual genotype},label={individual_genotype}"
 \begin_layout Standard
 The same object will also be returned by function 
 \family typewriter
-population.genotype()
+Population.genotype()
 \family default
 .
 \end_layout
@@ -3748,12 +3748,12 @@ Population
 \begin_layout Standard
 The 
 \family typewriter
-population
+Population
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-population
+Population
 \end_layout
 
 \end_inset
@@ -3785,16 +3785,16 @@ individual.setGenotype()
 \family default
 , genotypes of a population can be accessed in batch using functions 
 \family typewriter
-population.genotype()
+Population.genotype()
 \family default
  and 
 \family typewriter
-population.setGenotype()
+Population.setGenotype()
 \family default
 .
  However, because it is error prone to locate an allele of a particular
  individual in this long array, these functions are usually used to perform
- population-level genotype operations such as clearing all alleles (e.g.
+ Population-level genotype operations such as clearing all alleles (e.g.
  
 \family typewriter
 pop.setGenotype(0)
@@ -3841,7 +3841,7 @@ A simuPOP population consists of one or more subpopulations.
  
 \series bold
 If a population is not structured, it has one subpopulation that is the
- population itself.
+ Population itself.
 
 \series default
  Subpopulations serve as barriers of individuals in the sense that mating
@@ -3858,7 +3858,7 @@ reference "subPopName"
 
 \end_inset
 
- demonstrates how to use functions population.mergesome of the subpopulation
+ demonstrates how to use functions Population.mergesome of the subpopulation
  related functions.
  
 \end_layout
@@ -4218,7 +4218,7 @@ Access individuals and their properties
 There are many ways to access individuals of a population.
  For example, function 
 \family typewriter
-population.individual(idx)
+Population.individual(idx)
 \family default
  returns a reference to the 
 \family typewriter
@@ -4242,9 +4242,9 @@ subPop
 
 \begin_layout Standard
 If you would like to access a group of individuals, either from a whole
- population, a subpopulation, or from a virtual subpopulation, 
+ Population, a subpopulation, or from a virtual subpopulation, 
 \family typewriter
-population.individuals([subPop])
+Population.individuals([subPop])
 \family default
  is easier to use.
  This function returns a Python iterator that can be used to iterate through
@@ -4286,7 +4286,7 @@ current
 \emph default
  generation, and use 
 \family typewriter
-population.individuals
+Population.individuals
 \family default
 .
  Note that ancestor() function can always access individuals at a certain
@@ -4305,7 +4305,7 @@ reference "batchAccess"
 If an unique ID is assigned to all individuals in a population, you can
  look up individuals from their IDs using function 
 \family typewriter
-population.indByID()
+Population.indByID()
 \family default
 .
  The information field to save individual ID is usually 
@@ -4425,11 +4425,11 @@ reference "popInfo"
  or from a population in batch mode.
  Note that functions 
 \family typewriter
-population.indInfo
+Population.indInfo
 \family default
  and 
 \family typewriter
-population.setIndInfo
+Population.setIndInfo
 \family default
  can be applied to (virtual) subpopulation using a optional parameter subPop.
 \end_layout
@@ -4458,7 +4458,7 @@ Ancestral populations
 \begin_layout Standard
 A simuPOP population usually holds individuals in one generation.
  During evolution, an offspring generation will replace the parental generation
- and become the present generation (population), after it is populated from
+ and become the present generation (Population), after it is populated from
  a parental population.
  The parental generation is discarded.
 \end_layout
@@ -4656,20 +4656,20 @@ Remove or extract individuals and subpopulations
 \begin_layout Standard
 Functions 
 \family typewriter
-population.removeIndividuals
+Population.removeIndividuals
 \family default
  and 
 \family typewriter
-population.removeSubPops
+Population.removeSubPops
 \family default
  remove selected individuals or groups of individuals from a population.
  Functions 
 \family typewriter
-population.extractIndividuals
+Population.extractIndividuals
 \family default
  and 
 \family typewriter
-population.extractSubPops
+Population.extractSubPops
 \family default
  extract individuals and subpopulations from an existing population and
  form a new one.
@@ -4750,7 +4750,7 @@ operator!Stat
 
 
 \family default
- operator calculates population statistics and stores the results in this
+ operator calculates Population statistics and stores the results in this
  Python dictionary.
  Other operators such as the 
 \family typewriter
@@ -4766,12 +4766,12 @@ read from this dictionary and act upon its information.
 \begin_layout Standard
 simuPOP provides two functions, namely 
 \family typewriter
-population.vars
+Population.vars
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-population!vars
+Population!vars
 \end_layout
 
 \end_inset
@@ -4780,12 +4780,12 @@ population!vars
 \family default
  and 
 \family typewriter
-population.
+Population.
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-population!population
+Population!Population
 \end_layout
 
 \end_inset
@@ -4828,14 +4828,14 @@ reference "popVars"
 
 \end_inset
 
- demonstrates how to set and access Population variables.
+ demonstrates how to set and access population variables.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/popVars.log"
-lstparams "caption={Population variables},label={popVars}"
+lstparams "caption={population variables},label={popVars}"
 
 \end_inset
 
@@ -4866,7 +4866,7 @@ reference "simple-example"
 \backslash
 t' % LD[0][1]''
 \family default
- in each population's local namespace when it is applied to that population.
+ in each population's local namespace when it is applied to that Population.
  This yields different results for different population because their LD
  values are different.
  In addition to Python expressions, Python statements can also be executed
@@ -4932,12 +4932,12 @@ Save and load a population
 \begin_layout Standard
 simuPOP populations can be saved to and loaded from disk files using 
 \family typewriter
-population.save
+Population.save
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
-population!save
+Population!save
 \end_layout
 
 \end_inset
@@ -4994,7 +4994,7 @@ The native simuPOP format is portable across different platforms but is
  If you need to save a simuPOP population in a format that is recognizable
  by a particular software, please check the simuPOP online bookbook and
  see if there is an existing supporting module.
- Otherwise, you could write your own import and export function using population
+ Otherwise, you could write your own import and export function using Population
  functions.
  
 \end_layout
@@ -5343,7 +5343,7 @@ dynamic
 \family typewriter
 rep=-1
 \family default
- will refer to a previous population if the last population has stopped
+ will refer to a previous Population if the last population has stopped
  evolving.
  Use a non-negative replicate number if this is not intended.
  
@@ -5903,7 +5903,7 @@ A
 hybrid operator
 \emph default
  is an operator that calls a user-defined function when its applied to a
- population.
+ Population.
  The number and meaning of input parameters and return values vary from
  operator to operator.
  For example, a hybrid mutator sends a to-be-mutated allele to a user-defined
@@ -6263,7 +6263,7 @@ PyOperator
 \family typewriter
 Stat()
 \family default
- operator, to examine population property during evolution, or prepare populatio
+ operator, to examine Population property during evolution, or prepare populatio
 ns for a special mating scheme.
  However, because 
 \family typewriter
@@ -6562,7 +6562,7 @@ A homogeneous mating scheme
 
 \begin_layout Plain Layout
 A homogeneous mating scheme is responsible to choose parent(s) from a subpopulat
-ion or a virtual subpopulation, and population part or all of the corresponding
+ion or a virtual subpopulation, and Population part or all of the corresponding
  offspring subpopulation.
  A parent chooser is used to choose one or two parents from the parental
  generation, and pass it to an offspring generator, which produces one or
@@ -6598,7 +6598,7 @@ A mating scheme goes through each subpopulation and populates the subpopulations
 A simuPOP mating scheme, by default, produces an offspring generation that
  has the same subpopulation sizes as the parental generation.
  This does not guarantee a constant population size because some operators,
- such as a Migrator, can change population or subpopulation sizes.
+ such as a Migrator, can change Population or subpopulation sizes.
 \end_layout
 
 \begin_layout Itemize
@@ -7402,7 +7402,7 @@ aa
 a
 \family default
  have a high probability to be selected, and become the alpha male in this
- population, the frequency of this mutant tend to increase in this population.
+ Population, the frequency of this mutant tend to increase in this population.
 \end_layout
 
 \begin_layout Standard
@@ -7520,7 +7520,7 @@ HeteroMating
 ) accepts a list of mating schemes that are applied to different subpopulation
  or virtual subpopulations.
  If multiple mating schemes are applied to the same subpopulation, each
- of them only population part of the offspring subpopulation.
+ of them only Population part of the offspring subpopulation.
  This is illustrated in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7935,7 +7935,7 @@ A simuPOP simulator evolves one or more copies of a population forward in
  time, subject to various operators.
  Although a population could evolve by itself using function 
 \family typewriter
-population.evolve
+Population.evolve
 \family default
 , a simulator with one replicate is actually used.
 \end_layout
@@ -7990,7 +7990,7 @@ False
 \end_layout
 
 \begin_layout Standard
-Populations in a simulator can be added or removed using functions 
+populations in a simulator can be added or removed using functions 
 \family typewriter
 Simulator.add()
 \family default
@@ -8011,7 +8011,7 @@ Simulator.extract(idx)
 When a simulator is created, you can access populations in this simulator
  using function 
 \family typewriter
-Simulator.population(idx)
+Simulator.Population(idx)
 \family default
  or iterate through all populations using function 
 \family typewriter
@@ -8139,7 +8139,7 @@ evolve
 \end_layout
 
 \begin_layout Standard
-The generation number is stored in each population using population variable
+The generation number is stored in each Population using population variable
  
 \family typewriter
 gen
@@ -8150,7 +8150,7 @@ Simulator.dvars(idx)
 \family default
  or from a population using function 
 \family typewriter
-population.dvars()
+Population.dvars()
 \family default
 .
  If needed, you can reset generation numbers by changing these variables.
@@ -8610,7 +8610,7 @@ reference "locateRelative"
  gives an example how to locate a grandfather with at least five grandchildren.
  With such information, functions such as 
 \family typewriter
-population.extractIndividuals()
+Population.extractIndividuals()
 \family default
  could be used to extract Pedigrees from a population.
  This is basically how 
@@ -9134,7 +9134,7 @@ Operator
 PyExec
 \family default
  executes Python statements in a population's local namespace when it is
- applied to that population.
+ applied to that Population.
  This operator is designed to execute short Python statements but multiple
  statements separated by newline characters are allowed.
 \end_layout
@@ -10046,7 +10046,7 @@ migrate from virtual subpopulations *
 Under a realistic eco-social settings, individuals in a subpopulation rarely
  have the same probability to migrate.
  Genetic evidence has shown that female has a higher migrate rate than male
- in humans, perhaps due to migration patterns related to inter-population
+ in humans, perhaps due to migration patterns related to inter-Population
  marriages.
  Such sex-biased migration also happens in other large migration events
  such as slave trade.
@@ -10080,11 +10080,11 @@ To avoid confusing, this example uses the proportion migration mode.
 \end_layout
 
 \begin_layout Itemize
-Subpopulation 0: male 500-50, female 500-25, total 925
+SubPopulation 0: male 500-50, female 500-25, total 925
 \end_layout
 
 \begin_layout Itemize
-Subpopulation 1: male 500+50, female 500+25, total 1075
+SubPopulation 1: male 500+50, female 500+25, total 1075
 \end_layout
 
 \begin_layout Standard
@@ -10203,7 +10203,7 @@ SplitSubPops
 \family default
  splits one or more subpopulations into finer subpopulations.
  It can be used to simulate populations that originate from the same founder
- population.
+ Population.
  For example, a population of size 1000 in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -10512,7 +10512,7 @@ diploid
 HaplodiploidGenoTransmitter
 \family default
 : Set genotype to male and female offspring differently in a haplodiploid
- population, used by mating scheme 
+ Population, used by mating scheme 
 \family typewriter
 HaplodiploidMating
 \family default
@@ -10687,7 +10687,7 @@ status open
 
 \begin_layout Plain Layout
 
-population(size=100, loci=[4], lociPos=[0.1, 0.2, 0.4, 0.8])
+Population(size=100, loci=[4], lociPos=[0.1, 0.2, 0.4, 0.8])
 \end_layout
 
 \end_inset
@@ -15079,7 +15079,7 @@ ParentsTagger
 
 \begin_layout Standard
 A parents tagger is used to record the indexes of parents (in the parental
- population) in the information fields (default to 
+ Population) in the information fields (default to 
 \family typewriter
 father_idx
 \family default
@@ -15089,7 +15089,7 @@ mother_idx
 \family default
 ) of their offspring.
  These indexes provide a way to track down an individuals parents, offspring
- and consequently all relatives in a multi-generation population.
+ and consequently all relatives in a multi-generation Population.
  Because this operator has been extensively used in this guide, please refer
  to other sections for an Example (e.g.
  Example 
@@ -15518,11 +15518,11 @@ alleleFreq[0]
 You can also retrieve variables in a population directly using functions
  
 \family typewriter
-population.vars()
+Population.vars()
 \family default
  or 
 \family typewriter
-population.dvars()
+Population.dvars()
 \family default
 .
  The only difference between these functions is that 
@@ -15819,11 +15819,11 @@ m']
 .
  Functions 
 \family typewriter
-population.vars(sp)
+Population.vars(sp)
 \family default
  and 
 \family typewriter
-population.dvars(sp)
+Population.dvars(sp)
 \family default
  are provided as shortcuts to access these variables but the full variable
  names have to be specified if these variables are used in expressions.
@@ -16862,7 +16862,7 @@ ChiSq_p
 CramerV
 \family default
 .
- Subpopulation specific variables can be calculated by specifying variables
+ SubPopulation specific variables can be calculated by specifying variables
  such as 
 \family typewriter
 LD_sp
@@ -17146,7 +17146,7 @@ lstparams "caption={Genetic association tests},label={statAssociation}"
 \end_layout
 
 \begin_layout Subsection
-Population structure
+population structure
 \end_layout
 
 \begin_layout Standard
@@ -17564,7 +17564,7 @@ SavePopulation
 \begin_layout Standard
 Because it is usually not feasible to store all parental generations of
  an evolving population, it is a common practise to save snapshots of a
- population during an evolutionary process for further analysis.
+ Population during an evolutionary process for further analysis.
  Operator 
 \family typewriter
 SavePopulation
@@ -18891,7 +18891,7 @@ N=1000
 N=[1000, 2000]
 \family default
 ) for a structured population with constant size, or a demographic function
- that returns population or subpopulation sizes at each generation.
+ that returns Population or subpopulation sizes at each generation.
  In the last case, subpopulations can be split or merged with the constrait
  that subpopulations can be merged into one, from split from one population.
 \end_layout
@@ -20614,7 +20614,7 @@ drawRandomSample(pop, size=100)
 drawAffectedSibpairSample(pop, families=100)
 \family default
  to select 100 pairs of affected invididuals with their parents from a multi-gen
-erational population, or a age-structured population with parents and offspring
+erational Population, or a age-structured population with parents and offspring
  in the same generation.
 \end_layout
 
@@ -20691,7 +20691,7 @@ drawRandomSample
 \family typewriter
 drawRandomSamples
 \family default
- draw random invidiauls from a given population.
+ draw random invidiauls from a given Population.
  If a simple number is given to parameter 
 \family typewriter
 size
@@ -20716,7 +20716,7 @@ reference "randomSample"
  demonstrates how to draw a random sample from the whole population, and
  from each subpopulation.
  Because sample populations keep the population structure of the source
- population (this might change when parameter 
+ Population (this might change when parameter 
 \family typewriter
 subPops
 \family default
@@ -20762,7 +20762,7 @@ drawCaseControlSample
 drawCaseControlSamples
 \family default
  draw cases (affected individuals) and controls (unaffected invidiauls)
- from a given population.
+ from a given Population.
  If a simple number is given to parameter 
 \family typewriter
 cases
@@ -21552,10 +21552,10 @@ key "Reich2001a"
 \end_inset
 
  proposed a population genetics framework to model the evolution of allelic
- spectra (the number and population frequency of alleles at a locus).
- The model is based on the fact that human population grew quickly from
+ spectra (the number and Population frequency of alleles at a locus).
+ The model is based on the fact that human Population grew quickly from
  around 10,000 to 6 billion in 18,000 -150,000 years.
- His analysis showed that at the founder population, both common and rare
+ His analysis showed that at the founder Population, both common and rare
  diseases have simple spectra.
  After the sudden expansion of population size, the allelic spectra of simple
  diseases become complex; while those of complex diseases remained simple.
@@ -21600,7 +21600,7 @@ key "Reich2001a"
 
 \end_inset
 
- used a very simple instant population growth model.
+ used a very simple instant Population growth model.
  Under the model assumption, a population with an initial population size
  
 \begin_inset Formula $N_{0}$
@@ -21634,7 +21634,7 @@ def ins_expansion(gen):
 
 \begin_layout Plain Layout
 
-    'An instant population growth model'
+    'An instant Population growth model'
 \end_layout
 
 \begin_layout Plain Layout
@@ -21664,7 +21664,7 @@ def ins_expansion(gen):
 
 \begin_layout Standard
 Other demographic models could be implemented similarly.
- For example, an exponential population growth model that expand the population
+ For example, an exponential Population growth model that expand the population
  size from 
 \begin_inset Formula $N_{0}$
 \end_inset
@@ -21692,7 +21692,7 @@ def exp_expansion(gen):
 
 \begin_layout Plain Layout
 
-    'An exponential population growth model'
+    'An exponential Population growth model'
 \end_layout
 
 \begin_layout Plain Layout
@@ -21786,7 +21786,7 @@ reference "reichDemo"
 \family typewriter
 demo_model
 \family default
- is defined to return either an instant or an exponential population growth
+ is defined to return either an instant or an exponential Population growth
  demographic function.
  
 \end_layout
@@ -22946,7 +22946,7 @@ status open
 
 \begin_layout Plain Layout
 
->>> population(1, loci=[100]).individual(0).genotype()
+>>> Population(1, loci=[100]).individual(0).genotype()
 \end_layout
 
 \end_inset
@@ -22981,7 +22981,7 @@ Turn on/off debug information
 
 \begin_layout Plain Layout
 
->>> population(1, loci=100).individual(0).genotype()
+>>> Population(1, loci=100).individual(0).genotype()
 \end_layout
 
 \begin_layout Plain Layout
@@ -23003,7 +23003,7 @@ Segmentation fault (core dumped)
 
 
 \family typewriter
-population(1, loci=[100])
+Population(1, loci=[100])
 \family default
  creates a temporary object that is destroyed right after the execution
  of the command.
@@ -23020,7 +23020,7 @@ status open
 
 \begin_layout Plain Layout
 
->>> pop = population(1, loci=[100])
+>>> pop = Population(1, loci=[100])
 \end_layout
 
 \begin_layout Plain Layout
@@ -24374,7 +24374,7 @@ CloneMating
 \end_layout
 
 \begin_layout Itemize
-The resulting population is age-structured so Pedigrees could be extracted
+The resulting Population is age-structured so Pedigrees could be extracted
  from such a population.
 \end_layout
 

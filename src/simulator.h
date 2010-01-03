@@ -70,8 +70,8 @@ namespace simuPOP {
 class pyPopIterator
 {
 public:
-	pyPopIterator(vector<population *>::iterator const begin,
-		vector<population *>::iterator const end) :
+	pyPopIterator(vector<Population *>::iterator const begin,
+		vector<Population *>::iterator const end) :
 		m_index(begin),
 		m_end(end)
 	{
@@ -89,20 +89,20 @@ public:
 	}
 
 
-	population & next();
+	Population & next();
 
 private:
 	// current (initial population)
-	vector<population *>::iterator m_index;
+	vector<Population *>::iterator m_index;
 
 	// ending idx
-	vector<population *>::iterator m_end;
+	vector<Population *>::iterator m_end;
 };
 
 
 /** A simuPOP simulator is responsible for evolving one or more replicates
- *  of a \e population forward in time, subject to various \e operators.
- *  Populations in a simulator are created as identical copies of a population
+ *  of a \e Population forward in time, subject to various \e operators.
+ *  populations in a simulator are created as identical copies of a population
  *  and will become different after evolution. A number of functions are
  *  provided to access Simulator properties, access populations and their
  *  variables, copy, save and load a simulator.
@@ -154,7 +154,7 @@ public:
 	 *  <tt>simu.population(rep).clone()</tt>.
 	 *  <group>3-pop</group>
 	 */
-	population & pop(UINT rep) const;
+	Population & pop(UINT rep) const;
 
 	/** Add a population \e pop to the end of an existing Simulator. This
 	 *  function by default moves \c pop to the simulator, leaving an empty
@@ -162,13 +162,13 @@ public:
 	 *  the population will be copied to the simulator, and thus unchanged.
 	 *  <group>4-modify</group>
 	 */
-	void add(const population & pop, bool steal = true);
+	void add(const Population & pop, bool steal = true);
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
 	 *  <group>3-pop</group>
 	 */
-	population & extract(UINT rep);
+	Population & extract(UINT rep);
 
 	/** Return a Python iterator that can be used to iterate through all
 	 *  populations in a simulator.
@@ -197,7 +197,7 @@ public:
 	 *  the generations, to all or some of the evolving populations, depending
 	 *  the \e begin, \e end, \e step, \e at and \e reps parameters of these
 	 *  operators. These operators are applied in the order at which they are
-	 *  specified. Populations in a simulator are evolved one by one. At each
+	 *  specified. populations in a simulator are evolved one by one. At each
 	 *  generation, operators \e preOps are applied to the parental
 	 *  generations. A mating scheme is then used to populate an offspring
 	 *  generation. For each offspring, his or her sex is determined before
@@ -237,7 +237,7 @@ public:
 
 
 	/** Return the local namespace of the \e rep-th population, equivalent to
-	 *  <tt>x.population(rep).vars(subPop)</tt>.
+	 *  <tt>x.Population(rep).vars(subPop)</tt>.
 	 *  <group>9-var</group>
 	 */
 	PyObject * vars(UINT rep, vspID subPop = vspID())
@@ -254,7 +254,7 @@ public:
 
 private:
 	/// access scratch population
-	population & scratchpopulation()
+	Population & scratchPopulation()
 	{
 		return *m_scratchPop;
 	}
@@ -262,10 +262,10 @@ private:
 
 private:
 	/// replicate pointers
-	vector<population *> m_pops;
+	vector<Population *> m_pops;
 
 	/// the scratch pop
-	population * m_scratchPop;
+	Population * m_scratchPop;
 
 #ifndef OPTIMIZED
 	clock_t m_clock;

@@ -31,7 +31,7 @@ class TestPerformance(unittest.TestCase):
     def TestGetinfo(self):
         '''Comparing two ways to access info fields '''
         # There are two ways to get infomation from a population
-        # From individual or from Population as a whole
+        # From individual or from population as a whole
         # Let us see which one is faster
         for N in [10000, 100000, 1000000]:
             print "N=%d" % N
