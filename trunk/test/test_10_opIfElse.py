@@ -18,7 +18,7 @@ class TestIfElseOperator(unittest.TestCase):
 
     def testIfElseOperator(self):
         'Testing opeartor IfElse'
-        pop = population(1000, loci=[2])
+        pop = Population(1000, loci=[2])
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         pop.evolve(
             # init to 1,2 (or 0, 1 in the binary case)
@@ -42,7 +42,7 @@ class TestIfElseOperator(unittest.TestCase):
 
     def testIfElseOperators(self):
         'Testing opeartor IfElse with multiple operators'
-        simu = Simulator(population(1000, loci=[2]))
+        simu = Simulator(Population(1000, loci=[2]))
         # now if we want to flip a lot of alleles whenever it reaches 0.2
         simu.evolve(
             # init to 1,2 (or 0, 1 in the binary case)

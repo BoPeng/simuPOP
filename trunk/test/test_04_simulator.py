@@ -17,7 +17,7 @@ class TestSimulator(unittest.TestCase):
 
     def testClone(self):
         'Testing Simulator::clone() of Simulator'
-        pop = population(size=[100, 40], loci=[2, 5])
+        pop = Population(size=[100, 40], loci=[2, 5])
         simu = Simulator(pop, rep = 3)
         simu.evolve(
             initOps = [InitSex(), InitByFreq([0.3, .7])],
@@ -41,12 +41,12 @@ class TestSimulator(unittest.TestCase):
 
     def testEvolve(self):
         'Testing Simulator:: evolve()'
-        pop = population(size=1, loci=[1])
+        pop = Population(size=1, loci=[1])
         simu = Simulator(pop, rep=3)
         # no terminator, no ending generation is specified
         self.assertRaises(exceptions.ValueError, simu.evolve)
         # sample
-        pop = population(size=[200, 80], loci=[3])
+        pop = Population(size=[200, 80], loci=[3])
         pop.evolve(
             initOps = [InitSex(), InitByFreq([0.2, 0.8])],
             matingScheme=RandomMating(ops = Recombinator(rates=0.001)),
@@ -57,8 +57,8 @@ class TestSimulator(unittest.TestCase):
 
     def testCreateSimulator(self):
         'Testing the construction of Simulator'
-        pop = population(size=[20, 80], loci=1)
-        pop1 = population(size=[20, 40], loci=2)
+        pop = Population(size=[20, 80], loci=1)
+        pop1 = Population(size=[20, 40], loci=2)
         simu = Simulator([pop, pop1], steal=False)
         self.assertEqual(pop.popSize(), 100)
         self.assertEqual(pop1.popSize(), 60)
@@ -71,8 +71,8 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(0).popSize(), 100)
         self.assertEqual(simu.population(1).popSize(), 60)
         # rep
-        pop = population(size=[20, 80], loci=1)
-        pop1 = population(size=[20, 40], loci=2)
+        pop = Population(size=[20, 80], loci=1)
+        pop1 = Population(size=[20, 40], loci=2)
         simu = Simulator([pop, pop1], rep=3, steal=False)
         self.assertEqual(pop.popSize(), 100)
         self.assertEqual(pop1.popSize(), 60)
@@ -82,7 +82,7 @@ class TestSimulator(unittest.TestCase):
 
     def testExtract(self):
         'Testing Simulator::extract(rep), numRep()'
-        pop = population(size=[20, 80], loci=[3])
+        pop = Population(size=[20, 80], loci=[3])
         simu = Simulator(pop, rep=5)
         repnum = simu.numRep()
         simu.extract(2)
@@ -92,10 +92,10 @@ class TestSimulator(unittest.TestCase):
 
     def testAdd(self):
         'Testing Simulator::add(pop)'
-        pop = population(size=[20, 80], loci=[3])
+        pop = Population(size=[20, 80], loci=[3])
         simu = Simulator(pop, rep=5)
         repnum = simu.numRep()
-        pop1 = population(size=[20, 50], loci=[2])
+        pop1 = Population(size=[20, 50], loci=[2])
         simu.add(pop1)
         self.assertEqual(simu.numRep(), repnum+1)
         self.assertEqual(simu.population(repnum).subPopSizes(), (20, 50))
@@ -103,7 +103,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.population(repnum).subPopSizes(), (20,))
         self.assertEqual(pop1.subPopSizes(), (0,))
         # add without strealing
-        pop = population(size=[300, 500], loci=1)
+        pop = Population(size=[300, 500], loci=1)
         repnum = simu.numRep()
         simu.add(pop, steal=False)
         self.assertEqual(simu.numRep(), repnum + 1)
@@ -112,8 +112,8 @@ class TestSimulator(unittest.TestCase):
 
 
     def testPopulation(self):
-        'Testing Simulator::population(rep), populations()'
-        pop = population(size=1000, loci=[1])
+        'Testing Simulator::Population(rep), populations()'
+        pop = Population(size=1000, loci=[1])
         simu = Simulator(pop, rep=5)
         self.assertEqual(pop.popSize(), 0)
         # pop is not affected if simu changes
@@ -121,7 +121,7 @@ class TestSimulator(unittest.TestCase):
             for idx in range(simu.population(rep).popSize()):
                 simu.population(rep).individual(idx).setAllele(1, 0)
                 self.assertEqual(simu.population(rep).individual(idx).allele(0), 1)
-        # reference to the rep-th population
+        # reference to the rep-th Population
         for rep in range(5):
             pop = simu.population(rep)
             for idx in range(pop.popSize()):
@@ -142,7 +142,7 @@ class TestSimulator(unittest.TestCase):
 
     def testAddInfoField(self):
         'Testing setMatingScheme(matingScheme)'
-        simu = Simulator(population(100, infoFields=['a']), rep=3)
+        simu = Simulator(Population(100, infoFields=['a']), rep=3)
         simu.evolve(initOps=[InitSex()], 
             matingScheme=CloneMating(), gen=1)
         simu.evolve(initOps=[InitSex()],
@@ -150,7 +150,7 @@ class TestSimulator(unittest.TestCase):
 
     def testVars(self):
         'Testing Simulator::vars(rep), vars(rep, subPop), dvars(rep), dvars(rep, subPop)'
-        pop = population(size=100, loci=[2, 4])
+        pop = Population(size=100, loci=[2, 4])
         initByFreq(pop, [.2, .3, .5])
         stat(pop, alleleFreq=range(0, 6))
         simu = Simulator(pop, rep=5)
@@ -158,7 +158,7 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
             self.assertEqual(len(simu.dvars(rep).alleleFreq), 6)
         # with subPop
-        pop = population(size=[20, 80], loci=[2, 4])
+        pop = Population(size=[20, 80], loci=[2, 4])
         initByFreq(pop, [.2, .3, .5])
         stat(pop, alleleFreq=range(0, 6), vars=['alleleFreq', 'alleleFreq_sp'])
         simu = Simulator(pop, rep=5)

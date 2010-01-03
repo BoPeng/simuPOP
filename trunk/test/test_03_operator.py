@@ -31,7 +31,7 @@ class TestOperator(unittest.TestCase):
         'Testing active generation specifications'
         def getActiveGens(endGen=20, *args, **kwargs):
             d = opRecorder(*args, **kwargs)
-            simu = Simulator(population())
+            simu = Simulator(Population())
             simu.evolve(postOps=d, gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10),
@@ -54,7 +54,7 @@ class TestOperator(unittest.TestCase):
 
     def testReplicate(self):
         'Testing replicate related functions'
-        simu = Simulator(population(), rep=3)
+        simu = Simulator(Population(), rep=3)
         simu.evolve(
             postOps = opRecorder(reps=-1),
             matingScheme=CloneMating(),
@@ -78,7 +78,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutput(self):
         'Testing output specifications'
-        simu = Simulator( population(), rep=5)
+        simu = Simulator( Population(), rep=5)
         simu.evolve(postOps = PyOutput("a", output=">a.txt"),
             matingScheme=CloneMating(),
             gen=10)
@@ -117,7 +117,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutputExpr(self):
         'Testing the usage of output expression'
-        simu = Simulator( population(), rep=5)
+        simu = Simulator( Population(), rep=5)
         # each replicate
         simu.evolve(postOps = PyOutput("a", output="!'rep%d.txt'%rep"),
             matingScheme=CloneMating(),
@@ -163,7 +163,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutputFunc(self):
         '''Testing output to a function'''
-        simu = Simulator(population(), rep=5)
+        simu = Simulator(Population(), rep=5)
         def func1(msg):
             self.assertEqual(msg, 'func1')
         def func2(msg):
@@ -178,12 +178,12 @@ class TestOperator(unittest.TestCase):
 
     def testInfoEval(self):
         '''Testing operator InfoEval'''
-        pop = population(10, infoFields=['a', 'b'])
+        pop = Population(10, infoFields=['a', 'b'])
         infoEval(pop, expr='b', stmts='b=a+1', output='')
         # information field b is NOT updated
         self.assertEqual(pop.indInfo('b'), tuple([0]*10))
         #
-        # use population variable
+        # use Population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
         self.assertRaises(exceptions.RuntimeError, infoEval, pop, 'c+4')
@@ -193,7 +193,7 @@ class TestOperator(unittest.TestCase):
 
     def testInfoExec(self):
         '''Testing operator InfoExec'''
-        pop = population(10, infoFields=['a', 'b'])
+        pop = Population(10, infoFields=['a', 'b'])
         infoExec(pop, 'b=a+1')
         self.assertEqual(pop.indInfo('b'), tuple([1]*10))
         infoExec(pop, 'a+=1')
@@ -201,7 +201,7 @@ class TestOperator(unittest.TestCase):
         # this will not do anything because there is no c to be updated.
         infoExec(pop, 'c=a+b')
         #
-        # use population variable
+        # use Population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
         self.assertRaises(exceptions.RuntimeError, infoExec, pop, 'b=c+4')
@@ -224,7 +224,7 @@ class TestOperator(unittest.TestCase):
 
     def testcloseOutput(self):
         '''Testing global function closeOutput'''
-        pop = population(100, loci=[2])
+        pop = Population(100, loci=[2])
         dump(pop, output='a.pop')
         size = len(open('a.pop').read())
         self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')

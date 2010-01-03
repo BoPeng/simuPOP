@@ -20,7 +20,7 @@ class TestSelector(unittest.TestCase):
 
     def testMapSelector(self):
         'Testing a map selector'
-        pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'])
+        pop = Population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'])
         initByFreq(pop, [.2, .8])
         MapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,1):0.25}).apply(pop)
         for ind in pop.individuals():
@@ -46,7 +46,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.genotype() == (1,1):
                     self.assertEqual(ind.fitness, 0.25)
             #
-            pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=1)
             initByFreq(pop, [.2, 0, .8])
             MapSelector(loci=[0], fitness={(0,):1, (1,):0.9}).apply(pop)
@@ -56,7 +56,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.genotype() == (2,):
                     self.assertEqual(ind.fitness, 0.9)
             # haplodiploid population
-            pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=HAPLODIPLOID)
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -79,7 +79,7 @@ class TestSelector(unittest.TestCase):
                     self.assertEqual(ind.fitness, 0.9)
             #
             # sex chromosome
-            pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -107,7 +107,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # multiple loci
-            pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -142,7 +142,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.genotype() == (2,2):
                     self.assertEqual(ind.fitness, 0.25)
             #
-            pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=1)
             initByFreq(pop, [.2, 0, .8])
             MapSelector(loci=[0], fitness={(0,):1, (2,):0.9}).apply(pop)
@@ -152,7 +152,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.genotype() == (2,):
                     self.assertEqual(ind.fitness, 0.9)
             # haplodiploid population
-            pop = population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1], infoFields=['a', 'fitness', 'b'],
                 ploidy=HAPLODIPLOID)
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -175,7 +175,7 @@ class TestSelector(unittest.TestCase):
                     self.assertEqual(ind.fitness, 0.9)
             #
             # sex chromosome
-            pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -203,7 +203,7 @@ class TestSelector(unittest.TestCase):
                 elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # multiple loci
-            pop = population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop)
             initByFreq(pop, [.2, 0, .8])
@@ -229,7 +229,7 @@ class TestSelector(unittest.TestCase):
 
     def testMaSelector(self):
         'Testing multi-allele selector'
-        pop = population(size=10, loci=[1], infoFields=['a', 'fitness', 'b'])
+        pop = Population(size=10, loci=[1], infoFields=['a', 'fitness', 'b'])
         initByFreq(pop, [.2, .8])
         MaSelector(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
@@ -303,7 +303,7 @@ class TestSelector(unittest.TestCase):
                         )
         # sel = MaSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
-            pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
+            pop = Population(size=[200,N], loci=[1], infoFields=['fitness'])
             simu = Simulator(pop)
             simu.evolve(
                 initOps = [InitSex(), InitByFreq([1-p]+[p/10.]*10)],
@@ -325,7 +325,7 @@ class TestSelector(unittest.TestCase):
     def testSubPopDirSelection(self):
         'Testing directional selection in s subpopulation using a map selector'
         simu = Simulator(
-            population(size=[200, 1000], ploidy=2, loci=[1],
+            Population(size=[200, 1000], ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
@@ -352,7 +352,7 @@ class TestSelector(unittest.TestCase):
         # NOTE: use spare here to make sure that slector will work
         # when more than one information fields are available.
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
@@ -377,7 +377,7 @@ class TestSelector(unittest.TestCase):
         'Testing directional selection using a multi-allele selector'
         # specify relative fitness: w11, w12/w21, w22
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 1. directional selection
         #     w11 > w12 > w22
@@ -401,7 +401,7 @@ class TestSelector(unittest.TestCase):
         'Testing heterozygous advantage using map selector'
         # specify relative fitness: w11, w12/w21, w22
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         s1 = .1
         s2 = .2
@@ -435,7 +435,7 @@ class TestSelector(unittest.TestCase):
         p = .2/ (.1+.2)
         # specify relative fitness: w11, w12/w21, w22
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
@@ -463,7 +463,7 @@ class TestSelector(unittest.TestCase):
     def testMapSelectorHeteroDisadv(self):
         'Testing heterozygous disadvantage using map selector'
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 2. heterozygote inferiority
         #     w11 > w12, w12 < w22
@@ -491,7 +491,7 @@ class TestSelector(unittest.TestCase):
         p = .2/ (.1+.2)
         # specify relative fitness: w11, w12/w21, w22
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 2. heterozygote inferiority
         #     w11 > w12, w12 < w22
@@ -515,7 +515,7 @@ class TestSelector(unittest.TestCase):
     def testMultiLocusMaSelector(self):
         'Testing the multi-locus version of the MaSelector'
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[3,6],
+            Population(size=1000, ploidy=2, loci=[3,6],
             infoFields=['fitness', 'spare']))
         simu.evolve(
             preOps = MaSelector(loci=[3,6], wildtype=0,
@@ -527,7 +527,7 @@ class TestSelector(unittest.TestCase):
 
     def testMultiLocusMapSelector(self):
         'Testing multiple loci map selector.'
-        pop = population(10, loci=[2],
+        pop = Population(10, loci=[2],
             infoFields=['fitness'])
         initByValue(pop, value=[[0,0],[1,1]], proportions=[0.5,0.5])
         #MapSelector(pop, loci=[0,1],
@@ -580,7 +580,7 @@ class TestSelector(unittest.TestCase):
                 return 1 - s2
         #
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
@@ -632,7 +632,7 @@ class TestSelector(unittest.TestCase):
                     return 1 - s2/2.
         #
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[1],
+            Population(size=1000, ploidy=2, loci=[1],
             infoFields=['fitness', 'spare']))
         # 2. heterozygote superiority
         #     w11 < w12, w12 > w22
@@ -660,7 +660,7 @@ class TestSelector(unittest.TestCase):
     def testMlSelector(self):
         'Testing multi-locus selector'
         simu = Simulator(
-            population(size=1000, ploidy=2, loci=[2],
+            Population(size=1000, ploidy=2, loci=[2],
             infoFields=['fitness', 'spare']))
         sel = MlSelector(
             [
@@ -688,7 +688,7 @@ class TestSelector(unittest.TestCase):
     def testSubPops(self):
         'Testing the subPops parameter of selector'
         simu = Simulator(
-            population(size=[20, 30, 40], loci=[2],
+            Population(size=[20, 30, 40], loci=[2],
                 infoFields='fitness'))
         def testFitness(pop, param):
             for sp in param[0]:
@@ -705,7 +705,7 @@ class TestSelector(unittest.TestCase):
         )
         # subPop is also allowed
         simu = Simulator(
-            population(size=[20, 30, 40], loci=[2],
+            Population(size=[20, 30, 40], loci=[2],
                 infoFields=['fitness']))
         simu.evolve(
             initOps = [InitSex(), InitByFreq([.4, .6])],

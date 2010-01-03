@@ -87,7 +87,7 @@ class TestInitialization(unittest.TestCase):
     
     def testInitSex(self):
         'Testing operator InitSex'
-        pop = population(size=[500, 1000], loci=[1])
+        pop = Population(size=[500, 1000], loci=[1])
         initSex(pop, sex=[MALE, FEMALE, FEMALE])
         for idx, ind in enumerate(pop.individuals()):
             if idx % 3 == 0:
@@ -113,7 +113,7 @@ class TestInitialization(unittest.TestCase):
                 count += 1
         self.assertEqual(count, 600)
         # subPop, virtual subPop
-        pop = population(size=[500, 1000], loci=[1], infoFields=['x'])
+        pop = Population(size=[500, 1000], loci=[1], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
@@ -129,7 +129,7 @@ class TestInitialization(unittest.TestCase):
 
     def testInitByFreq(self):
         'Testing operator InitByFreq '
-        pop = population(size=[500, 1000, 500], loci=[2,4,2])
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2])
         # initialize all
         initByFreq(pop, [.2, .3, .5])
         self.assertGenotypeFreq(pop, [.15, .25, .45],
@@ -167,7 +167,7 @@ class TestInitialization(unittest.TestCase):
         self.assertRaises(exceptions.ValueError,
             initByFreq, pop, alleleFreq=[[.2, .8],[.8,.2]], identicalInds=1)
         # ploidy in InitByFreq'
-        pop = population(size=[500, 1000, 500], loci=[2,4,2])
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2])
         self.clearGenotype(pop)
         initByFreq(pop, [.2, .3, .5], loci=[2,4,6], ploidy=[0])
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55],
@@ -175,7 +175,7 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, loci=[0,3,5,7])
         self.assertGenotype(pop, 0, atPloidy=1)
         # virtual subPop
-        pop = population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
+        pop = Population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
@@ -208,7 +208,7 @@ class TestInitialization(unittest.TestCase):
  
     def testInitByValue(self):
         'Testing operator InitByValue'
-        pop = population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
+        pop = Population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))

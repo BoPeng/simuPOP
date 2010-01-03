@@ -20,11 +20,11 @@ class TestIndividual(unittest.TestCase):
     # define a function to create basic populations
     def getPop(self):
         if moduleInfo()['alleleType'] != 'binary':
-            pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
+            pop = Population(size=[20, 80], ploidy=2, loci=[5, 7],
                 lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
                 alleleNames=['_', 'A', 'C', 'T', 'G'])
         else: # binary
-            pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
+            pop = Population(size=[20, 80], ploidy=2, loci=[5, 7],
                 lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
                 alleleNames=['1', '2'])
         return pop
@@ -187,7 +187,7 @@ class TestIndividual(unittest.TestCase):
     def testInfo(self):
         'Testing individual::info(idx), info(name)'
         'setInfo(value, idx), setInfo(value, name)'
-        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
+        pop = Population(10, infoFields=['age', 'fitness', 'trait1'])
         ind = pop.individual(0)
         ind.setInfo(2.5, 0)
         self.assertEqual(ind.info(0), 2.5)

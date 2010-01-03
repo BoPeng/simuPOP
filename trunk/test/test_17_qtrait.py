@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions, math, random
 class TestQuanTrait(unittest.TestCase):
 
     def setUp(self):
-        self.pop = population(size=[5000],
+        self.pop = Population(size=[5000],
             ploidy=2, loci = [1], infoFields=['qtrait'])
         self.pop.setVirtualSplitter(RangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
         initByValue(self.pop,
@@ -45,14 +45,14 @@ class TestQuanTrait(unittest.TestCase):
         pyQuanTrait(self.pop, loci=[0], func=qt, infoFields='qtrait')
         #
         # multi-locus
-        pop = population(1000, loci=[3,5], infoFields=['qtrait'])
+        pop = Population(1000, loci=[3,5], infoFields=['qtrait'])
         initByFreq(pop, [.3, .7])
         def qt1(geno):
             assert len(geno) == 4
             return random.normalvariate(0, 0.5*sum(geno) )
         pyQuanTrait(pop, loci=[2,6], func=qt1, infoFields='qtrait')
         # multi-fields
-        pop = population(1000, loci=[3,5], infoFields=['qtrait1', 'qtrait2'])
+        pop = Population(1000, loci=[3,5], infoFields=['qtrait1', 'qtrait2'])
         initByFreq(pop, [.3, .7])
         def qt1(geno):
             assert len(geno) == 4
