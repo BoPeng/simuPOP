@@ -44,7 +44,7 @@ string PyOutput::describe(bool format)
 }
 
 
-void dumper::displayStructure(const population & pop, ostream & out)
+void Dumper::displayStructure(const population & pop, ostream & out)
 {
 	out << "Ploidy: " << pop.ploidy()
 	    << " (" << pop.ploidyName() << ")" << endl;
@@ -96,7 +96,7 @@ void dumper::displayStructure(const population & pop, ostream & out)
 }
 
 
-UINT dumper::displayGenotype(const population & pop, const subPopList & subPops, ostream & out)
+UINT Dumper::displayGenotype(const population & pop, const subPopList & subPops, ostream & out)
 {
 	UINT count = 0;
 	subPopList::const_iterator sp = subPops.begin();
@@ -122,7 +122,7 @@ UINT dumper::displayGenotype(const population & pop, const subPopList & subPops,
 }
 
 
-bool dumper::apply(population & pop)
+bool Dumper::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 

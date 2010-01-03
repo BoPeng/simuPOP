@@ -91,7 +91,7 @@ private:
  *  to simuPOP, this operator is usually used to dump a small population to a
  *  terminal for demonstration and debugging purposes.
  */
-class dumper : public BaseOperator
+class Dumper : public BaseOperator
 {
 public:
 	/** Create a operator that dumps the genotype structure (if \e structure is
@@ -105,7 +105,7 @@ public:
 	 *  class \c BaseOperator for a detailed explanation for common parameters
 	 *  such as \e output and \e stage.
 	 */
-	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
+	Dumper(bool genotype = true, bool structure = true, int ancGen = 0,
 		int width = 1, UINT max = 100, const uintList & loci = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -117,25 +117,25 @@ public:
 	}
 
 
-	/// Deep copy of a dumper operator.
+	/// Deep copy of a Dumper operator.
 	virtual BaseOperator * clone() const
 	{
-		return new dumper(*this);
+		return new Dumper(*this);
 	}
 
 
-	/// Apply a dumper operator to population \e pop.
+	/// Apply a Dumper operator to population \e pop.
 	virtual bool apply(population & pop);
 
 	/// destructor.
-	virtual ~dumper()
+	virtual ~Dumper()
 	{
 	};
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.dumper>" ;
+		return "<simuPOP.Dumper>" ;
 	}
 
 

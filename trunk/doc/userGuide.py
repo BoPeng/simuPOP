@@ -208,7 +208,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=[2,5], ploidy=sim.HAPLODIPLOID, loci=[3, 5])
 sim.initByFreq(pop, [0.3, 0.7])
-sim.Dump(pop)
+sim.dump(pop)
 #end_file
 
 #begin_file log/chromType.py
@@ -223,7 +223,7 @@ sim.getRNG().setSeed(12345)
 pop = sim.population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
     chromTypes=[sim.AUTOSOME]*2 + [sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2)
 sim.initByFreq(pop, [0.3, 0.7])
-sim.Dump(pop, structure=False) # does not display genotypic structure information
+sim.dump(pop, structure=False) # does not display genotypic structure information
 #end_file
 
 #begin_file log/infoField.py
@@ -408,7 +408,7 @@ sim.initByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]))
 pop.setIndInfo([sim.MALE], 'Sex', [0, 0])
 pop.setIndInfo([sim.FEMALE], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
 
@@ -615,7 +615,7 @@ pop.addChromFrom(pop1)
 pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], lociNames=['rs7', 'rs8'])
 # 1 1 1, 0 0 0, 2 0 2 0
 pop.removeLoci([8])
-sim.Dump(pop)
+sim.dump(pop)
 #end_file
 
 #begin_file log/recode.py
@@ -629,10 +629,10 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
 sim.initByFreq(pop, [0.2, 0.3, 0.4, 0.1])
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 print pop.genotype()
 pop.recodeAlleles([0, 3, 1, 2], alleleNames=['A', 'C', 'G', 'T'])
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 print pop.genotype()
 #end_file
 
@@ -661,7 +661,7 @@ pop.removeSubPops([(0, 1)])
 print pop.subPopSizes()
 # extract another virtual subpopulation (people with age greater than 60)
 pop1 = pop.extractSubPops([(0,2)])
-sim.Dump(pop1, structure=False, max=10)
+sim.dump(pop1, structure=False, max=10)
 #end_file
 
 
@@ -1347,10 +1347,10 @@ pop.evolve(
         sim.InitByValue([0]*10, subPops=[(0, 0)]),
         sim.InitByValue([1]*10+[2]*10, subPops=[(0, 1)])
     ],
-    preOps=sim.dumper(structure=False),
+    preOps=sim.Dumper(structure=False),
     matingScheme=sim.HaplodiploidMating(
         ops=[sim.HaplodiploidGenoTransmitter(), sim.ParentsTagger()]),
-    postOps=sim.dumper(structure=False),
+    postOps=sim.Dumper(structure=False),
     gen = 1
 )
 #end_file
@@ -1374,7 +1374,7 @@ pop.evolve(
     matingScheme=sim.SelfMating(ops=sim.Recombinator(rates=0.01)),
     gen = 1
 )
-sim.Dump(pop, width=3, structure=False, max=10)
+sim.dump(pop, width=3, structure=False, max=10)
 #end_file
 
 #begin_file log/HeteroMatingSP.py
@@ -1754,7 +1754,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=[2, 3], loci=[5, 7])
 sim.initByFreq(pop, alleleFreq=[[.2, .8], [.8, .2]])
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
 #begin_file log/InitByFreqIdenticalInds.py
@@ -1768,7 +1768,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=[2, 3], loci=[5, 7])
 sim.initByFreq(pop, alleleFreq=[.2, .8], identicalInds=True)
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
 #begin_file log/InitByValue.py
@@ -1782,7 +1782,7 @@ sim.getRNG().setSeed(12345)
 #end_ignore
 pop = sim.population(size=[2, 3], loci=[5, 7])
 sim.initByValue(pop, [1]*5 + [2]*7 + [3]*5 +[4]*7)
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
 #begin_file log/InitByValueProp.py
@@ -1805,7 +1805,7 @@ sim.initByValue(pop, loci=range(5, 12), value=[2]*7,
 # initialize females by proportion
 sim.initByValue(pop, loci=range(5, 12), ploidy=1, value=[[3]*7, [4]*7],
     subPops=[(0, 1), (1, 1)], proportions=[0.4, 0.6])
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
 #begin_file log/InitInfo.py
@@ -1824,10 +1824,10 @@ sim.initSex(pop)
 sim.initInfo(pop, 0, subPops=[(0,0)], infoFields='sex')
 sim.initInfo(pop, 1, subPops=[(0,1)], infoFields='sex')
 sim.initInfo(pop, lambda: random.randint(20, 70), infoFields='age')
-sim.Dump(pop, structure=False)
+sim.dump(pop, structure=False)
 #end_file
 
-#begin_file log/dumper.py
+#begin_file log/Dumper.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1845,7 +1845,7 @@ pop.setIndInfo(1, 'gen')
 sim.initByFreq(pop1, [0]*50 + [0.1]*10)
 pop1.setIndInfo(2, 'gen')
 pop.push(pop1)
-sim.Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
+sim.dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
     max=10, structure=False, ancGen=-1)
 #end_file
 
@@ -5082,7 +5082,7 @@ sim.getRNG().setSeed(12345)
 pop = sim.population(100, loci=5*3, infoFields='parent_idx')
 pop.evolve(
     initOps=[sim.InitByFreq([0.2]*5)],
-    preOps=sim.dumper(structure=False, max=5),
+    preOps=sim.Dumper(structure=False, max=5),
     matingScheme=sim.HomoMating(
         sim.SequentialParentChooser(),
         sim.OffspringGenerator(ops=[
@@ -5090,7 +5090,7 @@ pop.evolve(
             sim.ParentsTagger(infoFields='parent_idx'),
         ])
     ),
-    postOps=sim.dumper(structure=False, max=5),
+    postOps=sim.Dumper(structure=False, max=5),
     gen = 1
 )
 #end_file
@@ -5149,7 +5149,7 @@ pop.evolve(
         sim.MitochondrialGenoTransmitter(),
         sim.ParentsTagger()
     ]),
-    postOps=sim.dumper(structure=False),
+    postOps=sim.Dumper(structure=False),
     gen = 2
 )
 #end_file
@@ -5199,7 +5199,7 @@ pop.evolve(
         sexSpecificRecombinator(rates=0.1, maleRates=0),
         ParentsTagger()
     ]),
-    postOps=dumper(structure=False),
+    postOps=Dumper(structure=False),
     gen = 2
 )
 #end_file
@@ -5480,6 +5480,6 @@ pop.evolve(
 from simuPOP import sampling
 sample = sampling.drawNuclearFamilySample(pop, families=2, numOffspring=(2,3),
     affectedParents=(1,2), affectedOffspring=(1,3))
-sim.Dump(sample)
+sim.dump(sample)
 
 #end_file
