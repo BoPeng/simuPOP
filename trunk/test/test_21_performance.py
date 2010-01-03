@@ -91,7 +91,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestRandomMating(self):
         'Testing the performance of random mating '
-        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         r = 0.001
         migr = migrator(rate=[[1-r,r],[r,1-r]])
         p = 0.4
@@ -172,7 +172,7 @@ class TestPerformance(unittest.TestCase):
             # Tried to change maleIndex to IndIterator, but
             # the performance is slightly worse. (42,34, 64.35 etc)
             #
-            # Change maSelector and get a little performance gain of
+            # Change MaSelector and get a little performance gain of
             #    4.26, 6.02, 7.65
             #    43.66, 64.6, 83.77
             #
@@ -261,7 +261,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestInfoIterator(self):
         'Testing the performance of info iterator'
-        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         r = 0.001
         p = 0.4
         for N in [10000, 100000, 1000000]:
@@ -394,7 +394,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
-        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         r = 0.001
         migr = migrator(rate=[[1-r,r],[r,1-r]])
         p = 0.4
@@ -557,7 +557,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestMatingAlgorithm(self):
         'Testing the performance of mating algorithm'
-        sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
+        sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         for N in [40000, 400000]:
             print "N=%d" % N
             pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
@@ -751,7 +751,7 @@ class TestPerformance(unittest.TestCase):
                 else:
                     label = 'large'
                 c1 = time.clock()
-                pop.savePopulation('exp_%s.%s' % (label, format), compress=comp)
+                pop.SavePopulation('exp_%s.%s' % (label, format), compress=comp)
                 c2 = time.clock()
                 print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
                     os.stat('exp_%s.%s' % (label, format) )[stat.ST_SIZE]/1024./1024.)

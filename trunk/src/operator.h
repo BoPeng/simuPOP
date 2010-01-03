@@ -42,7 +42,7 @@ using std::ofstream;
 #include <string>
 using std::string;
 
-// for operator ticToc
+// for operator TicToc
 #include <time.h>
 
 #include "individual.h"
@@ -449,7 +449,7 @@ protected:
  *  shell to examine the status of an evolutionary process, resume or stop the
  *  evolution.
  */
-class pause : public baseOperator
+class Pause : public baseOperator
 {
 
 public:
@@ -473,7 +473,7 @@ public:
 	 *  \note Ctrl-C will be intercepted even if a specific character is
 	 *  specified in parameter \e stopOnKeyStroke.
 	 */
-	pause(char stopOnKeyStroke = false, bool prompt = true,
+	Pause(char stopOnKeyStroke = false, bool prompt = true,
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -485,7 +485,7 @@ public:
 
 
 	/// destructor
-	virtual ~pause()
+	virtual ~Pause()
 	{
 	}
 
@@ -493,11 +493,11 @@ public:
 	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
-		return new pause(*this);
+		return new Pause(*this);
 	}
 
 
-	/// apply the \c pause operator to one population
+	/// apply the \c Pause operator to one population
 	bool apply(population & pop);
 
 	/// HIDDEN
@@ -571,7 +571,7 @@ public:
  *  applied. If a value is passed directly, it will be considered as a fixed
  *  condition upon which one of \e ifOps or \e elseOps will be called.
  */
-class ifElse : public baseOperator
+class IfElse : public baseOperator
 {
 
 public:
@@ -582,18 +582,18 @@ public:
 	 *  is applied. If a fixed value is given, the condition when the operator
 	 *  is created always holds. The applicability of \e ifOps and \e elseOps
 	 *  are controlled by parameters \e begin, \e end, \e step, \e at and
-	 *  \e rep of both the \c ifElse operator and individual operators but
+	 *  \e rep of both the \c IfElse operator and individual operators but
 	 *  \e ifOps and \e elseOps opeartors does not support negative indexes
 	 *  for replicate and generation numbers.
 	 */
-	ifElse(PyObject * cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
+	IfElse(PyObject * cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 	/// destructor
-	virtual ~ifElse()
+	virtual ~IfElse()
 	{
 	}
 
@@ -601,7 +601,7 @@ public:
 	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
-		return new ifElse(*this);
+		return new IfElse(*this);
 	}
 
 
@@ -609,7 +609,7 @@ public:
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// apply the \c ifElse operator to population \e pop.
+	/// apply the \c IfElse operator to population \e pop.
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
@@ -692,14 +692,14 @@ private:
  *  of measuring the duration between several generations by setting \c step
  *  parameter.
  */
-class ticToc : public baseOperator
+class TicToc : public baseOperator
 {
 public:
-	/** Create a \c ticToc operator that outputs the elapsed since the last
+	/** Create a \c TicToc operator that outputs the elapsed since the last
 	 *  time it was applied, and the overall time since the first time this
 	 *  operator is applied.
 	 */
-	ticToc(const stringFunc & output = ">",
+	TicToc(const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -709,7 +709,7 @@ public:
 
 
 	/// destructor
-	virtual ~ticToc()
+	virtual ~TicToc()
 	{
 	}
 
@@ -717,7 +717,7 @@ public:
 	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
-		return new ticToc(*this);
+		return new TicToc(*this);
 	}
 
 

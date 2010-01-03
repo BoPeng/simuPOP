@@ -372,7 +372,7 @@ class TestPlotter(unittest.TestCase):
                     xlim = [0, 1],
                     main='Twoo colors, 100 points xlim=[0, 1]',
                     legend = ['MALE', 'FEMALE']),
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -390,7 +390,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(PATERNAL, infoFields='x')]),
             postOps = histPlotter(infoFields='x', main='histogram of x in green',
                     angle=60, col='green', step=2),
-                #pause(),
+                #Pause(),
             gen = 5,
         )
         sleep(1)
@@ -418,7 +418,7 @@ class TestPlotter(unittest.TestCase):
                     main_spfld=['Field x, MALE', 'Field y, MALE',
                         'Field x, FEMALE', 'Field y, FEMALE'],
                 ),
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -450,7 +450,7 @@ class TestPlotter(unittest.TestCase):
                         'Field x, FEMALE', 'Field y, FEMALE'],
                     plotHook=qqline, step=2
                 ),
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -479,7 +479,7 @@ class TestPlotter(unittest.TestCase):
                     subPops = [(0, 0), (0, 1)],
                     plotHook=qqplot, step=2
                 ),
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -499,7 +499,7 @@ class TestPlotter(unittest.TestCase):
             postOps = [
                 boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
                     step=2), 
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -521,7 +521,7 @@ class TestPlotter(unittest.TestCase):
                 InheritTagger(MATERNAL, infoFields='y'),
             ]),
             postOps = boxPlotter(infoFields=['x', 'y'], step=2),
-                #pause(),
+                #Pause(),
             gen = 5,
         )
         sleep(1)
@@ -548,7 +548,7 @@ class TestPlotter(unittest.TestCase):
                     step=2, main='Boxplot with 2 fields x 2 subpops',
                     col='green', horizontal=True,
                 ),
-                #pause(),
+                #Pause(),
             ],
             gen = 5,
         )
@@ -574,7 +574,7 @@ class TestPlotter(unittest.TestCase):
                     subPops=[(0,0), (0,1)],
                     step=2, col_fld=['yellow', 'green'],
                 ),
-                #pause(),
+                #Pause(),
             gen = 5,
         )
         sleep(1)
@@ -598,7 +598,7 @@ class TestPlotter(unittest.TestCase):
                     subPops=[(0,0), (0,1)],
                     step=2, horizontal_sp=[True, False],
                 ),
-                #pause(),
+                #Pause(),
             gen = 5,
         )
         sleep(1)
@@ -622,7 +622,7 @@ class TestPlotter(unittest.TestCase):
                     subPops=[(0,0), (0,1)], byField=True,
                     step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],
                 ),
-                #pause(),
+                #Pause(),
             gen = 5,
         )
         sleep(1)

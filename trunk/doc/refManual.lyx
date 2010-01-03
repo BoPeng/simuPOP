@@ -1210,28 +1210,28 @@ baseSelectorRef
 
 
 \backslash
-mapSelectorRef
+MapSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-maSelectorRef
+MaSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mlSelectorRef
+MlSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pySelectorRef
+PySelectorRef
 \end_layout
 
 \end_inset
@@ -1380,28 +1380,28 @@ dumperRef
 
 
 \backslash
-savePopulationRef
+SavePopulationRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-ifElseRef
+IfElseRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pauseRef
+PauseRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-ticTocRef
+TicTocRef
 \end_layout
 
 \end_inset

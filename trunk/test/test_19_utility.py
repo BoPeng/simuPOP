@@ -72,7 +72,7 @@ class TestUtility(unittest.TestCase):
             randomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
-            postOps=[ pause(at=[10]),
+            postOps=[ Pause(at=[10]),
                         # should quite, can not reach generation 12
                         TerminateIf("True", at=[12] ) ] )
 
@@ -83,11 +83,11 @@ class TestUtility(unittest.TestCase):
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
         simu.evolve(
-            postOps=[ pause(at=[10]) ], end=12)
+            postOps=[ Pause(at=[10]) ], end=12)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable tmpPop\n\n"
         simu.evolve(
-            postOps=[ pause(at=[20], popName='tmpPop') ], end=25)
+            postOps=[ Pause(at=[20], popName='tmpPop') ], end=25)
 
 
     def testsetRNG(self):

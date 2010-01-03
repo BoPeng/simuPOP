@@ -165,13 +165,13 @@ bool dumper::apply(population & pop)
 }
 
 
-string savePopulation::describe(bool format)
+string SavePopulation::describe(bool format)
 {
-	return "<simuPOP.savePopulation> save population to file " + m_filename;
+	return "<simuPOP.SavePopulation> save population to file " + m_filename;
 }
 
 
-bool savePopulation::apply(population & pop)
+bool SavePopulation::apply(population & pop)
 {
 	string filename;
 

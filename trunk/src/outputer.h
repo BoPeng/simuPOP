@@ -167,7 +167,7 @@ private:
 
 /** An operator that save populations to specified files.
  */
-class savePopulation : public baseOperator
+class SavePopulation : public baseOperator
 {
 public:
 	/** Create an operator that saves a population to \e output when it is
@@ -179,7 +179,7 @@ public:
 	 *  class \c baseOperator for a detailed description about common operator
 	 *  parameters such as \e stage and \e begin.
 	 */
-	savePopulation(const stringFunc & output = "", int begin = 0, int end = -1,
+	SavePopulation(const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		baseOperator("", begin, end, step, at, reps, subPops, infoFields),
@@ -191,15 +191,15 @@ public:
 
 
 	/// destructor.
-	~savePopulation()
+	~SavePopulation()
 	{
 	}
 
 
-	/// Deep copy of a savePopulation operator.
+	/// Deep copy of a SavePopulation operator.
 	virtual baseOperator * clone() const
 	{
-		return new savePopulation(*this);
+		return new SavePopulation(*this);
 	}
 
 

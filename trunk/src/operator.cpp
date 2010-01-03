@@ -338,11 +338,11 @@ opList::~opList()
 }
 
 
-vectori pause::s_cachedKeys = vectori();
+vectori Pause::s_cachedKeys = vectori();
 
-string pause::describe(bool format)
+string Pause::describe(bool format)
 {
-	string desc = "<simuPOP.pause> pause an evolutionary process";
+	string desc = "<simuPOP.Pause> Pause an evolutionary process";
 
 	if (m_stopOnKeyStroke)
 		desc += m_stopOnKeyStroke == static_cast<char>(true) ?
@@ -351,7 +351,7 @@ string pause::describe(bool format)
 }
 
 
-bool pause::apply(population & pop)
+bool Pause::apply(population & pop)
 {
 	// call initialize if needed.
 	initializeIfNeeded(pop);
@@ -384,7 +384,7 @@ bool pause::apply(population & pop)
 
 	string popName = "pop_" + toStr(pop.gen()) + "_" + toStr(pop.rep());
 	if (m_prompt) {
-		cerr	<< "Simulation paused for population " << pop.rep() << "\n"
+		cerr	<< "Simulation Paused for population " << pop.rep() << "\n"
 		        << "Press\n"
 		        << "   's' to (s)top the evolution of this population,\n"
 		        << "   'q' to quit (stop the evolution of all populations),\n"
@@ -421,7 +421,7 @@ bool pause::apply(population & pop)
 }
 
 
-ifElse::ifElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
+IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
@@ -438,9 +438,9 @@ ifElse::ifElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 }
 
 
-string ifElse::describe(bool format)
+string IfElse::describe(bool format)
 {
-	string desc = "<simuPOP.ifElse>";
+	string desc = "<simuPOP.IfElse>";
 	string ifDesc;
 	string elseDesc;
 
@@ -471,7 +471,7 @@ string ifElse::describe(bool format)
 }
 
 
-bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
+bool IfElse::applyDuringMating(population & pop, RawIndIterator offspring,
                                individual * dad, individual * mom)
 {
 	m_cond.setLocalDict(pop.dict());
@@ -504,7 +504,7 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-bool ifElse::apply(population & pop)
+bool IfElse::apply(population & pop)
 {
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
@@ -565,13 +565,13 @@ bool TerminateIf::apply(population & pop)
 }
 
 
-string ticToc::describe(bool format)
+string TicToc::describe(bool format)
 {
-	return "<simuPOP.ticToc> output performance monitor>" ;
+	return "<simuPOP.TicToc> output performance monitor>" ;
 }
 
 
-bool ticToc::apply(population & pop)
+bool TicToc::apply(population & pop)
 {
 	if (m_startTime == 0)
 		m_startTime = clock();

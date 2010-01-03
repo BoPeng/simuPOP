@@ -761,7 +761,7 @@ pop.evolve(
         sim.PyEval(r"'At the end of gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
             at = [-10, -1])
     ],
-    finalOps=sim.savePopulation(output='sample.pop'),
+    finalOps=sim.SavePopulation(output='sample.pop'),
     gen=100
 )
 #begin_ignore
@@ -1316,7 +1316,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitByFreq([0.5, 0.5])
     ],
-    preOps=sim.maSelector(loci=0, fitness=[0.8, 0.8, 1]),
+    preOps=sim.MaSelector(loci=0, fitness=[0.8, 0.8, 1]),
     matingScheme=sim.AlphaMating(alphaSex=sim.MALE, alphaNum=2,
         ops=[sim.MendelianGenoTransmitter(), sim.ParentsTagger()]),
     postOps=[
@@ -1487,7 +1487,7 @@ simu.evolve(
         sim.InitByFreq([0.3, 0.7])
     ],
     matingScheme=sim.randomMating(),
-    finalOps=sim.savePopulation('!"pop%d.pop"%rep'),
+    finalOps=sim.SavePopulation('!"pop%d.pop"%rep'),
     gen=10
 )
 # load the population and create another simulator
@@ -1533,9 +1533,9 @@ simu.evolve(
     matingScheme=sim.RandomSelection(),
     postOps=[
         sim.stat(alleleFreq=5),
-        sim.ifElse('alleleNum[5][0] == 0',
+        sim.IfElse('alleleNum[5][0] == 0',
             sim.PyEval(r"'Allele 0 is lost in rep %d at gen %d\n' % (rep, gen)")),
-        sim.ifElse('alleleNum[5][0] == 50',
+        sim.IfElse('alleleNum[5][0] == 50',
             sim.PyEval(r"'Allele 0 is fixed in rep %d at gen %d\n' % (rep, gen)")),
         sim.TerminateIf('len(alleleNum[5]) == 1'),
     ],
@@ -1849,7 +1849,7 @@ sim.Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
     max=10, structure=False, ancGen=-1)
 #end_file
 
-#begin_file log/savePopulation.py
+#begin_file log/SavePopulation.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1866,7 +1866,7 @@ simu.evolve(
         sim.InitByFreq([0.2, 0.8])
     ],
     matingScheme=sim.randomMating(),
-    postOps=sim.savePopulation(output="!'snapshot_%d_%d.pop' % (rep, gen)",
+    postOps=sim.SavePopulation(output="!'snapshot_%d_%d.pop' % (rep, gen)",
             step = 10),
     gen = 50
 )
@@ -1880,7 +1880,7 @@ for rep in range(5):
 #end_file
 
 
-#begin_file log/ifElseFixed.py
+#begin_file log/IfElseFixed.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1897,7 +1897,7 @@ pop.evolve(
         sim.InitByFreq([0.5, 0.5]),
     ],
     matingScheme=sim.randomMating(),
-    postOps=sim.ifElse(verbose,
+    postOps=sim.IfElse(verbose,
         ifOps=[
             sim.stat(alleleFreq=0),
             sim.PyEval(r"'Gen: %3d, allele freq: %.3f\n' % (gen, alleleFreq[0][1])",
@@ -1909,7 +1909,7 @@ pop.evolve(
 #end_file
 
 
-#begin_file log/ifElse.py
+#begin_file log/IfElse.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1930,11 +1930,11 @@ simu.evolve(
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0),
-        sim.ifElse('alleleFreq[0][1] < 0.4',
+        sim.IfElse('alleleFreq[0][1] < 0.4',
             sim.PyExec('below40 += 1')),
-        sim.ifElse('alleleFreq[0][1] > 0.6',
+        sim.IfElse('alleleFreq[0][1] > 0.6',
             sim.PyExec('above60 += 1')),
-        sim.ifElse('len(alleleFreq[0]) == 1',
+        sim.IfElse('len(alleleFreq[0]) == 1',
             sim.PyExec('stoppedAt = gen')),
         sim.TerminateIf('len(alleleFreq[0]) == 1')
     ]
@@ -1972,7 +1972,7 @@ simu.evolve(
 #end_file
 
 
-#begin_file log/pause.py
+#begin_file log/Pause.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1988,12 +1988,12 @@ simu.evolve(
         sim.InitByFreq([0.5, 0.5])
     ],
     matingScheme=sim.randomMating(),
-    postOps=[sim.pause(stopOnKeyStroke=str(x), reps=x) for x in range(10)],
+    postOps=[sim.Pause(stopOnKeyStroke=str(x), reps=x) for x in range(10)],
     gen = 100
 )
 #end_file
 
-#begin_file log/ticToc.py
+#begin_file log/TicToc.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -2011,7 +2011,7 @@ simu.evolve(
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0),
-        sim.ticToc(step=50, reps=-1),
+        sim.TicToc(step=50, reps=-1),
     ],
     gen = 101
 )
@@ -2522,7 +2522,7 @@ pop.evolve(
     initOps=sim.InitSex(),
     preOps=[
         sim.SnpMutator(u=0.001),
-        sim.maSelector(loci=0, fitness=[1, 0.99, 0.98]),
+        sim.MaSelector(loci=0, fitness=[1, 0.99, 0.98]),
     ],
     matingScheme=sim.randomMating(),
     postOps=[
@@ -2751,15 +2751,15 @@ sim.getRNG().setSeed(12345)
 pop = sim.population(1000, loci=1, infoFields='fitness')
 pop.evolve(
     initOps=sim.pyOutput('Introducing alleles at generation'),
-    preOps=sim.maSelector(loci=0, wildtype=0, fitness=[1, 1.05, 1.1]),
+    preOps=sim.MaSelector(loci=0, wildtype=0, fitness=[1, 1.05, 1.1]),
     matingScheme=sim.RandomSelection(),
     postOps=[
         sim.stat(alleleFreq=0),
-        sim.ifElse('alleleNum[0][1] == 0', ifOps=[
+        sim.IfElse('alleleNum[0][1] == 0', ifOps=[
             sim.PyEval(r"' %d' % gen"),
             sim.PointMutator(inds=0, loci=0, allele=1),
         ]),
-        sim.ifElse('alleleFreq[0][1] > 0.05', ifOps=[
+        sim.IfElse('alleleFreq[0][1] > 0.05', ifOps=[
             sim.PyEval(r"'.\nTerminate at generation %d at allele freq %.3f.\n'" +
                 " % (gen, alleleFreq[0][1])"),
             sim.TerminateIf('True'),
@@ -3284,7 +3284,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitByFreq([0.5, 0.5]),
     ],
-    preOps=sim.maSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
+    preOps=sim.MaSelector(loci=0, wildtype=0, fitness=[1, 0.99, 0.95]),
     matingScheme=sim.randomMating(ops=[
         sim.MendelianGenoTransmitter(),
         sim.SummaryTagger(mode=sim.MEAN, infoFields=['fitness', 'avgFitness']),
@@ -3614,7 +3614,7 @@ simu.evolve(
         sim.InitSex(),
         sim.InitByFreq([0.5, 0.5])
     ],
-    preOps=sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+    preOps=sim.MapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0, step=10),
@@ -3644,7 +3644,7 @@ simu.evolve(
     ],
     matingScheme=sim.randomMating(ops=[
         sim.MendelianGenoTransmitter(),
-        sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
+        sim.MapSelector(loci=0, fitness={(0,0):1, (0,1):0.98, (1,1):0.97}),
     ]),
     postOps=[
         sim.stat(alleleFreq=0, step=10),
@@ -3656,7 +3656,7 @@ simu.evolve(
 )
 #end_file
 
-#begin_file log/mapSelector.py
+#begin_file log/MapSelector.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3673,7 +3673,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitByFreq(alleleFreq=[.2, .8])
     ],
-    preOps=sim.mapSelector(loci=0, fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
+    preOps=sim.MapSelector(loci=0, fitness={(0,0):1-s1, (0,1):1, (1,1):1-s2}),
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0),
@@ -3685,7 +3685,7 @@ pop.evolve(
 #end_file
 
 
-#begin_file log/maSelector.py
+#begin_file log/MaSelector.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3702,7 +3702,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitByFreq(alleleFreq=[.2] * 5)
     ],
-    preOps=sim.maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
+    preOps=sim.MaSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0),
@@ -3711,7 +3711,7 @@ pop.evolve(
     gen = 301)
 #end_file
 
-#begin_file log/maSelectorHaploid.py
+#begin_file log/MaSelectorHaploid.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3727,7 +3727,7 @@ pop.evolve(
         sim.InitByFreq(alleleFreq=[.5, .5])
     ],
     # fitness values for AB, Ab, aB and ab
-    preOps=sim.maSelector(loci=[0,1], fitness=[1, 1, 1, 0.95]),
+    preOps=sim.MaSelector(loci=[0,1], fitness=[1, 1, 1, 0.95]),
     matingScheme=sim.RandomSelection(),
     postOps=[
         sim.stat(haploFreq=[0, 1], step=25),
@@ -3739,7 +3739,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/mlSelector.py
+#begin_file log/MlSelector.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3755,12 +3755,12 @@ pop.evolve(
         sim.InitByFreq(alleleFreq=[.5, .5])
     ],
     preOps=[
-        sim.mlSelector([
-            sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
-            sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
+        sim.MlSelector([
+            sim.MapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}),
+            sim.MapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}),
             ], mode = sim.ADDITIVE, reps=0),
-        sim.mapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}, reps=1),
-        sim.mapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}, reps=2)
+        sim.MapSelector(loci=0, fitness={(0,0):1, (0,1):1, (1,1):.8}, reps=1),
+        sim.MapSelector(loci=1, fitness={(0,0):1, (0,1):0.9, (1,1):.8}, reps=2)
     ],
     matingScheme=sim.randomMating(),
     postOps=[
@@ -3772,7 +3772,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/pySelector.py
+#begin_file log/PySelector.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3809,7 +3809,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitByFreq(alleleFreq=[.5, .5])
     ],
-    preOps=sim.pySelector(loci=[0, 1], func=sel),
+    preOps=sim.PySelector(loci=[0, 1], func=sel),
     matingScheme=sim.randomMating(),
     postOps=[
         # set smoking status randomly
@@ -3870,8 +3870,8 @@ pop.evolve(
         sim.InitByFreq(alleleFreq=[.5, .5])
     ],
     preOps=[
-        sim.maSelector(loci=0, fitness=[1, 1, 0.98], subPops=[(0,0), (1,1)]),
-        sim.maSelector(loci=0, fitness=[1, 1, 1], subPops=[(0,1), (1,0)]),
+        sim.MaSelector(loci=0, fitness=[1, 1, 0.98], subPops=[(0,0), (1,1)]),
+        sim.MaSelector(loci=0, fitness=[1, 1, 1], subPops=[(0,1), (1,0)]),
     ],
     matingScheme=sim.randomMating(),
     postOps=[
@@ -4715,7 +4715,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
         matingScheme=sim.randomMating(subPopSize=demo_func),
         postOps=[
             sim.KamMutator(k=k, rates=mu),
-            sim.maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            sim.MaSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=[0], step=100),
             sim.PyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
                 step=100),
@@ -4885,7 +4885,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
         matingScheme=sim.randomMating(subPopSize=demo_func),
         postOps=[
             sim.KamMutator(rate=mu, maxAllele=k),
-            sim.maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            sim.MaSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=0, step=100),
             sim.PyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
                 step=100),
@@ -4980,7 +4980,7 @@ simu.evolve(
     matingScheme=sim.randomMating(),
     postOps=[
         sim.stat(alleleFreq=0),
-        sim.ifElse('alleleNum[0][0] == 0',
+        sim.IfElse('alleleNum[0][0] == 0',
             ifOps=[
                 # the is None part makes the function return True
                 sim.pyOperator(lambda : sim.turnOnDebug("DBG_MUTATOR") is None),

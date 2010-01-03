@@ -169,10 +169,10 @@ __all__ = [
     'ContextMutator',
     'KamMutator',
     #
-    'mapSelector',
-    'maSelector',
-    'mlSelector',
-    'pySelector',
+    'MapSelector',
+    'MaSelector',
+    'MlSelector',
+    'PySelector',
     #
     'MaPenetrance',
     'MapPenetrance',
@@ -196,10 +196,10 @@ __all__ = [
     #
     'NoneOp',
     'dumper',
-    'savePopulation',
-    'ifElse',
-    'pause',
-    'ticToc',
+    'SavePopulation',
+    'IfElse',
+    'Pause',
+    'TicToc',
     #
     # Function form of operators
     'Dump',
