@@ -138,7 +138,6 @@ __all__ = [
     'initByFreq',
     'initByValue',
     'initInfo',
-    'intList',
     #
     'pyOutput',
     'pyEval',
