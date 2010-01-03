@@ -22,7 +22,7 @@ class TestQuanTrait(unittest.TestCase):
         self.pop = population(size=[5000],
             ploidy=2, loci = [1], infoFields=['qtrait'])
         self.pop.setVirtualSplitter(RangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
-        InitByValue(self.pop,
+        initByValue(self.pop,
             value = [[0,0],[0,1],[1,1]],
             subPops = ((0, 0), (0, 1), (0, 2)))
 
@@ -42,22 +42,22 @@ class TestQuanTrait(unittest.TestCase):
                 return random.normalvariate(0.5, 1)
             else:
                 return random.normalvariate(1, 2)
-        PyQuanTrait(self.pop, loci=[0], func=qt, infoFields='qtrait')
+        pyQuanTrait(self.pop, loci=[0], func=qt, infoFields='qtrait')
         #
         # multi-locus
         pop = population(1000, loci=[3,5], infoFields=['qtrait'])
-        InitByFreq(pop, [.3, .7])
+        initByFreq(pop, [.3, .7])
         def qt1(geno):
             assert len(geno) == 4
             return random.normalvariate(0, 0.5*sum(geno) )
-        PyQuanTrait(pop, loci=[2,6], func=qt1, infoFields='qtrait')
+        pyQuanTrait(pop, loci=[2,6], func=qt1, infoFields='qtrait')
         # multi-fields
         pop = population(1000, loci=[3,5], infoFields=['qtrait1', 'qtrait2'])
-        InitByFreq(pop, [.3, .7])
+        initByFreq(pop, [.3, .7])
         def qt1(geno):
             assert len(geno) == 4
             return random.normalvariate(0, 0.5*sum(geno) ), 1
-        PyQuanTrait(pop, loci=[2,6], func=qt1, infoFields=['qtrait1', 'qtrait2'])
+        pyQuanTrait(pop, loci=[2,6], func=qt1, infoFields=['qtrait1', 'qtrait2'])
 
     def testAncestralGen(self):
         'Testing parameter ancestralGen of qtrait... (FIXME)'

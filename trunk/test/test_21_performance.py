@@ -102,8 +102,8 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.evolve(
                 initOps = [
-                    initSex(),
-                    initByFreq([1-p]+[p/10.]*10)
+                    InitSex(),
+                    InitByFreq([1-p]+[p/10.]*10)
                 ],
                 gen = 101
             )
@@ -117,8 +117,8 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.evolve(
                 initOps = [
-                    initSex(),
-                    initByFreq([1-p]+[p/10.]*10)
+                    InitSex(),
+                    InitByFreq([1-p]+[p/10.]*10)
                 ],
                 preOps = sel,
                 gen = 101
@@ -131,8 +131,8 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.evolve(
                 initOps = [
-                    initSex(),
-                    initByFreq([1-p]+[p/10.]*10)
+                    InitSex(),
+                    InitByFreq([1-p]+[p/10.]*10)
                 ],
                 preOps = [migr, sel],
                 gen = 101
@@ -270,7 +270,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [sel],
                 end = 100
             )
@@ -283,7 +283,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = simulator(pop, binomialSelection())
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [sel],
                 end = 100
             )
@@ -295,7 +295,7 @@ class TestPerformance(unittest.TestCase):
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             for i in range(200):
-                MaPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
+                maPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
                 info = pop.indInfo('fitness')
             c2 = time.clock()
             print " %.2f " % (c2 - c1),
@@ -361,9 +361,9 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             for i in range(10):
                 pop = population(N, loci=[20,40])
-                InitByFreq(pop, [0.2, 0.8])
-                InitByFreq(pop, [0.4, 0.6])
-                InitByFreq(pop, [0.5, 0.5])
+                initByFreq(pop, [0.2, 0.8])
+                initByFreq(pop, [0.4, 0.6])
+                initByFreq(pop, [0.5, 0.5])
                 Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
                 Stat(pop, heteroFreq=range(0, pop.totNumLoci()))
                 Stat(pop, genoFreq=range(0, pop.totNumLoci()))
@@ -404,7 +404,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [],
                 end=100
             )
@@ -416,7 +416,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.0001)],
                 end=100
             )
@@ -427,7 +427,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.5)],
                 end=100
             )
@@ -565,7 +565,7 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, binomialSelection())
             p = 0.4
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [],
                 end = 100
             )
@@ -577,7 +577,7 @@ class TestPerformance(unittest.TestCase):
             simu = simulator(pop, randomMating())
             p = 0.4
             simu.evolve(
-                initOps = [initByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitByFreq([1-p]+[p/10.]*10)],
                 ops = [],
                 end = 100
             )
@@ -649,11 +649,11 @@ class TestPerformance(unittest.TestCase):
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [initByValue([50]*200)],
+            initOps = [InitByValue([50]*200)],
             ops = [
                #Recombinator(rate=0.5),
                SmmMutator(rate=0.0001),
-               pyEval(r'"%s\n"%gen', step=100),
+               PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
         )
@@ -669,11 +669,11 @@ class TestPerformance(unittest.TestCase):
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [initByValue([50]*200)],
+            initOps = [InitByValue([50]*200)],
             ops = [
                Recombinator(rate=0.5),
                SmmMutator(rate=0.0001),
-               pyEval(r'"%s\n"%gen', step=100),
+               PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
         )
@@ -689,10 +689,10 @@ class TestPerformance(unittest.TestCase):
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [initByValue([50]*200)],
+            initOps = [InitByValue([50]*200)],
             ops = [
                SmmMutator(rate=0.0001),
-               pyEval(r'"%s\n"%gen', step=100),
+               PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
         )
@@ -707,11 +707,11 @@ class TestPerformance(unittest.TestCase):
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [initByValue([50]*200)],
+            initOps = [InitByValue([50]*200)],
             ops = [
                Recombinator(rate=0.0005),
                SmmMutator(rate=0.0001),
-               pyEval(r'"%s\n"%gen', step=10),
+               PyEval(r'"%s\n"%gen', step=10),
            ],
            end = 100
         )
@@ -739,7 +739,7 @@ class TestPerformance(unittest.TestCase):
         import stat
         pop = loadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
-        #InitByFreq(pop, [.2, .8])
+        #initByFreq(pop, [.2, .8])
         #simu = simulator(pop, randomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
         #pop = simu.population(0)

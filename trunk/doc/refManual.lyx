@@ -803,28 +803,28 @@ status open
 
 
 \backslash
-initSexRef
+InitSexRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-initByFreqRef
+InitByFreqRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-initByValueRef
+InitByValueRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-initInfoRef
+InitInfoRef
 \end_layout
 
 \end_inset
@@ -851,28 +851,28 @@ pyOutputRef
 
 
 \backslash
-pyEvalRef
+PyEvalRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pyExecRef
+PyExecRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-infoEvalRef
+InfoEvalRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-infoExecRef
+InfoExecRef
 \end_layout
 
 \end_inset
@@ -909,21 +909,21 @@ migratorRef
 
 
 \backslash
-splitSubPopsRef
+SplitSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mergeSubPopsRef
+MergeSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-resizeSubPopsRef
+ResizeSubPopsRef
 \end_layout
 
 \end_inset
@@ -1115,28 +1115,28 @@ basePenetranceRef
 
 
 \backslash
-mapPenetranceRef
+MapPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-maPenetranceRef
+MaPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-mlPenetranceRef
+MlPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-pyPenetranceRef
+PyPenetranceRef
 \end_layout
 
 \end_inset
@@ -1173,7 +1173,7 @@ baseQuanTraitRef
 
 
 \backslash
-pyQuanTraitRef
+PyQuanTraitRef
 \end_layout
 
 \end_inset
@@ -1428,56 +1428,56 @@ simuPOPDumpRef
 
 
 \backslash
-simuPOPInitSexRef
+simuPOPinitSexRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPInitInfoRef
+simuPOPinitInfoRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPInitByFreqRef
+simuPOPinitByFreqRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPInitByValueRef
+simuPOPinitByValueRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPyEvalRef
+simuPOPpyEvalRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPyExecRef
+simuPOPpyExecRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPInfoEvalRef
+simuPOPinfoEvalRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPInfoExecRef
+simuPOPinfoExecRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1491,21 +1491,21 @@ simuPOPMigrateRef
 
 
 \backslash
-simuPOPResizeSubPopsRef
+simuPOPresizeSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPMergeSubPopsRef
+simuPOPmergeSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPSplitSubPopsRef
+simuPOPsplitSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1589,35 +1589,35 @@ simuPOPtagIDRef
 
 
 \backslash
-simuPOPMapPenetranceRef
+simuPOPmapPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPMaPenetranceRef
+simuPOPmaPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPMlPenetranceRef
+simuPOPmlPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPyPenetranceRef
+simuPOPpyPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPyQuanTraitRef
+simuPOPpyQuanTraitRef
 \end_layout
 
 \end_inset

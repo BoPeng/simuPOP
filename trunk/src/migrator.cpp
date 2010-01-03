@@ -240,7 +240,7 @@ struct compareVSP
 
 };
 
-bool splitSubPops::apply(population & pop)
+bool SplitSubPops::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -294,7 +294,7 @@ bool splitSubPops::apply(population & pop)
 }
 
 
-bool mergeSubPops::apply(population & pop)
+bool MergeSubPops::apply(population & pop)
 {
 	subPopList sp = applicableSubPops();
 
@@ -312,7 +312,7 @@ bool mergeSubPops::apply(population & pop)
 }
 
 
-bool resizeSubPops::apply(population & pop)
+bool ResizeSubPops::apply(population & pop)
 {
 	vectoru newSizes = pop.subPopSizes();
 

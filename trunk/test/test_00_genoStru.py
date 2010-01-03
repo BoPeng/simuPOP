@@ -23,7 +23,7 @@ class TestGenoStru(unittest.TestCase):
             lociPos=[2, 3, 4, 5, 6, 2, 4, 6, 8, 10, 12, 14],
             alleleNames=['_', 'A', 'C', 'T', 'G'],
             infoFields=['a', 'b'])
-        InitSex(pop)
+        initSex(pop)
         return pop
 
     def testLociPos(self):
@@ -52,7 +52,7 @@ class TestGenoStru(unittest.TestCase):
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
         pop = population(size=2, loci=[2, 1])
-        InitByValue(pop, [1, 2, 3])
+        initByValue(pop, [1, 2, 3])
         arr = pop.genotype()
         arr[:] = [0, 1, 2]*4
         # can print

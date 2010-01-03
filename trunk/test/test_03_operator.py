@@ -177,45 +177,45 @@ class TestOperator(unittest.TestCase):
         ], gen=10)
 
     def testInfoEval(self):
-        '''Testing operator infoEval'''
+        '''Testing operator InfoEval'''
         pop = population(10, infoFields=['a', 'b'])
-        InfoEval(pop, expr='b', stmts='b=a+1', output='')
+        infoEval(pop, expr='b', stmts='b=a+1', output='')
         # information field b is NOT updated
         self.assertEqual(pop.indInfo('b'), tuple([0]*10))
         #
         # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
-        self.assertRaises(exceptions.RuntimeError, InfoEval, pop, 'c+4')
+        self.assertRaises(exceptions.RuntimeError, infoEval, pop, 'c+4')
         # usePopVars is needed
-        InfoEval(pop, 'c+4', usePopVars=True, output='')
+        infoEval(pop, 'c+4', usePopVars=True, output='')
 
 
     def testInfoExec(self):
-        '''Testing operator infoExec'''
+        '''Testing operator InfoExec'''
         pop = population(10, infoFields=['a', 'b'])
-        InfoExec(pop, 'b=a+1')
+        infoExec(pop, 'b=a+1')
         self.assertEqual(pop.indInfo('b'), tuple([1]*10))
-        InfoExec(pop, 'a+=1')
+        infoExec(pop, 'a+=1')
         self.assertEqual(pop.indInfo('a'), tuple([1]*10))
         # this will not do anything because there is no c to be updated.
-        InfoExec(pop, 'c=a+b')
+        infoExec(pop, 'c=a+b')
         #
         # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
-        self.assertRaises(exceptions.RuntimeError, InfoExec, pop, 'b=c+4')
+        self.assertRaises(exceptions.RuntimeError, infoExec, pop, 'b=c+4')
         # usePopVars is needed
-        InfoExec(pop, 'b=c+4', usePopVars=True)
+        infoExec(pop, 'b=c+4', usePopVars=True)
         self.assertEqual(pop.indInfo('b'), tuple([9]*10))
         #
         # as an operator
         pop.evolve(
-            initOps = [infoExec('b=0')],
+            initOps = [InfoExec('b=0')],
             matingScheme=CloneMating(),
             postOps = [
-                infoEval(r"'\t%.1f' % b", output=''),
-                infoExec('b+=1', output=''),
+                InfoEval(r"'\t%.1f' % b", output=''),
+                InfoExec('b+=1', output=''),
                 pyOutput('\n', output=''),
             ],
             gen = 4

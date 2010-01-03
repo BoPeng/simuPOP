@@ -27,9 +27,9 @@
 
 namespace simuPOP {
 
-string initSex::describe(bool format)
+string InitSex::describe(bool format)
 {
-	string desc = "<simuPOP.initSex> initialize sex ";
+	string desc = "<simuPOP.InitSex> initialize sex ";
 
 	if (!m_sex.empty())
 		desc += "using a list";
@@ -43,7 +43,7 @@ string initSex::describe(bool format)
 }
 
 
-bool initSex::apply(population & pop)
+bool InitSex::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -78,9 +78,9 @@ bool initSex::apply(population & pop)
 }
 
 
-string initInfo::describe(bool format)
+string InitInfo::describe(bool format)
 {
-	string desc = "<simuPOP.initInfo> initialize information field";
+	string desc = "<simuPOP.InitInfo> initialize information field";
 
 	if (infoSize() > 1)
 		desc += "s";
@@ -96,7 +96,7 @@ string initInfo::describe(bool format)
 }
 
 
-bool initInfo::apply(population & pop)
+bool InitInfo::apply(population & pop)
 {
 	vectoru infoIdx(infoSize());
 
@@ -134,7 +134,7 @@ bool initInfo::apply(population & pop)
 }
 
 
-initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
+InitByFreq::InitByFreq(const matrix & alleleFreq, const uintList & loci,
 	const uintList & ploidy, bool identicalInds,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
@@ -156,13 +156,13 @@ initByFreq::initByFreq(const matrix & alleleFreq, const uintList & loci,
 }
 
 
-string initByFreq::describe(bool format)
+string InitByFreq::describe(bool format)
 {
-	return "<simuPOP.initByFreq> initialize individual genotype using a list of allele frequencies";
+	return "<simuPOP.InitByFreq> initialize individual genotype using a list of allele frequencies";
 }
 
 
-bool initByFreq::apply(population & pop)
+bool InitByFreq::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
@@ -218,7 +218,7 @@ bool initByFreq::apply(population & pop)
 }
 
 
-initByValue::initByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
+InitByValue::InitByValue(intMatrix value, const uintList & loci, const uintList & ploidy,
 	const floatList & proportions, const floatList & frequencies,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
@@ -241,7 +241,7 @@ initByValue::initByValue(intMatrix value, const uintList & loci, const uintList 
 }
 
 
-bool initByValue::apply(population & pop)
+bool InitByValue::apply(population & pop)
 {
 #ifndef OPTIMIZED
 	UINT gSz = m_value[0].size();

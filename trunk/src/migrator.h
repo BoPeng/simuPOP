@@ -180,9 +180,9 @@ protected:
  *  resulting subpopulations, proportion of individuals, or an information
  *  field. The resulting subpopulations will have the same name as the
  *  original subpopulation.
- *  <funcForm>SplitSubPops</funcForm>
+ *  <funcForm>splitSubPops</funcForm>
  */
-class splitSubPops : public baseOperator
+class SplitSubPops : public baseOperator
 {
 
 public:
@@ -224,7 +224,7 @@ public:
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
-	splitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
+	SplitSubPops(const subPopList & subPops = subPopList(), const vectoru & sizes = vectoru(),
 		const vectorf & proportions = vectorf(), const stringList names = vectorstr(), bool randomize = true,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
@@ -233,7 +233,7 @@ public:
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
-				"Virtual subpopulations are not supported in operator splitSubPops");
+				"Virtual subpopulations are not supported in operator SplitSubPops");
 		}
 
 		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.elems().empty() != 2, ValueError,
@@ -242,19 +242,19 @@ public:
 
 
 	/// destructor
-	virtual ~splitSubPops()
+	virtual ~SplitSubPops()
 	{
 	}
 
 
-	/// deep copy of a \c splitSubPops operator
+	/// deep copy of a \c SplitSubPops operator
 	virtual baseOperator * clone() const
 	{
-		return new splitSubPops(*this);
+		return new SplitSubPops(*this);
 	}
 
 
-	/// apply a \c splitSubPops operator
+	/// apply a \c SplitSubPops operator
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
@@ -281,9 +281,9 @@ private:
 /** This operator merges subpopulations \e subPops to a single subpopulation.
  *  If \c subPops is ignored, all subpopulations will be merged. Virtual
  *  subpopulations are not allowed in \e subPops.
- *  <funcForm>MergeSubPops</funcForm>
+ *  <funcForm>mergeSubPops</funcForm>
  */
-class mergeSubPops : public baseOperator
+class MergeSubPops : public baseOperator
 {
 
 public:
@@ -296,7 +296,7 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
+	MergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const stringList & infoFields = vectorstr())
 		: baseOperator("", begin, end, step, at, reps, subPops, infoFields),
@@ -304,25 +304,25 @@ public:
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
-				"Virtual subpopulations are not supported in operator mergeSubPops");
+				"Virtual subpopulations are not supported in operator MergeSubPops");
 		}
 	}
 
 
 	/// destructor
-	virtual ~mergeSubPops()
+	virtual ~MergeSubPops()
 	{
 	}
 
 
-	/// deep copy of a \c mergeSubPops operator
+	/// deep copy of a \c MergeSubPops operator
 	virtual baseOperator * clone() const
 	{
-		return new mergeSubPops(*this);
+		return new MergeSubPops(*this);
 	}
 
 
-	/// apply a \c mergeSubPops operator
+	/// apply a \c MergeSubPops operator
 	virtual bool apply(population & pop);
 
 	/// HIDDEN
@@ -339,9 +339,9 @@ private:
 
 /** This operator resizes subpopulations to specified sizes. Individuals are
  *  added or removed depending on the new subpopulation sizes.
- *  <funcForm>ResizeSubPops</funcForm>
+ *  <funcForm>resizeSubPops</funcForm>
  */
-class resizeSubPops : public baseOperator
+class ResizeSubPops : public baseOperator
 {
 
 public:
@@ -358,7 +358,7 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	resizeSubPops(const subPopList & subPops = subPopList(),
+	ResizeSubPops(const subPopList & subPops = subPopList(),
 		const vectoru & sizes = vectoru(), const vectorf & proportions = vectorf(),
 		bool propagate = true,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -368,7 +368,7 @@ public:
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
-				"Virtual subpopulations are not supported in operator splitSubPops");
+				"Virtual subpopulations are not supported in operator SplitSubPops");
 		}
 
 		DBG_FAILIF(m_sizes.empty() + m_proportions.empty() != 1, ValueError,
@@ -382,19 +382,19 @@ public:
 
 
 	/// destructor
-	virtual ~resizeSubPops()
+	virtual ~ResizeSubPops()
 	{
 	}
 
 
-	/// deep copy of a \c resizeSubPops operator
+	/// deep copy of a \c ResizeSubPops operator
 	virtual baseOperator * clone() const
 	{
-		return new resizeSubPops(*this);
+		return new ResizeSubPops(*this);
 	}
 
 
-	/// apply a \c resizeSubPops operator
+	/// apply a \c ResizeSubPops operator
 	virtual bool apply(population & pop);
 
 

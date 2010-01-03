@@ -129,9 +129,9 @@ private:
  *  specified information fields to respective parameters of this function.
  *  The return values will be assigned to specified trait fields.
  *
- *  <funcForm>PyQuanTrait</funcForm>
+ *  <funcForm>pyQuanTrait</funcForm>
  */
-class pyQuanTrait : public baseQuanTrait
+class PyQuanTrait : public baseQuanTrait
 {
 public:
 	/** Create a Python hybrid quantitative trait operator that passes genotype
@@ -142,7 +142,7 @@ public:
 	 *  or a sequence of one element is acceptable. Otherwise, a sequence of
 	 *  values will be accepted and be assigned to each trait field.
 	 */
-	pyQuanTrait(PyObject * func, const uintList & loci = vectoru(),
+	PyQuanTrait(PyObject * func, const uintList & loci = vectoru(),
 		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -158,7 +158,7 @@ public:
 	/// deep copy of a Python quantitative trait operator
 	virtual baseOperator * clone() const
 	{
-		return new pyQuanTrait(*this);
+		return new PyQuanTrait(*this);
 	}
 
 
@@ -170,7 +170,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.pyQuanTrait> a hybrid quantitative trait model";
+		return "<simuPOP.PyQuanTrait> a hybrid quantitative trait model";
 	}
 
 

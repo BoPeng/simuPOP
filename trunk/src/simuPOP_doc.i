@@ -2820,16 +2820,16 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoEval "
+%feature("docstring") simuPOP::InfoEval "
 
 Function form:
 
-    InfoEval
+    infoEval
 
 Details:
 
-    Unlike operator pyEval and pyExec that work at the population
-    level, in a population's local namespace, operator infoEval works
+    Unlike operator PyEval and PyExec that work at the population
+    level, in a population's local namespace, operator InfoEval works
     at the individual level, working with individual information
     fields. When this operator is applied to a population, information
     fields of eligible individuals are put into either a temporary
@@ -2839,18 +2839,18 @@ Details:
 
 Note:
 
-    Unlike operator ``infoExec``, individual information fields are
+    Unlike operator ``InfoExec``, individual information fields are
     not updated after this operator is applied to a population.This
     operator tends to generate a large amount of output so use it is
     with caution.
 
 "; 
 
-%feature("docstring") simuPOP::infoEval::infoEval "
+%feature("docstring") simuPOP::InfoEval::InfoEval "
 
 Usage:
 
-    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
+    InfoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=\"\",
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
@@ -2883,19 +2883,19 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::infoEval::~infoEval "
+%feature("docstring") simuPOP::InfoEval::~InfoEval "
 
 Usage:
 
-    x.~infoEval()
+    x.~InfoEval()
 
 "; 
 
-%feature("docstring") simuPOP::infoEval::clone "
+%feature("docstring") simuPOP::InfoEval::clone "
 
 Description:
 
-    deep copy of a infoEval operator
+    deep copy of a InfoEval operator
 
 Usage:
 
@@ -2903,11 +2903,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoEval::apply "
+%feature("docstring") simuPOP::InfoEval::apply "
 
 Description:
 
-    apply the infoEval operator
+    apply the InfoEval operator
 
 Usage:
 
@@ -2915,19 +2915,19 @@ Usage:
 
 "; 
 
-%ignore simuPOP::infoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::InfoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoEval::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InfoEval::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::infoExec "
+%feature("docstring") simuPOP::InfoExec "
 
 Function form:
 
-    InfoExec
+    infoExec
 
 Details:
 
-    Operator infoExec is similar to infoEval in that it works at the
+    Operator InfoExec is similar to InfoEval in that it works at the
     individual level, using individual information fields as
     variables. The difference is that instead of evaluating an
     expression and outputing its result, this operator execute one or
@@ -2940,11 +2940,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::infoExec::infoExec "
+%feature("docstring") simuPOP::InfoExec::InfoExec "
 
 Usage:
 
-    infoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
+    InfoExec(stmts=\"\", usePopVars=False, exposeInd=\"\", output=\"\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
@@ -2981,19 +2981,19 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::infoExec::~infoExec "
+%feature("docstring") simuPOP::InfoExec::~InfoExec "
 
 Usage:
 
-    x.~infoExec()
+    x.~InfoExec()
 
 "; 
 
-%feature("docstring") simuPOP::infoExec::clone "
+%feature("docstring") simuPOP::InfoExec::clone "
 
 Description:
 
-    deep copy of a infoExec operator
+    deep copy of a InfoExec operator
 
 Usage:
 
@@ -3001,11 +3001,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoExec::apply "
+%feature("docstring") simuPOP::InfoExec::apply "
 
 Description:
 
-    apply the infoExec operator
+    apply the InfoExec operator
 
 Usage:
 
@@ -3013,9 +3013,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::infoExec::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::InfoExec::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::infoExec::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InfoExec::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InformationIterator "
 
@@ -3182,11 +3182,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq "
+%feature("docstring") simuPOP::InitByFreq "
 
 Function form:
 
-    InitByFreq
+    initByFreq
 
 Details:
 
@@ -3197,11 +3197,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::initByFreq "
+%feature("docstring") simuPOP::InitByFreq::InitByFreq "
 
 Usage:
 
-    initByFreq(alleleFreq=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
+    InitByFreq(alleleFreq=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
       identicalInds=False, begin=0, end=1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
@@ -3223,19 +3223,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::~initByFreq "
+%feature("docstring") simuPOP::InitByFreq::~InitByFreq "
 
 Usage:
 
-    x.~initByFreq()
+    x.~InitByFreq()
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::clone "
+%feature("docstring") simuPOP::InitByFreq::clone "
 
 Description:
 
-    deep copy of the operator initByFreq
+    deep copy of the operator InitByFreq
 
 Usage:
 
@@ -3243,9 +3243,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByFreq::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InitByFreq::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::initByFreq::apply "
+%feature("docstring") simuPOP::InitByFreq::apply "
 
 Description:
 
@@ -3257,11 +3257,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue "
+%feature("docstring") simuPOP::InitByValue "
 
 Function form:
 
-    InitByValue
+    initByValue
 
 Details:
 
@@ -3269,11 +3269,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::initByValue "
+%feature("docstring") simuPOP::InitByValue::InitByValue "
 
 Usage:
 
-    initByValue(value=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
+    InitByValue(value=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
       proportions=[], freq=[], begin=0, end=1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
@@ -3296,19 +3296,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::~initByValue "
+%feature("docstring") simuPOP::InitByValue::~InitByValue "
 
 Usage:
 
-    x.~initByValue()
+    x.~InitByValue()
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::clone "
+%feature("docstring") simuPOP::InitByValue::clone "
 
 Description:
 
-    deep copy of the operator initByValue
+    deep copy of the operator InitByValue
 
 Usage:
 
@@ -3316,9 +3316,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initByValue::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InitByValue::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::initByValue::apply "
+%feature("docstring") simuPOP::InitByValue::apply "
 
 Description:
 
@@ -3330,11 +3330,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo "
+%feature("docstring") simuPOP::InitInfo "
 
 Function form:
 
-    InitInfo
+    initInfo
 
 Details:
 
@@ -3343,11 +3343,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::initInfo "
+%feature("docstring") simuPOP::InitInfo::InitInfo "
 
 Usage:
 
-    initInfo(values, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+    InitInfo(values, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -3365,7 +3365,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::~initInfo "
+%feature("docstring") simuPOP::InitInfo::~InitInfo "
 
 Description:
 
@@ -3373,15 +3373,15 @@ Description:
 
 Usage:
 
-    x.~initInfo()
+    x.~InitInfo()
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::clone "
+%feature("docstring") simuPOP::InitInfo::clone "
 
 Description:
 
-    deep copy of an initInfo operator.
+    deep copy of an InitInfo operator.
 
 Usage:
 
@@ -3389,9 +3389,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initInfo::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InitInfo::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::initInfo::apply "
+%feature("docstring") simuPOP::InitInfo::apply "
 
 Description:
 
@@ -3403,11 +3403,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initSex "
+%feature("docstring") simuPOP::InitSex "
 
 Function form:
 
-    InitSex
+    initSex
 
 Details:
 
@@ -3416,11 +3416,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initSex::initSex "
+%feature("docstring") simuPOP::InitSex::InitSex "
 
 Usage:
 
-    initSex(maleFreq=0.5, maleProp=-1, sex=[], begin=0, end=-1,
+    InitSex(maleFreq=0.5, maleProp=-1, sex=[], begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -3440,7 +3440,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::initSex::~initSex "
+%feature("docstring") simuPOP::InitSex::~InitSex "
 
 Description:
 
@@ -3448,15 +3448,15 @@ Description:
 
 Usage:
 
-    x.~initSex()
+    x.~InitSex()
 
 "; 
 
-%feature("docstring") simuPOP::initSex::clone "
+%feature("docstring") simuPOP::InitSex::clone "
 
 Description:
 
-    deep copy of an initSex operator.
+    deep copy of an InitSex operator.
 
 Usage:
 
@@ -3464,9 +3464,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initSex::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InitSex::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::initSex::apply "
+%feature("docstring") simuPOP::InitSex::apply "
 
 Description:
 
@@ -3564,11 +3564,11 @@ Usage:
 
 %feature("docstring") simuPOP::KamMutator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::maPenetrance "
+%feature("docstring") simuPOP::MaPenetrance "
 
 Function form:
 
-    MaPenetrance
+    maPenetrance
 
 Details:
 
@@ -3582,11 +3582,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::maPenetrance::maPenetrance "
+%feature("docstring") simuPOP::MaPenetrance::MaPenetrance "
 
 Usage:
 
-    maPenetrance(loci, penetrance, wildtype=0, ancGen=0, begin=0,
+    MaPenetrance(loci, penetrance, wildtype=0, ancGen=0, begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
@@ -3610,15 +3610,15 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::maPenetrance::~maPenetrance "
+%feature("docstring") simuPOP::MaPenetrance::~MaPenetrance "
 
 Usage:
 
-    x.~maPenetrance()
+    x.~MaPenetrance()
 
 "; 
 
-%feature("docstring") simuPOP::maPenetrance::clone "
+%feature("docstring") simuPOP::MaPenetrance::clone "
 
 Description:
 
@@ -3630,15 +3630,15 @@ Usage:
 
 "; 
 
-%ignore simuPOP::maPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MaPenetrance::penet(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::maPenetrance::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mapPenetrance "
+%feature("docstring") simuPOP::MapPenetrance "
 
 Function form:
 
-    MapPenetrance
+    mapPenetrance
 
 Applicability: all ploidy
 
@@ -3649,11 +3649,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mapPenetrance::mapPenetrance "
+%feature("docstring") simuPOP::MapPenetrance::MapPenetrance "
 
 Usage:
 
-    mapPenetrance(loci, penetrance, ancGen=0, begin=0, end=-1,
+    MapPenetrance(loci, penetrance, ancGen=0, begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -3672,15 +3672,15 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mapPenetrance::~mapPenetrance "
+%feature("docstring") simuPOP::MapPenetrance::~MapPenetrance "
 
 Usage:
 
-    x.~mapPenetrance()
+    x.~MapPenetrance()
 
 "; 
 
-%feature("docstring") simuPOP::mapPenetrance::clone "
+%feature("docstring") simuPOP::MapPenetrance::clone "
 
 Description:
 
@@ -3692,9 +3692,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mapPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MapPenetrance::penet(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mapPenetrance::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mapSelector "
 
@@ -4025,11 +4025,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops "
+%feature("docstring") simuPOP::MergeSubPops "
 
 Function form:
 
-    MergeSubPops
+    mergeSubPops
 
 Details:
 
@@ -4039,11 +4039,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::mergeSubPops "
+%feature("docstring") simuPOP::MergeSubPops::MergeSubPops "
 
 Usage:
 
-    mergeSubPops(subPops=ALL_AVAIL, name=\"\", begin=0, end=-1,
+    MergeSubPops(subPops=ALL_AVAIL, name=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -4058,7 +4058,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::~mergeSubPops "
+%feature("docstring") simuPOP::MergeSubPops::~MergeSubPops "
 
 Description:
 
@@ -4066,15 +4066,15 @@ Description:
 
 Usage:
 
-    x.~mergeSubPops()
+    x.~MergeSubPops()
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::clone "
+%feature("docstring") simuPOP::MergeSubPops::clone "
 
 Description:
 
-    deep copy of a mergeSubPops operator
+    deep copy of a MergeSubPops operator
 
 Usage:
 
@@ -4082,11 +4082,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::apply "
+%feature("docstring") simuPOP::MergeSubPops::apply "
 
 Description:
 
-    apply a mergeSubPops operator
+    apply a MergeSubPops operator
 
 Usage:
 
@@ -4094,7 +4094,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mergeSubPops::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MergeSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::migrator "
 
@@ -4337,11 +4337,11 @@ Usage:
 
 %feature("docstring") simuPOP::MixedMutator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mlPenetrance "
+%feature("docstring") simuPOP::MlPenetrance "
 
 Function form:
 
-    MlPenetrance
+    mlPenetrance
 
 Details:
 
@@ -4357,11 +4357,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mlPenetrance::mlPenetrance "
+%feature("docstring") simuPOP::MlPenetrance::MlPenetrance "
 
 Usage:
 
-    mlPenetrance(ops, mode=MULTIPLICATIVE, ancGen=0, begin=0,
+    MlPenetrance(ops, mode=MULTIPLICATIVE, ancGen=0, begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
@@ -4382,15 +4382,15 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mlPenetrance::~mlPenetrance "
+%feature("docstring") simuPOP::MlPenetrance::~MlPenetrance "
 
 Usage:
 
-    x.~mlPenetrance()
+    x.~MlPenetrance()
 
 "; 
 
-%feature("docstring") simuPOP::mlPenetrance::clone "
+%feature("docstring") simuPOP::MlPenetrance::clone "
 
 Description:
 
@@ -4402,9 +4402,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mlPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::MlPenetrance::penet(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::mlPenetrance::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::mlSelector "
 
@@ -5866,11 +5866,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::mergeSubPops "
+%feature("docstring") simuPOP::population::MergeSubPops "
 
 Usage:
 
-    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\")
+    x.MergeSubPops(subPops=ALL_AVAIL, name=\"\")
 
 Details:
 
@@ -6433,31 +6433,31 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval "
+%feature("docstring") simuPOP::PyEval "
 
 Function form:
 
-    PyEval
+    pyEval
 
 Details:
 
-    A pyEval operator evaluates a Python expression in a population's
+    A PyEval operator evaluates a Python expression in a population's
     local namespace when it is applied to this population. The result
     is written to an output specified by parameter output.
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::pyEval "
+%feature("docstring") simuPOP::PyEval::PyEval "
 
 Usage:
 
-    pyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\", begin=0,
+    PyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\", begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
 Details:
 
-    Crete a pyEval operator that evaluates a Python expression expr in
+    Crete a PyEval operator that evaluates a Python expression expr in
     a population's local namespace when it is applied to this
     population. If Python statements stmts is given (a single or
     multi-line string), the statement will be executed before expr. If
@@ -6480,19 +6480,19 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::~pyEval "
+%feature("docstring") simuPOP::PyEval::~PyEval "
 
 Usage:
 
-    x.~pyEval()
+    x.~PyEval()
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::clone "
+%feature("docstring") simuPOP::PyEval::clone "
 
 Description:
 
-    deep copy of a pyEval operator
+    deep copy of a PyEval operator
 
 Usage:
 
@@ -6500,7 +6500,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::evaluate "
+%feature("docstring") simuPOP::PyEval::evaluate "
 
 Usage:
 
@@ -6513,11 +6513,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::apply "
+%feature("docstring") simuPOP::PyEval::apply "
 
 Description:
 
-    Apply the pyEval operator to populationpop.
+    Apply the PyEval operator to populationpop.
 
 Usage:
 
@@ -6525,13 +6525,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyEval::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::pyExec "
+%feature("docstring") simuPOP::PyExec "
 
 Function form:
 
-    PyExec
+    pyExec
 
 Details:
 
@@ -6540,16 +6540,16 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::pyExec "
+%feature("docstring") simuPOP::PyExec::PyExec "
 
 Usage:
 
-    pyExec(stmts=\"\", exposePop=\"\", output=\">\", begin=0, end=-1,
+    PyExec(stmts=\"\", exposePop=\"\", output=\">\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Create a pyExec operator that executes statements stmts in a
+    Create a PyExec operator that executes statements stmts in a
     population's local namespace when it is applied to this
     population. If exposePop is given, current population will be
     exposed in its local namespace as a variable named by exposePop.
@@ -6560,19 +6560,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::~pyExec "
+%feature("docstring") simuPOP::PyExec::~PyExec "
 
 Usage:
 
-    x.~pyExec()
+    x.~PyExec()
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::clone "
+%feature("docstring") simuPOP::PyExec::clone "
 
 Description:
 
-    deep copy of a pyExec operator
+    deep copy of a PyExec operator
 
 Usage:
 
@@ -6580,7 +6580,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyExec::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyExec::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::pyFunc;
 
@@ -6981,11 +6981,11 @@ Usage:
 
 %ignore simuPOP::PyParentsChooser::chooseParents(RawIndIterator basePtr);
 
-%feature("docstring") simuPOP::pyPenetrance "
+%feature("docstring") simuPOP::PyPenetrance "
 
 Function form:
 
-    PyPenetrance
+    pyPenetrance
 
 Details:
 
@@ -7002,11 +7002,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyPenetrance::pyPenetrance "
+%feature("docstring") simuPOP::PyPenetrance::PyPenetrance "
 
 Usage:
 
-    pyPenetrance(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
+    PyPenetrance(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -7018,7 +7018,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyPenetrance::clone "
+%feature("docstring") simuPOP::PyPenetrance::clone "
 
 Description:
 
@@ -7030,9 +7030,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyPenetrance::penet(individual *ind, ULONG gen);
+%ignore simuPOP::PyPenetrance::penet(individual *ind, ULONG gen);
 
-%feature("docstring") simuPOP::pyPenetrance::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyPopIterator "
 
@@ -7075,11 +7075,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyQuanTrait "
+%feature("docstring") simuPOP::PyQuanTrait "
 
 Function form:
 
-    PyQuanTrait
+    pyQuanTrait
 
 Details:
 
@@ -7095,11 +7095,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyQuanTrait::pyQuanTrait "
+%feature("docstring") simuPOP::PyQuanTrait::PyQuanTrait "
 
 Usage:
 
-    pyQuanTrait(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
+    PyQuanTrait(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -7115,7 +7115,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::pyQuanTrait::clone "
+%feature("docstring") simuPOP::PyQuanTrait::clone "
 
 Description:
 
@@ -7127,9 +7127,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyQuanTrait::qtrait(individual *ind, ULONG gen, vectorf &traits);
+%ignore simuPOP::PyQuanTrait::qtrait(individual *ind, ULONG gen, vectorf &traits);
 
-%feature("docstring") simuPOP::pyQuanTrait::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PyQuanTrait::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pySelector "
 
@@ -7591,11 +7591,11 @@ Details:
 
 %ignore simuPOP::Recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad, individual *mom);
 
-%feature("docstring") simuPOP::resizeSubPops "
+%feature("docstring") simuPOP::ResizeSubPops "
 
 Function form:
 
-    ResizeSubPops
+    resizeSubPops
 
 Details:
 
@@ -7605,11 +7605,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::resizeSubPops "
+%feature("docstring") simuPOP::ResizeSubPops::ResizeSubPops "
 
 Usage:
 
-    resizeSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
+    ResizeSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
       propagate=True, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       infoFields=[])
 
@@ -7629,7 +7629,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::~resizeSubPops "
+%feature("docstring") simuPOP::ResizeSubPops::~ResizeSubPops "
 
 Description:
 
@@ -7637,15 +7637,15 @@ Description:
 
 Usage:
 
-    x.~resizeSubPops()
+    x.~ResizeSubPops()
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::clone "
+%feature("docstring") simuPOP::ResizeSubPops::clone "
 
 Description:
 
-    deep copy of a resizeSubPops operator
+    deep copy of a ResizeSubPops operator
 
 Usage:
 
@@ -7653,11 +7653,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::apply "
+%feature("docstring") simuPOP::ResizeSubPops::apply "
 
 Description:
 
-    apply a resizeSubPops operator
+    apply a ResizeSubPops operator
 
 Usage:
 
@@ -7665,7 +7665,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::resizeSubPops::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RNG "
 
@@ -8601,11 +8601,11 @@ Usage:
 
 %feature("docstring") simuPOP::SmmMutator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::splitSubPops "
+%feature("docstring") simuPOP::SplitSubPops "
 
 Function form:
 
-    SplitSubPops
+    splitSubPops
 
 Details:
 
@@ -8616,11 +8616,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::splitSubPops "
+%feature("docstring") simuPOP::SplitSubPops::SplitSubPops "
 
 Usage:
 
-    splitSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
+    SplitSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[],
       names=[], randomize=True, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, infoFields=[])
 
@@ -8664,7 +8664,7 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::~splitSubPops "
+%feature("docstring") simuPOP::SplitSubPops::~SplitSubPops "
 
 Description:
 
@@ -8672,15 +8672,15 @@ Description:
 
 Usage:
 
-    x.~splitSubPops()
+    x.~SplitSubPops()
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::clone "
+%feature("docstring") simuPOP::SplitSubPops::clone "
 
 Description:
 
-    deep copy of a splitSubPops operator
+    deep copy of a SplitSubPops operator
 
 Usage:
 
@@ -8688,11 +8688,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::apply "
+%feature("docstring") simuPOP::SplitSubPops::apply "
 
 Description:
 
-    apply a splitSubPops operator
+    apply a SplitSubPops operator
 
 Usage:
 
@@ -8700,7 +8700,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPops::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::stat "
 
@@ -10332,19 +10332,19 @@ Usage:
 
 "; 
 
-%feature("docstring") _new_initByFreq "
+%feature("docstring") _new_InitByFreq "
 
 Usage:
 
-    _new_initByFreq(self, alleleFreq=[], *args, **kwargs)
+    _new_InitByFreq(self, alleleFreq=[], *args, **kwargs)
 
 "; 
 
-%feature("docstring") _new_initByValue "
+%feature("docstring") _new_InitByValue "
 
 Usage:
 
-    _new_initByValue(self, value=[], *args, **kwargs)
+    _new_InitByValue(self, value=[], *args, **kwargs)
 
 "; 
 

@@ -89,7 +89,7 @@ bool baseQuanTrait::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
-void pyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
+void PyQuanTrait::qtrait(individual * ind, ULONG gen, vectorf & traits)
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

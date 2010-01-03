@@ -1074,7 +1074,7 @@ private:
 
 /** CPPONLY
  *  Define a class that decipher simple statements that
- *  can be executed faster for infoExec. It does not
+ *  can be executed faster for InfoExec. It does not
  *  execute the statement.
  */
 class simpleStmt

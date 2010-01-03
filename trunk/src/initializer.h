@@ -40,9 +40,9 @@ namespace simuPOP {
 
 /** This operator initialize sex of individuals, either randomly or use a list
  *  of sexes.
- *  <funcForm>InitSex</funcForm>
+ *  <funcForm>initSex</funcForm>
  */
-class initSex : public baseOperator
+class InitSex : public baseOperator
 {
 public:
 	/** Create an operator that initialize individual sex to \c MALE or
@@ -59,7 +59,7 @@ public:
 	 *  used, is assigned repeatedly regardless of (virtual) subpopulation
 	 *  boundaries.
 	 */
-	initSex(double maleFreq = 0.5, double maleProp = -1, const intList & sex = vectori(),
+	InitSex(double maleFreq = 0.5, double maleProp = -1, const intList & sex = vectori(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
@@ -76,15 +76,15 @@ public:
 
 
 	/// destructor
-	virtual ~initSex()
+	virtual ~InitSex()
 	{
 	}
 
 
-	/// deep copy of an \c initSex operator.
+	/// deep copy of an \c InitSex operator.
 	virtual baseOperator * clone() const
 	{
-		return new initSex(*this);
+		return new InitSex(*this);
 	}
 
 
@@ -108,9 +108,9 @@ protected:
 
 /** This operator initializes given information fields with a sequence of
  *  values, or a user-provided function such as \c random.random.
- *  <funcForm>InitInfo</funcForm>
+ *  <funcForm>initInfo</funcForm>
  */
-class initInfo : public baseOperator
+class InitInfo : public baseOperator
 {
 public:
 	/** Create an operator that initialize individual information fields
@@ -123,7 +123,7 @@ public:
 	 *  a list of (virtual) subpopulation is specified in parameter \e subPop,
 	 *  only individuals in these subpopulations will be initialized.
 	 */
-	initInfo(const floatListFunc & values,
+	InitInfo(const floatListFunc & values,
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
@@ -135,15 +135,15 @@ public:
 
 
 	/// destructor
-	virtual ~initInfo()
+	virtual ~InitInfo()
 	{
 	}
 
 
-	/// deep copy of an \c initInfo operator.
+	/// deep copy of an \c InitInfo operator.
 	virtual baseOperator * clone() const
 	{
-		return new initInfo(*this);
+		return new InitInfo(*this);
 	}
 
 
@@ -162,9 +162,9 @@ protected:
 /** This operator assigns alleles at all or part of loci with given allele
  *  frequencies. Alternatively, an individual can be initialized and be copied
  *  to all individuals in the same (virtual) subpopulations.
- *  <funcForm>InitByFreq</funcForm>
+ *  <funcForm>initByFreq</funcForm>
  */
-class initByFreq : public baseOperator
+class InitByFreq : public baseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -181,22 +181,22 @@ public:
 	 *  chromosomes, including unused genotype locations and customized
 	 *  chromosomes.
 	 */
-	initByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
+	InitByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(), bool identicalInds = false,
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 
-	~initByFreq()
+	~InitByFreq()
 	{
 	}
 
 
-	/// deep copy of the operator \c initByFreq
+	/// deep copy of the operator \c InitByFreq
 	virtual baseOperator * clone() const
 	{
-		return new initByFreq(*this);
+		return new InitByFreq(*this);
 	}
 
 
@@ -222,9 +222,9 @@ private:
 };
 
 /** This operator initialize individuals by given values.
- *  <funcForm>InitByValue</funcForm>
+ *  <funcForm>initByValue</funcForm>
  */
-class initByValue : public baseOperator
+class InitByValue : public baseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
@@ -242,29 +242,29 @@ public:
 	 *  chromosomes, including unused genotype locations and customized
 	 *  chromosomes.
 	 */
-	initByValue(intMatrix value = intMatrix(),
+	InitByValue(intMatrix value = intMatrix(),
 		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
 		const floatList & proportions = vectorf(), const floatList & freq = vectorf(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
-	~initByValue()
+	~InitByValue()
 	{
 	}
 
 
-	/// deep copy of the operator \c initByValue
+	/// deep copy of the operator \c InitByValue
 	virtual baseOperator * clone() const
 	{
-		return new initByValue(*this);
+		return new InitByValue(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.initByValue>";
+		return "<simuPOP.InitByValue>";
 	}
 
 

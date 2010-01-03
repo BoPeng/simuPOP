@@ -65,7 +65,7 @@ class TestMigrator(unittest.TestCase):
         self.assertEqual(pop.subPopSizes(), (1990, 4000, 4010))
         # virtual subpopulations?
         pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
-        InitSex(pop, sex=[MALE, FEMALE])
+        initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         # only get male out of the second subpopulation
         Migrate(pop, mode=BY_IND_INFO, subPops=[(1, 0)])
@@ -129,9 +129,9 @@ class TestMigrator(unittest.TestCase):
         'Testing migrate by sex and counts'
         # everyone is MALE
         pop = population(size=[2000, 4000,4000], loci=[2], infoFields=['migrate_to'])
-        InitSex(pop, maleFreq=0, subPops=[0])
-        InitSex(pop, maleFreq=1, subPops=[1])
-        InitSex(pop, maleFreq=1, subPops=[2])
+        initSex(pop, maleFreq=0, subPops=[0])
+        initSex(pop, maleFreq=1, subPops=[1])
+        initSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(SexSplitter())
         Migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
@@ -168,9 +168,9 @@ class TestMigrator(unittest.TestCase):
     def testMigrateBySexAndProportion(self):
         'Testing migrate by sex and proportion'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        InitSex(pop, maleFreq=0, subPops=[0])
-        InitSex(pop, maleFreq=1, subPops=[1])
-        InitSex(pop, maleFreq=1, subPops=[2])
+        initSex(pop, maleFreq=0, subPops=[0])
+        initSex(pop, maleFreq=1, subPops=[1])
+        initSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(SexSplitter())
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=BY_PROPORTION,
@@ -209,9 +209,9 @@ class TestMigrator(unittest.TestCase):
     def testMigrateBySexAndProbability(self):
         'Testing migrate by sex and probability'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        InitSex(pop, maleFreq=0, subPops=[0])
-        InitSex(pop, maleFreq=1, subPops=[1])
-        InitSex(pop, maleFreq=1, subPops=[2])
+        initSex(pop, maleFreq=0, subPops=[0])
+        initSex(pop, maleFreq=1, subPops=[1])
+        initSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(SexSplitter())
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=BY_PROBABILITY,
@@ -244,7 +244,7 @@ class TestMigrator(unittest.TestCase):
     def testMigrConstAlleleFreq(self):
         'Testing that migration does not change allele frequency'
         pop = population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        InitByFreq(pop, [.2, .8])
+        initByFreq(pop, [.2, .8])
         Stat(pop, alleleFreq=[0])
         af = pop.dvars().alleleFreq[0][1]    # ~.2
         # migrate and check if allele frequency changes
@@ -268,27 +268,27 @@ class TestMigrator(unittest.TestCase):
     def testSplitSubPops(self):
         'Testing population split'
         pop = population(size=10, loci=[2,6], infoFields=['migrate_to'])
-        InitByFreq(pop, [.2,.4,.4])
+        initByFreq(pop, [.2,.4,.4])
         genotype = list(pop.genotype())
-        SplitSubPops(pop, subPops=0, sizes=[2, 8], randomize=False)
+        splitSubPops(pop, subPops=0, sizes=[2, 8], randomize=False)
         # individual untouched
         self.assertEqual(pop.genotype(), genotype)
         # split, with randomization
-        SplitSubPops(pop, subPops=1, sizes=[6,2], randomize=True)
+        splitSubPops(pop, subPops=1, sizes=[6,2], randomize=True)
         self.assertNotEqual(pop.genotype(), genotype)
         # test subpopulation names
         pop = population(size=10, loci=[2,6], infoFields=['migrate_to'])
-        self.assertRaises(exceptions.ValueError, SplitSubPops, pop, subPops=0,
+        self.assertRaises(exceptions.ValueError, splitSubPops, pop, subPops=0,
             sizes=[2, 8], names='ab', randomize=False)
-        SplitSubPops(pop, subPops=0, sizes=[2, 8], names=['ab', 'cd'],
+        splitSubPops(pop, subPops=0, sizes=[2, 8], names=['ab', 'cd'],
             randomize=False)
         self.assertEqual(pop.subPopName(0), 'ab')
         self.assertEqual(pop.subPopName(1), 'cd')
-        SplitSubPops(pop, subPops=1, proportions=[0.5, 0.5], randomize=False)
+        splitSubPops(pop, subPops=1, proportions=[0.5, 0.5], randomize=False)
         self.assertEqual(pop.subPopName(2), 'cd')
         # names from noone...
         pop = population(size=[10, 20], loci=[2,6], infoFields=['migrate_to'])
-        SplitSubPops(pop, subPops=1, sizes=[12, 8], names=['ab', 'cd'],
+        splitSubPops(pop, subPops=1, sizes=[12, 8], names=['ab', 'cd'],
             randomize=False)
         self.assertEqual(pop.subPopName(0), '')
         self.assertEqual(pop.subPopName(1), 'ab')
@@ -323,16 +323,16 @@ class TestMigrator(unittest.TestCase):
     def testMergeSubPop(self):
         'Testing population merge'
         pop = population(size=[2,4,4], loci=[2,6])
-        MergeSubPops(pop, subPops=[0,2])
+        mergeSubPops(pop, subPops=[0,2])
         self.assertEqual(pop.subPopSizes(), (6,4))
-        MergeSubPops(pop, subPops=[0,1])
+        mergeSubPops(pop, subPops=[0,1])
         self.assertEqual(pop.subPopSizes(), (10,))
 
     def testResizeSubPops(self):
         'Testing population resize'
         pop = population(size=[2, 4, 4], loci=[2,6])
-        InitByFreq(pop, [0.3, 0.7])
-        ResizeSubPops(pop, sizes=[6], subPops=[0])
+        initByFreq(pop, [0.3, 0.7])
+        resizeSubPops(pop, sizes=[6], subPops=[0])
         self.assertEqual(pop.subPopSizes(), (6, 4, 4))
         for ind in (2, 4):
             self.assertEqual(pop.individual(ind, 0), pop.individual(0, 0))
@@ -341,7 +341,7 @@ class TestMigrator(unittest.TestCase):
             self.assertEqual(pop.individual(ind, 0), pop.individual(1, 0))
             self.assertNotEqual(pop.individual(ind, 0), pop.individual(0, 0))
         # no propagate
-        ResizeSubPops(pop, sizes=[8, 7], subPops=[1,2], propagate=False)
+        resizeSubPops(pop, sizes=[8, 7], subPops=[1,2], propagate=False)
         self.assertEqual(pop.subPopSizes(), (6, 8, 7))
         for ind in (10, 11, 12, 13, 18, 19, 20):
             self.assertEqual(pop.individual(ind).genotype(), [0]*16)
