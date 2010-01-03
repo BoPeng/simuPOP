@@ -41,7 +41,7 @@
  * StreamManager
  * StreamProvider
  * RNG
- * bernulliTrials
+ * Bernullitrials
  * parameter polymorphism
  */
 
@@ -1618,10 +1618,10 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count);
 string formatText(const string & text);
 
 // weighted sampling using Walker's alias algorithm
-class weightedSampler
+class Weightedsampler
 {
 public:
-	weightedSampler(RNG & rng)
+	Weightedsampler(RNG & rng)
 		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
@@ -1629,7 +1629,7 @@ public:
 
 
 	// set up AliasMethod table
-	weightedSampler(RNG & rng, const vectorf & weight)
+	Weightedsampler(RNG & rng, const vectorf & weight)
 		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
@@ -1638,7 +1638,7 @@ public:
 
 
 	// Return 0, 1, ... randomly according to a proportion table.
-	weightedSampler(RNG & rng, const vectorf & weight, ULONG N)
+	Weightedsampler(RNG & rng, const vectorf & weight, ULONG N)
 		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
@@ -1646,7 +1646,7 @@ public:
 	}
 
 
-	~weightedSampler()
+	~Weightedsampler()
 	{
 	}
 
@@ -1724,17 +1724,17 @@ private:
  *  if trial will be called, e.g., N+2 times all the time,
  *  this treatment might not be very efficient.
  */
-class bernulliTrials
+class Bernullitrials
 {
 public:
 	/// CPPONLY
-	bernulliTrials(RNG & rng);
+	Bernullitrials(RNG & rng);
 
 	///
-	bernulliTrials(RNG & rng, const vectorf & prob, ULONG trials);
+	Bernullitrials(RNG & rng, const vectorf & prob, ULONG trials);
 
 	///
-	~bernulliTrials();
+	~Bernullitrials();
 
 	/** CPPONLY
 	 * return size of trial

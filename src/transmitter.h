@@ -567,8 +567,8 @@ private:
 	vectorf m_convMode;
 
 	/// bernulli trials
-	//  vector<bernulliTrials*> m_bt;
-	bernulliTrials m_bt;
+	//  vector<Bernullitrials*> m_bt;
+	Bernullitrials m_bt;
 
 	// locataion of special chromosomes
 	int m_chromX;

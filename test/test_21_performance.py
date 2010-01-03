@@ -465,14 +465,14 @@ class TestPerformance(unittest.TestCase):
     # long: 6.32, 19.82, 52.03
 
 
-    def TestbernulliTrials(self):
+    def TestBernullitrials(self):
         'Testing the performance of bernulli trials'
         rg = rng()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
         for pi in p:
             c1 = time.clock()
-            bt = bernulliTrials(rg, [pi]*100, N)
+            bt = Bernullitrials(rg, [pi]*100, N)
             for rep in range(400):
                 bt.doTrial()
             c2 = time.clock()
