@@ -50,7 +50,7 @@ namespace simuPOP {
  *  IDs to all individuals in this population. This property is usually used
  *  in the \c preOps parameter of function \c simulator.evolve to assign
  *  initial ID to a population.
- *  <funcForm>TagID</funcForm>
+ *  <funcForm>tagID</funcForm>
  */
 class IdTagger : public baseOperator
 {

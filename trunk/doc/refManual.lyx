@@ -1512,63 +1512,63 @@ simuPOPSplitSubPopsRef
 
 
 \backslash
-simuPOPMatrixMutateRef
+simuPOPmatrixMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPSnpMutateRef
+simuPOPsnpMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPAcgtMutateRef
+simuPOPacgtMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPKamMutateRef
+simuPOPkamMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPSmmMutateRef
+simuPOPsmmMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPyMutateRef
+simuPOPpyMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPMixedMutateRef
+simuPOPmixedMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPContextMutateRef
+simuPOPcontextMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPPointMutateRef
+simuPOPpointMutateRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1582,7 +1582,7 @@ simuPOPStatRef
 
 
 \backslash
-simuPOPTagIDRef
+simuPOPtagIDRef
 \end_layout
 
 \begin_layout Plain Layout

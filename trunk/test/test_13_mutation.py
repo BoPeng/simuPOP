@@ -275,7 +275,7 @@ class TestMutator(unittest.TestCase):
         # cutom mutator
         def mut(x):
             return 1
-        PyMutate(pop, rates=1, func=mut)
+        pyMutate(pop, rates=1, func=mut)
         self.assertEqual(pop.individual(0).allele(0), 1)
 
     def testMixedMutator(self):
@@ -314,11 +314,11 @@ class TestMutator(unittest.TestCase):
         self.assertAlmostEqual(pop.dvars().alleleFreq[1][1], 0.01, places=2)
         self.assertAlmostEqual(pop.dvars().alleleFreq[4][1], 0.1, places=2)
         # test parameters
-        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
             contexts=[(0, 0, 0)])
-        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
             mutators=[SnpMutator(u=0.1)], contexts=[(0, 0), (1, 1)])
-        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
             mutators=[SnpMutator(u=0.1), SnpMutator(u=0.01)],
             contexts=[(0, 0), (1, 1, 2, 2)])
 
@@ -327,10 +327,10 @@ class TestMutator(unittest.TestCase):
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])
         InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
-        PointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
+        pointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
         self.assertEqual(pop.individual(1).allele(1,0), 0)
         self.assertNotEqual(pop.individual(1).allele(1,1), 0)
-        PointMutate(pop, inds=[1,2,3], ploidy=[1],
+        pointMutate(pop, inds=[1,2,3], ploidy=[1],
             allele=0, loci=[1,2])
         self.assertEqual(pop.individual(1).allele(2,1), 0)
         self.assertNotEqual(pop.individual(1).allele(2,0), 0)
@@ -342,7 +342,7 @@ class TestMutator(unittest.TestCase):
         for i in range(50):
             pop = population(size=10000, loci=[1])
             InitByFreq(pop, [0.6, 0.4])
-            SnpMutate(pop, u=0.2, v=0.1, loci=0)
+            snpMutate(pop, u=0.2, v=0.1, loci=0)
             Stat(pop, alleleFreq=[0])
             # u = 10000*2*(0.6-0.12+0.04), v = 10000*2*(0.4-0.04+0.12)
             cnt0 += pop.dvars().alleleNum[0][0]
@@ -356,7 +356,7 @@ class TestMutator(unittest.TestCase):
         for i in range(50):
             pop = population(size=10000, loci=[1])
             # Mutate autosome
-            SnpMutate(pop, u=0.01, loci=0)
+            snpMutate(pop, u=0.01, loci=0)
             Stat(pop, alleleFreq=[0])
             # 10000 x 2 x 0.01 = 200
             cnt += pop.dvars().alleleNum[0][1]
@@ -369,7 +369,7 @@ class TestMutator(unittest.TestCase):
             pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop, sex=[MALE, FEMALE])
             # Mutate X chromosomes
-            SnpMutate(pop, u=0.01, loci=0)
+            snpMutate(pop, u=0.01, loci=0)
             Stat(pop, alleleFreq=[0])
             # MALE: 5000 x 0.01, FEMALE: 5000 x 2 x 0.01 = 50 + 100
             cnt += pop.dvars().alleleNum[0][1]
@@ -380,7 +380,7 @@ class TestMutator(unittest.TestCase):
         for i in range(50):
             pop = population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             InitSex(pop, sex=[MALE, FEMALE])
-            SnpMutate(pop, u=0.01, loci=1)
+            snpMutate(pop, u=0.01, loci=1)
             Stat(pop, alleleFreq=[1])
             # MALE: 5000 x 0.01 = 50
             cnt += pop.dvars().alleleNum[1][1]

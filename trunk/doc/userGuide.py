@@ -506,7 +506,7 @@ pop.individual(0, 1).x      # relative index
 pop.ancestor(5, 0).x
 # access individual by ID
 pop.addInfoFields('ind_id')
-sim.TagID(pop)
+sim.tagID(pop)
 [int(ind.ind_id) for ind in pop.individuals()]
 # access individual by ID. Note that individual 12 is in the parental generation
 pop.indByID(12).x
@@ -960,9 +960,9 @@ def dynaMutator(pop, param):
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
-            sim.KamMutate(pop, k=2, rates=mu1, loci=[i])
+            sim.kamMutate(pop, k=2, rates=mu1, loci=[i])
         else:
-            sim.KamMutate(pop, k=2, rates=mu2, loci=[i])
+            sim.kamMutate(pop, k=2, rates=mu2, loci=[i])
     return True
 
 pop = sim.population(size=10000, loci=[2, 3])
@@ -3321,7 +3321,7 @@ pop.evolve(
 print [int(ind.ind_id) for ind in pop.individuals()]
 pop.useAncestralGen(1)
 print [int(ind.ind_id) for ind in pop.individuals()]
-sim.TagID(pop) # re-assign ID
+sim.tagID(pop) # re-assign ID
 print [int(ind.ind_id) for ind in pop.individuals()]
 #end_file
 
@@ -5025,9 +5025,9 @@ class dynaMutator(sim.pyOperator):
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                sim.KamMutate(pop, k=2, rates=self.mu1, loci=[i])
+                sim.kamMutate(pop, k=2, rates=self.mu1, loci=[i])
             else:
-                sim.KamMutate(pop, k=2, rates=self.mu2, loci=[i])
+                sim.kamMutate(pop, k=2, rates=self.mu2, loci=[i])
         return True
 
 pop = sim.population(size=10000, loci=[2, 3])

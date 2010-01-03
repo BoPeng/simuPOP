@@ -93,7 +93,7 @@ import exceptions
 import random
 
 from simuPOP import ALL_AVAIL, pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
-    MALE, AFFECTED, TagID
+    MALE, AFFECTED, tagID
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -116,7 +116,7 @@ def IndexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
     '''
     pop.addInfoFields([idField, fatherField, motherField], -1)
     # set each individual's unique ID to idField
-    TagID(pop, reset=reset, infoFields=idField)
+    tagID(pop, reset=reset, infoFields=idField)
     # save each individual's parents' IDs to fatherField and motherField
     for gen in range(pop.ancestralGens()-1, -1, -1):
         pop.useAncestralGen(gen)
