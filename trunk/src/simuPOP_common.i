@@ -234,7 +234,7 @@ namespace std
 // as function name. ind and pop are used instead.
 // at the python level, individual and Population are better.
 %rename(individual) ind(double, vspID);
-%rename(Population) pop(UINT) const;
+%rename(population) pop(UINT) const;
 
 %newobject loadPopulation;
 %newobject LoadSimulator;
