@@ -328,9 +328,9 @@ def unsupportedPedigreeOperation(*args, **kwargs):
     'This function is not supported in the pedigree class'
     raise exceptions.ValueError('Changing pedigree structure using this function is disallowed.')
 
-Pedigree.removeindividuals = unsupportedPedigreeOperation
+Pedigree.removeIndividuals = unsupportedPedigreeOperation
 Pedigree.removeSubPops = unsupportedPedigreeOperation
-Pedigree.extractindividuals = unsupportedPedigreeOperation
+Pedigree.extractIndividuals = unsupportedPedigreeOperation
 Pedigree.extractSubPops = unsupportedPedigreeOperation
 Pedigree.push = unsupportedPedigreeOperation
 Pedigree.setAncestralDepth = unsupportedPedigreeOperation
