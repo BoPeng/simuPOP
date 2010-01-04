@@ -240,7 +240,7 @@ void MatrixMutator::mutate(AlleleRef allele, UINT)
 
 
 // mutate to a state other than current state with equal probability
-void KamMutator::mutate(AlleleRef allele, UINT)
+void KAlleleMutator::mutate(AlleleRef allele, UINT)
 {
 #ifdef BINARYALLELE
 	allele = !allele;
@@ -254,7 +254,7 @@ void KamMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-SmmMutator::SmmMutator(const floatList & rates, const uintList & loci,
+StepwiseMutator::StepwiseMutator(const floatList & rates, const uintList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
@@ -283,7 +283,7 @@ SmmMutator::SmmMutator(const floatList & rates, const uintList & loci,
 }
 
 
-void SmmMutator::mutate(AlleleRef allele, UINT)
+void StepwiseMutator::mutate(AlleleRef allele, UINT)
 {
 	UINT step = 1;
 
@@ -295,7 +295,7 @@ void SmmMutator::mutate(AlleleRef allele, UINT)
 		step = getRNG().randGeometric(m_mutStep[1]);
 	} else {
 		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
-			"Invalid Python function for SmmMutator");
+			"Invalid Python function for StepwiseMutator");
 		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>(allele));
 	}
 

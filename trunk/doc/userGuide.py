@@ -960,9 +960,9 @@ def dynaMutator(pop, param):
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
-            sim.kamMutate(pop, k=2, rates=mu1, loci=[i])
+            sim.kAlleleMutate(pop, k=2, rates=mu1, loci=[i])
         else:
-            sim.kamMutate(pop, k=2, rates=mu2, loci=[i])
+            sim.kAlleleMutate(pop, k=2, rates=mu2, loci=[i])
     return True
 
 pop = sim.Population(size=10000, loci=[2, 3])
@@ -2485,7 +2485,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/KamMutator.py
+#begin_file log/KAlleleMutator.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -2499,7 +2499,7 @@ pop.evolve(
     initOps=sim.InitSex(),
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.KamMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
+        sim.KAlleleMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
         sim.Stat(alleleFreq=range(3), step=100),
         sim.PyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
             step=100),
@@ -2508,7 +2508,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/SnpMutator.py
+#begin_file log/SNPMutator.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -2521,7 +2521,7 @@ pop = sim.Population(size=[2000], loci=[1, 1], infoFields='fitness')
 pop.evolve(
     initOps=sim.InitSex(),
     preOps=[
-        sim.SnpMutator(u=0.001),
+        sim.SNPMutator(u=0.001),
         sim.MaSelector(loci=0, fitness=[1, 0.99, 0.98]),
     ],
     matingScheme=sim.RandomMating(),
@@ -2561,7 +2561,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/SmmMutator.py
+#begin_file log/StepwiseMutator.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -2579,8 +2579,8 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(),
     preOps=[
-        sim.SmmMutator(rates=1e-3, loci=0),
-        sim.SmmMutator(rates=1e-3, incProb=0.6, loci=1,
+        sim.StepwiseMutator(rates=1e-3, loci=0),
+        sim.StepwiseMutator(rates=1e-3, incProb=0.6, loci=1,
             mutStep=(sim.GEOMETRIC_DISTRIBUTION, 0.2)),
     ],
     gen=100
@@ -2644,11 +2644,11 @@ pop.evolve(
     ],
     preOps=[
         # the first locus uses a pure stepwise mutation model
-        sim.SmmMutator(rates=0.001, loci=0),
+        sim.StepwiseMutator(rates=0.001, loci=0),
         # the second locus uses a mixed model
         sim.MixedMutator(rates=0.001, loci=1, mutators=[        
-            sim.KamMutator(rates=1, k=100),
-            sim.SmmMutator(rates=1)
+            sim.KAlleleMutator(rates=1, k=100),
+            sim.StepwiseMutator(rates=1)
         ], prob=[0.1, 0.9])],
     matingScheme=sim.RandomMating(),
     gen = 20
@@ -2682,8 +2682,8 @@ pop.evolve(
     ],
     preOps=[
         sim.ContextMutator(mutators=[
-            sim.SnpMutator(u=0.1),
-            sim.SnpMutator(u=1),
+            sim.SNPMutator(u=0.1),
+            sim.SNPMutator(u=1),
             ],
             contexts=[(0, 0), (1, 1)],
             loci=[1, 4],
@@ -2729,7 +2729,7 @@ pop.evolve(
         sim.PyMutator(func=contextMut, context=1,
             loci=[1, 4],  rates=0.01
         ),
-        #sim.SnpMutator(u=0.01, v= 0.01, loci=[1, 4]),
+        #sim.SNPMutator(u=0.01, v= 0.01, loci=[1, 4]),
         sim.Stat(alleleFreq=[1, 4], step=5),
         sim.PyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
             " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
@@ -2823,11 +2823,11 @@ pop.evolve(
         # determine affection sim.status for each offspring (duringMating)
         sim.PyPenetrance(func=fragileX, loci=0),
         # unaffected offspring, mutation rate is high to save some time
-        sim.SmmMutator(rates=1e-3, loci=1),
+        sim.StepwiseMutator(rates=1e-3, loci=1),
         # unaffected offspring, mutation rate is high to save some time
-        sim.SmmMutator(rates=1e-3, loci=0, subPops=[(0, 0)]),
+        sim.StepwiseMutator(rates=1e-3, loci=0, subPops=[(0, 0)]),
         # affected offspring have high probability of mutating upward
-        sim.SmmMutator(rates=1e-2, loci=0, subPops=[(0, 1)],
+        sim.StepwiseMutator(rates=1e-2, loci=0, subPops=[(0, 1)],
            incProb=0.7, mutStep=3),
         # number of affected
         sim.PyOperator(func=avgAllele, step=20),
@@ -2856,7 +2856,7 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.KamMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
+        sim.KAlleleMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
             mapOut=[4, 5, 6, 7]),
         sim.Stat(alleleFreq=0, step=100),
         sim.PyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
@@ -4714,7 +4714,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
         ],
         matingScheme=sim.RandomMating(subPopSize=demo_func),
         postOps=[
-            sim.KamMutator(k=k, rates=mu),
+            sim.KAlleleMutator(k=k, rates=mu),
             sim.MaSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=[0], step=100),
             sim.PyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
@@ -4884,7 +4884,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
         ],
         matingScheme=sim.RandomMating(subPopSize=demo_func),
         postOps=[
-            sim.KamMutator(rate=mu, maxAllele=k),
+            sim.KAlleleMutator(rate=mu, maxAllele=k),
             sim.MaSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=0, step=100),
             sim.PyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
@@ -5025,9 +5025,9 @@ class dynaMutator(sim.PyOperator):
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                sim.kamMutate(pop, k=2, rates=self.mu1, loci=[i])
+                sim.kAlleleMutate(pop, k=2, rates=self.mu1, loci=[i])
             else:
-                sim.kamMutate(pop, k=2, rates=self.mu2, loci=[i])
+                sim.kAlleleMutate(pop, k=2, rates=self.mu2, loci=[i])
         return True
 
 pop = sim.Population(size=10000, loci=[2, 3])

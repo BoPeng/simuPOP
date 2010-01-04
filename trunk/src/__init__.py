@@ -162,12 +162,12 @@ __all__ = [
     'MatrixMutator',
     'MixedMutator',
     'PyMutator',
-    'SmmMutator',
-    'SnpMutator',
+    'StepwiseMutator',
+    'SNPMutator',
     'AcgtMutator',
     'AminoAcidMutator',
     'ContextMutator',
-    'KamMutator',
+    'KAlleleMutator',
     #
     'MapSelector',
     'MaSelector',
@@ -223,11 +223,11 @@ __all__ = [
     #
     'matrixMutate',
     'contextMutate',
-    'kamMutate',
+    'kAlleleMutate',
     'mixedMutate',
     'pointMutate',
     'pyMutate',
-    'smmMutate',
+    'stepwqiseMutate',
     'snpMutate',
     'acgtMutate',
     #
@@ -598,7 +598,7 @@ class ControlledRandomMating(HomoMating):
 
 
 # Mutation models
-class SnpMutator(MatrixMutator):
+class SNPMutator(MatrixMutator):
     '''
     Because there are only two alleles, this mutation model only needs to know
     the mutation rate from allele 0 to 1 (parameter ``u``) and from 1 to 0
@@ -798,20 +798,20 @@ def matrixMutate(pop, *args, **kwargs):
     MatrixMutator(*args, **kwargs).apply(pop)
 
 def snpMutate(pop, *args, **kwargs):
-    'Function form of operator ``SnpMutator``'
-    SnpMutator(*args, **kwargs).apply(pop)
+    'Function form of operator ``SNPMutator``'
+    SNPMutator(*args, **kwargs).apply(pop)
 
 def acgtMutate(pop, *args, **kwargs):
     'Function form of operator ``AcgtMutator``'
     AcgtMutator(*args, **kwargs).apply(pop)
 
-def kamMutate(pop, *args, **kwargs):
-    'Function form of operator ``KamMutator``'
-    KamMutator(*args, **kwargs).apply(pop)
+def kAlleleMutate(pop, *args, **kwargs):
+    'Function form of operator ``KAlleleMutator``'
+    KAlleleMutator(*args, **kwargs).apply(pop)
 
-def smmMutate(pop, *args, **kwargs):
-    'Function form of operator ``SmmMutator``'
-    SmmMutator(*args, **kwargs).apply(pop)
+def stepwqiseMutate(pop, *args, **kwargs):
+    'Function form of operator ``StepwiseMutator``'
+    StepwiseMutator(*args, **kwargs).apply(pop)
 
 def pyMutate(pop, *args, **kwargs):
     'Function form of operator ``PyMutator``'

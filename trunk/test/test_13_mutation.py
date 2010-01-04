@@ -118,7 +118,7 @@ class TestMutator(unittest.TestCase):
         simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
-            postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4],
+            postOps = [ KAlleleMutator(k=2, rates=0.5, loci=[1,4],
                 subPops=1)],
             gen = 100)
         pop = simu.extract(0)
@@ -137,7 +137,7 @@ class TestMutator(unittest.TestCase):
         simu = Simulator(pop )
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
-            postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
+            postOps = [ KAlleleMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
             gen = 1)
         pop = simu.extract(0)
         stat(pop, alleleFreq=range(5))
@@ -157,17 +157,17 @@ class TestMutator(unittest.TestCase):
         simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]))
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
-            postOps = [ KamMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
+            postOps = [ KAlleleMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
         self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
 
-    def testSnpMutator(self):
+    def testSNPMutator(self):
         'Testing diallelic mutator (SNP mutator)'
         simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]), rep=5)
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
-                postOps = [SnpMutator(u=0.1, loci=[0, 4]),
+                postOps = [SNPMutator(u=0.1, loci=[0, 4]),
                     #Stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[4][0])')
                 ],
@@ -185,7 +185,7 @@ class TestMutator(unittest.TestCase):
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
-                postOps = [SnpMutator(u=0.1, loci=[0, 4],
+                postOps = [SNPMutator(u=0.1, loci=[0, 4],
                     mapIn=[0, 0, 0, 0, 0, 0, 1],
                     mapOut=[5, 6]),
                     #Stat(alleleFreq=[0, 4]),
@@ -207,7 +207,7 @@ class TestMutator(unittest.TestCase):
         simu.evolve(
                 initOps = [InitSex(), InitByFreq([0, 0, 0, 0, 0, .5, .5], loci=[0, 4])],
             matingScheme = RandomMating(),
-                postOps = [SnpMutator(u=0.1, loci=[0, 4],
+                postOps = [SNPMutator(u=0.1, loci=[0, 4],
                     mapIn=mapIn, mapOut=mapOut),
                     #Stat(alleleFreq=[0, 4]),
                     #PyEval(r'"%.3f %.3f\n" % (alleleFreq[0][5], alleleFreq[4][5])')
@@ -221,7 +221,7 @@ class TestMutator(unittest.TestCase):
 
 
 
-    def testKamMutator(self):
+    def testKAlleleMutator(self):
         'Testing k-allele mutator'
         simu = Simulator( Population(size=1000, ploidy=2, loci=[2, 3]),
             rep=5)
@@ -229,7 +229,7 @@ class TestMutator(unittest.TestCase):
         simu.evolve(
                 initOps = [ InitSex(), InitByFreq([.2,.8])],
             matingScheme = RandomMating(),
-                postOps = [ KamMutator(k=2, rates=0.1)],
+                postOps = [ KAlleleMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
         simu = Simulator( Population(size=10000, ploidy=2, loci=[2, 3]),
@@ -237,7 +237,7 @@ class TestMutator(unittest.TestCase):
         simu.evolve(
             initOps = [InitSex()],
             matingScheme = RandomMating(),
-            postOps = [ KamMutator(k=2, rates=0.1, loci=[0,4])],
+            postOps = [ KAlleleMutator(k=2, rates=0.1, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
@@ -245,7 +245,7 @@ class TestMutator(unittest.TestCase):
         self.assertGenotype(simu.population(0), 0,
             loci=[1,2,3])
 
-    def testSmmMutator(self):
+    def testStepwiseMutator(self):
         'Testing generalized step-wise mutation mutator'
         if moduleInfo()['alleleType'] == 'binary':
             return
@@ -254,13 +254,13 @@ class TestMutator(unittest.TestCase):
         # simu.apply( [ InitSex(), InitByFreq([.2,.8])])
         simu.evolve(initOps=[InitSex(), InitByFreq([.2,.8])],
             matingScheme = RandomMating(),
-             postOps = [ SmmMutator(rates=0.2)], gen=200)
+             postOps = [ StepwiseMutator(rates=0.2)], gen=200)
         # at loci
         simu = Simulator( Population(size=10000, ploidy=2, loci=[2, 3]),
             rep=5)
         simu.evolve(initOps = [InitSex()],
             matingScheme = RandomMating(),
-            postOps = [ SmmMutator(rates=0.2, loci=[0,4])],
+            postOps = [ StepwiseMutator(rates=0.2, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
@@ -283,10 +283,10 @@ class TestMutator(unittest.TestCase):
         pop = Population(1000, loci=[1])
         simu = Simulator(pop)
         self.assertRaises(exceptions.ValueError,
-            MixedMutator, mutators=[KamMutator(k=10), KamMutator(k=10)],
+            MixedMutator, mutators=[KAlleleMutator(k=10), KAlleleMutator(k=10)],
             prob=[0.2, 0.4])
         self.assertRaises(exceptions.ValueError,
-            MixedMutator, mutators=[KamMutator(k=10), KamMutator(k=10)],
+            MixedMutator, mutators=[KAlleleMutator(k=10), KAlleleMutator(k=10)],
             prob=[0.2, 0.4, 0.4])
 
     def testContextMutator(self):
@@ -298,8 +298,8 @@ class TestMutator(unittest.TestCase):
             matingScheme = RandomMating(),
             postOps = [
                 ContextMutator(mutators=[
-                    SnpMutator(u=0.1),
-                    SnpMutator(u=1),
+                    SNPMutator(u=0.1),
+                    SNPMutator(u=1),
                     ],
                     contexts=[(0, 0), (1, 1)],
                     loci=[1, 4],
@@ -317,9 +317,9 @@ class TestMutator(unittest.TestCase):
         self.assertRaises(exceptions.ValueError, contextMutate, pop, 
             contexts=[(0, 0, 0)])
         self.assertRaises(exceptions.ValueError, contextMutate, pop, 
-            mutators=[SnpMutator(u=0.1)], contexts=[(0, 0), (1, 1)])
+            mutators=[SNPMutator(u=0.1)], contexts=[(0, 0), (1, 1)])
         self.assertRaises(exceptions.ValueError, contextMutate, pop, 
-            mutators=[SnpMutator(u=0.1), SnpMutator(u=0.01)],
+            mutators=[SNPMutator(u=0.1), SNPMutator(u=0.01)],
             contexts=[(0, 0), (1, 1, 2, 2)])
 
     def testPointMutator(self):
@@ -335,7 +335,7 @@ class TestMutator(unittest.TestCase):
         self.assertEqual(pop.individual(1).allele(2,1), 0)
         self.assertNotEqual(pop.individual(1).allele(2,0), 0)
 
-    def testSnpMutator(self):
+    def testSNPMutator(self):
         'Testing SNP mutator'
         cnt0 = 0
         cnt1 = 0

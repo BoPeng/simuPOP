@@ -525,7 +525,7 @@ operators
 \series default
  such as a 
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
  are applied to a population before a mating scheme repeatedly chooses a
  parent or parents to produce offspring.
@@ -5054,7 +5054,7 @@ MergeSubPops
 \family default
  to merge subpopulations and 
 \family typewriter
-SmmMutator
+StepwiseMutator
 \family default
  to mutate individuals using a stepwise mutation model.
 \end_layout
@@ -6089,11 +6089,11 @@ e model at high mutation rate if the frequency is lower than the cutoff
  and a low mutation rate otherwise.
  The 
 \family typewriter
-kamMutate
+kAlleleMutate
 \family default
  function is the function form of a mutator 
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
  (see Section 
 \begin_inset CommandInset ref
@@ -11239,7 +11239,7 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 \begin_layout Subsection
 k-allele mutation model (
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
 )
 \end_layout
@@ -11282,7 +11282,7 @@ MatrixMutator
 \family default
  but a specialized 
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
  is recommended because it provides better performance, especially when
  
@@ -11301,7 +11301,7 @@ KamMutator
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "KamMutator"
+reference "KAlleleMutator"
 
 \end_inset
 
@@ -11321,8 +11321,8 @@ loci
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/KamMutator.log"
-lstparams "caption={A k-allele mutation model},label={KamMutator}"
+filename "log/KAlleleMutator.log"
+lstparams "caption={A k-allele mutation model},label={KAlleleMutator}"
 
 \end_inset
 
@@ -11332,7 +11332,7 @@ lstparams "caption={A k-allele mutation model},label={KamMutator}"
 \begin_layout Subsection
 Diallelic mutation models (
 \family typewriter
-SnpMutator
+SNPMutator
 \family default
 )
 \end_layout
@@ -11344,7 +11344,7 @@ MatrixMutator
 \family default
  and 
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
  are general purpose mutators in the sense that they do not assume a type
  for the mutated alleles.
@@ -11358,7 +11358,7 @@ If there are only two alleles at a locus, a diallelic mutation model should
  Because single nucleotide polymorphisms (SNPs) are the most widely avaiable
  diallelic markers, a 
 \family typewriter
-SnpMutator
+SNPMutator
 \family default
  is provided to mutate such markers using a mutate rate matrix
 \end_layout
@@ -11393,7 +11393,7 @@ Despite of its name, this mutator can be used in many theoretical models
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "SnpMutator"
+reference "SNPMutator"
 
 \end_inset
 
@@ -11406,8 +11406,8 @@ reference "SnpMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/SnpMutator.log"
-lstparams "caption={A diallelic directional mutation model},label={SnpMutator}"
+filename "log/SNPMutator.log"
+lstparams "caption={A diallelic directional mutation model},label={SNPMutator}"
 
 \end_inset
 
@@ -12006,7 +12006,7 @@ AcgtMutator
 \begin_layout Subsection
 Mutation model for microsatellite markers (
 \family typewriter
-SmmMutator
+StepwiseMutator
 \family default
 )
 \end_layout
@@ -12035,7 +12035,7 @@ key "Ohta1973"
 \begin_layout Standard
 A 
 \family typewriter
-SmmMutator
+StepwiseMutator
 \family default
  assumes that alleles at a locus are the number of tandem repeats and mutates
  them by increasing or decreasing the number of repeats during a mutation
@@ -12061,13 +12061,13 @@ generalized stepwise mutation models
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "SmmMutator"
+reference "StepwiseMutator"
 
 \end_inset
 
  uses two 
 \family typewriter
-SmmMutator
+StepwiseMutator
 \family default
  to mutate two microsatellite markers, using a standard and a generalized
  model where a geometric distribution is used to determine the number of
@@ -12077,8 +12077,8 @@ SmmMutator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/SmmMutator.log"
-lstparams "caption={A standard and a generalized stepwise mutation model},label={SmmMutator}"
+filename "log/StepwiseMutator.log"
+lstparams "caption={A standard and a generalized stepwise mutation model},label={StepwiseMutator}"
 
 \end_inset
 
@@ -12237,7 +12237,7 @@ MixedMutator(rates=mu)
 \family default
  with 
 \family typewriter
-SmmMutator(rates=1)
+StepwiseMutator(rates=1)
 \family default
  and 
 \family typewriter
@@ -12245,7 +12245,7 @@ MixedMutator(rates=1)
 \family default
 with 
 \family typewriter
-SmmMutator(rates=mu)
+StepwiseMutator(rates=mu)
 \family default
  mutate alleles at the same mutation rate, the former is much more efficient
  because it triggers far less mutation events.
@@ -12311,7 +12311,7 @@ reference "ContextMutator"
 
  applies two 
 \family typewriter
-SnpMutator
+SNPMutator
 \family default
  at different rates under different contexts.
 \end_layout
@@ -12336,12 +12336,12 @@ ContextMutator(mutators=[
 
 \begin_layout Plain Layout
 
-    SnpMutator(u=0.1),
+    SNPMutator(u=0.1),
 \end_layout
 
 \begin_layout Plain Layout
 
-    SnpMutator(u=1)],
+    SNPMutator(u=1)],
 \end_layout
 
 \begin_layout Plain Layout
@@ -12373,12 +12373,12 @@ ContextMutator(mutators=[
 
 \begin_layout Plain Layout
 
-    SnpMutator(u=0.001),
+    SNPMutator(u=0.001),
 \end_layout
 
 \begin_layout Plain Layout
 
-    SnpMutator(u=0.01)],
+    SNPMutator(u=0.01)],
 \end_layout
 
 \begin_layout Plain Layout
@@ -12400,7 +12400,7 @@ ContextMutator(mutators=[
 
 both apply two 
 \family typewriter
-SnpMutator
+SNPMutator
 \family default
  at mutation rates 
 \family typewriter
@@ -21864,7 +21864,7 @@ A
 
 -allele model can be simulated using the 
 \family typewriter
-KamMutator
+KAlleleMutator
 \family default
  operator which accepts a mutation rate and a maximum allelic state as parameter
 s.
@@ -21874,7 +21874,7 @@ status open
 
 \begin_layout Plain Layout
 
-KamMutator(rates=mu, maxAllele=k)
+KAlleleMutator(rates=mu, maxAllele=k)
 \end_layout
 
 \end_inset
