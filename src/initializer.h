@@ -168,24 +168,24 @@ class InitGenotype : public BaseOperator
 public:
 	/** This function creates an initializer that initializes individual
 	 *  genotypes either randomly with specified allele frequencies
-     *  (parameter \e freq) or proportions (parameter \e prop), or with fixed
-     *  genotypes (\e genotype). Elements in \e freq specifies the allele
+	 *  (parameter \e freq) or proportions (parameter \e prop), or with fixed
+	 *  genotypes (\e genotype). Elements in \e freq specifies the allele
 	 *  frequencies of allele \c 0, \c 1, ... respectively. These frequencies
 	 *  should add up to \c 1. Elements in \e prop specified the proportions of
-     *  alleles. Parameter \e prop is similar to \e freq except that \e prop
-     *  guarantees exact proportions of alleles, although alleles with small
-     *  proportions might not be allocated at all. Parameter \e genotype
-     *  specifies a list of genotype that will be assigned repeatedly to all
-     *  individuals (similar to \c Population.setGenotype() except that this
-     *  operator supports parameter \e ploidy). If \e loci, \e ploidy and/or
-     *  \e subPop are specified, only specified loci, ploidy, and individuals
-     *  in these (virtual) subpopulations will be initialized. This operator
-     *  initializes all chromosomes, including unused genotype locations and
-     *  customized chromosomes.
+	 *  alleles. Parameter \e prop is similar to \e freq except that \e prop
+	 *  guarantees exact proportions of alleles, although alleles with small
+	 *  proportions might not be allocated at all. Parameter \e genotype
+	 *  specifies a list of genotype that will be assigned repeatedly to all
+	 *  individuals (similar to \c Population.setGenotype() except that this
+	 *  operator supports parameter \e ploidy). If \e loci, \e ploidy and/or
+	 *  \e subPop are specified, only specified loci, ploidy, and individuals
+	 *  in these (virtual) subpopulations will be initialized. This operator
+	 *  initializes all chromosomes, including unused genotype locations and
+	 *  customized chromosomes.
 	 */
 	InitGenotype(const vectorf & freq = vectorf(),
-        const uintList & genotype = uintList(), const vectorf & prop = vectorf(),
-        const uintList & loci = uintList(),
+		const uintList & genotype = uintList(), const vectorf & prop = vectorf(),
+		const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -214,8 +214,8 @@ public:
 private:
 	/// allele frequencies (assume all loci are the same for a subPop
 	vectorf m_freq;
-    vectoru m_genotype;
-    vectorf m_prop;
+	vectoru m_genotype;
+	vectorf m_prop;
 	//
 	uintList m_loci;
 
