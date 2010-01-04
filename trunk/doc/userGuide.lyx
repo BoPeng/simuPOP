@@ -305,6 +305,14 @@ lstlistoflistings
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Introduction
 \end_layout
@@ -534,15 +542,15 @@ KAlleleMutator
 During-mating operators
 \series default
  such as 
-\emph on
+\family typewriter
 Recombinator
-\emph default
+\family default
  can be applied by a mating scheme to transmit parental genotype to offspring.
  After an offspring population is populated, other 
 \series bold
 operators
 \series default
- can be applied, for example, to calculate population statistics.
+ can be applied, for example, to calculate and output population statistics.
  The offspring population will then become the parental population of the
  next evolutionary cycle.
  Many simuPOP operators can be applied in different stages so the type of
@@ -848,7 +856,7 @@ simuPOP is distributed under a GPL license and is hosted at
  code and applications.
  simuPOP is available on any platform where Python is available, and is
  currently tested under both 32 and 64 bit versions of Windows (Windows
- 2000 and later), Linux (Redhat), MacOS X and Sun Solaris systems.
+ 2000 and later), Linux (Redhat and Ubuntu), MacOS X and Sun Solaris systems.
  Different C++ compilers such as Microsoft Visual C++, gcc and Intel icc
  are supported under different operating systems.
  Standard installation packages are provided for Windows, Linux, and MacOS
@@ -1068,16 +1076,6 @@ initSex()
 Population.mergeSubPops()
 \family default
 ) and parameter names use the mixedCases style.
- (e.g.
- 
-\family typewriter
-Population.subPopSize()
-\family default
-, 
-\family typewriter
-Individual.setInfo()
-\family default
-).
 \end_layout
 
 \begin_layout Itemize
