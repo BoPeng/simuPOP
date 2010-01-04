@@ -118,7 +118,7 @@ Usage:
 
 %ignore simuPOP::AlphaParentsChooser::chooseParents(RawIndIterator basePtr);
 
-%feature("docstring") simuPOP::baseMutator "
+%feature("docstring") simuPOP::BaseMutator "
 
 Details:
 
@@ -131,11 +131,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseMutator::baseMutator "
+%feature("docstring") simuPOP::BaseMutator::BaseMutator "
 
 Usage:
 
-    baseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
+    BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       context=0, output=\">\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
@@ -188,7 +188,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::baseMutator::~baseMutator "
+%feature("docstring") simuPOP::BaseMutator::~BaseMutator "
 
 Description:
 
@@ -196,11 +196,11 @@ Description:
 
 Usage:
 
-    x.~baseMutator()
+    x.~BaseMutator()
 
 "; 
 
-%feature("docstring") simuPOP::baseMutator::clone "
+%feature("docstring") simuPOP::BaseMutator::clone "
 
 Description:
 
@@ -212,19 +212,19 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseMutator::setRate(const vectorf &rates, const uintList &loci);
+%ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const uintList &loci);
 
-%ignore simuPOP::baseMutator::mutRate(UINT loc);
+%ignore simuPOP::BaseMutator::mutRate(UINT loc);
 
-%ignore simuPOP::baseMutator::mutate(AlleleRef allele, UINT locus);
+%ignore simuPOP::BaseMutator::mutate(AlleleRef allele, UINT locus);
 
-%ignore simuPOP::baseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, UINT locus);
+%ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, UINT locus);
 
-%ignore simuPOP::baseMutator::setContext(int context);
+%ignore simuPOP::BaseMutator::setContext(int context);
 
-%ignore simuPOP::baseMutator::context();
+%ignore simuPOP::BaseMutator::context();
 
-%feature("docstring") simuPOP::baseMutator::apply "
+%feature("docstring") simuPOP::BaseMutator::apply "
 
 Description:
 
@@ -743,6 +743,94 @@ Usage:
 %ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
 %feature("docstring") simuPOP::BaseSelector::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BaseVspSplitter "
+
+Details:
+
+    This class is the base class of all virtual subpopulation (VSP)
+    splitters, which provide ways to define groups of individuals in a
+    subpopulation who share certain properties. A splitter defines a
+    fixed number of named VSPs. They do not have to add up to the
+    whole subpopulation, nor do they have to be distinct. After a
+    splitter is assigned to a population, many functions and operators
+    can be applied to individuals within specified VSPs.  Each VSP has
+    a name. A default name is determined by each splitter but you can
+    also assign a name to each VSP. The name of a VSP can be retrieved
+    by function Population.subPopName.  Only one VSP splitter can be
+    assigned to a population, which defined VSPs for all its
+    subpopulations. If different splitters are needed for different
+    subpopulations, a CombinedSplitter should be used.
+
+"; 
+
+%feature("docstring") simuPOP::BaseVspSplitter::BaseVspSplitter "
+
+Usage:
+
+    BaseVspSplitter(names=[])
+
+Details:
+
+    This is a virtual class that cannot be instantiated.
+
+"; 
+
+%feature("docstring") simuPOP::BaseVspSplitter::clone "
+
+Usage:
+
+    x.clone()
+
+Details:
+
+    All VSP splitter defines a clone() function to create an identical
+    copy of itself.
+
+"; 
+
+%feature("docstring") simuPOP::BaseVspSplitter::~BaseVspSplitter "
+
+Usage:
+
+    x.~BaseVspSplitter()
+
+"; 
+
+%ignore simuPOP::BaseVspSplitter::activatedSubPop() const;
+
+%ignore simuPOP::BaseVspSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+
+%feature("docstring") simuPOP::BaseVspSplitter::numVirtualSubPop "
+
+Usage:
+
+    x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter.
+
+"; 
+
+%ignore simuPOP::BaseVspSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+
+%ignore simuPOP::BaseVspSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+
+%ignore simuPOP::BaseVspSplitter::deactivate(SubPopID subPop);
+
+%feature("docstring") simuPOP::BaseVspSplitter::name "
+
+Usage:
+
+    x.name(vsp)
+
+Details:
+
+    Return the name of VSP vsp (an index between 0 and
+    numVirtualSubPop()).
+
+"; 
 
 %feature("docstring") simuPOP::Bernullitrials "
 
@@ -3820,15 +3908,15 @@ Usage:
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::mating "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MatingScheme "Obsolete or undocumented function."
 
-%ignore simuPOP::mating::isCompatible(const Population &pop) const;
+%ignore simuPOP::MatingScheme::isCompatible(const Population &pop) const;
 
-%feature("docstring") simuPOP::mating::mating "
+%feature("docstring") simuPOP::MatingScheme::MatingScheme "
 
 Usage:
 
-    mating(subPopSize=[])
+    MatingScheme(subPopSize=[])
 
 Details:
 
@@ -3837,7 +3925,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mating::~mating "
+%feature("docstring") simuPOP::MatingScheme::~MatingScheme "
 
 Description:
 
@@ -3845,11 +3933,11 @@ Description:
 
 Usage:
 
-    x.~mating()
+    x.~MatingScheme()
 
 "; 
 
-%feature("docstring") simuPOP::mating::clone "
+%feature("docstring") simuPOP::MatingScheme::clone "
 
 Description:
 
@@ -3861,7 +3949,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mating::describe "
+%feature("docstring") simuPOP::MatingScheme::describe "
 
 Description:
 
@@ -3873,15 +3961,15 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mating::submitScratch(Population &pop, Population &scratch);
+%ignore simuPOP::MatingScheme::submitScratch(Population &pop, Population &scratch);
 
-%ignore simuPOP::mating::mateSubPop(Population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
+%ignore simuPOP::MatingScheme::mateSubPop(Population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
-%ignore simuPOP::mating::mate(Population &pop, Population &scratch);
+%ignore simuPOP::MatingScheme::mate(Population &pop, Population &scratch);
 
-%ignore simuPOP::mating::prepareScratchPop(Population &pop, Population &scratch);
+%ignore simuPOP::MatingScheme::prepareScratchPop(Population &pop, Population &scratch);
 
-%ignore simuPOP::mating::subPopSizeSpecified();
+%ignore simuPOP::MatingScheme::subPopSizeSpecified();
 
 %feature("docstring") simuPOP::MatrixMutator "
 
@@ -8454,8 +8542,8 @@ Details:
 
 Usage:
 
-    x.evolve(initOps=[], preOps=[], matingScheme=mating, postOps=[],
-      finalOps=[], gen=-1)
+    x.evolve(initOps=[], preOps=[], matingScheme=MatingScheme,
+      postOps=[], finalOps=[], gen=-1)
 
 Details:
 
@@ -9945,94 +10033,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::vspSplitter "
-
-Details:
-
-    This class is the base class of all virtual subpopulation (VSP)
-    splitters, which provide ways to define groups of individuals in a
-    subpopulation who share certain properties. A splitter defines a
-    fixed number of named VSPs. They do not have to add up to the
-    whole subpopulation, nor do they have to be distinct. After a
-    splitter is assigned to a population, many functions and operators
-    can be applied to individuals within specified VSPs.  Each VSP has
-    a name. A default name is determined by each splitter but you can
-    also assign a name to each VSP. The name of a VSP can be retrieved
-    by function Population.subPopName.  Only one VSP splitter can be
-    assigned to a population, which defined VSPs for all its
-    subpopulations. If different splitters are needed for different
-    subpopulations, a CombinedSplitter should be used.
-
-"; 
-
-%feature("docstring") simuPOP::vspSplitter::vspSplitter "
-
-Usage:
-
-    vspSplitter(names=[])
-
-Details:
-
-    This is a virtual class that cannot be instantiated.
-
-"; 
-
-%feature("docstring") simuPOP::vspSplitter::clone "
-
-Usage:
-
-    x.clone()
-
-Details:
-
-    All VSP splitter defines a clone() function to create an identical
-    copy of itself.
-
-"; 
-
-%feature("docstring") simuPOP::vspSplitter::~vspSplitter "
-
-Usage:
-
-    x.~vspSplitter()
-
-"; 
-
-%ignore simuPOP::vspSplitter::activatedSubPop() const;
-
-%ignore simuPOP::vspSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
-
-%feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
-
-Usage:
-
-    x.numVirtualSubPop()
-
-Details:
-
-    Return the number of VSPs defined by this splitter.
-
-"; 
-
-%ignore simuPOP::vspSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
-
-%ignore simuPOP::vspSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
-
-%ignore simuPOP::vspSplitter::deactivate(SubPopID subPop);
-
-%feature("docstring") simuPOP::vspSplitter::name "
-
-Usage:
-
-    x.name(vsp)
-
-Details:
-
-    Return the name of VSP vsp (an index between 0 and
-    numVirtualSubPop()).
-
-"; 
-
 %feature("docstring") simuPOP::Weightedsampler "
 
 "; 
@@ -10103,8 +10103,8 @@ Details:
 
 Usage:
 
-    describe(initOps=[], preOps=[], matingScheme=mating, postOps=[],
-      finalOps=[], gen=-1, numRep=1)
+    describe(initOps=[], preOps=[], matingScheme=MatingScheme,
+      postOps=[], finalOps=[], gen=-1, numRep=1)
 
 Details:
 

@@ -281,7 +281,7 @@ ind.info('x')           # get information field x
 ind.x                   # the same as ind.info('x')
 #end_file
 
-#begin_file log/individual_genotype.py
+#begin_file log/individualGenotype.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
