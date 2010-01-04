@@ -130,12 +130,12 @@ def indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
 
 
 # pedigree drawing
-def plotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_id',
+def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
     motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
     pedigree to a format that is recognizable by R's ``'kinship'`` library.
     Aliased arguments could be used to pass parameters to functions
-    ``Pedigree``, ``plot`` and ``par``. Please refer to module
+    ``pedigree``, ``plot`` and ``par``. Please refer to module
     ``simuPOP.plotter`` for details about aliased arguments. This function
     returns silently if rpy is not properly installed.
     '''
@@ -159,9 +159,9 @@ def plotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_
     momid = []
     sex = []
     aff = []
-    for gen in range(Pedigree.ancestralGens(), -1, -1):
-        Pedigree.useAncestralGen(gen)
-        for ind in Pedigree.individuals():
+    for gen in range(ped.ancestralGens(), -1, -1):
+        ped.useAncestralGen(gen)
+        for ind in ped.individuals():
             id.append(int(ind.info(idField)))
             #
             fid = int(ind.info(fatherField))
@@ -186,10 +186,10 @@ def plotPedigree(Pedigree, filename=None, idField='ind_id', fatherField='father_
                 aff.append(2)
             else:
                 aff.append(1)
-    # create an object of pedigree structure recognizable by R library
-    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.Pedigree)(
+    # create an object of ped structure recognizable by R library
+    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
         id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
-    # plot the pedigree structure
+    # plot the ped structure
     plotter.r.par(**args.getArgs('par', None))
     plotter.r.plot(ptemp, **args.getArgs('plot', None))
     plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))

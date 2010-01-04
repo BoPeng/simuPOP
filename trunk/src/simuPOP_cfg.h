@@ -89,17 +89,17 @@ typedef unsigned int UINT;
 // NOTE: the change of allele type here may need similar changes
 // in the wrapper file simuPOP_common.i
 #ifdef LONGALLELE
-#  ifdef _MSC_VER
+//#  ifdef _MSC_VER
 // according to MSVC manual, unsigned int is 32 bit, regardless of
 // platform. Because uint32_t is not handled correctly by swig under
 // windows, I am using unsigned int here.
 typedef unsigned int Allele;
 typedef unsigned int & AlleleRef;
-#  else
+//#  else
 // under a unix platform, uint32_t seems to work fine.
-typedef uint32_t Allele;
-typedef uint32_t & AlleleRef;
-#  endif
+//typedef uint32_t Allele;
+//typedef uint32_t & AlleleRef;
+//#  endif
 
 #  define AlleleInc(a)  ++ (a)
 #  define AlleleDec(a)  -- (a)
