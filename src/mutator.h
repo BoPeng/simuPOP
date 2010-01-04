@@ -78,7 +78,7 @@ public:
 	 *  item being the corresponding allele of real allele \c i, and a
 	 *  \e mapOut list with its \e i-th item being the real allele of allele
 	 *  \c i assumed in the model. For example <tt>mapIn=[0, 0, 1]</tt> and
-	 *  <tt>mapOut=[1, 2]</tt> would allow the use of a \c SnpMutator to mutate
+	 *  <tt>mapOut=[1, 2]</tt> would allow the use of a \c SNPMutator to mutate
 	 *  between alleles 1 and 2, instead of 0 and 1. Parameters \e mapIn and
 	 *  \e mapOut also accept a user-defined Python function that returns
 	 *  a corresponding allele for a given allele. This allows easier mapping
@@ -247,9 +247,9 @@ private:
  *  allelic states (alleles 0, 1, 2, ..., \e k-1) at each locus. When a
  *  mutation event happens, it mutates an allele to any other states with equal
  *  probability.
- *  <funcForm>kamMutate</funcForm>
+ *  <funcForm>kAlleleMutate</funcForm>
  */
-class KamMutator : public BaseMutator
+class KAlleleMutator : public BaseMutator
 {
 public:
 	/** Create a k-allele mutator that mutates alleles to one of the other
@@ -260,7 +260,7 @@ public:
 	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
 	 *  and \c BaseOperator for descriptions of other parameters.
 	 */
-	KamMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	KAlleleMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -275,7 +275,7 @@ public:
 	}
 
 
-	~KamMutator()
+	~KAlleleMutator()
 	{
 	}
 
@@ -283,17 +283,17 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c KamMutator
+	/// deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
 	{
-		return new KamMutator(*this);
+		return new KAlleleMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.KamMutator> A k-allele mutation model with K=" +
+		return "<simuPOP.KAlleleMutator> A k-allele mutation model with K=" +
 		       toStr(m_k);
 	}
 
@@ -311,9 +311,9 @@ private:
  *  with equal probability. More complex models (generalized stepwise mutation
  *  model) are also allowed. Note that an allele cannot be mutated beyond
  *  boundaries (0 and maximum allowed allele).
- *  <funcForm>smmMutate</funcForm>
+ *  <funcForm>stepwqiseMutate</funcForm>
  */
-class SmmMutator : public BaseMutator
+class StepwiseMutator : public BaseMutator
 {
 public:
 	/** Create a stepwise mutation mutator that mutates an allele by increasing
@@ -340,14 +340,14 @@ public:
 	 *  implement them using a \c PyMutator. If performance becomes a concern,
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
-	SmmMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	StepwiseMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
-	~SmmMutator()
+	~StepwiseMutator()
 	{
 	}
 
@@ -356,17 +356,17 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c SmmMutator
+	/// deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
 	{
-		return new SmmMutator(*this);
+		return new StepwiseMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true)
 	{
-		return "<simuPOP.SmmMutator> a step-wise mutation model mutator";
+		return "<simuPOP.StepwiseMutator> a step-wise mutation model mutator";
 	}
 
 

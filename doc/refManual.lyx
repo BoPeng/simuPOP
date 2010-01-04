@@ -1029,14 +1029,14 @@ MatrixMutatorRef
 
 
 \backslash
-KamMutatorRef
+KAlleleMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-SmmMutatorRef
+StepwiseMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1071,7 +1071,7 @@ PointMutatorRef
 
 
 \backslash
-simuPOPSnpMutatorRef
+simuPOPSNPMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1533,14 +1533,14 @@ simuPOPacgtMutateRef
 
 
 \backslash
-simuPOPkamMutateRef
+simuPOPkAlleleMutateRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPsmmMutateRef
+simuPOPstepwqiseMutateRef
 \end_layout
 
 \begin_layout Plain Layout

@@ -652,7 +652,7 @@ class TestPerformance(unittest.TestCase):
             initOps = [InitByValue([50]*200)],
             ops = [
                #Recombinator(rate=0.5),
-               SmmMutator(rate=0.0001),
+               StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -672,7 +672,7 @@ class TestPerformance(unittest.TestCase):
             initOps = [InitByValue([50]*200)],
             ops = [
                Recombinator(rate=0.5),
-               SmmMutator(rate=0.0001),
+               StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -691,7 +691,7 @@ class TestPerformance(unittest.TestCase):
         simu.evolve(
             initOps = [InitByValue([50]*200)],
             ops = [
-               SmmMutator(rate=0.0001),
+               StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=100),
            ],
            end = 500
@@ -710,7 +710,7 @@ class TestPerformance(unittest.TestCase):
             initOps = [InitByValue([50]*200)],
             ops = [
                Recombinator(rate=0.0005),
-               SmmMutator(rate=0.0001),
+               StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=10),
            ],
            end = 100
