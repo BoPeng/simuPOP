@@ -649,7 +649,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitGenotype(values=[50]*200)],
+            initOps = [InitGenotype(genotype=[50]*200)],
             ops = [
                #Recombinator(rate=0.5),
                StepwiseMutator(rate=0.0001),
@@ -669,7 +669,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitGenotype(values=[50]*200)],
+            initOps = [InitGenotype(genotype=[50]*200)],
             ops = [
                Recombinator(rate=0.5),
                StepwiseMutator(rate=0.0001),
@@ -689,7 +689,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitGenotype(values=[50]*200)],
+            initOps = [InitGenotype(genotype=[50]*200)],
             ops = [
                StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=100),
@@ -707,7 +707,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitGenotype(values=[50]*200)],
+            initOps = [InitGenotype(genotype=[50]*200)],
             ops = [
                Recombinator(rate=0.0005),
                StepwiseMutator(rate=0.0001),

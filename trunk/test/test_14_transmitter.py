@@ -836,7 +836,7 @@ class TestTransmitters(unittest.TestCase):
         simu = Simulator(pop)
         simu.evolve(
             initOps = [
-                InitSex(), InitGenotype(values=[0]*8 + [1]*8)
+                InitSex(), InitGenotype(genotype=[0]*8 + [1]*8)
                 ],
             matingScheme = HaplodiploidMating(),
             gen = 1)

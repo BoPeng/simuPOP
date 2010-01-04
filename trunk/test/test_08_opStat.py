@@ -133,8 +133,10 @@ class Teststat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, genotype=genotype, subPops=[subPop])
         stat(pop, alleleFreq=[0])
         self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
         self.assertEqual(pop.dvars().alleleFreq[0], {0:1230./3200, 1:1970./3200})
@@ -172,8 +174,10 @@ class Teststat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         if moduleInfo()['alleleType'] == 'binary':
-            initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-                subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            for genotype, subPop in zip(
+                    [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+                    [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+                initGenotype(pop, genotype=genotype, subPops=[subPop])
             stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
                 'homoNum_sp', 'homoFreq_sp'])
@@ -186,8 +190,10 @@ class Teststat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroNum[0], 600)
             self.assertEqual(pop.dvars(2).heteroFreq[0], 0.6)
         else:
-            initGenotype(pop, genotype=[[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
-                subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            for genotype, subPop in zip(
+                [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
+                [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+                initGenotype(pop, genotype=genotype, subPops=[subPop])
             stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
                 'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
                 'homoNum_sp', 'homoFreq_sp'])
@@ -206,8 +212,10 @@ class Teststat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, genotype=genotype, subPops=[subPop])
         stat(pop, genoFreq=[0])
         #print pop.dvars().genoNum[0]
         self.assertEqual(pop.dvars().genoNum[0][(0, 0)], 175)
@@ -267,8 +275,10 @@ class Teststat(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, genotype=genotype, subPops=[subPop])
         #SaveFStat(simu.population(0), "p1.dat", maxAllele=2)
         # Fst is compaared with result from FStat.
         #
@@ -294,16 +304,20 @@ class Teststat(unittest.TestCase):
         # test haplotype frequency
         pop = Population(size=[5000,1000], ploidy=2, loci = [10])
         if moduleInfo()['alleleType'] == 'binary':
-            initGenotype(pop, genotype=[[0]*10,[1]*10], proportions=[.3,.7])
+            pop.setVirtualSplitter(ProportionSplitter([.3, .7]))
+            initGenotype(pop, genotype=[0]*10, subPops=[(0,0)])
+            initGenotype(pop, genotype=[1]*10, subPops=[(0,1)])
             stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05
             assert abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05
         else:
-            initGenotype(pop, genotype=[[1]*10,[2]*10,[3]*10],
-                proportions=[.2,.3,.5])
-            stat(pop, haploFreq=[[0,1,5],[2,5]])
+            pop.setVirtualSplitter(ProportionSplitter([.2, .3, .5]))
+            initGenotype(pop, genotype=[1]*10, subPops=[(1,0), (0,0)])
+            initGenotype(pop, genotype=[2]*10, subPops=[(1,1), (0,1)])
+            initGenotype(pop, genotype=[3]*10, subPops=[(1,2), (0,2)])
+            stat(pop, haploFreq=[[0,1,5], [2,5]])
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05

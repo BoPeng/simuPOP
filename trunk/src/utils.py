@@ -74,7 +74,11 @@ def viewVars(var, gui=None):
     #
     if gui == False or gui == 'Tkinter':
         import pprint
-        pprint.pprint(var)
+        try:
+            # a dvars() object
+            pprint.pprint(var.__dict__)
+        except:
+            pprint.pprint(var)
         return
 
     try:

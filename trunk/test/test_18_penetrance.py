@@ -24,8 +24,10 @@ class TestPenetrance(unittest.TestCase):
         self.pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initByValue(self.pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(self.pop, genotype=genotype, subPops=[subPop])
 
     def testMapPenetrance(self):
         'Testing map penetrance'
@@ -55,8 +57,10 @@ class TestPenetrance(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, genotype=genotype, subPops=[subPop])
         #
         mapPenetrance(pop, loci = 0,
             penetrance={(0,0):0, (0,1):1, (1,1):1},

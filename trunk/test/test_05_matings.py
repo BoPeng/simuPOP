@@ -195,8 +195,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(ProportionSplitter([0.2, 0.8]))
         pop.evolve(
             initOps = InitSex(),
-            matingScheme = HeteroMating(
-                matingSchemes = [
+            matingScheme = HeteroMating([
                 RandomMating(numOffspring=1, subPops=[(0,0)], ops=[MendelianGenoTransmitter(), ParentsTagger()]),
                 RandomMating(numOffspring=2, subPops=[(1,1)], ops=[MendelianGenoTransmitter(), ParentsTagger()]),
                 ]),
@@ -325,7 +324,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop.evolve(
             initOps = [InitSex(),
                 # female has [1]
-                InitGenotype(values=[1]*25, subPops=[(0, 1), (1, 1)]),
+                InitGenotype(genotype=[1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
             matingScheme=RandomMating(ops=[MitochondrialGenoTransmitter()]),
             gen = 1

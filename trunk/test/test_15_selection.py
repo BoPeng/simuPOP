@@ -529,7 +529,9 @@ class TestSelector(unittest.TestCase):
         'Testing multiple loci map selector.'
         pop = Population(10, loci=[2],
             infoFields=['fitness'])
-        initGenotype(pop, genotype=[[0,0],[1,1]], proportions=[0.5,0.5])
+        pop.setVirtualSplitter(ProportionSplitter([0.5, 0.5]))
+        initGenotype(pop, genotype=[0,0], subPops=[(0, 0)])
+        initGenotype(pop, genotype=[1,1], subPops=[(0, 1)])
         #MapSelector(pop, loci=[0,1],
         #    fitness={(0,0,0,0):0, (1,1,1,1):0.25, (0,1,0,1):0.5, (1,0,1,0):0.75})
         # there is only one field, so fitness is continuous
