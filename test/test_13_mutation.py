@@ -294,7 +294,7 @@ class TestMutator(unittest.TestCase):
         simu = Simulator(Population(50000, loci=[3, 3]))
         simu.evolve(
             # initialize locus by 0, 0, 0, 1, 0, 1
-            initOps = [InitSex(), InitGenotype(values=[1, 1], loci=[3, 5])],
+            initOps = [InitSex(), InitGenotype(genotype=[1, 1], loci=[3, 5])],
             matingScheme = RandomMating(),
             postOps = [
                 ContextMutator(mutators=[
@@ -326,7 +326,9 @@ class TestMutator(unittest.TestCase):
         'Testing point mutator'
         # test point mutator
         pop = Population(size=10, ploidy=2, loci=[5])
-        initGenotype(pop, genotype=[[1]*5, [2]*5], proportions=[.3,.7])
+        pop.setVirtualSplitter(ProportionSplitter([.3, .7]))
+        initGenotype(pop, genotype=[1]*5, subPops=[(0,0)])
+        initGenotype(pop, genotype=[2]*5, subPops=[(0,1)])
         pointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
         self.assertEqual(pop.individual(1).allele(1,0), 0)
         self.assertNotEqual(pop.individual(1).allele(1,1), 0)

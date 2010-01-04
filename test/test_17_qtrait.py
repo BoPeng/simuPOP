@@ -22,9 +22,9 @@ class TestQuanTrait(unittest.TestCase):
         self.pop = Population(size=[5000],
             ploidy=2, loci = [1], infoFields=['qtrait'])
         self.pop.setVirtualSplitter(RangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
-        initByValue(self.pop,
-            value = [[0,0],[0,1],[1,1]],
-            subPops = ((0, 0), (0, 1), (0, 2)))
+        initGenotype(self.pop, genotype = [0,0], subPops = [(0, 0)])
+        initGenotype(self.pop, genotype = [0,1], subPops = [(0, 1)])
+        initGenotype(self.pop, genotype = [1,1], subPops = [(0, 2)])
 
     def stdev(self, x):
         'calculate standard devisaion'

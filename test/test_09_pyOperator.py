@@ -30,7 +30,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testSimpleFunc(self):
         'Testing Python operator'
-        initByFreq(self.pop, [.2, .3, .5])
+        initGenotype(self.pop, freq= [.2, .3, .5])
         self.pop.evolve( postOps = PyOperator(self.myFunc),
             matingScheme=RandomMating(),
             gen=20)
@@ -40,7 +40,7 @@ class TestPyOperator(unittest.TestCase):
         op = PyOperator(self.myFunc)
         op1 = op
         op2 = op.clone()
-        initByFreq(self.pop, [.2, .3, .5])
+        initGenotype(self.pop, freq= [.2, .3, .5])
         # all copied version are working fine.
         op.apply(self.pop)
         op1.apply(self.pop)
@@ -54,7 +54,7 @@ class TestPyOperator(unittest.TestCase):
 
     def testFuncWithParam(self):
         'Testing python operator with parameters'
-        initByFreq(self.pop, [.2, .8])
+        initGenotype(self.pop, freq= [.2, .8])
         self.pop.evolve( postOps=[
             PyOperator(func=self.myFuncWithParam, param=(0,.2)),
             PyOperator(func=self.myFuncWithParam, param=(1,.8)),

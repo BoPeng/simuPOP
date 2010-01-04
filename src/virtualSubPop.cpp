@@ -728,8 +728,8 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
     vectoru count(m_proportions.size());
     propToCount(m_proportions, size, count);
     // determine range
-    ULONG higher = std::accumulate(count.begin(), count.begin() + virtualSubPop, 0L);
-    ULONG lower = higher - count[virtualSubPop];
+    ULONG lower = std::accumulate(count.begin(), count.begin() + virtualSubPop, 0L);
+    ULONG higher = lower + count[virtualSubPop];
 
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
