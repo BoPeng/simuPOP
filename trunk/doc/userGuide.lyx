@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -3650,7 +3650,7 @@ list()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Individual_genotype"
+reference "individualGenotype"
 
 \end_inset
 
@@ -3658,8 +3658,8 @@ reference "Individual_genotype"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/Individual_genotype.log"
-lstparams "caption={Access individual genotype},label={Individual_genotype}"
+filename "log/individualGenotype.log"
+lstparams "caption={Access individual genotype},label={individualGenotype}"
 
 \end_inset
 
@@ -3700,7 +3700,7 @@ information fields
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Individuals"
+reference "individuals"
 
 \end_inset
 
@@ -3733,8 +3733,8 @@ ind.age = 35
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/Individual.log"
-lstparams "caption={Access Individual properties},label={Individuals}"
+filename "log/individual.log"
+lstparams "caption={Access Individual properties},label={individuals}"
 
 \end_inset
 
