@@ -869,7 +869,7 @@ private:
  * directly.
  * HIDDEN
  */
-class mating
+class MatingScheme
 {
 
 public:
@@ -885,16 +885,16 @@ public:
 	/** Create a mating scheme. \e subPopSize can be used to determine
 	 * subpopulatio sizes of an offspring generation.
 	 */
-	mating(const uintListFunc & subPopSize = uintListFunc());
+	MatingScheme(const uintListFunc & subPopSize = uintListFunc());
 
 	/// destructor
-	virtual ~mating()
+	virtual ~MatingScheme()
 	{
 	}
 
 
 	/// deep copy of a mating scheme
-	virtual mating * clone() const
+	virtual MatingScheme * clone() const
 	{
 		return NULL;
 	}
@@ -953,7 +953,7 @@ protected:
  *  pedigree object.
  */
 /*
-   class PedigreeMating : public mating
+   class PedigreeMating : public MatingScheme
    {
    public:
  */
@@ -995,7 +995,7 @@ protected:
 
 
    /// deep copy of a Python mating scheme
-   virtual mating * clone() const
+   virtual MatingScheme * clone() const
    {
    return new PedigreeMating(*this);
    }
@@ -1034,7 +1034,7 @@ protected:
  *  heterogeneous mating scheme. In the latter case, it can be applied to a
  *  (virtual) subpopulation.
  */
-class HomoMating : public mating
+class HomoMating : public MatingScheme
 {
 public:
 	/** Create a homogeneous mating scheme using a parent chooser \e chooser
@@ -1080,7 +1080,7 @@ public:
 
 	/// CPPONLY
 	HomoMating(const HomoMating & rhs) :
-		mating(rhs), m_subPops(rhs.m_subPops), m_weight(rhs.m_weight)
+		MatingScheme(rhs), m_subPops(rhs.m_subPops), m_weight(rhs.m_weight)
 	{
 		m_OffspringGenerator = rhs.m_OffspringGenerator->clone();
 		m_ParentChooser = rhs.m_ParentChooser->clone();
@@ -1088,7 +1088,7 @@ public:
 
 
 	/// Deep copy of a homogeneous mating scheme
-	virtual mating * clone() const
+	virtual MatingScheme * clone() const
 	{
 		return new HomoMating(*this);
 	}
@@ -1133,7 +1133,7 @@ typedef std::vector<HomoMating *> vectormating;
 /** A heterogeneous mating scheme that applies a list of mating
  *  schemes to different (virtual) subpopulations.
  */
-class HeteroMating : public mating
+class HeteroMating : public MatingScheme
 {
 public:
 	/** Create a heterogeneous mating scheme that will apply a list of
@@ -1180,7 +1180,7 @@ public:
 	HeteroMating(const HeteroMating & rhs);
 
 	/// deep copy of a heterogeneous mating scheme
-	virtual mating * clone() const
+	virtual MatingScheme * clone() const
 	{
 		return new HeteroMating(*this);
 	}

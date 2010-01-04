@@ -1168,13 +1168,13 @@ void PyParentsChooser::finalize(Population & pop, SubPopID sp)
 }
 
 
-mating::mating(const uintListFunc & subPopSize)
+MatingScheme::MatingScheme(const uintListFunc & subPopSize)
 	: m_subPopSize(subPopSize)
 {
 }
 
 
-bool mating::prepareScratchPop(Population & pop, Population & scratch)
+bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 {
 	if (scratch.genoStruIdx() != pop.genoStruIdx())
 		scratch.fitGenoStru(pop.genoStruIdx());
@@ -1222,7 +1222,7 @@ bool mating::prepareScratchPop(Population & pop, Population & scratch)
 }
 
 
-bool mating::mate(Population & pop, Population & scratch)
+bool MatingScheme::mate(Population & pop, Population & scratch)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1236,7 +1236,7 @@ bool mating::mate(Population & pop, Population & scratch)
 }
 
 
-void mating::submitScratch(Population & pop, Population & scratch)
+void MatingScheme::submitScratch(Population & pop, Population & scratch)
 {
 	// use scratch population,
 	pop.push(scratch);
@@ -1248,7 +1248,7 @@ void mating::submitScratch(Population & pop, Population & scratch)
    PedigreeMating::PedigreeMating(const pedigree & ped,
     const OffspringGenerator & generator, bool setSex, bool setAffection,
     const vectorstr & copyFields)
-    : mating(uintListFunc()), m_ped(ped),
+    : MatingScheme(uintListFunc()), m_ped(ped),
     m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
    {
     m_generator = generator.clone();
@@ -1379,7 +1379,7 @@ HomoMating::HomoMating(ParentChooser & chooser,
 	OffspringGenerator & generator,
 	const uintListFunc & subPopSize,
 	subPopList subPops, double weight)
-	: mating(subPopSize), m_subPops(subPops), m_weight(weight)
+	: MatingScheme(subPopSize), m_subPops(subPops), m_weight(weight)
 {
 	m_ParentChooser = chooser.clone();
 	m_OffspringGenerator = generator.clone();
@@ -1431,7 +1431,7 @@ bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
 HeteroMating::HeteroMating(const vectormating & matingSchemes,
 	const uintListFunc & subPopSize,
 	bool shuffleOffspring)
-	: mating(subPopSize),
+	: MatingScheme(subPopSize),
 	m_shuffleOffspring(shuffleOffspring)
 {
 	vectormating::const_iterator it = matingSchemes.begin();
@@ -1485,7 +1485,7 @@ HeteroMating::~HeteroMating()
 
 
 HeteroMating::HeteroMating(const HeteroMating & rhs) :
-	mating(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring)
+	MatingScheme(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring)
 {
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();

@@ -245,7 +245,7 @@ namespace std
 %newobject simuPOP::Simulator::extract;
 %newobject simuPOP::Simulator::clone;
 %newobject simuPOP::BaseOperator::clone;
-%newobject simuPOP::mating::clone;
+%newobject simuPOP::MatingScheme::clone;
 %newobject simuPOP::Stat::clone;
 
 // the following load a docstring file extracted from doxgen output.
@@ -276,7 +276,7 @@ namespace std
 namespace std
 {
     %template()    vector<simuPOP::vspID >;
-    %template()    vector<simuPOP::vspSplitter * >;
+    %template()    vector<simuPOP::BaseVspSplitter * >;
 }
 
 %implicitconv subPopList;
