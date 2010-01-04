@@ -171,7 +171,7 @@ Details:
     the corresponding allele of real allele i, and a mapOut list with
     its i-th item being the real allele of allele i assumed in the
     model. For example mapIn=[0, 0, 1] and mapOut=[1, 2] would allow
-    the use of a SnpMutator to mutate between alleles 1 and 2, instead
+    the use of a SNPMutator to mutate between alleles 1 and 2, instead
     of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
     Python function that returns a corresponding allele for a given
     allele. This allows easier mapping between a large number of
@@ -3591,11 +3591,11 @@ Usage:
 
 %ignore simuPOP::intList::match(UINT rep, const vector< bool > *activeRep=NULL);
 
-%feature("docstring") simuPOP::KamMutator "
+%feature("docstring") simuPOP::KAlleleMutator "
 
 Function form:
 
-    kamMutate
+    kAlleleMutate
 
 Details:
 
@@ -3606,11 +3606,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::KamMutator::KamMutator "
+%feature("docstring") simuPOP::KAlleleMutator::KAlleleMutator "
 
 Usage:
 
-    KamMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
+    KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
@@ -3627,21 +3627,21 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::KamMutator::~KamMutator "
+%feature("docstring") simuPOP::KAlleleMutator::~KAlleleMutator "
 
 Usage:
 
-    x.~KamMutator()
+    x.~KAlleleMutator()
 
 "; 
 
-%ignore simuPOP::KamMutator::mutate(AlleleRef allele, UINT locus);
+%ignore simuPOP::KAlleleMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::KamMutator::clone "
+%feature("docstring") simuPOP::KAlleleMutator::clone "
 
 Description:
 
-    deep copy of a KamMutator
+    deep copy of a KAlleleMutator
 
 Usage:
 
@@ -3649,7 +3649,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::KamMutator::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MaPenetrance "
 
@@ -8613,81 +8613,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::SmmMutator "
-
-Function form:
-
-    smmMutate
-
-Details:
-
-    A stepwise mutation model treats alleles at a locus as the number
-    of tandem repeats of microsatellite or minisatellite markers. When
-    a mutation event happens, the number of repeats (allele) either
-    increase or decrease. A standard stepwise mutation model increases
-    of decreases an allele by 1 with equal probability. More complex
-    models (generalized stepwise mutation model) are also allowed.
-    Note that an allele cannot be mutated beyond boundaries (0 and
-    maximum allowed allele).
-
-"; 
-
-%feature("docstring") simuPOP::SmmMutator::SmmMutator "
-
-Usage:
-
-    SmmMutator(rates=[], loci=ALL_AVAIL, incProb=0.5, maxAllele=0,
-      mutStep=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
-
-Details:
-
-    Create a stepwise mutation mutator that mutates an allele by
-    increasing or decreasing it. This mutator by default applies to
-    all loci unless parameter loci is specified. A single mutation
-    rate will be used for all loci if a single value of parameter
-    rates is given. Otherwise, a list of mutation rates can be
-    specified for each locus in parameter loci.  When a mutation event
-    happens, this operator increases or decreases an allele by mutStep
-    steps. Acceptable input of parameter mutStep include
-    *   A number: This is the default mode with default value 1.
-    *   (GEOMETRIC_DISTRIBUTION, p): The number of steps follows a a
-    geometric distribution with parameter p.
-    *   A Python function: This user defined function accepts the
-    allele being mutated and return the steps to mutate. The mutation
-    process is usually neutral in the sense that mutating up and down
-    is equally likely. You can adjust parameter incProb to change this
-    behavior.  If you need to use other generalized stepwise mutation
-    models, you can implement them using a PyMutator. If performance
-    becomes a concern, I may add them to this operator if provided
-    with a reliable reference.
-
-"; 
-
-%feature("docstring") simuPOP::SmmMutator::~SmmMutator "
-
-Usage:
-
-    x.~SmmMutator()
-
-"; 
-
-%ignore simuPOP::SmmMutator::mutate(AlleleRef allele, UINT locus);
-
-%feature("docstring") simuPOP::SmmMutator::clone "
-
-Description:
-
-    deep copy of a SmmMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::SmmMutator::describe "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::SplitSubPops "
 
 Function form:
@@ -9530,6 +9455,82 @@ Usage:
     x.apply(pop)
 
 "; 
+
+%feature("docstring") simuPOP::StepwiseMutator "
+
+Function form:
+
+    stepwqiseMutate
+
+Details:
+
+    A stepwise mutation model treats alleles at a locus as the number
+    of tandem repeats of microsatellite or minisatellite markers. When
+    a mutation event happens, the number of repeats (allele) either
+    increase or decrease. A standard stepwise mutation model increases
+    of decreases an allele by 1 with equal probability. More complex
+    models (generalized stepwise mutation model) are also allowed.
+    Note that an allele cannot be mutated beyond boundaries (0 and
+    maximum allowed allele).
+
+"; 
+
+%feature("docstring") simuPOP::StepwiseMutator::StepwiseMutator "
+
+Usage:
+
+    StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
+      maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\">\",
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a stepwise mutation mutator that mutates an allele by
+    increasing or decreasing it. This mutator by default applies to
+    all loci unless parameter loci is specified. A single mutation
+    rate will be used for all loci if a single value of parameter
+    rates is given. Otherwise, a list of mutation rates can be
+    specified for each locus in parameter loci.  When a mutation event
+    happens, this operator increases or decreases an allele by mutStep
+    steps. Acceptable input of parameter mutStep include
+    *   A number: This is the default mode with default value 1.
+    *   (GEOMETRIC_DISTRIBUTION, p): The number of steps follows a a
+    geometric distribution with parameter p.
+    *   A Python function: This user defined function accepts the
+    allele being mutated and return the steps to mutate. The mutation
+    process is usually neutral in the sense that mutating up and down
+    is equally likely. You can adjust parameter incProb to change this
+    behavior.  If you need to use other generalized stepwise mutation
+    models, you can implement them using a PyMutator. If performance
+    becomes a concern, I may add them to this operator if provided
+    with a reliable reference.
+
+"; 
+
+%feature("docstring") simuPOP::StepwiseMutator::~StepwiseMutator "
+
+Usage:
+
+    x.~StepwiseMutator()
+
+"; 
+
+%ignore simuPOP::StepwiseMutator::mutate(AlleleRef allele, UINT locus);
+
+%feature("docstring") simuPOP::StepwiseMutator::clone "
+
+Description:
+
+    deep copy of a StepwiseMutator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::StepwiseMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::StopEvolution "
 
