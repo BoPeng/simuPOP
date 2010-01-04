@@ -112,7 +112,7 @@ class TestTagger(unittest.TestCase):
     def TestPedigree(self):
         'Testing the handling of Pedigrees (FIXME)'
         pop = Population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
-        initByFreq(pop, [0.2, 0.8])
+        initGenotype(pop, freq=[0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]
         simu = Simulator(pop)

@@ -106,8 +106,8 @@ class TestPyOperator(unittest.TestCase):
         simu = Simulator(self.pop)
         simu.evolve(
             initOps = [
-                InitByFreq( [.6, .4], loci=[0,2,4]),
-                InitByFreq( [.8, .2], loci=[1,3]) ],
+                InitGenotype(freq= [.6, .4], loci=[0,2,4]),
+                InitGenotype(freq= [.8, .2], loci=[1,3]) ],
             matingScheme=RandomMating(),
             postOps = [
                 PyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),

@@ -20,7 +20,7 @@ class TestSimulator(unittest.TestCase):
         pop = Population(size=[100, 40], loci=[2, 5])
         simu = Simulator(pop, rep = 3)
         simu.evolve(
-            initOps = [InitSex(), InitByFreq([0.3, .7])],
+            initOps = [InitSex(), InitGenotype(freq=[0.3, .7])],
             matingScheme=RandomMating(),
             postOps = [Stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
@@ -48,7 +48,7 @@ class TestSimulator(unittest.TestCase):
         # sample
         pop = Population(size=[200, 80], loci=[3])
         pop.evolve(
-            initOps = [InitSex(), InitByFreq([0.2, 0.8])],
+            initOps = [InitSex(), InitGenotype(freq=[0.2, 0.8])],
             matingScheme=RandomMating(ops = Recombinator(rates=0.001)),
             postOps = Stat(alleleFreq=[1]),
             finalOps = Stat(),
@@ -151,7 +151,7 @@ class TestSimulator(unittest.TestCase):
     def testVars(self):
         'Testing Simulator::vars(rep), vars(rep, subPop), dvars(rep), dvars(rep, subPop)'
         pop = Population(size=100, loci=[2, 4])
-        initByFreq(pop, [.2, .3, .5])
+        initGenotype(pop, freq=[.2, .3, .5])
         stat(pop, alleleFreq=range(0, 6))
         simu = Simulator(pop, rep=5)
         for rep in range(5):
@@ -159,7 +159,7 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(len(simu.dvars(rep).alleleFreq), 6)
         # with subPop
         pop = Population(size=[20, 80], loci=[2, 4])
-        initByFreq(pop, [.2, .3, .5])
+        initGenotype(pop, freq=[.2, .3, .5])
         stat(pop, alleleFreq=range(0, 6), vars=['alleleFreq', 'alleleFreq_sp'])
         simu = Simulator(pop, rep=5)
         for rep in range(5):

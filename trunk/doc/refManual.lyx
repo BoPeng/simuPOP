@@ -810,21 +810,14 @@ InitSexRef
 
 
 \backslash
-InitByFreqRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-InitByValueRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 InitInfoRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+InitGenotypeRef
 \end_layout
 
 \end_inset
@@ -1442,14 +1435,7 @@ simuPOPinitInfoRef
 
 
 \backslash
-simuPOPinitByFreqRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPinitByValueRef
+simuPOPinitGenotypeRef
 \end_layout
 
 \begin_layout Plain Layout

@@ -52,7 +52,7 @@ class TestGenoStru(unittest.TestCase):
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
         pop = Population(size=2, loci=[2, 1])
-        initByValue(pop, [1, 2, 3])
+        initGenotype(pop, genotype=[1, 2, 3])
         arr = pop.genotype()
         arr[:] = [0, 1, 2]*4
         # can print

@@ -55,7 +55,7 @@ class TestPenetrance(unittest.TestCase):
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
-        initByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+        initGenotype(pop, genotype=[[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #
         mapPenetrance(pop, loci = 0,
@@ -90,7 +90,7 @@ class TestPenetrance(unittest.TestCase):
     def testMultiLocusmaPenetrance(self):
         'Testing the multi-locus version of MaPenetrance'
         pop = Population(1000, loci=[3,5], infoFields=['penetrance'])
-        initByFreq(pop, [.3, .7])
+        initGenotype(pop, freq=[.3, .7])
         #
         maPenetrance(pop, loci=[3,5], wildtype=0,
             penetrance=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
@@ -99,7 +99,7 @@ class TestPenetrance(unittest.TestCase):
     def testMlPenetrance(self):
         'Testing multi-locus penetrance'
         pop = Population(1000, loci=[3,5], infoFields=['penetrance'])
-        initByFreq(pop, [.3, .7])
+        initGenotype(pop, freq=[.3, .7])
         #
         mlPenetrance(pop, [
             MaPenetrance(loci = 0,    wildtype=0,

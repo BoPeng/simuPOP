@@ -244,7 +244,7 @@ class TestMigrator(unittest.TestCase):
     def testMigrConstAlleleFreq(self):
         'Testing that migration does not change allele frequency'
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        initByFreq(pop, [.2, .8])
+        initGenotype(pop, freq=[.2, .8])
         stat(pop, alleleFreq=[0])
         af = pop.dvars().alleleFreq[0][1]    # ~.2
         # migrate and check if allele frequency changes
@@ -268,7 +268,7 @@ class TestMigrator(unittest.TestCase):
     def testSplitSubPops(self):
         'Testing Population split'
         pop = Population(size=10, loci=[2,6], infoFields=['migrate_to'])
-        initByFreq(pop, [.2,.4,.4])
+        initGenotype(pop, freq=[.2,.4,.4])
         genotype = list(pop.genotype())
         splitSubPops(pop, subPops=0, sizes=[2, 8], randomize=False)
         # individual untouched
@@ -331,7 +331,7 @@ class TestMigrator(unittest.TestCase):
     def testResizeSubPops(self):
         'Testing Population resize'
         pop = Population(size=[2, 4, 4], loci=[2,6])
-        initByFreq(pop, [0.3, 0.7])
+        initGenotype(pop, freq=[0.3, 0.7])
         resizeSubPops(pop, sizes=[6], subPops=[0])
         self.assertEqual(pop.subPopSizes(), (6, 4, 4))
         for ind in (2, 4):

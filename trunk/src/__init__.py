@@ -135,9 +135,8 @@ __all__ = [
     # Operators
     #
     'InitSex',
-    'InitByFreq',
-    'InitByValue',
     'InitInfo',
+    'InitGenotype',
     #
     'PyOutput',
     'PyEval',
@@ -206,8 +205,7 @@ __all__ = [
     #
     'initSex',
     'initInfo',
-    'initByFreq',
-    'initByValue',
+    'initGenotype',
     #
     'pyEval',
     'pyExec',
@@ -736,13 +734,9 @@ def initInfo(pop, *args, **kwargs):
     'Apply operator ``InitInfo`` to population *pop*.'
     InitInfo(*args, **kwargs).apply(pop)
 
-def initByFreq(pop, *args, **kwargs):
-    'Apply operator ``InitByFreq`` to population *pop*.'
-    InitByFreq(*args, **kwargs).apply(pop)
-
-def initByValue(pop, *args, **kwargs):
-    'Apply operator ``InitByValue`` to population *pop*.'
-    InitByValue(*args, **kwargs).apply(pop)
+def initGenotype(pop, *args, **kwargs):
+    'Apply operator ``InitGenotype`` to population *pop*.'
+    InitGenotype(*args, **kwargs).apply(pop)
 
 def pyEval(pop, *args, **kwargs):
     '''Evaluate statements *stmts* (optional) and expression *expr* in

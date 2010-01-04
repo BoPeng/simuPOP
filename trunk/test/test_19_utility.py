@@ -234,7 +234,7 @@ class TestUtility(unittest.TestCase):
         'Testing if loadPopulation leaks memory'
         # run this and see if memory usage goes up continuously
         pop = Population(100, loci=[400])
-        initByFreq(pop, [0.2, 0.8])
+        initGenotype(pop, freq=[0.2, 0.8])
         stat(pop, alleleFreq=range(pop.totNumLoci()))
         pop.save('test.bin')
         for i in range(4):

@@ -594,7 +594,7 @@ InitSex
 \family default
  and 
 \family typewriter
-InitByValue
+InitGenotype
 \family default
  are applied at the beginning of the evolutionary process.
  Operator 
@@ -603,7 +603,7 @@ InitSex
 \family default
  initializes individual sex randomly and 
 \family typewriter
-InitByValue
+InitGenotype
 \family default
  initializes all individuals with the same genotype 
 \family typewriter
@@ -5203,7 +5203,7 @@ reference "applicableGen"
  In this example, a population is initialized before evolution using an
  
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
  operator.
  allele frequency at locus 
@@ -6129,7 +6129,7 @@ reference "sequentialSelfing"
  demonstrates how to use this operator.
  It first initializes the population using two 
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
  operators that initialize loci with different allele frequencies.
  It applies a 
@@ -6295,7 +6295,7 @@ Operators are usually applied to populations through a simulator but they
  can also be applied to a population directly.
  For example, it is possible to create an 
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
  operator and apply to a population as follows:
 \end_layout
@@ -6307,7 +6307,7 @@ status open
 
 \begin_layout Plain Layout
 
-InitByFreq([.3, .2, .5]).apply(pop)
+InitGenotype(freq=[.3, .2, .5]).apply(pop)
 \end_layout
 
 \end_inset
@@ -6343,11 +6343,11 @@ This usage is used so often that it deserves some simplification.
  Equivalent functions are defined for most operators.
  For example, function 
 \family typewriter
-initByFreq
+initGenotype
 \family default
  is defined for operator 
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
  as follows
 \end_layout
@@ -6355,8 +6355,8 @@ InitByFreq
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/funcinitByFreq.log"
-lstparams "caption={The function form of operator \\texttt{InitByFreq}},label={funcinitByFreq}"
+filename "log/funcform.log"
+lstparams "caption={The function form of operator \\texttt{InitGenotype}},label={funcform}"
 
 \end_inset
 
@@ -6375,7 +6375,7 @@ status open
 
 \begin_layout Plain Layout
 
-initByFreq(pop, [.3, .2, .5])
+initGenotype(pop, freq=[.3, .2, .5])
 \end_layout
 
 \end_inset
@@ -8762,9 +8762,9 @@ lstparams "caption={Initialize individual sex},label={InitSex}"
 \end_layout
 
 \begin_layout Subsection
-Initialize by allele frequency (operator 
+Initialize genotype (operator 
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
 )
 \end_layout
@@ -8847,14 +8847,6 @@ lstparams "caption={Initialize by allele frequency with identical individuals in
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Initialize by haplotype (operator 
-\family typewriter
-InitByValue
-\family default
-)
 \end_layout
 
 \begin_layout Standard

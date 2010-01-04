@@ -160,43 +160,47 @@ protected:
 
 
 /** This operator assigns alleles at all or part of loci with given allele
- *  frequencies. Alternatively, an individual can be initialized and be copied
- *  to all individuals in the same (virtual) subpopulations.
+ *  frequencies, proportions or values.
  *  <funcForm>initByFreq</funcForm>
  */
-class InitByFreq : public BaseOperator
+class InitGenotype : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
-	 *  genotypes randomly, using allele frequencies specified in parameter
-	 *  \e alleleFreq. Elements in \e alleleFreq specifies the allele
+	 *  genotypes either randomly with specified allele frequencies
+     *  (parameter \e freq) or proportions (parameter \e prop), or with fixed
+     *  genotypes (\e genotype). Elements in \e freq specifies the allele
 	 *  frequencies of allele \c 0, \c 1, ... respectively. These frequencies
-	 *  should add up to \c 1. If \e loci, \e ploidy and/or \e subPop are
-	 *  specified, only specified loci, ploidy, and individuals in these
-	 *  (virtual) subpopulations will be initialized. If \e identicalInds is
-	 *  \c True, the first individual in each (virtual) subpopulation will be
-	 *  initialized randomly, and be copied to all other individuals in this
-	 *  (virtual) subpopulation. If a list of frequencies are given, they will
-	 *  be used for each (virtual) subpopulation. This operator initializes all
-	 *  chromosomes, including unused genotype locations and customized
-	 *  chromosomes.
+	 *  should add up to \c 1. Elements in \e prop specified the proportions of
+     *  alleles. Parameter \e prop is similar to \e freq except that \e prop
+     *  guarantees exact proportions of alleles, although alleles with small
+     *  proportions might not be allocated at all. Parameter \e genotype
+     *  specifies a list of genotype that will be assigned repeatedly to all
+     *  individuals (similar to \c Population.setGenotype() except that this
+     *  operator supports parameter \e ploidy). If \e loci, \e ploidy and/or
+     *  \e subPop are specified, only specified loci, ploidy, and individuals
+     *  in these (virtual) subpopulations will be initialized. This operator
+     *  initializes all chromosomes, including unused genotype locations and
+     *  customized chromosomes.
 	 */
-	InitByFreq(const matrix & alleleFreq = matrix(), const uintList & loci = uintList(),
-		const uintList & ploidy = uintList(), bool identicalInds = false,
+	InitGenotype(const vectorf & freq = vectorf(),
+        const uintList & genotype = uintList(), const vectorf & prop = vectorf(),
+        const uintList & loci = uintList(),
+		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr());
 
 
-	~InitByFreq()
+	~InitGenotype()
 	{
 	}
 
 
-	/// deep copy of the operator \c InitByFreq
+	/// deep copy of the operator \c InitGenotype
 	virtual BaseOperator * clone() const
 	{
-		return new InitByFreq(*this);
+		return new InitGenotype(*this);
 	}
 
 
@@ -209,11 +213,9 @@ public:
 
 private:
 	/// allele frequencies (assume all loci are the same for a subPop
-	matrix m_alleleFreq;
-
-	///
-	bool m_identicalInds;
-
+	vectorf m_freq;
+    vectoru m_genotype;
+    vectorf m_prop;
 	//
 	uintList m_loci;
 
@@ -221,72 +223,6 @@ private:
 	uintList m_ploidy;
 };
 
-/** This operator initialize individuals by given values.
- *  <funcForm>initByValue</funcForm>
- */
-class InitByValue : public BaseOperator
-{
-public:
-	/** This function creates an initializer that initializes individual
-	 *  genotypes with given genotype \e value. If \e loci, \e ploidy
-	 *  and/or \e subPop are specified, only specified loci, ploidy, and
-	 *  individuals in these (virtual) subpopulations will be initialized.
-	 *  \e value can be used to initialize given \e loci, all loci, and all
-	 *  homologous copies of these loci. If \e freq (a list of positive
-	 *  numbers that add up to \c 1) is given, \e value should be a list of
-	 *  values that will be assigned randomly according to their respective
-	 *  proportion. Althernatively, you can use parameter \e proportions which
-	 *  assign values randomly, but with exact proportion. If a list of values
-	 *  are given without \e frequencies or \e proportions, they will be used
-	 *  for each (virtual) subpopulations. This operator initializes all
-	 *  chromosomes, including unused genotype locations and customized
-	 *  chromosomes.
-	 */
-	InitByValue(intMatrix value = intMatrix(),
-		const uintList & loci = uintList(), const uintList & ploidy = uintList(),
-		const floatList & proportions = vectorf(), const floatList & freq = vectorf(),
-		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr());
-
-	~InitByValue()
-	{
-	}
-
-
-	/// deep copy of the operator \c InitByValue
-	virtual BaseOperator * clone() const
-	{
-		return new InitByValue(*this);
-	}
-
-
-	/// HIDDEN
-	string describe(bool format = true)
-	{
-		return "<simuPOP.InitByValue>";
-	}
-
-
-	/// apply this operator to population \e pop
-	bool apply(Population & pop);
-
-private:
-	/// allele frequencies (assume all loci are the same
-	intMatrix m_value;
-
-	/// if assign randomly
-	vectorf m_proportion;
-
-	///
-	vectorf m_frequencies;
-
-	//
-	uintList m_loci;
-
-	//
-	uintList m_ploidy;
-};
 
 }
 #endif
