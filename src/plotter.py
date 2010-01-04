@@ -1012,21 +1012,26 @@ class InfoPlotter(PyOperator):
             saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
-def HistPlotter(*args, **kwargs):
+
+class HistPlotter(InfoPlotter):
     '''
     A InfoPlotter that uses R function ``hist`` to draw histogram of individual
     information fields of specified (virtual) subpopulations. Please see
     ``InfoPlotter`` for details.
     '''
-    return InfoPlotter('hist', *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        InfoPlotter.__init__(self, 'hist', *args, **kwargs)
 
-def QQPlotter(*args, **kwargs):
+
+class QQPlotter(InfoPlotter):
     '''
     A InfoPlotter that uses R function ``qqnorm`` to draw qq plot of individual
     information fields of specified (virtual) subpopulations. Please see
     ``InfoPlotter`` for details.
     '''
-    return InfoPlotter('qqnorm', *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        InfoPlotter.__init__(self, 'qqnorm', *args, **kwargs)
+
 
 class BoxPlotter(PyOperator):
     '''
