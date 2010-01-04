@@ -196,16 +196,14 @@ bool InitGenotype::apply(Population & pop)
 
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
-	for (size_t idx = 0; sp != sp_end; ++sp, ++idx) {
+	size_t sz = m_genotype.size();
+	for (size_t idx = 0; sp != sp_end; ++sp) {
 		//
 		Weightedsampler ws(getRNG());
 		if (!m_prop.empty())
 			ws.set(m_prop, pop.subPopSize(*sp));
 		else if (!m_freq.empty())
 			ws.set(m_freq);
-		//
-		size_t idx = 0;
-		size_t sz = m_genotype.size();
 
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
