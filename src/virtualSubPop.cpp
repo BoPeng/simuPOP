@@ -49,7 +49,7 @@ ostream & operator<<(ostream & out, const vspID & vsp)
 }
 
 
-ULONG vspSplitter::countVisibleInds(const Population & pop, SubPopID subPop) const
+ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop) const
 {
 	if (activatedSubPop() != subPop)
 		return pop.subPopSize(subPop);
@@ -65,7 +65,7 @@ ULONG vspSplitter::countVisibleInds(const Population & pop, SubPopID subPop) con
 
 CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 	const intMatrix & vspMap, const stringList & names)
-	: vspSplitter(names), m_splitters(0), m_vspMap(0)
+	: BaseVspSplitter(names), m_splitters(0), m_vspMap(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i)
 		m_splitters.push_back(splitters[i]->clone());
@@ -102,7 +102,7 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 
 
 CombinedSplitter::CombinedSplitter(const CombinedSplitter & rhs) :
-	vspSplitter(rhs), m_splitters(), m_vspMap(rhs.m_vspMap)
+	BaseVspSplitter(rhs), m_splitters(), m_vspMap(rhs.m_vspMap)
 {
 	for (size_t i = 0; i < rhs.m_splitters.size(); ++i)
 		m_splitters.push_back(rhs.m_splitters[i]->clone());
@@ -116,7 +116,7 @@ CombinedSplitter::~CombinedSplitter()
 }
 
 
-vspSplitter * CombinedSplitter::clone() const
+BaseVspSplitter * CombinedSplitter::clone() const
 {
 	return new CombinedSplitter(*this);
 }
@@ -215,7 +215,7 @@ string CombinedSplitter::name(SubPopID sp)
 
 
 ProductSplitter::ProductSplitter(const vectorsplitter & splitters, const stringList & names)
-	: vspSplitter(names), m_numVSP(0)
+	: BaseVspSplitter(names), m_numVSP(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i) {
 		if (m_numVSP == 0)
@@ -244,7 +244,7 @@ vectori ProductSplitter::getVSPs(SubPopID vsp) const
 
 
 ProductSplitter::ProductSplitter(const ProductSplitter & rhs) :
-	vspSplitter(rhs), m_splitters(), m_numVSP(rhs.m_numVSP)
+	BaseVspSplitter(rhs), m_splitters(), m_numVSP(rhs.m_numVSP)
 {
 	for (size_t i = 0; i < rhs.m_splitters.size(); ++i)
 		m_splitters.push_back(rhs.m_splitters[i]->clone());
@@ -258,7 +258,7 @@ ProductSplitter::~ProductSplitter()
 }
 
 
-vspSplitter * ProductSplitter::clone() const
+BaseVspSplitter * ProductSplitter::clone() const
 {
 	return new ProductSplitter(*this);
 }
@@ -437,7 +437,7 @@ string AffectionSplitter::name(SubPopID vsp)
 
 InfoSplitter::InfoSplitter(string info, const vectorinfo & values,
 	const vectorf & cutoff, const matrix & ranges, const stringList & names)
-	: vspSplitter(names),
+	: BaseVspSplitter(names),
 	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges)
 {
 	DBG_FAILIF(m_values.empty() && m_cutoff.empty() && m_ranges.empty(),
@@ -665,7 +665,7 @@ string InfoSplitter::name(SubPopID sp)
 
 
 ProportionSplitter::ProportionSplitter(vectorf const & proportions, const stringList & names)
-	: vspSplitter(names), m_proportions(proportions)
+	: BaseVspSplitter(names), m_proportions(proportions)
 {
 	DBG_ASSERT(fcmp_eq(std::accumulate(proportions.begin(),
 				proportions.end(), 0.), 1.), ValueError,
@@ -766,7 +766,7 @@ string ProportionSplitter::name(SubPopID subPop)
 
 
 RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
-	: vspSplitter(names), m_ranges(ranges)
+	: BaseVspSplitter(names), m_ranges(ranges)
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
 		DBG_FAILIF(m_ranges[i].size() != 2
@@ -842,7 +842,7 @@ string RangeSplitter::name(SubPopID subPop)
 
 GenotypeSplitter::GenotypeSplitter(const uintList & loci,
 	const intMatrix & alleles, bool phase, const stringList & names)
-	: vspSplitter(names), m_loci(loci.elems()), m_alleles(alleles),
+	: BaseVspSplitter(names), m_loci(loci.elems()), m_alleles(alleles),
 	m_phase(phase)
 {
 }

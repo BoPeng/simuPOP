@@ -325,7 +325,7 @@ public:
 	bool hasVirtualSubPop() const;
 
 	/// CPPONLY
-	vspSplitter * virtualSplitter() const { return m_vspSplitter; }
+	BaseVspSplitter * virtualSplitter() const { return m_vspSplitter; }
 
 	/** Set a VSP \e splitter to the population, which defines the same VSPs
 	 *  for all subpopulations. If different VSPs are needed for different
@@ -333,7 +333,7 @@ public:
 	 *  available to all subpopulations.
 	 *  <group>3-VSP</group>
 	 */
-	void setVirtualSplitter(vspSplitter * splitter);
+	void setVirtualSplitter(BaseVspSplitter * splitter);
 
 	/** Return the number of virtual subpopulations (VSP) defined by a VSP
 	 *  splitter. Return \c 0 if no VSP is defined.
@@ -1698,7 +1698,7 @@ private:
 	vectoru m_subPopIndex;
 
 	///
-	vspSplitter * m_vspSplitter;
+	BaseVspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
 	vectora m_genotype;

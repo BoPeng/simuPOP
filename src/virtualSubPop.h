@@ -220,13 +220,13 @@ private:
  *  for all its subpopulations. If different splitters are needed for different
  *  subpopulations, a \c CombinedSplitter should be used.
  */
-class vspSplitter
+class BaseVspSplitter
 {
 
 public:
 	/** This is a virtual class that cannot be instantiated.
 	 */
-	vspSplitter(const stringList & names = vectorstr()) :
+	BaseVspSplitter(const stringList & names = vectorstr()) :
 		m_names(names.elems()), m_activated(InvalidSubPopID)
 	{
 	}
@@ -235,9 +235,9 @@ public:
 	/** All VSP splitter defines a \c clone() function to create an identical
 	 *  copy of itself.
 	 */
-	virtual vspSplitter * clone() const = 0;
+	virtual BaseVspSplitter * clone() const = 0;
 
-	virtual ~vspSplitter()
+	virtual ~BaseVspSplitter()
 	{
 	}
 
@@ -290,7 +290,7 @@ protected:
 	SubPopID m_activated;
 };
 
-typedef std::vector<vspSplitter *> vectorsplitter;
+typedef std::vector<BaseVspSplitter *> vectorsplitter;
 
 /** CPPONLY
  *  A functor that judge if an individual belong to a certain virtual subpopulation.
@@ -302,7 +302,7 @@ public:
 	vspFunctor() : m_pop(NULL), m_splitter(NULL), m_vsp()
 	{}
 
-	vspFunctor(const Population & pop, const vspSplitter * splitter, vspID vsp)
+	vspFunctor(const Population & pop, const BaseVspSplitter * splitter, vspID vsp)
 		: m_pop(&pop), m_splitter(splitter), m_vsp(vsp)
 	{
 	}
@@ -316,7 +316,7 @@ public:
 
 private:
 	const Population * m_pop;
-	const vspSplitter * m_splitter;
+	const BaseVspSplitter * m_splitter;
 	vspID m_vsp;
 };
 
@@ -329,7 +329,7 @@ private:
  *  of the original VSPs. This splitter is usually used to define different
  *  types of VSPs to a population.
  */
-class CombinedSplitter : public vspSplitter
+class CombinedSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a combined splitter using a list of \e splitters. For example,
@@ -352,7 +352,7 @@ public:
 	~CombinedSplitter();
 
 	/// HIDDEN
-	vspSplitter * clone() const;
+	BaseVspSplitter * clone() const;
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
@@ -384,7 +384,7 @@ public:
 
 private:
 	/// the splitters
-	vector<vspSplitter *> m_splitters;
+	vector<BaseVspSplitter *> m_splitters;
 
 	/// the splitter correspond to a vsp
 	typedef std::pair<UINT, UINT> vspPair;
@@ -399,7 +399,7 @@ private:
  *  defined by the first splitter each to two VSPs. This splitter is usually
  *  used to define finer VSPs from existing VSPs.
  */
-class ProductSplitter : public vspSplitter
+class ProductSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a product splitter using a list of \e splitters. For example,
@@ -417,7 +417,7 @@ public:
 	~ProductSplitter();
 
 	/// HIDDEN
-	vspSplitter * clone() const;
+	BaseVspSplitter * clone() const;
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
@@ -454,7 +454,7 @@ private:
 
 private:
 	/// the splitters
-	vector<vspSplitter *> m_splitters;
+	vector<BaseVspSplitter *> m_splitters;
 
 	/// total number of vsp
 	int m_numVSP;
@@ -465,20 +465,20 @@ private:
  *  all male individuals and the second VSP consists of all females in a
  *  subpopulation.
  */
-class SexSplitter : public vspSplitter
+class SexSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a sex splitter that defines male and female VSPs. These VSPs
 	 *  are named \c MALE and \c FEMALE unless a new set of names are specified
 	 *  by parameter \e names.
 	 */
-	SexSplitter(const stringList & names = vectorstr()) : vspSplitter(names)
+	SexSplitter(const stringList & names = vectorstr()) : BaseVspSplitter(names)
 	{
 	}
 
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new SexSplitter(*this);
 	}
@@ -519,20 +519,20 @@ public:
  *  first VSP consists of unaffected invidiauls and the second VSP consists
  *  of affected ones.
  */
-class AffectionSplitter : public vspSplitter
+class AffectionSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter that defined two VSPs by affection status.These VSPs
 	 *  are named \c UNAFFECTED and \c AFFECTED unless a new set of names are
 	 *  specified by parameter \e names.
 	 */
-	AffectionSplitter(const stringList & names = vectorstr()) : vspSplitter(names)
+	AffectionSplitter(const stringList & names = vectorstr()) : BaseVspSplitter(names)
 	{
 	}
 
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new AffectionSplitter(*this);
 	}
@@ -572,7 +572,7 @@ public:
 /** This splitter defines VSPs according to the value of an information field
  *  of each indivdiual. A VSP is defined either by a value or a range of values.
  */
-class InfoSplitter : public vspSplitter
+class InfoSplitter : public BaseVspSplitter
 {
 public:
 	/** Create an infomration splitter using information field \e field. If
@@ -596,7 +596,7 @@ public:
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new InfoSplitter(*this);
 	}
@@ -644,7 +644,7 @@ private:
 
 /** This splitter divides subpopulations into several VSPs by proportion.
  */
-class ProportionSplitter : public vspSplitter
+class ProportionSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter that divides subpopulations by \e proportions, which
@@ -656,7 +656,7 @@ public:
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new ProportionSplitter(*this);
 	}
@@ -695,7 +695,7 @@ private:
 /** This class defines a splitter that groups individuals in certain ranges
  *  into VSPs.
  */
-class RangeSplitter : public vspSplitter
+class RangeSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter according to a number of individual ranges defined
@@ -710,7 +710,7 @@ public:
 	RangeSplitter(const intMatrix & ranges, const stringList & names = vectorstr());
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new RangeSplitter(*this);
 	}
@@ -749,7 +749,7 @@ private:
 /** This class defines a VSP splitter that defines VSPs according to individual
  *  genotype at specified loci.
  */
-class GenotypeSplitter : public vspSplitter
+class GenotypeSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter that defines VSPs by individual genotype at \e loci
@@ -789,7 +789,7 @@ public:
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
-	vspSplitter * clone() const
+	BaseVspSplitter * clone() const
 	{
 		return new GenotypeSplitter(*this);
 	}

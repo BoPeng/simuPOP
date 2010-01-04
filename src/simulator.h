@@ -226,7 +226,7 @@ public:
 	vectoru evolve(
 		const opList & initOps = opList(),
 		const opList & preOps = opList(),
-		const mating & matingScheme = mating(),
+		const MatingScheme & matingScheme = MatingScheme(),
 		const opList & postOps = opList(),
 		const opList & finalOps = opList(),
 		int gen = -1);
@@ -282,7 +282,7 @@ private:
 string describe(
 	const opList & initOps = opList(),
 	const opList & preOps = opList(),
-	const mating & matingScheme = mating(),
+	const MatingScheme & matingScheme = MatingScheme(),
 	const opList & postOps = opList(),
 	const opList & finalOps = opList(),
 	int gen = -1,

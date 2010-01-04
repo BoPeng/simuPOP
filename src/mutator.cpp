@@ -1,5 +1,5 @@
 /**
- *  $File: baseMutator.cpp $
+ *  $File: BaseMutator.cpp $
  *  $LastChangedDate$
  *  $Rev$
  *
@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-double baseMutator::mutRate(UINT loc)
+double BaseMutator::mutRate(UINT loc)
 {
 	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate.");
 	if (m_loci.allAvail()) {
@@ -46,7 +46,7 @@ double baseMutator::mutRate(UINT loc)
 }
 
 
-void baseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus)
+void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus)
 {
 	// chromosome?
 	UINT chrom = pop.chromLocusPair(locus).first;
@@ -83,7 +83,7 @@ void baseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UIN
 }
 
 
-bool baseMutator::apply(Population & pop)
+bool BaseMutator::apply(Population & pop)
 {
 	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
@@ -186,7 +186,7 @@ MatrixMutator::MatrixMutator(const matrix & rate,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields)
-	: baseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
+	: BaseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
 	              at, reps, subPops, infoFields)
 {
 	matrix rateMatrix = rate;
@@ -259,7 +259,7 @@ SmmMutator::SmmMutator(const floatList & rates, const uintList & loci,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-	: baseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
+	: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
@@ -351,16 +351,16 @@ void PyMutator::mutate(AlleleRef allele, UINT)
 
 void MixedMutator::initialize(Population & pop)
 {
-	baseMutator::initialize(pop);
+	BaseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
-		reinterpret_cast<baseMutator *>(m_mutators[i])->initialize(pop);
+		reinterpret_cast<BaseMutator *>(m_mutators[i])->initialize(pop);
 }
 
 
 void MixedMutator::mutate(AlleleRef allele, UINT locus)
 {
 	UINT idx = m_sampler.get();
-	baseMutator * mut = reinterpret_cast<baseMutator *>(m_mutators[idx]);
+	BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
 
 	if (mu == 1.0 || getRNG().randUniform() < mu)
@@ -370,9 +370,9 @@ void MixedMutator::mutate(AlleleRef allele, UINT locus)
 
 void ContextMutator::initialize(Population & pop)
 {
-	baseMutator::initialize(pop);
+	BaseMutator::initialize(pop);
 	for (size_t i = 0; i < m_mutators.size(); ++i)
-		reinterpret_cast<baseMutator *>(m_mutators[i])->initialize(pop);
+		reinterpret_cast<BaseMutator *>(m_mutators[i])->initialize(pop);
 }
 
 
@@ -390,7 +390,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 		}
 		if (match) {
 			DBG_DO(DBG_MUTATOR, cerr << "Context " << alleles << " mutator " << i << endl);
-			baseMutator * mut = reinterpret_cast<baseMutator *>(m_mutators[i]);
+			BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[i]);
 			if (getRNG().randUniform() < mut->mutRate(locus))
 				mut->mutate(allele, locus);
 			return;
@@ -398,7 +398,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 	}
 	if (m_contexts.size() + 1 == m_mutators.size()) {
 		DBG_DO(DBG_MUTATOR, cerr << "No context found. Use last mutator." << endl);
-		baseMutator * mut = reinterpret_cast<baseMutator *>(m_mutators[m_contexts.size()]);
+		BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[m_contexts.size()]);
 		if (getRNG().randUniform() < mut->mutRate(locus))
 			mut->mutate(allele, locus);
 	} else {

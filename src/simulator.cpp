@@ -188,7 +188,7 @@ string Simulator::describe(bool format)
 vectoru Simulator::evolve(
                           const opList & initOps,
                           const opList & preOps,
-                          const mating & matingScheme,
+                          const MatingScheme & matingScheme,
                           const opList & postOps,
                           const opList & finalOps,
                           int gens)
@@ -301,7 +301,7 @@ vectoru Simulator::evolve(
 				continue;
 			// start mating:
 			try {
-				if (!const_cast<mating &>(matingScheme).mate(curPop, scratchPopulation())) {
+				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
 					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " + toStr(curRep) << endl);
 
 					numStopped++;
@@ -430,7 +430,7 @@ int Simulator::__cmp__(const Simulator & rhs) const
 
 string describe(const opList & initOps,
                 const opList & preOps,
-                const mating & matingScheme,
+                const MatingScheme & matingScheme,
                 const opList & postOps,
                 const opList & finalOps,
                 int gen, UINT numRep)

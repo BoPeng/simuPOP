@@ -265,7 +265,7 @@ bool Population::hasVirtualSubPop() const
 }
 
 
-void Population::setVirtualSplitter(vspSplitter * vsp)
+void Population::setVirtualSplitter(BaseVspSplitter * vsp)
 {
 	if (m_vspSplitter)
 		delete m_vspSplitter;
