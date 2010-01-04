@@ -1309,7 +1309,7 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.ValueError, ped.addIndFrom)
         self.assertRaises(exceptions.ValueError, ped.addLoci)
         self.assertRaises(exceptions.ValueError, ped.addLociFrom)
-        self.assertRaises(exceptions.ValueError, ped.MergeSubPops)
+        self.assertRaises(exceptions.ValueError, ped.mergeSubPops)
         self.assertRaises(exceptions.ValueError, ped.recodeAlleles)
         self.assertRaises(exceptions.ValueError, ped.removeLoci)
         self.assertRaises(exceptions.ValueError, ped.resize)
