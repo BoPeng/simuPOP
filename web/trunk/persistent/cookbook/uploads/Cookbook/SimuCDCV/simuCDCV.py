@@ -19,9 +19,9 @@ Introduction
 
 Reich and Lander's 2001 paper "On the allelic spectrum of human disease"
 proposed a population genetics framework to model the evolution of 
-allelic spectra. The model is based on the fact that human population
+allelic spectra. The model is based on the fact that human Population
 grew quickly from around 10,000 to 6 billion in 18,000 -150,000 years.
-Their analysis showed that at the founder population, both common and
+Their analysis showed that at the founder Population, both common and
 rare diseases have simple spectra. After the sudden expansion of 
 population size, the allelic spectra of simple diseases become complex;
 while those of complex diseases remained simple.
@@ -165,7 +165,7 @@ options = [
     {'longarg': 'growth=',
      'default': 'exponential',
      'label': 'Population growth model',
-     'description': '''How population is grown from initSize to finalSize.
+     'description': '''How Population is grown from initSize to finalSize.
                 Choose between instant, linear and exponential''',
      'chooseOneOf': ['exponential', 'linear', 'instant'],
     },
@@ -377,7 +377,7 @@ def getStats(v, highest, numDSL, allelesBeforeExpansion):
 # using given allele frequencies
 #
 def PlotSpectra(pop, param):
-    " swtich from old-style python plotter to new style, use pyOperator"
+    " swtich from old-style python plotter to new style, use PyOperator"
     (numDSL, saveAt, highest, plot, plotLabel, name) = param
     # use global logOutput handle
     # this is less efficient but make sure we can see partial results
@@ -531,7 +531,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     #
     # create a simulator, if not in resume mode
     if resume == '':
-        pop = population(size=incFunc(0), loci=[1]*(numDSL), infoFields=['fitness'])
+        pop = Population(size=incFunc(0), loci=[1]*(numDSL), infoFields=['fitness'])
     else:
         try:
             print "Resuming simulation from file ", resume, " at generation ", resumeAtGen
@@ -542,34 +542,34 @@ def simuCDCV(numDSL, initSpec, selModel,
 
     # determine mutation etc
     if mutaModel == 'k-allele':
-        mutation = kamMutator(rates=mutaRate, loci=range(numDSL), k=maxAllele+1)
+        mutation = KamMutator(rates=mutaRate, loci=range(numDSL), k=maxAllele+1)
     else:
-        mutation = smmMutator(rates=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
+        mutation = SmmMutator(rates=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
     # determine selection
     #
     if selModelAllDSL == 'customized':
-        selection = maSelector(loci=range(numDSL), fitness=selCoef, wildtype=[0] )
+        selection = MaSelector(loci=range(numDSL), fitness=selCoef, wildtype=[0] )
     else:
         sel = []
         for d in range(numDSL):
             if selModel[d] == 'recessive':
-                sel.append(maSelector(loci=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
+                sel.append(MaSelector(loci=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
             else: 
-                sel.append(maSelector(loci=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
+                sel.append(MaSelector(loci=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
         # now, the whole selector
         if selModelAllDSL == 'additive':
-            selection = mlSelector(sel, mode=ADDITIVE)
+            selection = MlSelector(sel, mode=ADDITIVE)
         elif selModelAllDSL == 'multiplicative':
-            selection = mlSelector(sel, mode=MULTIPLICATIVE)
+            selection = MlSelector(sel, mode=MULTIPLICATIVE)
     # migration
     if numSubPop == 1 or migrModel == 'none':
         # no migration
-        migration = noneOp()
+        migration = NoneOp()
     else:
         if migrModel == 'island':
-            migration = migrator(MigrIslandRates(migrRate, numSubPop), begin=mixing)
+            migration = Migrator(MigrIslandRates(migrRate, numSubPop), begin=mixing)
         else:
-            migration = migrator(MigrSteppingStoneRates(migrRate, numSubPop, circular=True), begin=mixing)
+            migration = Migrator(MigrSteppingStoneRates(migrRate, numSubPop, circular=True), begin=mixing)
     #            
     # prepare log file, if not in resume mode
     if resume == '':    # not resume
@@ -599,13 +599,13 @@ def simuCDCV(numDSL, initSpec, selModel,
     # start evolution
     pop.evolve(                            # start evolution
         initOps=
-            [initSex()] + 
+            [InitSex()] + 
             # initialize DSL 
-            [initByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
-            [pyExec('allelesBeforeExpansion=[]')],
+            [InitByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
+            [PyExec('allelesBeforeExpansion=[]')],
         preOps = [
             #
-            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
+            SplitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
             # mutate
             mutation,
             # selection
@@ -613,38 +613,38 @@ def simuCDCV(numDSL, initSpec, selModel,
             # migration
             migration, 
         ],
-        matingScheme = randomMating(subPopSize=incFunc),
+        matingScheme = RandomMating(subPopSize=incFunc),
         postOps = [         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
-            stat(popSize=True, alleleFreq=range(numDSL), vars=['alleleFreq', 'alleleFreq_sp', 'alleleNum', 'alleleNum_sp'], step=update),
+            Stat(popSize=True, alleleFreq=range(numDSL), vars=['alleleFreq', 'alleleFreq_sp', 'alleleNum', 'alleleNum_sp'], step=update),
             # report generation and popsize
-            pyEval(r"'%d\t%d\t%f\n' % (gen, popSize, alleleFreq[0][0])", step=50),
+            PyEval(r"'%d\t%d\t%f\n' % (gen, popSize, alleleFreq[0][0])", step=50),
             #
             # record alleles before expansion, used to count percentage of alleles derived
             # from before expansion.
-            pyExec( '''for i in range(%d):
+            PyExec( '''for i in range(%d):
                 allelesBeforeExpansion.extend([alleleFreq[i].keys()])
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
                 numDSL, at=[burnin]),
             # visualizer
-            pyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, name), step=update ),
+            PyOperator(func=PlotSpectra, param=(numDSL, saveAt, 50, dispPlot, plotLabel, name), step=update ),
             # monitor execution time
-            ticToc(step=100),
-            ## pause at any user key input (for presentation purpose)
-            ## pause(stopOnKeyStroke=1)
-            savePopulation(output='!"%s/%s-%%d.txt"%% gen' % (name, name), step=3000),
+            TicToc(step=100),
+            ## Pause at any user key input (for presentation purpose)
+            ## Pause(stopOnKeyStroke=1)
+            SavePopulation(output='!"%s/%s-%%d.txt"%% gen' % (name, name), step=3000),
         ],
         gen=end
     )
     #
     if savePop != '':
-        pop.savePopulation(savePop)
+        pop.SavePopulation(savePop)
 
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.simuParam(options, 
+    par = simuOpt.SimuParam(options, 
         'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
         'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
         'and plotted (if R/RPy is available).', __doc__)

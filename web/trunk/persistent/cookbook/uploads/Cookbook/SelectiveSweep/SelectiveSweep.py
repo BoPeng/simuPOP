@@ -11,7 +11,7 @@ setOptions(alleleType='long')
 from simuPOP import *
 
 try:
-    from simuPOP.plotter import varPlotter
+    from simuPOP.plotter import VarPlotter
 except:
     print "simuRPy import failed. Please check your rpy installation."
     useRPy = False
@@ -19,7 +19,7 @@ else:
     useRPy = True
         
 def I2k(pop, param):
-    #Stat(pop, alleleFreq=loci)
+    #stat(pop, alleleFreq=loci)
     I2k ={}
     for loc in param:
         #print pop.dvars().alleleFreq[loc].values()[0]
@@ -29,7 +29,7 @@ def I2k(pop, param):
     return True            
 
 def simulate(r, eta, size=30000, numLoci=2, gen=500):
-    pop = population(size=size, loci=[numLoci], infoFields='fitness')
+    pop = Population(size=size, loci=[numLoci], infoFields='fitness')
 
     for i,ind in enumerate(pop.individuals()):
         if i < 5:
@@ -47,35 +47,35 @@ def simulate(r, eta, size=30000, numLoci=2, gen=500):
     selLocus = 1
 
     if useRPy:
-        plotter = varPlotter('alleleFreq[%d][1]' % selLocus,
+        plotter = VarPlotter('alleleFreq[%d][1]' % selLocus,
             ylim=[0, 1], update=10, legend=['Allele freq'],
 	    xlab="genenerations", ylab="alleleFrequency", saveAs='selectionsweep.png')
     else:
-        plotter = noneOp()
+        plotter = NoneOp()
         
     a=[]
 
     g = pop.evolve(
-        initOps = initSex(),
+        initOps = InitSex(),
         preOps = [
-            stat (alleleFreq=[selLocus]),
-            ifElse('alleleFreq[%d][1] == 0' % selLocus, 
+            Stat (alleleFreq=[selLocus]),
+            IfElse('alleleFreq[%d][1] == 0' % selLocus, 
                 ifOps=[
-                    pyEval (r'"introduce at gen %d\n"% gen'),
-                    pointMutator(inds=0, loci=selLocus, allele=1, ploidy=0, at=0),
+                    PyEval (r'"introduce at gen %d\n"% gen'),
+                    PointMutator(inds=0, loci=selLocus, allele=1, ploidy=0, at=0),
                 ]),
-            maSelector (loci = selLocus, fitness = [1, 1.+2*eta*0.05, 1+2*0.05]),
-            stat (alleleFreq=[selLocus]),
+            MaSelector (loci = selLocus, fitness = [1, 1.+2*eta*0.05, 1+2*0.05]),
+            Stat (alleleFreq=[selLocus]),
         ],
-        matingScheme = randomMating(ops=recombinator(rates=r)),
+        matingScheme = RandomMating(ops=Recombinator(rates=r)),
         postOps = [
-            #dumper(),
-            stat(alleleFreq=[0,1]),
-            pyOperator(func = I2k, param=[0]),
+            #Dumper(),
+            Stat(alleleFreq=[0,1]),
+            PyOperator(func = I2k, param=[0]),
             #pyEval(r"'Gen %d: allele frequency: %.3e I2k: %.2e\n' % (gen, alleleFreq[1][1], I2k[0])"),
-            terminateIf('len(alleleFreq[1]) == 1'),
+            TerminateIf('len(alleleFreq[1]) == 1'),
             #plotter,
-            #pause(at=gen-1)
+            #Pause(at=gen-1)
         ],
         gen = gen
     )

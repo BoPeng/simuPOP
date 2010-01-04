@@ -5,7 +5,7 @@ import os, sys, exceptions
 #
 # Purpose:
 #     This python module provides several utility functions that save a simuPOP
-#     population in SOLAR formats,
+#     Population in SOLAR formats,
 #
 # License:
 #     This program is freely available in the simuPOP's online cookbook
@@ -29,7 +29,7 @@ import os, sys, exceptions
 #         cookbook.
 # 
 
-def SaveSolarFrqFile(pop, output='', loci=[], calcFreq=True):
+def saveSolarFrqFile(pop, output='', loci=[], calcFreq=True):
     '''
     Output a frequency file, in a format readable by solar calcFreq
     '''
@@ -47,7 +47,7 @@ def SaveSolarFrqFile(pop, output='', loci=[], calcFreq=True):
     if loci == []:
         loci = range(0, pop.totNumLoci())
     if calcFreq or not pop.vars().has_key('alleleFreq'):
-        Stat(pop, alleleFreq=loci)
+        stat(pop, alleleFreq=loci)
     alleleFreq = pop.dvars().alleleFreq
     for m in loci:
         try:
@@ -63,10 +63,10 @@ def SaveSolarFrqFile(pop, output='', loci=[], calcFreq=True):
 if __name__ == '__main__':
     #for testing
     outfile = 'SolarOut.dat'
-    pop = population(size=[100]*3, loci=[2,3],
+    pop = Population(size=[100]*3, loci=[2,3],
                      lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
-    InitByFreq(pop, [.1, .3, .6])
-    SaveSolarFrqFile(pop, outfile)
+    initByFreq(pop, [.1, .3, .6])
+    saveSolarFrqFile(pop, outfile)
     print open(outfile).read()
 
 

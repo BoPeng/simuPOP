@@ -45,7 +45,7 @@ options = [
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
      'validate':simuOpt.valueGT(0),
-     'description':'Population size'
+     'description':'population size'
     },
      {'arg':'l:',
      'longarg':'lociNum=',
@@ -96,25 +96,25 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
     recRate: recombination rate
     numRep:  number of replicates
     '''
-    pop = population(size=popSize, ploidy=2, loci=[lociNum])
+    pop = Population(size=popSize, ploidy=2, loci=[lociNum])
 
     # initialize each individual with a different allele
     for idx,ind in enumerate(pop.individuals()):
         ind.setGenotype([idx])
     #
-    simu = simulator(pop, rep = numRep)
+    simu = Simulator(pop, rep = numRep)
     simu.evolve(
-        initOps = initSex(),
-        matingScheme = randomMating(ops=recombinator(rates=recRate)),
+        initOps = InitSex(),
+        matingScheme = RandomMating(ops=Recombinator(rates=recRate)),
         postOps=[
-            pyOperator(func=avgNumOfAncestors),
-            pyOutput('\n', reps=-1)
+            PyOperator(func=avgNumOfAncestors),
+            PyOutput('\n', reps=-1)
         ],
         gen=gen
     )
 
 if __name__ == '__main__':
-    pars = simuOpt.simuParam(options, doc =
+    pars = simuOpt.SimuParam(options, doc =
         'This script counts the average number of ancestors who contribute\n' +
         'their genotype to an offspring after a few generations.',
         details = __doc__)

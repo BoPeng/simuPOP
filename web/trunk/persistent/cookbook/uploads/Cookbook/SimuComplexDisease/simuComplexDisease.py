@@ -28,22 +28,22 @@ frequency of disease susceptibility loci than simuForward.py. I will describe
 the method briefly here. More details please see 
 
     Peng B, Amos CI, Kimmel M (2007) Forward-Time Simulations of Human 
-    Populations with Complex Diseases. PLoS Genet 3(3): e47
+    populations with Complex Diseases. PLoS Genet 3(3): e47
 
 This program simulates the evolution of a complex common disease under the 
 influence of mutation, migration, recombination and population size change. 
-Starting from a small founder population, each simulation will go through
+Starting from a small founder Population, each simulation will go through
 the following steps:
 
-    1. Simulate the trajectory of allele frequency using specified disease model.
+    1. Simulate the Trajectory of allele frequency using specified disease model.
     2. Burn-in the population with mutation and recombination
     3. Introduce disease alleles and evolve the population with pre-simulated 
        allele frequency.
-    4. Population structure and migration are specified along with demographic
+    4. population structure and migration are specified along with demographic
        models. The population can be split into several equally-sized subpopulations
        and then evolve independently, or with migration. 
 
-The result of the simulation is a large multi-generation population. To analyze 
+The result of the simulation is a large multi-generation Population. To analyze 
 the population, you will typically need to 
 
     1. Apply a penetrance function to the population and determine the affectedness
@@ -68,7 +68,7 @@ With typical settings, each individual will have 10 chromosomes, each having
 several disease susceptibility loci (DSL) between markers. For example, a
 DSL may be .3 unit to the right of marker 25 (the six marker on the second
 chromosome). Since we assume that fitness is only determined by genotype, 
-not affectedness status or trait value, we do not assign individual 
+not affectedness status or trait value, we do not assign Individual 
 affectedness till the sampling stage.
 
 
@@ -80,7 +80,7 @@ The evolutionary process can be divided into three stages:
 Burn-in stage
 ------------
 
-A founder population will be initialized with a small number of haplotypes.
+A founder Population will be initialized with a small number of haplotypes.
 All DSL will be initialized with wild type alleles ( no disease). This leads
 to complete linkage disequilibrium between markers and no LD with DSL.
 The population will evolve for a number of generations, subject to mutation 
@@ -97,13 +97,13 @@ No-migration stage
 
 The population will be split into 10 subpopulations and starts to grow,
 aiming at 100,000 or more individuals at the final generation. No migration 
-is allowed between subpopulations so population heterogeneity will build up.
+is allowed between subpopulations so population.heterogeneity will build up.
 
 Mixing stage
 -------------
 
-Individuals from different subpopulations will be able to migrate following
-a circular step-stone model. Population heterogeneity will be reduced to
+individuals from different subpopulations will be able to migrate following
+a circular step-stone model. population.heterogeneity will be reduced to
 a level depending on migration rate and length of this stage.
 
 Introduction of disease
@@ -112,7 +112,7 @@ Introduction of disease
 The disease allele frequency is simulated before the simulation is performed.
 A single disease mutant is introduce to each DSL at simulated mutant-introduction
 generation. The allele frequency then evolve according to the simulated frequency
-trajectory.
+Trajectory.
 
 However, you can also specify some free DSL, who will evolve in a different manner.
 Namely, they will be brought to high allele frequency in your specified time frame,
@@ -127,9 +127,9 @@ A number of statistics will be measured and saved. They are:
 
     1. Fst before and after mixing
     2. Observed heterogeneity before and after mixing
-    3. Disease allele frequency trajectory.
+    3. Disease allele frequency Trajectory.
 
-You can add more stat() operator if you need to preserve more information.
+You can add more Stat() operator if you need to preserve more information.
 
 """
 
@@ -214,7 +214,7 @@ options = [
     {'longarg': 'growthModel=',
      'default': 'exponential',
      'label': 'Population growth model',
-     'description': '''How population is grown from initSize to endingSize.
+     'description': '''How Population is grown from initSize to endingSize.
                 Choose between linear and exponential''',
      'chooseOneOf': ['exponential', 'linear'],
     },
@@ -227,7 +227,7 @@ options = [
     },
     {'longarg': 'splitGen=',
      'default': 5000,
-     'label': 'When to split population',
+     'label': 'When to split Population',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to split the population. 
                 The population will start to grow after burnin stage but will
@@ -238,7 +238,7 @@ options = [
     },
     {'longarg': 'mixingGen=',
      'default': 8000,
-     'label': 'When to mix population',
+     'label': 'When to mix Population',
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''At which generation to start mixing (allow migration.
                 This number should be greater than or equal to split gen.''',
@@ -390,7 +390,7 @@ options = [
      'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
     },
     #
-    {'separator': 'Final population preparation:'},
+    {'separator': 'Final Population preparation:'},
     {'longarg': 'savedGen=',
      'default': 2,
      'useDefault': True,
@@ -407,7 +407,7 @@ options = [
      'allowedTypes': [types.FloatType, types.IntType, types.LongType],
      'label': 'Number of offspring per mating', 
      'description': '''Number of offspring in these last generations. 2 is good for affected sibpair. More
-                is needed for the sampling of large pedigrees. The value can be the number of offspring
+                is needed for the sampling of large Pedigrees. The value can be the number of offspring
                 per mating when numOffMode=constant, but can also be parameters for a distribution. Details
                 see description of numOffMode.''',
      'validate': simuOpt.valueGT(0),
@@ -421,7 +421,7 @@ options = [
      'description': '''Two ways to determine number of offspring. If constant, numOffspring will be used
                 to generate the same number of offspring per mating event (in the final generations). If
                 'geometric', P(k) = p*(1-p)^(k-1) where p=numOffspring. 0<p<1. The mean number of offspring
-                is 1/p. This mode can be used when you need some large pedigrees.''',
+                is 1/p. This mode can be used when you need some large Pedigrees.''',
     },
     #
     # 
@@ -469,7 +469,7 @@ def trajFunc(endingGen, traj):
 
 
 def outputStatistics(pop, args): 
-    ''' This function will be working with a pyOperator
+    ''' This function will be working with a PyOperator
         to output statistics. Many parameters will be passed,
         packed as a tuple.
     
@@ -484,7 +484,7 @@ def outputStatistics(pop, args):
     gen = pop.gen()
     # see how long the simulation has been running
     if gen == burnin:
-        print "Start population growth\t\t"
+        print "Start Population growth\t\t"
     elif gen == split:
         print "Start no-migration stage\t\t"
     elif gen == mixing:
@@ -505,7 +505,7 @@ def outputStatistics(pop, args):
     # append to output file.
     output = open(outfile, 'a')
     # first, calculate LD and other statistics
-    Stat(pop, alleleFreq=DSL, Fst = nonDSL, heteroFreq = range(pop.totNumLoci()))
+    stat(pop, alleleFreq=DSL, Fst = nonDSL, heteroFreq = range(pop.totNumLoci()))
     # output D', allele frequency at split, mixing and endGen
     print >> output, "Average Fst estimated from non-DSL at gen %d: %.4f \n" % (gen, pop.dvars().AvgFst)
     print >> output, "\n\nAllele frequencies\nall\t",
@@ -588,9 +588,9 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if numOffMode == 'geometric' and numOffspring > 1:
         raise exceptions.ValueError("numOffspring is p for a geometric distribution when numOffMode='geometric'. It should be elss than 1.") 
     ###
-    ### simulating population frequency
+    ### simulating Population frequency
     ### 
-    print '\n\nSimulating trajectory of allele frequencies'
+    print '\n\nSimulating Trajectory of allele frequencies'
     # 1. define population size function
     def popSizeFunc(gen):
         if gen < burninGen:
@@ -607,7 +607,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
                 return [int(initSize*math.exp((gen-burninGen)*rate))]
             else:
                 return [int(initSize*math.exp((gen-burninGen)*rate)/numSubPop)]*numSubPop
-    # 2. simulating allele frequency trajectory
+    # 2. simulating allele frequency Trajectory
     if maxMutAge == 0:
         maxMutAge = endingGen
     elif maxMutAge < minMutAge:
@@ -636,7 +636,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     #
     # create a population, give each locus a name
     # 0, 1, 2, 3, ...
-    tmp = population(1, loci=[numLoci]*numChrom, lociNames=[str(x) for x in range(numLoci*numChrom)])
+    tmp = Population(1, loci=[numLoci]*numChrom, lociNames=[str(x) for x in range(numLoci*numChrom)])
     # insert DSL, given them names DSL0, DSL1, ...
     tmp.addLoci(chrom=[tmp.chromLocusPair(x)[0] for x in DSLafter],
         pos=[tmp.locusPos(DSLafter[x]) + DSLdist[x] for x in range(len(DSLafter))], 
@@ -652,36 +652,36 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     if maxAle > 1:    # Not SNP
         initOperators = [
-            initSex(),
+            InitSex(),
             # initialize all loci with 5 haplotypes
-            initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
+            InitByValue(value=[[x]*sum(loci) for x in range(48, 53)],
                 proportions=[.2]*5), 
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), loci=DSL)
+            InitByValue([0]*len(DSL), loci=DSL)
         ]
     else: # SNP
         initOperators = [
-            initSex(),
+            InitSex(),
             # initialize all loci with two haplotypes (0001,111)
-            initByValue(value=[[x]*sum(loci) for x in [0,1] ],
+            InitByValue(value=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2), 
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), loci=DSL)
+            InitByValue([0]*len(DSL), loci=DSL)
         ]            
     ###
     ### mutation, start from gen 0,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = smmMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
+        mutator = SmmMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = kamMutator(rates=mutaRate, k=2, loci=nonDSL)
+        mutator = KamMutator(rates=mutaRate, k=2, loci=nonDSL)
     ###
     ### Recombination
     ###
     if len(recRate) == 1: 
-        rec = recombinator(intensity=recRate[0])
+        rec = Recombinator(intensity=recRate[0])
     else:
         # rec after ...
         if len(recRate) != sum(loci) - numChrom:
@@ -691,18 +691,18 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         for ch in range(numChrom):
             al.extend( [x+start for x in range(loci(ch) )] )
             start += loci[ch]
-        rec = recombinator(rate=recRate, afterLoci=al)
+        rec = Recombinator(rate=recRate, afterLoci=al)
     ###
     ### output progress
     ###
     preOperators = [mutator]
     postOperators = [
-        stat(alleleFreq=DSL, popSize=True, LD=[DSL[0], DSL[0]+1], step=1),
+        Stat(alleleFreq=DSL, popSize=True, LD=[DSL[0], DSL[0]+1], step=1),
         # output to screen
-        pyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+" %f\n"%LD_prime[DSL[0]][DSL[0]+1]',
+        PyEval( expr=r'"%d(%d): "%(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+" %f\n"%LD_prime[DSL[0]][DSL[0]+1]',
             step=100),
         # output to file (append)
-        pyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
+        PyEval( expr=r'"%d %d " %(gen, popSize) + " ".join(["%.5f"%(1-alleleFreq[x][0]) for x in DSL])+"\n"',
             output='>>>'+filename+'.traj')
     ]
     ###
@@ -716,7 +716,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ### 
     if numSubPop > 1:
         preOperators.append( 
-            splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[splitGen]),
+            SplitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[splitGen]),
         )
     ###
     ### selection 
@@ -724,39 +724,39 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if mlSelModelTmp in ['additive', 'multiplicative']:
         mlSelModel = {'additive':SEL_Additive, 
             'multiplicative':SEL_Multiplicative}[mlSelModelTmp]
-        preOperators.append( mlSelector(
+        preOperators.append( MlSelector(
             # with five multiple-allele selector as parameter
-            [ maSelector(locus=DSL[x], wildtype=[0], 
+            [ MaSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
             mode=mlSelModel, begin=burninGen),
         )
     elif mlSelModelTmp == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        preOperators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0],
+        preOperators.append( MaSelector(loci=DSL, fitness=fitness, wildtype=[0],
             begin=burninGen) )
     ###
     ### migration
     ###
     if numSubPop > 1 and migrModel == 'island' and migrRate > 0:
-        preOperators.append( migrator(migrIslandRates(migrRate, numSubPop),
+        preOperators.append( Migrator(migrIslandRates(migrRate, numSubPop),
             mode=MigrByProbability, begin=mixingGen) )
     elif numSubPop > 1 and migrModel == 'stepping stone' and migrRate > 0:
-        preOperators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
+        preOperators.append( Migrator(migrSteppingStoneRates(migrRate, numSubPop, 
             circular=True),    mode=MigrByProbability, begin=mixingGen) )
     ###
     ### output statistics, track performance
     ###
     postOperators.extend([
-        pyOperator(func=outputStatistics, 
+        PyOperator(func=outputStatistics, 
             param = (burninGen, splitGen, mixingGen, endingGen, filename+'.log'),
             at = [burninGen, splitGen, mixingGen, endingGen ] ), 
         # show elapsed time
-        ticToc(at=[burninGen, splitGen, mixingGen, endingGen]),
+        TicToc(at=[burninGen, splitGen, mixingGen, endingGen]),
         ]
     )
     if len(savePop) > 0:
         # save population at given generations
-        postOperators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.%s" % (name, gen, format))', 
+        postOperators.append(SavePopulation(outputExpr='os.path.join(name, "%s_%d.%s" % (name, gen, format))', 
             at=savePop))
     ### 
     ### prepare mating scheme
@@ -770,7 +770,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # create a population, note that I add needed information 
     # fields father_idx, mother_idx later on, with the hope 
     # that simulation can run a bit faster without them. 
-    pop = population(size=popSizeFunc(0), ploidy=2,
+    pop = Population(size=popSizeFunc(0), ploidy=2,
         loci = loci, lociPos = lociPos,
         infoFields = ['fitness', 'father_idx', 'mother_idx'])
     # save DSL info, some operators will use it.
@@ -785,12 +785,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     #
     # evolve! If --dryrun is set, only show info
     pop.evolve( initOps = initOperators, preOps = preOperators, postOps = postOperators,
-        matingScheme = controlledRandomMating(
+        matingScheme = ControlledRandomMating(
             subPopSize=popSizeFunc,            # demographic model
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
             freqFunc=traj.func(),                                # frequency control function
-            ops = [rec, parentsTagger()],
+            ops = [rec, ParentsTagger()],
         ),
         gen=endingGen-savedGen)
     # prepare for the last several generations
@@ -800,12 +800,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     pop.setAncestralDepth(savedGen-1)
     # different evolution method for the last few generations
     pop.evolve(preOps = preOperators, postOps = postOperators,
-        matingScheme = randomMating(
+        matingScheme = RandomMating(
             subPopSize=popSizeFunc,            # demographic model
             numOffspring = ({'constant': NumOffspring, 
                     'geometric': GeometricDistribution
                    }[numOffMode], numOffspring),
-            ops = [rec, parentsTagger()],
+            ops = [rec, ParentsTagger()],
         ),
         end=endingGen)
     # succeed save information
@@ -828,13 +828,13 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     pop.dvars().recRate = recRate
     pop.dvars().numOffspring = numOffspring
     pop.dvars().numOffMode = numOffMode
-    print "Saving population to " + filename + '.' + format + '\n'
+    print "Saving Population to " + filename + '.' + format + '\n'
     simu.population(0).save(filename)
     return True
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.simuParam(options, 
+    par = simuOpt.SimuParam(options, 
       '''This program simulates the evolution of a complex common disease, subject 
          to the impact of mutation, migration, recombination and population size change. 
          Click 'help' for more information about the evolutionary scenario.''',

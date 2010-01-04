@@ -10,7 +10,7 @@ import simuOpt, os, sys, types, time
 from simuPOP import *
 
 try:
-    from simuPOP.plotter import varPlotter
+    from simuPOP.plotter import VarPlotter
 except:
     print "simuRPy import failed. Please check your rpy installation."
     print "Allele Frequencies will not be plotted"
@@ -54,14 +54,14 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
     '''Simulate the Genetic Drift as a result of random mating.'''
     # diploid population, one chromosome with 1 locus
     # random mating with sex
-    pop = population(size=popSize, loci=[1])
-    simu=simulator(pop, rep=replications)
+    pop = Population(size=popSize, loci=[1])
+    simu=Simulator(pop, rep=replications)
 
     if useRPy:
-        plotter = varPlotter('alleleFreq[0][0]', ylim=[0, 1], ylab='allele frequency',
+        plotter = VarPlotter('alleleFreq[0][0]', ylim=[0, 1], ylab='allele frequency',
             update=generations-1, saveAs='geneticDrift.png')
     else:
-        plotter = noneOp()
+        plotter = NoneOp()
 
     # if number of generation is smaller than 200, step is 10 generations,
     # if it's between 200 and 500, set step to be 20 generations,
@@ -76,15 +76,15 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
     simu.evolve(
         # everyone initially will have the same allele frequency
         initOps = [
-            initSex(),
-            initByFreq([p, 1-p])
+            InitSex(),
+            InitByFreq([p, 1-p])
         ],
-        matingScheme = randomMating(),
+        matingScheme = RandomMating(),
         postOps = [
-            stat(alleleFreq=[0]),
-            pyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),
-	        pyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
-	        pyOutput('\n', reps=-1, step = s),
+            Stat(alleleFreq=[0]),
+            PyEval(r'"Generation %d:\t" % gen', reps = 0, step = s),
+	        PyEval(r"'%.3f\t' % alleleFreq[0][0]", step = s),
+	        PyOutput('\n', reps=-1, step = s),
 	        plotter,
         ],
         gen = generations
@@ -92,7 +92,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuParam(options, __doc__)
+    pars = simuOpt.SimuParam(options, __doc__)
     # cancelled
     if not pars.getParam():
         sys.exit(0)

@@ -2,7 +2,7 @@
 #
 # Purpose:
 #     This python module provides several utility functions that save a simuPOP
-#     population in FSTAT formats,
+#     Population in FSTAT formats,
 #
 # License:
 #     This program is freely available in the simuPOP's online cookbook
@@ -22,14 +22,14 @@
 # Change Log:
 #     2009-06-25 Bo Peng <bpeng@mdanderson.org>
 #
-#         Move functions SaveFstat and LoadFstat from simuUtil.py to the
+#         Move functions SaveFStat and LoadFStat from simuUtil.py to the
 #         online cookbook.
 # 
 
 from simuPOP import *
 import re, exceptions
 
-def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
+def saveFStat(pop, output='', maxAllele=0, loci=[], shift=1,
     combine=None):
     '''
     '''
@@ -94,9 +94,9 @@ def SaveFstat(pop, output='', maxAllele=0, loci=[], shift=1,
     f.close()
 
 
-def LoadFstat(file, loci=[]):
-    '''load population from fstat file 'file'
-    since fstat does not have chromosome structure
+def loadFStat(file, loci=[]):
+    '''load Population from fStat file 'file'
+    since fStat does not have chromosome structure
     an additional parameter can be given
     '''
     try:
@@ -156,9 +156,9 @@ def LoadFstat(file, loci=[]):
     if len(subPopSize) != np:
         raise exceptions.ValueError("Number of subpop does not match")
     if sum(subPopSize) != len(gt):
-        raise exceptions.ValueError("Population size does not match")
+        raise exceptions.ValueError("population size does not match")
     # we have all the information, create a population
-    pop = population(size=subPopSize, loci=numLoci, lociNames=lociNames)
+    pop = Population(size=subPopSize, loci=numLoci, lociNames=lociNames)
     for idx, ind in enumerate(pop.individuals()):
         for locus in range(pop.totNumLoci()):
             for ploidy in [0,1]:
@@ -168,12 +168,12 @@ def LoadFstat(file, loci=[]):
 
 if __name__ == '__main__':
     # for testing
-    # test func SaveFstat
+    # test func SaveFStat
     outfile = 'Fstatout.dat'
-    pop = population(size=[3,4,5], loci=[2,3],
+    pop = Population(size=[3,4,5], loci=[2,3],
                      lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
-    InitByFreq(pop, [.1, .2, .3, .4])
-    SaveFstat(pop, outfile)
+    initByFreq(pop, [.1, .2, .3, .4])
+    saveFStat(pop, outfile)
     print open(outfile).read()
-    # load the saved population(in fstat format) into pop1(in simuPOP format) 
-    pop1 = LoadFstat('Fstatout.dat')
+    # load the saved population(in fStat format) into pop1(in simuPOP format) 
+    pop1 = loadFStat('Fstatout.dat')

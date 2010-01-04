@@ -62,8 +62,8 @@ def mergeHapMapPops(HapMap_dir, HapMap_pops, chrom, logger=None):
         filename = os.path.join(HapMap_dir, 'HapMap_%s_chr%d.pop' % \
             (HapMap_pop, chrom))
         if logger is not None:
-            logger.info('Loading HapMap population %s' % filename)
-        pop1 = LoadPopulation(filename)
+            logger.info('Loading HapMap Population %s' % filename)
+        pop1 = loadPopulation(filename)
         if pop is None:
             pop = pop1
             continue
@@ -177,7 +177,7 @@ def getHapMapMarkers(HapMap_dir, names = [], chroms=[], HapMap_pops=['CEU'],
         if chPop.totNumLoci() == 0:
             continue
         if minAF > 0:
-            Stat(chPop, alleleFreq=range(chPop.totNumLoci()))
+            stat(chPop, alleleFreq=range(chPop.totNumLoci()))
         # Trim by start, end position ...
         indexes = []
         lastPos = 0
@@ -341,7 +341,7 @@ if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger()
-    pars = opt.simuParam(options,
+    pars = opt.SimuParam(options,
         'This script chooses specified markers from one or more HapMap\n'
         'populations and saves them in simuPOP format.\n',
         __doc__)

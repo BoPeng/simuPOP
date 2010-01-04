@@ -2,7 +2,7 @@
 from simuPOP import *
 import os, sys, exceptions
 
-def SavePOPGENEDatFile(pop, output='', title='', pad=1):
+def savePOPGENEDatFile(pop, output='', title='', pad=1):
     '''
     Output a data file readable by POPGENE
     pad - shift genotype from 0 to pad, 1 to 1+pad...
@@ -65,15 +65,15 @@ if __name__ == '__main__':
     # for testing
     # haploid
     outfile = 'PopGeneOut_hap.dat'
-    pop = population(size=[2, 3], ploidy=1, loci=[2, 3],
+    pop = Population(size=[2, 3], ploidy=1, loci=[2, 3],
                      lociNames=['loc1-1', 'loc1-2', 'loc2-1', 'loc2-2', 'loc2-3'])
-    InitByFreq(pop, [.3, .4, .3])
-    SavePOPGENEDatFile(pop, outfile, 'testing haploid')
+    initByFreq(pop, [.3, .4, .3])
+    savePOPGENEDatFile(pop, outfile, 'testing haploid')
     print open(outfile).read()    
     # diploid
     outfile = 'PopGeneOut_dip.dat'
-    pop = population(size=[4, 5], ploidy=2, loci=[2, 4], alleleNames=['A','B'],
+    pop = Population(size=[4, 5], ploidy=2, loci=[2, 4], alleleNames=['A','B'],
                      lociNames=['loc1-1', 'loc1-2', 'loc2-1', 'loc2-2', 'loc2-3', 'loci2-4'])
-    InitByFreq(pop, [.3, .7])
-    SavePOPGENEDatFile(pop, outfile, 'testing diploid')
+    initByFreq(pop, [.3, .7])
+    savePOPGENEDatFile(pop, outfile, 'testing diploid')
     print open(outfile).read()

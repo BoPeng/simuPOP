@@ -2,7 +2,7 @@
 #
 # Purpose:
 #     This python module provides several utility functions that save a simuPOP
-#     population in merlin formats,
+#     Population in merlin formats,
 #
 # License:
 #     This program is freely available in the simuPOP's online cookbook
@@ -28,7 +28,7 @@
 
 from simuPOP import *
 
-def SaveMerlinDatFile(pop, output='', outputExpr='', loci=[], fields=[], outputAffection=False):
+def saveMerlinDatFile(pop, output='', outputExpr='', loci=[], fields=[], outputAffection=False):
     '''Output a .dat file readable by merlin'''
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
@@ -55,7 +55,7 @@ def SaveMerlinDatFile(pop, output='', outputExpr='', loci=[], fields=[], outputA
 
 
 
-def SaveMerlinMapFile(pop, output='', outputExpr='', loci=[]):
+def saveMerlinMapFile(pop, output='', outputExpr='', loci=[]):
     '''Output a .map file readable by merlin'''
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
@@ -80,7 +80,7 @@ def SaveMerlinMapFile(pop, output='', outputExpr='', loci=[]):
 
 
 
-def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=False,
+def saveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=False,
     outputAffection=False, affectionCode=['U', 'A'], combine=None, shift=1, **kwargs):
     '''Output a .ped file readable by merlin'''
     if type(pop) == type(''):
@@ -126,7 +126,7 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
                 print >> pedOut, "%d" % combine([ind.allele(marker, 0), ind.allele(marker, 1)]),
         print >> pedOut
     #
-    # number of pedigrees
+    # number of Pedigrees
     # get unique pedgree id numbers
     from sets import Set
     if pop.hasInfoField('pedindex') and pop.ancestralDepth() >= 1:
@@ -134,7 +134,7 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
         # do not count peds
         peds.discard(-1)
         if len(peds) == 0:
-            print 'Warning: no valid pedigree, please check the pedindex field of your population'
+            print 'Warning: no valid Pedigree, please check the pedindex field of your population'
         #
         newPedIdx = 1
         #
@@ -168,14 +168,14 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
 
 
 # save in merlin qtdt format
-def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
+def saveQTDT(pop, output='', outputExpr='', loci=[], header=False,
     affectionCode=['U', 'A'], fields=[], combine=None, shift=1, **kwargs):
     """
     save population in Merlin/QTDT format. The population must have pedindex,
     father_idx and mother_idx information fields.
 
     pop
-        population to be saved. If pop is a filename, it will be loaded.
+        Population to be saved. If pop is a filename, it will be loaded.
 
     output
         base filename.
@@ -199,7 +199,7 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
 
     combine
         an optional function to combine two alleles of a diploid
-        individual.
+        Individual.
 
     shift
         if combine is not given, output two alleles directly, adding
@@ -216,11 +216,11 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
         fields.remove('affection')
     else:
         outputAffection = False
-    SaveMerlinDatFile(pop, output, outputExpr, loci, fields, outputAffection)
+    saveMerlinDatFile(pop, output, outputExpr, loci, fields, outputAffection)
     # write map file
-    SaveMerlinMapFile(pop, output, outputExpr, loci)
+    saveMerlinMapFile(pop, output, outputExpr, loci)
     # write ped file
-    SaveMerlinPedFile(pop, output, outputExpr, loci, fields, header,
+    saveMerlinPedFile(pop, output, outputExpr, loci, fields, header,
         outputAffection, affectionCode, combine, shift)
 
 

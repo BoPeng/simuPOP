@@ -24,7 +24,7 @@ options = [
      'label':'Population Size',
      'allowedTypes':[types.IntType, types.LongType],
      'validate':simuOpt.valueGT(0),
-     'description':'''Population size. HWE assumes infinite population size
+     'description':'''population size. HWE assumes infinite population size
          so large population size improves approximity to theoretical estimates.'''
     },
     {'arg':'e:',
@@ -56,7 +56,7 @@ options = [
 
 
 # get all parameters
-par = simuOpt.simuParam(options, __doc__)
+par = simuOpt.SimuParam(options, __doc__)
 if not par.getParam():
     sys.exit(1)
 
@@ -64,21 +64,21 @@ if not par.getParam():
 
 # diploid population, one chromosome with 1 loci
 # random mating with sex
-pop = population(size=popSize, ploidy=2, loci=[1])
-pop.setVirtualSplitter(sexSplitter())
+pop = Population(size=popSize, ploidy=2, loci=[1])
+pop.setVirtualSplitter(SexSplitter())
 
 # simulation
 print "p\tP00 (p^2)\tP01 (2p(1-p))\tP11 ((1-p)^2)"
 pop.evolve(
     initOps = [
-        initSex(),
-        initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
-        initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
+        InitSex(),
+        InitByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
+        InitByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
     ],
-    matingScheme = randomMating(),
+    matingScheme = RandomMating(),
     postOps = [
-        stat(alleleFreq=[0], genoFreq=[0]),
-        pyEval(r"'%.3f\t%.3f (%.3f)\t%.3f (%.3f)\t%.3f (%.3f)\n' % (alleleFreq[0][0], "\
+        Stat(alleleFreq=[0], genoFreq=[0]),
+        PyEval(r"'%.3f\t%.3f (%.3f)\t%.3f (%.3f)\t%.3f (%.3f)\n' % (alleleFreq[0][0], "\
             "genoFreq[0][(0,0)], alleleFreq[0][0]*alleleFreq[0][0], "\
             "genoFreq[0][(0,1)], 2*alleleFreq[0][0]*(1-alleleFreq[0][0]), "\
             "genoFreq[0][(1,1)], (1-alleleFreq[0][0])*(1-alleleFreq[0][0]) )"),

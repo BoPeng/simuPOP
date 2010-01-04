@@ -19,7 +19,7 @@ def spatialMigrRates(xy, r):
         A list of (x,y) location for each subpopulation.
 
     r
-        Migrate rate between two subpopulations is exp(-r*d_ij) where
+        migrate rate between two subpopulations is exp(-r*d_ij) where
         d_ij is the Euclidean distance between subpopulations i and j.
     '''
     nSubPop = len(xy)
@@ -36,7 +36,7 @@ def spatialMigrRates(xy, r):
 
 def printAlleleFreq(pop):
     'Print allele frequencies of all subpopulations'
-    Stat(pop, alleleFreq=[0], vars=['alleleFreq_sp'])
+    stat(pop, alleleFreq=[0], vars=['alleleFreq_sp'])
     print 'Allele frequencies at generation', pop.dvars().gen
     for i in range(10):
         for j in range(10):
@@ -54,17 +54,17 @@ def simuSpatial():
         for j in range(10):
             xy.append((i, j))
     r = spatialMigrRates(xy, 3)
-    pop = population(size=[100]*100, loci=[1],
+    pop = Population(size=[100]*100, loci=[1],
         infoFields='migrate_to')
     pop.evolve(
         # only subpopulation 55 has genotype 1, 1
         initOps = [
-            initSex(),
-            initByValue([1, 1], subPops=55),
+            InitSex(),
+            InitByValue([1, 1], subPops=55),
         ],
-        preOps = migrator(rate=r),
-        matingScheme = randomSelection(),
-        postOps = pyOperator(printAlleleFreq, at=3),
+        preOps = Migrator(rate=r),
+        matingScheme = RandomSelection(),
+        postOps = PyOperator(printAlleleFreq, at=3),
         gen = 10
     )
                 

@@ -2,7 +2,7 @@
 #
 # Purpose:
 #     This python module provides several utility functions that save a simuPOP
-#     population in linkage formats,
+#     Population in linkage formats,
 #
 # License:
 #     This program is freely available in the simuPOP's online cookbook
@@ -28,7 +28,7 @@
 
 from simuPOP import *
 
-def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
+def saveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
         fields = [], recombination=0.00001, penetrance=[0,0.25,0.5],
         affectionCode=['1', '2'],  pre=True, daf=0.001):
     """
@@ -37,7 +37,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     operator.
 
     pop
-        population to be saved. Must have ancestralDepth 1.
+        Population to be saved. Must have ancestralDepth 1.
         paired individuals are sibs. Parental population are corresponding
         parents. If pop is a filename, it will be loaded.
 
@@ -104,7 +104,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     datOut.write( "1 << number of factors\n")
     datOut.write( "%f %f %f << penetrance\n" % tuple(penetrance) )
     # describe each locus
-    Stat(pop, alleleFreq=loci)
+    stat(pop, alleleFreq=loci)
     af = pop.dvars().alleleFreq
     for marker in loci:
         # now, 3 for numbered alleles
@@ -152,7 +152,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     # do not count peds
     peds.discard(-1)
     if len(peds) == 0:
-        print 'Warning: no valid pedigree, please check the pedindex field of your population'
+        print 'Warning: no valid Pedigree, please check the pedindex field of your population'
     #
     newPedIdx = 1
     for ped in peds:

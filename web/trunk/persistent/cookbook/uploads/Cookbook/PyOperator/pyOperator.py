@@ -2,7 +2,7 @@
 
 """
 
-This is a small example of how to use pyOperator to do
+This is a small example of how to use PyOperator to do
 custimized mating and condition checking (terminator) 
 etc. This is *not* the efficient way to do that since
 everything can be handled using a post-mating operator.
@@ -34,7 +34,7 @@ options = [
     {'arg': 'N:',
      'longarg': 'N=',
      'default': 10000,
-     'label': 'Population size',
+     'label': 'population size',
      'allowedTypes': [types.IntType, types.LongType],
      'validate': simuOpt.valueGT(0)
     },
@@ -56,7 +56,7 @@ options = [
 def offGen(pop, off, dad, mom):
     ''' how to pass allele? 
         We can of course do everything by ourself, but if we do not
-        set isTransmitter of this pyOperator, we can let randomMating()
+        set isTransmitter of this PyOperator, we can let RandomMating()
         generate offspring genotype as usual, we just need to change
         1 2 to 2 2.
     '''
@@ -85,25 +85,25 @@ def allTwos(pop):
          
 def simu(N):
     ' run the simulation! '
-    pop = population(N, loci=[1], ploidy=2)
-    InitSex(pop)
-    InitByValue(pop, value=[1])
+    pop = Population(N, loci=[1], ploidy=2)
+    initSex(pop)
+    initByValue(pop, value=[1])
     # you can also use a PointerMutator ...
     pop.individual(0).setAllele(2,0)
     pop.individual(0).setAllele(2,1)
     pop.evolve(
-        matingScheme = randomMating(ops=[
-            mendelianGenoTransmitter(),
-            pyOperator(func=offGen)]),
-        postOps = pyOperator(func=allTwos),
+        matingScheme = RandomMating(ops=[
+            MendelianGenoTransmitter(),
+            PyOperator(func=offGen)]),
+        postOps = PyOperator(func=allTwos),
     )
     return (pop.dvars().succ, pop.dvars().gen)
 
 if __name__ == '__main__':
-    pars = simuOpt.simuParam(options,
+    pars = simuOpt.SimuParam(options,
         '''This program mimic the evolution of the infection process
     where X- chromosome will be turn to XX. We are concerned    about 
-    the speed at which all population becomes XX. ''', __doc__)
+    the speed at which all Population becomes XX. ''', __doc__)
     
     if not pars.getParam():
         sys.exit(1)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
         else:
             print " failed"
 
-    print "Population size: ", N
+    print "population size: ", N
     print "Replicates: ", rep
     print "Successful counts: ", succCount
     if succCount > 0:

@@ -22,7 +22,7 @@ maxX = 100.0
 maxY = 100.0
 LOCIPERDIM=5
  
-pop = population(POPSIZE, 2,
+pop = Population(POPSIZE, 2,
     loci=[1]*LOCIPERDIM*2,
     infoFields = ['x', 'y']
 )
@@ -154,19 +154,19 @@ def killUnfit(pop):
 
 pop.evolve(
     initOps = [
-        initByFreq(alleleFreq=[1,0])
+        InitByFreq(alleleFreq=[1,0])
     ],
     preOps = [
-        pyOperator(killUnfit),
-        kamMutator(k=2, rates=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2)),
+        PyOperator(killUnfit),
+        KamMutator(k=2, rates=[0.01]*LOCIPERDIM*2, loci=range(LOCIPERDIM*2)),
     ],
-    matingScheme = homoMating(
-        pyParentsChooser(geoChooser),
-        offspringGenerator(ops=[
-            mendelianGenoTransmitter(),#numOffspring=(UniformDistribution, 2, 4)),
-            pyOperator(placeIndividual)]),
+    matingScheme = HomoMating(
+        PyParentsChooser(geoChooser),
+        OffspringGenerator(ops=[
+            MendelianGenoTransmitter(),#numOffspring=(UniformDistribution, 2, 4)),
+            PyOperator(placeIndividual)]),
         subPopSize=[POPSIZE]
     ),
-    postOps = pyOperator(dmp),
+    postOps = PyOperator(dmp),
     gen = 1000
 )

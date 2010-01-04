@@ -27,38 +27,38 @@ from simuPOP import *
 #
 # This is implemented in the following Python during-mating operator:
 #
-class haplodiploidRecombinator(pyOperator):
+class HaplodiploidRecombinator(PyOperator):
     def __init__(self, rates, intensity, loci, convMode, *args, **kwargs):
         '''
         Create an instance of a Python operator, which will call
         ``self.transmitGenotype`` to create offspring. For performance
         considerations, this example uses two existing operators, namely
-        ``recombinator`` and ``genoTransmitter`` to recombine and copy
+        ``Recombinator`` and ``GenoTransmitter`` to recombine and copy
         genotype. It is of course possible to use functions such as
-        ``individual::setGenotype()`` directly if no existing operator
+        ``Individual::setGenotype()`` directly if no existing operator
         fits your need.
         '''
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(rates, intensity, loci, convMode)
+        self.Recombinator = Recombinator(rates, intensity, loci, convMode)
         # this operator is used to copy paternal chromosomes
-        self.copier = genoTransmitter()
+        self.copier = GenoTransmitter()
         self.initialized = False
         # With no *param*, this operator expects a function
         # in the form of ``(pop, off, dad, mom)``. If *param* is given, the
         # function should have the form ``(pop, off, dad, mom, param)``. If
         # *offspringOnly* is set to ``True``, the function can be simplied
         # to ``(off)`` or ``(off, param)``.
-        pyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
+        PyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
 
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinator and copier needs to be initialized. Basically, they
         # cache some population properties to speed up genotype transmission.
         if not self.initialized:
-            self.recombinator.initialize(pop)
+            self.Recombinator.initialize(pop)
             self.copier.initialize(pop)
             self.initialized = True
         # Form the first homologous copy of offspring.
-        self.recombinator.transmitGenotype(mom, off, 0)
+        self.Recombinator.transmitGenotype(mom, off, 0)
         # If the offspring is male, copy the second homologous copy from
         # her father. Male individuals only have one homologous set.
         if off.sex() == FEMALE:
@@ -66,28 +66,28 @@ class haplodiploidRecombinator(pyOperator):
         return True
 
 
-def haplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
+def HaplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
         convMode=NO_CONVERSION, numOffspring = 1., sexMode = RANDOM_SEX,
         ops = [], subPopSize = [], subPops = [], weight = 0):
     '''
     Return a mating scheme that uses random parents chooser and a customized
     during mating operator. A large number of parameters are provided to support
     number of offspring, sex-specification and population size changes. If none
-    of these is needed, and you do not need a fancy recombinator, this function
+    of these is needed, and you do not need a fancy Recombinator, this function
     can be simplied to:
 
     def haplodiploidRecMating(rate):
-        return homoMating(
-            chooser = randomParentsChooser(False),
-            generator = offspringGenerator(
+        return HomoMating(
+            chooser = RandomParentsChooser(False),
+            generator = OffspringGenerator(
                 ops = [haplodiploidRecombinator(rate=rate)]
             )
         )
     '''
-    return homoMating(
-        chooser = randomParentsChooser(replacement),
-        generator = offspringGenerator(
-            [haplodiploidRecombinator(rates, intensity, loci, convMode)] + ops,
+    return HomoMating(
+        chooser = RandomParentsChooser(replacement),
+        generator = OffspringGenerator(
+            [HaplodiploidRecombinator(rates, intensity, loci, convMode)] + ops,
             numOffspring, sexMode),
         subPopSize = subPopSize,
         subPops = subPops,
@@ -96,28 +96,28 @@ def haplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
 
 def simuHaplodiploid(N, numMito=3, gen=10):
     '''
-    The default genotype transmitter (haplodiploidGenoTransmitter used in
+    The default genotype transmitter (HaplodiploidGenoTransmitter used in
     mating cheme haplodiploidMaiting) does not support recombination.
-    We cannot use a recombinator directly because it will also recombine
+    We cannot use a Recombinator directly because it will also recombine
     maternal chromosomes. This example defines a Python during mating
-    operator that actually uses a recombinator to recombine maternal
-    chromosomes, and then a genoTransmitter to copy paternal chromosomes.
+    operator that actually uses a Recombinator to recombine maternal
+    chromosomes, and then a GenoTransmitter to copy paternal chromosomes.
     '''
-    pop = population(N, ploidy=HAPLODIPLOID, loci=[20]*2,
+    pop = Population(N, ploidy=HAPLODIPLOID, loci=[20]*2,
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 
     pop.evolve(
         initOps=[
-            initSex(),
+            InitSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
-            initByFreq([0.4] + [0.2]*3),
+            InitByFreq([0.4] + [0.2]*3),
         ],
-        matingScheme = haplodiploidRecMating(rates=0.1,
+        matingScheme = HaplodiploidRecMating(rates=0.1,
             # this operator is appended, instead of replace the haplodiploid
-            # recombinator
-            ops = [parentsTagger()]),
-        postOps = dumper(structure=False),
+            # Recombinator
+            ops = [ParentsTagger()]),
+        postOps = Dumper(structure=False),
         gen = gen
     )
     return pop
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
 # A possible output:
 #
-#Subpopulation 0 (unnamed):
+#SubPopulation 0 (unnamed):
 #    0: MU 00120212010013211123 33003123030303201020 | ____________________ ____________________ |  9 3
 #    1: FU 22233212010013211033 01003123030303201002 | 20002010320030301002 30030021133211001113 |  5 3
 #    2: FU 00310232201103033000 00032103001203103020 | 00003100331001033002 30230200113331320030 |  4 1
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 # End of individual genotype.
 # 
 # Genotype of individuals in the present generation:
-# Subpopulation 0 (unnamed):
+# SubPopulation 0 (unnamed):
 #    0: MU 20033210320030301002 30033123030303001113 | ____________________ ____________________ |  0 1
 #    1: FU 02220210331001033000 33120123030303200030 | 00310232201103032000 01231103010103303021 |  3 7
 #    2: MU 00020212031001033002 30120123030303200030 | ____________________ ____________________ |  6 7

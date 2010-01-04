@@ -21,19 +21,19 @@ def simuRestartIfFailed(N, initFreq, freqRange, gen, genCheck):
     gen:       total generations to evolve
     genCheck:  when to check allele frequency
     '''
-    pop = population(size=N, loci=[1])
-    InitSex(pop)
-    InitByFreq(pop, [1 - initFreq, initFreq])
+    pop = Population(size=N, loci=[1])
+    initSex(pop)
+    initByFreq(pop, [1 - initFreq, initFreq])
     # put freqRange as a population variable so that it can be
     # used in an expression
     pop.dvars().fr = freqRange
     while True:
-        simu = simulator(pop, steal=False)
+        simu = Simulator(pop, steal=False)
         evolved = simu.evolve(
-            matingScheme = randomMating(),
+            matingScheme = RandomMating(),
             postOps = [
-                stat(alleleFreq=[0], at=genCheck),
-                terminateIf('alleleFreq[0][1] > fr[1] or alleleFreq[0][1] < fr[0]',
+                Stat(alleleFreq=[0], at=genCheck),
+                TerminateIf('alleleFreq[0][1] > fr[1] or alleleFreq[0][1] < fr[0]',
                     at=genCheck)
             ],
             gen = gen

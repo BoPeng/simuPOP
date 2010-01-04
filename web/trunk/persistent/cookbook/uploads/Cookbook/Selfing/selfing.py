@@ -19,24 +19,24 @@ def simuSelfing(perc, N, n_rep, gen):
     n_rep   Number of replicates per simulation
     gen     generations to run
     '''
-    pop = population(N, loci=[2])
-    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))
+    pop = Population(N, loci=[2])
+    pop.setVirtualSplitter(ProportionSplitter([perc, 1-perc]))
 
-    simu = simulator(pop, rep=n_rep)
+    simu = Simulator(pop, rep=n_rep)
 
     simu.evolve(
         initOps= [
-            initSex(),
-            initByValue([0, 1, 1, 0]),
-            pyExec('ld_hist=[]')  # record ld
+            InitSex(),
+            InitByValue([0, 1, 1, 0]),
+            PyExec('ld_hist=[]')  # record ld
         ],
-        matingScheme = heteroMating([
-            selfMating(subPops=[(0, 0)]),
-            randomMating(subPops=[(0, 1)], ops = recombinator(rates=0.01))
+        matingScheme = HeteroMating([
+            SelfMating(subPops=[(0, 0)]),
+            RandomMating(subPops=[(0, 1)], ops = Recombinator(rates=0.01))
         ]),
         postOps=[
-            stat(LD=[0,1]),
-            pyExec('ld_hist.append(LD[0][1])')
+            Stat(LD=[0,1]),
+            PyExec('ld_hist.append(LD[0][1])')
         ],
         gen = gen
     )

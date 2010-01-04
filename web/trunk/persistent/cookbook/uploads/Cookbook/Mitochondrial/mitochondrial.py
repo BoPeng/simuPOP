@@ -18,20 +18,20 @@ from simuPOP import *
 # simuPOP does not define Mitochondrial as an internally recognized chromosome
 # type so you have to define a number of 'Customized' chromososomes. Such
 # chromosomes are not handled by 'normal' genotype transmitters such as
-# mendelianGenoTransmitter. In this case, a mitochondrialGenoTransmitter is
+# MendelianGenoTransmitter. In this case, a MitochondrialGenoTransmitter is
 # used, which, by default, treats all customized chromosomes as mitochondrial
 # chromosomes and transmits them properly. A parameter chroms can be used to
 # specify which chromosomes are mitochondrial and allow, possibly, another
 # during-mating operator to handle another type of chromosome.
 #
-# This example passes a recombinator and a mitochondrialGenoTransmitter in
-# the evolve() function of a simulator. The recombinator will replace the
-# default genotype transmitter, namely mendelianGenoTransmitter, to transmit
-# non-customized chromosomes with recombination. mitochondrialGenoTransmitter
+# This example passes a Recombinator and a MitochondrialGenoTransmitter in
+# the evolve() function of a simulator. The Recombinator will replace the
+# default genotype transmitter, namely MendelianGenoTransmitter, to transmit
+# non-customized chromosomes with recombination. MitochondrialGenoTransmitter
 # then handles the rest of the chromosomes. Note that it is also possible to
 # pass these operators to the ops parameter of a mating scheme, e.g.,
 #
-#   randomMating(ops=[recombinator(), mitochondrialGenoTransmitter()])
+#   RandomMating(ops=[Recombinator(), MitochondrialGenoTransmitter()])
 #
 # This is required if more than one mating schemes are used and you do not
 # want to use these operators in all mating schemes.
@@ -40,7 +40,7 @@ from simuPOP import *
 def simuMitochondrial(N, numMito=3, gen=10):
     '''
     '''
-    pop = population(N, loci=[5]*(3 + numMito),
+    pop = Population(N, loci=[5]*(3 + numMito),
         # one autosome, two sex chromosomes, and numMito mitochondrial chromosomes
         chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*numMito,
         # record indexes of parents for verification purpose
@@ -48,13 +48,13 @@ def simuMitochondrial(N, numMito=3, gen=10):
 
     pop.evolve(
         initOps=[
-            initSex(),
+            InitSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
-            initByFreq([0.4] + [0.2]*3),
+            InitByFreq([0.4] + [0.2]*3),
         ],
-        matingScheme = randomMating(ops = [ recombinator(rates=0.1),
-            mitochondrialGenoTransmitter(), parentsTagger()]),
-        postOps = dumper(structure=False),
+        matingScheme = RandomMating(ops = [ Recombinator(rates=0.1),
+            MitochondrialGenoTransmitter(), ParentsTagger()]),
+        postOps = Dumper(structure=False),
         gen = gen
     )
     return pop
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 # A possible output:
 ##
-# Subpopulation 0 (unnamed):
+# SubPopulation 0 (unnamed):
 #    0: FU 20001 33000 _____ 23300 23300 00131 | 02203 20300 _____ 00000 00000 00000 |  3 8
 #    1: FU 21330 22311 _____ 00223 00223 00030 | 00030 01100 _____ 00000 00000 00000 |  2 7
 #    2: MU 03222 11210 _____ 33002 02203 02203 | 00030 _____ 22230 00000 00000 00000 |  2 6
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 # End of individual genotype.
 # 
 # Genotype of individuals in the present generation:
-# Subpopulation 0 (unnamed):
+# SubPopulation 0 (unnamed):
 #    0: MU 21330 22311 _____ 00223 00030 00223 | 21131 _____ 23200 00000 00000 00000 |  3 1
 #    1: MU 20001 00301 _____ 00131 23300 00131 | 13310 _____ 23200 00000 00000 00000 |  6 4
 #    2: MU 21131 00300 _____ 23300 00131 23300 | 00310 _____ 23200 00000 00000 00000 |  6 4

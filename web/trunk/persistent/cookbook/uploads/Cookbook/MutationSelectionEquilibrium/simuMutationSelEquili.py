@@ -50,34 +50,34 @@ options = [
 
 def simuMigration(PopSize, m, generations, step):
 
-    pop = population(size=[PopSize], loci=[1, 1], infoFields='fitness')
-# initialize population
+    pop = Population(size=[PopSize], loci=[1, 1], infoFields='fitness')
+# initialize Population
 #   set population size
 #   two loci of interest are looked at
 #   create field at where fitness values can be stored
 
     pop.evolve(
-        initOps = initSex(),
+        initOps = InitSex(),
     # before evolve function takes place
     #   initiate population with males and females
         preOps = [
         # begin evolve function
-            snpMutator(u=m),
+            SnpMutator(u=m),
         # mutation function with rate for "A -> a" set earlier
-            maSelector(loci=0, fitness=[1, 1-10*m, 1-10*2*m]),
+            MaSelector(loci=0, fitness=[1, 1-10*m, 1-10*2*m]),
         ],
-        matingScheme = randomMating(),
+        matingScheme = RandomMating(),
         postOps = [
         # apply a purifying selection pressure to the first locus
-            stat(alleleFreq=[0, 1], step=step),
-        # stat function taken set amount of steps
-            pyEval(
+            Stat(alleleFreq=[0, 1], step=step),
+        # Stat function taken set amount of steps
+            PyEval(
                 r"'Generation: %.3f\n' % (gen)",
                 step=step),
-            pyEval(
+            PyEval(
                 r"'frequency of allele at locus 1: %.3f\n' % (alleleFreq[0][1])",
                 step=step),
-            pyEval(
+            PyEval(
                 r"'frequency of allele at locus 2: %.3f\n' % (alleleFreq[1][1])",
                 step=step),
         # output freq of allele 1 at the first and second locus
@@ -88,7 +88,7 @@ def simuMigration(PopSize, m, generations, step):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuParam(options, __doc__)
+    pars = simuOpt.SimuParam(options, __doc__)
     if not pars.getParam():
         sys.exit(0)
 

@@ -82,8 +82,8 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
     '''
     # diploid population, one chromosome with 2 loci
     # random mating with sex
-    simu = simulator(
-        population(size=popSize, ploidy=2, loci=[2]),
+    simu = Simulator(
+        Population(size=popSize, ploidy=2, loci=[2]),
         rep = numRep)
 
     # get method value used to plot and evolve
@@ -102,24 +102,24 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
 
     if useRPy:
         print saveFigure
-        plotter = varPlotter(methodplot, 
+        plotter = VarPlotter(methodplot, 
             ylim = [0, upperlim], saveAs=saveFigure,
             update = gen - 1, ylab=method,
             main="Decay of Linkage Disequilibrium r=%f" % recRate)
     else:
-        plotter = noneOp()
+        plotter = NoneOp()
 
     simu.evolve(
         # everyone will have the same genotype: 01/10
         initOps = [
-            initSex(),
-            initByValue([0,1,1,0])
+            InitSex(),
+            InitByValue([0,1,1,0])
         ],
-        matingScheme = randomMating(ops=recombinator(rates = recRate)), 
+        matingScheme = RandomMating(ops=Recombinator(rates = recRate)), 
         postOps = [
-            stat(alleleFreq=[0], LD=[0, 1]),
-            pyEval(methodeval),
-            pyOutput('\n', reps=-1),
+            Stat(alleleFreq=[0], LD=[0, 1]),
+            PyEval(methodeval),
+            PyOutput('\n', reps=-1),
             plotter
         ],
         gen = gen
@@ -128,7 +128,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.simuParam(options, __doc__)
+    pars = simuOpt.SimuParam(options, __doc__)
     # cancelled or -h, --help
     if not pars.getParam():
         sys.exit(0)

@@ -7,7 +7,7 @@ Purpose:
   This script demonstrates how to implement assortative mating, namely mating
   with preference to individuals with similar phenotype.
 
-  The core of this script is a heteroMating mating scheme that use
+  The core of this script is a HeteroMating mating scheme that use
   1. general random mating among all individuals
   2. random mating between individuals with homozygous wildtype allele (0, 0)
   3. random mating between individuals having at least one mutant (0, 1) or
@@ -41,32 +41,32 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
         gen     how many generation to run
         vsp     virtual subpopulations for assortative mating.
     '''
-    pop = population(size, loci=[1])
-    # define four virtual subpopulations. Individuals in the first three virtual
-    # subpopulation have genotype (0, 0), (0, 1) or (1, 0), and (1, 1) respectively,
+    pop = Population(size, loci=[1])
+    # define four virtual subpopulations. individuals in the first three virtual
+    # subpopulation.have genotype (0, 0), (0, 1) or (1, 0), and (1, 1) respectively,
     # and have at leat one mutant (allele 1) in the last virtual subpopulation.
-    pop.setVirtualSplitter(genotypeSplitter(loci=0,
+    pop.setVirtualSplitter(GenotypeSplitter(loci=0,
         alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]))
 
     pop.evolve(
         initOps = [
-            initSex(),
-            initByFreq([0.5, 0.5]),
-            pyExec('AaNum=[]'),  # initialize a list in population's local dictionary
+            InitSex(),
+            InitByFreq([0.5, 0.5]),
+            PyExec('AaNum=[]'),  # initialize a list in population's local dictionary
             ],
             # calculate virtual population sizes, and allele frequency at locus 0.
-        preOps = stat(popSize=True, alleleFreq=[0], subPops=[(0,0), (0,1), (0,2)]),
+        preOps = Stat(popSize=True, alleleFreq=[0], subPops=[(0,0), (0,1), (0,2)]),
         # Negative weight means fixed size (weight * current subpopulation size).
         # In the case of no positive weight, zero weights means proportional to
         # parental (virtual) subpopulation size.
-        matingScheme = heteroMating([randomMating(weight = -1*w),
-            randomMating(subPops=[(0, x) for x in vsp], weight = 0)]),
+        matingScheme = HeteroMating([RandomMating(weight = -1*w),
+            RandomMating(subPops=[(0, x) for x in vsp], weight = 0)]),
         postOps = [
             # print size of virtual populations and allele frequency
-            pyEval(r"'#inds with genotype AA %4d, Aa %4d, aa %4d, freq of A: %.1f\n' % "
+            PyEval(r"'#inds with genotype AA %4d, Aa %4d, aa %4d, freq of A: %.1f\n' % "
                 "(subPopSize[0], subPopSize[1], subPopSize[2], alleleFreq[0][0]*100)"),
             # append number of individuals with genotype Aa to list AaNum
-            pyExec(r"AaNum.append(subPopSize[1])")
+            PyExec(r"AaNum.append(subPopSize[1])")
         ],
         gen = gen
     )
