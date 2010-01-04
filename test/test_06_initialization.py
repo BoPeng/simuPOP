@@ -100,18 +100,20 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             if ind.sex() == MALE:
                 count += 1
-        assert count * 1.0 / 1500 > 0.25 and count * 1.0 /1500 < 0.35
+        print count
+        assert count / 1500. > 0.25 and count /1500. < 0.35
         # male proportion
         initSex(pop, maleProp=0.4)
         count = 0
         for ind in pop.individuals(0):
             if ind.sex() == MALE:
                 count += 1
-        #self.assertEqual(count, 200)
+        self.assertEqual(count, 200)
+        count = 0
         for ind in pop.individuals(1):
             if ind.sex() == MALE:
                 count += 1
-        self.assertEqual(count, 600)
+        self.assertEqual(count, 400)
         # subPop, virtual subPop
         pop = Population(size=[500, 1000], loci=[1], infoFields=['x'])
         for ind in pop.individuals():
@@ -127,49 +129,32 @@ class TestInitialization(unittest.TestCase):
                     self.assertEqual(ind.sex(), FEMALE)
                 idx += 1
 
-    def testInitByFreq(self):
+    def testInitGenotype(self):
         'Testing operator InitByFreq '
         pop = Population(size=[500, 1000, 500], loci=[2,4,2])
         # initialize all
-        initByFreq(pop, [.2, .3, .5])
+        initGenotype(pop, freq=[.2, .3, .5])
         self.assertGenotypeFreq(pop, [.15, .25, .45],
             [.25, .35, .55])
         #
         self.clearGenotype(pop)
-        initByFreq(pop, [.2, .3, .4, .1], loci=[2,4,6])
+        initGenotype(pop, freq=[.2, .3, .4, .1], loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .25, .35, .05],
             [.25, .35, .45, .15], loci=[2,4,6])
         self.assertGenotype(pop, 0, loci=[0,1,3,5,7])
-        # use maleFreq=1 to avoid problem when comparing individuals
+        #
         self.clearGenotype(pop)
-        initSex(pop, maleFreq=1)
-        initByFreq(pop, [.2, .3, .4, .1], identicalInds=True)
-        self.assertEqual(pop.individual(0), pop.individual(1))
-        self.assertEqual(pop.individual(10), pop.individual(20))       
-        # subPop
-        self.clearGenotype(pop)
-        initSex(pop, maleFreq=1)
-        initByFreq(pop, [.2, .8], identicalInds=1, subPops=[0, 1])
-        self.assertEqual(pop.individual(0), pop.individual(1))
-        self.assertNotEqual(pop.individual(2), pop.individual(500))
-        self.clearGenotype(pop)
-        initByFreq(pop, alleleFreq=[[.2, .8],[.8,.2],[.5,.5]])
+        initGenotype(pop, freq=[.2,.8], subPops=0)
+        initGenotype(pop, freq=[.8,.2], subPops=1)
+        initGenotype(pop, freq=[.5,.5], subPops=2)
         self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0])
         self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPop=[1])
         self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPop=[2])
         #
-        self.clearGenotype(pop)
-        initSex(pop, maleFreq=1)
-        initByFreq(pop, [.2, .8], identicalInds=1, subPops=[0])
-        self.assertEqual(pop.individual(6), pop.individual(7))
-        self.assertNotEqual(pop.individual(0), pop.individual(500))
-        self.assertGenotype(pop, 0, subPop=[1,2] )
-        self.assertRaises(exceptions.ValueError,
-            initByFreq, pop, alleleFreq=[[.2, .8],[.8,.2]], identicalInds=1)
         # ploidy in InitByFreq'
         pop = Population(size=[500, 1000, 500], loci=[2,4,2])
         self.clearGenotype(pop)
-        initByFreq(pop, [.2, .3, .5], loci=[2,4,6], ploidy=[0])
+        initGenotype(pop, freq=[.2, .3, .5], loci=[2,4,6], ploidy=[0])
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55],
             loci=[2,4,6], atPloidy=0)
         self.assertGenotype(pop, 0, loci=[0,3,5,7])
@@ -179,8 +164,11 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
-        initByFreq(pop, [[0.2, 0.3, 0.5], [0.2,0.8], [0.5, 0.5]], 
-            subPops=[[0,0],[1,1], [2,0]], loci=[2,4,6])
+        for idx in range(3):
+            freq=[[0.2, 0.3, 0.5], [0.2,0.8], [0.5, 0.5]]
+            subPops=[[0,0],[1,1], [2,0]]
+            initGenotype(pop, freq=freq[idx], subPops=[subPops[idx]],
+            loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55], 
             subPop=[[0,0]], loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], 
@@ -189,7 +177,10 @@ class TestInitialization(unittest.TestCase):
             subPop=[[2,0]], loci=[2,4,6])
         # corner case
         self.clearGenotype(pop)
-        initByFreq(pop, [[0, 0, 1], [0, 1], [1]], subPops=[[0,0],[1,1], [2,1]])
+        for idx in range(3):
+            freq=[[0, 0, 1], [0, 1], [1]]
+            subPops=[[0,0],[1,1], [2,1]]
+            initGenotype(pop, freq=freq[idx], subPops=[subPops[idx]])
         for ind in pop.individuals([0,0]):
             if moduleInfo()['alleleType'] == 'binary':
                 for allele in ind.genotype():
@@ -204,49 +195,35 @@ class TestInitialization(unittest.TestCase):
             for allele in ind.genotype():
                  self.assertEqual(allele, 0)
         self.clearGenotype(pop)
-        self.assertRaises(exceptions.ValueError,initByFreq, pop, alleleFreq=[-1,2])
- 
-    def testInitByValue(self):
-        'Testing operator InitByValue'
+        self.assertRaises(exceptions.ValueError,initGenotype, pop, freq=[-1,2])
+        #
         pop = Population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
         # can initialize an invidiausl
-        initByValue(pop, [0]*5 + [2]*3 + [3]*5 +[4]*3)
+        initGenotype(pop, genotype=[0]*5 + [2]*3 + [3]*5 +[4]*3)
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*pop.popSize())
         # one copy of chromosomes
         self.clearGenotype(pop)
-        initByValue(pop, [0]*5 + [7]*3)
+        initGenotype(pop, genotype=[0]*5 + [7]*3)
         self.assertGenotype(pop, ([0]*5 + [7]*3)*(pop.popSize()*pop.ploidy()))
-        # by proportion
-        initByValue(pop, value= [ [0]*8, [1]*8 ],
-            proportions=[.3,.7])
-        self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75])
-        # by frequencies
-        initByValue(pop, value= [ [0]*8, [1]*8 ], freq=[.3, .7])
         # ploidy
         self.clearGenotype(pop)
-        initByValue(pop, value=[0]*5 + [1]*3 , ploidy=[1])
+        initGenotype(pop, genotype=[0]*5 + [1]*3 , ploidy=[1])
         self.assertGenotype( pop, ([0]*5 + [1]*3)*pop.popSize(), atPloidy=1)
         self.assertGenotype(pop, 0, atPloidy=0)
         # subPop, virtual subPop
         self.clearGenotype(pop)
-        initByValue(pop, [0]*5 + [2]*3 + [3]*5 +[4]*3, subPops=[[0,1], [1,0]])
+        initGenotype(pop, genotype=[0]*5 + [2]*3 + [3]*5 +[4]*3, subPops=[[0,1], [1,0]])
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*
             (pop.subPopSize([0,1])+pop.subPopSize([1,0])), subPop=[[0,1], [1,0]])
         # loci
         self.clearGenotype(pop)
-        initByValue(pop, value=[0,1,5], loci=[2,4,5], subPops=[[0,0], [2,1]])
+        initGenotype(pop, genotype=[0,1,5], loci=[2,4,5], subPops=[[0,0], [2,1]])
         self.assertGenotype(pop, [0,1,5]*2*(pop.subPopSize([0,0])+
             pop.subPopSize([2,1])), loci=[2,4,5], subPop=[[0,0], [2,1]])
         self.assertGenotype(pop, 0, loci=[0,1,3,6,7])
-        # error
-        self.clearGenotype(pop)
-        self.assertRaises(exceptions.ValueError,initByValue, pop, [0]*16, ploidy=[0])    
-        self.assertRaises(exceptions.ValueError,initByValue, pop, [])  
-        self.assertRaises(exceptions.ValueError,initByValue, pop, [], subPops=[[0,1], [1,0]])  
-
 
 if __name__ == '__main__':
     unittest.main()

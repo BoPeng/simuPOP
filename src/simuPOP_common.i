@@ -385,33 +385,6 @@ del Migrator.__init__
 Migrator.__init__ = _new_Migrator
 
 
-def _new_InitByFreq(self, alleleFreq=[], *args, **kwargs):
-    # parameter alleleFreq
-    if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
-        af = [alleleFreq]
-    else:
-        af = alleleFreq
-    cppModule.InitByFreq_swiginit(self,
-        cppModule.new_InitByFreq(af, *args, **kwargs))
-
-_new_InitByFreq.__doc__ = InitByFreq.__init__.__doc__
-del InitByFreq.__init__
-InitByFreq.__init__ = _new_InitByFreq
-
-
-def _new_InitByValue(self, value=[], *args, **kwargs):
-    # parameter value
-    if len(value) > 0 and type(value[0]) in [types.IntType, types.LongType]:
-        val = [value]
-    else:
-        val = value
-    cppModule.InitByValue_swiginit(self,
-        cppModule.new_InitByValue(val, *args, **kwargs))
-
-_new_InitByValue.__doc__ = InitByValue.__init__.__doc__
-del InitByValue.__init__
-InitByValue.__init__ = _new_InitByValue
-
 def _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:

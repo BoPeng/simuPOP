@@ -103,7 +103,7 @@ class TestPerformance(unittest.TestCase):
             simu.evolve(
                 initOps = [
                     InitSex(),
-                    InitByFreq([1-p]+[p/10.]*10)
+                    InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
                 gen = 101
             )
@@ -118,7 +118,7 @@ class TestPerformance(unittest.TestCase):
             simu.evolve(
                 initOps = [
                     InitSex(),
-                    InitByFreq([1-p]+[p/10.]*10)
+                    InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
                 preOps = sel,
                 gen = 101
@@ -132,7 +132,7 @@ class TestPerformance(unittest.TestCase):
             simu.evolve(
                 initOps = [
                     InitSex(),
-                    InitByFreq([1-p]+[p/10.]*10)
+                    InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
                 preOps = [migr, sel],
                 gen = 101
@@ -270,7 +270,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [sel],
                 end = 100
             )
@@ -283,7 +283,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = Simulator(pop, binomialSelection())
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [sel],
                 end = 100
             )
@@ -361,9 +361,9 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             for i in range(10):
                 pop = Population(N, loci=[20,40])
-                initByFreq(pop, [0.2, 0.8])
-                initByFreq(pop, [0.4, 0.6])
-                initByFreq(pop, [0.5, 0.5])
+                initGenotype(pop, freq=[0.2, 0.8])
+                initGenotype(pop, freq=[0.4, 0.6])
+                initGenotype(pop, freq=[0.5, 0.5])
                 stat(pop, alleleFreq=range(0, pop.totNumLoci()))
                 stat(pop, heteroFreq=range(0, pop.totNumLoci()))
                 stat(pop, genoFreq=range(0, pop.totNumLoci()))
@@ -404,7 +404,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [],
                 end=100
             )
@@ -416,7 +416,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.0001)],
                 end=100
             )
@@ -427,7 +427,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [Recombinator(rate=0.5)],
                 end=100
             )
@@ -565,7 +565,7 @@ class TestPerformance(unittest.TestCase):
             simu = Simulator(pop, binomialSelection())
             p = 0.4
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [],
                 end = 100
             )
@@ -577,7 +577,7 @@ class TestPerformance(unittest.TestCase):
             simu = Simulator(pop, RandomMating())
             p = 0.4
             simu.evolve(
-                initOps = [InitByFreq([1-p]+[p/10.]*10)],
+                initOps = [InitGenotype(freq=[1-p]+[p/10.]*10)],
                 ops = [],
                 end = 100
             )
@@ -649,7 +649,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitByValue([50]*200)],
+            initOps = [InitGenotype(values=[50]*200)],
             ops = [
                #Recombinator(rate=0.5),
                StepwiseMutator(rate=0.0001),
@@ -669,7 +669,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitByValue([50]*200)],
+            initOps = [InitGenotype(values=[50]*200)],
             ops = [
                Recombinator(rate=0.5),
                StepwiseMutator(rate=0.0001),
@@ -689,7 +689,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitByValue([50]*200)],
+            initOps = [InitGenotype(values=[50]*200)],
             ops = [
                StepwiseMutator(rate=0.0001),
                PyEval(r'"%s\n"%gen', step=100),
@@ -707,7 +707,7 @@ class TestPerformance(unittest.TestCase):
             RandomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             reps=1)
         simu.evolve(
-            initOps = [InitByValue([50]*200)],
+            initOps = [InitGenotype(values=[50]*200)],
             ops = [
                Recombinator(rate=0.0005),
                StepwiseMutator(rate=0.0001),
@@ -739,7 +739,7 @@ class TestPerformance(unittest.TestCase):
         import Stat
         pop = loadPopulation('exp3_0_9.txt')
         #pop = Population(size=100000, loci=[10]*8, ancestralDepth=2)
-        #initByFreq(pop, [.2, .8])
+        #initGenotype(pop, freq=[.2, .8])
         #simu = Simulator(pop, RandomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
         #pop = simu.population(0)

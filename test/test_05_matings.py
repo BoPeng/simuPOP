@@ -142,7 +142,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = Population(10000)
         simu = Simulator(pop)
         simu.evolve(
-            initOps = [InitSex(), InitByFreq([0.5, 0.5])],
+            initOps = [InitSex(), InitGenotype(freq=[0.5, 0.5])],
             matingScheme = RandomMating(sexMode=(PROB_OF_MALES, 0.3)),
             postOps = [
                 Stat(numOfMales=True),
@@ -156,7 +156,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testMonoMating(self):
         'Testing monogemous mating scheme'
         pop = Population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
-        initByFreq(pop, [0.2, 0.3, 0.5])
+        initGenotype(pop, freq=[0.2, 0.3, 0.5])
         simu = Simulator(pop)
         simu.evolve(
             initOps = InitSex(sex=(MALE, FEMALE)), 
@@ -218,7 +218,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'
         pop = Population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
-        initByFreq(pop, [0.2, 0.3, 0.5])
+        initGenotype(pop, freq=[0.2, 0.3, 0.5])
         # exactly 100 males and 100 females
         for i in range(100):
             pop.individual(i).setSex(MALE)
@@ -250,7 +250,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testSequentialParentsChooser(self):
         'Testing sequential parent chooser'
         pop = Population(size=[100, 200], infoFields=['parent_idx'])
-        initByFreq(pop, [.3, .7])
+        initGenotype(pop, freq=[.3, .7])
         pop.evolve(
             matingScheme = HomoMating(
                 SequentialParentsChooser(),
@@ -265,7 +265,7 @@ class TestMatingSchemes(unittest.TestCase):
         def traj(gen):
             return [0.5 + gen*0.01]
         pop = Population(size=[1000, 2000], infoFields=['parent_idx'])
-        initByFreq(pop, [.2, .8])
+        initGenotype(pop, freq=[.2, .8])
         pop.evolve(
             matingScheme= HomoMating(
                 RandomParentChooser(),
@@ -325,7 +325,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop.evolve(
             initOps = [InitSex(),
                 # female has [1]
-                InitByValue([1]*25, subPops=[(0, 1), (1, 1)]),
+                InitGenotype(values=[1]*25, subPops=[(0, 1), (1, 1)]),
                 ],
             matingScheme=RandomMating(ops=[MitochondrialGenoTransmitter()]),
             gen = 1

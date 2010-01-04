@@ -23,7 +23,7 @@ class TestTerminator(unittest.TestCase):
         pop = Population(size=100, loci=[2])
         simu = Simulator(pop, rep=5)
         gens = simu.evolve(
-            initOps = [InitSex(), InitByFreq([0.3, 0.7])],
+            initOps = [InitSex(), InitGenotype(freq=[0.3, 0.7])],
             matingScheme = RandomMating(),
             postOps = [
                 Stat(alleleFreq=[0]),
@@ -43,7 +43,7 @@ class TestTerminator(unittest.TestCase):
         pop = Population(size=100, loci=[2])
         simu = Simulator(pop, rep=5)
         gens = simu.evolve(
-            initOps = [InitSex(), InitByFreq([0.3, 0.7])],
+            initOps = [InitSex(), InitGenotype(freq=[0.3, 0.7])],
             matingScheme = RandomMating(),
             postOps = [
                 Stat(alleleFreq=[0]),

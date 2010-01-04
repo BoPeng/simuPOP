@@ -27,7 +27,7 @@ class TestSampling(unittest.TestCase):
         self.pop.evolve(
             initOps = [
                  InitSex(),
-                 InitByFreq(alleleFreq=[.2, .8]),
+                 InitGenotype(freq=[.2, .8]),
                  IdTagger(),
             ],
             matingScheme=RandomMating(
@@ -52,8 +52,8 @@ class TestSampling(unittest.TestCase):
         self.largepop.evolve(
             initOps=[
                  InitSex(),
-                 InitByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 InitByFreq(alleleFreq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
+                 InitGenotype(freq=[.2, .8], loci=[0]),
+                 InitGenotype(freq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
                  IdTagger(),
             ],
             #preOps = Migrator(rate=[[0.1,0.1],[0.1,0.1]]),
