@@ -63,7 +63,7 @@ bool InitSex::apply(Population & pop)
 			vectorf prop(2, m_maleFreq);
 			prop[1] = 1 - prop[0];
 			ws.set(prop);
-        }
+		}
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		size_t sexSz = m_sex.size();
@@ -136,8 +136,8 @@ bool InitInfo::apply(Population & pop)
 
 
 InitGenotype::InitGenotype(const vectorf & freq,
-    const uintList & genotype, const vectorf & prop,
-    const uintList & loci,
+	const uintList & genotype, const vectorf & prop,
+	const uintList & loci,
 	const uintList & ploidy,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
@@ -146,31 +146,32 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	m_freq(freq), m_genotype(genotype.elems()), m_prop(prop),
 	m_loci(loci), m_ploidy(ploidy)
 {
-    for (size_t i = 0; i < m_freq.size(); ++i)
-        DBG_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
-            "Allele frequency should be between 0 and 1");
-    for (size_t i = 0; i < m_prop.size(); ++i)
-        DBG_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
-            "Allele proportion should be between 0 and 1");
-    DBG_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
-        "Allele frequencies should add up to one.");
-    DBG_FAILIF(!m_prop.empty() && fcmp_ne(accumulate(m_prop.begin(), m_prop.end(), 0.), 1.0), ValueError,
-        "Allele proportions should add up to one.");
-    DBG_ASSERT(!m_freq.empty() + !m_genotype.empty() + !m_prop.empty() == 1, ValueError,
-        "Please specify one and only one of parameters freq, genotype and prop.");
+	for (size_t i = 0; i < m_freq.size(); ++i)
+		DBG_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
+			"Allele frequency should be between 0 and 1");
+	for (size_t i = 0; i < m_prop.size(); ++i)
+		DBG_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
+			"Allele proportion should be between 0 and 1");
+	DBG_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
+		"Allele frequencies should add up to one.");
+	DBG_FAILIF(!m_prop.empty() && fcmp_ne(accumulate(m_prop.begin(), m_prop.end(), 0.), 1.0), ValueError,
+		"Allele proportions should add up to one.");
+	DBG_ASSERT(!m_freq.empty() + !m_genotype.empty() + !m_prop.empty() == 1, ValueError,
+		"Please specify one and only one of parameters freq, genotype and prop.");
 }
 
 
 string InitGenotype::describe(bool format)
 {
-	string desc =  "<simuPOP.InitGenotype> initialize individual genotype ";
-    if (!m_freq.empty()) 
-        desc += "acccording to allele frequencies.";
-    else if (m_prop.empty())
-        desc += "according to proportion of alleles.";
-    else
-        desc += "using specified genotype.";
-    return desc;
+	string desc = "<simuPOP.InitGenotype> initialize individual genotype ";
+
+	if (!m_freq.empty())
+		desc += "acccording to allele frequencies.";
+	else if (m_prop.empty())
+		desc += "according to proportion of alleles.";
+	else
+		desc += "using specified genotype.";
+	return desc;
 }
 
 
@@ -196,30 +197,30 @@ bool InitGenotype::apply(Population & pop)
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
 	for (size_t idx = 0; sp != sp_end; ++sp, ++idx) {
-		// 
+		//
 		Weightedsampler ws(getRNG());
-        if (!m_prop.empty())
-            ws.set(m_prop, pop.subPopSize(*sp));
-        else if (!m_freq.empty())
-            ws.set(m_freq);
-        //
-        size_t idx = 0;
-        size_t sz = m_genotype.size();
+		if (!m_prop.empty())
+			ws.set(m_prop, pop.subPopSize(*sp));
+		else if (!m_freq.empty())
+			ws.set(m_freq);
+		//
+		size_t idx = 0;
+		size_t sz = m_genotype.size();
 
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
 		IndIterator it = pop.indIterator(sp->subPop());
-        if (!m_genotype.empty()) {
-		    for (; it.valid(); ++it)
-		    	for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-	    		    for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-                        it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, *p);
-        } else
-    		for (; it.valid(); ++it) {
-	    		for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
-		    		for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-			    		it->setAllele(ToAllele(ws.get()), *loc, *p);
-		}
+		if (!m_genotype.empty()) {
+			for (; it.valid(); ++it)
+				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+						it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, *p);
+		} else
+			for (; it.valid(); ++it) {
+				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+						it->setAllele(ToAllele(ws.get()), *loc, *p);
+			}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;

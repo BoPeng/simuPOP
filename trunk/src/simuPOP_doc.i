@@ -3269,7 +3269,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InitByFreq "
+%feature("docstring") simuPOP::InitGenotype "
 
 Function form:
 
@@ -3278,51 +3278,52 @@ Function form:
 Details:
 
     This operator assigns alleles at all or part of loci with given
-    allele frequencies. Alternatively, an individual can be
-    initialized and be copied to all individuals in the same (virtual)
-    subpopulations.
+    allele frequencies, proportions or values.
 
 "; 
 
-%feature("docstring") simuPOP::InitByFreq::InitByFreq "
+%feature("docstring") simuPOP::InitGenotype::InitGenotype "
 
 Usage:
 
-    InitByFreq(alleleFreq=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
-      identicalInds=False, begin=0, end=1, step=1, at=[],
+    InitGenotype(freq=[], genotype=ALL_AVAIL, prop=[],
+      loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
     This function creates an initializer that initializes individual
-    genotypes randomly, using allele frequencies specified in
-    parameter alleleFreq. Elements in alleleFreq specifies the allele
+    genotypes either randomly with specified allele frequencies
+    (parameter freq) or proportions (parameter prop), or with fixed
+    genotypes (genotype). Elements in freq specifies the allele
     frequencies of allele 0, 1, ... respectively. These frequencies
-    should add up to 1. If loci, ploidy and/or subPop are specified,
-    only specified loci, ploidy, and individuals in these (virtual)
-    subpopulations will be initialized. If identicalInds is True, the
-    first individual in each (virtual) subpopulation will be
-    initialized randomly, and be copied to all other individuals in
-    this (virtual) subpopulation. If a list of frequencies are given,
-    they will be used for each (virtual) subpopulation. This operator
-    initializes all chromosomes, including unused genotype locations
-    and customized chromosomes.
+    should add up to 1. Elements in prop specified the proportions of
+    alleles. Parameter prop is similar to freq except that prop
+    guarantees exact proportions of alleles, although alleles with
+    small proportions might not be allocated at all. Parameter
+    genotype specifies a list of genotype that will be assigned
+    repeatedly to all individuals (similar to Population.setGenotype()
+    except that this operator supports parameter ploidy). If loci,
+    ploidy and/or subPop are specified, only specified loci, ploidy,
+    and individuals in these (virtual) subpopulations will be
+    initialized. This operator initializes all chromosomes, including
+    unused genotype locations and customized chromosomes.
 
 "; 
 
-%feature("docstring") simuPOP::InitByFreq::~InitByFreq "
+%feature("docstring") simuPOP::InitGenotype::~InitGenotype "
 
 Usage:
 
-    x.~InitByFreq()
+    x.~InitGenotype()
 
 "; 
 
-%feature("docstring") simuPOP::InitByFreq::clone "
+%feature("docstring") simuPOP::InitGenotype::clone "
 
 Description:
 
-    deep copy of the operator InitByFreq
+    deep copy of the operator InitGenotype
 
 Usage:
 
@@ -3330,82 +3331,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InitByFreq::describe "Obsolete or undocumented function."
+%feature("docstring") simuPOP::InitGenotype::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InitByFreq::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::InitByValue "
-
-Function form:
-
-    initByValue
-
-Details:
-
-    This operator initialize individuals by given values.
-
-"; 
-
-%feature("docstring") simuPOP::InitByValue::InitByValue "
-
-Usage:
-
-    InitByValue(value=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL,
-      proportions=[], freq=[], begin=0, end=1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
-
-Details:
-
-    This function creates an initializer that initializes individual
-    genotypes with given genotype value. If loci, ploidy and/or subPop
-    are specified, only specified loci, ploidy, and individuals in
-    these (virtual) subpopulations will be initialized. value can be
-    used to initialize given loci, all loci, and all homologous copies
-    of these loci. If freq (a list of positive numbers that add up to
-    1) is given, value should be a list of values that will be
-    assigned randomly according to their respective proportion.
-    Althernatively, you can use parameter proportions which assign
-    values randomly, but with exact proportion. If a list of values
-    are given without frequencies or proportions, they will be used
-    for each (virtual) subpopulations. This operator initializes all
-    chromosomes, including unused genotype locations and customized
-    chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::InitByValue::~InitByValue "
-
-Usage:
-
-    x.~InitByValue()
-
-"; 
-
-%feature("docstring") simuPOP::InitByValue::clone "
-
-Description:
-
-    deep copy of the operator InitByValue
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::InitByValue::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitByValue::apply "
+%feature("docstring") simuPOP::InitGenotype::apply "
 
 Description:
 
@@ -10329,22 +10257,6 @@ Usage:
 Usage:
 
     _new_Migrator(self, rate=[], *args, **kwargs)
-
-"; 
-
-%feature("docstring") _new_InitByFreq "
-
-Usage:
-
-    _new_InitByFreq(self, alleleFreq=[], *args, **kwargs)
-
-"; 
-
-%feature("docstring") _new_InitByValue "
-
-Usage:
-
-    _new_InitByValue(self, value=[], *args, **kwargs)
 
 "; 
 

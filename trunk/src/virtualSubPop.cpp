@@ -704,13 +704,13 @@ bool ProportionSplitter::contains(const Population & pop, ULONG ind, vspID vsp) 
 		"Virtual subpopulation index out of range");
 
 	ULONG size = pop.subPopSize(vsp.subPop());
-    vectoru count(m_proportions.size());
-    propToCount(m_proportions, size, count);
+	vectoru count(m_proportions.size());
+	propToCount(m_proportions, size, count);
 
 	ULONG lower = 0;
 	ULONG higher = 0;
 	for (UINT sp = 0; sp < m_proportions.size(); ++sp) {
-        higher += count[sp];
+		higher += count[sp];
 		if (ind >= lower && ind < higher)
 			return vsp.virtualSubPop() == static_cast<int>(sp);
 		lower = higher;
@@ -725,16 +725,16 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
 		"Virtual subpopulation index out of range");
 
 	ULONG size = pop.subPopSize(subPop);
-    vectoru count(m_proportions.size());
-    propToCount(m_proportions, size, count);
-    // determine range
-    ULONG lower = std::accumulate(count.begin(), count.begin() + virtualSubPop, 0L);
-    ULONG higher = lower + count[virtualSubPop];
+	vectoru count(m_proportions.size());
+	propToCount(m_proportions, size, count);
+	// determine range
+	ULONG lower = std::accumulate(count.begin(), count.begin() + virtualSubPop, 0L);
+	ULONG higher = lower + count[virtualSubPop];
 
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (size_t idx = 0; it != it_end; ++it, ++idx)
-        it->setVisible(idx >= lower && idx < higher);
+		it->setVisible(idx >= lower && idx < higher);
 	m_activated = subPop;
 }
 
