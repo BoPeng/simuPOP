@@ -55,7 +55,7 @@ bool IdTagger::apply(Population & pop)
 	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
 		pop.useAncestralGen(depth);
 		for (ULONG i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
-			pop.ind(i).setInfo(g_indID++, idx);
+			pop.individual(i).setInfo(g_indID++, idx);
 	}
 	pop.useAncestralGen(curGen);
 	return true;

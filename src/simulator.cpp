@@ -145,7 +145,7 @@ Simulator * Simulator::clone() const
 }
 
 
-Population & Simulator::pop(UINT rep) const
+Population & Simulator::population(UINT rep) const
 {
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");
@@ -205,7 +205,7 @@ vectoru Simulator::evolve(
 		DBG_ASSERT(postOps[i]->isCompatible(*m_pops[0]), ValueError,
 			"Operator " + postOps[i]->describe() + " is not compatible.");
 	}
-	if (!matingScheme.isCompatible(pop(0)))
+	if (!matingScheme.isCompatible(population(0)))
 		throw ValueError("mating type is not compatible with current population settings.");
 
 	vector<bool> activeReps(m_pops.size());
@@ -421,7 +421,7 @@ int Simulator::__cmp__(const Simulator & rhs) const
 		return 1;
 
 	for (size_t i = 0; i < numRep(); ++i)
-		if (pop(i).__cmp__(rhs.pop(i)) != 0)
+		if (population(i).__cmp__(rhs.population(i)) != 0)
 			return 1;
 
 	return 0;

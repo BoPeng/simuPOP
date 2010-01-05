@@ -154,7 +154,7 @@ public:
 	 *  <tt>simu.population(rep).clone()</tt>.
 	 *  <group>3-pop</group>
 	 */
-	Population & pop(UINT rep) const;
+	Population & population(UINT rep) const;
 
 	/** Add a population \e pop to the end of an existing Simulator. This
 	 *  function by default moves \c pop to the simulator, leaving an empty

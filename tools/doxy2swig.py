@@ -1080,16 +1080,6 @@ class Doxy2SWIG:
                 print >> out, '%s' % self.latex_text(cons['note'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
-            for entry in members:
-                # change pop()->population() in simulator.h
-                # change ind()->individual() in population.h
-                if entry.has_key('Usage'):
-                    if entry['Name'] == 'simuPOP::simulator::pop':
-                        entry['Name'] = 'simuPOP::simulator::population'
-                        entry['Usage'] = entry['Usage'].replace('pop(', 'population(')
-                    if entry['Name'] == 'simuPOP::population::ind':
-                        entry['Name'] = 'simuPOP::population::individual'
-                        entry['Usage'] = entry['Usage'].replace('ind(', 'individual(')
             def sort_member(x, y):
                 res = cmp(x['group'], y['group'])
                 if res == 0:
@@ -1334,16 +1324,6 @@ class Doxy2SWIG:
             #
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
-            for entry in members:
-                # change pop()->population() in simulator.h
-                # change ind()->individual() in population.h
-                if entry.has_key('Usage'):
-                    if entry['Name'] == 'simuPOP::simulator::pop':
-                        entry['Name'] = 'simuPOP::simulator::population'
-                        entry['Usage'] = entry['Usage'].replace('pop(', 'population(')
-                    if entry['Name'] == 'simuPOP::population::ind':
-                        entry['Name'] = 'simuPOP::population::individual'
-                        entry['Usage'] = entry['Usage'].replace('ind(', 'individual(')
             def sort_member(x, y):
                 res = cmp(x['group'], y['group'])
                 if res == 0:

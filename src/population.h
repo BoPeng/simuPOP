@@ -203,8 +203,8 @@ public:
 	 *    the haplodiploid populations are handled for the second case, for
 	 *    which <tt>ploidy=HAPLODIPLOID</tt> should be used.
 	 *  \param loci A list of numbers of loci on each chromosome. The length of
-	 *    this parameter determines the number of chromosomes. Default to
-	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
+	 *    this parameter determines the number of chromosomes. If there is only
+	 *    one chromosome, \c numLoci instead of <tt>[numLoci]</tt> can be used.
 	 *  \param chromTypes A list that specifies the type of each chromosome,
 	 *    which can be \c AUTOSOME, \c CHROMOSOME_X, \c CHROMOSOME_Y, or
 	 *    \c CUSTOMIZED. All chromosomes are assumed to be autosomes if
@@ -229,7 +229,7 @@ public:
 	 *    generation will be kept. If it is set to \c -1, all ancestral
 	 *    generations will be kept in this population (and exhaust your
 	 *    computer RAM quickly).
-	 *  \param chromNames A list of chromosome names. Default to '' for all
+	 *  \param chromNames A list of chromosome names. Default to \c '' for all
 	 *    chromosomes.
 	 *  \param alleleNames A list or a nested list of allele names. If a list
 	 *    of alleles is given, it will be used for all loci in this population.
@@ -381,7 +381,7 @@ public:
 
 
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
-	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>). If no \e subpop
+	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>). If no \e subpop
 	 *  is given, it is the same as <tt>popSize()</tt>.
 	 *  <group>2-subpopsize</group>
 	 */
@@ -421,8 +421,8 @@ public:
 	 */
 	vectorstr subPopNames() const;
 
-	/** Assign a name \e name to subpopulation \e subPop. \e does not have to
-	 *  be unique.
+	/** Assign a name \e name to subpopulation \e subPop. Note that
+	 *  subpopulation names do not have to be unique.
 	 *  <group>2-subpopname</group>
 	 */
 	void setSubPopName(const string & name, SubPopID subPop);
@@ -521,7 +521,7 @@ public:
 	 * float \e idx is acceptable as long as it rounds closely to an integer.
 	 * <group>4-ind</group>
 	 */
-	Individual & ind(double idx, vspID subPop = vspID())
+	Individual & individual(double idx, vspID subPop = vspID())
 	{
 		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
 
@@ -561,7 +561,7 @@ public:
 
 	/** CPPONLY: const version of the ind function.
 	 */
-	const Individual & ind(double idx, vspID subPop = vspID()) const
+	const Individual & individual(double idx, vspID subPop = vspID()) const
 	{
 		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
 

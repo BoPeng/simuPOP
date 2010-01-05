@@ -184,7 +184,7 @@ void CombinedSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 					break;
 				}
 			}
-			pop.ind(ind, subPop).setVisible(ok);
+			pop.individual(ind, subPop).setVisible(ok);
 		}
 	}
 	m_activated = subPop;
@@ -307,7 +307,7 @@ void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID
 				break;
 			}
 		}
-		pop.ind(i, subPop).setVisible(ok);
+		pop.individual(i, subPop).setVisible(ok);
 	}
 	m_activated = subPop;
 }
@@ -354,7 +354,7 @@ ULONG SexSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtua
 
 bool SexSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 {
-	return (vsp.virtualSubPop() == 0 ? MALE : FEMALE) == pop.ind(ind, vsp.subPop()).sex();
+	return (vsp.virtualSubPop() == 0 ? MALE : FEMALE) == pop.individual(ind, vsp.subPop()).sex();
 }
 
 
@@ -404,7 +404,7 @@ ULONG AffectionSplitter::size(const Population & pop, SubPopID subPop, SubPopID 
 
 bool AffectionSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 {
-	return (vsp.virtualSubPop() == 0 ? false : true) == pop.ind(ind, vsp.subPop()).affected();
+	return (vsp.virtualSubPop() == 0 ? false : true) == pop.individual(ind, vsp.subPop()).affected();
 }
 
 
@@ -551,25 +551,25 @@ bool InfoSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 
 		// using cutoff, below
 		if (virtualSubPop == 0)
-			return pop.ind(ind, vsp.subPop()).info(idx) < m_cutoff[0];
+			return pop.individual(ind, vsp.subPop()).info(idx) < m_cutoff[0];
 		else if (static_cast<UINT>(virtualSubPop) == m_cutoff.size())
-			return pop.ind(ind, vsp.subPop()).info(idx) >= m_cutoff.back();
+			return pop.individual(ind, vsp.subPop()).info(idx) >= m_cutoff.back();
 		else {         // in between
 			double v1 = m_cutoff[virtualSubPop - 1];
 			double v2 = m_cutoff[virtualSubPop];
-			double v = pop.ind(ind, vsp.subPop()).info(idx);
+			double v = pop.individual(ind, vsp.subPop()).info(idx);
 			return v >= v1 && v < v2;
 		}
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
 			"Virtual Subpoplation index " + toStr(virtualSubPop) + " out of range of 0 ~ "
 			+ toStr(m_values.size() - 1));
-		return fcmp_eq(pop.ind(ind, vsp.subPop()).info(idx), m_values[virtualSubPop]);
+		return fcmp_eq(pop.individual(ind, vsp.subPop()).info(idx), m_values[virtualSubPop]);
 	} else {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 			"Virtual Subpoplation index " + toStr(virtualSubPop) + " out of range of 0 ~ "
 			+ toStr(m_ranges.size() - 1));
-		double v = pop.ind(ind, vsp.subPop()).info(idx);
+		double v = pop.individual(ind, vsp.subPop()).info(idx);
 		return v >= m_ranges[virtualSubPop][0] && v < m_ranges[virtualSubPop][1];
 	}
 	// this should not be reached.
@@ -869,7 +869,7 @@ bool GenotypeSplitter::contains(const Population & pop, ULONG ind, vspID vsp) co
 
 	const vectori & alleles = m_alleles[virtualSubPop];
 
-	return match(&pop.ind(ind, vsp.subPop()), alleles);
+	return match(&pop.individual(ind, vsp.subPop()), alleles);
 }
 
 

@@ -397,7 +397,7 @@ Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (!vsp.valid()) {
 		if (gen == m_curAncestralGen)
-			return this->ind(idx);
+			return individual(idx);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 			IndexError, "individual index out of range");
@@ -405,7 +405,7 @@ Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 	} else {
 		SubPopID subPop = vsp.subPop();
 		if (gen == m_curAncestralGen)
-			return this->ind(idx, subPop);
+			return individual(idx, subPop);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
@@ -434,7 +434,7 @@ const Individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (!vsp.valid()) {
 		if (gen == m_curAncestralGen)
-			return this->ind(idx);
+			return individual(idx);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 			IndexError, "individual index out of range");
@@ -442,7 +442,7 @@ const Individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 	} else {
 		SubPopID subPop = vsp.subPop();
 		if (gen == m_curAncestralGen)
-			return this->ind(idx, subPop);
+			return individual(idx, subPop);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
 		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
@@ -966,7 +966,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
 				"individual index out of range.");
-			ind(indexes[i]).setMarked(true);
+			individual(indexes[i]).setMarked(true);
 		}
 		removeMarkedIndividuals();
 		return;
@@ -1398,7 +1398,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 			// repeating?
 			if (spSize == 0 || ((j / spSize) > 0 && !propagate))
 				break;
-			newInds[startSP + i].copyFrom(ind(j % spSize, sp));
+			newInds[startSP + i].copyFrom(individual(j % spSize, sp));
 		}
 		// point to the start of next subpopulation
 		startSP += newSubPopSizes[sp];
@@ -1670,7 +1670,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
 				"individual index " + toStr(indexes[i]) + " out of range of 0 ~ " + toStr(m_popSize) + ".");
-			ind(indexes[i]).setMarked(true);
+			individual(indexes[i]).setMarked(true);
 		}
 		return extractMarkedIndividuals();
 	}
@@ -1833,7 +1833,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			for (ULONG sp = 0; sp < numSubPop(); ++sp) {
 				ULONG spBegin = subPopBegin(sp);
 				for (size_t i = 0; i < subPopSize(sp); ++i) {
-					if (!ind(i, sp).marked())
+					if (!individual(i, sp).marked())
 						continue;
 					++spSizes[sp];
 					indIdx[sp].push_back(spBegin + i);

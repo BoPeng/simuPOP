@@ -112,7 +112,7 @@ bool Migrator::apply(Population & pop)
 	if (m_mode == BY_IND_INFO && !fromSubPops.empty()) {
 		oldInfo.resize(pop.popSize());
 		for (size_t i = 0; i < pop.popSize(); ++i)
-			oldInfo[i] = pop.ind(i).info(info);
+			oldInfo[i] = pop.individual(i).info(info);
 	}
 
 	if (m_mode != BY_IND_INFO || !fromSubPops.empty()) {

@@ -213,8 +213,8 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (size_t i = 0; i < popSize(); ++i) {
-			double f = ind(i).info(m_fatherIdx);
-			double m = ind(i).info(m_motherIdx);
+			double f = individual(i).info(m_fatherIdx);
+			double m = individual(i).info(m_motherIdx);
 			if (f >= 0 && m >= 0) {
 				if (excludeOutbred) {
 					// if they share a father or a mother.
@@ -265,7 +265,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 				bool valid = true;
 				// duplicate spouse
 				for (size_t s = 0; s < numSpouse[m]; ++s)
-					if (ind(m).info(spouseIdx[s]) == p) {
+					if (individual(m).info(spouseIdx[s]) == p) {
 						valid = false;
 						break;
 					}
@@ -309,8 +309,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 		useAncestralGen(ans);
 		for (size_t i = 0; i < popSize(); ++i) {
 			// everyone has one or two parents.
-			double p = ind(i).info(m_fatherIdx);
-			double m = ind(i).info(m_motherIdx);
+			double p = individual(i).info(m_fatherIdx);
+			double m = individual(i).info(m_motherIdx);
 			if (p < 0 || m < 0)
 				continue;
 			try {
@@ -321,16 +321,16 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 				Individual & ma = indByID(mm);
 				// add child as father's offspring
 				if (numOffspring[pp] < maxOffspring &&
-				    acceptableSex(MALE, ind(i).sex(), sexChoice) &&
-				    acceptableAffectionStatus(ind(i).affected(), affectionChoice)) {
-					fa.setInfo(ind(i).info(m_idIdx), offspringIdx[numOffspring[pp]]);
+				    acceptableSex(MALE, individual(i).sex(), sexChoice) &&
+				    acceptableAffectionStatus(individual(i).affected(), affectionChoice)) {
+					fa.setInfo(individual(i).info(m_idIdx), offspringIdx[numOffspring[pp]]);
 					++numOffspring[pp];
 				}
 				// add child as mother's offspring
 				if (numOffspring[mm] < maxOffspring &&
-				    acceptableSex(FEMALE, ind(i).sex(), sexChoice) &&
-				    acceptableAffectionStatus(ind(i).affected(), affectionChoice)) {
-					ma.setInfo(ind(i).info(m_idIdx), offspringIdx[numOffspring[mm]]);
+				    acceptableSex(FEMALE, individual(i).sex(), sexChoice) &&
+				    acceptableAffectionStatus(individual(i).affected(), affectionChoice)) {
+					ma.setInfo(individual(i).info(m_idIdx), offspringIdx[numOffspring[mm]]);
 					++numOffspring[mm];
 				}
 			} catch (...) {
@@ -366,12 +366,12 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (size_t i = 0; i < popSize(); ++i) {
-			double f = ind(i).info(m_fatherIdx);
-			double m = ind(i).info(m_motherIdx);
+			double f = individual(i).info(m_fatherIdx);
+			double m = individual(i).info(m_motherIdx);
 			if (f >= 0)
-				families[static_cast<ULONG>(f)].push_back(static_cast<ULONG>(ind(i).info(m_idIdx)));
+				families[static_cast<ULONG>(f)].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
 			if (m >= 0)
-				families[static_cast<ULONG>(m)].push_back(static_cast<ULONG>(ind(i).info(m_idIdx)));
+				families[static_cast<ULONG>(m)].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each single-parent family
@@ -463,10 +463,10 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (size_t i = 0; i < popSize(); ++i) {
-			double f = ind(i).info(m_fatherIdx);
-			double m = ind(i).info(m_motherIdx);
+			double f = individual(i).info(m_fatherIdx);
+			double m = individual(i).info(m_motherIdx);
 			if (f >= 0 && m >= 0)
-				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(ind(i).info(m_idIdx)));
+				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each single-parent family
@@ -558,10 +558,10 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	for (unsigned ans = 0; ans <= topGen; ++ans) {
 		useAncestralGen(ans);
 		for (size_t i = 0; i < popSize(); ++i) {
-			double f = ind(i).info(m_fatherIdx);
-			double m = ind(i).info(m_motherIdx);
+			double f = individual(i).info(m_fatherIdx);
+			double m = individual(i).info(m_motherIdx);
 			if (f >= 0 && m >= 0)
-				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(ind(i).info(m_idIdx)));
+				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each family
