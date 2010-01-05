@@ -3998,9 +3998,9 @@ import simuPOP as sim
 sim.getRNG().setSeed(12345)
 #end_ignore
 from simuPOP.utils import saveCSV
-pop = sim.Population(size=[10], loci=[5, 5],
-    lociNames=['loc1_%d' % x for x in range(1, 6)] + ['loc2_%d' % x for x in range(1, 6)],
-    infoFields='age')
+pop = sim.Population(size=[10], loci=[2, 3],
+    lociNames=['r11', 'r12', 'r21', 'r22', 'r23'],
+    alleleNames=['A', 'B'], infoFields='age')
 sim.initSex(pop)
 sim.initInfo(pop, [2, 3, 4], infoFields='age')
 sim.initGenotype(pop, freq=[0.4, 0.6])
@@ -4009,7 +4009,7 @@ sim.maPenetrance(pop, loci=0, penetrance=(0.2, 0.2, 0.4))
 saveCSV(pop, infoFields='age')
 # change affection code and how to output genotype
 saveCSV(pop, infoFields='age', affectionCode={True: 1, False: 2},
-    genoCode=lambda geno: geno[0] + geno[1] + 1)
+    genoCode={(0,0):'AA', (0,1):'AB', (1,0):'AB', (1,1):'BB'})
 # save to a file
 saveCSV(pop, filename='pop.csv', infoFields='age', affectionCode={True: 1, False: 2},
     genoCode=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')

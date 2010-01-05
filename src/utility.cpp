@@ -2894,7 +2894,7 @@ void Weightedsampler::set(const vectorf & weight, ULONG N)
 
 	// random shuffle
 	m_RNG->randomShuffle(m_sequence.begin(), m_sequence.end());
-    m_index = 0;
+	m_index = 0;
 }
 
 

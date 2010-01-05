@@ -2652,7 +2652,18 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Individual::alleleChar "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Individual::alleleChar "
+
+Usage:
+
+    x.alleleChar(idx, ploidy=-1, chrom=-1)
+
+Details:
+
+    return the name of allele(idx, ploidy, chrom). If idx is invalid
+    (e.g. second homologus copy of chromosome Y), '.' is returned.
+
+"; 
 
 %feature("docstring") simuPOP::Individual::setAllele "
 
