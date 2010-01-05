@@ -325,7 +325,6 @@ public:
 	PyObject * operator()(PyObject * args) const
 	{
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), args);
-
 		if (pyResult == NULL) {
 			PyErr_Print();
 			PyErr_Clear();
@@ -1867,7 +1866,8 @@ void setRNG(const string rng = string(), unsigned long seed = 0);
  *  \li \c platform: platform of the module.
  *  \li \c maxNumSubPop: maximum number of subpopulations.
  *  \li \c maxIndex: maximum index size (limits population size * total number of marker).
- *  \li \c debug: A list of effective debugging codes.
+ *  \li \c debug: A dictionary with debugging codes as keys and the status of each
+ *       debugging code (\c True or \c False) as their values.
  */
 PyObject * moduleInfo();
 
