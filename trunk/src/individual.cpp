@@ -164,22 +164,62 @@ string Individual::alleleChar(UINT idx, int p, int chrom) const
 }
 
 
-PyObject * Individual::genotype(int p, int chrom)
+PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
-	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
-		"A valid ploidy index has to be specified if chrom is non-positive");
-	if (p < 0) {
-		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
-	} else if (chrom < 0) {
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
-			m_genoPtr + (p + 1) * totNumLoci() );
-	} else {
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		CHECKRANGECHROM(static_cast<UINT>(chrom));
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(chrom),
-			m_genoPtr + p * totNumLoci() + chromEnd(chrom));
+	size_t beginP = 0;
+	size_t endP = 0;
+	size_t beginCh = 0;
+	size_t endCh = 0;
+	if (ply.allAvail())
+		endP = ploidy();
+	else {
+		const vectoru & ploidys = ply.elems();
+		if (ploidys.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginP = ploidys[0];
+		endP = ploidys[0];
+		CHECKRANGEPLOIDY(static_cast<UINT>(beginP));
+		for (size_t i = 1; i < ploidys.size(); ++i) {
+			CHECKRANGEPLOIDY(static_cast<UINT>(ploidys[i]));
+			if (beginP > ploidys[i])
+				beginP = ploidys[i];
+			if (endP < ploidys[i])
+				endP = ploidys[i];
+		}
+		++endP;
 	}
+	if (ch.allAvail())
+		endCh = numChrom();
+	else {
+		const vectoru & chroms = ch.elems();
+		if (chroms.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginCh = chroms[0];
+		endCh = chroms[0];
+		CHECKRANGECHROM(static_cast<UINT>(beginCh));
+		for (size_t i = 1; i < chroms.size(); ++i) {
+			CHECKRANGECHROM(static_cast<UINT>(chroms[i]));
+			if (beginCh > chroms[i])
+				beginCh = chroms[i];
+			if (endCh < chroms[i])
+				endCh = chroms[i];
+		}
+		++endCh;
+	}
+		
+	if (endP > beginP + 1){
+		// has to be all chromosomes
+		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
+			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
+		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
+			m_genoPtr + endP * totNumLoci());
+	} else 
+		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
+			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
 
 
@@ -237,30 +277,41 @@ void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 }
 
 
-void Individual::setGenotype(const vectora & geno, int p, int chrom)
+void Individual::setGenotype(const vectora & geno, const uintList & ply, const uintList & ch)
 {
-	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
-		"A valid ploidy index has to be specified if chrom is non-positive");
 	UINT sz = geno.size();
-	if (p < 0) {
-		for (UINT i = 0; i < totNumLoci() * ploidy(); i++)
-			*(m_genoPtr + i) = geno[i % sz];
-	} else if (chrom < 0) {
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		GenoIterator ptr = m_genoPtr + p * totNumLoci();
+	size_t idx = 0;
 
-		UINT sz = geno.size();
-		for (UINT i = 0; i < totNumLoci(); i++)
-			*(ptr + i) = geno[i % sz];
-
+	vectoru ploidys = ply.elems();
+	if (ply.allAvail()) {
+		for (size_t i = 0; i < ploidy(); ++i)
+			ploidys.push_back(i);
 	} else {
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		CHECKRANGECHROM(static_cast<UINT>(chrom));
-		GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
-		UINT sz = geno.size();
-		for (UINT i = 0; i < numLoci(chrom); i++)
-			*(ptr + i) = geno[i % sz];
+#ifndef OPTIMIZED
+		for (size_t i = 0; i < ploidys.size(); ++i) {
+			CHECKRANGEPLOIDY(static_cast<UINT>(ploidys[i]));
+		}
+#endif
+	}
+	vectoru chroms = ch.elems();
+	if (ch.allAvail()) {
+		for (size_t i = 0; i < numChrom(); ++i)
+			chroms.push_back(i);
+	} else {
+#ifndef OPTIMIZED
+		for (size_t i = 0; i < chroms.size(); ++i) {
+			CHECKRANGECHROM(static_cast<UINT>(chroms[i]));
+		}
+#endif
+	}
+	for (size_t i = 0; i < ploidys.size(); ++i) {
+		size_t p = ploidys[i];
+		for (size_t j = 0; j < chroms.size(); ++j) {
+			size_t chrom = chroms[j];
+			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+			for (UINT i = 0; i < numLoci(chrom); i++, ++idx)
+				*(ptr + i) = geno[idx % sz];
+		}
 	}
 }
 
@@ -287,7 +338,7 @@ void Individual::swap(Individual & ind, bool swapContent)
 
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
-	out << sexChar() << affectedChar() << " ";
+	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
 	UINT pEnd = ploidy();
 	for (UINT p = 0; p < pEnd; ++p) {
 		if (loci.empty()) {

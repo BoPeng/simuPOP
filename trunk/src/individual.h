@@ -63,7 +63,7 @@ namespace simuPOP {
  *  An \c Individual object cannot be created independently, but refences to
  *  inidividuals can be retrieved using member functions of a \c Population
  *  object. In addition to structural information shared by all individuals in
- *  a population (provided by class \c genoStruTrait), the \c Individual class
+ *  a population (provided by class \c GenoStruTrait), the \c Individual class
  *  provides member functions to get and set \e genotype, \e sex, <em>affection
  *  status</em> and <em>information fields</em> of an individual.
  *
@@ -77,7 +77,7 @@ namespace simuPOP {
  *  a diploid individual. A consequence of this memory layout is that alleles
  *  at the same locus of a non-haploid individual are separated by
  *  <tt>Individual::totNumLoci()</tt> loci. It is worth noting that access to
- *  invalid chromosomes, such as the Y chromosomes of female individuals, are
+ *  invalid chromosomes, such as the Y chromosomes of female individuals, is
  *  not restricted.
  */
 class Individual : public GenoStruTrait
@@ -170,7 +170,7 @@ public:
 	//@{
 
 	/** return the current allele at a locus, using its absolute index \e idx.
-	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
+	 *  If a ploidy \e ploidy and/or a chromosome indexes is given, \e idx is
 	 *  relative to the beginning of specified homologous copy of chromosomes
 	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
 	 *  specified chromosome (if \e chrom >= 0).
@@ -181,7 +181,7 @@ public:
 
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
-	 *  invalid (e.g. second homologus copy of chromosome Y), '.' is returned.
+	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
 	 */
 	string alleleChar(UINT idx, int ploidy = -1, int chrom = -1) const;
@@ -195,14 +195,14 @@ public:
 	 */
 	void setAllele(Allele allele, UINT idx, int ploidy = -1, int chrom = -1);
 
-	/** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
-	 *  that represents all alleles on the <em>p</em>-th homologous set of
-	 *  chromosomes. If \e ploidy or \e chrom is given, only alleles on the
-	 *  \e chrom-th chromosome (or all chromosomes if <tt>chrom = -1</tt>) of
-	 *  \e ploidy-th homologous copy of chromosomes will be returned.
+	/** return an editable array (a \c carray object) that represents all
+	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
+	 *  alleles on the specified chromosomes and homologous copy of chromosomes
+	 *  will be returned. If multiple chromosomes are specified, there should
+	 *  not be gaps between chromosomes.
 	 *  <group>2-genotype</group>
 	 */
-	PyObject * genotype(int ploidy = -1, int chrom = -1);
+	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 
 	/** CPPONLY
@@ -212,13 +212,13 @@ public:
 	PyObject * genoAtLoci(const vectoru & loci);
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
-	 *  If parameters \e ploidy and/or \e chrom are specified, alleles will
-	 *  be copied to only all or specified chromosome on selected homologous
-	 *  copy of chromosomes. \c geno will be reused if its length is less than
+	 *  If parameters \e ploidy and/or \e chroms are specified, alleles will
+	 *  be copied to only all or specified chromosomes on selected homologous
+	 *  copies of chromosomes. \c geno will be reused if its length is less than
 	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(const vectora & geno, int ploidy = -1, int chrom = -1);
+	void setGenotype(const vectora & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>
@@ -229,15 +229,6 @@ public:
 			return FEMALE;
 		else
 			return MALE;
-	}
-
-
-	/** return the sex of an individual, \c M for male or \c F for \c female.
-	 * <group>3-sex</group>
-	 */
-	char sexChar() const
-	{
-		return sex() == FEMALE ? 'F' : 'M';
 	}
 
 
@@ -261,15 +252,6 @@ public:
 	bool affected() const
 	{
 		return ISSETFLAG(m_flags, m_flagAffected);
-	}
-
-
-	/** Return \c A if this individual is affected, or \c U otherwise.
-	 * <group>4-affection</group>
-	 */
-	char affectedChar() const
-	{
-		return affected() ? 'A' : 'U';
 	}
 
 

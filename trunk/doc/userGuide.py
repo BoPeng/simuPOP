@@ -1207,7 +1207,7 @@ def checkSexMode(ms):
     pop = sim.Population(size=[40])
     pop.evolve(initOps=sim.InitSex(), matingScheme=ms, gen=1)
     # return individual sex as a string
-    return ''.join([ind.sexChar() for ind in pop.individuals()])
+    return ''.join(['M' if ind.sex() == sim.MALE else 'F' for ind in pop.individuals()])
 
 # Case 1: sim.NO_SEX (all male, sim.RandomMating will not continue)
 checkSexMode(sim.RandomMating(sexMode=sim.NO_SEX))
