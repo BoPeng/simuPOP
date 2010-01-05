@@ -8682,12 +8682,12 @@ Initialization
 \end_layout
 
 \begin_layout Standard
-simuPOP provides three operators to initialize individual sex and genotype.
+simuPOP provides three operators to initialize individual sex, information
+ fields and genotype at the population level.
  A number of parameter are provided to cover most commonly used initialization
  scenarios.
  A Python operator can be used to intialize a population explicitly if none
  of the operators fits your need.
- 
 \end_layout
 
 \begin_layout Subsection
@@ -8710,11 +8710,11 @@ initSex()
  initialize individual sex either randomly or using a given sequence.
  In the first case, individuals are assigned 
 \family typewriter
-Male
+MALE
 \family default
  or 
 \family typewriter
-Female
+FEMALE
 \family default
  with equal probability unless parameter 
 \emph on
@@ -8725,16 +8725,34 @@ maleFreq
 \emph on
 maleProp
 \emph default
- can be used to specify exact proportions of male individuals.
- In the second case, a sequence of sex (
+ can be used to specify exact proportions of male individuals so that you
+ will have exactly 1000 males and 1000 females if you apply 
 \family typewriter
-Male
+InitSex(maleProp=0.5)
+\family default
+ to a population of 2000 individuals.
+\end_layout
+
+\begin_layout Standard
+Both parameters 
+\family typewriter
+maleFreq
+\family default
+ and 
+\family typewriter
+maleProp
+\family default
+ assigns individual sex randomly.
+ If for some reason you need to specify individual sex explicitly, you could
+ use a sequence of sex (
+\family typewriter
+MALE
 \family default
  or 
 \family typewriter
-Female
+FEMALE
 \family default
-) is assigned to individuals succesively.
+) to assign sex to individuals succesively.
  The list will be reused if needed.
  If a list of (virtual) subpopulations are given, this operator will only
  initialize individuals in these (virtual) subpopulations.
@@ -8745,7 +8763,7 @@ reference "InitSex"
 
 \end_inset
 
- uses two 
+ demonstrates how to use two 
 \family typewriter
 InitSex
 \family default
@@ -8772,23 +8790,64 @@ InitGenotype
 \begin_layout Standard
 Operator 
 \family typewriter
-InitByFreq
+InitGenotype
 \family default
  (and its function form 
 \family typewriter
-initByFreq
+initGenotype
 \family default
-) initialize individual genotype by 
-\series bold
-allelic spectrum
-\series default
-, which is the number and frequency of alleles at a locus.
+) initializes individual genotype in three ways:
+\end_layout
+
+\begin_layout Itemize
+By frequency of alleles.
  For example, 
 \family typewriter
-alleleFreq=(0, 0.2, 0.4, 0.2)
+InitGenotype(freq=(0, 0.2, 0.4, 0.2))
 \family default
- will yield allele 0, 1, 2, and 3 with probability 0, 0.2, 0.4 and 0.2 respectively.
- Parameter 
+ will assign allele 0, 1, 2, and 3 with probability 0, 0.2, 0.4 and 0.2 respectivel
+y.
+\end_layout
+
+\begin_layout Itemize
+By proportions of alleles.
+ For example, 
+\family typewriter
+InitGenotype(prop=(0, 0.2, 0.4, 0.2))
+\family default
+ will assign 400 allele 1, 800 allele 2 and 400 allele 3 to a diploid population
+ with 800 individuals.
+\end_layout
+
+\begin_layout Itemize
+By a list of genotype.
+ For example, 
+\family typewriter
+InitGenotype(genotype=[1, 2, 2, 1])
+\family default
+ will assign genotype 1, 2, 2, 1 repeatedly to a population.
+ If individuals in this population has two homologous copies of a chromosome
+ with two loci, this operator will assign haplotype 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+ to the first homologous copy of the chromosome, and 
+\family typewriter
+2
+\family default
+, 
+\family typewriter
+1
+\family default
+ to the second copy.
+\end_layout
+
+\begin_layout Standard
+Parameter 
 \family typewriter
 loci
 \family default
@@ -8802,128 +8861,26 @@ ploidy
 subPops
 \family default
  can be used to specify subsets of individuals to initialize.
- In the latter case, a list of allelic spectra can be given to assign different
- genotype with different allele frequency for each (virtual) subpopulation.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/InitByFreq.log"
-lstparams "caption={Initialize by allele frequency},label={InitByFreq}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is sometimes desired to create identical individuals with random genotype.
- Parameter 
-\family typewriter
-identicalInds
-\family default
- can be used for this purpose.
- When this parameter is set to true, a random Individual will be created
- for each subpopulation (using different allele frequencies if a list of
- allelic spectra are given), and be copied to all other individuals in the
- subpopulation.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "InitByFreqIdenticalInds"
+reference "InitGenotype"
 
 \end_inset
 
- demonstrates this usage.
+ demonstrates how to use these the 
+\family typewriter
+InitGenotype
+\family default
+ operator, including examples on how to define and use virtual subpopulations
+ to initialize individual genotype by sex or by proportion.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/InitByFreqIdenticalInds.log"
-lstparams "caption={Initialize by allele frequency with identical individuals in each subpopulation},label={InitByFreqIdenticalInds}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Operator 
-\family typewriter
-InitByValue
-\family default
- (and its function form 
-\family typewriter
-initByValue
-\family default
-) initializes individual genotypes using given haplotypes.
- The simplest form of this operator is to specify genotype on one or all
- homologous sets of chromosomes.
- For example, all individuals in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "InitByValue"
-
-\end_inset
-
- get the same genotype using such an operator.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/InitByValue.log"
-lstparams "caption={initialize by haplotype},label={InitByValue}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A number of parameters are provided to initialize individual genotype at
- a finer scale.
- More specifically, you can apply the operator to specified loci (parameter
- 
-\emph on
-loci
-\emph default
-), (virtual) subpopulations (parameter 
-\family typewriter
-subPops
-\family default
-), homologous sets of chromosomes (parameter 
-\family typewriter
-ploidy
-\family default
-).
- If multiple haplotypes are given, you can specify the proportions at which
- each haplotype will be used using parameter 
-\family typewriter
-proportions
-\family default
-, or by frequencies using parameter 
-\family typewriter
-frequencies
-\family default
-.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "InitByValueProp"
-
-\end_inset
-
- demonstrates the use of these parameters.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/InitByValueProp.log"
-lstparams "caption={initialize by haplotypes with given proportion},label={InitByValueProp}"
+filename "log/InitGenotype.log"
+lstparams "caption={Initialize individual genotype},label={InitGenotype}"
 
 \end_inset
 
@@ -19305,6 +19262,56 @@ Export simuPOP population in csv format (function
 saveCSV
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+A large number of file formats are used by different software applications
+ that analyze genetic data.
+ Because it is relatively easy to write functions to import and export files
+ in these formats, a number of functions have been written to allow interoperati
+on between simuPOP and various genetic analysis software such as Linkage
+ and merlin.
+ These functions are available in the import and export section of the simuPOP
+ online cookbook.
+\end_layout
+
+\begin_layout Standard
+Function 
+\family typewriter
+saveCSV
+\family default
+ is provided in the 
+\family typewriter
+simuPOP.utils
+\family default
+ module to save (the present generation of) a simuPOP population in comma
+ separated formats.
+ It allows you to save individual information fields, sex, affection status
+ and genotype (in that order).
+ Because this function allows you to output these information in different
+ formats, this function can already be used to export a simuPOP population
+ to formats that are recognizable by some populat software applications.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "saveCSV"
+
+\end_inset
+
+ creates a small population and demonstrates how to save it in different
+ formats.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/saveCSV.log"
+lstparams "caption={Using function saveCSV to save a simuPOP population in different formats},label={saveCSV}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
