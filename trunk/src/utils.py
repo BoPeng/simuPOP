@@ -267,11 +267,11 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
 
     genoCode
         How to output genotype at specified loci. Acceptable values include
-        ``None`` (output alleles), a dictionary with genotype as keys, (e.g.
-        ``genoCode={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function with
-        genotype (as a tuple) as inputs. The dictionary value or the return
-        function of this function can be a single or a list of number or
-        strings.
+        ``None`` (output allele names), a dictionary with genotype as keys,
+        (e.g. ``genoCode={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
+        with genotype (as a tuple of integers) as inputs. The dictionary value
+        or the return value of this function can be a single or a list of
+        number or strings.
 
     sexCode
         How to output individual sex. Acceptable values include ``None`` (no
@@ -325,9 +325,12 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         else:
             if not callable(genoCode):
                 raise ValueError("genoCode should be a None, a dictionary or a callable function")
-            value = genoCode([pop.individual(0).allele(0, p) for p in range(ploidy)])
+            value = genoCode(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
         try:
-            colPerGenotype = len(value)
+            if type(value) == type(''):
+                colPerGenotype = 1
+            else:  # a sequece?
+                colPerGenotype = len(value)
         except:
             colPerGenotype = 1
     # header
@@ -355,18 +358,18 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
                 values.append(str(affectionCode[ind.affected()]))
             # genotype
             for loc in loci:
-                genotype = [ind.allele(0, p) for p in range(ploidy)]
                 if genoCode is None:
-                    values.extend(['%s' % x for x in genotype])
+                    values.extend([ind.alleleChar(0, p) for p in range(ploidy)])
                 else:
+                    genotype = [ind.allele(0, p) for p in range(ploidy)]
                     if isinstance(genoCode, dict):
-                        code = genoCode[genotype]
+                        code = genoCode[tuple(genotype)]
                     else:
                         code = genoCode(genotype)
                     if type(code) in [type([]), type(())]:
                         values.extend(['%s' % x for x in code])
                     else:
-                        values.extend(str(code))
+                        values.append(str(code))
             # output
             print >> out, sep.join(values)
     # clode output

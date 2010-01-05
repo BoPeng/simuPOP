@@ -182,7 +182,6 @@ public:
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
 	 *  invalid (e.g. second homologus copy of chromosome Y), '.' is returned.
-	 *  HIDDEN
 	 *  <group>1-allele</group>
 	 */
 	string alleleChar(UINT idx, int ploidy = -1, int chrom = -1) const;
