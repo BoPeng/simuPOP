@@ -40,7 +40,7 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'saveCSV',
-    'SimuProgress',
+    'ProgressBar',
     'Trajectory',
     'TrajectorySimulator',
     'simulateBackwardTrajectory',
@@ -594,8 +594,8 @@ class _wxProgressBar(_baseProgressBar):
 
 
 
-class SimuProgress:
-    '''The ``SimuProgress`` class defines a progress bar. This class will use a
+class ProgressBar:
+    '''The ``ProgressBar`` class defines a progress bar. This class will use a
     text-based progress bar that outputs progressing dots (.) with intermediate
     numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``). In the GUI
     mode, a Tkinter or wxPython progress dialog will be used (``gui=Tkinter``
@@ -604,7 +604,7 @@ class SimuProgress:
 
     This class is usually used as follows::
 
-        progress = SimuProgress("Start simulation", 500)
+        progress = ProgressBar("Start simulation", 500)
         for i in range(500):
             progress.update(i+1)
         # if you would like to make sure the done message is displayed.

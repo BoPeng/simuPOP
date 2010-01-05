@@ -3948,7 +3948,7 @@ pop.evolve(
 #end_file
 
 
-#begin_file log/SimuProgress.py
+#begin_file log/ProgressBar.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3957,9 +3957,9 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-from simuPOP.utils import SimuProgress
+from simuPOP.utils import ProgressBar
 pop = sim.Population(10000, loci=[10], infoFields='index')
-prog = SimuProgress('Setting individual genotype...\n', pop.popSize(), gui=False)
+prog = ProgressBar('Setting individual genotype...\n', pop.popSize(), gui=False)
 for idx in range(pop.popSize()):
     # do something to each individaul
     pop.individual(idx).index = idx
@@ -4278,7 +4278,7 @@ options = [
      'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
     }
 ]
-pars = simuOpt.SimuParam(options, 'A demo simulation')
+pars = simuOpt.Params(options, 'A demo simulation')
 print pars.usage()
 # You can manually feed parameters...
 pars.processArgs(['--rep=10'])
@@ -4313,14 +4313,14 @@ pars.asDict()
 pars.asList()
 # Default value of parameter rep is changed
 # additional attribute is added.
-par1 = simuOpt.SimuParam(options, # all parameters with default values
+par1 = simuOpt.Params(options, # all parameters with default values
     rep=50,                     # default value of rep is changed
     additional=10               # derived parameters are added
 )
 # print all parameters except for derived ones.
 print par1.asDict()
 # All parameters are derived ...
-par2 = simuOpt.SimuParam(rep=50, pop='CEU', rate=[0.5])
+par2 = simuOpt.Params(rep=50, pop='CEU', rate=[0.5])
 print par2.asDict()
 print par2.rep, par2.pop
 #end_file
@@ -4360,7 +4360,7 @@ options = [
         validate = simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT']))
 ]
 #begin_ignore
-pars = simuOpt.SimuParam(options, 'A demo simulation')
+pars = simuOpt.Params(options, 'A demo simulation')
 print pars.usage()
 #end_ignore
 #end_file
@@ -4908,7 +4908,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.SimuParam(options, __doc__)
+    par = simuOpt.Params(options, __doc__)
     if not par.getParam():
         sys.exit(1)
     
