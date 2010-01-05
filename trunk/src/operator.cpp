@@ -681,8 +681,8 @@ void applyDuringMatingOperator(const BaseOperator & op,
 	BaseOperator * opPtr = op.clone();
 
 	opPtr->applyDuringMating(*pop, pop->rawIndBegin() + off,
-		dad < 0 ? NULL : &pop->ind(dad),
-		mom < 0 ? NULL : &pop->ind(mom));
+		dad < 0 ? NULL : &pop->individual(dad),
+		mom < 0 ? NULL : &pop->individual(mom));
 }
 
 
