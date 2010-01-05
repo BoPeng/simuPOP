@@ -62,7 +62,7 @@ def simuMigration(PopSize, m, generations, step):
     #   initiate population with males and females
         preOps = [
         # begin evolve function
-            SnpMutator(u=m),
+            SNPMutator(u=m),
         # mutation function with rate for "A -> a" set earlier
             MaSelector(loci=0, fitness=[1, 1-10*m, 1-10*2*m]),
         ],
