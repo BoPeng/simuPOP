@@ -1643,7 +1643,7 @@ simuOptsetOptionsRef
 
 
 \backslash
-simuOptSimuParamRef
+simuOptParamsRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1840,7 +1840,7 @@ simuPOPutilsmigrSteppingStoneRatesRef
 
 
 \backslash
-simuPOPutilsSimuProgressRef
+simuPOPutilsProgressBarRef
 \end_layout
 
 \begin_layout Plain Layout

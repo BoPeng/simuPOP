@@ -1569,12 +1569,12 @@ A complete graphical user interface (GUI) for users to interactively construct
  from a parameter specification list, and be used to accept user input if
  class 
 \family typewriter
-simuOpt.SimuParam
+simuOpt.Params
 \family default
  is used to handle parameters.
  Other examples include a progress bar 
 \family typewriter
-simuPOP.utils.SimuProgress
+simuPOP.utils.ProgressBar
 \family default
  and a dialog used by function 
 \family typewriter
@@ -1592,7 +1592,7 @@ simuOpt.getParam()
 \family default
  will use a terminal to accept user input interactively and 
 \family typewriter
-simuPOP.utils.SimuProgress
+simuPOP.utils.ProgressBar
 \family default
  will turn to a text-based progress bar in the non-GUI mode.
 \end_layout
@@ -1690,7 +1690,7 @@ gui
  For example, you could force the use of a text-based progress bar by using
  
 \family typewriter
-SimuProgress(gui=False)
+ProgressBar(gui=False)
 \family default
 .
 \end_layout
@@ -18018,7 +18018,7 @@ most options can be set by environmental variables and command line options
 \begin_layout Subsection
 Class 
 \family typewriter
-simuOpt.SimuParam
+simuOpt.Params
 \end_layout
 
 \begin_layout Standard
@@ -18028,7 +18028,7 @@ simuOpt
 \family default
  module also provides a class 
 \family typewriter
-SimuParam
+Params
 \family default
  to help users handle and manage script parameters.
  There are many other standard or third-party parameter handling modules
@@ -18037,7 +18037,7 @@ SimuParam
  methods.
  More specifically, if a script uses the 
 \family typewriter
-simuOpt.SimuParam
+simuOpt.Params
 \family default
  class to handle parameters,
 \end_layout
@@ -18100,7 +18100,7 @@ Define a parameter specification list.
 \begin_layout Standard
 A 
 \family typewriter
-SimuParam
+Params
 \family default
  object is created from a list of parameter specification dictionaries,
  and optional short and long descriptions of a script.
@@ -18266,7 +18266,7 @@ lstparams "caption={Using simuOpt.param to specify parameters},label={paramFunc}
 \begin_layout Subsection
 Get parameters (function 
 \family typewriter
-SimuParam.getParam
+Params.getParam
 \family default
 )
 \end_layout
@@ -18274,13 +18274,13 @@ SimuParam.getParam
 \begin_layout Standard
 A 
 \family typewriter
-SimuParam
+Params
 \family default
  object can be created from a parameter specification list.
  A few member functions are immediately usable.
  For example, 
 \family typewriter
-SimuParam.usage()
+Params.usage()
 \family default
  returns a detailed usage message about the script and all its parameters
  (although the usage message will be displayed automatically if command
@@ -18310,7 +18310,7 @@ par.rate
 \begin_layout Standard
 Function 
 \family typewriter
-SimuParam.saveConfig(filename)
+Params.saveConfig(filename)
 \family default
  saves current values of parameters to a configuraiton file 
 \family typewriter
@@ -18341,32 +18341,32 @@ filename
 \begin_layout Standard
 The 
 \family typewriter
-params.SimuParam
+params.Params
 \family default
  class provides a number of member functions that allow you to acquire user
  input in a number of ways.
  For example 
 \family typewriter
-SimuParam.loadConfig
+Params.loadConfig
 \family default
  reads a configuration file, 
 \family typewriter
-SimuParam.processArgs
+Params.processArgs
 \family default
  checks commandline options, 
 \family typewriter
-SimuParam.termGetParam
+Params.termGetParam
 \family default
  asks user input interactively, and 
 \family typewriter
-SimuParam.guiGetParam
+Params.guiGetParam
 \family default
  generates and uses a parameter input dialog.
  These functions can be used several times, on different sets of parameters.
  In addition, new options could be added programmatically using function
  
 \family typewriter
-SimuParam.addOption
+Params.addOption
 \family default
  and allows further flexibility on how parameters are generated.
  Please refer to 
@@ -18398,7 +18398,7 @@ reference "getParam"
  lists some methods to determine parameter values but the last function,
  
 \family typewriter
-SimuParam.getParam()
+Params.getParam()
 \family default
 , will be used most of the time.
  This function processes each parameter in the following order:
@@ -18455,7 +18455,7 @@ wxPython
 \begin_layout Standard
 
 \family typewriter
-SimuParam.getParam
+Params.getParam
 \family default
  returns 
 \family typewriter
@@ -18483,11 +18483,11 @@ reference "fig:parameter-input-dialog"
 \begin_layout Note
 If 
 \family typewriter
-SimuParam.valueValidFile()
+Params.valueValidFile()
 \family default
  or 
 \family typewriter
-SimuParam.valueValidDir()
+Params.valueValidDir()
 \family default
  is used to validate a parameter, 
 \series bold
@@ -18600,18 +18600,18 @@ par.rep
 \begin_layout Standard
 When there are a large number of parameters, passing this 
 \family typewriter
-SimuParam
+Params
 \family default
  object, instead of tens of parameters, is a good way to provide clean interface
 s.
  Alternatively, you can get a list or a dictionary of parameters using member
  functions 
 \family typewriter
-SimuParam.asList()
+Params.asList()
 \family default
  and 
 \family typewriter
-SimuParam.asDict()
+Params.asDict()
 \family default
 .
 \end_layout
@@ -18634,7 +18634,7 @@ additional attributes
 \series default
  to a 
 \family typewriter
-SimuParam
+Params
 \family default
  object, using either 
 \family typewriter
@@ -18656,7 +18656,7 @@ simuOpt
  object (e.g.
  they are not returned by function 
 \family typewriter
-SimuParam.asDict()
+Params.asDict()
 \family default
 ) but could be used just like regular parameters.
  Note that the same operations for 
@@ -18690,7 +18690,7 @@ reference "useSimuOpt"
  are created easily with needed attributes.
  They can be passed to functions where a 
 \family typewriter
-SimuParam
+Params
 \family default
  object is needed, although some of the attributes are not real parameters
  (in the sense that they are not created by a parameter specification dictionary
@@ -19120,7 +19120,7 @@ lstparams "caption={Simulation and use of backward-time simulated trajectories.}
 \begin_layout Subsection
 Graphical or text-based progress bar (class 
 \family typewriter
-SimuProgress
+ProgressBar
 \family default
 )
 \end_layout
@@ -19130,12 +19130,12 @@ If your simulation takes a while to finish, you could use a progress bar
  to indicate its progress.
  The 
 \family typewriter
-SimuProgress
+ProgressBar
 \family default
  class is provided for such a purpose.
  Basically, you create a 
 \family typewriter
-SimuProgress
+ProgressBar
 \family default
  project with intended total steps, and calls its 
 \family typewriter
@@ -19155,7 +19155,7 @@ Tkinter
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "SimuProgress"
+reference "ProgressBar"
 
 \end_inset
 
@@ -19163,8 +19163,8 @@ reference "SimuProgress"
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/SimuProgress.log"
-lstparams "caption={Using a text-based progress bar},label={SimuProgress}"
+filename "log/ProgressBar.log"
+lstparams "caption={Using a text-based progress bar},label={ProgressBar}"
 
 \end_inset
 
