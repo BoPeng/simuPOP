@@ -1,8 +1,6 @@
-simuPOP is a forward-time population genetics simulation environment.
-Please refer to a paper 
+simuPOP is a general-purpose individual-based forward-time population genetics
+simulation environment. Please refer to the simuPOP homepage
 
-Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics simulation environ-
-ment. bioinformatics, 21(18): 3686-3687
+    http://simupop.sourceforge.net
 
-and simuPOP user's guide and reference manual under the doc directory
 for details.
