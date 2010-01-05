@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -556,13 +556,6 @@ PolyParentsChooserRef
 
 
 \backslash
-AlphaParentsChooserRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 PyParentsChooserRef
 \end_layout
 
@@ -626,13 +619,6 @@ simuPOPMonogamousMatingRef
 
 \backslash
 simuPOPPolygamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPAlphaMatingRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -707,7 +693,7 @@ closeOutputRef
 
 
 \backslash
-describeRef
+describeEvolProcessRef
 \end_layout
 
 \begin_layout Plain Layout

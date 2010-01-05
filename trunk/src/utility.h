@@ -322,6 +322,18 @@ public:
 	}
 
 
+	PyObject * operator()(PyObject * args) const
+	{
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), args);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			PyErr_Clear();
+			throw ValueError("Function call failed\n");
+		}
+		return pyResult;
+	}
+
+
 private:
 	pyObject m_func;
 
@@ -1366,7 +1378,7 @@ private:
 
 /** Output files specified by \c '>' are closed immediately after they are
  *  written. Those specified by \c '>>' and \c '>>>' are closed by a
- *  Simulator after <tt>Simulator.evolve()</tt>. However, these files will
+ *  simulator after <tt>Simulator.evolve()</tt>. However, these files will
  *  be kept open if the operators are applied directly to a population using
  *  the operators' function form. In this case, function \c closeOutput can be
  *  used to close a specific file \e output, and close all unclosed files if

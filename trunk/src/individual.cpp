@@ -170,6 +170,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 	size_t endP = 0;
 	size_t beginCh = 0;
 	size_t endCh = 0;
+
 	if (ply.allAvail())
 		endP = ploidy();
 	else {
@@ -210,14 +211,14 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		}
 		++endCh;
 	}
-		
-	if (endP > beginP + 1){
+
+	if (endP > beginP + 1) {
 		// has to be all chromosomes
 		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
 			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
 			m_genoPtr + endP * totNumLoci());
-	} else 
+	} else
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
@@ -283,6 +284,7 @@ void Individual::setGenotype(const vectora & geno, const uintList & ply, const u
 	size_t idx = 0;
 
 	vectoru ploidys = ply.elems();
+
 	if (ply.allAvail()) {
 		for (size_t i = 0; i < ploidy(); ++i)
 			ploidys.push_back(i);
@@ -309,6 +311,7 @@ void Individual::setGenotype(const vectora & geno, const uintList & ply, const u
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
 			for (UINT i = 0; i < numLoci(chrom); i++, ++idx)
 				*(ptr + i) = geno[idx % sz];
 		}

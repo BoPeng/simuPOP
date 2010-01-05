@@ -281,28 +281,28 @@ class TestMatingSchemes(unittest.TestCase):
     def testPyParentsChooserRetValue(self):
         'Testing the return value of Python parents chooser'
         import random
-        def retIndex(pop, sp):
+        def retIndex(pop, subPop):
             while True:
-                yield random.randint(0, pop.subPopSize(sp) - 1)
-        def retIndexes(pop, sp):
+                yield random.randint(0, pop.subPopSize(subPop) - 1)
+        def retIndexes(pop, subPop):
             while True:
-                yield random.randint(0, pop.subPopSize(sp) - 1), random.randint(0, pop.subPopSize(sp) -1)
-        def retInd(pop, sp):
+                yield random.randint(0, pop.subPopSize(subPop) - 1), random.randint(0, pop.subPopSize(subPop) -1)
+        def retInd(pop, subPop):
             while True:
-                yield pop.individual(random.randint(0, pop.subPopSize(sp) - 1))
-        def retInds(pop, sp):
+                yield pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+        def retInds(pop, subPop):
             while True:
-                yield pop.individual(random.randint(0, pop.subPopSize(sp) - 1)), \
-                     pop.individual(random.randint(0, pop.subPopSize(sp) - 1))
-        def retPop(pop, sp):
+                yield pop.individual(random.randint(0, pop.subPopSize(subPop) - 1)), \
+                     pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+        def retPop(pop, subPop):
             while True:
                 yield pop
-        def retWrongIndex(pop, sp):
+        def retWrongIndex(pop, subPop):
             while True:
-                yield pop.subPopSize(sp)
-        def retWrongIndexes(pop, sp):
+                yield pop.subPopSize(subPop)
+        def retWrongIndexes(pop, subPop):
             while True:
-                yield 0, pop.subPopSize(sp)
+                yield 0, pop.subPopSize(subPop)
         def testPyRetValue(func):
             pop = Population([200]*5)
             pop.evolve(

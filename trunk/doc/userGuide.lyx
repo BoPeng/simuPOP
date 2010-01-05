@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7329,90 +7329,6 @@ lstparams "caption={Asexual random mating},label={RandomSelection}"
 \end_layout
 
 \begin_layout Subsection
-Mating with alpha individuals *
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-AlphaMating
-\family default
- mating scheme is intended to simulate animal populations in which only
- individuals with alpha status have the power to mate.
- In this mating scheme, a number of alpha individuals with specified sex
- (
-\family typewriter
-alphaSex
-\family default
-) are determined, either randomly (
-\family typewriter
-alphaNum
-\family default
-) or according to values at an information field (
-\family typewriter
-alphaField
-\family default
-).
- During mating, only individuals from this alpha group can be selected to
- mate.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "AlphaMating"
-
-\end_inset
-
- gives a simple evolutionary scenario where two alpha males are chosen according
- to individual fitness values at each generation.
- The fitness value of each individual is determined by his/her genotype
- at the first locus, 
-\family typewriter
-0.8
-\family default
-, 
-\family typewriter
-0.8
-\family default
-, and 
-\family typewriter
-1
-\family default
- for genotype 
-\family typewriter
-AA
-\family default
-, 
-\family typewriter
-Aa
-\family default
-, and 
-\family typewriter
-aa
-\family default
- respectively.
- Because individuals having mutant 
-\family typewriter
-a
-\family default
- have a high probability to be selected, and become the alpha male in this
- population, the frequency of this mutant tend to increase in this population.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/AlphaMating.log"
-lstparams "caption={Random mating with alpha individuals},label={AlphaMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Mating in haplodiploid populations
 \end_layout
 
@@ -8364,9 +8280,21 @@ Orders at which operators are applied during an evolutionary process
 
 \begin_layout Standard
 If you suspect that your simulation is not running as expected, you can
- have a close look at your evolutionary process using function 
+ have a close look at your evolutionary process by setting the 
 \family typewriter
-describe()
+dryrun
+\family default
+ parameter of an 
+\family typewriter
+evolve
+\family default
+ function to 
+\family typewriter
+True
+\family default
+, or by calling function 
+\family typewriter
+describeEvolProcess()
 \family default
 .
  This function takes the same set of parameters as 

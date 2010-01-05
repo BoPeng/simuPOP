@@ -191,8 +191,13 @@ vectoru Simulator::evolve(
                           const MatingScheme & matingScheme,
                           const opList & postOps,
                           const opList & finalOps,
-                          int gens)
+                          int gens, bool dryrun)
 {
+	if (dryrun) {
+		cerr << describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gens, numRep()) << endl;
+		return vectoru(numRep());
+	}
+
 	if (numRep() == 0)
 		return vectoru();
 
@@ -428,7 +433,7 @@ int Simulator::__cmp__(const Simulator & rhs) const
 }
 
 
-string describe(const opList & initOps,
+string describeEvolProcess(const opList & initOps,
                 const opList & preOps,
                 const MatingScheme & matingScheme,
                 const opList & postOps,

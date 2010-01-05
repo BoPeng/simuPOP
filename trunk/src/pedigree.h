@@ -35,20 +35,14 @@
 namespace simuPOP {
 
 /** The pedigree class is derived from the population class. Unlike a
- *  population class that emphasizes on Individual properties, the pedigree
+ *  population class that emphasizes on individual properties, the pedigree
  *  class emphasizes on relationship between individuals. An unique ID for
  *  all individuals is needed to create a pedigree object from a population
- *  object. Compared to the \c Population class, a \c pedigree object is
+ *  object. Compared to the \c Population class, a \c Pedigree object is
  *  optimized for access individuals by their IDs, regardless of population
  *  structure and ancestral generations. Note that although the pedigree class
- *  is derived from the population class so most of the population member
- *  functions could be called, functions such as \c removeSubPops that alter
- *  population structure are disabled.
- *
- *  A pedigree object can be created from a population, or loaded from
- *  a disk file, which is usually saved by an operator during a previous
- *  evolutionary process. Depending on how a pedigree is saved, sex and
- *  affection status information may be missing.
+ *  is derived from the population class, functions such as \c removeSubPops
+ *  that alter population structure are disabled.
  */
 class Pedigree : public Population
 {
@@ -100,22 +94,20 @@ public:
 	UINT numParents();
 
 	/** This function locates relatives (of type \e relType) of each individual
-	 *  and store their ID (if \c idField is specified) or indexes (if
-	 *  \c idField is not specified) in information fields \e relFields. The
-	 *  length of \e relFields determines how many relatives an individual can
-	 *  have.
+	 *  and store their IDs in information fields \e relFields. The length of
+	 *  \e relFields determines how many relatives an individual can have.
 	 *
-	 *  Parameter \e relType specifies what type of relative to locate. It can
-	 *  be
+	 *  Parameter \e relType specifies what type of relative to locate, which
+	 *  can be
 	 *  \li \c SPOUSE locate spouses with whom an individual has at least one
 	 *       common offspring.
 	 *  \li \c OUTBRED_SPOUSE locate non-slibling spouses, namely spouses with
 	 *       no shared parent.
 	 *  \li \c OFFSPRING all offspring of each individual.
 	 *  \li \c COMMON_OFFSPRING common offspring between each individual and its
-	 *       spouse (located by SPOUSE or OUTBRED_SPOUSE). \e relFields should
-	 *       consist of an information field for spouse and \c m-1 fields for
-	 *       offspring where \c m is the number of fields.
+	 *       spouse (located by \c SPOUSE or \c OUTBRED_SPOUSE). \e relFields
+	 *       should consist of an information field for spouse and \c m-1 fields
+	 *       for offspring where \c m is the number of fields.
 	 *  \li \c FULLSIBLING siblings with common father and mother,
 	 *  \li \c SIBLING siblings with at least one common parent.
 	 *
@@ -151,8 +143,8 @@ public:
 	 *  should be a list of information fields, \e sex and
 	 *  \e affectionStatus are optional. If specified, they should be a list of
 	 *  \c ANY_SEX, \c MALE_ONLY, \c FEMALE_ONLY, \c SAME_SEX and \c OppsiteSex
-	 *  for parameter \e sex, and a list of \e UNAFFECTED, \e AFFECTED
-	 *  and \e ANY_AFFECTION_STATUS for parameter \e affectionStatus.
+	 *  for parameter \e sex, and a list of \c UNAFFECTED, \c AFFECTED
+	 *  and \c ANY_AFFECTION_STATUS for parameter \e affectionStatus.
 	 *
 	 *  For example, if <tt>fieldPath = [['father_id', 'mother_id'],
 	 *  ['sib1', 'sib2'], ['off1', 'off2']]</tt>, and <tt>sex = [ANY_SEX,

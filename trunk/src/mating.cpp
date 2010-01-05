@@ -799,138 +799,6 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void AlphaParentsChooser::initialize(Population & pop, SubPopID subPop)
-{
-	m_numMale = 0;
-	m_numFemale = 0;
-
-	UINT info_id = 0;
-	bool hasAlphaMale = m_alphaNum != 0 || !m_alphaField.empty();
-	bool useInfo = false;
-	if (!m_alphaField.empty()) {
-		info_id = pop.infoIdx(m_alphaField);
-		useInfo = true;
-	}
-
-	IndIterator it = pop.indIterator(subPop);
-	for (; it.valid(); ++it) {
-		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
-		    && it->info(info_id) == 0.)
-			continue;
-		if (it->sex() == MALE)
-			m_numMale++;
-		else
-			m_numFemale++;
-	}
-
-	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
-		ValueError, "No alpha individual or Individual of opposite sex is found.");
-
-	// allocate memory at first for performance reasons
-	m_maleIndex.resize(m_numMale);
-	m_femaleIndex.resize(m_numFemale);
-
-	m_selection = pop.hasInfoField(m_selectionField);
-	UINT fit_id = 0;
-	if (m_selection) {
-		fit_id = pop.infoIdx(m_selectionField);
-		m_maleFitness.resize(m_numMale);
-		m_femaleFitness.resize(m_numFemale);
-	}
-
-	m_numMale = 0;
-	m_numFemale = 0;
-
-	it = pop.indIterator(subPop);
-	for (; it.valid(); it++) {
-		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
-		    && it->info(info_id) == 0.)
-			continue;
-		if (it->sex() == MALE) {
-			m_maleIndex[m_numMale] = it.rawIter();
-			if (m_selection)
-				m_maleFitness[m_numMale] = it->info(fit_id);
-			m_numMale++;
-		} else {
-			m_femaleIndex[m_numFemale] = it.rawIter();
-			if (m_selection)
-				m_femaleFitness[m_numFemale] = it->info(fit_id);
-			m_numFemale++;
-		}
-	}
-
-	if (m_selection) {
-		m_malesampler.set(m_maleFitness);
-		m_femalesampler.set(m_femaleFitness);
-		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
-		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
-	}
-
-	if (!hasAlphaMale || useInfo || m_alphaNum >=
-	    (m_alphaSex == MALE ? m_numMale : m_numFemale)) {
-		m_initialized = true;
-		return;
-	}
-
-	// now, we need to choose a few alpha individuals
-	vector<RawIndIterator> m_newAlphaIndex;
-	vectorf m_newAlphaFitness;
-	// select Individuals
-	for (size_t i = 0; i < m_alphaNum; ++i) {
-		if (m_selection) {     // fix me, without replacement!
-			// using weighted sampler.
-			m_newAlphaIndex.push_back(
-				m_alphaSex == MALE ? m_maleIndex[m_malesampler.get()]
-				: m_femaleIndex[m_femalesampler.get()]);
-			m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
-		} else     // fix me, without replacement!
-			m_newAlphaIndex.push_back(
-				m_alphaSex == MALE ? m_maleIndex[getRNG().randInt(m_numMale)]
-				: m_femaleIndex[getRNG().randInt(m_numFemale)]);
-	}
-	if (m_alphaSex == MALE) {
-		m_maleIndex.swap(m_newAlphaIndex);
-		if (m_selection)
-			m_malesampler.set(m_newAlphaFitness);
-		m_numMale = m_maleIndex.size();
-	} else {
-		m_femaleIndex.swap(m_newAlphaIndex);
-		if (m_selection)
-			m_femalesampler.set(m_newAlphaFitness);
-		m_numFemale = m_femaleIndex.size();
-	}
-	m_initialized = true;
-}
-
-
-ParentChooser::IndividualPair AlphaParentsChooser::chooseParents(RawIndIterator)
-{
-	DBG_ASSERT(initialized(), SystemError,
-		"Please initialize this parent chooser before using it");
-
-	Individual * dad = NULL;
-	Individual * mom = NULL;
-
-	// this exception should be raised also in optimized mode because the cause
-	// can be random.
-	if (m_numMale == 0)
-		throw RuntimeError("AlphaParentsChooser fails because there is no male individual in a subpopulation.");
-	if (m_numFemale == 0)
-		throw RuntimeError("AlphaParentsChooser fails because there is no female individual in a subpopulation ");
-
-	// using weidhted sampler.
-	if (m_selection) {                                    // with selection
-		dad = &*(m_maleIndex[m_malesampler.get()]);
-		mom = &*(m_femaleIndex[m_femalesampler.get()]);
-	} else {
-		dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
-		mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
-	}
-
-	return std::make_pair(dad, mom);
-}
-
-
 /*
    void infoParentsChooser::initialize(Population & pop, SubPopID sp)
    {
@@ -1070,12 +938,22 @@ void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 	m_begin = pop.indIterator(sp);
 
 	m_popObj = pyPopObj(static_cast<void *>(&pop));
-	// if pop is valid?
-	DBG_FAILIF(m_popObj == NULL, SystemError,
-		"Could not pass Population to the provided function. \n"
-		"Compiled with the wrong version of SWIG?");
 
-	m_generator = m_func("(Oi)", m_popObj, sp);
+	PyObject * args = PyTuple_New(m_func.numArgs());
+	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+	for (int i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
+		if (arg == "pop")
+			PyTuple_SET_ITEM(args, i, m_popObj);
+		else if (arg == "subPop")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(sp));
+		else {
+			DBG_FAILIF(true, ValueError,
+				"Only parameters 'pop' and 'subPop' are acceptable in a generator function.");
+		}
+	}
+	m_generator = m_func(args);
+	Py_DECREF(args);
 
 	// test if m_generator is a generator
 	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
