@@ -72,8 +72,8 @@ print "p\tP00 (p^2)\tP01 (2p(1-p))\tP11 ((1-p)^2)"
 pop.evolve(
     initOps = [
         InitSex(),
-        InitByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
-        InitByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
+        InitGenotype(freq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)]),
+        InitGenotype(freq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)])
     ],
     matingScheme = RandomMating(),
     postOps = [

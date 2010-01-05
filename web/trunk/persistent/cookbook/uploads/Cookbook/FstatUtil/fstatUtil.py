@@ -172,7 +172,7 @@ if __name__ == '__main__':
     outfile = 'Fstatout.dat'
     pop = Population(size=[3,4,5], loci=[2,3],
                      lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
-    initByFreq(pop, [.1, .2, .3, .4])
+    initGenotype(pop, freq=[.1, .2, .3, .4])
     saveFStat(pop, outfile)
     print open(outfile).read()
     # load the saved population(in fStat format) into pop1(in simuPOP format) 

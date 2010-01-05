@@ -113,7 +113,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
         # everyone will have the same genotype: 01/10
         initOps = [
             InitSex(),
-            InitByValue([0,1,1,0])
+            InitGenotype(genotype=[0,1,1,0])
         ],
         matingScheme = RandomMating(ops=Recombinator(rates = recRate)), 
         postOps = [

@@ -43,13 +43,13 @@ def simuPodMating(numPods, podSize):
     podSize     size of each pod
     '''
     pop = Population(numPods * podSize, loci=[2], infoFields=['pod'])
-    initByFreq(pop, [0.2, 0.8])
+    initGenotype(pop, freq=[0.2, 0.8])
     pop.setIndInfo([x for z in range(numPods) for x in [z]*podSize], 'pod')
     pop.setVirtualSplitter(InfoSplitter('pod', range(numPods)))
     pop.evolve(
         initOps = [
             InitSex(),
-            InitByFreq([0.5, 0.5])
+            InitGenotype(freq=[0.5, 0.5])
         ],
             # calculate size of pods
         preOps = Stat(popSize=True, subPops=[(0,x) for x in range(numPods)]),

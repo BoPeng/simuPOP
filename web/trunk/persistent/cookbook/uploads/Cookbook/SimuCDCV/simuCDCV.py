@@ -542,9 +542,9 @@ def simuCDCV(numDSL, initSpec, selModel,
 
     # determine mutation etc
     if mutaModel == 'k-allele':
-        mutation = KamMutator(rates=mutaRate, loci=range(numDSL), k=maxAllele+1)
+        mutation = KAlleleMutator(rates=mutaRate, loci=range(numDSL), k=maxAllele+1)
     else:
-        mutation = SmmMutator(rates=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
+        mutation = StepwiseMutator(rates=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
     # determine selection
     #
     if selModelAllDSL == 'customized':
@@ -601,7 +601,7 @@ def simuCDCV(numDSL, initSpec, selModel,
         initOps=
             [InitSex()] + 
             # initialize DSL 
-            [InitByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
+            [InitGenotype(loci=[x], freq=initSpec[x]) for x in range(numDSL)] +
             [PyExec('allelesBeforeExpansion=[]')],
         preOps = [
             #

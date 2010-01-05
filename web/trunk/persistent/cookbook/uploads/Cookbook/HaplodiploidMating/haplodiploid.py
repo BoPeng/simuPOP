@@ -111,7 +111,7 @@ def simuHaplodiploid(N, numMito=3, gen=10):
         initOps=[
             InitSex(),
             # initialize alleles 0, 1, 2, 3 with different frequencies
-            InitByFreq([0.4] + [0.2]*3),
+            InitGenotype(freq=[0.4] + [0.2]*3),
         ],
         matingScheme = HaplodiploidRecMating(rates=0.1,
             # this operator is appended, instead of replace the haplodiploid

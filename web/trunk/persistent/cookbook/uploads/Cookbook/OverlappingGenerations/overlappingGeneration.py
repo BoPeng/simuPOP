@@ -50,7 +50,7 @@ def simuOverlappingGeneration(size, maxAge, minMatingAge, maxMatingAge, gen):
     pop.evolve(
         initOps = [
             InitSex(),
-            InitByFreq([0.5, 0.5])
+            InitGenotype(freq=[0.5, 0.5])
         ],
             # increase age by 1
         preOps = InfoExec('age += 1'),

@@ -27,7 +27,7 @@ def simuSelfing(perc, N, n_rep, gen):
     simu.evolve(
         initOps= [
             InitSex(),
-            InitByValue([0, 1, 1, 0]),
+            InitGenotype(genotype=[0, 1, 1, 0]),
             PyExec('ld_hist=[]')  # record ld
         ],
         matingScheme = HeteroMating([

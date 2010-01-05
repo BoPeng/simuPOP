@@ -60,7 +60,7 @@ def simuSpatial():
         # only subpopulation 55 has genotype 1, 1
         initOps = [
             InitSex(),
-            InitByValue([1, 1], subPops=55),
+            InitGenotype(genotype=[1, 1], subPops=55),
         ],
         preOps = Migrator(rate=r),
         matingScheme = RandomSelection(),

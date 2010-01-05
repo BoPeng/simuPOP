@@ -51,7 +51,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     pop.evolve(
         initOps = [
             InitSex(),
-            InitByFreq([0.5, 0.5]),
+            InitGenotype(freq=[0.5, 0.5]),
             PyExec('AaNum=[]'),  # initialize a list in population's local dictionary
             ],
             # calculate virtual population sizes, and allele frequency at locus 0.

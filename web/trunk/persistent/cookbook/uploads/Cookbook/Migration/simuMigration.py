@@ -63,7 +63,7 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
     # subpopulations and been set evenly distributed between 0 and 1.
     # Therefore, the average allele frequency named theoretical value among all subpopulations will be 0.5
     for i in range(numOfSubPops):
-        initByFreq(pop, [i*1./(numOfSubPops-1), 1 - i*1./(numOfSubPops-1)], subPops=[i])
+        initGenotype(pop, freq=[i*1./(numOfSubPops-1), 1 - i*1./(numOfSubPops-1)], subPops=[i])
 
     # check if plot
     if useRPy:

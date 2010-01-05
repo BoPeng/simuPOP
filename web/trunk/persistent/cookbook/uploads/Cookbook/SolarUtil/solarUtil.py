@@ -65,7 +65,7 @@ if __name__ == '__main__':
     outfile = 'SolarOut.dat'
     pop = Population(size=[100]*3, loci=[2,3],
                      lociNames=['loc1-1','loc1-2','loc2-1','loc2-2','loc2-3'])
-    initByFreq(pop, [.1, .3, .6])
+    initGenotype(pop, freq=[.1, .3, .6])
     saveSolarFrqFile(pop, outfile)
     print open(outfile).read()
 

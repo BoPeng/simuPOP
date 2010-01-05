@@ -19,7 +19,7 @@ def recordTrajectory(N, initFreq, gen):
     pop.evolve(
         initOps = [
             InitSex(),
-            InitByFreq([1 - initFreq, initFreq]),
+            InitGenotype(freq=[1 - initFreq, initFreq]),
             # initialize an array in the population's local namespace
             PyExec('traj=[]')
         ],
@@ -49,7 +49,7 @@ def simuFollowTrajectory(N, locus, initFreq, traj):
     simu.evolve(
         initOps = [
             InitSex(),
-            InitByFreq([1 - initFreq, initFreq])
+            InitGenotype(freq=[1 - initFreq, initFreq])
         ],
         matingScheme = ControlledRandomMating(loci=locus, alleles=1, freqFunc=func),
         postOps = [Stat(alleleFreq=[locus], at=-1)],

@@ -651,32 +651,36 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ### initialization 
     ###
     if maxAle > 1:    # Not SNP
+        def initByProportion(pop, param):
+            pop.setVirtualSplitter(ProportionSplitter([.2]*5))
+            for x in range(48, 53):
+                initGenotype(pop, genotype=[x]*sum(param), subPops=[(0,x-48)])
+            return True
         initOperators = [
             InitSex(),
             # initialize all loci with 5 haplotypes
-            InitByValue(value=[[x]*sum(loci) for x in range(48, 53)],
-                proportions=[.2]*5), 
+            PyOperator(func=initByProportion, param=loci),
             # and then init DSL with all wild type alleles
-            InitByValue([0]*len(DSL), loci=DSL)
+            InitGenotype(genotype=[0]*len(DSL), loci=DSL)
         ]
     else: # SNP
         initOperators = [
             InitSex(),
             # initialize all loci with two haplotypes (0001,111)
-            InitByValue(value=[[x]*sum(loci) for x in [0,1] ],
+            InitGenotype(genotype=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2), 
             # and then init DSL with all wild type alleles
-            InitByValue([0]*len(DSL), loci=DSL)
+            InitGenotype(genotype=[0]*len(DSL), loci=DSL)
         ]            
     ###
     ### mutation, start from gen 0,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = SmmMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
+        mutator = StepwiseMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = KamMutator(rates=mutaRate, k=2, loci=nonDSL)
+        mutator = KAlleleMutator(rates=mutaRate, k=2, loci=nonDSL)
     ###
     ### Recombination
     ###

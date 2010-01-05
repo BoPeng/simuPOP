@@ -18,8 +18,8 @@ pop = Population([10000]*2, loci=[1]*5, infoFields='migrate_to')
 pop.evolve(
     initOps = [
         InitSex(),
-        InitByFreq([0.5, 0.5], loci=[0, 2]),
-        InitByFreq([0.2, 0.4, 0.4], loci=[1, 3, 4]),
+        InitGenotype(freq=[0.5, 0.5], loci=[0, 2]),
+        InitGenotype(freq=[0.2, 0.4, 0.4], loci=[1, 3, 4]),
     ],
     matingScheme = RandomMating(),
     postOps = [

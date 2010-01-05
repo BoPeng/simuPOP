@@ -87,7 +87,7 @@ def simu(N):
     ' run the simulation! '
     pop = Population(N, loci=[1], ploidy=2)
     initSex(pop)
-    initByValue(pop, value=[1])
+    initGenotype(pop, genotype=[1])
     # you can also use a PointerMutator ...
     pop.individual(0).setAllele(2,0)
     pop.individual(0).setAllele(2,1)

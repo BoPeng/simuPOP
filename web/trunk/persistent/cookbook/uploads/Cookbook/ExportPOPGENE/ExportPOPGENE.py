@@ -66,12 +66,12 @@ if __name__ == '__main__':
     # haploid
     outfile = 'PopGeneOut_hap.dat'
     pop = Population(size=[2, 3], ploidy=1, loci=[2, 3])
-    initByFreq(pop, [.3, .4, .3])
+    initGenotype(pop, freq=[.3, .4, .3])
     savePOPGENEDatFile(pop, outfile, 'testing haploid')
     print open(outfile).read()    
     # diploid
     outfile = 'PopGeneOut_dip.dat'
     pop = Population(size=[4, 5], ploidy=2, loci=[2, 4], alleleNames=['A','B'])
-    initByFreq(pop, [.3, .7])
+    initGenotype(pop, freq=[.3, .7])
     savePOPGENEDatFile(pop, outfile, 'testing diploid')
     print open(outfile).read()

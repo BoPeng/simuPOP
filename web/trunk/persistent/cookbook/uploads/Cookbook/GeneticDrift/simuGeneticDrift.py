@@ -77,7 +77,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
         # everyone initially will have the same allele frequency
         initOps = [
             InitSex(),
-            InitByFreq([p, 1-p])
+            InitGenotype(freq=[p, 1-p])
         ],
         matingScheme = RandomMating(),
         postOps = [

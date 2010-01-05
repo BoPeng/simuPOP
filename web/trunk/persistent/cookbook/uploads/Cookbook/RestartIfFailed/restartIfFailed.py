@@ -23,7 +23,7 @@ def simuRestartIfFailed(N, initFreq, freqRange, gen, genCheck):
     '''
     pop = Population(size=N, loci=[1])
     initSex(pop)
-    initByFreq(pop, [1 - initFreq, initFreq])
+    initGenotype(pop, freq=[1 - initFreq, initFreq])
     # put freqRange as a population variable so that it can be
     # used in an expression
     pop.dvars().fr = freqRange

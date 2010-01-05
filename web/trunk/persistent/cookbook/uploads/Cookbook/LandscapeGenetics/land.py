@@ -154,7 +154,7 @@ def killUnfit(pop):
 
 pop.evolve(
     initOps = [
-        InitByFreq(alleleFreq=[1,0])
+        InitGenotype(freq=[1,0])
     ],
     preOps = [
         PyOperator(killUnfit),
