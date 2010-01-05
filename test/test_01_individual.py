@@ -132,8 +132,10 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(gt, [1, 0, 1, 0, 1, 0, 1])
         else:
             self.assertEqual(gt, [4, 2, 3, 4, 2, 3, 4])
+        #
         self.assertRaises(exceptions.IndexError, ind.genotype, 2)
         self.assertRaises(exceptions.IndexError, ind.genotype, 0, 2)
+        # FIXME: test the list version of parameter ploidy and chroms
 
     def testSetGenotype(self):
         'Testing individual::setGenotype(geno), setgenotype(geno, p), '
@@ -163,26 +165,23 @@ class TestIndividual(unittest.TestCase):
         else:
             ind.setGenotype([4, 2, 3], 1, 1)
             self.assertEqual(gt, [4, 2, 3, 4, 2, 3, 4])
+        # FIXME: test the list version of parameter ploidy and chroms
 
     def testSex(self):
-        'Testing individual::sex(), setSex(sex), sexChar()'
+        'Testing individual::sex(), setSex(sex)'
         pop = self.getPop()
         ind = pop.individual(0)
         self.assertEqual(ind.sex(), MALE)
-        self.assertEqual(ind.sexChar(), 'M')
         ind.setSex(FEMALE)
         self.assertEqual(ind.sex(), FEMALE)
-        self.assertEqual(ind.sexChar(), 'F')
 
     def testAffected(self):
-        'Testing individual::affected(), affectedChar(), setAffected(affected)'
+        'Testing individual::affected(), setAffected(affected)'
         pop = self.getPop()
         ind = pop.individual(0)
         self.assertEqual(ind.affected(), False)
-        self.assertEqual(ind.affectedChar(), 'U')
         ind.setAffected(True)
         self.assertEqual(ind.affected(), True)
-        self.assertEqual(ind.affectedChar(), 'A')
 
     def testInfo(self):
         'Testing individual::info(idx), info(name)'

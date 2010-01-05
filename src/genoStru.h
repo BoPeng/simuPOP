@@ -252,25 +252,23 @@ namespace simuPOP {
  *  All individuals in a population share the same genotypic properties such as
  *  number of chromosomes, number and position of loci, names of markers,
  *  chromosomes, and information fields. These properties are stored in this
- *  \c GenoStruTrait class and are accessible from \c Individual,
- *  \c Population, and \c Simulator classes. Currently, a genotypic structure
- *  consists of
+ *  \c GenoStruTrait class and are accessible from both \c Individual and
+ *  \c Population classes. Currently, a genotypic structure consists of
  *
  *  \li Ploidy, namely the number of homologous sets of chromosomes, of a
- *      Population. HAPLODIPLOID Population is also supported.
+ *      population. Haplodiploid population is also supported.
  *  \li Number of chromosomes and number of loci on each chromosome.
  *  \li Positions of loci, which determine the relative distance between loci
  *      on the same chromosome. No unit is assumed so these positions can be
  *      ordinal (\c 1, \c 2, \c 3, ..., the default), in physical distance
- *      (\c bp, \c kb or \c mb), or in map distance (e.g. centiMorgan)
+ *      (\c bp, \c kb or \c mb), or in map distance (e.g. \c centiMorgan)
  *      depending on applications.
- *  \li Names of alleles. Although alleles at different loci usually have
- *      different names, simuPOP uses the same names for alleles across loci
- *      for simplicity.
+ *  \li Names of alleles, which can either be shared by all loci or be
+ *      specified for each locus.
  *  \li Names of loci and chromosomes.
  *  \li Names of information fields attached to each individual.
  *
- *  In addition to basic property access functions, this class also provides
+ *  In addition to basic property access functions, this class provides
  *  some utility functions such as \c locusByName, which looks up a locus by
  *  its name.
  */
@@ -278,8 +276,8 @@ class GenoStruTrait
 {
 public:
 	/**
-	 * A \c GenoStruTrait object is created with the creation of a \c Population
-	 * so it cannot be initialized directly.
+	 * A \c GenoStruTrait object is created with the construction of a
+	 * \c Population object and cannot be initialized directly.
 	 */
 	GenoStruTrait() : m_genoStruIdx(MaxTraitIndex)
 	{
@@ -426,7 +424,7 @@ public:
 	}
 
 
-	/** return the number of loci on all chromosomes.
+	/** return a list of the number of loci on all chromosomes.
 	 *  <group>3-locus</group>
 	 */
 	vectoru numLoci() const
@@ -611,8 +609,7 @@ public:
 
 
 	/**
-	 * return the name of a chromosome \e chrom. Default to \c chrom# where #
-	 * is the 1-based index of the chromosome.
+	 * return the name of a chromosome \e chrom.
 	 *  <group>2-chromosome</group>
 	 */
 	string chromName(const UINT chrom) const
@@ -675,7 +672,7 @@ public:
 	/** return the name of allele \e allele at \e lcous specified by the
 	 *  \e alleleNames parameter of the \c Population function. \e locus could
 	 *  be ignored if alleles at all loci share the same names. If the name of
-	 *  an allele is unspecified, its index (\c '0', \c '1', \c '2', etc) is
+	 *  an allele is unspecified, its value (\c '0', \c '1', \c '2', etc) is
 	 *  returned.
 	 *  <group>4-allele</group>
 	 */

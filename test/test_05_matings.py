@@ -120,7 +120,12 @@ class TestMatingSchemes(unittest.TestCase):
         simu = Simulator( Population(size=[40]))
         simu.evolve(initOps = InitSex(), matingScheme=ms, gen=1)
         # return individual sex as a string
-        return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
+        def sexChar(sex):
+            if sex == MALE:
+                return 'M'
+            else:
+                return 'F'
+        return ''.join([sexChar(ind.sex()) for ind in simu.population(0).individuals()])
 
     def testSexMode(self):
         'Testing parameter sexMode of mating schemes'
