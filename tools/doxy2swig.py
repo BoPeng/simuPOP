@@ -743,8 +743,8 @@ class Doxy2SWIG:
             # for polySex and alphaSex
             for sex in ['MALE', 'FEMALE']:
                 text = text.replace('Sex=%s' % eval('sim.' + sex), 'Sex=%s' % sex)
-            for transmitter in [ 'haplodiploidGenoTransmitter', 'mendelianGenoTransmitter', 'mitochondrialGenoTransmitter',
-                'selfingGenoTransmitter', 'cloneGenoTransmitter', 'recombinator']:
+            for transmitter in [ 'HaplodiploidGenoTransmitter', 'MendelianGenoTransmitter', 'MitochondrialGenoTransmitter',
+                'SelfingGenoTransmitter', 'CloneGenoTransmitter', 'Recombinator']:
                 text = text.replace('ops=%s' % eval('sim.' + transmitter+'()'), 'ops=%s' % (transmitter+'()'))
         except Exception, e:
             print e

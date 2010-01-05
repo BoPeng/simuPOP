@@ -1301,34 +1301,6 @@ print ind.sex(), ind.genotype()
 print par.sex(), par.genotype()
 #end_file
 
-#begin_file log/AlphaMating.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.getRNG().setSeed(12345)
-#end_ignore
-pop = sim.Population(1000, loci=5, 
-    infoFields=['father_idx', 'mother_idx', 'fitness'])
-pop.evolve(
-    initOps=[
-        sim.InitSex(),
-        sim.InitGenotype(freq=[0.5, 0.5])
-    ],
-    preOps=sim.MaSelector(loci=0, fitness=[0.8, 0.8, 1]),
-    matingScheme=sim.AlphaMating(alphaSex=sim.MALE, alphaNum=2,
-        ops=[sim.MendelianGenoTransmitter(), sim.ParentsTagger()]),
-    postOps=[
-        sim.Stat(alleleFreq=0),
-        sim.PyEval(r'"%.2f\n" % alleleFreq[0][1]', step=5)
-    ],
-    gen = 20,
-)
-[int(ind.father_idx) for ind in pop.individuals()][:10]
-[int(ind.mother_idx) for ind in pop.individuals()][:10]
-#end_file
 
 #begin_file log/HaplodiploidMating.py
 #begin_ignore
@@ -1556,7 +1528,7 @@ def outputstat(pop):
     return True
 
 # describe this evolutionary process
-print sim.describe(
+print sim.describeEvolProcess(
     initOps=[
         sim.InitSex(),
         sim.InitInfo(lambda: random.randint(0, 75), infoFields='age'),

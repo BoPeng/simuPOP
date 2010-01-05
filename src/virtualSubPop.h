@@ -214,11 +214,11 @@ private:
  *
  *  Each VSP has a name. A default name is determined by each splitter but you
  *  can also assign a name to each VSP. The name of a VSP can be retrieved by
- *  function \c Population.subPopName.
+ *  function \c BaseVspSplitter.name() or \c Population.subPopName().
  *
  *  Only one VSP splitter can be assigned to a population, which defined VSPs
  *  for all its subpopulations. If different splitters are needed for different
- *  subpopulations, a \c CombinedSplitter should be used.
+ *  subpopulations, a \c CombinedSplitter can be used.
  */
 class BaseVspSplitter
 {
@@ -378,7 +378,8 @@ public:
 	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
 	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
-	 *  of the combined splitters unless a new set of names is specified.
+	 *  of the combined splitters unless a new set of names is specified. If
+	 *  a \e vspMap was used, names from different VSPs will be joined by \c "or".
 	 */
 	string name(SubPopID vsp);
 
@@ -469,7 +470,7 @@ class SexSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a sex splitter that defines male and female VSPs. These VSPs
-	 *  are named \c MALE and \c FEMALE unless a new set of names are specified
+	 *  are named \c Male and \c Female unless a new set of names are specified
 	 *  by parameter \e names.
 	 */
 	SexSplitter(const stringList & names = vectorstr()) : BaseVspSplitter(names)
@@ -523,7 +524,7 @@ class AffectionSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter that defined two VSPs by affection status.These VSPs
-	 *  are named \c UNAFFECTED and \c AFFECTED unless a new set of names are
+	 *  are named \c Unaffected and \c Affected unless a new set of names are
 	 *  specified by parameter \e names.
 	 */
 	AffectionSplitter(const stringList & names = vectorstr()) : BaseVspSplitter(names)
@@ -735,8 +736,8 @@ public:
 	/// CPPONLY
 	void activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop);
 
-	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b]"</tt> where
-	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>. A user specified name
+	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b)"</tt> where
+	 *  <tt>[a, b)</tt> is range <tt>ranges[vsp]</tt>. A user specified name
 	 *  will be returned if specified.
 	 */
 	string name(SubPopID vsp);

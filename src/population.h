@@ -1007,7 +1007,7 @@ public:
 	vectoru addLoci(const uintList & chrom, const floatList & pos,
 		const vectorstr & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
-	/** Resize Population by giving new subpopulation sizes \e sizes.
+	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  individuals at the end of some subpopulations will be removed if the
 	 *  new subpopulation size is smaller than the old one. New individuals
 	 *  will be appended to a subpopulation if the new size is larger. Their
@@ -1045,13 +1045,13 @@ public:
 	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
-	 *  or IDs (\e IDs, stored in information field \e idField, default to
-	 *  \c ind_id). If a list of absolute indexes are specified, the present
-	 *  generation will be extracted and form a one-generational Population.
-	 *  If a list of IDs are specified, this function will look through all
-	 *  ancestral generations and extract individuals with given ID. Extracted
-	 *  individuals will be in their original ancestral generations
-	 *  and subpopulations, even if some subpopulations even generations are
+	 *  or IDs (parameter \e IDs, stored in information field \e idField,
+	 *  default to \c ind_id). If a list of absolute indexes are specified, the
+	 *  present generation will be extracted and form a one-generational
+	 *  population. If a list of IDs are specified, this function will look
+	 *  through all ancestral generations and extract individuals with given ID.
+	 *  Extracted individuals will be in their original ancestral generations
+	 *  and subpopulations, even if some subpopulations or generations are
 	 *  empty. An \c IndexError will be raised if an index is out of bound or
 	 *  if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
@@ -1105,13 +1105,12 @@ public:
 	 *  should have the same genotypic structure. The current population is
 	 *  discarded if \e ancestralDepth (maximum number of ancestral generations
 	 *  to hold) is zero so no ancestral generation can be kept. Otherise, the
-	 *  current population will become the parental generation of \e pop,
-	 *  a the greatness level of all existing ancestral generations by
-	 *  one. If \e ancestralDepth is positive and there are already
-	 *  \e ancestralDepth ancestral generations (see also:
-	 *  <tt>ancestralGens()</tt>), the greatest ancestral generation will be
-	 *  discarded. In any case, Population \e pop becomes invalid as all its
-	 *  individuals are absorbed by the current population.
+	 *  current population will become the parental generation of \e pop.
+	 *  If \e ancGen of a population is positive and there are already
+	 *  \e ancGen ancestral generations (c.f. <tt>ancestralGens()</tt>), the
+	 *  greatest ancestral generation will be discarded. In any case, Population
+	 *  \e pop becomes invalid as all its individuals are absorbed by the
+	 *  current population.
 	 *  <group>6-ancestral</group>
 	 */
 	void push(Population & pop);
@@ -1153,7 +1152,7 @@ public:
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in
-	 *  a (virtual) subpopulation (<tt>subPop=sp</tt> or <tt>(sp, vsp)<tt>)
+	 *  a (virtual) subpopulation (<tt>subPop=sp</tt> or <tt>(sp, vsp)</tt>)
 	 *  to \e values. \e values will be reused if its length is smaller than
 	 *  the size of the population or (virtual) subpopulation.
 	 *  <group>8-info</group>

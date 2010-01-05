@@ -230,12 +230,6 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-// Individual and Population are type names, and can not be used
-// as function name. ind and pop are used instead.
-// at the python level, Individual and Population are better.
-%rename(individual) ind(double, vspID);
-%rename(population) pop(UINT) const;
-
 %newobject loadPopulation;
 
 // %newobject simuPOP::Population::extract;
@@ -348,7 +342,7 @@ Pedigree.splitSubPop = unsupportedPedigreeOperation
 
 
 def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
-    finalOps=[], gen=-1):
+    finalOps=[], gen=-1, dryrun=False):
     '''Evolve the current population \e gen generations using mating scheme
     \e matingScheme and operators \e initOps (applied before evolution),
     \e preOps (applied to the parental population at the beginning of each
@@ -357,7 +351,10 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     specifically, this function creates a \e Simulator using the current
     Population, call its \e evolve function using passed parameters and then
     replace the current population with the evolved population. Please refer to
-    function \c Simulator.evolve for more details about each parameter. '''
+    function \c Simulator.evolve for more details about each parameter.'''
+    if dryrun:
+        print describeEvolProcess(initOps, preOPs, matingScheme, postOps, finalOps, gen, 1)
+        return (0,)
     # create a simulator with self
     simu = Simulator(self)
     # evolve

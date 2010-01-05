@@ -130,7 +130,7 @@ public:
 	}
 
 
-	/// describe an offspring generator
+	/// HIDDEN describe an offspring generator
 	virtual string describe(bool format = true) const;
 
 	/// CPPONLY
@@ -229,7 +229,7 @@ public:
 	}
 
 
-	/// describe a controlled offspring generator
+	/// HIDDEN describe a controlled offspring generator
 	virtual string describe(bool format = true) const;
 
 private:
@@ -291,7 +291,7 @@ public:
 	}
 
 
-	/// describe a general parent chooser
+	/// HIDDEN describe a general parent chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.ParentChooser> (base class)";
@@ -345,7 +345,7 @@ public:
 	}
 
 
-	/// describe a sequential parent chooser
+	/// HIDDEN describe a sequential parent chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.SequentialParentChooser> chooses a parent sequentially";
@@ -394,7 +394,7 @@ public:
 	}
 
 
-	/// describe a sequential parents chooser.
+	/// HIDDEN describe a sequential parents chooser.
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.SequentialParentsChooser> chooses two parents sequentially";
@@ -423,12 +423,12 @@ private:
 /** This parent chooser chooses a parent randomly from a (virtual) parental
  *  subpopulation. Parents are chosen with or without replacement.
  *  If parents are chosen with replacement, a parent can be selected multiple
- *  times. If natural selection is enabled, the probability that an individual
- *  is chosen is proportional to his/her fitness value stored in an information
- *  field \e selectionField (default to \c "fitness"). If parents are chosen
- *  without replacement, a parent can be chosen only once. An \c RuntimeError
- *  will be raised if all parents are exhausted. Selection is disabled in the
- *  without-replacement case.
+ *  times. If individual fitness values are assigned to individuals (
+ *  stored in an information  field \e selectionField (default to \c "fitness"),
+ *  individuals will be chosen at a probability proportional to his or her
+ *  fitness value. If parents are chosen without replacement, a parent can be
+ *  chosen only once. An \c RuntimeError will be raised if all parents are
+ *  exhausted. Natural selection is disabled in the without-replacement case.
  */
 class RandomParentChooser : public ParentChooser
 {
@@ -454,7 +454,7 @@ public:
 	}
 
 
-	/// describe a random parent chooser
+	/// HIDDEN describe a random parent chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
@@ -486,14 +486,13 @@ protected:
 /** This parent chooser chooses two parents, a male and a female, randomly from
  *  a (virtual) parental subpopulation. Parents are chosen with or without
  *  replacement from their respective sex group. If parents are chosen with
- *  replacement, a parent can be selected multiple times. If natural selection
- *  is enabled, the probability that an individual is chosen is proportional to
- *  his/her fitness value among all individuals with the same sex. Selection
- *  will be disabled if specified information field \e selectionField (default
- *  to \c "fitness") does not exist.If parents are chosen without replacement,
- *  a parent can be chosen only once. An \c RuntimeError will be raised if all
- *  males or females are exhausted. Selection is disabled in the
- *  without-replacement case.
+ *  replacement, a parent can be selected multiple times. If individual fitness
+ *  values are assigned (stored in information field \e selectionField, default
+ *  to \c "fitness", the probability that an individual is chosen is
+ *  proportional to his/her fitness value among all individuals with the same
+ *  sex. If parents are chosen without replacement, a parent can be chosen only
+ *  once. An \c RuntimeError will be raised if all males or females are
+ *  exhausted. Natural selection is disabled in the without-replacement case.
  */
 class RandomParentsChooser : public ParentChooser
 {
@@ -519,7 +518,7 @@ public:
 	}
 
 
-	/// describe a random parents chooser
+	/// HIDDEN describe a random parents chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
@@ -566,11 +565,11 @@ class PolyParentsChooser : public ParentChooser
 public:
 	/** Create a multi-spouse parents chooser where each father (if \e polySex
 	 *  is MALE) or mother (if \e polySex is FEMALE) has \e polyNum spouses.
-	 *  The parents are chosen with replacement. If natural selection
-	 *  is enabled, the probability that an individual is chosen is
+	 *  The parents are chosen with replacement. If individual fitness values
+	 *  are assigned (stored to information field \c selectionField, default
+	 *  to \c "fitness"), the probability that an individual is chosen is
 	 *  proportional to his/her fitness value among all individuals with the
-	 *  same sex. Selection will be disabled if specified information field
-	 *  \e selectionField (default to \c "fitness") does not exist.
+	 *  same sex. 
 	 */
 	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
 		const string & selectionField = "fitness") :
@@ -592,7 +591,7 @@ public:
 	}
 
 
-	/// describe a polygenic parents chooser
+	/// HIDDEN describe a polygenic parents chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.PolyParentsChooser> chooses parents with several spouses";
@@ -623,80 +622,6 @@ private:
 	vector<RawIndIterator> m_femaleIndex;
 	vector<RawIndIterator> m_chosenMale;
 	vector<RawIndIterator> m_chosenFemale;
-
-	vectorf m_maleFitness;
-	vectorf m_femaleFitness;
-
-	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
-};
-
-
-/** This parent chooser mimicks some animal populations where only certain
- *  individuals (usually males) can mate. Alpha individuals can be chosen
- *  either randomly (with natural selection) or according to an information
- *  field. After the alpha individuals are selected, the parent chooser works
- *  identical to a random mating scheme, except that one of the parents are
- *  chosen from these alpha individuals.
- */
-class AlphaParentsChooser : public ParentChooser
-{
-public:
-	/** Create a parent chooser that chooses father (if \e alphaSex is \c MALE)
-	 *  or mother (if \e alphaSex is \c FEMALE) from a selected group of alpha
-	 *  individuals. If \e alphaNum is given, alpha individuals are chosen
-	 *  randomly or according to individual fitness if natural selection is
-	 *  enabled. If \e alphaField is given, individuals with non-zero values
-	 *  at this information field are considered as alpha individuals. After
-	 *  alpha individuals are selected, \e alphaSex parent will be chosen
-	 *  from the alpha individuals randomly or according to individual fitness.
-	 *  The other parents are chosen randomly.
-	 */
-	AlphaParentsChooser(Sex alphaSex = MALE, UINT alphaNum = 0, string alphaField = string(),
-		const string & selectionField = "fitness") :
-		ParentChooser(selectionField),
-		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
-		m_maleIndex(0), m_femaleIndex(0),
-		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(getRNG()), m_femalesampler(getRNG())
-	{
-	}
-
-
-	/// Deep copy of an alpha parents chooser.
-	ParentChooser * clone() const
-	{
-		return new AlphaParentsChooser(*this);
-	}
-
-
-	/// describe an alpha parents chooser
-	virtual string describe(bool format = true) const
-	{
-		return "<simuPOP.AlphaParentsChooser> chooses alpha individuals and their spouses";
-	}
-
-
-	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
-
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
-
-private:
-	Sex m_alphaSex;
-	UINT m_alphaNum;
-	string m_alphaField;
-
-	bool m_selection;
-
-	ULONG m_numMale;
-	ULONG m_numFemale;
-
-	/// internal index to female/males.
-	vector<RawIndIterator> m_maleIndex;
-	vector<RawIndIterator> m_femaleIndex;
 
 	vectorf m_maleFitness;
 	vectorf m_femaleFitness;
@@ -761,7 +686,7 @@ private:
    }
 
 
-   /// describe a parents chooser using information fields
+   /// HIDDEN describe a parents chooser using information fields
    virtual string describe(bool format = true) const
    {
    return "<simuPOP.infoParentsChooser> chooses parents from specified information fields";
@@ -788,7 +713,7 @@ private:
    }; */
 
 
-/** This parents chooser accept a Python generator function that repeatedly
+/** This parent chooser accept a Python generator function that repeatedly
  *  yields one or two parents, which can be references to individual objects
  *  or indexes relative to each subpopulation. The parent chooser calls the
  *  generator function with parental population and a subpopulation index
@@ -804,13 +729,13 @@ class PyParentsChooser : public ParentChooser
 {
 public:
 	/** Create a Python parent chooser using a Python generator function
-	 *  \e parentsGenerator. This function should accept a population object
-	 *  (the parental population) and a subpopulation number and return the
-	 *  reference or index (relative to subpopulation) of a parent or a pair of
-	 *  parents repeatedly using the iterator interface of the generator
-	 *  function.
+	 *  \e parentsGenerator. This function should accept one or both of
+	 *  parameters \e pop (the parental population) and \e subPop (index
+	 *  of subpopulation) and return the reference or index (relative to
+	 *  subpopulation) of a parent or a pair of parents repeatedly using
+	 *  the iterator interface of the generator function.
 	 */
-	PyParentsChooser(PyObject * parentsGenerator);
+	PyParentsChooser(PyObject * generator);
 
 	/// CPPONLY
 	PyParentsChooser(const PyParentsChooser & rhs)
@@ -828,7 +753,7 @@ public:
 	}
 
 
-	/// describe a hybrid parent chooser
+	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
@@ -900,7 +825,7 @@ public:
 	}
 
 
-	/// describe a general mating scheme.
+	/// HIDDEN describe a general mating scheme.
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.mating> A general mating scheme";
@@ -1001,7 +926,7 @@ protected:
    }
 
 
-   /// describe a pedigree mating scheme.
+   /// HIDDEN describe a pedigree mating scheme.
    virtual string describe(bool format = true) const
    {
    return "<simuPOP.PedigreeMating> A pedigree mating scheme";
@@ -1094,7 +1019,7 @@ public:
 	}
 
 
-	/// describe a homogeneous mating scheme.
+	/// HIDDEN describe a homogeneous mating scheme.
 	virtual string describe(bool format = true) const;
 
 
@@ -1130,7 +1055,7 @@ private:
 
 typedef std::vector<HomoMating *> vectormating;
 
-/** A heterogeneous mating scheme that applies a list of mating
+/** A heterogeneous mating scheme that applies a list of homogeneous mating
  *  schemes to different (virtual) subpopulations.
  */
 class HeteroMating : public MatingScheme
@@ -1186,7 +1111,7 @@ public:
 	}
 
 
-	/// describe a heterogeneous mating scheme.
+	/// HIDDEN describe a heterogeneous mating scheme.
 	virtual string describe(bool format = true) const;
 
 	/** CPPONLY Call each homogeneous mating scheme to populate offspring

@@ -115,7 +115,6 @@ __all__ = [
     'SequentialParentChooser',
     'RandomParentsChooser',
     'SequentialParentsChooser',
-    'AlphaParentsChooser',
     #'infoParentsChooser',
     'ParentChooser',
     'PolyParentsChooser',
@@ -124,7 +123,6 @@ __all__ = [
     'RandomSelection',
     'MonogamousMating',
     'SelfMating',
-    'AlphaMating',
     'CloneMating',
     'HaplodiploidMating',
     #'consanguineousMating',
@@ -464,30 +462,6 @@ class PolygamousMating(HomoMating):
 		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
         HomoMating.__init__(self,
             chooser = PolyParentsChooser(polySex, polyNum),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class AlphaMating(HomoMating):
-    '''A homogeneous mating scheme that uses a alpha-individual parents chooser
-    and a Mendelian offspring generator. It differs from the basic random
-    mating scheme in that selection of parents of sex *alphaSex* is limited to
-    certain alpha individuals, which are chosen either randomly (parameter
-    *alphaNum*) or from an information field (parameter *alphaField*). This
-    mating scheme is usually used to simulate animal population where only a
-    few alpha individuals have the right to mate. Please refer to class
-    ``AlphaParentsChooser`` for parameters *alphaSex*, *alphaNum*, *alphaField*
-    and *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
-    *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
-    *subPopSize*, *subPops* and *weight*.
-    '''
-    def __init__(self, alphaSex=MALE, alphaNum=0, alphaField='', numOffspring = 1, 
-    	sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), subPopSize = [],
-		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-        HomoMating.__init__(self,
-            chooser = AlphaParentsChooser(alphaSex, alphaNum, alphaField, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
             subPopSize = subPopSize,
             subPops = subPops,
