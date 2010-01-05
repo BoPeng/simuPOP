@@ -100,7 +100,7 @@ def simu(N):
     return (pop.dvars().succ, pop.dvars().gen)
 
 if __name__ == '__main__':
-    pars = simuOpt.SimuParam(options,
+    pars = simuOpt.Params(options,
         '''This program mimic the evolution of the infection process
     where X- chromosome will be turn to XX. We are concerned    about 
     the speed at which all Population becomes XX. ''', __doc__)

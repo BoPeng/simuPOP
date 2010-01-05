@@ -108,7 +108,7 @@ def simuMigration(subPopSize, numOfSubPops, m, generations):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.SimuParam(options, __doc__)
+    pars = simuOpt.Params(options, __doc__)
     if not pars.getParam():
         sys.exit(0)
 

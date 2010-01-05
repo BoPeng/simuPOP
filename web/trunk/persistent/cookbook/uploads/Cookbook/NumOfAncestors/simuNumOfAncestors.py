@@ -114,7 +114,7 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
     )
 
 if __name__ == '__main__':
-    pars = simuOpt.SimuParam(options, doc =
+    pars = simuOpt.Params(options, doc =
         'This script counts the average number of ancestors who contribute\n' +
         'their genotype to an offspring after a few generations.',
         details = __doc__)

@@ -92,7 +92,7 @@ def simuGeneticDrift(popSize=100, p=0.2, generations=100, replications=5):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.SimuParam(options, __doc__)
+    pars = simuOpt.Params(options, __doc__)
     # cancelled
     if not pars.getParam():
         sys.exit(0)

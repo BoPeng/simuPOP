@@ -838,7 +838,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.SimuParam(options, 
+    par = simuOpt.Params(options, 
       '''This program simulates the evolution of a complex common disease, subject 
          to the impact of mutation, migration, recombination and population size change. 
          Click 'help' for more information about the evolutionary scenario.''',

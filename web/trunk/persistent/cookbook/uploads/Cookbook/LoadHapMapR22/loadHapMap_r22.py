@@ -302,7 +302,7 @@ options = [
 ]
 
 if __name__ == '__main__':
-    pars = SimuParam(options, 
+    pars = Params(options, 
         'This script downloads the 22 release of the HapMap datasets\n'
         'and saves them in simuPOP format. It also downloads the fine-scale\n'
         'recombination map and saves the genetic distance of each marker in\n'

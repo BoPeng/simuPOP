@@ -128,7 +128,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
 
 if __name__ == '__main__':
     # get all parameters
-    pars = simuOpt.SimuParam(options, __doc__)
+    pars = simuOpt.Params(options, __doc__)
     # cancelled or -h, --help
     if not pars.getParam():
         sys.exit(0)

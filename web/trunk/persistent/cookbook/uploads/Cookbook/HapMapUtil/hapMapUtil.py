@@ -341,7 +341,7 @@ if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger()
-    pars = opt.SimuParam(options,
+    pars = opt.Params(options,
         'This script chooses specified markers from one or more HapMap\n'
         'populations and saves them in simuPOP format.\n',
         __doc__)

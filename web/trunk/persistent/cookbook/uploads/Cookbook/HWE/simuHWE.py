@@ -56,7 +56,7 @@ options = [
 
 
 # get all parameters
-par = simuOpt.SimuParam(options, __doc__)
+par = simuOpt.Params(options, __doc__)
 if not par.getParam():
     sys.exit(1)
 

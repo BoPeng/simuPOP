@@ -644,7 +644,7 @@ def simuCDCV(numDSL, initSpec, selModel,
 
 if __name__ == '__main__':
     # get parameters
-    par = simuOpt.SimuParam(options, 
+    par = simuOpt.Params(options, 
         'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
         'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
         'and plotted (if R/RPy is available).', __doc__)
