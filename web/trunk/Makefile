@@ -10,6 +10,7 @@ put:
 
 clean:
 	rm -f *.png sample* *.dat *.txt *.log  persistent/cookbook/uploads/Cookbook/SimuRecHotSpot/simuRecHotSpot.cfg
+	find . -name '*.bak' -exec rm -f {} \;
 	rm -rf cdcv simu
 	
 # figure out what has been added or changed
