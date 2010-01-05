@@ -81,7 +81,7 @@ Details:
     A mutator mutates alleles from one state to another with given
     probability. This base mutator does not perform any mutation but
     it defines common behaviors of all mutators.  By default, a
-    mutator mutates all alleles in all populations of a Simulator at
+    mutator mutates all alleles in all populations of a simulator at
     all generations. A number of parameters can be used to restrict
     mutations to certain generations (parameters begin, end, step and
     at), replicate populations (parameter rep), (virtual)
@@ -3676,7 +3676,7 @@ Details:
     BY_PROPORTION), numbers of migrants in the source (virtual)
     subpopulations (mode = BY_COUNTS), or ignored completely (mode =
     BY_IND_INFO). In the last case, parameter subPops is respected
-    (only Individuals in specified (virtual) subpopulations will
+    (only individuals in specified (virtual) subpopulations will
     migrate) but toSubPops is ignored.  This operator is by default
     applied pre-mating (parameter stage). Please refer to operator
     BaseOperator for a detailed explanation for all parameters.
@@ -4611,7 +4611,7 @@ Details:
     subpopulation splitter can be assigned to a population, which
     defines groups of individuals called virtual subpopulations (VSP)
     within each subpopulation.
-    *   Access individuals Individually, or through iterators that
+    *   Access individuals individually, or through iterators that
     iterate through individuals in (virtual) subpopulations.
     *   Access genotype and information fields of individuals at the
     population level. From a population point of view, all genotypes
@@ -4653,7 +4653,7 @@ Arguments:
                     chromosomes have the same number of homologous
                     sets, even if some customized chromosomes or some
                     individuals (e.g. males in a haplodiploid
-                    Population) have different numbers of homologous
+                    population) have different numbers of homologous
                     sets. The first case is handled by setting
                     chromTypes of each chromosome. Only the
                     haplodiploid populations are handled for the
@@ -7404,7 +7404,7 @@ Details:
 
     Clone a simulator, along with all its populations. Note that
     Python assign statement simu1 = simu only creates a symbolic link
-    to an existing Simulator.
+    to an existing simulator.
 
 "; 
 
@@ -7822,7 +7822,7 @@ Details:
     results to dictionary (with loci index as keys) of default
     dictionaries (with haplotypes as keys) such as
     haploFreq[(1,2,4)][(1,1,0)] (frequency of haplotype (1,1,0) at
-    loci (1,2,3)). This statistic works for all Population types.
+    loci (1,2,3)). This statistic works for all population types.
     Number of haplotypes for each individual equals to his/her ploidy
     number. Haplodiploid populations are supported in the sense that
     the second homologous copy of the haplotype is not counted for
