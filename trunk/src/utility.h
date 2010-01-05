@@ -325,6 +325,7 @@ public:
 	PyObject * operator()(PyObject * args) const
 	{
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), args);
+
 		if (pyResult == NULL) {
 			PyErr_Print();
 			PyErr_Clear();

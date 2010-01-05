@@ -305,6 +305,7 @@ public:
 	}
 
 
+	/// HIDDEN
 	void initializeIfNeeded(const Population & pop);
 
 	/// HIDDEN Initialize an operator against a population.
@@ -497,7 +498,7 @@ public:
 	}
 
 
-	/// apply the \c Pause operator to one population
+	/// HIDDEN apply the \c Pause operator to one population
 	bool apply(Population & pop);
 
 	/// HIDDEN
@@ -549,7 +550,7 @@ public:
 	}
 
 
-	/// apply the \c NoneOp operator to one population
+	/// HIDDEN apply the \c NoneOp operator to one population
 	virtual bool apply(Population & pop)
 	{
 		return true;
@@ -609,7 +610,7 @@ public:
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL);
 
-	/// apply the \c IfElse operator to population \e pop.
+	/// HIDDEN apply the \c IfElse operator to population \e pop.
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN
@@ -654,7 +655,7 @@ public:
 	}
 
 
-	/// deep copy of a \c TerminateIf terminator
+	/// HIDDEN Deep copy of a \c TerminateIf terminator
 	virtual BaseOperator * clone() const
 	{
 		return new TerminateIf(*this);
@@ -665,8 +666,8 @@ public:
 	string describe(bool format = true);
 
 
-	// check all alleles in vector allele if they are fixed.
-	virtual bool apply(Population & pop);
+	// HIDDEN check all alleles in vector allele if they are fixed.
+	bool apply(Population & pop);
 
 	virtual ~TerminateIf()
 	{
@@ -778,7 +779,7 @@ public:
 	}
 
 
-	/** Apply the \c PyOperator operator to population \e pop. Calling this
+	/** HIDDEN Apply the \c PyOperator operator to population \e pop. Calling this
 	 *  function is equivalent to call \e func with parameter \e pop and
 	 *  optional parameter \e param.
 	 */

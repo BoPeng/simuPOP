@@ -82,7 +82,7 @@ public:
 	}
 
 
-	/// deep copy of a quantitative trait operator
+	/// HIDDEN Deep copy of a quantitative trait operator
 	virtual BaseOperator * clone() const
 	{
 		return new BaseQuanTrait(*this);
@@ -155,7 +155,7 @@ public:
 			"Please specify susceptibility loci");
 	};
 
-	/// deep copy of a Python quantitative trait operator
+	/// HIDDEN Deep copy of a Python quantitative trait operator
 	virtual BaseOperator * clone() const
 	{
 		return new PyQuanTrait(*this);

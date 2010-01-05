@@ -62,7 +62,7 @@ public:
 	}
 
 
-	/// simply output some info
+	/// HIDDEN simply output some info
 	virtual bool apply(Population & pop);
 
 	/// destructor
@@ -71,7 +71,7 @@ public:
 	}
 
 
-	/// Deep copy of a \e PyOutput operator.
+	/// HIDDEN Deep copy of a \e PyOutput operator.
 	virtual BaseOperator * clone() const
 	{
 		return new PyOutput(*this);
@@ -117,14 +117,14 @@ public:
 	}
 
 
-	/// Deep copy of a Dumper operator.
+	/// HIDDEN Deep copy of a Dumper operator.
 	virtual BaseOperator * clone() const
 	{
 		return new Dumper(*this);
 	}
 
 
-	/// Apply a Dumper operator to population \e pop.
+	/// HIDDEN Apply a Dumper operator to population \e pop.
 	virtual bool apply(Population & pop);
 
 	/// destructor.
@@ -196,14 +196,14 @@ public:
 	}
 
 
-	/// Deep copy of a SavePopulation operator.
+	/// HIDDEN Deep copy of a SavePopulation operator.
 	virtual BaseOperator * clone() const
 	{
 		return new SavePopulation(*this);
 	}
 
 
-	/// Apply operator to population \e pop.
+	/// HIDDEN apply operator to population \e pop.
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN

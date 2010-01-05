@@ -119,7 +119,7 @@ public:
 	 *  the destination subpopulations (\e mode = \c BY_PROPORTION), numbers
 	 *  of migrants in the source (virtual) subpopulations (\e mode
 	 *  = \c BY_COUNTS), or ignored completely (\e mode = \c BY_IND_INFO).
-	 *  In the last case, parameter \e subPops is respected (only Individuals
+	 *  In the last case, parameter \e subPops is respected (only individuals
 	 *  in specified (virtual) subpopulations will migrate) but \e toSubPops
 	 *  is ignored.
 	 *
@@ -139,14 +139,14 @@ public:
 	{
 	};
 
-	/// deep copy of a Migrator
+	/// HIDDEN Deep copy of a Migrator
 	virtual BaseOperator * clone() const
 	{
 		return new Migrator(*this);
 	}
 
 
-	/// return migration rate
+	/// HIDDEN return migration rate
 	matrix rate()
 	{
 		return m_rate;
@@ -157,7 +157,7 @@ public:
 	 */
 	void setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops);
 
-	/// apply the Migrator to populaiton \e pop.
+	/// HIDDEN apply the Migrator to populaiton \e pop.
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN
@@ -247,14 +247,14 @@ public:
 	}
 
 
-	/// deep copy of a \c SplitSubPops operator
+	/// HIDDEN Deep copy of a \c SplitSubPops operator
 	virtual BaseOperator * clone() const
 	{
 		return new SplitSubPops(*this);
 	}
 
 
-	/// apply a \c SplitSubPops operator
+	/// HIDDEN apply a \c SplitSubPops operator
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN
@@ -315,14 +315,14 @@ public:
 	}
 
 
-	/// deep copy of a \c MergeSubPops operator
+	/// HIDDEN Deep copy of a \c MergeSubPops operator
 	virtual BaseOperator * clone() const
 	{
 		return new MergeSubPops(*this);
 	}
 
 
-	/// apply a \c MergeSubPops operator
+	/// HIDDEN apply a \c MergeSubPops operator
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN
@@ -387,14 +387,14 @@ public:
 	}
 
 
-	/// deep copy of a \c ResizeSubPops operator
+	/// HIDDEN Deep copy of a \c ResizeSubPops operator
 	virtual BaseOperator * clone() const
 	{
 		return new ResizeSubPops(*this);
 	}
 
 
-	/// apply a \c ResizeSubPops operator
+	/// HIDDEN apply a \c ResizeSubPops operator
 	virtual bool apply(Population & pop);
 
 

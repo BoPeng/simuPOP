@@ -901,7 +901,7 @@ class TrajectorySimulator:
         N
             Parameter *N* accepts either a constant number for population size
             (e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
-            or a demographic function that returns Population or subpopulation
+            or a demographic function that returns population or subpopulation
             sizes at each generation. During the evolution, multiple
             subpopulations can be merged into one, and one population can be
             split into several subpopulations. The number of subpopulation is

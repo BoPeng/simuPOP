@@ -198,7 +198,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
 
 \begin_layout Abstract
 simuPOP is provided as a number of Python modules, which consist of a large
- number of Python objects and functions, including Population, mating schemes,
+ number of Python objects and functions, including population, mating schemes,
  operators (objects that manipulate populations) and simulators to coordinate
  the evolutionary processes.
  It is the users’ responsibility to write a Python script to glue these
