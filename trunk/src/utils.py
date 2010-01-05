@@ -51,7 +51,7 @@ import exceptions, operator, types, os, sys, re
 
 from simuOpt import simuOptions
 
-from simuPOP import MALE, FEMALE, PointMutator, getRNG
+from simuPOP import MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL
 
 def viewVars(var, gui=None):
     '''
@@ -225,83 +225,153 @@ or non-circular
     return m
 
 
-def saveCSV(pop, filename='', fields=[], loci=[], header=True,
-    shift=1, combine=None,
-        sexCode={MALE: '1', FEMALE: '2'}, affectionCode={True: '1', False: '2'},
-        **kwargs):
-    '''Save a simuPOP population ``pop`` in csv format.
+def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
+        subPops=ALL_AVAIL, genoCode=None,
+        sexCode={MALE: 'M', FEMALE: 'F'},
+        affectionCode={True: 'A', False: 'U'}, sep=', '):
+    '''Save a simuPOP population ``pop`` in csv format. Columns of this
+    file is arranged in the order of information fields (``infoFields``),
+    sex (if ``sexCode`` is not ``None``), affection status (if
+    ``affectionCode`` is not ``None``), and genotype (if ``genoCode`` is
+    not ``None``). This function only output individuals in the present
+    generation of population ``pop``. This function accepts the following
+    parameters:
 
     pop
-        A simuPOP population object. If a string is given, it will be loaded.
+        A simuPOP population object.
 
     filename
-        Output filename.
+        Output filename. Leading '>' characters are ignored. However, if the first
+        character of this filename is '!', the rest of the name will be evalulated
+        in the population's local namespace. If ``filename`` is empty, the content
+        will be written to the standard output.
 
-    fileds
-        Information fields to be outputted.
+    infoFileds
+        Information fields to be outputted. Default to none.
 
     loci
         If a list of loci is given, only genotype at these loci will be
-        written.
+        written. Default to ``ALL_AVAIL``, meaning all available loci. You can
+        set this parameter to ``[]`` if you do not want to output any genotype.
 
     header
         Whether or not a header should be written. These headers will include
         information fields, sex (if ``sexCode`` is not ``None``), affection
         status (if ``affectionCode`` is not ``None``) and loci names. If
         genotype at a locus needs more than one column, ``_1``, ``_2`` etc will
-        be appended to locus names.
+        be appended to loci names.
 
-    genotype
-        list of loci to output, default to all.
+    subPops
+        A list of (virtual) subpopulations. If specified, only individuals
+        from these subpopulations will be outputed.
 
-    combine
-        how to combine the markers. Default to None.
-        A function can be specified, that takes the form::
+    genoCode
+        How to output genotype at specified loci. Acceptable values include
+        ``None`` (output alleles), a dictionary with genotype as keys, (e.g.
+        ``genoCode={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function with
+        genotype (as a tuple) as inputs. The dictionary value or the return
+        function of this function can be a single or a list of number or
+        strings.
 
-             def func(markers):
-                 return markers[0]+markers[1]
+    sexCode
+        How to output individual sex. Acceptable values include ``None`` (no
+        output) or a dictionary with keys ``MALE`` and ``FEMALE``.
 
-    shift
-        since alleles in simuPOP is 0-based, shift=1 is usually needed to
-        output alleles starting from allele 1. This parameter is ignored if
-        combine is used.
+    affectionCode
+        How to output individual affection status. Acceptable values include
+        ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
 
     '''
-    if loci == []:
+    # parameter pop
+    if not isinstance(pop, Population):
+        raise ValueError("Passed population should either be a population object")
+    # parameter loci
+    if loci == ALL_AVAIL:
         loci = range(0, pop.totNumLoci())
+    elif type(loci) == type(1):
+        loci = [loci]
+    if not type(loci) in [type([]) or type(())]:
+        raise ValueError("Passed loci should be ALL_AVAIL or a list of loci.")
+    # parameter infoFields (allow single input)
+    if type(infoFields) == type(''):
+        infoFields = [infoFields]
+    # parameter filename
+    if filename.startswith('!'):
+        filename = str(pop.evalulate(filename[1:]))
+    if filename.startswith('>'):
+        filename = filename.lstrip('>')
+    #
     try:
-        out = open(filename, "w")
+        if filename:
+            out = open(filename, "w")
+        else:
+            out = sys.stdout
     except exceptions.IOError:
         raise exceptions.IOError, "Can not open file " + filename +" to write."
-    # keep the content of pieces in strings first
-    content = [''] * pop.numChrom()
-    # write out header
-    print >> out, 'id, ', ', '.join(fields), ', ',
-    if combine is None:
-        print >> out, ', '.join(['%s_1, %s_2' % (pop.locusName(loc), pop.locusName(loc)) for loc in loci])
-    else:
-        print >> out, ', '.join(['%s' % pop.locusName(loc) for loc in loci])
-    # write out
-    id = 1
-    pldy = pop.ploidy()
-    for ind in pop.individuals():
-        print >> out, id,
-        for f in fields:
-            if f == 'sex':
-                print >> out, ',', sexCode[ind.sex()],
-            elif f == 'affection':
-                print >> out, ',', affectionCode[ind.affected()],
-            else:
-                print >> out, ',', ind.info(f),
-        for marker in loci:
-            if combine is None:
-                for p in range(pldy):
-                    out.write(", %d" % (ind.allele(marker, p) + shift))
-            else:
-                out.write(", %d" % combine([ind.allele(marker, p) for p in range(pldy)]))
-        print >> out
-        id += 1
-    out.close()
+    # parameter subPops
+    if subPops == ALL_AVAIL:
+        subPops = range(pop.numSubPop())
+    #
+    # figure out columns per genotype
+    ploidy = pop.ploidy()
+    colPerGenotype = 0
+    if len(loci) > 0 and pop.totNumLoci() > 0 and pop.popSize() > 0:
+        if genoCode is None:
+            value = [0]*ploidy
+        elif isinstance(genoCode, dict):
+            if len(genoCode) == 0:
+                raise ValueError("genoCode cannot be empty")
+            value = genoCode.values()[0]
+        else:
+            if not callable(genoCode):
+                raise ValueError("genoCode should be a None, a dictionary or a callable function")
+            value = genoCode([pop.individual(0).allele(0, p) for p in range(ploidy)])
+        try:
+            colPerGenotype = len(value)
+        except:
+            colPerGenotype = 1
+    # header
+    names = [x for x in infoFields]
+    if sexCode is not None:
+        names.append('sex')
+    if affectionCode is not None:
+        names.append('aff')
+    if colPerGenotype == 1:
+        names.extend([pop.locusName(loc) for loc in loci])
+    elif colPerGenotype > 1:
+        for loc in loci:
+            names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+    # output header
+    print >> out, sep.join(names)
+    for subPop in subPops:
+        for ind in pop.individuals(subPop):
+            # information fields
+            values = [str(ind.info(x)) for x in infoFields]
+            # sex
+            if sexCode is not None:
+                values.append(str(sexCode[ind.sex()]))
+            # affection status
+            if affectionCode is not None:
+                values.append(str(affectionCode[ind.affected()]))
+            # genotype
+            for loc in loci:
+                genotype = [ind.allele(0, p) for p in range(ploidy)]
+                if genoCode is None:
+                    values.extend(['%s' % x for x in genotype])
+                else:
+                    if isinstance(genoCode, dict):
+                        code = genoCode[genotype]
+                    else:
+                        code = genoCode(genotype)
+                    if type(code) in [type([]), type(())]:
+                        values.extend(['%s' % x for x in code])
+                    else:
+                        values.extend(str(code))
+            # output
+            print >> out, sep.join(values)
+    # clode output
+    if filename:
+        out.close()
 
 
 class _baseProgressBar:

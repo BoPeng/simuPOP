@@ -198,27 +198,32 @@ bool InitGenotype::apply(Population & pop)
 	subPopList::iterator sp_end = subPops.end();
 	size_t sz = m_genotype.size();
 	for (size_t idx = 0; sp != sp_end; ++sp) {
-		//
-		Weightedsampler ws(getRNG());
-		if (!m_prop.empty())
-			ws.set(m_prop, pop.subPopSize(*sp));
-		else if (!m_freq.empty())
-			ws.set(m_freq);
-
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
-		IndIterator it = pop.indIterator(sp->subPop());
 		if (!m_genotype.empty()) {
+		    IndIterator it = pop.indIterator(sp->subPop());
 			for (; it.valid(); ++it)
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
 						it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, *p);
-		} else
-			for (; it.valid(); ++it) {
-				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+		} else if (!m_prop.empty()) {
+    		Weightedsampler ws(getRNG());
+            UINT sz = pop.subPopSize(*sp);
+			for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc) {
+                ws.set(m_prop, sz * ploidy.size());
+		        IndIterator it = pop.indIterator(sp->subPop());
+    			for (; it.valid(); ++it)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						it->setAllele(ToAllele(ws.get()), *loc, *p);
 			}
+        } else {
+			Weightedsampler ws(getRNG(), m_freq);
+		    IndIterator it = pop.indIterator(sp->subPop());
+			for (; it.valid(); ++it)
+				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+						it->setAllele(ToAllele(ws.get()), *loc, *p);
+		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;

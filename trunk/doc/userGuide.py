@@ -1744,7 +1744,7 @@ print pop.dvars(0).numOfMales
 print pop.dvars(1).numOfMales
 #end_file
 
-#begin_file log/InitByFreq.py
+#begin_file log/InitGenotype.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -1753,32 +1753,33 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().setSeed(12345)
 #end_ignore
-pop = sim.Population(size=[2, 3], loci=[5, 7])
-#sim.initGenotype(pop, freq=[.2, .8])
-sim.dump(pop, structure=False)
-#end_file
-
-#begin_file log/InitByValue.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.getRNG().setSeed(12345)
-#end_ignore
+pop = sim.Population(size=[20, 30], loci=[5, 7])
+# by allele frequency
+sim.initGenotype(pop, freq=[.4, .6])
+sim.dump(pop, max=6, structure=False)
+sim.stat(pop, alleleFreq=range(12))
+print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+# by proportion
+sim.initGenotype(pop, prop=[0.4, 0.6])
+sim.stat(pop, alleleFreq=range(12))
+print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+# by genotype
 pop = sim.Population(size=[2, 3], loci=[5, 7])
 sim.initGenotype(pop, genotype=[1]*5 + [2]*7 + [3]*5 +[4]*7)
 sim.dump(pop, structure=False)
-#
+# 
+# use virtual subpopulation
 pop.setVirtualSplitter(sim.SexSplitter())
-# initialize sex and the first two loci
 sim.initSex(pop)
 sim.initGenotype(pop, genotype=range(10), loci=range(5))
 # initialize all males
 sim.initGenotype(pop, genotype=[2]*7, loci=range(5, 12),
     subPops=[(0, 0), (1, 0)])
 sim.dump(pop, structure=False)
+# assign genotype by proportions
+pop.setVirtualSplitter(sim.ProportionSplitter([0.4, 0.6]))
+sim.initGenotype(pop, freq=[0.2, 0.8], subPops=[(0,0)])
+sim.initGenotype(pop, freq=[0.5, 0.5], subPops=[(0,1)])
 #end_file
 
 #begin_file log/InitInfo.py
@@ -3986,6 +3987,38 @@ sim.stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
 viewVars(pop.vars())
 #end_file
 
+
+#begin_file log/saveCSV.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True, gui=False)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().setSeed(12345)
+#end_ignore
+from simuPOP.utils import saveCSV
+pop = sim.Population(size=[10], loci=[5, 5],
+    lociNames=['loc1_%d' % x for x in range(1, 6)] + ['loc2_%d' % x for x in range(1, 6)],
+    infoFields='age')
+sim.initSex(pop)
+sim.initInfo(pop, [2, 3, 4], infoFields='age')
+sim.initGenotype(pop, freq=[0.4, 0.6])
+sim.maPenetrance(pop, loci=0, penetrance=(0.2, 0.2, 0.4))
+# no filename so output to standard output
+saveCSV(pop, infoFields='age')
+# change affection code and how to output genotype
+saveCSV(pop, infoFields='age', affectionCode={True: 1, False: 2},
+    genoCode=lambda geno: geno[0] + geno[1] + 1)
+# save to a file
+saveCSV(pop, filename='pop.csv', infoFields='age', affectionCode={True: 1, False: 2},
+    genoCode=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')
+print open('pop.csv').read()
+#begin_ignore
+import os
+os.remove('pop.csv')
+#end_ignore
+#end_file
 
 #begin_file log/VarPlotter.py
 #begin_ignore
