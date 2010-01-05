@@ -127,7 +127,7 @@ public:
 
 	/** Clone a simulator, along with all its populations. Note that Python
 	 *  assign statement <tt>simu1 = simu</tt> only creates a symbolic link to
-	 *  an existing Simulator.
+	 *  an existing simulator.
 	 *  <group>0-stru</group>
 	 */
 	Simulator * clone() const;

@@ -56,7 +56,7 @@ public:
 	}
 
 
-	/// Deep copy of a base genotype transmitter.
+	/// HIDDEN Deep copy of a base genotype transmitter.
 	BaseOperator * clone() const
 	{
 		return new GenoTransmitter(*this);
@@ -142,7 +142,7 @@ public:
 	}
 
 
-	/// Deep copy of a clone genotype transmitter.
+	/// HIDDEN Deep copy of a clone genotype transmitter.
 	BaseOperator * clone() const
 	{
 		return new CloneGenoTransmitter(*this);
@@ -185,7 +185,7 @@ public:
 	}
 
 
-	/// Deep copy of a Mendelian genotype transmitter.
+	/// HIDDEN Deep copy of a Mendelian genotype transmitter.
 	BaseOperator * clone() const
 	{
 		return new MendelianGenoTransmitter(*this);
@@ -251,7 +251,7 @@ public:
 	}
 
 
-	/// Deep copy of a selfing genotype transmitter
+	/// HIDDEN Deep copy of a selfing genotype transmitter
 	BaseOperator * clone() const
 	{
 		return new SelfingGenoTransmitter(*this);
@@ -299,7 +299,7 @@ public:
 	}
 
 
-	/// Deep copy of a haplodiploid transmitter.
+	/// HIDDEN Deep copy of a haplodiploid transmitter.
 	BaseOperator * clone() const
 	{
 		return new HaplodiploidGenoTransmitter(*this);
@@ -353,7 +353,7 @@ public:
 	}
 
 
-	/// Deep copy of a mitochondrial genotype transmitter.
+	/// HIDDEN Deep copy of a mitochondrial genotype transmitter.
 	BaseOperator * clone() const
 	{
 		return new MitochondrialGenoTransmitter(*this);
@@ -510,7 +510,7 @@ public:
 		const stringList & infoFields = vectorstr());
 
 
-	/// deep copy of a Recombinator
+	/// HIDDEN Deep copy of a Recombinator
 	virtual BaseOperator * clone() const
 	{
 		return new Recombinator(*this);

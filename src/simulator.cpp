@@ -434,11 +434,11 @@ int Simulator::__cmp__(const Simulator & rhs) const
 
 
 string describeEvolProcess(const opList & initOps,
-                const opList & preOps,
-                const MatingScheme & matingScheme,
-                const opList & postOps,
-                const opList & finalOps,
-                int gen, UINT numRep)
+                           const opList & preOps,
+                           const MatingScheme & matingScheme,
+                           const opList & postOps,
+                           const opList & finalOps,
+                           int gen, UINT numRep)
 {
 	vectorstr allDesc(numRep, "");
 

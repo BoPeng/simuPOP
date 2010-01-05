@@ -93,7 +93,7 @@ public:
 	}
 
 
-	/// deep copy of a penetrance operator
+	/// HIDDEN Deep copy of a penetrance operator
 	virtual BaseOperator * clone() const
 	{
 		return new BasePenetrance(*this);
@@ -171,7 +171,7 @@ public:
 	}
 
 
-	/// deep copy of a map penetrance operator
+	/// HIDDEN Deep copy of a map penetrance operator
 	virtual BaseOperator * clone() const
 	{
 		return new MapPenetrance(*this);
@@ -244,7 +244,7 @@ public:
 	}
 
 
-	/// deep copy of a multi-allele penetrance operator
+	/// HIDDEN Deep copy of a multi-allele penetrance operator
 	virtual BaseOperator * clone() const
 	{
 		return new MaPenetrance(*this);
@@ -312,7 +312,7 @@ public:
 	}
 
 
-	/// deep copy of a multi-loci penetrance operator
+	/// HIDDEN Deep copy of a multi-loci penetrance operator
 	virtual BaseOperator * clone() const
 	{
 		throw ValueError("Multi-loci penetrance operator can not be nested.");
@@ -376,7 +376,7 @@ public:
 	};
 
 
-	/// deep copy of a Python penetrance operator
+	/// HIDDEN Deep copy of a Python penetrance operator
 	virtual BaseOperator * clone() const
 	{
 		return new PyPenetrance(*this);

@@ -164,7 +164,7 @@ class Pedigree;
  *    splitter</em> can be assigned to a population, which defines groups of
  *    individuals called <em>virtual subpopulations</em> (VSP) within each
  *    subpopulation.
- *  \li Access individuals Individually, or through iterators that iterate
+ *  \li Access individuals individually, or through iterators that iterate
  *    through individuals in (virtual) subpopulations.
  *  \li Access genotype and information fields of individuals at the population
  *    level. From a population point of view, all genotypes are arranged
@@ -198,7 +198,7 @@ public:
 	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
 	 *    the same number of homologous sets, even if some customized
 	 *    chromosomes or some individuals (e.g. males in a haplodiploid
-	 *    Population) have different numbers of homologous sets. The first
+	 *    population) have different numbers of homologous sets. The first
 	 *    case is handled by setting \e chromTypes of each chromosome. Only
 	 *    the haplodiploid populations are handled for the second case, for
 	 *    which <tt>ploidy=HAPLODIPLOID</tt> should be used.

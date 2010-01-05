@@ -222,7 +222,7 @@ public:
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
-	/// Deep copy of a controlled random mating scheme
+	/// HIDDEN Deep copy of a controlled random mating scheme
 	virtual OffspringGenerator * clone() const
 	{
 		return new ControlledOffspringGenerator(*this);
@@ -274,7 +274,7 @@ public:
 	}
 
 
-	/// Deep copy of a parent chooser
+	/// HIDDEN Deep copy of a parent chooser
 	virtual ParentChooser * clone() const
 	{
 		return new ParentChooser(*this);
@@ -338,7 +338,7 @@ public:
 	}
 
 
-	/// Deep copy of a sequential parent chooser.
+	/// HIDDEN Deep copy of a sequential parent chooser.
 	ParentChooser * clone() const
 	{
 		return new SequentialParentChooser(*this);
@@ -387,7 +387,7 @@ public:
 	}
 
 
-	/// Deep copy of a sequential parents chooser.
+	/// HIDDEN Deep copy of a sequential parents chooser.
 	ParentChooser * clone() const
 	{
 		return new SequentialParentsChooser(*this);
@@ -447,7 +447,7 @@ public:
 	}
 
 
-	/// Deep copy of a random parent chooser.
+	/// HIDDEN Deep copy of a random parent chooser.
 	ParentChooser * clone() const
 	{
 		return new RandomParentChooser(*this);
@@ -511,7 +511,7 @@ public:
 	}
 
 
-	/// Deep copy of a random parents chooser.
+	/// HIDDEN Deep copy of a random parents chooser.
 	ParentChooser * clone() const
 	{
 		return new RandomParentsChooser(*this);
@@ -569,7 +569,7 @@ public:
 	 *  are assigned (stored to information field \c selectionField, default
 	 *  to \c "fitness"), the probability that an individual is chosen is
 	 *  proportional to his/her fitness value among all individuals with the
-	 *  same sex. 
+	 *  same sex.
 	 */
 	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
 		const string & selectionField = "fitness") :
@@ -679,7 +679,7 @@ private:
    }
 
 
-   /// Deep copy of a infomation parent chooser.
+   /// HIDDEN Deep copy of a infomation parent chooser.
    ParentChooser * clone() const
    {
    return new infoParentsChooser(*this);
@@ -746,7 +746,7 @@ public:
 	}
 
 
-	/// Deep copy of a python parent chooser.
+	/// HIDDEN Deep copy of a python parent chooser.
 	ParentChooser * clone() const
 	{
 		return new PyParentsChooser(*this);
@@ -818,7 +818,7 @@ public:
 	}
 
 
-	/// deep copy of a mating scheme
+	/// HIDDEN Deep copy of a mating scheme
 	virtual MatingScheme * clone() const
 	{
 		return NULL;
@@ -919,7 +919,7 @@ protected:
    PedigreeMating(const PedigreeMating & rhs);
 
 
-   /// deep copy of a Python mating scheme
+   /// HIDDEN Deep copy of a Python mating scheme
    virtual MatingScheme * clone() const
    {
    return new PedigreeMating(*this);
@@ -1012,7 +1012,7 @@ public:
 	}
 
 
-	/// Deep copy of a homogeneous mating scheme
+	/// HIDDEN Deep copy of a homogeneous mating scheme
 	virtual MatingScheme * clone() const
 	{
 		return new HomoMating(*this);
@@ -1104,7 +1104,7 @@ public:
 	/// CPPONLY
 	HeteroMating(const HeteroMating & rhs);
 
-	/// deep copy of a heterogeneous mating scheme
+	/// HIDDEN Deep copy of a heterogeneous mating scheme
 	virtual MatingScheme * clone() const
 	{
 		return new HeteroMating(*this);

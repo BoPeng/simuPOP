@@ -48,7 +48,7 @@ public:
 	 *  defines common behaviors of all mutators.
 	 *
 	 *  By default, a mutator mutates all alleles in all populations of a
-	 *  Simulator at all generations. A number of parameters can be used to
+	 *  simulator at all generations. A number of parameters can be used to
 	 *  restrict mutations to certain generations (parameters \e begin, \e end,
 	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
 	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).
@@ -121,7 +121,7 @@ public:
 	}
 
 
-	/// deep copy of a \c mutator
+	/// HIDDEN Deep copy of a \c mutator
 	virtual BaseOperator * clone() const
 	{
 		return new BaseMutator(*this);
@@ -170,7 +170,7 @@ public:
 	}
 
 
-	/// Apply a mutator
+	/// HIDDEN Apply a mutator
 	virtual bool apply(Population & pop);
 
 protected:
@@ -225,7 +225,7 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c MatrixMutator
+	/// HIDDEN Deep copy of a \c MatrixMutator
 	virtual BaseOperator * clone() const
 	{
 		return new MatrixMutator(*this);
@@ -283,7 +283,7 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c KAlleleMutator
+	/// HIDDEN Deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
 	{
 		return new KAlleleMutator(*this);
@@ -356,7 +356,7 @@ public:
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
-	/// deep copy of a \c StepwiseMutator
+	/// HIDDEN Deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
 	{
 		return new StepwiseMutator(*this);
@@ -415,7 +415,7 @@ public:
 	}
 
 
-	/// deep copy of a \c PyMutator
+	/// HIDDEN Deep copy of a \c PyMutator
 	virtual BaseOperator * clone() const
 	{
 		return new PyMutator(*this);
@@ -476,7 +476,7 @@ public:
 	}
 
 
-	/// deep copy of a \c MixedMutator
+	/// HIDDEN Deep copy of a \c MixedMutator
 	virtual BaseOperator * clone() const
 	{
 		return new MixedMutator(*this);
@@ -555,7 +555,7 @@ public:
 	}
 
 
-	/// deep copy of a \c context-dependentMutator
+	/// HIDDEN Deep copy of a \c context-dependentMutator
 	virtual BaseOperator * clone() const
 	{
 		return new ContextMutator(*this);
@@ -619,14 +619,14 @@ public:
 	}
 
 
-	/// deep copy of a \c PointMutator
+	/// HIDDEN Deep copy of a \c PointMutator
 	virtual BaseOperator * clone() const
 	{
 		return new PointMutator(*this);
 	}
 
 
-	/// apply a \c PointMutator
+	/// HIDDEN apply a \c PointMutator
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN

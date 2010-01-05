@@ -137,17 +137,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BaseMutator::clone "
-
-Description:
-
-    deep copy of a mutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::BaseMutator::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const uintList &loci);
 
@@ -161,17 +151,7 @@ Usage:
 
 %ignore simuPOP::BaseMutator::context();
 
-%feature("docstring") simuPOP::BaseMutator::apply "
-
-Description:
-
-    Apply a mutator.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::BaseMutator::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseOperator "
 
@@ -352,13 +332,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::noOutput();
 
-%feature("docstring") simuPOP::BaseOperator::initializeIfNeeded "
-
-Usage:
-
-    x.initializeIfNeeded(pop)
-
-"; 
+%feature("docstring") simuPOP::BaseOperator::initializeIfNeeded "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseOperator::initialize "Obsolete or undocumented function."
 
@@ -427,17 +401,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BasePenetrance::clone "
-
-Description:
-
-    deep copy of a penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::BasePenetrance::penet(Individual *, ULONG gen);
 
@@ -525,17 +489,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BaseQuanTrait::clone "
-
-Description:
-
-    deep copy of a quantitative trait operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::BaseQuanTrait::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseQuanTrait::qtrait(Individual *, ULONG gen, vectorf &traits);
 
@@ -651,31 +605,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BaseSelector::clone "
-
-Description:
-
-    deep copy of a selector
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseSelector::indFitness(Individual *, ULONG gen);
 
-%feature("docstring") simuPOP::BaseSelector::apply "
-
-Description:
-
-    set fitness to all individuals. No selection will happen!
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
@@ -958,17 +892,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::CloneGenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a clone genotype transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::CloneGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::CloneGenoTransmitter::describe "Obsolete or undocumented function."
 
@@ -1147,17 +1071,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::ContextMutator::clone "
-
-Description:
-
-    deep copy of a context-dependentMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::ContextMutator::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::ContextMutator::initialize(Population &pop);
 
@@ -1222,17 +1136,7 @@ Details:
 
 %ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
-%feature("docstring") simuPOP::ControlledOffspringGenerator::clone "
-
-Description:
-
-    Deep copy of a controlled random mating scheme.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::ControlledOffspringGenerator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::ControlledOffspringGenerator::describe "Obsolete or undocumented function."
 
@@ -1271,29 +1175,9 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Dumper::clone "
+%feature("docstring") simuPOP::Dumper::clone "Obsolete or undocumented function."
 
-Description:
-
-    Deep copy of a Dumper operator.
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::Dumper::apply "
-
-Description:
-
-    Apply a Dumper operator to population pop.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::Dumper::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Dumper::~Dumper "
 
@@ -1932,17 +1816,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::GenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a base genotype transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::GenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoTransmitter::clearChromosome "
 
@@ -2116,17 +1990,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::HaplodiploidGenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a haplodiploid transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::HaplodiploidGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::HaplodiploidGenoTransmitter::describe "Obsolete or undocumented function."
 
@@ -2198,17 +2062,7 @@ Usage:
 
 %ignore simuPOP::HeteroMating::HeteroMating(const HeteroMating &rhs);
 
-%feature("docstring") simuPOP::HeteroMating::clone "
-
-Description:
-
-    deep copy of a heterogeneous mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::HeteroMating::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::HeteroMating::describe "Obsolete or undocumented function."
 
@@ -2276,17 +2130,7 @@ Usage:
 
 %ignore simuPOP::HomoMating::HomoMating(const HomoMating &rhs);
 
-%feature("docstring") simuPOP::HomoMating::clone "
-
-Description:
-
-    Deep copy of a homogeneous mating scheme.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::HomoMating::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::HomoMating::describe "Obsolete or undocumented function."
 
@@ -2362,31 +2206,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::IdTagger::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    Set an unique ID to all individuals with zero ID.
-
-"; 
+%feature("docstring") simuPOP::IdTagger::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::IdTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
-%feature("docstring") simuPOP::IdTagger::clone "
-
-Description:
-
-    deep copy of an IdTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::IdTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::IfElse "
 
@@ -2439,17 +2263,7 @@ Usage:
 
 %ignore simuPOP::IfElse::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
-%feature("docstring") simuPOP::IfElse::apply "
-
-Description:
-
-    apply the IfElse operator to population pop.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::IfElse::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::IfElse::describe "Obsolete or undocumented function."
 
@@ -2872,29 +2686,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InfoEval::clone "
+%feature("docstring") simuPOP::InfoEval::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a InfoEval operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::InfoEval::apply "
-
-Description:
-
-    apply the InfoEval operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::InfoEval::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::InfoEval::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
@@ -2970,29 +2764,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InfoExec::clone "
+%feature("docstring") simuPOP::InfoExec::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a InfoExec operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::InfoExec::apply "
-
-Description:
-
-    apply the InfoExec operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::InfoExec::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::InfoExec::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
@@ -3151,23 +2925,13 @@ Usage:
 
 %ignore simuPOP::InheritTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
-%feature("docstring") simuPOP::InheritTagger::clone "
-
-Description:
-
-    deep copy of a InheritTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::InheritTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitGenotype "
 
 Function form:
 
-    initByFreq
+    initGenotype
 
 Details:
 
@@ -3213,31 +2977,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InitGenotype::clone "
-
-Description:
-
-    deep copy of the operator InitGenotype
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::InitGenotype::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitGenotype::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InitGenotype::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::InitGenotype::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitInfo "
 
@@ -3286,31 +3030,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InitInfo::clone "
-
-Description:
-
-    deep copy of an InitInfo operator.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::InitInfo::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitInfo::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InitInfo::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::InitInfo::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitSex "
 
@@ -3361,31 +3085,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::InitSex::clone "
-
-Description:
-
-    deep copy of an InitSex operator.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::InitSex::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitSex::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InitSex::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::InitSex::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::intList "
 
@@ -3459,17 +3163,7 @@ Usage:
 
 %ignore simuPOP::KAlleleMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::KAlleleMutator::clone "
-
-Description:
-
-    deep copy of a KAlleleMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::KAlleleMutator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
 
@@ -3527,17 +3221,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MaPenetrance::clone "
-
-Description:
-
-    deep copy of a multi-allele penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MaPenetrance::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MaPenetrance::penet(Individual *ind, ULONG gen);
 
@@ -3589,17 +3273,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MapPenetrance::clone "
-
-Description:
-
-    deep copy of a map penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MapPenetrance::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MapPenetrance::penet(Individual *ind, ULONG gen);
 
@@ -3649,17 +3323,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MapSelector::clone "
-
-Description:
-
-    deep copy of a map selector
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MapSelector::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MapSelector::indFitness(Individual *ind, ULONG gen);
 
@@ -3714,17 +3378,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MaSelector::clone "
-
-Description:
-
-    deep copy of a MaSelector
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MaSelector::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MaSelector::indFitness(Individual *ind, ULONG gen);
 
@@ -3759,17 +3413,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MatingScheme::clone "
-
-Description:
-
-    deep copy of a mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MatingScheme::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MatingScheme::describe "Obsolete or undocumented function."
 
@@ -3836,17 +3480,7 @@ Usage:
 
 %ignore simuPOP::MatrixMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::MatrixMutator::clone "
-
-Description:
-
-    deep copy of a MatrixMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MatrixMutator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MatrixMutator::describe "Obsolete or undocumented function."
 
@@ -3879,17 +3513,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::MendelianGenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a Mendelian genotype transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MendelianGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter::describe "Obsolete or undocumented function."
 
@@ -3969,29 +3593,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MergeSubPops::clone "
+%feature("docstring") simuPOP::MergeSubPops::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a MergeSubPops operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::MergeSubPops::apply "
-
-Description:
-
-    apply a MergeSubPops operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::MergeSubPops::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MergeSubPops::describe "Obsolete or undocumented function."
 
@@ -4091,43 +3695,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Migrator::clone "
+%feature("docstring") simuPOP::Migrator::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a Migrator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::Migrator::rate "
-
-Description:
-
-    return migration rate
-
-Usage:
-
-    x.rate()
-
-"; 
+%feature("docstring") simuPOP::Migrator::rate "Obsolete or undocumented function."
 
 %ignore simuPOP::Migrator::setRates(int mode, const subPopList &fromSubPops, const vectoru &toSubPops);
 
-%feature("docstring") simuPOP::Migrator::apply "
-
-Description:
-
-    apply the Migrator to populaiton pop.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::Migrator::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Migrator::describe "Obsolete or undocumented function."
 
@@ -4164,17 +3738,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::MitochondrialGenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a mitochondrial genotype transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MitochondrialGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter::describe "Obsolete or undocumented function."
 
@@ -4218,17 +3782,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::MixedMutator::clone "
-
-Description:
-
-    deep copy of a MixedMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MixedMutator::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MixedMutator::initialize(Population &pop);
 
@@ -4289,17 +3843,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MlPenetrance::clone "
-
-Description:
-
-    deep copy of a multi-loci penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MlPenetrance::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MlPenetrance::penet(Individual *ind, ULONG gen);
 
@@ -4348,17 +3892,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MlSelector::clone "
-
-Description:
-
-    deep copy of a MlSelector
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::MlSelector::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::MlSelector::indFitness(Individual *ind, ULONG gen);
 
@@ -4403,17 +3937,7 @@ Usage:
 
 %ignore simuPOP::NoneOp::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
-%feature("docstring") simuPOP::NoneOp::apply "
-
-Description:
-
-    apply the NoneOp operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::NoneOp::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::NoneOp::describe "Obsolete or undocumented function."
 
@@ -4584,17 +4108,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ParentChooser::clone "
-
-Description:
-
-    Deep copy of a parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::ParentChooser::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::ParentChooser::initialize(Population &pop, SubPopID subPop);
 
@@ -4663,17 +4177,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ParentsTagger::clone "
-
-Description:
-
-    deep copy of a ParentsTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::ParentsTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::ParentsTagger::describe "Obsolete or undocumented function."
 
@@ -4737,17 +4241,7 @@ Usage:
 
 %feature("docstring") simuPOP::Pause::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Pause::apply "
-
-Description:
-
-    apply the Pause operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::Pause::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pause::describe "Obsolete or undocumented function."
 
@@ -4991,17 +4485,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PedigreeTagger::clone "
-
-Description:
-
-    deep copy of a PedigreeTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PedigreeTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
 
@@ -5058,29 +4542,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PointMutator::clone "
+%feature("docstring") simuPOP::PointMutator::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a PointMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::PointMutator::apply "
-
-Description:
-
-    apply a PointMutator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::PointMutator::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PointMutator::describe "Obsolete or undocumented function."
 
@@ -5116,17 +4580,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PolyParentsChooser::clone "
-
-Description:
-
-    Deep copy of a parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PolyParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PolyParentsChooser::describe "Obsolete or undocumented function."
 
@@ -6318,8 +5772,8 @@ Usage:
 
 Details:
 
-    Crete a PyEval operator that evaluates a Python expression expr in
-    a population's local namespace when it is applied to this
+    Create a PyEval operator that evaluates a Python expression expr
+    in a population's local namespace when it is applied to this
     population. If Python statements stmts is given (a single or
     multi-line string), the statement will be executed before expr. If
     exposePop is set to an non-empty string, the current population
@@ -6333,7 +5787,7 @@ Details:
 Note:
 
     Although the statements and expressions are evaluated in a
-    population's local namespace, they have access to a **global**
+    population's local namespace, they have access to a global
     namespace which is the module global namespace. It is therefore
     possible to refer to any module variable in these expressions.
     Such mixed use of local and global variables is, however, strongly
@@ -6349,42 +5803,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PyEval::clone "
+%feature("docstring") simuPOP::PyEval::clone "Obsolete or undocumented function."
 
-Description:
+%feature("docstring") simuPOP::PyEval::evaluate "Obsolete or undocumented function."
 
-    deep copy of a PyEval operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::PyEval::evaluate "
-
-Usage:
-
-    x.evaluate(pop)
-
-Details:
-
-    Evaluate the expression and optional statements in the local
-    namespace of population pop and return its result as a string.
-
-"; 
-
-%feature("docstring") simuPOP::PyEval::apply "
-
-Description:
-
-    Apply the PyEval operator to population pop.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::PyEval::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyEval::describe "Obsolete or undocumented function."
 
@@ -6429,17 +5852,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PyExec::clone "
-
-Description:
-
-    deep copy of a PyExec operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyExec::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyExec::describe "Obsolete or undocumented function."
 
@@ -6585,17 +5998,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyMutator::clone "
-
-Description:
-
-    deep copy of a PyMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyMutator::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::PyMutator::mutate(AlleleRef allele, UINT locus);
 
@@ -6681,19 +6084,7 @@ Details:
 
 %feature("docstring") simuPOP::PyOperator::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::PyOperator::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    Apply the PyOperator operator to population pop. Calling this
-    function is equivalent to call func with parameter pop and
-    optional parameter param.
-
-"; 
+%feature("docstring") simuPOP::PyOperator::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::PyOperator::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
@@ -6725,17 +6116,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyOutput::apply "
-
-Description:
-
-    simply output some info
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::PyOutput::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyOutput::~PyOutput "
 
@@ -6749,17 +6130,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PyOutput::clone "
-
-Description:
-
-    Deep copy of a PyOutput operator.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyOutput::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyOutput::describe "Obsolete or undocumented function."
 
@@ -6800,17 +6171,7 @@ Details:
 
 %ignore simuPOP::PyParentsChooser::PyParentsChooser(const PyParentsChooser &rhs);
 
-%feature("docstring") simuPOP::PyParentsChooser::clone "
-
-Description:
-
-    Deep copy of a python parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyParentsChooser::describe "Obsolete or undocumented function."
 
@@ -6869,17 +6230,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyPenetrance::clone "
-
-Description:
-
-    deep copy of a Python penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyPenetrance::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::PyPenetrance::penet(Individual *ind, ULONG gen);
 
@@ -6966,17 +6317,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyQuanTrait::clone "
-
-Description:
-
-    deep copy of a Python quantitative trait operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyQuanTrait::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, ULONG gen, vectorf &traits);
 
@@ -7014,17 +6355,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PySelector::clone "
-
-Description:
-
-    deep copy of a PySelector
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PySelector::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::PySelector::indFitness(Individual *ind, ULONG gen);
 
@@ -7065,17 +6396,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyTagger::clone "
-
-Description:
-
-    deep copy of a PyTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::PyTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyTagger::describe "Obsolete or undocumented function."
 
@@ -7115,17 +6436,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::RandomParentChooser::clone "
-
-Description:
-
-    Deep copy of a random parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::RandomParentChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RandomParentChooser::describe "Obsolete or undocumented function."
 
@@ -7168,17 +6479,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::RandomParentsChooser::clone "
-
-Description:
-
-    Deep copy of a random parents chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::RandomParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RandomParentsChooser::describe "Obsolete or undocumented function."
 
@@ -7370,17 +6671,7 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::Recombinator::clone "
-
-Description:
-
-    deep copy of a Recombinator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::Recombinator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Recombinator::~Recombinator "
 
@@ -7473,29 +6764,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ResizeSubPops::clone "
+%feature("docstring") simuPOP::ResizeSubPops::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a ResizeSubPops operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::ResizeSubPops::apply "
-
-Description:
-
-    apply a ResizeSubPops operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::ResizeSubPops::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
 
@@ -7791,29 +7062,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::SavePopulation::clone "
+%feature("docstring") simuPOP::SavePopulation::clone "Obsolete or undocumented function."
 
-Description:
-
-    Deep copy of a SavePopulation operator.
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::SavePopulation::apply "
-
-Description:
-
-    Apply operator to population pop.
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::SavePopulation::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SavePopulation::describe "Obsolete or undocumented function."
 
@@ -7845,17 +7096,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::SelfingGenoTransmitter::clone "
-
-Description:
-
-    Deep copy of a selfing genotype transmitter.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::SelfingGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SelfingGenoTransmitter::describe "Obsolete or undocumented function."
 
@@ -7885,17 +7126,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::SequentialParentChooser::clone "
-
-Description:
-
-    Deep copy of a sequential parent chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::SequentialParentChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SequentialParentChooser::describe "Obsolete or undocumented function."
 
@@ -7928,17 +7159,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::SequentialParentsChooser::clone "
-
-Description:
-
-    Deep copy of a sequential parents chooser.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::SequentialParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SequentialParentsChooser::describe "Obsolete or undocumented function."
 
@@ -8417,29 +7638,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::SplitSubPops::clone "
+%feature("docstring") simuPOP::SplitSubPops::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a SplitSubPops operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::SplitSubPops::apply "
-
-Description:
-
-    apply a SplitSubPops operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::SplitSubPops::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
 
@@ -8794,29 +7995,9 @@ Usage:
 
 %feature("docstring") simuPOP::Stat::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Stat::clone "
+%feature("docstring") simuPOP::Stat::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a Stat operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::Stat::apply "
-
-Description:
-
-    apply the Stat operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::Stat::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::statAlleleFreq;
 
@@ -9247,17 +8428,7 @@ Usage:
 
 %ignore simuPOP::StepwiseMutator::mutate(AlleleRef allele, UINT locus);
 
-%feature("docstring") simuPOP::StepwiseMutator::clone "
-
-Description:
-
-    deep copy of a StepwiseMutator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::StepwiseMutator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::StepwiseMutator::describe "Obsolete or undocumented function."
 
@@ -9492,17 +8663,7 @@ Usage:
 
 %ignore simuPOP::SummaryTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL);
 
-%feature("docstring") simuPOP::SummaryTagger::clone "
-
-Description:
-
-    deep copy of a SummaryTagger
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::SummaryTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SystemError "
 
@@ -9555,17 +8716,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::TerminateIf::clone "
-
-Description:
-
-    deep copy of a TerminateIf terminator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::TerminateIf::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::TerminateIf::describe "Obsolete or undocumented function."
 

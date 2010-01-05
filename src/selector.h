@@ -121,7 +121,7 @@ public:
 	}
 
 
-	/// deep copy of a selector
+	/// HIDDEN Deep copy of a selector
 	virtual BaseOperator * clone() const
 	{
 		return new BaseSelector(*this);
@@ -137,7 +137,7 @@ public:
 	}
 
 
-	/// set fitness to all individuals. No selection will happen!
+	/// HIDDEN set fitness to all individuals. No selection will happen!
 	bool apply(Population & pop);
 
 	/// CPPONLY
@@ -199,7 +199,7 @@ public:
 	}
 
 
-	/// deep copy of a map selector
+	/// HIDDEN Deep copy of a map selector
 	virtual BaseOperator * clone() const
 	{
 		return new MapSelector(*this);
@@ -270,7 +270,7 @@ public:
 	}
 
 
-	/// deep copy of a \c MaSelector
+	/// HIDDEN Deep copy of a \c MaSelector
 	virtual BaseOperator * clone() const
 	{
 		return new MaSelector(*this);
@@ -336,7 +336,7 @@ public:
 	}
 
 
-	/// deep copy of a \c MlSelector
+	/// HIDDEN Deep copy of a \c MlSelector
 	virtual BaseOperator * clone() const
 	{
 		return new MlSelector(*this);
@@ -394,7 +394,7 @@ public:
 	};
 
 
-	/// deep copy of a \c PySelector
+	/// HIDDEN Deep copy of a \c PySelector
 	virtual BaseOperator * clone() const
 	{
 		return new PySelector(*this);

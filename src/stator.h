@@ -57,7 +57,7 @@ namespace simuPOP {
 class PyEval : public BaseOperator
 {
 public:
-	/** Crete a \c PyEval operator that evaluates a Python expression \e expr
+	/** Create a \c PyEval operator that evaluates a Python expression \e expr
 	 *  in a population's local namespace when it is applied to this population.
 	 *  If Python statements \e stmts is given (a single or multi-line string),
 	 *  the statement will be executed before \e expr. If \e exposePop is set
@@ -70,7 +70,7 @@ public:
 	 *  other parameters.
 	 *
 	 *  \note Although the statements and expressions are evaluated in a
-	 *  population's local namespace, they have access to a **global**
+	 *  population's local namespace, they have access to a global
 	 *  namespace which is the module global namespace. It is therefore
 	 *  possible to refer to any module variable in these expressions. Such
 	 *  mixed use of local and global variables is, however, strongly
@@ -91,19 +91,19 @@ public:
 	}
 
 
-	/// deep copy of a \c PyEval operator
+	/// HIDDEN Deep copy of a \c PyEval operator
 	virtual BaseOperator * clone() const
 	{
 		return new PyEval(*this);
 	}
 
 
-	/** Evaluate the expression and optional statements in the local namespace
+	/** HIDDEN Evaluate the expression and optional statements in the local namespace
 	 *  of population \e pop and return its result as a string.
 	 */
 	string evaluate(Population & pop);
 
-	/// Apply the \c PyEval operator to population \e pop.
+	/// HIDDEN Apply the \c PyEval operator to population \e pop.
 	virtual bool apply(Population & pop);
 
 	/// HIDDEN
@@ -148,7 +148,7 @@ public:
 	}
 
 
-	/// deep copy of a \c PyExec operator
+	/// HIDDEN Deep copy of a \c PyExec operator
 	virtual BaseOperator * clone() const
 	{
 		return new PyExec(*this);
@@ -224,7 +224,7 @@ public:
 	}
 
 
-	/// deep copy of a \c InfoEval operator
+	/// HIDDEN Deep copy of a \c InfoEval operator
 	virtual BaseOperator * clone() const
 	{
 		return new InfoEval(*this);
@@ -232,7 +232,7 @@ public:
 
 
 	// check all alleles in vector allele if they are fixed.
-	/// apply the \c InfoEval operator
+	/// HIDDEN apply the \c InfoEval operator
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
@@ -314,7 +314,7 @@ public:
 	}
 
 
-	/// deep copy of a \c InfoExec operator
+	/// HIDDEN Deep copy of a \c InfoExec operator
 	virtual BaseOperator * clone() const
 	{
 		return new InfoExec(*this);
@@ -322,7 +322,7 @@ public:
 
 
 	// check all alleles in vector allele if they are fixed.
-	/// apply the \c InfoExec operator
+	/// HIDDEN apply the \c InfoExec operator
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
@@ -990,7 +990,7 @@ public:
 	 *  dictionaries (with haplotypes as keys) such as
 	 *  <tt>haploFreq[(1,2,4)][(1,1,0)]</tt> (frequency of haplotype
 	 *  <tt>(1,1,0)</tt> at loci <tt>(1,2,3)</tt>). This statistic works for
-	 *  all Population types. Number of haplotypes for each individual equals
+	 *  all population types. Number of haplotypes for each individual equals
 	 *  to his/her ploidy number. Haplodiploid populations are supported in
 	 *  the sense that the second homologous copy of the haplotype is not
 	 *  counted for male individuals. This statistic outputs the following
@@ -1205,7 +1205,7 @@ public:
 	string describe(bool format = true);
 
 
-	/// deep copy of a \c Stat operator
+	/// HIDDEN Deep copy of a \c Stat operator
 	virtual BaseOperator * clone() const
 	{
 		return new Stat(*this);
@@ -1215,7 +1215,7 @@ public:
 	// count various statistics.
 	// use m_alleles etc to save (potentially) time to
 	// resize all these variables.
-	/// apply the \c Stat operator
+	/// HIDDEN apply the \c Stat operator
 	virtual bool apply(Population & pop);
 
 private:

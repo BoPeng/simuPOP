@@ -86,7 +86,7 @@ public:
 	 */
 	void reset(ULONG startID = 1);
 
-	/** Set an unique ID to all individuals with zero ID. */
+	/** HIDDEN Set an unique ID to all individuals with zero ID. */
 	virtual bool apply(Population & pop);
 
 	/** CPPONLY
@@ -95,7 +95,7 @@ public:
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL);
 
-	/// deep copy of an \c IdTagger
+	/// HIDDEN Deep copy of an \c IdTagger
 	virtual BaseOperator * clone() const
 	{
 		return new IdTagger(*this);
@@ -158,7 +158,7 @@ public:
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL);
 
-	/// deep copy of a \c InheritTagger
+	/// HIDDEN Deep copy of a \c InheritTagger
 	virtual BaseOperator * clone() const
 	{
 		return new InheritTagger(*this);
@@ -218,7 +218,7 @@ public:
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL);
 
-	/// deep copy of a \c SummaryTagger
+	/// HIDDEN Deep copy of a \c SummaryTagger
 	virtual BaseOperator * clone() const
 	{
 		return new SummaryTagger(*this);
@@ -265,7 +265,7 @@ public:
 	}
 
 
-	/// deep copy of a \c ParentsTagger
+	/// HIDDEN Deep copy of a \c ParentsTagger
 	virtual BaseOperator * clone() const
 	{
 		return new ParentsTagger(*this);
@@ -326,7 +326,7 @@ public:
 	}
 
 
-	/// deep copy of a \c PedigreeTagger
+	/// HIDDEN Deep copy of a \c PedigreeTagger
 	virtual BaseOperator * clone() const
 	{
 		return new PedigreeTagger(*this);
@@ -381,7 +381,7 @@ public:
 	};
 
 
-	/// deep copy of a \c PyTagger
+	/// HIDDEN Deep copy of a \c PyTagger
 	virtual BaseOperator * clone() const
 	{
 		return new PyTagger(*this);

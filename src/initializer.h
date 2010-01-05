@@ -81,7 +81,7 @@ public:
 	}
 
 
-	/// deep copy of an \c InitSex operator.
+	/// HIDDEN Deep copy of an \c InitSex operator.
 	virtual BaseOperator * clone() const
 	{
 		return new InitSex(*this);
@@ -92,7 +92,7 @@ public:
 	string describe(bool format = true);
 
 
-	/// apply this operator to population \e pop
+	/// HIDDEN apply this operator to population \e pop
 	bool apply(Population & pop);
 
 protected:
@@ -140,7 +140,7 @@ public:
 	}
 
 
-	/// deep copy of an \c InitInfo operator.
+	/// HIDDEN Deep copy of an \c InitInfo operator.
 	virtual BaseOperator * clone() const
 	{
 		return new InitInfo(*this);
@@ -150,7 +150,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true);
 
-	/// apply this operator to population \e pop
+	/// HIDDEN apply this operator to population \e pop
 	bool apply(Population & pop);
 
 protected:
@@ -161,7 +161,7 @@ protected:
 
 /** This operator assigns alleles at all or part of loci with given allele
  *  frequencies, proportions or values.
- *  <funcForm>initByFreq</funcForm>
+ *  <funcForm>initGenotype</funcForm>
  */
 class InitGenotype : public BaseOperator
 {
@@ -197,7 +197,7 @@ public:
 	}
 
 
-	/// deep copy of the operator \c InitGenotype
+	/// HIDDEN Deep copy of the operator \c InitGenotype
 	virtual BaseOperator * clone() const
 	{
 		return new InitGenotype(*this);
@@ -208,7 +208,7 @@ public:
 	string describe(bool format = true);
 
 
-	/// apply this operator to population \e pop
+	/// HIDDEN apply this operator to population \e pop
 	bool apply(Population & pop);
 
 private:
