@@ -100,14 +100,14 @@ public:
 
 
 	/// set \c qtrait to all individual
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.BaseQuanTrait> quantitative trait>" ;
 	}
@@ -168,7 +168,7 @@ public:
 	virtual void qtrait(Individual * ind, ULONG gen, vectorf & traits) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PyQuanTrait> a hybrid quantitative trait model";
 	}

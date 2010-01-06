@@ -111,7 +111,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 }
 
 
-string CloneGenoTransmitter::describe(bool format)
+string CloneGenoTransmitter::describe(bool format) const
 {
 	return "<simuPOP.CloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
 }
@@ -261,7 +261,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 
 
 bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
-Individual * dad, Individual * mom) const
+                                                 Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
@@ -274,7 +274,7 @@ Individual * dad, Individual * mom) const
 
 
 bool SelfingGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
-Individual * dad, Individual * mom) const
+                                               Individual * dad, Individual * mom) const
 {
 	//
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -299,7 +299,7 @@ void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
-Individual * dad, Individual * mom) const
+                                                    Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
 		"haplodiploid offspring generator: one of the parents is invalid.");
@@ -345,7 +345,7 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
-	Individual * dad, Individual * mom) const
+                                                     Individual * dad, Individual * mom) const
 {
 	if (!initialized())
 		initialize(*offspring);
@@ -402,7 +402,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 };
 
 
-string Recombinator::describe(bool format)
+string Recombinator::describe(bool format) const
 {
 	string desc = "<simuPOP.Recombinator> genetic recombination.";
 

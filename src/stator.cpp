@@ -30,7 +30,7 @@ using std::ostringstream;
 
 namespace simuPOP {
 
-string PyEval::describe(bool format)
+string PyEval::describe(bool format) const
 {
 	string desc = m_expr.expr();
 
@@ -40,7 +40,7 @@ string PyEval::describe(bool format)
 }
 
 
-string PyEval::evaluate(Population & pop)
+string PyEval::evaluate(Population & pop) const
 {
 	if (!m_exposePop.empty()) {
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -59,7 +59,7 @@ string PyEval::evaluate(Population & pop)
 }
 
 
-string PyExec::describe(bool format)
+string PyExec::describe(bool format) const
 {
 	string desc = m_expr.stmts();
 
@@ -69,13 +69,13 @@ string PyExec::describe(bool format)
 }
 
 
-string InfoEval::describe(bool format)
+string InfoEval::describe(bool format) const
 {
 	return "<simuPOP.InfoEval> evaluate expression " + m_expr.expr() + " using information fields as variables.";
 }
 
 
-bool PyEval::apply(Population & pop)
+bool PyEval::apply(Population & pop) const
 {
 	string res = evaluate(pop);
 
@@ -158,11 +158,12 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
 }
 
 
-bool InfoEval::apply(Population & pop)
+bool InfoEval::apply(Population & pop) const
 {
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	subPopList subPops = applicableSubPops();
+
 	if (subPops.allAvail())
 		subPops.useSubPopsFrom(pop);
 
@@ -181,8 +182,8 @@ bool InfoEval::apply(Population & pop)
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-    if (!m_usePopVars)
-        Py_DECREF(dict);
+	if (!m_usePopVars)
+		Py_DECREF(dict);
 	return true;
 }
 
@@ -199,23 +200,24 @@ bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
 		out << res;
 		this->closeOstream();
 	}
-    if (!m_usePopVars)
-        Py_DECREF(dict);
+	if (!m_usePopVars)
+		Py_DECREF(dict);
 	return true;
 }
 
 
-string InfoExec::describe(bool format)
+string InfoExec::describe(bool format) const
 {
 	return "<simuPOP.InfoExec> execute statement " + m_expr.stmts() + " using information fields as variables.";
 }
 
 
-bool InfoExec::apply(Population & pop)
+bool InfoExec::apply(Population & pop) const
 {
 	PyObject * dict = NULL;
-    if (m_simpleStmt.operation() == simpleStmt::NoOperation)
-        dict = m_usePopVars ? pop.dict() : PyDict_New();
+
+	if (m_simpleStmt.operation() == simpleStmt::NoOperation)
+		dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.allAvail())
@@ -265,8 +267,8 @@ bool InfoExec::apply(Population & pop)
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-    if (dict && !m_usePopVars)
-        Py_DECREF(dict);
+	if (dict && !m_usePopVars)
+		Py_DECREF(dict);
 	return true;
 }
 
@@ -275,9 +277,10 @@ bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
+
 	evalInfo(&*offspring, dict, true);
-    if (!m_usePopVars)
-        Py_DECREF(dict);
+	if (!m_usePopVars)
+		Py_DECREF(dict);
 	return true;
 }
 
@@ -359,7 +362,7 @@ Stat::Stat(
 }
 
 
-string Stat::describe(bool format)
+string Stat::describe(bool format) const
 {
 	string desc = "<simuPOP.Stat> Calculate statistics\n<ul>\n";
 	vectorstr descs;
@@ -386,7 +389,7 @@ string Stat::describe(bool format)
 }
 
 
-bool Stat::apply(Population & pop)
+bool Stat::apply(Population & pop) const
 {
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
@@ -416,13 +419,13 @@ statPopSize::statPopSize(bool popSize, const subPopList & subPops,
 }
 
 
-string statPopSize::describe(bool format)
+string statPopSize::describe(bool format) const
 {
 	return m_isActive ? "calculate population size" : "";
 }
 
 
-bool statPopSize::apply(Population & pop)
+bool statPopSize::apply(Population & pop) const
 {
 	if (!m_isActive)
 		return true;
@@ -468,13 +471,13 @@ statNumOfMales::statNumOfMales(bool numOfMales, const subPopList & subPops, cons
 }
 
 
-string statNumOfMales::describe(bool format)
+string statNumOfMales::describe(bool format) const
 {
 	return m_isActive ? "count number of male Individuals" : "";
 }
 
 
-bool statNumOfMales::apply(Population & pop)
+bool statNumOfMales::apply(Population & pop) const
 {
 	if (!m_isActive)
 		return true;
@@ -550,13 +553,13 @@ statNumOfAffected::statNumOfAffected(bool numOfAffected, const subPopList & subP
 }
 
 
-string statNumOfAffected::describe(bool format)
+string statNumOfAffected::describe(bool format) const
 {
 	return m_isActive ? "count number of affected individuals" : "";
 }
 
 
-bool statNumOfAffected::apply(Population & pop)
+bool statNumOfAffected::apply(Population & pop) const
 {
 	if (!m_isActive)
 		return true;
@@ -633,7 +636,7 @@ statAlleleFreq::statAlleleFreq(const vectoru & loci, const subPopList & subPops,
 }
 
 
-string statAlleleFreq::describe(bool format)
+string statAlleleFreq::describe(bool format) const
 {
 	ostringstream desc;
 
@@ -643,7 +646,7 @@ string statAlleleFreq::describe(bool format)
 }
 
 
-bool statAlleleFreq::apply(Population & pop)
+bool statAlleleFreq::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -786,7 +789,7 @@ statHeteroFreq::statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoF
 }
 
 
-string statHeteroFreq::describe(bool format)
+string statHeteroFreq::describe(bool format) const
 {
 	string desc;
 
@@ -796,7 +799,7 @@ string statHeteroFreq::describe(bool format)
 }
 
 
-bool statHeteroFreq::apply(Population & pop)
+bool statHeteroFreq::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -914,7 +917,7 @@ statGenoFreq::statGenoFreq(const vectoru & genoFreq, const subPopList & subPops,
 }
 
 
-string statGenoFreq::describe(bool format)
+string statGenoFreq::describe(bool format) const
 {
 	string desc;
 
@@ -924,7 +927,7 @@ string statGenoFreq::describe(bool format)
 }
 
 
-bool statGenoFreq::apply(Population & pop)
+bool statGenoFreq::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -1052,7 +1055,7 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 }
 
 
-string statHaploFreq::describe(bool format)
+string statHaploFreq::describe(bool format) const
 {
 	string desc;
 
@@ -1062,7 +1065,7 @@ string statHaploFreq::describe(bool format)
 }
 
 
-string statHaploFreq::dictKey(const vectori & loci)
+string statHaploFreq::dictKey(const vectori & loci) const
 {
 	string key = "(";
 
@@ -1076,7 +1079,7 @@ string statHaploFreq::dictKey(const vectori & loci)
 }
 
 
-bool statHaploFreq::apply(Population & pop)
+bool statHaploFreq::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -1223,7 +1226,7 @@ statInfo::statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
 }
 
 
-string statInfo::describe(bool format)
+string statInfo::describe(bool format) const
 {
 	if (m_sumOfInfo.empty() && m_meanOfInfo.empty() && m_varOfInfo.empty()
 	    && m_maxOfInfo.empty() && m_minOfInfo.empty())
@@ -1280,7 +1283,7 @@ string statInfo::describe(bool format)
 }
 
 
-bool statInfo::apply(Population & pop)
+bool statInfo::apply(Population & pop) const
 {
 	if (m_sumOfInfo.empty() && m_meanOfInfo.empty() && m_varOfInfo.empty()
 	    && m_maxOfInfo.empty() && m_minOfInfo.empty())
@@ -1488,7 +1491,7 @@ statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 }
 
 
-string statLD::describe(bool format)
+string statLD::describe(bool format) const
 {
 	string desc;
 
@@ -1500,7 +1503,7 @@ string statLD::describe(bool format)
 
 void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCnt,
                          const HAPLOCNTLIST & haploCnt, vectorf & LD, vectorf & D_prime,
-                         vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p, vectorf & CramerV)
+                         vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p, vectorf & CramerV) const
 {
 	for (size_t idx = 0; idx < m_LD.size(); ++idx) {
 		UINT loc1 = m_LD[idx][0];
@@ -1696,7 +1699,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 }
 
 
-void statLD::outputVar(Population & pop, const string & name, const vectorf & value)
+void statLD::outputVar(Population & pop, const string & name, const vectorf & value) const
 {
 	if (value.empty())
 		return;
@@ -1716,7 +1719,7 @@ void statLD::outputVar(Population & pop, const string & name, const vectorf & va
 }
 
 
-bool statLD::apply(Population & pop)
+bool statLD::apply(Population & pop) const
 {
 	if (m_LD.empty())
 		return true;
@@ -1894,7 +1897,7 @@ statAssociation::statAssociation(const vectoru & loci,
 }
 
 
-string statAssociation::describe(bool format)
+string statAssociation::describe(bool format) const
 {
 	string desc;
 
@@ -1906,7 +1909,7 @@ string statAssociation::describe(bool format)
 
 void statAssociation::alleleChiSqTest(const ALLELECNT & caseCnt,
                                       const ALLELECNT & controlCnt, double & chisq,
-                                      double & chisq_p)
+                                      double & chisq_p) const
 {
 	// figure out alleles
 	map<Allele, int> alleles;
@@ -1943,7 +1946,7 @@ void statAssociation::alleleChiSqTest(const ALLELECNT & caseCnt,
 
 void statAssociation::genoChiSqTest(const GENOCNT & caseCnt,
                                     const GENOCNT & controlCnt, double & chisq,
-                                    double & chisq_p)
+                                    double & chisq_p) const
 {
 	// figure out alleles
 	map<std::pair<UINT, UINT>, int> genotypes;
@@ -1979,7 +1982,7 @@ void statAssociation::genoChiSqTest(const GENOCNT & caseCnt,
 
 
 double statAssociation::armitageTest(const GENOCNT & caseCnt,
-                                     const GENOCNT & ctrlCnt)
+                                     const GENOCNT & ctrlCnt) const
 {
 	// figure out alleles and their frequencies
 	map<Allele, int> alleles;
@@ -2041,7 +2044,7 @@ double statAssociation::armitageTest(const GENOCNT & caseCnt,
 }
 
 
-bool statAssociation::apply(Population & pop)
+bool statAssociation::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -2228,7 +2231,7 @@ statNeutrality::statNeutrality(const vectoru & loci, const subPopList & subPops,
 }
 
 
-string statNeutrality::describe(bool format)
+string statNeutrality::describe(bool format) const
 {
 	string desc;
 
@@ -2238,7 +2241,7 @@ string statNeutrality::describe(bool format)
 }
 
 
-double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end)
+double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end) const
 {
 	double diffCnt = 0;
 	int numComparison = 0;
@@ -2261,7 +2264,7 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 }
 
 
-bool statNeutrality::apply(Population & pop)
+bool statNeutrality::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -2331,7 +2334,7 @@ statStructure::statStructure(const vectoru & Fst, const subPopList & subPops, co
 }
 
 
-string statStructure::describe(bool format)
+string statStructure::describe(bool format) const
 {
 	string desc;
 
@@ -2342,7 +2345,7 @@ string statStructure::describe(bool format)
 
 
 void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
-                                  const ALLELELIST & alleles, double & Gst, intDict & gst)
+                                  const ALLELELIST & alleles, double & Gst, intDict & gst) const
 {
 	double H_t_all = 0.;
 	double D_st_all = 0.;
@@ -2398,7 +2401,7 @@ void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq
 
 void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
                                  const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-                                 intDict & fst, intDict & fis, intDict & fit)
+                                 intDict & fst, intDict & fis, intDict & fit) const
 {
 	double aa = 0.;
 	double bb = 0.;
@@ -2476,7 +2479,7 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 }
 
 
-bool statStructure::apply(Population & pop)
+bool statStructure::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;
@@ -2598,7 +2601,7 @@ statHWE::statHWE(const vectoru & loci,  const subPopList & subPops,
 }
 
 
-string statHWE::describe(bool format)
+string statHWE::describe(bool format) const
 {
 	string desc;
 
@@ -2608,7 +2611,7 @@ string statHWE::describe(bool format)
 }
 
 
-vectoru statHWE::mapToCount(const GENOCNT & cnt)
+vectoru statHWE::mapToCount(const GENOCNT & cnt) const
 {
 	vectoru res(3, 0);
 
@@ -2629,7 +2632,7 @@ vectoru statHWE::mapToCount(const GENOCNT & cnt)
 }
 
 
-bool statHWE::apply(Population & pop)
+bool statHWE::apply(Population & pop) const
 {
 	if (m_loci.empty())
 		return true;

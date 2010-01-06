@@ -111,7 +111,7 @@ public:
 
 
 	/// set penetrance to all individuals and record penetrance if requested
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/** Apply the penetrance operator to a single individual \e ind and set his
 	 *  or her affection status. A generation number \e gen is needed if the
@@ -126,7 +126,7 @@ public:
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.penetrance>" ;
 	}
@@ -183,7 +183,7 @@ public:
 	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MapPenetrance> map penetrance";
 	}
@@ -257,7 +257,7 @@ public:
 	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	/// one locus
@@ -325,7 +325,7 @@ public:
 	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MlPenetrance> multiple-loci penetrance>" ;
 	}
@@ -389,7 +389,7 @@ public:
 	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PyPenetrance> python penetrance>" ;
 	}

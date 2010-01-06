@@ -178,7 +178,7 @@ public:
 
 	/** CPPONLY describe a simulator.
 	 */
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	/** Evolve all populations \e gen generations, subject to several lists of
 	 *  operators which are applied at different stages of an evolutionary

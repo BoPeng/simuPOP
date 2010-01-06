@@ -68,7 +68,7 @@ public:
 	{
 		if (!m_sex.empty()) {
 			vectori::const_iterator it = m_sex.begin();
-            for (; it != m_sex.end(); ++it) {
+			for (; it != m_sex.end(); ++it) {
 				DBG_ASSERT(*it == int(MALE) || *it == int(FEMALE),
 					ValueError, "Parameter sex must be an array of MALE or FEMALE. ");
 			}
@@ -90,11 +90,11 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/// HIDDEN apply this operator to population \e pop
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 protected:
 	/// sex frequency
@@ -149,10 +149,10 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	/// HIDDEN apply this operator to population \e pop
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 protected:
 	/// specify sex
@@ -206,11 +206,11 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/// HIDDEN apply this operator to population \e pop
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	/// allele frequencies (assume all loci are the same for a subPop

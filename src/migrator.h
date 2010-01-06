@@ -145,11 +145,12 @@ public:
 		return new Migrator(*this);
 	}
 
+
 	/// HIDDEN apply the Migrator to populaiton \e pop.
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 protected:
 	/// migration rate. its meaning is controled by m_mode
@@ -243,10 +244,10 @@ public:
 
 
 	/// HIDDEN apply a \c SplitSubPops operator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.split subpopulation>" ;
 	}
@@ -311,10 +312,10 @@ public:
 
 
 	/// HIDDEN apply a \c MergeSubPops operator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.merge subpopulations>" ;
 	}
@@ -383,11 +384,11 @@ public:
 
 
 	/// HIDDEN apply a \c ResizeSubPops operator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.resize subpopulations>" ;
 	}

@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-double BaseMutator::mutRate(UINT loc)
+double BaseMutator::mutRate(UINT loc) const
 {
 	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate.");
 	if (m_loci.allAvail()) {
@@ -46,7 +46,7 @@ double BaseMutator::mutRate(UINT loc)
 }
 
 
-void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus)
+void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus) const
 {
 	// chromosome?
 	UINT chrom = pop.chromLocusPair(locus).first;
@@ -83,7 +83,7 @@ void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, UIN
 }
 
 
-bool BaseMutator::apply(Population & pop)
+bool BaseMutator::apply(Population & pop) const
 {
 	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
@@ -230,7 +230,7 @@ MatrixMutator::MatrixMutator(const matrix & rate,
 }
 
 
-void MatrixMutator::mutate(AlleleRef allele, UINT)
+void MatrixMutator::mutate(AlleleRef allele, UINT) const
 {
 	DBG_FAILIF(static_cast<size_t>(allele) >= m_sampler.size(), IndexError,
 		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
@@ -240,7 +240,7 @@ void MatrixMutator::mutate(AlleleRef allele, UINT)
 
 
 // mutate to a state other than current state with equal probability
-void KAlleleMutator::mutate(AlleleRef allele, UINT)
+void KAlleleMutator::mutate(AlleleRef allele, UINT) const
 {
 #ifdef BINARYALLELE
 	allele = !allele;
@@ -283,7 +283,7 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const uintList & loci,
 }
 
 
-void StepwiseMutator::mutate(AlleleRef allele, UINT)
+void StepwiseMutator::mutate(AlleleRef allele, UINT) const
 {
 	UINT step = 1;
 
@@ -324,18 +324,25 @@ void StepwiseMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void PyMutator::mutate(AlleleRef allele, UINT)
+void PyMutator::mutate(AlleleRef allele, UINT) const
 {
 	int resInt = 0;
 
-	if (m_contextObj == NULL && !context().empty())
-		// this needs to be done only once
-		m_contextObj = Int_Vec_As_NumArray(context().begin(), context().end());
+	PyObject * args = PyTuple_New(m_func.numArgs());
 
-	if (m_contextObj != NULL)
-		resInt = m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), m_contextObj);
-	else
-		resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
+	for (int i = 0; i < m_func.numArgs(); ++i) {
+		const string & arg = m_func.arg(i);
+		if (arg == "allele")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));
+		else if (arg == "context")
+			PyTuple_SET_ITEM(args, i, Int_Vec_As_NumArray(context().begin(), context().end()));
+		else {
+			DBG_FAILIF(true, ValueError,
+				"Only parameters 'allele' and 'context' are acceptable in a user-provided mutation function.");
+		}
+	}
+	resInt = m_func(PyObj_As_Int, args);
+	Py_DECREF(args);
 
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
@@ -349,10 +356,10 @@ void PyMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void MixedMutator::mutate(AlleleRef allele, UINT locus)
+void MixedMutator::mutate(AlleleRef allele, UINT locus) const
 {
 	UINT idx = m_sampler.get();
-	BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[idx]);
+	const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
 
 	if (mu == 1.0 || getRNG().randUniform() < mu)
@@ -360,7 +367,7 @@ void MixedMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-void ContextMutator::mutate(AlleleRef allele, UINT locus)
+void ContextMutator::mutate(AlleleRef allele, UINT locus) const
 {
 	const vectori & alleles = context();
 
@@ -374,7 +381,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 		}
 		if (match) {
 			DBG_DO(DBG_MUTATOR, cerr << "Context " << alleles << " mutator " << i << endl);
-			BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[i]);
+			const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[i]);
 			if (getRNG().randUniform() < mut->mutRate(locus))
 				mut->mutate(allele, locus);
 			return;
@@ -382,7 +389,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 	}
 	if (m_contexts.size() + 1 == m_mutators.size()) {
 		DBG_DO(DBG_MUTATOR, cerr << "No context found. Use last mutator." << endl);
-		BaseMutator * mut = reinterpret_cast<BaseMutator *>(m_mutators[m_contexts.size()]);
+		const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[m_contexts.size()]);
 		if (getRNG().randUniform() < mut->mutRate(locus))
 			mut->mutate(allele, locus);
 	} else {
@@ -392,7 +399,7 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus)
 }
 
 
-bool PointMutator::apply(Population & pop)
+bool PointMutator::apply(Population & pop) const
 {
 	subPopList subPops = applicableSubPops();
 
@@ -406,8 +413,8 @@ bool PointMutator::apply(Population & pop)
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
 
-		vectoru::iterator it = m_inds.begin();
-		vectoru::iterator itEnd = m_inds.end();
+		vectoru::const_iterator it = m_inds.begin();
+		vectoru::const_iterator itEnd = m_inds.end();
 		for (; it != itEnd; ++it) {
 			IndIterator ind = pop.indIterator(sp->subPop()) + *it;
 			if (!ind.valid())

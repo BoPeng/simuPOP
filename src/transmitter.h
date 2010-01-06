@@ -86,7 +86,7 @@ public:
 		Individual & offspring, int ploidy) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.GenoTransmitter>" ;
 	}
@@ -100,7 +100,7 @@ public:
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
 	                       RawIndIterator offspring,
-	                       Individual * dad = NULL, 
+	                       Individual * dad = NULL,
 	                       Individual * mom = NULL) const
 	{
 		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
@@ -150,7 +150,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/// CPPONLY
@@ -193,7 +193,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MendelianGenoTransmitter>" ;
 	}
@@ -259,7 +259,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.SelfingGenoTransmitter>" ;
 	}
@@ -307,7 +307,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.HaplodiploidGenoTransmitter>" ;
 	}
@@ -361,7 +361,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MitochondrialGenoTransmitter>" ;
 	}
@@ -523,7 +523,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/** HIDDEN Initialize a Recombinator for the genotypic structure of population

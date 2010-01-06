@@ -78,7 +78,7 @@ subPopList::subPopList(const vectorvsp & subPops)
 }
 
 
-bool BaseOperator::isActive(UINT rep, long gen)
+bool BaseOperator::isActive(UINT rep, long gen) const
 {
 	if (!m_reps.match(rep))
 		return false;
@@ -120,7 +120,7 @@ bool BaseOperator::isActive(UINT rep, long gen)
 
 
 bool BaseOperator::isActive(UINT rep, long gen, long end,
-                            const vector<bool> & activeRep, bool repOnly)
+                            const vector<bool> & activeRep, bool repOnly) const
 {
 	// rep does not match
 	if (!m_reps.match(rep, &activeRep))
@@ -222,7 +222,7 @@ void BaseOperator::setFlags()
 }
 
 
-bool BaseOperator::apply(Population & pop)
+bool BaseOperator::apply(Population & pop) const
 {
 	DBG_FAILIF(true, RuntimeError,
 		"This operator can only be applied during mating.");
@@ -239,7 +239,7 @@ bool BaseOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
 }
 
 
-string BaseOperator::applicability(bool subPops, bool gen)
+string BaseOperator::applicability(bool subPops, bool gen) const
 {
 	string desc;
 
@@ -331,7 +331,7 @@ opList::~opList()
 
 vectori Pause::s_cachedKeys = vectori();
 
-string Pause::describe(bool format)
+string Pause::describe(bool format) const
 {
 	string desc = "<simuPOP.Pause> Pause an evolutionary process";
 
@@ -342,7 +342,7 @@ string Pause::describe(bool format)
 }
 
 
-bool Pause::apply(Population & pop)
+bool Pause::apply(Population & pop) const
 {
 	char a;
 
@@ -417,16 +417,16 @@ IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	m_cond(), m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
 	if (PyString_Check(cond))
-		m_cond.setExpr(PyString_AsString(cond));
+		const_cast<IfElse *>(this)->m_cond.setExpr(PyString_AsString(cond));
 	else {
 		bool c;
 		PyObj_As_Bool(cond, c);
-		m_fixedCond = c ? 1 : 0;
+		const_cast<IfElse *>(this)->m_fixedCond = c ? 1 : 0;
 	}
 }
 
 
-string IfElse::describe(bool format)
+string IfElse::describe(bool format) const
 {
 	string desc = "<simuPOP.IfElse>";
 	string ifDesc;
@@ -492,7 +492,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 }
 
 
-bool IfElse::apply(Population & pop)
+bool IfElse::apply(Population & pop) const
 {
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
@@ -526,7 +526,7 @@ bool IfElse::apply(Population & pop)
 }
 
 
-string TerminateIf::describe(bool format)
+string TerminateIf::describe(bool format) const
 {
 	return string("<simuPOP.TerminateIf> terminate the evolution of ") +
 	       (m_stopAll ? "all populations" : "the current population") +
@@ -534,7 +534,7 @@ string TerminateIf::describe(bool format)
 }
 
 
-bool TerminateIf::apply(Population & pop)
+bool TerminateIf::apply(Population & pop) const
 {
 	// experssion return true
 	m_expr.setLocalDict(pop.dict());
@@ -553,13 +553,13 @@ bool TerminateIf::apply(Population & pop)
 }
 
 
-string TicToc::describe(bool format)
+string TicToc::describe(bool format) const
 {
 	return "<simuPOP.TicToc> output performance monitor>" ;
 }
 
 
-bool TicToc::apply(Population & pop)
+bool TicToc::apply(Population & pop) const
 {
 	if (m_startTime == 0)
 		m_startTime = clock();
@@ -600,13 +600,13 @@ PyOperator::PyOperator(PyObject * func, PyObject * param,
 }
 
 
-string PyOperator::describe(bool format)
+string PyOperator::describe(bool format) const
 {
 	return "<simuPOP.PyOperator> calling a Python function " + m_func.name();
 }
 
 
-bool PyOperator::apply(Population & pop)
+bool PyOperator::apply(Population & pop) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

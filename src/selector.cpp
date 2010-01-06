@@ -26,7 +26,7 @@
 #include "selector.h"
 
 namespace simuPOP {
-bool BaseSelector::apply(Population & pop)
+bool BaseSelector::apply(Population & pop) const
 {
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
@@ -193,19 +193,19 @@ double MlSelector::indFitness(Individual * ind, ULONG gen) const
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
+			fit *= dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit;
 	} else if (m_mode == ADDITIVE) {
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit -= 1 - static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
+			fit -= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
 	} else if (m_mode == HETEROGENEITY) {
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= 1 - static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
+			fit *= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 1 ? 1 - fit : 0;
 	}
 	// this is the case for none.

@@ -140,10 +140,10 @@ public:
 
 
 	/// CPPONLY
-	double mutRate(UINT loc);
+	double mutRate(UINT loc) const;
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus)
+	virtual void mutate(AlleleRef allele, UINT locus) const
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
@@ -154,7 +154,7 @@ public:
 	/// These is certainly more efficient if it is squeezed in the apply function,
 	/// with a number of flags defined in the initialization stage. However, for
 	/// a rarely used feature, performance should be a secondary consideration.
-	void fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus);
+	void fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus) const;
 
 	/// CPPONLY
 	void setContext(int context)
@@ -164,18 +164,18 @@ public:
 
 
 	/// CPPONLY
-	vectori & context()
+	vectori & context() const
 	{
 		return m_context;
 	}
 
 
 	/// HIDDEN Apply a mutator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 protected:
-    /// This cannot be const because some mutators
-    /// needs to determine these things later.
+	/// This cannot be const because some mutators
+	/// needs to determine these things later.
 
 	/// mutation rates
 	vectorf m_rates;
@@ -187,7 +187,7 @@ protected:
 
 	const uintListFunc m_mapOut;
 
-    // Be careful about this variable, which is not constant.
+	// Be careful about this variable, which is not constant.
 	mutable vectori m_context;
 };
 
@@ -227,7 +227,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN Deep copy of a \c MatrixMutator
 	virtual BaseOperator * clone() const
@@ -237,14 +237,14 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MatrixMutator>";
 	}
 
 
 private:
-	vector<Weightedsampler> m_sampler;
+	mutable vector<Weightedsampler> m_sampler;
 };
 
 /** This mutator implements a \e k-allele mutation model that assumes \e k
@@ -285,7 +285,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN Deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
@@ -295,7 +295,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.KAlleleMutator> A k-allele mutation model with K=" +
 		       toStr(m_k);
@@ -358,7 +358,7 @@ public:
 
 	/// mutate according to the SMM model
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN Deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
@@ -368,7 +368,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.StepwiseMutator> a step-wise mutation model mutator";
 	}
@@ -392,19 +392,19 @@ class PyMutator : public BaseMutator
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
 	 *  allele when a mutation event happens. This function (parameter \e func)
-	 *  accepts the allele to be mutated and return a mutated allele. If
-	 *  \e context is specified, the \e context alleles to the left and to the
-	 *  right of the mutated alleles will be passed to this function as the
-	 *  second parameter. Invalid context alleles (e.g. left allele to the
-	 *  first locus of a chromosome) will be marked by -1. The passed, returned
-	 *  and context alleles might be changed if parameters \e mapIn and
-	 *  \e mapOut are used although allele mappings, if needed, are usually
-	 *  handled in \e func as well. This mutator by default applies to all loci
-	 *  unless parameter \e loci is specified. A single mutation rate will be
-	 *  used for all loci if a single value of parameter \e rates is given.
-	 *  Otherwise, a list of mutation rates can be specified for each locus in
-	 *  parameter \e loci. Please refer to classes \c mutator and
-	 *  \c BaseOperator for descriptions of other parameters.
+	 *  accepts the allele to be mutated as parameter \c allele and optional
+	 *  array of alleles as parameter \c context, which are \e context alleles
+	 *  the left and right of the mutated allele. Invalid context alleles (e.g.
+	 *  left allele to the first locus of a chromosome) will be marked by -1.
+	 *  The return value of this function will be used to mutate the passed
+	 *  allele. The passed, returned and context alleles might be altered if
+	 *  parameter \e mapIn and \e mapOut are used. This mutator by default
+	 *  applies to all loci unless parameter \e loci is specified. A single
+	 *  mutation rate will be used for all loci if a single value of
+	 *  parameter \e rates is given. Otherwise, a list of mutation rates can
+	 *  be specified for each locus in parameter \e loci. Please refer to
+	 *  classes \c mutator and \c BaseOperator for descriptions of other
+	 *  parameters.
 	 */
 	PyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
@@ -412,7 +412,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
-		m_func(func), m_contextObj(NULL)
+		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
 			"Passed variable is not a callable python function.");
@@ -427,10 +427,10 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PyMutator>" ;
 	}
@@ -438,8 +438,6 @@ public:
 
 private:
 	pyFunc m_func;
-
-	PyObject * m_contextObj;
 };
 
 
@@ -488,19 +486,19 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MixedMutator>" ;
 	}
 
 
 private:
-	opList m_mutators;
+	const opList m_mutators;
 
-	Weightedsampler m_sampler;
+	mutable Weightedsampler m_sampler;
 };
 
 
@@ -563,10 +561,10 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus);
+	virtual void mutate(AlleleRef allele, UINT locus) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.ContextMutator> context-dependent mutator>" ;
 	}
@@ -623,10 +621,10 @@ public:
 
 
 	/// HIDDEN apply a \c PointMutator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PointMutator>" ;
 	}

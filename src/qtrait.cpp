@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-bool BaseQuanTrait::apply(Population & pop)
+bool BaseQuanTrait::apply(Population & pop) const
 {
 	vectoru infoIdx(infoSize());
 

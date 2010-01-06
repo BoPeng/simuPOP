@@ -27,7 +27,7 @@
 
 namespace simuPOP {
 
-string InitSex::describe(bool format)
+string InitSex::describe(bool format) const
 {
 	string desc = "<simuPOP.InitSex> initialize sex ";
 
@@ -43,7 +43,7 @@ string InitSex::describe(bool format)
 }
 
 
-bool InitSex::apply(Population & pop)
+bool InitSex::apply(Population & pop) const
 {
 	subPopList subPops = applicableSubPops();
 
@@ -79,7 +79,7 @@ bool InitSex::apply(Population & pop)
 }
 
 
-string InitInfo::describe(bool format)
+string InitInfo::describe(bool format) const
 {
 	string desc = "<simuPOP.InitInfo> initialize information field";
 
@@ -97,7 +97,7 @@ string InitInfo::describe(bool format)
 }
 
 
-bool InitInfo::apply(Population & pop)
+bool InitInfo::apply(Population & pop) const
 {
 	vectoru infoIdx(infoSize());
 
@@ -161,7 +161,7 @@ InitGenotype::InitGenotype(const vectorf & freq,
 }
 
 
-string InitGenotype::describe(bool format)
+string InitGenotype::describe(bool format) const
 {
 	string desc = "<simuPOP.InitGenotype> initialize individual genotype ";
 
@@ -175,7 +175,7 @@ string InitGenotype::describe(bool format)
 }
 
 
-bool InitGenotype::apply(Population & pop)
+bool InitGenotype::apply(Population & pop) const
 {
 	subPopList subPops = applicableSubPops();
 
