@@ -945,7 +945,7 @@ class Doxy2SWIG:
 
             print >> out, '\\newcommand{\\%sRef}{\\index{%s}' % (module.replace('.', ''), module)
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
-            print >> out, self.latex_text(doc)
+            print >> out, self.latex_formatted_text(doc)
             print >> out, '}\n'
 
             # module functions
@@ -1020,7 +1020,7 @@ class Doxy2SWIG:
                 continue
             elif len(constructor) > 1:
                 print "Warning: multiple constructors: %s" % entry['Name']
-            print >> out, '\\vspace{6pt}\n'
+            #print >> out, '\\vspace{6pt}\n'
             cons = constructor[0]
             #
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'

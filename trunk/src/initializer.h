@@ -45,7 +45,7 @@ class InitSex : public BaseOperator
 {
 public:
 	/** Create an operator that initializes individual sex to \c MALE or
-	 *  \c FEMALE. By default, it assign sex to individuals randomly, with
+	 *  \c FEMALE. By default, it assigns sex to individuals randomly, with
 	 *  equal probability of having a male or a female. This probabability can
 	 *  be adjusted through parameter \e maleFreq or be made to exact
 	 *  proportions by specifying parameter \e maleProp. Alternatively, a fixed
@@ -56,7 +56,8 @@ public:
 	 *  specified in parameter \e subPop, only individuals in these
 	 *  subpopulations will be initialized. Note that the \e sex sequence, if
 	 *  used, is assigned repeatedly regardless of (virtual) subpopulation
-	 *  boundaries.
+	 *  boundaries so that you can assign \e sex to all individuals in a
+	 *  population.
 	 */
 	InitSex(double maleFreq = 0.5, double maleProp = -1, const intList & sex = vectori(),
 		int begin = 0, int end = -1, int step = 1,
@@ -171,15 +172,15 @@ public:
 	 *  frequencies of allele \c 0, \c 1, ... respectively. These frequencies
 	 *  should add up to \c 1. Elements in \e prop specified the proportions of
 	 *  alleles. Parameter \e prop is similar to \e freq except that \e prop
-	 *  guarantees exact proportions of alleles, although alleles with small
-	 *  proportions might not be allocated at all. Parameter \e genotype
-	 *  specifies a list of genotype that will be assigned repeatedly to all
-	 *  individuals (similar to \c Population.setGenotype() except that this
-	 *  operator supports parameter \e ploidy). If \e loci, \e ploidy and/or
-	 *  \e subPop are specified, only specified loci, ploidy, and individuals
-	 *  in these (virtual) subpopulations will be initialized. This operator
-	 *  initializes all chromosomes, including unused genotype locations and
-	 *  customized chromosomes.
+	 *  guarantees exact proportions of alleles at each locus, although alleles
+	 *  with small proportions might not be allocated at all. Parameter
+	 *  \e genotype specifies a list of genotype that will be assigned
+	 *  repeatedly to all individuals (similar to \c Population.setGenotype()
+	 *  except that this operator supports parameters \e loci and \e ploidy).
+	 *  If \e loci, \e ploidy and/or \e subPop are specified, only specified
+	 *  loci, ploidy, and individuals in these (virtual) subpopulations will
+	 *  be initialized. This operator initializes all chromosomes, including
+	 *  unused genotype locations and customized chromosomes.
 	 */
 	InitGenotype(const vectorf & freq = vectorf(),
 		const uintList & genotype = uintList(), const vectorf & prop = vectorf(),

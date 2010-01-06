@@ -169,10 +169,6 @@ public:
  *
  *  \note Unlike operator ``InfoExec``, individual information fields are not
  *  updated after this operator is applied to a population.
- *
- *  \note This operator tends to generate a large amount of output so use it
- *  is with caution.
- *
  */
 class InfoEval : public BaseOperator
 {

@@ -599,7 +599,7 @@ public:
 	string describe(bool format = true) const;
 
 
-	// HIDDEN check all alleles in vector allele if they are fixed.
+	/// HIDDEN check all alleles in vector allele if they are fixed.
 	bool apply(Population & pop) const;
 
 	virtual ~TerminateIf()
