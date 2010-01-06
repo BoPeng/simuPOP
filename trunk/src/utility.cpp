@@ -2444,10 +2444,11 @@ unsigned long RNG::generateRandomSeed()
 void RNG::set(const char * rng, unsigned long seed)
 {
 	const char * rng_name = rng;
+
 	// if RNG name is not given, try GSL_RNG_TYPE
 	if (m_RNG == NULL && rng_name == NULL)
 		rng_name = getenv("GSL_RNG_TYPE");
-	
+
 	// if a name is given ..... replace the existing RNG
 	if (rng_name != NULL && rng_name[0] != '\0') {
 		// locate the RNG
@@ -2478,7 +2479,7 @@ void RNG::set(const char * rng, unsigned long seed)
 	} else if (m_RNG == NULL)
 		// no name is given so we use a default one (mt19937)
 		m_RNG = gsl_rng_alloc(gsl_rng_mt19937);
-	
+
 	// in the case that a name is not given, and m_RNG already exists, just set seed.
 
 	// generate seed
