@@ -27,8 +27,8 @@
 
 '''
 Module ``simuOpt`` provides a function ``simuOpt.setOptions`` to control which
-simuPOP module to load, and how it is loaded, and a class ``simuOpt.simuOpt``
-that helps users manage script options.
+simuPOP module to load, and how it is loaded, and a class ``simuOpt.Params``
+that helps users manage simulation parameters.
 
 When simuPOP is loaded, it checkes a few environmental variables
 (``SIMUOPTIMIZED``, ``SIMUALLELETYPE``, and ``SIMUDEBUG``) to determine which
@@ -48,14 +48,14 @@ your script. simuPOP recognize the following commandline arguments
     use its default value (``useDefault`` not set). Please refer to parameter
     ``gui`` for ``simuOpt.setOptions`` for details.
 
-class ``params.SimuParam`` provides a powerful way to handle commandline
-arguments. Briefly speaking, a ``SimuParam`` object can be created from a list
+class ``params.Params`` provides a powerful way to handle commandline
+arguments. Briefly speaking, a ``Params`` object can be created from a list
 of parameter specification dictionaries. The parameters are then become
 attributes of this object. A number of functions are provided to determine
 values of these parameters using commandline arguments, a configuration
 file, or a parameter input dialog (using ``Tkinter`` or ``wxPython``).
 Values of these parameters can be accessed as attributes, or extracted
-as a list or a dictionary. Note that the ``SimuParam.getParam`` function
+as a list or a dictionary. Note that the ``Params.getParam`` function
 automatically handles the following commandline arguments.
 
 ``-h`` or ``--help``
@@ -87,7 +87,7 @@ __all__ = [
     'valueValidDir',
     'valueValidFile',
     'valueListOf',
-    'SimuParam',
+    'Params',
     'param',
 ]
 
@@ -166,24 +166,15 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None
         Whether or not use graphical user interfaces, and which graphical
         toolkit to use. If this parameter is ``None`` (default), this function
         will check environmental variable ``SIMUGUI`` for a value, and assume
-        ``True`` if such an option is unavailable.
-        
-        gui=True
-            allows simuPOP to use ``wxPython``-based dialogs if ``wxPython``
-            is available, and use ``Tkinter``-based dialogs if ``Tkinter``
-            is available.
-        
-        gui='Tkinter'
-            Use ``Tkinter`` based dialogs even if ``wxPython`` is available.
-
-        gui='wxPython'
-            Use ``wxPython``  based dialogs. Usually not needed.
-        
-        gui=False
-            Do not use any graphical toolkit. Run the script in batch mode.
-
-        This option is usually left to ``None`` so that the same script can
-        be ran in both GUI and batch mode using commandline option ``--gui``.
+        ``True`` if such an option is unavailable. If ``gui=True``, allows
+        simuPOP to use ``wxPython``-based dialogs if ``wxPython`` is available,
+        and use ``Tkinter``-based dialogs if ``Tkinter`` is available. If        
+        ``gui='Tkinter'``, use ``Tkinter`` based dialogs even if ``wxPython``
+        is available. If ``gui='wxPython'``, use ``wxPython`` based dialogs.
+        If ``gui=False``, do not use any graphical toolkit. This will force
+        the script to run in batch mode. This option is usually left to
+        ``None`` so that the same script can be ran in both GUI and batch
+        mode using commandline option ``--gui``.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -364,7 +355,7 @@ def valueValidDir():
     '''Return a function that returns true if passed option val if a valid
     directory'''
     def func(val):
-        '''SimuParam.valueValidDir''' 
+        '''Params.valueValidDir''' 
         return os.path.isdir(val)
     return func
 
@@ -373,7 +364,7 @@ def valueValidFile():
     '''Return a function that returns true if passed option val if a valid
     file'''
     def func(val):
-        '''SimuParam.valueValidFile''' 
+        '''Params.valueValidFile''' 
         return os.path.isfile(val)
     return func
 
@@ -1085,18 +1076,18 @@ class _wxParamDialog(_paramDialog):
 def param(**kwargs):
     '''A simple wrapper that allows the specification of a parameter using a
     function instead of a dictionary. Please refer to class
-    ``simuOpt.SimuParam`` for allowed keyword arguments and their meanings.'''
+    ``simuOpt.Params`` for allowed keyword arguments and their meanings.'''
     return kwargs
 
-class SimuParam:
+class Params:
     '''
-    class SimuParam provides a uniform interface for simuPOP scripts to handle
+    class Params provides a uniform interface for simuPOP scripts to handle
     parameters. It allows users to get parameters from command line options,
     a configuration file, a parameter input dialog (*tkInter* or *wxPython*) or
     from interative input. This class provides parameter validation, conversion
     and and some utility functions to print, save and restore parameters.
 
-    A SimuParam object accepts a parameter specification list that consists of
+    A Params object accepts a parameter specification list that consists of
     dictionaries with pre-defined keys. Each item defines an option in terms of
     command line option, entry name in a configuration file, label in a
     parameter input dialog, acceptable types, validation rules and a default
@@ -1146,7 +1137,7 @@ class SimuParam:
         will be outputed as is without the leading '|' symbol**.
 
     allowedTypes
-        A list of acceptable types of this option. class ``SimuParam`` will try
+        A list of acceptable types of this option. class ``Params`` will try
         to convert user input to these types. For example, if ``allowedTypes``
         is ``types.ListType`` or  ``types.TupleType`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
@@ -1179,22 +1170,22 @@ class SimuParam:
     effectively *hide* a parameter although users who know this parameter
     can set it using command line options.
 
-    The ``SimuParam.SimuParam`` class defines a number of functions to collect,
+    The ``Params.Params`` class defines a number of functions to collect,
     validate, and manipulate parameters using this parameter specification
     list.
 
-    As a shortcut to create a SimuParam object with a number of attributes,
-    a SimuParam object can be created with additional ``key=value`` pairs that
-    could be assessed as attributes. This is used to create a ``SimuParam``
+    As a shortcut to create a Params object with a number of attributes,
+    a Params object can be created with additional ``key=value`` pairs that
+    could be assessed as attributes. This is used to create a ``Params``
     object in which *parameters* are assigned directly.
     '''
     def __init__(self, options=[], doc='', details='', **kwargs):
-        '''Create a ``SimuParam`` oject using a list of parameter specification
+        '''Create a ``Params`` oject using a list of parameter specification
         dictionaries *options*. Additional *doc* and *details* can be
         specified which will be displayed as script summary (on the top of
         a parameter input dialog) and script introduction (the first part of
         a help message), respectively. Additional attributes could be assigned
-        to a ``SimuParam`` object as keyword arguments. Note that it is customary
+        to a ``Params`` object as keyword arguments. Note that it is customary
         to use module document (the first string object in a Python script) as
         *details*, using parameter ``details=__doc__``.
         '''
@@ -1297,10 +1288,10 @@ class SimuParam:
             opt.has_key('chooseFrom')):
             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
         if opt['longarg'].rstrip('=') in methods:
-            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the SimuParam class." % \
+            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the Params class." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         if opt['longarg'].rstrip('=') in self.__dict__.keys():
-            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this SimuParam object." % \
+            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
             raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s. Missing '=' after longarg?" % opt['longarg'])
@@ -1577,7 +1568,7 @@ class SimuParam:
         ``Tkinter``. If none of the toolkits are available, this function will
         raise an ``ImportError``.
 
-        If ``SimuParam.valueValidFile`` or ``SimuParam.valueValidDir`` is used
+        If ``Params.valueValidFile`` or ``Params.valueValidDir`` is used
         to validate a parameter, double click the text input box of this
         parameter will open a file or directory browse dialog.
         '''
