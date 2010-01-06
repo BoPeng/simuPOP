@@ -510,7 +510,7 @@ class _tkProgressBar(_baseProgressBar):
 
     def update(self, count):
         '''
-        Update the progreebar.
+        Update the progress bar with count. 
         '''
         if not _baseProgressBar.update(self, count):
             return
@@ -611,22 +611,12 @@ class ProgressBar:
         progress.done()
     '''
     def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=None):
-        '''
-        message
-            Title of the progress bar.
-
-        totalCount
-            Total expected steps.
-
-        progressChar
-            Character to be displayed for each progress. This is only used for
-            text-based progress bars.
-
-        block
-            Intervals at which progresses will be displayed. Default to 2 (percent).
-
-        done
-            Message displayed when the job is finished.
+        '''Create a progress bar with ``message``, which will be the title of
+        a progress dialog or a message for textbased progress bar. Parameter
+        ``totalCount`` specifies total expected steps. If a text-based progress
+        bar is used, you could specified progress character and intervals at
+        which progresses will be displayed using parameters ``progressChar``
+        and ``block``. A ending message will also be displayed in text mode.
         '''
         if gui is None:
             self.gui = simuOptions['GUI']
