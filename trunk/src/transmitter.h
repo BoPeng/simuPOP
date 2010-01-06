@@ -92,7 +92,7 @@ public:
 	}
 
 
-	/** Initialize a base genotype operator for a population. This function should be
+	/** HIDDEN Initialize a base genotype operator for a population. This function should be
 	 *  called before any other functions are used to transmit genotype.
 	 */
 	void initialize(const Population & pop);

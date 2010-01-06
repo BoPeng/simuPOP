@@ -222,15 +222,6 @@ void BaseOperator::setFlags()
 }
 
 
-void BaseOperator::initializeIfNeeded(const Population & pop)
-{
-	if (m_lastPop != pop.genoStruIdx()) {
-		initialize(pop);
-		m_lastPop = pop.genoStruIdx();
-	}
-}
-
-
 bool BaseOperator::apply(Population & pop)
 {
 	DBG_FAILIF(true, RuntimeError,
@@ -353,9 +344,6 @@ string Pause::describe(bool format)
 
 bool Pause::apply(Population & pop)
 {
-	// call initialize if needed.
-	initializeIfNeeded(pop);
-
 	char a;
 
 	if (m_stopOnKeyStroke != static_cast<char>(false)) {

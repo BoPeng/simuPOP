@@ -38,14 +38,14 @@ using std::accumulate;
 
 namespace simuPOP {
 
-/** This operator initialize sex of individuals, either randomly or use a list
+/** This operator initializes sex of individuals, either randomly or use a list
  *  of sexes.
  *  <funcForm>initSex</funcForm>
  */
 class InitSex : public BaseOperator
 {
 public:
-	/** Create an operator that initialize individual sex to \c MALE or
+	/** Create an operator that initializes individual sex to \c MALE or
 	 *  \c FEMALE. By default, it assign sex to individuals randomly, with
 	 *  equal probability of having a male or a female. This probabability can
 	 *  be adjusted through parameter \e maleFreq or be made to exact
@@ -67,7 +67,8 @@ public:
 		m_maleFreq(maleFreq), m_maleProp(maleProp), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
-			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
+			vectori::const_iterator it = m_sex.begin();
+            for (; it != m_sex.end(); ++it) {
 				DBG_ASSERT(*it == int(MALE) || *it == int(FEMALE),
 					ValueError, "Parameter sex must be an array of MALE or FEMALE. ");
 			}
@@ -97,12 +98,12 @@ public:
 
 protected:
 	/// sex frequency
-	double m_maleFreq;
+	const double m_maleFreq;
 
-	double m_maleProp;
+	const double m_maleProp;
 
 	/// specify sex
-	vectori m_sex;
+	const vectori m_sex;
 };
 
 
@@ -155,7 +156,7 @@ public:
 
 protected:
 	/// specify sex
-	floatListFunc m_values;
+	const floatListFunc m_values;
 };
 
 
@@ -213,14 +214,14 @@ public:
 
 private:
 	/// allele frequencies (assume all loci are the same for a subPop
-	vectorf m_freq;
-	vectoru m_genotype;
-	vectorf m_prop;
+	const vectorf m_freq;
+	const vectoru m_genotype;
+	const vectorf m_prop;
 	//
-	uintList m_loci;
+	const uintList m_loci;
 
 	//
-	uintList m_ploidy;
+	const uintList m_ploidy;
 };
 
 

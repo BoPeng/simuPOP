@@ -3816,12 +3816,12 @@ bool initialize()
 }
 
 
-bool intList::match(UINT rep, const vector<bool> * activeRep)
+bool intList::match(UINT rep, const vector<bool> * activeRep) const
 {
     if (m_elems.empty())
 		return m_allAvail;
-    vectori::iterator it = m_elems.begin();
-    vectori::iterator it_end = m_elems.end();
+    vectori::const_iterator it = m_elems.begin();
+    vectori::const_iterator it_end = m_elems.end();
     for (; it != it_end; ++it) {
         // positive index is easy
         if (*it >= 0) {
