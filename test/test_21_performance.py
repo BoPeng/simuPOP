@@ -99,12 +99,12 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = Simulator(pop, RandomMating())
-            simu.evolve(
+            pop.evolve(
                 initOps = [
                     InitSex(),
                     InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
+                matingScheme = RandomMating(),
                 gen = 101
             )
             c2 = time.clock()
@@ -114,13 +114,13 @@ class TestPerformance(unittest.TestCase):
             print "N=%d" % N
             pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
-            simu = Simulator(pop, RandomMating())
-            simu.evolve(
+            pop.evolve(
                 initOps = [
                     InitSex(),
                     InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
                 preOps = sel,
+                matingScheme = RandomMating(),
                 gen = 101
             )
             c2 = time.clock()
@@ -128,13 +128,13 @@ class TestPerformance(unittest.TestCase):
             # with migr and sel
             pop = Population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
             c1 = time.clock()
-            simu = Simulator(pop, RandomMating())
-            simu.evolve(
+            pop.evolve(
                 initOps = [
                     InitSex(),
                     InitGenotype(freq=[1-p]+[p/10.]*10)
                 ],
                 preOps = [migr, sel],
+                matingScheme = RandomMating(),
                 gen = 101
             )
             c2 = time.clock()
@@ -257,6 +257,14 @@ class TestPerformance(unittest.TestCase):
             # 0.36, 0.42, 0.60
             # 5.11, 8.11, 9.84, 
             # 93.22
+            #
+            #
+            # Using simuPOP 1.0.0, under the mac (supposedly a faster machine)
+            #
+            #
+            #
+            #
+
 
 
     def TestInfoIterator(self):

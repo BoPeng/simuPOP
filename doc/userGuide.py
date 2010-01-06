@@ -4933,7 +4933,7 @@ random.seed(seed)
 print '%.4f' % simulate()
 # will yield different result
 print '%.4f' % simulate()
-sim.getRNG.set(seed=seed)
+sim.getRNG().set(seed=seed)
 random.seed(seed)
 # will yield identical result because the same seeds are used
 print '%.4f' % simulate()
@@ -5214,19 +5214,19 @@ import simuPOP as sim
 sim.getRNG().set(seed=12345)
 #end_ignore
 from random import randint
-def randomChooser(pop, sp):
+def randomChooser(pop, subPop):
     males = []
     females = []
     # identify males and females in each social rank
     for rank in range(3):
-        males.append([x for x in pop.individuals(sp) \
+        males.append([x for x in pop.individuals(subPop) \
             if x.sex() == sim.MALE and x.rank == rank])
-        females.append([x for x in pop.individuals(sp) \
+        females.append([x for x in pop.individuals(subPop) \
             if x.sex() == sim.FEMALE and x.rank == rank])
     #
     while True:
         # choose a rank randomly
-        rank = int(pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).rank)
+        rank = int(pop.individual(randint(0, pop.subPopSize(subPop) - 1), subPop).rank)
         yield males[rank][randint(0, len(males[rank]) - 1)], \
             females[rank][randint(0, len(females[rank]) - 1)]
 
