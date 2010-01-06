@@ -5157,19 +5157,12 @@ class sexSpecificRecombinator(PyOperator):
         self.maleRecombinator = Recombinator(maleRates, maleIntensity,
             maleLoci, maleConvMode)
         #
-        self.initialized = False
-        #
         PyOperator.__init__(self, func=self.transmitGenotype, *args, **kwargs)
     #
     def transmitGenotype(self, pop, off, dad, mom):
-        # Recombinators need to be initialized. Basically, they cache some
-        # Population properties to speed up genotype transmission.
-        if not self.initialized:
-            self.Recombinator.initialize(pop)
-            self.maleRecombinator.initialize(pop)
-            self.initialized = True
         # Form the first homologous copy of offspring.
         self.Recombinator.transmitGenotype(mom, off, 0)
+        # Form the second homologous copy of offspring.
         self.maleRecombinator.transmitGenotype(dad, off, 1)
         return True
 
