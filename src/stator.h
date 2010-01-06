@@ -111,10 +111,10 @@ public:
 
 protected:
 	/// expression to evaluate
-	Expression m_expr;
+	const Expression m_expr;
 
 	/// if expose pop
-	string m_exposePop;
+	const string m_exposePop;
 };
 
 
@@ -157,8 +157,6 @@ public:
 
 	/// HIDDEN
 	string describe(bool format = true);
-
-
 };
 
 
@@ -212,15 +210,13 @@ public:
 		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
+		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd)
 	{
 	}
 
 
 	~InfoEval()
 	{
-		if (!m_usePopVars && m_dict != NULL)
-			Py_DECREF(m_dict);
 	}
 
 
@@ -242,16 +238,14 @@ public:
 	string describe(bool format = true);
 
 protected:
-	string evalInfo(Individual *, bool update);
+	string evalInfo(Individual *, PyObject * dict, bool update);
 
 	/// expression to evaluate
-	Expression m_expr;
+	const Expression m_expr;
 
-	bool m_usePopVars;
+	const bool m_usePopVars;
 
-	string m_exposeInd;
-
-	PyObject * m_dict;
+	const string m_exposeInd;
 };
 
 /** Operator \c InfoExec is similar to \c InfoEval in that it works at the
@@ -332,7 +326,7 @@ public:
 	string describe(bool format = true);
 
 private:
-	simpleStmt m_simpleStmt;
+	const simpleStmt m_simpleStmt;
 };
 
 

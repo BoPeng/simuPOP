@@ -1021,7 +1021,7 @@ public:
 	/** CPPONLY
 	 * set local dictionary
 	 */
-	void setLocalDict(PyObject * dict)
+	void setLocalDict(PyObject * dict) const
 	{
 		m_locals = dict;
 	}
@@ -1049,22 +1049,22 @@ public:
 
 
 	/// CPPONLY evaluate with PyObject* output
-	PyObject * evaluate();
+	PyObject * evaluate() const;
 
 	/// CPPONLY  return bool value
-	bool valueAsBool();
+	bool valueAsBool() const;
 
 	/// CPPONLY  return dictionary value
-	long int valueAsInt();
+	long int valueAsInt() const;
 
 	/// CPPONLY  return double value
-	double valueAsDouble();
+	double valueAsDouble() const;
 
 	/// CPPONLY  return string value
-	string valueAsString();
+	string valueAsString() const;
 
 	/// CPPONLY  return array value
-	vectorf valueAsArray();
+	vectorf valueAsArray() const;
 
 private:
 	/// compile expression into byte code
@@ -1080,7 +1080,7 @@ private:
 	PyObject * m_expr, * m_stmts;
 
 	/// local namespace
-	PyObject * m_locals;
+	mutable PyObject * m_locals;
 };
 
 

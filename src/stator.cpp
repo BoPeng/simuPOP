@@ -88,7 +88,7 @@ bool PyEval::apply(Population & pop)
 }
 
 
-string InfoEval::evalInfo(Individual * ind, bool update)
+string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -96,7 +96,7 @@ string InfoEval::evalInfo(Individual * ind, bool update)
 		string name = infos[idx];
 		double val = ind->info(idx);
 		PyObject * obj = PyFloat_FromDouble(val);
-		int err = PyDict_SetItemString(m_dict, name.c_str(), obj);
+		int err = PyDict_SetItemString(dict, name.c_str(), obj);
 		Py_DECREF(obj);
 		if (err != 0) {
 #ifndef OPTIMIZED
@@ -115,11 +115,11 @@ string InfoEval::evalInfo(Individual * ind, bool update)
 			throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
 
 		// set dictionary variable pop to this object
-		PyDict_SetItemString(m_dict, m_exposeInd.c_str(), indObj);
+		PyDict_SetItemString(dict, m_exposeInd.c_str(), indObj);
 		Py_DECREF(indObj);
 	}
 
-	m_expr.setLocalDict(m_dict);
+	m_expr.setLocalDict(dict);
 	// evaluate
 	string res = m_expr.valueAsString();
 	// update
@@ -128,7 +128,7 @@ string InfoEval::evalInfo(Individual * ind, bool update)
 			double info = 0;
 			string name = infos[idx];
 			try {
-				PyObject * var = PyDict_GetItemString(m_dict, name.c_str());
+				PyObject * var = PyDict_GetItemString(dict, name.c_str());
 				PyObj_As_Double(var, info);
 				ind->setInfo(info, idx);
 			} catch (...) {
@@ -141,7 +141,7 @@ string InfoEval::evalInfo(Individual * ind, bool update)
 	//
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];
-		int err = PyDict_DelItemString(m_dict, name.c_str());
+		int err = PyDict_DelItemString(dict, name.c_str());
 		if (err != 0) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -153,14 +153,14 @@ string InfoEval::evalInfo(Individual * ind, bool update)
 		}
 	}
 	if (!m_exposeInd.empty())
-		PyDict_DelItemString(m_dict, m_exposeInd.c_str());
+		PyDict_DelItemString(dict, m_exposeInd.c_str());
 	return res;
 }
 
 
 bool InfoEval::apply(Population & pop)
 {
-	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
+	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.allAvail())
@@ -172,7 +172,7 @@ bool InfoEval::apply(Population & pop)
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
-			string res = evalInfo(&*ind, false) ;
+			string res = evalInfo(&*ind, dict, false) ;
 			if (!this->noOutput() ) {
 				ostream & out = this->getOstream(pop.dict());
 				out << res;
@@ -181,6 +181,8 @@ bool InfoEval::apply(Population & pop)
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
+    if (!m_usePopVars)
+        Py_DECREF(dict);
 	return true;
 }
 
@@ -188,15 +190,17 @@ bool InfoEval::apply(Population & pop)
 bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom)
 {
-	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
+	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	string res = evalInfo(&*offspring, false);
+	string res = evalInfo(&*offspring, dict, false);
 
 	if (!this->noOutput() ) {
 		ostream & out = this->getOstream(pop.dict());
 		out << res;
 		this->closeOstream();
 	}
+    if (!m_usePopVars)
+        Py_DECREF(dict);
 	return true;
 }
 
@@ -209,7 +213,9 @@ string InfoExec::describe(bool format)
 
 bool InfoExec::apply(Population & pop)
 {
-	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
+	PyObject * dict = NULL;
+    if (m_simpleStmt.operation() == simpleStmt::NoOperation)
+        dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.allAvail())
@@ -230,7 +236,7 @@ bool InfoExec::apply(Population & pop)
 		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case simpleStmt::NoOperation:
-				evalInfo(&*ind, true);
+				evalInfo(&*ind, dict, true);
 				break;
 			case simpleStmt::Assignment:
 				ind->setInfo(oValue, oVarIdx);
@@ -259,6 +265,8 @@ bool InfoExec::apply(Population & pop)
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
+    if (dict && !m_usePopVars)
+        Py_DECREF(dict);
 	return true;
 }
 
@@ -266,9 +274,10 @@ bool InfoExec::apply(Population & pop)
 bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom)
 {
-	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
-
-	evalInfo(&*offspring, true);
+	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
+	evalInfo(&*offspring, dict, true);
+    if (!m_usePopVars)
+        Py_DECREF(dict);
 	return true;
 }
 
