@@ -276,14 +276,15 @@ public:
 
 
 	/// CPPONLY
-	bool initialized()
+	bool initialized() const
 	{
 		return ISSETFLAG(m_flags, m_flagInitialized);
 	}
 
 	/// CPPONLY
-	void setInitialized()
+	void setInitialized() const
 	{
+		//m_flags is mutable
 		SETFLAG(m_flags, m_flagInitialized);
 	}
 
