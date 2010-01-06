@@ -103,7 +103,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
 	 */
-	virtual double penet(Individual *, ULONG gen)
+	virtual double penet(Individual *, ULONG gen) const
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
 		return 1.;
@@ -123,7 +123,7 @@ public:
 	/// set penetrance to all individuals
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -134,7 +134,7 @@ public:
 
 private:
 	/// how to handle ancestral gen
-	int m_ancGen;
+	const int m_ancGen;
 };
 
 /** This penetrance operator assigns individual affection status using a
@@ -180,7 +180,7 @@ public:
 
 	/// currently assuming diploid
 	/// CPPONLY
-	virtual double penet(Individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -191,10 +191,10 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	const vectoru m_loci;
 
 	/// penetrance for each genotype
-	tupleDict m_dict;
+	const tupleDict m_dict;
 };
 
 /** This operator is called a 'multi-allele' penetrance operator because it
@@ -254,20 +254,20 @@ public:
 	/** CPPONLY
 	 * currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true);
 
 private:
 	/// one locus
-	vectoru m_loci;
+	const vectoru m_loci;
 
 	/// penetrance for each genotype
-	vectorf m_penetrance;
+	const vectorf m_penetrance;
 
 	///
-	vectoru m_wildtype;
+	const vectoru m_wildtype;
 };
 
 /** This penetrance operator is created by a list of penetrance operators. When
@@ -322,7 +322,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -333,10 +333,10 @@ public:
 
 private:
 	/// a list of peneOps
-	opList m_peneOps;
+	const opList m_peneOps;
 
 	/// mode
-	int m_mode;
+	const int m_mode;
 };
 
 /** This penetrance operator assigns penetrance values by calling a user
@@ -386,7 +386,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen);
+	virtual double penet(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -397,10 +397,10 @@ public:
 
 private:
 	/// user supplied python function
-	pyFunc m_func;
+	const pyFunc m_func;
 
 	/// susceptibility loci
-	vectoru m_loci;
+	const vectoru m_loci;
 };
 
 }

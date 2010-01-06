@@ -174,17 +174,21 @@ public:
 	virtual bool apply(Population & pop);
 
 protected:
+    /// This cannot be const because some mutators
+    /// needs to determine these things later.
+
 	/// mutation rates
 	vectorf m_rates;
 
 	/// applicable loci.
 	uintList m_loci;
 
-	uintListFunc m_mapIn;
+	const uintListFunc m_mapIn;
 
-	uintListFunc m_mapOut;
+	const uintListFunc m_mapOut;
 
-	vectori m_context;
+    // Be careful about this variable, which is not constant.
+	mutable vectori m_context;
 };
 
 /** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
@@ -483,10 +487,6 @@ public:
 	}
 
 
-	/// CPPONLY: initialize all passed mutators
-	void initialize(Population & pop);
-
-
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
@@ -560,10 +560,6 @@ public:
 	{
 		return new ContextMutator(*this);
 	}
-
-
-	/// CPPONLY: initialize all passed mutators
-	void initialize(Population & pop);
 
 
 	/// CPPONLY

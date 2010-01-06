@@ -44,7 +44,7 @@ void GenoTransmitter::initialize(const Population & pop)
 }
 
 
-void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int chrom)
+void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int chrom) const
 {
 #ifdef BINARYALLELE
 	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
@@ -57,7 +57,7 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int ch
 
 
 void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
-                                     Individual & offspring, int ploidy, int chrom)
+                                     Individual & offspring, int ploidy, int chrom) const
 {
 #ifdef BINARYALLELE
 	copyGenotype(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
@@ -74,7 +74,7 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 
 
 void GenoTransmitter::copyChromosomes(const Individual & parent,
-                                      int parPloidy, Individual & offspring, int ploidy)
+                                      int parPloidy, Individual & offspring, int ploidy) const
 {
 	// troublesome ...
 	if (m_hasCustomizedChroms) {
@@ -107,10 +107,8 @@ string CloneGenoTransmitter::describe(bool format)
 }
 
 
-bool CloneGenoTransmitter::applyDuringMating(Population & pop,
-                                             RawIndIterator offspring,
-                                             Individual * dad,
-                                             Individual * mom)
+bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
+                                             Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError,
 		"Both parents are invalid");
@@ -166,7 +164,7 @@ void MendelianGenoTransmitter::initialize(const Population & pop)
 
 
 void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
-                                                Individual & offspring, int ploidy)
+                                                Individual & offspring, int ploidy) const
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -246,8 +244,8 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 }
 
 
-bool MendelianGenoTransmitter::applyDuringMating(Population & pop,
-                                                 RawIndIterator offspring, Individual * dad, Individual * mom)
+bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
+Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
@@ -259,8 +257,8 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop,
 }
 
 
-bool SelfingGenoTransmitter::applyDuringMating(Population & pop,
-                                               RawIndIterator offspring, Individual * dad, Individual * mom)
+bool SelfingGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
+Individual * dad, Individual * mom) const
 {
 	//
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -284,8 +282,8 @@ void HaplodiploidGenoTransmitter::initialize(const Population & pop)
 }
 
 
-bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop,
-                                                    RawIndIterator offspring, Individual * dad, Individual * mom)
+bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
+Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
 		"haplodiploid offspring generator: one of the parents is invalid.");
@@ -330,8 +328,8 @@ void MitochondrialGenoTransmitter::initialize(const Population & pop)
 }
 
 
-bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop,
-                                                     RawIndIterator offspring, Individual * dad, Individual * mom)
+bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
+	Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
@@ -393,7 +391,7 @@ string Recombinator::describe(bool format)
 }
 
 
-int Recombinator::markersConverted(size_t index, const Individual & ind)
+int Recombinator::markersConverted(size_t index, const Individual & ind) const
 {
 	int mode = static_cast<int>(m_convMode[0]);
 
@@ -554,7 +552,7 @@ void Recombinator::initialize(const Population & pop)
 
 
 void Recombinator::transmitGenotype(const Individual & parent,
-                                    Individual & offspring, int ploidy)
+                                    Individual & offspring, int ploidy) const
 {
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
@@ -822,10 +820,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 }
 
 
-bool Recombinator::applyDuringMating(Population & pop,
-                                     RawIndIterator offspring,
-                                     Individual * dad,
-                                     Individual * mom)
+bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
+                                     Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(dad == NULL && mom == NULL,
 		ValueError, "None of the parents is invalid.");

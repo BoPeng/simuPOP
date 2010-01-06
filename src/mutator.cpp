@@ -349,14 +349,6 @@ void PyMutator::mutate(AlleleRef allele, UINT)
 }
 
 
-void MixedMutator::initialize(Population & pop)
-{
-	BaseMutator::initialize(pop);
-	for (size_t i = 0; i < m_mutators.size(); ++i)
-		reinterpret_cast<BaseMutator *>(m_mutators[i])->initialize(pop);
-}
-
-
 void MixedMutator::mutate(AlleleRef allele, UINT locus)
 {
 	UINT idx = m_sampler.get();
@@ -365,14 +357,6 @@ void MixedMutator::mutate(AlleleRef allele, UINT locus)
 
 	if (mu == 1.0 || getRNG().randUniform() < mu)
 		mut->mutate(allele, locus);
-}
-
-
-void ContextMutator::initialize(Population & pop)
-{
-	BaseMutator::initialize(pop);
-	for (size_t i = 0; i < m_mutators.size(); ++i)
-		reinterpret_cast<BaseMutator *>(m_mutators[i])->initialize(pop);
 }
 
 

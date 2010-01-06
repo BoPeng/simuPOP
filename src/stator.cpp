@@ -88,7 +88,7 @@ bool PyEval::apply(Population & pop)
 }
 
 
-string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update)
+string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
 {
 	vectorstr infos = ind->infoFields();
 
@@ -188,7 +188,7 @@ bool InfoEval::apply(Population & pop)
 
 
 bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 Individual * dad, Individual * mom)
+                                 Individual * dad, Individual * mom) const
 {
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
@@ -272,7 +272,7 @@ bool InfoExec::apply(Population & pop)
 
 
 bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 Individual * dad, Individual * mom)
+                                 Individual * dad, Individual * mom) const
 {
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 	evalInfo(&*offspring, dict, true);

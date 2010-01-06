@@ -63,7 +63,7 @@ bool IdTagger::apply(Population & pop)
 
 
 bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 Individual * dad, Individual * mom)
+                                 Individual * dad, Individual * mom) const
 {
 	UINT idx = pop.infoIdx(infoField(0));
 
@@ -80,7 +80,7 @@ bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
 
 
 bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom)
+                                      Individual * dad, Individual * mom) const
 {
 	UINT sz = infoSize();
 
@@ -127,7 +127,7 @@ bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring
 
 
 bool SummaryTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom)
+                                      Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
 		"Invalid father and mother for SummaryTagger.");
@@ -218,7 +218,7 @@ string ParentsTagger::describe(bool format)
 
 
 bool ParentsTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom)
+                                      Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
@@ -246,7 +246,7 @@ string PedigreeTagger::describe(bool format)
 
 
 bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                       Individual * dad, Individual * mom)
+                                       Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
@@ -278,7 +278,7 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 
 
 bool PyTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                 Individual * dad, Individual * mom)
+                                 Individual * dad, Individual * mom) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

@@ -232,13 +232,13 @@ public:
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
 	string describe(bool format = true);
 
 protected:
-	string evalInfo(Individual *, PyObject * dict, bool update);
+	string evalInfo(Individual *, PyObject * dict, bool update) const;
 
 	/// expression to evaluate
 	const Expression m_expr;
@@ -320,7 +320,7 @@ public:
 	bool apply(Population & pop);
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
 	string describe(bool format = true);
