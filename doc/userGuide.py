@@ -1429,9 +1429,12 @@ def markOff(param):
 pop.evolve(
     initOps=sim.InitSex(),
     matingScheme=sim.HeteroMating([
-        sim.RandomMating(subPops=0, weight=-0.5, ops=[markOff(0), sim.MendelianGenoTransmitter()]),
-        sim.RandomMating(subPops=[(0, 0)], weight=2, ops=[markOff(1), sim.MendelianGenoTransmitter()]),
-        sim.RandomMating(subPops=[(0, 1)], weight=3, ops=[markOff(2), sim.MendelianGenoTransmitter()])
+        sim.RandomMating(subPops=0, weight=-0.5,
+            ops=[markOff(0), sim.MendelianGenoTransmitter()]),
+        sim.RandomMating(subPops=[(0, 0)], weight=2,
+            ops=[markOff(1), sim.MendelianGenoTransmitter()]),
+        sim.RandomMating(subPops=[(0, 1)], weight=3,
+            ops=[markOff(2), sim.MendelianGenoTransmitter()])
     ]),
     gen = 10
 )

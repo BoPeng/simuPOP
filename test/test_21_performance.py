@@ -259,12 +259,18 @@ class TestPerformance(unittest.TestCase):
             # 93.22
             #
             #
-            # Using simuPOP 1.0.0, under the mac (supposedly a faster machine)
+            # Using simuPOP 1.0.0
+            # op:
+            # 0.32, 0.39, 0.70
+            # 4.57, 8.05, 10.91
+            # 102.22, 126.53, 
+            #
+            # On the new mac workstation with more RAM
             #
             # op:
             # 0.27, 0.38, 1.1
             # 3.02, 4.31, 13.16
-            # 43.73 
+            # 43.73
 
 
 
