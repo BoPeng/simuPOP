@@ -353,11 +353,15 @@ BaseOperator.__deepcopy__ = _deepcopy
 
 
 class WithArgs:
-    '''This class wraps around a function ``func`` and provides an attribute
-    ``args`` so that simuPOP knows which parameters to send to the function.
-    ``args`` should be a list of parameter names.
+    '''This class wraps around a user-provided function and provides an
+    attribute ``args`` so that simuPOP knows which parameters to send to the
+    function. This is only needed if the function can not be defined with
+    allowed parameters.
     '''
     def __init__(self, func, args):
+        '''Return a callable object that wraps around function ``func``.
+        Parameter ``args`` should be a list of parameter names.
+        '''
         self.args = args
         self.func = func
 
@@ -369,16 +373,18 @@ class WithArgs:
 
 class CloneMating(HomoMating):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
-    a clone offspring generator. Please refer to class ``OffspringGenerator``
-    for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
-    parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
-    *selectionField* are ignored because this mating scheme does not support
-    natural selection, and ``CloneGenoTransmitter`` copies sex from parents
-    to offspring. Note that ``CloneGenoTransmitter`` by default also copies
-    all parental information fields to offspring.
-    '''
+    a clone offspring generator.'''
     def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+        '''Create a clonal mating scheme that clones parents to offspring using
+        a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
+        for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
+        parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
+        *selectionField* are ignored because this mating scheme does not support
+        natural selection, and ``CloneGenoTransmitter`` copies sex from parents
+        to offspring. Note that ``CloneGenoTransmitter`` by default also copies
+        all parental information fields to offspring.
+        '''
         HomoMating.__init__(self,
             chooser = SequentialParentChooser(),
             generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
@@ -391,15 +397,17 @@ class RandomSelection(HomoMating):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with replacement, and a clone offspring generator. This mating
     scheme is usually used to simulate the basic haploid Wright-Fisher model
-    but it can also be applied to diploid populations. Please refer to class
-    ``RandomParentChooser`` for parameter *selectionField*, to class
-    ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
-    class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
-    Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
-    sex from parents to offspring.
-    '''
+    but it can also be applied to diploid populations.'''
     def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Create a mating scheme that select a parent randomly and copy him or
+        her to the offspring population. Please refer to class 
+        ``RandomParentChooser`` for parameter *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
+        class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+        Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
+        sex from parents to offspring.
+        '''
         HomoMating.__init__(self,
             chooser = RandomParentChooser(True, selectionField),
             generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
@@ -411,14 +419,16 @@ class RandomSelection(HomoMating):
 class RandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
-    widely used to simulate diploid sexual Wright-Fisher random mating.
-    Please refer to class ``RandomParentsChooser`` for parameter
-    *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
-    *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
-    *subPopSize*, *subPops* and *weight*.
-    '''
+    widely used to simulate diploid sexual Wright-Fisher random mating.'''
     def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Creates a random mating ssheme that selects two parents randomly and
+        transmit genotypes according to Mendelian laws. Please refer to class
+        ``RandomParentsChooser`` for parameter *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+        *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*.
+        '''
         HomoMating.__init__(self,
             chooser = RandomParentsChooser(True, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
@@ -431,14 +441,16 @@ class MonogamousMating(HomoMating):
     '''A homogeneous mating scheme that uses a random parents chooser without
     replacement and a Mendelian offspring generator. It differs from the basic
     random mating scheme in that each parent can mate only once so there is no
-    half-sibling in the population. Please refer to class ``OffspringGenerator``
-    for parameters *ops*, *sexMode* and *numOffspring*, and to class
-    ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
-    Parameter *selectionField* is ignored because this mating scheme does not
-    support natural selection.
-    '''
+    half-sibling in the population.'''
     def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+        '''Creates a monogamous mating scheme that selects each parent only
+        once. Please refer to class ``OffspringGenerator`` for parameters
+        *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
+        parameters *subPopSize*, *subPops* and *weight*. Parameter
+        *selectionField* is ignored because this mating scheme does not
+        support natural selection.
+        '''
         HomoMating.__init__(self,
             chooser = RandomParentsChooser(replacement=False),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
@@ -451,14 +463,16 @@ class PolygamousMating(HomoMating):
     '''A homogeneous mating scheme that uses a multi-spouse parents chooser
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that each parent of sex *polySex* will have *polyNum*
-    spouses. Please refer to class ``PolyParentsChooser`` for parameters
-    *polySex*, *polyNum* and *selectionField*, to class ``OffspringGenerator``
-    for parameters *ops*,  *sexMode* and *numOffspring*, and to class
-    ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
-    '''
+    spouses.'''
     def __init__(self, polySex=MALE, polyNum=1, numOffspring = 1,
         sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), subPopSize = [],
 		subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Creates a polygamous mating scheme that each parent mates with
+        multiple spouses. Please refer to class ``PolyParentsChooser`` for
+        parameters *polySex*, *polyNum* and *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops*,  *sexMode* and
+        *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*. '''
         HomoMating.__init__(self,
             chooser = PolyParentsChooser(polySex, polyNum),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
@@ -471,14 +485,16 @@ class HaplodiploidMating(HomoMating):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a haplodiploid offspring generator. It should be used
     in a haplodiploid population where male individuals only have one set
-    of homologous chromosomes. Please refer to class ``RandomParentsChooser``
-    for parameter *selectionField*, to class ``OffspringGenerator`` for
-    parameters *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating``
-    for parameters *subPopSize*, *subPops* and *weight*.
-    '''
+    of homologous chromosomes.'''
     def __init__(self, numOffspring = 1., sexMode = RANDOM_SEX,
         ops = HaplodiploidGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL,
         weight = 0, selectionField = 'fitness'):
+        '''Creates a mating scheme in haplodiploid populations. Please refer
+        to class ``RandomParentsChooser`` for parameter *selectionField*, to
+        class ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+        *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*.
+        '''
         HomoMating.__init__(self,
             chooser = RandomParentsChooser(True, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
@@ -491,15 +507,18 @@ class SelfMating(HomoMating):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with or without replacement (parameter *replacement*) and a
     selfing offspring generator. It is used to mimic self-fertilization
-    in certain plant populations. Please refer to class ``RandomParentChooser``
-    for parameter *replacement* and  *selectionField*, to class
-    ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-    and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
-    *weight*.
-    '''
+    in certain plant populations.'''
     def __init__(self, replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
         ops = SelfingGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL, weight = 0,
         selectionField = 'fitness'):
+        '''Creates a selfing mating scheme where two homologous copies of
+        parental chromosomes are transmitted to offspring according to
+        Mendelian laws. Please refer to class ``RandomParentChooser`` for
+        parameter *replacement* and  *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+        *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*.
+    '''
         HomoMating.__init__(self,
             chooser = RandomParentChooser(replacement, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
@@ -534,23 +553,26 @@ class SelfMating(HomoMating):
 class ControlledRandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random sexual parents chooser
     with replacement and a controlled offspring generator using Mendelian
-    genotype transmitter. At each generation, function *freqFunc* will be
-    called to obtain intended frequencies of alleles *alleles* at loci
-    *loci*. The controlled offspring generator will control the acceptance of
-    offspring so that the generation reaches desired allele frequencies at
-    these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
-    scheme works identically to a ``RandomMating scheme``. Rationals and
-    applications of this mating scheme is described in details in a paper *Peng
-    et al, 2007 (PLoS Genetics)*. Please refer to class ``RandomParentsChooser``
-    for parameters *selectionField*, to class ``ControlledOffspringGenerator``
-    for parameters *loci*, *alleles*, *freqFunc*, to class
-    ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-    and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
-    *weight*.
-    '''
+    genotype transmitter. It falls back to a regular random mating scheme
+    if there is no locus to control or no trajectory is defined.'''
     def __init__(self, loci=[], alleles=[], freqFunc=None,
         numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Creates a random mating scheme that controls allele frequency at
+        loci *loci*. At each generation, function *freqFunc* will be called to
+        called to obtain intended frequencies of alleles *alleles* at loci
+        *loci*. The controlled offspring generator will control the acceptance
+        of offspring so that the generation reaches desired allele frequencies
+        at these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
+        scheme works identically to a ``RandomMating scheme``. Rationals and
+        applications of this mating scheme is described in details in a paper *Peng
+        et al, 2007 (PLoS Genetics)*. Please refer to class ``RandomParentsChooser``
+        for parameters *selectionField*, to class ``ControlledOffspringGenerator``
+        for parameters *loci*, *alleles*, *freqFunc*, to class
+        ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
+        and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
+        *weight*.
+        '''
         if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
             HomoMating.__init__(self,
                 chooser = RandomParentsChooser(True, selectionField),
@@ -568,32 +590,34 @@ class ControlledRandomMating(HomoMating):
                 weight = weight)
 
 
-# Mutation models
+
 class SNPMutator(MatrixMutator):
-    '''
-    Because there are only two alleles, this mutation model only needs to know
-    the mutation rate from allele 0 to 1 (parameter ``u``) and from 1 to 0
-    (parameter ``v``).
-    '''
+    '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
+    rate from 0 to 1, and from 1 to 0 alleles. '''
     def __init__(self, u=0, v=0, *args, **kwargs):
+        '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
+        mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
+        and from 1 to 0 (parameter ``v``)'''
         MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], *args, **kwargs)
 
 
 class AcgtMutator(MatrixMutator):
-    '''
-    This operator assumes alleles 0, 1, 2, 3 as nucleotides ``A``, ``C``,
-    ``G`` and ``T`` and use a 4 by 4 mutation rate matrix to mutate them.
+    '''This mutation operator assumes alleles 0, 1, 2, 3 as nucleotides ``A``,
+    ``C``, ``G`` and ``T`` and use a 4 by 4 mutation rate matrix to mutate them.
     Although a general model needs 12 parameters, less parameters are needed
     for specific nucleotide mutation models (parameter ``model``). The length
-    and meaning of parameter ``rate`` is model dependent. Currently supported
-    models are Jukes and Cantor 1969 model (``JC69``), Kimura's 2-parameter
-    model (``K80``), Felsenstein 1981 model (``F81``), Hasgawa, Kishino and
-    Yano 1985 model (``HKY85``), Tamura 1992 model (``T92``), Tamura and Nei
-    1993 model (``TN93``), Generalized time reversible model (``GTR``), and
-    a general model (``general``) with 12 parameters. Please refer to the
-    simuPOP user's guide for detailed information about each model.
-    '''
+    and meaning of parameter ``rate`` is model dependent.'''
     def __init__(self, rate=[], model='general', *args, **kwargs):
+        '''Create a mutation model that mutates between nucleotides ``A``,
+        ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
+        and 3). Currently supported models are Jukes and Cantor 1969 model
+        (``JC69``), Kimura's 2-parameter model (``K80``), Felsenstein 1981
+        model (``F81``), Hasgawa, Kishino and Yano 1985 model (``HKY85``),
+        Tamura 1992 model (``T92``), Tamura and Nei 1993 model (``TN93``),
+        Generalized time reversible model (``GTR``), and a general model
+        (``general``) with 12 parameters. Please refer to the simuPOP user's
+        guide for detailed information about each model.
+        '''
         if model == 'JC69':
             if type(rate) in [type(()), type([])]:
                 if len(rate) != 1:
@@ -776,7 +800,7 @@ def kAlleleMutate(pop, *args, **kwargs):
     'Function form of operator ``KAlleleMutator``'
     KAlleleMutator(*args, **kwargs).apply(pop)
 
-def stepwqiseMutate(pop, *args, **kwargs):
+def stepwiseMutate(pop, *args, **kwargs):
     'Function form of operator ``StepwiseMutator``'
     StepwiseMutator(*args, **kwargs).apply(pop)
 
