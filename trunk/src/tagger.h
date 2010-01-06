@@ -78,7 +78,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/** Reset the global individual ID number so that IdTaggers will start
@@ -87,7 +87,7 @@ public:
 	void reset(ULONG startID = 1);
 
 	/** HIDDEN Set an unique ID to all individuals with zero ID. */
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/** CPPONLY
 	 *  apply the \c IdTagger
@@ -146,7 +146,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.InheritTagger>" ;
 	}
@@ -206,7 +206,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.SummaryTagger>" ;
 	}
@@ -273,7 +273,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/** CPPONLY
@@ -334,7 +334,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	/** CPPONLY
 	 * apply the \c PedigreeTagger
@@ -389,7 +389,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PyTagger>" ;
 	}

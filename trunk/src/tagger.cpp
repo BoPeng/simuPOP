@@ -39,13 +39,13 @@ void IdTagger::reset(ULONG startID)
 }
 
 
-string IdTagger::describe(bool format)
+string IdTagger::describe(bool format) const
 {
 	return "<simuPOP.IdTagger> assign an unique ID to individuals" ;
 }
 
 
-bool IdTagger::apply(Population & pop)
+bool IdTagger::apply(Population & pop) const
 {
 	DBG_DO(DBG_TAGGER, cerr << "Applying IdTagger with current ID " << g_indID << endl);
 
@@ -204,7 +204,7 @@ bool SummaryTagger::applyDuringMating(Population & pop, RawIndIterator offspring
 }
 
 
-string ParentsTagger::describe(bool format)
+string ParentsTagger::describe(bool format) const
 {
 	if (infoSize() == 1)
 		return "<simuPOP.ParentsTagger> record index of parent in the parental generation "
@@ -238,7 +238,7 @@ bool ParentsTagger::applyDuringMating(Population & pop, RawIndIterator offspring
 }
 
 
-string PedigreeTagger::describe(bool format)
+string PedigreeTagger::describe(bool format) const
 {
 	return "<simuPOP.PedigreeTagger> record parental IDs (" + infoField(0) + " and "
 	       + infoField(1) + ") to field " + m_idField + " of each offspring.";

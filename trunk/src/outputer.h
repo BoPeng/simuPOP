@@ -63,7 +63,7 @@ public:
 
 
 	/// HIDDEN simply output some info
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// destructor
 	virtual ~PyOutput()
@@ -79,7 +79,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	const string m_string;
@@ -125,7 +125,7 @@ public:
 
 
 	/// HIDDEN Apply a Dumper operator to population \e pop.
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// destructor.
 	virtual ~Dumper()
@@ -133,16 +133,16 @@ public:
 	};
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.Dumper>" ;
 	}
 
 
 private:
-	void displayStructure(const Population & pop, ostream & out);
+	void displayStructure(const Population & pop, ostream & out) const;
 
-	UINT displayGenotype(const Population & pop, const subPopList & subPops, ostream & out);
+	UINT displayGenotype(const Population & pop, const subPopList & subPops, ostream & out) const;
 
 private:
 	///
@@ -204,10 +204,10 @@ public:
 
 
 	/// HIDDEN apply operator to population \e pop.
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	/// filename,

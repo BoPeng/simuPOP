@@ -162,8 +162,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 		it->setSex(getSex(count));
 		//
 		accept = true;
-		opList::iterator iop = m_transmitters.begin();
-		opList::iterator iopEnd = m_transmitters.end();
+		opList::const_iterator iop = m_transmitters.begin();
+		opList::const_iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {
 			try {
 				if (!(*iop)->isActive(pop.rep(), pop.gen()))

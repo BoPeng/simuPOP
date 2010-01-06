@@ -26,7 +26,7 @@
 
 namespace simuPOP {
 
-bool PyOutput::apply(Population & pop)
+bool PyOutput::apply(Population & pop) const
 {
 	ostream & out = this->getOstream(pop.dict());
 
@@ -36,7 +36,7 @@ bool PyOutput::apply(Population & pop)
 }
 
 
-string PyOutput::describe(bool format)
+string PyOutput::describe(bool format) const
 {
 	return "<simuPOP.PyOutput> write '" + \
 	       (m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
@@ -44,7 +44,7 @@ string PyOutput::describe(bool format)
 }
 
 
-void Dumper::displayStructure(const Population & pop, ostream & out)
+void Dumper::displayStructure(const Population & pop, ostream & out) const
 {
 	out << "Ploidy: " << pop.ploidy()
 	    << " (" << pop.ploidyName() << ")" << endl;
@@ -96,7 +96,7 @@ void Dumper::displayStructure(const Population & pop, ostream & out)
 }
 
 
-UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops, ostream & out)
+UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops, ostream & out) const
 {
 	UINT count = 0;
 	subPopList::const_iterator sp = subPops.begin();
@@ -122,7 +122,7 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 }
 
 
-bool Dumper::apply(Population & pop)
+bool Dumper::apply(Population & pop) const
 {
 	ostream & out = this->getOstream(pop.dict());
 
@@ -165,13 +165,13 @@ bool Dumper::apply(Population & pop)
 }
 
 
-string SavePopulation::describe(bool format)
+string SavePopulation::describe(bool format) const
 {
 	return "<simuPOP.SavePopulation> save population to file " + m_filename;
 }
 
 
-bool SavePopulation::apply(Population & pop)
+bool SavePopulation::apply(Population & pop) const
 {
 	string filename;
 

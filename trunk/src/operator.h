@@ -179,12 +179,12 @@ public:
 	   replicate, current generation, ending generation etc.
 	   \note This function will be called by Simulators before applying.
 	 */
-	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false);
+	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false) const;
 
 	/** CPPONLY
 	 * Another version of isActive when negative gen is not considered.
 	 */
-	bool isActive(UINT rep, long gen);
+	bool isActive(UINT rep, long gen) const;
 
 	//@}
 
@@ -192,10 +192,11 @@ public:
 	//@{
 
 	/// CPPONLY
-	virtual bool isCompatible(const Population & pop)
+	virtual bool isCompatible(const Population & pop) const
 	{
 		return true;
 	}
+
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
@@ -227,7 +228,7 @@ public:
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
@@ -256,11 +257,11 @@ public:
 
 
 	/// CPPONLY say something about the applicability of this operator.
-	string applicability(bool subPops = true, bool gen = true);
+	string applicability(bool subPops = true, bool gen = true) const;
 
 
 	/// HIDDEN
-	virtual string describe(bool format = true)
+	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.operator> a based operator that should not be used directly." ;
 	}
@@ -281,12 +282,14 @@ public:
 		return ISSETFLAG(m_flags, m_flagInitialized);
 	}
 
+
 	/// CPPONLY
 	void setInitialized() const
 	{
 		//m_flags is mutable
 		SETFLAG(m_flags, m_flagInitialized);
 	}
+
 
 	/// CPPONLY
 	subPopList applicableSubPops() const { return m_subPops; }
@@ -334,12 +337,11 @@ private:
 	const stringList m_infoFields;
 };
 
-typedef std::vector< BaseOperator * > vectorop;
+typedef std::vector< const BaseOperator * > vectorop;
 
 class opList
 {
 public:
-	typedef vectorop::iterator iterator;
 	typedef vectorop::const_iterator const_iterator;
 
 public:
@@ -350,7 +352,7 @@ public:
 	/// CPPONLY
 	opList(const opList & rhs);
 
-	BaseOperator * operator[](size_t idx) const
+	const BaseOperator * operator[](size_t idx) const
 	{
 		DBG_ASSERT(idx < m_elems.size(), IndexError,
 			"Operator index out of range");
@@ -359,19 +361,6 @@ public:
 
 
 	~opList();
-
-	/// CPPONLY
-	iterator begin()
-	{
-		return m_elems.begin();
-	}
-
-
-	/// CPPONLY
-	iterator end()
-	{
-		return m_elems.end();
-	}
 
 
 	/// CPPONLY
@@ -411,7 +400,6 @@ public:
 
 protected:
 	vectorop m_elems;
-
 };
 
 /** This operator pauses the evolution of a simulator at given generations or
@@ -468,15 +456,15 @@ public:
 
 
 	/// HIDDEN apply the \c Pause operator to one population
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
-	bool m_prompt;
+	const bool m_prompt;
 
-	char m_stopOnKeyStroke;
+	const char m_stopOnKeyStroke;
 
 	static vectori s_cachedKeys;
 };
@@ -520,14 +508,14 @@ public:
 
 
 	/// HIDDEN apply the \c NoneOp operator to one population
-	virtual bool apply(Population & pop)
+	virtual bool apply(Population & pop) const
 	{
 		return true;
 	}
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.None> an operator that does nothing" ;
 	}
@@ -580,17 +568,18 @@ public:
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN apply the \c IfElse operator to population \e pop.
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
+	/// These will be kept constant (they are set in constructor only)
 	Expression m_cond;
 	int m_fixedCond;
 
-	opList m_ifOps;
-	opList m_elseOps;
+	const opList m_ifOps;
+	const opList m_elseOps;
 };
 
 
@@ -632,11 +621,11 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	// HIDDEN check all alleles in vector allele if they are fixed.
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	virtual ~TerminateIf()
 	{
@@ -645,13 +634,13 @@ public:
 
 private:
 	/// alleles to check. If empty, check all alleles.
-	Expression m_expr;
+	const Expression m_expr;
 
 	///
-	bool m_stopAll;
+	const bool m_stopAll;
 
 	/// message to print when terminated
-	string m_message;
+	const string m_message;
 };
 
 
@@ -692,14 +681,14 @@ public:
 
 
 	/// HIDDEN
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
-	clock_t m_startTime;
-	clock_t m_lastTime;
+	mutable clock_t m_startTime;
+	mutable clock_t m_lastTime;
 };
 
 
@@ -752,21 +741,21 @@ public:
 	 *  function is equivalent to call \e func with parameter \e pop and
 	 *  optional parameter \e param.
 	 */
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	/// the function
-	pyFunc m_func;
+	const pyFunc m_func;
 
 	/// parammeters
-	pyObject m_param;
+	const pyObject m_param;
 };
 
 

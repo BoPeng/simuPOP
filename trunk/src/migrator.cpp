@@ -42,13 +42,13 @@ Migrator::Migrator(const matrix & rate, int mode, const uintList & toSubPops,
 }
 
 
-string Migrator::describe(bool format)
+string Migrator::describe(bool format) const
 {
 	return "<simuPOP.Migrator>";
 }
 
 
-bool Migrator::apply(Population & pop)
+bool Migrator::apply(Population & pop) const
 {
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));
@@ -83,51 +83,51 @@ bool Migrator::apply(Population & pop)
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			toSubPops.push_back(i);
 
-    // real migration matrix might change from population to population because
-    // of different number of subpopulations, and toSubPops can be ALL_AVAIL, and
-    // then does not have to match subPops.
-    matrix migrationRate = m_rate;
-   	if (m_mode != BY_IND_INFO) {
-        UINT szFrom = migrationRate.size();
-        UINT szTo = migrationRate[0].size();
+	// real migration matrix might change from population to population because
+	// of different number of subpopulations, and toSubPops can be ALL_AVAIL, and
+	// then does not have to match subPops.
+	matrix migrationRate = m_rate;
+	if (m_mode != BY_IND_INFO) {
+		UINT szFrom = migrationRate.size();
+		UINT szTo = migrationRate[0].size();
 
-        // check parameters
-        for (UINT i = 0; i < szFrom; ++i) {
-            DBG_FAILIF(migrationRate[i].size() != szTo, ValueError,
-                "Expecting a matrix of migration rate.");
+		// check parameters
+		for (UINT i = 0; i < szFrom; ++i) {
+			DBG_FAILIF(migrationRate[i].size() != szTo, ValueError,
+				"Expecting a matrix of migration rate.");
 
-            for (size_t j = 0; j < szTo; ++j) {
-                DBG_FAILIF(fcmp_lt(migrationRate[i][j], 0.), ValueError,
-                    "Migration rate should be positive.");
-                DBG_FAILIF(m_mode != BY_COUNTS && fcmp_gt(migrationRate[i][j], 1.), ValueError,
-                    "Migration rate should be in the range of [0,1]");
-            }
-        }
+			for (size_t j = 0; j < szTo; ++j) {
+				DBG_FAILIF(fcmp_lt(migrationRate[i][j], 0.), ValueError,
+					"Migration rate should be positive.");
+				DBG_FAILIF(m_mode != BY_COUNTS && fcmp_gt(migrationRate[i][j], 1.), ValueError,
+					"Migration rate should be in the range of [0,1]");
+			}
+		}
 
-        // set r[i][i]--- may need to extend rate (to add i->i)
-        if (m_mode == BY_PROBABILITY || m_mode == BY_PROPORTION) {
-            for (UINT i = 0; i < szFrom; i++) {               // from
-                // look for from=to cell.
-                UINT spFrom = fromSubPops[i].subPop();
-                double sum = accumulate(migrationRate[i].begin(), migrationRate[i].end(), 0.0);
-                //
-                vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
-                if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
-                    if (fcmp_gt(sum, 1.0) )
-                        throw ValueError("Sum of migrate rate from one subPop should <= 1");
-                    // adding i->i item
-                    migrationRate[i].push_back(1.0 - sum);
-                } else {                                                          // if not, set r[i][i]
-                    double & self = migrationRate[i][ spTo - toSubPops.begin() ];
-                    sum -= self;
-                    if (fcmp_gt(sum, 1.0) )
-                        throw ValueError("Sum of migrate rate from one subPop should <= 1");
-                    // reset to-my-self probability/proportion
-                    self = 1.0 - sum;
-                }
-            }
-        }
-    }
+		// set r[i][i]--- may need to extend rate (to add i->i)
+		if (m_mode == BY_PROBABILITY || m_mode == BY_PROPORTION) {
+			for (UINT i = 0; i < szFrom; i++) {               // from
+				// look for from=to cell.
+				UINT spFrom = fromSubPops[i].subPop();
+				double sum = accumulate(migrationRate[i].begin(), migrationRate[i].end(), 0.0);
+				//
+				vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
+				if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
+					if (fcmp_gt(sum, 1.0) )
+						throw ValueError("Sum of migrate rate from one subPop should <= 1");
+					// adding i->i item
+					migrationRate[i].push_back(1.0 - sum);
+				} else {                                                          // if not, set r[i][i]
+					double & self = migrationRate[i][ spTo - toSubPops.begin() ];
+					sum -= self;
+					if (fcmp_gt(sum, 1.0) )
+						throw ValueError("Sum of migrate rate from one subPop should <= 1");
+					// reset to-my-self probability/proportion
+					self = 1.0 - sum;
+				}
+			}
+		}
+	}
 
 
 	for (UINT from = 0, fromEnd = fromSubPops.size(); from < fromEnd; ++from) {
@@ -233,7 +233,7 @@ struct compareVSP
 
 };
 
-bool SplitSubPops::apply(Population & pop)
+bool SplitSubPops::apply(Population & pop) const
 {
 	subPopList subPops = applicableSubPops();
 
@@ -287,7 +287,7 @@ bool SplitSubPops::apply(Population & pop)
 }
 
 
-bool MergeSubPops::apply(Population & pop)
+bool MergeSubPops::apply(Population & pop) const
 {
 	subPopList sp = applicableSubPops();
 
@@ -305,7 +305,7 @@ bool MergeSubPops::apply(Population & pop)
 }
 
 
-bool ResizeSubPops::apply(Population & pop)
+bool ResizeSubPops::apply(Population & pop) const
 {
 	vectoru newSizes = pop.subPopSizes();
 

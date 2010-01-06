@@ -11,8 +11,8 @@ version 1.0.0 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
   - CHG: Using a new method to communicate with user-provided Python functions.
 		Basically, parameter names are now used to tell simuPOP what information
-		to sent to these functions. This leads to the following changes.
-  - CHG: Remove parameter offspringOnly from pyOperator.
+		to sent to these functions. This leads to the removal of parameter
+		offspringOnly from pyOperator.
   - CHG: pyPenetrance, pyQuanTrait and pySelector now accept functions with
 		parameters ind.
   - CHG: Allow a penetrance operator to be applied to single individuals.

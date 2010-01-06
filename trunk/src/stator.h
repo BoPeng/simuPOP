@@ -101,13 +101,13 @@ public:
 	/** HIDDEN Evaluate the expression and optional statements in the local namespace
 	 *  of population \e pop and return its result as a string.
 	 */
-	string evaluate(Population & pop);
+	string evaluate(Population & pop) const;
 
 	/// HIDDEN Apply the \c PyEval operator to population \e pop.
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 protected:
 	/// expression to evaluate
@@ -156,7 +156,8 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
+
 };
 
 
@@ -229,13 +230,13 @@ public:
 
 	// check all alleles in vector allele if they are fixed.
 	/// HIDDEN apply the \c InfoEval operator
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 protected:
 	string evalInfo(Individual *, PyObject * dict, bool update) const;
@@ -317,13 +318,13 @@ public:
 
 	// check all alleles in vector allele if they are fixed.
 	/// HIDDEN apply the \c InfoExec operator
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	const simpleStmt m_simpleStmt;
@@ -342,9 +343,9 @@ public:
 	statPopSize(bool popSize, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	bool m_isActive;
@@ -372,9 +373,9 @@ public:
 	statNumOfMales(bool numOfMales, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 private:
 	/// whether or not to apply number of male/female
@@ -401,9 +402,9 @@ public:
 	statNumOfAffected(bool numOfAffected, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	/// whether or not to apply number of affected
@@ -431,7 +432,7 @@ public:
 	statAlleleFreq(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq()
@@ -439,7 +440,7 @@ public:
 	}
 
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	/// which alleles?
@@ -468,9 +469,9 @@ public:
 	statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
 		const subPopList & subPops, const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	/// heteroFreq
@@ -495,9 +496,9 @@ public:
 	statGenoFreq(const vectoru & genoFreq,  const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	/// which genotypes
@@ -522,18 +523,18 @@ public:
 	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	~statHaploFreq()
 	{
 	}
 
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	// key string (in the format of a tuple)
-	string dictKey(const vectori & loci);
+	string dictKey(const vectori & loci) const;
 
 private:
 	/// haplotype at which loci
@@ -567,14 +568,14 @@ public:
 		const stringList & vars, const string & suffix);
 
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	~statInfo()
 	{
 	}
 
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	vectorstr m_sumOfInfo;
@@ -620,10 +621,10 @@ public:
 	statLD(const intMatrix & LD, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	typedef map<UINT, UINT> ALLELECNT;
@@ -635,9 +636,9 @@ private:
 	void calculateLD(const vectoru & lociMap,
 		const ALLELECNTLIST & alleleCnt, const HAPLOCNTLIST & haploCnt,
 		vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
-		vectorf & CramerV);
+		vectorf & CramerV) const;
 
-	void outputVar(Population & pop, const string & name, const vectorf & value);
+	void outputVar(Population & pop, const string & name, const vectorf & value) const;
 
 private:
 	/// LD
@@ -675,22 +676,22 @@ public:
 		const stringList & vars, const string & suffix);
 
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	void alleleChiSqTest(const ALLELECNT & caseCnt,
 		const ALLELECNT & controlCnt, double & chisq,
-		double & chisq_p);
+		double & chisq_p) const;
 
 	void genoChiSqTest(const GENOCNT & caseCnt,
 		const GENOCNT & controlCnt, double & chisq,
-		double & chisq_p);
+		double & chisq_p) const;
 
 	double armitageTest(const GENOCNT & caseCnt,
-		const GENOCNT & controlCnt);
+		const GENOCNT & controlCnt) const;
 
 private:
 	/// Association
@@ -712,14 +713,14 @@ public:
 	statNeutrality(const vectoru & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 	// calculate, right now,  do not tempt to save values
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	typedef vector<vectora> HAPLOLIST;
-	double calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end);
+	double calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_iterator end) const;
 
 private:
 	/// Neutrality
@@ -749,9 +750,9 @@ public:
 	statStructure(const vectoru & Fst, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
 	typedef map<UINT, float> FREQ;
@@ -761,11 +762,11 @@ private:
 	typedef vector<ALLELES> ALLELELIST;
 
 	void calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
-		const ALLELELIST & alleles, double & Gst, intDict & gst);
+		const ALLELELIST & alleles, double & Gst, intDict & gst) const;
 
 	void calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
 		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-		intDict & fst, intDict & fis, intDict & fit);
+		intDict & fst, intDict & fis, intDict & fit) const;
 
 private:
 	/// Fst
@@ -793,12 +794,12 @@ public:
 		const stringList & vars, const string & suffix);
 
 
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 private:
-	vectoru mapToCount(const GENOCNT & cnt);
+	vectoru mapToCount(const GENOCNT & cnt) const;
 
 private:
 	vectoru m_loci;
@@ -1196,7 +1197,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true);
+	string describe(bool format = true) const;
 
 
 	/// HIDDEN Deep copy of a \c Stat operator
@@ -1210,22 +1211,22 @@ public:
 	// use m_alleles etc to save (potentially) time to
 	// resize all these variables.
 	/// HIDDEN apply the \c Stat operator
-	virtual bool apply(Population & pop);
+	virtual bool apply(Population & pop) const;
 
 private:
-	statPopSize m_popSize;
-	statNumOfMales m_numOfMales;
-	statNumOfAffected m_numOfAffected;
-	statAlleleFreq m_alleleFreq;
-	statHeteroFreq m_heteroFreq;
-	statGenoFreq m_genoFreq;
-	statHaploFreq m_haploFreq;
-	statInfo m_info;
-	statLD m_LD;
-	statAssociation m_association;
-	statNeutrality m_neutrality;
-	statStructure m_structure;
-	statHWE m_HWE;
+	const statPopSize m_popSize;
+	const statNumOfMales m_numOfMales;
+	const statNumOfAffected m_numOfAffected;
+	const statAlleleFreq m_alleleFreq;
+	const statHeteroFreq m_heteroFreq;
+	const statGenoFreq m_genoFreq;
+	const statHaploFreq m_haploFreq;
+	const statInfo m_info;
+	const statLD m_LD;
+	const statAssociation m_association;
+	const statNeutrality m_neutrality;
+	const statStructure m_structure;
+	const statHWE m_HWE;
 };
 
 }

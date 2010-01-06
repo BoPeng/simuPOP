@@ -28,7 +28,7 @@
 namespace simuPOP {
 
 // set pentrance to all individuals and record penetrance if requested.
-bool BasePenetrance::apply(Population & pop)
+bool BasePenetrance::apply(Population & pop) const
 {
 	bool savePene = infoSize() > 0;
 	UINT infoIdx = 0;
@@ -198,7 +198,7 @@ double MapPenetrance::penet(Individual * ind, ULONG gen) const
 }
 
 
-string MaPenetrance::describe(bool format)
+string MaPenetrance::describe(bool format) const
 {
 	return "<simuPOP.MaPenetrance> multiple-alleles penetrance" ;
 }
@@ -256,21 +256,21 @@ double MlPenetrance::penet(Individual * ind, ULONG gen) const
 		double pen = 1;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= static_cast<BasePenetrance *>(*s)->penet(ind, gen);
+			pen *= dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
 		return pen;
 	} else if (m_mode == ADDITIVE) {
 		// x1 + x2 + x3
 		double pen = 0;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen += static_cast<BasePenetrance *>(*s)->penet(ind, gen);
+			pen += dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 1 : pen;
 	} else if (m_mode == HETEROGENEITY) {
 		// 1-(1-x1)(1-x2)
 		double pen = 1;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= 1 - static_cast<BasePenetrance *>(*s)->penet(ind, gen);
+			pen *= 1 - dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 0 : 1 - pen;
 	}
 

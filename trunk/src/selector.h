@@ -138,7 +138,7 @@ public:
 
 
 	/// HIDDEN set fitness to all individuals. No selection will happen!
-	bool apply(Population & pop);
+	bool apply(Population & pop) const;
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
@@ -154,7 +154,7 @@ public:
 
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.selector>" ;
 	}
@@ -212,7 +212,7 @@ public:
 	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MapSelector>" ;
 	}
@@ -282,7 +282,7 @@ public:
 	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MaSelector>" ;
 	}
@@ -349,7 +349,7 @@ public:
 	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.MlSelector>" ;
 	}
@@ -407,7 +407,7 @@ public:
 	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
-	string describe(bool format = true)
+	string describe(bool format = true) const
 	{
 		return "<simuPOP.PySelector>" ;
 	}
