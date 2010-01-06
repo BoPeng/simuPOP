@@ -223,7 +223,7 @@ __all__ = [
     'mixedMutate',
     'pointMutate',
     'pyMutate',
-    'stepwqiseMutate',
+    'stepwiseMutate',
     'snpMutate',
     'acgtMutate',
     #
