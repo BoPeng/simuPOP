@@ -237,7 +237,7 @@ __all__ = [
     'setRNG',
     #
     'closeOutput',
-    'describe',
+    'describeEvolProcess',
     'loadPopulation',
     'moduleInfo',
     'turnOffDebug',
