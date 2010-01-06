@@ -3,7 +3,6 @@ ChangeLog of simuPOP
 TODO:
   - Improve the describe() function of all operators.
   - Implement an event driven demographic class.
-  - Use a more consistent initializeIfNeeded mechanism.
 
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.

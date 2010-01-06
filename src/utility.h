@@ -378,7 +378,7 @@ public:
 
 
 	/// CPPONLY
-	bool match(UINT rep, const vector<bool> * activeRep = NULL);
+	bool match(UINT rep, const vector<bool> * activeRep = NULL) const;
 
 private:
 	vectori m_elems;

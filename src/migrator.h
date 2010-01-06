@@ -145,18 +145,6 @@ public:
 		return new Migrator(*this);
 	}
 
-
-	/// HIDDEN return migration rate
-	matrix rate()
-	{
-		return m_rate;
-	}
-
-
-	/** CPPONLY  set migration rate.
-	 */
-	void setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops);
-
 	/// HIDDEN apply the Migrator to populaiton \e pop.
 	virtual bool apply(Population & pop);
 
@@ -165,14 +153,14 @@ public:
 
 protected:
 	/// migration rate. its meaning is controled by m_mode
-	matrix m_rate;
+	const matrix m_rate;
 
 	/// asProbability (1), asProportion (2), or asCounts.
-	int m_mode;
+	const int m_mode;
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	uintList m_to;
+	const uintList m_to;
 };
 
 

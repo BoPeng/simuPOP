@@ -144,8 +144,7 @@ public:
 		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
-		m_ostream(output.value(), output.func()), m_infoFields(infoFields),
-		m_lastPop(MaxTraitIndex)
+		m_ostream(output.value(), output.func()), m_infoFields(infoFields)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
 
@@ -198,37 +197,6 @@ public:
 		return true;
 	}
 
-
-	/// determine if the operator can be applied only for haploid population
-	/// CPPONLY
-	bool haploidOnly()
-	{
-		return ISSETFLAG(m_flags, m_flagHaploid);
-	}
-
-
-	/// determine if the operator can be applied only for diploid population
-	/// CPPONLY
-	bool diploidOnly()
-	{
-		return ISSETFLAG(m_flags, m_flagDiploid);
-	}
-
-
-	/// CPPONLY set that the operator can be applied only for haploid populations
-	void setHaploidOnly()
-	{
-		SETFLAG(m_flags, m_flagHaploid);
-	}
-
-
-	/// CPPONLY set that the operator can be applied only for diploid populations
-	void setDiploidOnly()
-	{
-		SETFLAG(m_flags, m_flagDiploid);
-	}
-
-
 	/// get the length of information fields for this operator
 	/// CPPONLY
 	UINT infoSize()
@@ -248,7 +216,7 @@ public:
 
 
 	/// CPPONLY
-	stringList & infoFields()
+	const stringList & infoFields() const
 	{
 		return m_infoFields;
 	}
@@ -305,11 +273,17 @@ public:
 	}
 
 
-	/// HIDDEN
-	void initializeIfNeeded(const Population & pop);
+	/// CPPONLY
+	bool initialized()
+	{
+		return ISSETFLAG(m_flags, m_flagInitialized);
+	}
 
-	/// HIDDEN Initialize an operator against a population.
-	virtual void initialize(const Population & pop) {}
+	/// CPPONLY
+	void setInitialized()
+	{
+		SETFLAG(m_flags, m_flagInitialized);
+	}
 
 	/// CPPONLY
 	subPopList applicableSubPops() const { return m_subPops; }
@@ -324,45 +298,37 @@ private:
 	static const size_t m_flagAtAllGen = 1;
 	static const size_t m_flagOnlyAtBegin = 2;
 	static const size_t m_flagOnlyAtEnd = 4;
-	// limited to haploid?
-	static const size_t m_flagHaploid = 8;
-	// limited to diploid?
-	static const size_t m_flagDiploid = 16;
+	// initialized?
+	static const size_t m_flagInitialized = 8;
 
 private:
 	/// starting generation, default to 0
-	int m_beginGen;
+	const int m_beginGen;
 
 	/// ending generation, default to -1 (last genrration)
-	int m_endGen;
+	const int m_endGen;
 
 	/// interval between active states, default to 1 (active at every generation)
-	int m_stepGen;
+	const int m_stepGen;
 
 	/// a list of generations that this oeprator will be active.
 	/// typical usage is m_atGen=-1 to apply at the last generation.
-	vectori m_atGen;
+	const vectori m_atGen;
 
 	/// various m_flags of Operator for faster processing.
-	unsigned char m_flags;
+	mutable unsigned char m_flags;
 
 	/// apply to all (-1) or one of the replicates.
-	intList m_reps;
+	const intList m_reps;
 
 	/// apply to some of the (virtual) subpops.
-	subPopList m_subPops;
+	const subPopList m_subPops;
 
 	/// the output stream
 	StreamProvider m_ostream;
 
 	/// information fields that will be used by this operator
-	stringList m_infoFields;
-
-	/// last population to which this operator is applied.
-	/// If the population is changed, the operator needs to be
-	/// re-initialized.
-	size_t m_lastPop;
-
+	const stringList m_infoFields;
 };
 
 typedef std::vector< BaseOperator * > vectorop;

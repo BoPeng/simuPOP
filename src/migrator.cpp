@@ -48,58 +48,6 @@ string Migrator::describe(bool format)
 }
 
 
-void Migrator::setRates(int mode, const subPopList & fromSubPops, const vectoru & toSubPops)
-{
-	if (mode == BY_IND_INFO)
-		return;
-
-	UINT szFrom = m_rate.size();
-	UINT szTo = m_rate[0].size();
-
-	m_mode = mode;
-
-	if (m_mode != BY_PROBABILITY && m_mode != BY_PROPORTION && m_mode != BY_COUNTS)
-		throw ValueError("Migration mode can only be BY_PROBABILITY, BY_PROPORTION or BY_COUNTS");
-
-	// check parameters
-	for (UINT i = 0; i < szFrom; ++i) {
-		DBG_FAILIF(m_rate[i].size() != szTo, ValueError,
-			"Expecting a matrix of migration rate.");
-
-		for (size_t j = 0; j < szTo; ++j) {
-			DBG_FAILIF(fcmp_lt(m_rate[i][j], 0.), ValueError,
-				"Migration rate should be positive.");
-			DBG_FAILIF(m_mode != BY_COUNTS && fcmp_gt(m_rate[i][j], 1.), ValueError,
-				"Migration rate should be in the range of [0,1]");
-		}
-	}
-
-	// set r[i][i]--- may need to extend rate (to add i->i)
-	if (m_mode == BY_PROBABILITY || m_mode == BY_PROPORTION) {
-		for (UINT i = 0; i < szFrom; i++) {               // from
-			// look for from=to cell.
-			UINT spFrom = fromSubPops[i].subPop();
-			double sum = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0);
-			//
-			vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
-			if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
-				if (fcmp_gt(sum, 1.0) )
-					throw ValueError("Sum of migrate rate from one subPop should <= 1");
-				// adding i->i item
-				m_rate[i].push_back(1.0 - sum);
-			} else {                                                          // if not, set r[i][i]
-				double & self = m_rate[i][ spTo - toSubPops.begin() ];
-				sum -= self;
-				if (fcmp_gt(sum, 1.0) )
-					throw ValueError("Sum of migrate rate from one subPop should <= 1");
-				// reset to-my-self probability/proportion
-				self = 1.0 - sum;
-			}
-		}
-	}
-}
-
-
 bool Migrator::apply(Population & pop)
 {
 	// set info of individual
@@ -135,7 +83,52 @@ bool Migrator::apply(Population & pop)
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			toSubPops.push_back(i);
 
-	setRates(m_mode, fromSubPops, toSubPops);
+    // real migration matrix might change from population to population because
+    // of different number of subpopulations, and toSubPops can be ALL_AVAIL, and
+    // then does not have to match subPops.
+    matrix migrationRate = m_rate;
+   	if (m_mode != BY_IND_INFO) {
+        UINT szFrom = migrationRate.size();
+        UINT szTo = migrationRate[0].size();
+
+        // check parameters
+        for (UINT i = 0; i < szFrom; ++i) {
+            DBG_FAILIF(migrationRate[i].size() != szTo, ValueError,
+                "Expecting a matrix of migration rate.");
+
+            for (size_t j = 0; j < szTo; ++j) {
+                DBG_FAILIF(fcmp_lt(migrationRate[i][j], 0.), ValueError,
+                    "Migration rate should be positive.");
+                DBG_FAILIF(m_mode != BY_COUNTS && fcmp_gt(migrationRate[i][j], 1.), ValueError,
+                    "Migration rate should be in the range of [0,1]");
+            }
+        }
+
+        // set r[i][i]--- may need to extend rate (to add i->i)
+        if (m_mode == BY_PROBABILITY || m_mode == BY_PROPORTION) {
+            for (UINT i = 0; i < szFrom; i++) {               // from
+                // look for from=to cell.
+                UINT spFrom = fromSubPops[i].subPop();
+                double sum = accumulate(migrationRate[i].begin(), migrationRate[i].end(), 0.0);
+                //
+                vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
+                if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
+                    if (fcmp_gt(sum, 1.0) )
+                        throw ValueError("Sum of migrate rate from one subPop should <= 1");
+                    // adding i->i item
+                    migrationRate[i].push_back(1.0 - sum);
+                } else {                                                          // if not, set r[i][i]
+                    double & self = migrationRate[i][ spTo - toSubPops.begin() ];
+                    sum -= self;
+                    if (fcmp_gt(sum, 1.0) )
+                        throw ValueError("Sum of migrate rate from one subPop should <= 1");
+                    // reset to-my-self probability/proportion
+                    self = 1.0 - sum;
+                }
+            }
+        }
+    }
+
 
 	for (UINT from = 0, fromEnd = fromSubPops.size(); from < fromEnd; ++from) {
 		UINT spFrom = fromSubPops[from].subPop();
@@ -160,14 +153,14 @@ bool Migrator::apply(Population & pop)
 					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
 			}
 		} else if (m_mode == BY_PROBABILITY) {
-			Weightedsampler ws(getRNG(), m_rate[from]);
+			Weightedsampler ws(getRNG(), migrationRate[from]);
 
 			// for each individual, migrate according to migration probability
 			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
-				//toIndex = getRNG().randIntByFreq( rateSize, &m_rate[from][0] ) ;
+				//toIndex = getRNG().randIntByFreq( rateSize, &migrationRate[from][0] ) ;
 				toIndex = ws.get();
 
-				DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
+				DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
 					"Return index out of range.");
 
 				// rateSize == toSize (no i->i addition)
@@ -186,10 +179,10 @@ bool Migrator::apply(Population & pop)
 				// in case that to sub is not in from sub, the last added
 				// element is not used. sum of toNum is not spSize.
 				for (UINT i = 0; i < toSize; ++i)
-					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
+					toNum[i] = static_cast<ULONG>(spSize * migrationRate[from][i]);
 			} else {                                                                      // by count
 				for (UINT i = 0; i < toSize; ++i)
-					toNum[i] = static_cast<ULONG>(m_rate[from][i]);
+					toNum[i] = static_cast<ULONG>(migrationRate[from][i]);
 			}
 			// create a vector and assign indexes, then random shuffle
 			// and assign info
