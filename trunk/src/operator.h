@@ -199,7 +199,7 @@ public:
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
-	UINT infoSize()
+	UINT infoSize() const
 	{
 		return m_infoFields.elems().size();
 	}
@@ -207,7 +207,7 @@ public:
 
 	/// get the information field specified by user (or by default)
 	/// CPPONLY
-	string infoField(UINT idx)
+	string infoField(UINT idx) const
 	{
 		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError, "Given info index " + toStr(idx) +
 			" is out of range of 0 ~ " + toStr(m_infoFields.elems().size()));
@@ -222,6 +222,8 @@ public:
 	}
 
 
+	// FIXME: this function should be const, which means I need to add
+	// millions const or mutable everywhere.
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
@@ -230,7 +232,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 
 	//@}
@@ -240,14 +242,14 @@ public:
 
 
 	/// CPPONLY get output stream. This function is not exposed to user.
-	ostream & getOstream(PyObject * dict = NULL, bool readable = false)
+	ostream & getOstream(PyObject * dict = NULL, bool readable = false) const
 	{
 		return m_ostream.getOstream(dict, readable);
 	}
 
 
 	/// CPPONLY close output stream and delete output stream pointer, if it is a output stream
-	void closeOstream()
+	void closeOstream() const
 	{
 		m_ostream.closeOstream();
 	}
@@ -267,7 +269,7 @@ public:
 	//@}
 
 	/// CPPONLY determine if \c output=">". Used internally.
-	bool noOutput()
+	bool noOutput() const
 	{
 		return m_ostream.noOutput();
 	}
@@ -325,7 +327,7 @@ private:
 	const subPopList m_subPops;
 
 	/// the output stream
-	StreamProvider m_ostream;
+	mutable StreamProvider m_ostream;
 
 	/// information fields that will be used by this operator
 	const stringList m_infoFields;
@@ -510,7 +512,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-	                               Individual * dad = NULL, Individual * mom = NULL)
+	                               Individual * dad = NULL, Individual * mom = NULL) const
 	{
 		return true;
 	}
@@ -574,7 +576,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN apply the \c IfElse operator to population \e pop.
 	virtual bool apply(Population & pop);
@@ -753,7 +755,7 @@ public:
 
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
 	string describe(bool format = true);

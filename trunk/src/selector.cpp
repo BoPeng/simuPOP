@@ -52,7 +52,7 @@ bool BaseSelector::apply(Population & pop)
 }
 
 
-double MapSelector::indFitness(Individual * ind, ULONG gen)
+double MapSelector::indFitness(Individual * ind, ULONG gen) const
 {
 	vectoru chromTypes;
 
@@ -77,15 +77,15 @@ double MapSelector::indFitness(Individual * ind, ULONG gen)
 		}
 	}
 
-	tupleDict::iterator pos = m_dict.find(alleles);
+	tupleDict::const_iterator pos = m_dict.find(alleles);
 
 	if (pos != m_dict.end())
 		return pos->second;
 
 	if (ply > 1) {
 		// try to look up the key without phase
-		tupleDict::iterator it = m_dict.begin();
-		tupleDict::iterator itEnd = m_dict.end();
+		tupleDict::const_iterator it = m_dict.begin();
+		tupleDict::const_iterator itEnd = m_dict.end();
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
@@ -143,7 +143,7 @@ double MapSelector::indFitness(Individual * ind, ULONG gen)
 
 
 // currently assuming diploid
-double MaSelector::indFitness(Individual * ind, ULONG gen)
+double MaSelector::indFitness(Individual * ind, ULONG gen) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -152,7 +152,7 @@ double MaSelector::indFitness(Individual * ind, ULONG gen)
 		(ind->ploidy() == 1 && m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
 		ValueError, "Please specify fitness for each combination of genotype.");
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectoru::const_iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		if (ind->ploidy() == 1) {
 			Allele a = ToAllele(ind->allele(*loc));
 			if (singleST)
@@ -187,23 +187,23 @@ double MaSelector::indFitness(Individual * ind, ULONG gen)
 }
 
 
-double MlSelector::indFitness(Individual * ind, ULONG gen)
+double MlSelector::indFitness(Individual * ind, ULONG gen) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		double fit = 1;
-		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
+		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit;
 	} else if (m_mode == ADDITIVE) {
 		double fit = 1;
-		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
+		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit -= 1 - static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
 	} else if (m_mode == HETEROGENEITY) {
 		double fit = 1;
-		for (opList::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
+		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= 1 - static_cast<BaseSelector * >(*s)->indFitness(ind, gen);
 		return fit < 1 ? 1 - fit : 0;
@@ -213,7 +213,7 @@ double MlSelector::indFitness(Individual * ind, ULONG gen)
 }
 
 
-double PySelector::indFitness(Individual * ind, ULONG gen)
+double PySelector::indFitness(Individual * ind, ULONG gen) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

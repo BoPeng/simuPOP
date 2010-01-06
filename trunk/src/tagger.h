@@ -93,7 +93,7 @@ public:
 	 *  apply the \c IdTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of an \c IdTagger
 	virtual BaseOperator * clone() const
@@ -156,7 +156,7 @@ public:
 	 *  apply the \c InheritTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of a \c InheritTagger
 	virtual BaseOperator * clone() const
@@ -166,7 +166,7 @@ public:
 
 
 private:
-	int m_mode;
+	const int m_mode;
 };
 
 /** A summary tagger summarize values of one or more parental information field
@@ -216,7 +216,7 @@ public:
 	 *  apply the \c SummaryTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of a \c SummaryTagger
 	virtual BaseOperator * clone() const
@@ -226,7 +226,7 @@ public:
 
 
 private:
-	int m_mode;
+	const int m_mode;
 };
 
 
@@ -280,7 +280,7 @@ public:
 	 * apply the \c ParentsTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 };
 
@@ -340,10 +340,10 @@ public:
 	 * apply the \c PedigreeTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 private:
-	string m_idField;
+	const string m_idField;
 };
 
 
@@ -399,10 +399,10 @@ public:
 	 *  apply the \c PyTagger
 	 */
 	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 private:
-	pyFunc m_func;
+	const pyFunc m_func;
 };
 
 

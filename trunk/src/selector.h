@@ -129,7 +129,7 @@ public:
 
 
 	/// CPPONLY
-	virtual double indFitness(Individual *, ULONG gen)
+	virtual double indFitness(Individual *, ULONG gen) const
 	{
 		///
 		throw ValueError("This selector is not supposed to be called directly");
@@ -142,7 +142,7 @@ public:
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-	                       Individual * dad = NULL, Individual * mom = NULL)
+	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
 		double fitness = indFitness(&*offspring, pop.gen());
 
@@ -209,7 +209,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -220,10 +220,10 @@ public:
 
 private:
 	///
-	vectoru m_loci;
+	const vectoru m_loci;
 
 	/// fitness for each genotype
-	tupleDict m_dict;
+	const tupleDict m_dict;
 };
 
 /** This operator is called a 'multi-allele' selector because it groups
@@ -279,7 +279,7 @@ public:
 
 	/// CPPONLY
 	/// calculate/return the fitness value, currently assuming diploid
-	virtual double indFitness(Individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -290,13 +290,13 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	const vectoru m_loci;
 
 	/// fitness for each genotype
-	vectorf m_fitness;
+	const vectorf m_fitness;
 
 	///
-	vectoru m_wildtype;
+	const vectoru m_wildtype;
 };
 
 
@@ -346,7 +346,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -357,10 +357,10 @@ public:
 
 private:
 	/// a list of selectors
-	opList m_selectors;
+	const opList m_selectors;
 
 	/// mode
-	int m_mode;
+	const int m_mode;
 };
 
 
@@ -404,7 +404,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen);
+	virtual double indFitness(Individual * ind, ULONG gen) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -415,11 +415,12 @@ public:
 
 private:
 	/// user supplied python function
-	pyFunc m_func;
+	const pyFunc m_func;
 
 	/// susceptibility loci
-	vectoru m_loci;
+	const vectoru m_loci;
 
 };
+
 }
 #endif

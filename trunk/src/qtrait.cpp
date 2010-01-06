@@ -77,7 +77,7 @@ bool BaseQuanTrait::apply(Population & pop)
 
 
 bool BaseQuanTrait::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom)
+                                      Individual * dad, Individual * mom) const
 
 {
 	vectorf traits(infoSize());
@@ -89,7 +89,7 @@ bool BaseQuanTrait::applyDuringMating(Population & pop, RawIndIterator offspring
 }
 
 
-void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits)
+void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

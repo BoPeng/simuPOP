@@ -96,7 +96,7 @@ bool BasePenetrance::applyToIndividual(Individual * ind, ULONG gen)
 
 
 bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                       Individual * dad, Individual * mom)
+                                       Individual * dad, Individual * mom) const
 {
 	double p = penet(&*offspring, pop.gen());
 
@@ -108,7 +108,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offsprin
 
 
 // this function is the same as MapSelector.
-double MapPenetrance::penet(Individual * ind, ULONG gen)
+double MapPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	vectoru chromTypes;
 
@@ -133,15 +133,15 @@ double MapPenetrance::penet(Individual * ind, ULONG gen)
 		}
 	}
 
-	tupleDict::iterator pos = m_dict.find(alleles);
+	tupleDict::const_iterator pos = m_dict.find(alleles);
 
 	if (pos != m_dict.end())
 		return pos->second;
 
 	if (ply > 1) {
 		// try to look up the key without phase
-		tupleDict::iterator it = m_dict.begin();
-		tupleDict::iterator itEnd = m_dict.end();
+		tupleDict::const_iterator it = m_dict.begin();
+		tupleDict::const_iterator itEnd = m_dict.end();
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
@@ -205,7 +205,7 @@ string MaPenetrance::describe(bool format)
 
 
 // this function is the same as MaSelector.
-double MaPenetrance::penet(Individual * ind, ULONG gen)
+double MaPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -214,7 +214,7 @@ double MaPenetrance::penet(Individual * ind, ULONG gen)
 		(ind->ploidy() == 1 && m_penetrance.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
 		ValueError, "Please specify penetrance for each combination of genotype.");
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectoru::const_iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		if (ind->ploidy() == 1) {
 			Allele a = ToAllele(ind->allele(*loc));
 			if (singleST)
@@ -249,26 +249,26 @@ double MaPenetrance::penet(Individual * ind, ULONG gen)
 }
 
 
-double MlPenetrance::penet(Individual * ind, ULONG gen)
+double MlPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		// x1 x2 x3 ...
 		double pen = 1;
-		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
+		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
 			pen *= static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen;
 	} else if (m_mode == ADDITIVE) {
 		// x1 + x2 + x3
 		double pen = 0;
-		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
+		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
 			pen += static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 1 : pen;
 	} else if (m_mode == HETEROGENEITY) {
 		// 1-(1-x1)(1-x2)
 		double pen = 1;
-		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
+		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
 			pen *= 1 - static_cast<BasePenetrance *>(*s)->penet(ind, gen);
 		return pen > 1 ? 0 : 1 - pen;
@@ -279,7 +279,7 @@ double MlPenetrance::penet(Individual * ind, ULONG gen)
 
 
 // the same as PySelector
-double PyPenetrance::penet(Individual * ind, ULONG gen)
+double PyPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 

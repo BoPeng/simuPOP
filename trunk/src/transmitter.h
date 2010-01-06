@@ -67,7 +67,7 @@ public:
 	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
 	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
 	 */
-	void clearChromosome(const Individual & ind, int ploidy, int chrom);
+	void clearChromosome(const Individual & ind, int ploidy, int chrom) const;
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
@@ -75,7 +75,7 @@ public:
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
 	 */
 	void copyChromosome(const Individual & parent, int parPloidy,
-		Individual & offspring, int ploidy, int chrom);
+		Individual & offspring, int ploidy, int chrom) const;
 
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
@@ -83,7 +83,7 @@ public:
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>.
 	 */
 	void copyChromosomes(const Individual & parent, int parPloidy,
-		Individual & offspring, int ploidy);
+		Individual & offspring, int ploidy) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -100,8 +100,8 @@ public:
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
 	                       RawIndIterator offspring,
-	                       Individual * dad = NULL,
-	                       Individual * mom = NULL)
+	                       Individual * dad = NULL, 
+	                       Individual * mom = NULL) const
 	{
 		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
 	}
@@ -110,10 +110,10 @@ public:
 protected:
 	// cache some genostructor information for
 	// faster performance
-	UINT m_ploidy;
-	bool m_hasCustomizedChroms;
-	vectoru m_lociToCopy;
-	vectoru m_chromIdx;
+	mutable UINT m_ploidy;
+	mutable bool m_hasCustomizedChroms;
+	mutable vectoru m_lociToCopy;
+	mutable vectoru m_chromIdx;
 };
 
 
@@ -157,7 +157,7 @@ public:
 	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
-		Individual * mom = NULL);
+		Individual * mom = NULL) const;
 
 };
 
@@ -203,7 +203,7 @@ public:
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
-		Individual * mom = NULL);
+		Individual * mom = NULL) const;
 
 	/** Initialize a base genotype operator for a population. This function should be
 	 *  called before function \c transmitGenotype is used to transmit genotype.
@@ -216,17 +216,17 @@ public:
 	 *  to offspring sex and \c ploidy.
 	 */
 	void transmitGenotype(const Individual & parent,
-		Individual & offspring, int ploidy);
+		Individual & offspring, int ploidy) const;
 
 protected:
 	// cache chromBegin, chromEnd for better performance.
-	vectoru m_chIdx;
+	mutable vectoru m_chIdx;
 
-	int m_chromX;
+	mutable int m_chromX;
 
-	int m_chromY;
+	mutable int m_chromY;
 
-	UINT m_numChrom;
+	mutable UINT m_numChrom;
 };
 
 
@@ -269,7 +269,7 @@ public:
 	bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
-		Individual * mom = NULL);
+		Individual * mom = NULL) const;
 
 };
 
@@ -320,7 +320,7 @@ public:
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
-		Individual * mom = NULL);
+		Individual * mom = NULL) const;
 
 private:
 	GenoTransmitter m_copier;
@@ -374,17 +374,17 @@ public:
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
-		Individual * mom = NULL);
+		Individual * mom = NULL) const;
 
 private:
 	// this is user input.
-	vectoru m_chroms;
+	const vectoru m_chroms;
 
 	// this is the temporary holder for different populaitons
-	vectoru m_mitoChroms;
+	mutable vectoru m_mitoChroms;
 
 	//
-	UINT m_numLoci;
+	mutable UINT m_numLoci;
 };
 
 
@@ -538,48 +538,48 @@ public:
 	 *  recombination rates to transmit parental genotypes to offspring.
 	 */
 	void transmitGenotype(const Individual & parent,
-		Individual & offspring, int ploidy);
+		Individual & offspring, int ploidy) const;
 
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
 	virtual bool applyDuringMating(Population & pop,
 		RawIndIterator offspring,
-		Individual * dad, Individual * mom);
+		Individual * dad, Individual * mom) const;
 
 private:
 	/// determine number of markers to convert
-	int markersConverted(size_t index, const Individual & ind);
+	int markersConverted(size_t index, const Individual & ind) const;
 
 private:
 	/// intensity
-	double m_intensity;
+	const double m_intensity;
 
 	/// differnt rates
-	vectorf m_rates;
+	const vectorf m_rates;
 
 	/// initial parameter
-	uintList m_loci;
+	const uintList m_loci;
 
 	/// position to recombine, changed to fit a special pop
-	vectoru m_recBeforeLoci;
+	mutable vectoru m_recBeforeLoci;
 
-	vectorf m_convMode;
+	const vectorf m_convMode;
 
 	/// bernulli trials
 	//  vector<Bernullitrials*> m_bt;
-	Bernullitrials m_bt;
+	mutable Bernullitrials m_bt;
 
 	// locataion of special chromosomes
-	int m_chromX;
-	int m_chromY;
-	int m_customizedBegin;
-	int m_customizedEnd;
+	mutable int m_chromX;
+	mutable int m_chromY;
+	mutable int m_customizedBegin;
+	mutable int m_customizedEnd;
 
 	/// algorithm to use (frequent or seldom recombinations)
-	int m_algorithm;
+	mutable int m_algorithm;
 
-	ostream * m_debugOutput;
+	mutable ostream * m_debugOutput;
 };
 
 }

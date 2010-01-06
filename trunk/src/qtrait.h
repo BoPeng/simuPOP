@@ -92,7 +92,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return quantitative trait etc.
 	 */
-	virtual void qtrait(Individual *, ULONG gen, vectorf & traits)
+	virtual void qtrait(Individual *, ULONG gen, vectorf & traits) const
 	{
 		///
 		throw ValueError("This quantitative trait calculator is not supposed to be called directly");
@@ -104,7 +104,7 @@ public:
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
-		Individual * dad = NULL, Individual * mom = NULL);
+		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -115,7 +115,7 @@ public:
 
 private:
 	/// how to handle ancestral gen
-	int m_ancGen;
+	const int m_ancGen;
 
 };
 
@@ -165,7 +165,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual void qtrait(Individual * ind, ULONG gen, vectorf & traits);
+	virtual void qtrait(Individual * ind, ULONG gen, vectorf & traits) const;
 
 	/// HIDDEN
 	string describe(bool format = true)
@@ -176,10 +176,10 @@ public:
 
 private:
 	/// user supplied python function
-	pyFunc m_func;
+	const pyFunc m_func;
 
 	/// susceptibility loci
-	vectoru m_loci;
+	const vectoru m_loci;
 };
 
 }
