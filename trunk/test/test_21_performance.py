@@ -261,9 +261,10 @@ class TestPerformance(unittest.TestCase):
             #
             # Using simuPOP 1.0.0, under the mac (supposedly a faster machine)
             #
-            #
-            #
-            #
+            # op:
+            # 0.27, 0.38, 1.1
+            # 3.02, 4.31, 13.16
+            # 43.73 
 
 
 

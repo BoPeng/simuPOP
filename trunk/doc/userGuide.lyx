@@ -8065,7 +8065,9 @@ Simulator.dvars(idx)
 Population.dvars()
 \family default
 .
- If needed, you can reset generation numbers by changing these variables.
+ If needed, 
+\series bold
+you can reset generation numbers by changing these variables.
 \end_layout
 
 \begin_layout Standard

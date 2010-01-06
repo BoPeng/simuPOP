@@ -5460,14 +5460,6 @@ Details:
 
 %ignore simuPOP::Population::load(const string &filename);
 
-%ignore simuPOP::Population::rep();
-
-%ignore simuPOP::Population::setRep(int rep);
-
-%ignore simuPOP::Population::gen() const;
-
-%ignore simuPOP::Population::setGen(ULONG gen);
-
 %feature("docstring") simuPOP::Population::vars "
 
 Usage:
@@ -5497,6 +5489,14 @@ Details:
 %feature("docstring") simuPOP::Population::evaluate "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Population::execute "Obsolete or undocumented function."
+
+%ignore simuPOP::Population::rep();
+
+%ignore simuPOP::Population::setRep(int rep);
+
+%ignore simuPOP::Population::gen() const;
+
+%ignore simuPOP::Population::setGen(ULONG gen);
 
 %feature("docstring") simuPOP::ProductSplitter "
 
@@ -7350,10 +7350,11 @@ Details:
     operator fails. Another variable \"rep\" will also be set to
     indicate the index of each population in the simulator. Note that
     populations in a simulator does not have to have the same
-    generation number.  Parameter gen can be set to a positive number,
-    which is the number of generations to evolve. If a simulator
-    starts at the beginning of a generation g (for example 0), a
-    simulator will stop at the beginning (instead of the end) of
+    generation number. You could reset a population's generation
+    number by changing this variable.  Parameter gen can be set to a
+    positive number, which is the number of generations to evolve. If
+    a simulator starts at the beginning of a generation g (for example
+    0), a simulator will stop at the beginning (instead of the end) of
     generation g + gen (for example gen). If gen is negative
     (default), the evolution will continue indefinitely, until all
     replicates are stopped by operators that return False at some
