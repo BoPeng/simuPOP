@@ -1014,22 +1014,22 @@ class InfoPlotter(PyOperator):
 
 
 class HistPlotter(InfoPlotter):
-    '''
-    A InfoPlotter that uses R function ``hist`` to draw histogram of individual
-    information fields of specified (virtual) subpopulations. Please see
-    ``InfoPlotter`` for details.
-    '''
+    '''An ``InfoPlotter`` that uses function ``hist``.'''
     def __init__(self, *args, **kwargs):
+        '''Returns an ``InfoPlotter`` that uses R function ``hist`` to draw
+        histogram of individual information fields of specified (virtual)
+        subpopulations. Please see ``InfoPlotter`` for details.
+    '''
         InfoPlotter.__init__(self, 'hist', *args, **kwargs)
 
 
 class QQPlotter(InfoPlotter):
-    '''
-    A InfoPlotter that uses R function ``qqnorm`` to draw qq plot of individual
-    information fields of specified (virtual) subpopulations. Please see
-    ``InfoPlotter`` for details.
-    '''
+    '''An ``InfoPlotter`` that uses function ``qqnorm``.'''
     def __init__(self, *args, **kwargs):
+        '''Returns an ``InfoPlotter`` that uses R function ``qqnorm`` to draw
+        qq plot of individual information fields of specified (virtual)
+        subpopulations. Please see ``InfoPlotter`` for details.
+        '''
         InfoPlotter.__init__(self, 'qqnorm', *args, **kwargs)
 
 

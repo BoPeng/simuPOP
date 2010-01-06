@@ -2597,9 +2597,7 @@ Details:
 Note:
 
     Unlike operator ``InfoExec``, individual information fields are
-    not updated after this operator is applied to a population.This
-    operator tends to generate a large amount of output so use it is
-    with caution.
+    not updated after this operator is applied to a population.
 
 "; 
 
@@ -2911,15 +2909,16 @@ Details:
     frequencies of allele 0, 1, ... respectively. These frequencies
     should add up to 1. Elements in prop specified the proportions of
     alleles. Parameter prop is similar to freq except that prop
-    guarantees exact proportions of alleles, although alleles with
-    small proportions might not be allocated at all. Parameter
-    genotype specifies a list of genotype that will be assigned
-    repeatedly to all individuals (similar to Population.setGenotype()
-    except that this operator supports parameter ploidy). If loci,
-    ploidy and/or subPop are specified, only specified loci, ploidy,
-    and individuals in these (virtual) subpopulations will be
-    initialized. This operator initializes all chromosomes, including
-    unused genotype locations and customized chromosomes.
+    guarantees exact proportions of alleles at each locus, although
+    alleles with small proportions might not be allocated at all.
+    Parameter genotype specifies a list of genotype that will be
+    assigned repeatedly to all individuals (similar to
+    Population.setGenotype() except that this operator supports
+    parameters loci and ploidy). If loci, ploidy and/or subPop are
+    specified, only specified loci, ploidy, and individuals in these
+    (virtual) subpopulations will be initialized. This operator
+    initializes all chromosomes, including unused genotype locations
+    and customized chromosomes.
 
 "; 
 
@@ -3005,7 +3004,7 @@ Usage:
 Details:
 
     Create an operator that initializes individual sex to MALE or
-    FEMALE. By default, it assign sex to individuals randomly, with
+    FEMALE. By default, it assigns sex to individuals randomly, with
     equal probability of having a male or a female. This probabability
     can be adjusted through parameter maleFreq or be made to exact
     proportions by specifying parameter maleProp. Alternatively, a
@@ -3015,7 +3014,8 @@ Details:
     given. If a list of (virtual) subpopulation is specified in
     parameter subPop, only individuals in these subpopulations will be
     initialized. Note that the sex sequence, if used, is assigned
-    repeatedly regardless of (virtual) subpopulation boundaries.
+    repeatedly regardless of (virtual) subpopulation boundaries so
+    that you can assign sex to all individuals in a population.
 
 "; 
 
@@ -3904,17 +3904,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::OffspringGenerator::clone "
-
-Description:
-
-    Make a deep copy of this offspring generator.
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::OffspringGenerator::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::OffspringGenerator::initialize(const Population &pop, SubPopID subPop);
 
@@ -8550,18 +8540,7 @@ Details:
 
 %feature("docstring") simuPOP::TerminateIf::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::TerminateIf::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    Apply an operator to population pop directly, without checking its
-    applicability.
-
-"; 
+%feature("docstring") simuPOP::TerminateIf::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::TerminateIf::~TerminateIf "
 

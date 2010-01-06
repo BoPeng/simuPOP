@@ -105,7 +105,7 @@ public:
 	}
 
 
-	/// Make a deep copy of this offspring generator.
+	/// HIDDEN Make a deep copy of this offspring generator.
 	virtual OffspringGenerator * clone() const
 	{
 		return new OffspringGenerator(*this);
