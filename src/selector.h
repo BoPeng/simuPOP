@@ -166,7 +166,6 @@ public:
 /** This selector assigns individual fitness values using a user-specified
  *  dictionary. This operator can be applied to populations with arbitrary
  *  number of homologous chromosomes.
- *  <applicability>all ploidy</applicability>
  */
 class MapSelector : public BaseSelector
 {

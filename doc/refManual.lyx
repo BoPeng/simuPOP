@@ -721,13 +721,6 @@ getRNGRef
 
 
 \backslash
-setRNGRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 turnOnDebugRef
 \end_layout
 

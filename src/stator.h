@@ -52,7 +52,6 @@ namespace simuPOP {
 /** A \c PyEval operator evaluates a Python expression in a population's local
  *  namespace when it is applied to this population. The result is written to
  *  an output specified by parameter \e output.
- *  <funcForm>pyEval</funcForm>
  */
 class PyEval : public BaseOperator
 {
@@ -120,7 +119,6 @@ protected:
 
 /** This operator executes given Python statements in a population's local
  *  namespace when it is applied to this population.
- *  <funcForm>pyExec</funcForm>
  */
 class PyExec : public PyEval
 {
@@ -175,7 +173,6 @@ public:
  *  \note This operator tends to generate a large amount of output so use it
  *  is with caution.
  *
- *  <funcForm>infoEval</funcForm>
  */
 class InfoEval : public BaseOperator
 {
@@ -259,7 +256,6 @@ protected:
  *  not through functions (e.g. <tt>"ind.setInfo(5, 'a')"</tt> with individuals
  *  exposed as \c "ind" will not work).
  *
- *  <funcForm>infoExec</funcForm>
  */
 class InfoExec : public InfoEval
 {
@@ -813,7 +809,6 @@ private:
  *  applied and sets variables in its local namespace. Other operators or
  *  functions can retrieve results from or evalulate expressions in this local
  *  namespace after \c Stat is applied.
- *  <funcForm>stat</funcForm>
  */
 class Stat : public BaseOperator
 {

@@ -40,7 +40,6 @@ namespace simuPOP {
 
 /** This operator initializes sex of individuals, either randomly or use a list
  *  of sexes.
- *  <funcForm>initSex</funcForm>
  */
 class InitSex : public BaseOperator
 {
@@ -109,7 +108,6 @@ protected:
 
 /** This operator initializes given information fields with a sequence of
  *  values, or a user-provided function such as \c random.random.
- *  <funcForm>initInfo</funcForm>
  */
 class InitInfo : public BaseOperator
 {
@@ -162,7 +160,6 @@ protected:
 
 /** This operator assigns alleles at all or part of loci with given allele
  *  frequencies, proportions or values.
- *  <funcForm>initGenotype</funcForm>
  */
 class InitGenotype : public BaseOperator
 {
