@@ -82,7 +82,7 @@ public:
 	string describe(bool format = true);
 
 private:
-	string m_string;
+	const string m_string;
 };
 
 
@@ -146,22 +146,22 @@ private:
 
 private:
 	///
-	bool m_showGenotype;
+	const bool m_showGenotype;
 
 	///
-	bool m_showStructure;
+	const bool m_showStructure;
 
 	///
-	int m_ancGen;
+	const int m_ancGen;
 
 	/// disp width when outputing alleles
-	int m_width;
+	const int m_width;
 
 	///
-	vectoru m_loci;
+	const vectoru m_loci;
 
 	/// only output first ... individuals. Good for large population
-	UINT m_max;
+	const UINT m_max;
 };
 
 
@@ -211,7 +211,7 @@ public:
 
 private:
 	/// filename,
-	string m_filename;
+	const string m_filename;
 };
 
 }

@@ -1739,7 +1739,7 @@ void Expression::compileStmts(const string & stmts)
 
 
 // python expression
-PyObject * Expression::evaluate()
+PyObject * Expression::evaluate() const
 {
 	if (m_expr == NULL && m_stmts == NULL)
 		return NULL;
@@ -1783,7 +1783,7 @@ PyObject * Expression::evaluate()
 }
 
 
-bool Expression::valueAsBool()
+bool Expression::valueAsBool() const
 {
 	PyObject * res = evaluate();
 
@@ -1796,7 +1796,7 @@ bool Expression::valueAsBool()
 }
 
 
-long int Expression::valueAsInt()
+long int Expression::valueAsInt() const
 {
 	PyObject * res = evaluate();
 
@@ -1809,7 +1809,7 @@ long int Expression::valueAsInt()
 }
 
 
-double Expression::valueAsDouble()
+double Expression::valueAsDouble() const
 {
 	PyObject * res = evaluate();
 
@@ -1822,7 +1822,7 @@ double Expression::valueAsDouble()
 }
 
 
-string Expression::valueAsString()
+string Expression::valueAsString() const
 {
 	PyObject * res = evaluate();
 
@@ -1835,7 +1835,7 @@ string Expression::valueAsString()
 }
 
 
-vectorf Expression::valueAsArray()
+vectorf Expression::valueAsArray() const
 {
 	PyObject * res = evaluate();
 
