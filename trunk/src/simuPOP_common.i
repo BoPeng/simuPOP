@@ -279,6 +279,8 @@ namespace std
 %include "population.h"
 
 namespace std {
+    // this place should be vector<const simuPOP::BaseOperator *> but
+    // swig right now does not handle this well......q
     %template()    vector<simuPOP::BaseOperator * >;
 }
 

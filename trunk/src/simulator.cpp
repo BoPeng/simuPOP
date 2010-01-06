@@ -201,18 +201,6 @@ vectoru Simulator::evolve(
 	if (numRep() == 0)
 		return vectoru();
 
-	// check compatibility of operators
-	for (size_t i = 0; i < preOps.size(); ++i) {
-		DBG_ASSERT(preOps[i]->isCompatible(*m_pops[0]), ValueError,
-			"Operator " + preOps[i]->describe() + " is not compatible.");
-	}
-	for (size_t i = 0; i < postOps.size(); ++i) {
-		DBG_ASSERT(postOps[i]->isCompatible(*m_pops[0]), ValueError,
-			"Operator " + postOps[i]->describe() + " is not compatible.");
-	}
-	if (!matingScheme.isCompatible(population(0)))
-		throw ValueError("mating type is not compatible with current population settings.");
-
 	vector<bool> activeReps(m_pops.size());
 	fill(activeReps.begin(), activeReps.end(), true);
 	UINT numStopped = 0;
@@ -393,12 +381,6 @@ vectoru Simulator::evolve(
 
 bool Simulator::apply(const opList & ops)
 {
-	for (size_t i = 0; i < ops.size(); ++i) {
-		// check compatibility of operators
-		DBG_ASSERT(ops[i]->isCompatible(*m_pops[0]), ValueError,
-			"Operator " + ops[i]->describe() + " is not compatible.");
-	}
-
 	// really apply
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		Population & curPop = *m_pops[curRep];

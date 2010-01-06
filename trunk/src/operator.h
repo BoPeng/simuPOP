@@ -191,12 +191,6 @@ public:
 	/** @name applicable stages	pre, during, post-mating methods */
 	//@{
 
-	/// CPPONLY
-	virtual bool isCompatible(const Population & pop) const
-	{
-		return true;
-	}
-
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
@@ -223,8 +217,6 @@ public:
 	}
 
 
-	// FIXME: this function should be const, which means I need to add
-	// millions const or mutable everywhere.
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
@@ -277,21 +269,6 @@ public:
 
 
 	/// CPPONLY
-	bool initialized() const
-	{
-		return ISSETFLAG(m_flags, m_flagInitialized);
-	}
-
-
-	/// CPPONLY
-	void setInitialized() const
-	{
-		//m_flags is mutable
-		SETFLAG(m_flags, m_flagInitialized);
-	}
-
-
-	/// CPPONLY
 	subPopList applicableSubPops() const { return m_subPops; }
 
 protected:
@@ -304,8 +281,6 @@ private:
 	static const size_t m_flagAtAllGen = 1;
 	static const size_t m_flagOnlyAtBegin = 2;
 	static const size_t m_flagOnlyAtEnd = 4;
-	// initialized?
-	static const size_t m_flagInitialized = 8;
 
 private:
 	/// starting generation, default to 0
@@ -337,7 +312,7 @@ private:
 	const stringList m_infoFields;
 };
 
-typedef std::vector< const BaseOperator * > vectorop;
+typedef std::vector< BaseOperator * > vectorop;
 
 class opList
 {

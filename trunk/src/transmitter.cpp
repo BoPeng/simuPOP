@@ -30,6 +30,17 @@ using std::max;
 
 namespace simuPOP {
 
+void GenoTransmitter::initializeIfNeeded(const Individual & ind) const
+{
+	if (m_lastGenoStru != ind.genoStruIdx()) {
+		// this could be the initialize function from a derived class,
+		// which will also call GenoTransmitter::initialize(ind)
+		initialize(ind);
+		m_lastGenoStru = ind.genoStruIdx();
+	}
+}
+
+
 void GenoTransmitter::initialize(const Individual & ind) const
 {
 	m_hasCustomizedChroms = !ind.customizedChroms().empty();
@@ -41,14 +52,12 @@ void GenoTransmitter::initialize(const Individual & ind) const
 			m_lociToCopy.push_back(ind.numLoci(ch));
 	m_ploidy = ind.ploidy();
 	m_chromIdx = ind.chromIndex();
-	setInitialized();
 }
 
 
 void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int chrom) const
 {
-	if (!initialized())
-		initialize(ind);
+	initializeIfNeeded(ind);
 
 #ifdef BINARYALLELE
 	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
@@ -63,8 +72,7 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int ch
 void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
                                      Individual & offspring, int ploidy, int chrom) const
 {
-	if (!initialized())
-		initialize(offspring);
+	initializeIfNeeded(offspring);
 
 #ifdef BINARYALLELE
 	copyGenotype(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
@@ -83,8 +91,7 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 void GenoTransmitter::copyChromosomes(const Individual & parent,
                                       int parPloidy, Individual & offspring, int ploidy) const
 {
-	if (!initialized())
-		initialize(offspring);
+	initializeIfNeeded(offspring);
 
 	// troublesome ...
 	if (m_hasCustomizedChroms) {
@@ -120,8 +127,7 @@ string CloneGenoTransmitter::describe(bool format) const
 bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                              Individual * dad, Individual * mom) const
 {
-	if (!initialized())
-		initialize(*offspring);
+	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError,
 		"Both parents are invalid");
@@ -179,8 +185,7 @@ void MendelianGenoTransmitter::initialize(const Individual & ind) const
 void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
                                                 Individual & offspring, int ploidy) const
 {
-	if (!initialized())
-		initialize(offspring);
+	initializeIfNeeded(offspring);
 
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -266,6 +271,7 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterato
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
 
+	initializeIfNeeded(*offspring);
 	// the next two functions.
 	transmitGenotype(*mom, *offspring, 0);
 	transmitGenotype(*dad, *offspring, 1);
@@ -283,6 +289,7 @@ bool SelfingGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator 
 	// call MendelianGenoTransmitter::initialize if needed.
 	Individual * parent = mom != NULL ? mom : dad;
 
+	initializeIfNeeded(*offspring);
 	// use the same parent to produce two copies of chromosomes
 	transmitGenotype(*parent, *offspring, 0);
 	transmitGenotype(*parent, *offspring, 1);
@@ -304,6 +311,7 @@ bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIter
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
 		"haplodiploid offspring generator: one of the parents is invalid.");
 
+	initializeIfNeeded(*offspring);
 	// mom generate the first...
 	transmitGenotype(*mom, *offspring, 0);
 
@@ -347,8 +355,7 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                                      Individual * dad, Individual * mom) const
 {
-	if (!initialized())
-		initialize(*offspring);
+	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
@@ -387,7 +394,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
 	m_bt(getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-	m_algorithm(0), m_debugOutput(NULL)
+	m_algorithm(0), m_debugOutput(NULL), m_intendedSize(1024)
 {
 	DBG_FAILIF(m_convMode.empty(), ValueError,
 		"Please specify a conversion mode");
@@ -448,7 +455,7 @@ int Recombinator::markersConverted(size_t index, const Individual & ind) const
 }
 
 
-void Recombinator::initializeRecombinator(const Individual & ind, size_t popSize) const
+void Recombinator::initialize(const Individual & ind) const
 {
 	GenoTransmitter::initialize(ind);
 
@@ -552,9 +559,9 @@ void Recombinator::initializeRecombinator(const Individual & ind, size_t popSize
 	DBG_ASSERT(vecP.back() == .5, SystemError,
 		"The last elem of m_rates should be half.");
 
-	// if the operator is called directly, there is no way to know population size so we use a
-	// default number.
-	m_bt.setParameter(vecP, popSize == 0 ? 1024 : popSize);
+	// if the operator is called directly, there is no way to know population size so we
+	// a variable to tell it.
+	m_bt.setParameter(vecP, m_intendedSize);
 
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
@@ -569,16 +576,13 @@ void Recombinator::initializeRecombinator(const Individual & ind, size_t popSize
 	else
 		m_algorithm = 1;
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
-	//
-	setInitialized();
 }
 
 
 void Recombinator::transmitGenotype(const Individual & parent,
                                     Individual & offspring, int ploidy) const
 {
-	if (!initialized())
-		initializeRecombinator(offspring);
+	initializeIfNeeded(offspring);
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
 
@@ -848,9 +852,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                      Individual * dad, Individual * mom) const
 {
-	// this is called in transmitGenotype
-	if (!initialized())
-		initializeRecombinator(*offspring, pop.popSize());
+	// this tells the recombinator how to initialize m_bt.
+	// if the recombinator member function is used directly, this information will
+	// not be available.
+	m_intendedSize = pop.popSize();
+	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(dad == NULL && mom == NULL,
 		ValueError, "None of the parents is invalid.");
