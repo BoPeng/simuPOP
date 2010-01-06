@@ -575,19 +575,6 @@ class Doxy2SWIG:
         print "Unique entries: ", len(self.content)
         #
         for entry in self.content:
-            # add funcForm key to content and delete function form from Details
-            if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
-                piece1 = entry['Details'].split('<funcForm>')
-                piece2 = piece1[1].split('</funcForm>')
-                entry['Details'] = piece1[0] + piece2[1]
-                entry['funcForm'] = piece2[0]
-            #
-            if (entry.has_key('Details') and '<applicability>' in entry['Details']):
-                piece1 = entry['Details'].split('<applicability>')
-                piece2 = piece1[1].split('</applicability>')
-                entry['Details'] = piece1[0] + piece2[1]
-                entry['Applicability'] = piece2[0]
-            #
             if (entry.has_key('Details') and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
                 try:
@@ -664,11 +651,6 @@ class Doxy2SWIG:
                 print >> out, '%%feature("docstring") %s "Obsolete or undocumented function."\n' % entry['Name']
                 continue
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
-            if entry.has_key('funcForm'):
-                print >> out, 'Function form:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
-            if entry.has_key('Applicability'):
-                print >> out, 'Applicability: %s\n' % self.swig_text(entry['Applicability'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
@@ -994,9 +976,6 @@ class Doxy2SWIG:
             for cls in classes:
                 print >> out, '\\newcommand{\\%s%sRef}{' % (module.replace('.', ''), cls['Name'])
                 print >> out, '\n\\subsection{Class \\texttt{%s}\index{module!%s}' % (cls['Name'], cls['Name'])
-                if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
-                    print >> out, '  (Function %s\index{function!%s})' % (
-                            self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
                 print >> out, '}\n'
                 print >> out, r' %s' % self.latex_formatted_text(cls['Doc'])
                 if cls.has_key('Usage') and cls['Usage'] != '':
@@ -1029,19 +1008,7 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.', ''))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}' % (classname, classname)
-            comment = ''
-            if entry.has_key('Applicability'):
-                comment += 'Applicable to %s' % self.latex_text(entry['Applicability']).strip()
-            if entry.has_key('funcForm'):
-                if comment != '':
-                    comment += ', can be '
-                else:
-                    comment += 'Can be '
-                comment += 'applied directly using function %s' % self.latex_text('<tt>' + entry['funcForm'].strip() + '</tt>').strip()
-            if comment != '':
-                print >> out, '  (%s)' % comment
-            print >> out, '}\n'
+            print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}}\n' % (classname, classname)
             print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note: }\n\\par'
@@ -1280,17 +1247,6 @@ class Doxy2SWIG:
             print >> out, '-' * (6 + len(classname))
             print >> out
             print >> out, '.. class::', classname
-            comment = ''
-            if entry.has_key('Applicability'):
-                comment += 'Applicable to %s' % self.wrap_reST(entry['Applicability']).strip()
-            if entry.has_key('funcForm'):
-                if comment != '':
-                    comment += ', can be '
-                else:
-                    comment += 'Can be '
-                comment += 'applied directly using function %s' % self.wrap_reST('<tt>' + entry['funcForm'].strip() + '</tt>').strip()
-            if comment != '':
-                print >> out, '\n   ' + comment
             print >> out
             print >> out, self.wrap_reST(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
