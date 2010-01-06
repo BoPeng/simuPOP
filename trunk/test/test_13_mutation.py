@@ -273,7 +273,7 @@ class TestMutator(unittest.TestCase):
         'Testing the hybrid PyMutator'
         pop = Population(size=10, loci=[2])
         # cutom mutator
-        def mut(x):
+        def mut(allele):
             return 1
         pyMutate(pop, rates=1, func=mut)
         self.assertEqual(pop.individual(0).allele(0), 1)

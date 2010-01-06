@@ -93,7 +93,7 @@ class TestUtility(unittest.TestCase):
     def testsetRNG(self):
         'Testing all RNG types'
         for rg in moduleInfo()['availableRNGs']:
-            setRNG(rg)
+            getRNG().set(rg)
 
     def testDefaultRNG(self):
         'Testing default RNG'
@@ -174,27 +174,28 @@ class TestUtility(unittest.TestCase):
         seed = []
         name = moduleInfo()['availableRNGs'][0]
         for i in range(100):
-            setRNG(name)
+            getRNG().set(name=name)
             sd = getRNG().seed()
             self.assertFalse(sd in seed)
             seed.append(sd)
         # test set seed
         sd = random.randint(100, 10000)
-        setRNG(name, sd)
+        getRNG().set(name, sd)
         self.assertEqual(getRNG().seed(), sd)
         # test if sequences are the same once the seed is set
         sd = random.randint(100, 10000)
-        setRNG(name, sd)
+        getRNG().set(name, sd)
         seq = [getRNG().randInt(10000) for x in range(100)]
-        setRNG(name, sd)
+        getRNG().set:browse confirm e
+        (name, sd)
         seq1 = [getRNG().randInt(10000) for x in range(100)]
         self.assertEqual(seq, seq1)
         # randBit need to be treated separately because it uses
         # global variable of RNG().
         sd = random.randint(100, 10000)
-        setRNG(name, sd)
+        getRNG().set(name, sd)
         seq = [getRNG().randBit() for x in range(100)]
-        setRNG(name, sd)
+        getRNG().set(name, sd)
         seq1 = [getRNG().randBit() for x in range(100)]
         self.assertEqual(seq, seq1)
 
