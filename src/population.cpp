@@ -59,7 +59,9 @@ Population::Population(const uintList & size,
 	m_vars(NULL, true),
 	m_ancestralPops(0),
 	m_curAncestralGen(0),
-	m_indOrdered(true)
+	m_indOrdered(true),
+	m_gen(0),
+	m_rep(0)
 {
 	DBG_DO(DBG_POPULATION, cerr << "Constructor of population is called\n");
 
@@ -116,7 +118,9 @@ Population::Population(const Population & rhs) :
 	m_ancestralGens(rhs.m_ancestralGens),
 	m_vars(rhs.m_vars),                                                                     // variables will be copied
 	m_curAncestralGen(rhs.m_curAncestralGen),
-	m_indOrdered(true)
+	m_indOrdered(true),
+	m_gen(rhs.m_gen),
+	m_rep(rhs.m_rep)
 {
 	DBG_DO(DBG_POPULATION,
 		cerr << "Copy constructor of population is called" << endl);

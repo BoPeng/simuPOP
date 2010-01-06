@@ -208,7 +208,8 @@ public:
 	 *  a post-mating operator fails. Another variable \c "rep" will also be
 	 *  set to indicate the index of each population in the simulator. Note
 	 *  that populations in a simulator does not have to have the same
-	 *  generation number.
+	 *  generation number. You could reset a population's generation number
+	 *  by changing this variable.
 	 *
 	 *  Parameter \e gen can be set to a positive number, which is the number
 	 *  of generations to evolve. If a simulator starts at the beginning of a

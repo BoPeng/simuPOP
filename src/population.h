@@ -288,6 +288,8 @@ public:
 		std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
 		std::swap(m_indOrdered, rhs.m_indOrdered);
 		std::swap(m_vspSplitter, rhs.m_vspSplitter);
+		std::swap(rhs.m_gen, m_gen);
+		std::swap(rhs.m_rep, m_rep);
 	}
 
 
@@ -1320,45 +1322,6 @@ public:
 	void load(const string & filename);
 
 public:
-	/** CPPONLY
-	 *  current replicate in a simulator which is not meaningful for a stand-alone population
-	 *	<group>evolve</group>
-	 */
-	int rep()
-	{
-		return m_vars.getVarAsInt("rep");
-	}
-
-
-	/// CPPONLY  set rep number
-	void setRep(int rep)
-	{
-		m_vars.setIntVar("rep", rep);
-	}
-
-
-	/** CPPONLY
-	    current generation during evolution
-	    <group>evolve</group>
-	 */
-	ULONG gen() const
-	{
-		try {
-			return m_vars.getVarAsInt("gen");
-		} catch (...) {
-			const_cast<Population *>(this)->setGen(0);
-			return 0;
-		}
-	}
-
-
-	/// CPPONLY
-	void setGen(ULONG gen)
-	{
-		m_vars.setIntVar("gen", gen);
-	}
-
-
 	/** return variables of a population as a Python dictionary. If a valid
 	 *  subpopulation \e subPop is specified, a dictionary
 	 *  <tt>vars()["subPop"][subPop]</tt> is returned. A \c ValueError will be
@@ -1739,6 +1702,47 @@ private:
 	/// whether or not individual genotype and information are in order
 	/// within a population.
 	mutable bool m_indOrdered;
+
+	mutable int m_gen;
+	mutable int m_rep;
+
+public:
+	/** CPPONLY
+	 *  current replicate in a simulator which is not meaningful for a stand-alone population
+	 *	<group>evolve</group>
+	 */
+	int rep()
+	{
+		return m_rep;
+	}
+
+
+	/// CPPONLY  set rep number
+	void setRep(int rep)
+	{
+		m_rep = rep;
+		m_vars.setIntVar("rep", rep);
+	}
+
+
+	/** CPPONLY
+	 *  Return the current generation number of this population. This is
+	 *  faster than getting generation number from population variable.
+	 *  <group>evolve</group>
+	 */
+	int gen() const
+	{
+		return m_gen;
+	}
+
+
+	/// CPPONLY
+	void setGen(ULONG gen)
+	{
+		m_gen = gen;
+		m_vars.setIntVar("gen", gen);
+	}
+
 
 };
 

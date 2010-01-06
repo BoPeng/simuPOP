@@ -237,7 +237,12 @@ vectoru Simulator::evolve(
 
 		for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 			Population & curPop = *m_pops[curRep];
-			int curGen = curPop.gen();
+			// sync population variable gen with gen(). This allows
+			// users to set population variable to change generation number.
+			int curGen = curPop.getVars().getVarAsInt("gen");
+			if (curGen != curPop.gen())
+				curPop.setGen(curGen);
+
 			int end = -1;
 			if (gens > 0)
 				end = curGen + gens - 1;
@@ -292,6 +297,7 @@ vectoru Simulator::evolve(
 
 			if (!activeReps[curRep])
 				continue;
+			ElapsedTime("matingBegin");
 			// start mating:
 			try {
 				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
