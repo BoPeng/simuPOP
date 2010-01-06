@@ -13,7 +13,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 #expect_error
 pop = sim.Population(10, loci=2)
@@ -28,7 +28,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=1000, loci=2)
 pop.evolve(
@@ -52,7 +52,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 help(sim.Population.addInfoFields)
 #end_file
@@ -64,7 +64,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[10, 20], loci=[5, 7])
 print pop.chromLocusPair(7)
@@ -80,7 +80,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=2, loci=[5, 6])
 sim.initGenotype(pop, freq=[0.2, 0.3, 0.5])
@@ -97,7 +97,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([100]*2, loci=1)
 sim.initGenotype(pop, freq=[0, 0.2, 0.8], subPops=0)
@@ -119,7 +119,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(1000, loci=1, infoFields='smoking')
@@ -146,7 +146,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(1000, loci=1, infoFields=('x', 'y'))
@@ -171,7 +171,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2, 3], ploidy=2, loci=[5, 10],
     lociPos=range(0, 5) + range(0, 20, 2), chromNames=['Chr1', 'Chr2'],
@@ -204,7 +204,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2,5], ploidy=sim.HAPLODIPLOID, loci=[3, 5])
 sim.initGenotype(pop, freq=[0.3, 0.7])
@@ -218,7 +218,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
     chromTypes=[sim.AUTOSOME]*2 + [sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2)
@@ -233,7 +233,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10, loci=[20], ancGen=1,
     infoFields=['father_idx', 'mother_idx'])
@@ -265,7 +265,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([5, 4], loci=[2, 5], infoFields='x')
 # get an individual
@@ -288,7 +288,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([2, 1], loci=[2, 5])
 for ind in pop.individuals(1):
@@ -325,7 +325,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[3, 4, 5], ploidy=1, loci=1, infoFields='x')
 # individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
@@ -349,7 +349,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
 pop.removeSubPops([1])
@@ -369,7 +369,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[200, 400], loci=[30], infoFields='x')
@@ -396,7 +396,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(10, loci=[2, 3], infoFields='Sex')
@@ -420,7 +420,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[2000, 4000], loci=[30], infoFields='x')
@@ -470,7 +470,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 # create a sim.population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
@@ -520,7 +520,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[4, 6], loci=2, infoFields='x')
@@ -542,7 +542,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10)
 pop.setInfoFields(['a', 'b'])
@@ -566,7 +566,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(500, loci=1, ancGen=2)
 pop.evolve(
@@ -598,7 +598,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10, loci=3, chromNames=['chr1'])
 # 1 1 1, 
@@ -626,7 +626,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
 sim.initGenotype(pop, freq=[0.2, 0.3, 0.4, 0.1])
@@ -644,7 +644,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[200, 200], loci=[5, 5], infoFields='age')
@@ -673,7 +673,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from pprint import pprint
 pop = sim.Population(100, loci=2)
@@ -698,7 +698,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(100, loci=1), rep=5)
 simu.evolve(
@@ -721,7 +721,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=5, chromNames=['chrom1'])
 pop.dvars().name = 'my sim.Population'
@@ -742,7 +742,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=[20])
 pop.evolve(
@@ -778,7 +778,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(100, loci=[20]), 5)
 simu.evolve(
@@ -805,7 +805,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(size=1000, loci=2), rep=3)
 simu.evolve(
@@ -841,7 +841,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import logging
 # logging to a file simulation.log, with detailed debug information
@@ -890,7 +890,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=10000, loci=2)
 pop.evolve(
@@ -917,7 +917,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def myPenetrance(geno):
     'A three-locus heterogeneity penetrance model'
@@ -949,7 +949,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def dynaMutator(pop, param):
     '''This mutator mutates commom loci with low mutation rate and rare
@@ -991,7 +991,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def rejectInd(off):
     'reject an individual if it off.allele(0) == 1'
@@ -1022,7 +1022,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import InitGenotype, Population
 #begin_ignore
 from simuPOP import getRNG
-getRNG().setSeed(12345)
+getRNG().set(seed=12345)
 #end_ignore
 def initGenotype(pop, *args, **kwargs):
     InitGenotype(*args, **kwargs).apply(pop)
@@ -1038,7 +1038,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[500, 1000], infoFields='migrate_to')
 pop.evolve(
@@ -1060,7 +1060,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[500, 1000], infoFields='migrate_to')
 pop.evolve(
@@ -1086,7 +1086,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def demo(gen):
     return [500 + gen*10, 1000 + gen*10]
@@ -1112,7 +1112,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def demo(gen, pop):
     if gen < 2:
@@ -1146,7 +1146,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def checkNumOffspring(numOffspring):
     '''Check the number of offspring for each family using
@@ -1200,7 +1200,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def checkSexMode(ms):
     '''Check the assignment of sex to offspring'''
@@ -1231,7 +1231,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(20, infoFields=['father_idx', 'mother_idx'])
 pop.evolve(
@@ -1261,7 +1261,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, infoFields=['father_idx', 'mother_idx'])
 pop.evolve(
@@ -1283,7 +1283,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, ploidy=1, loci=[5, 5], ancGen=1,
     infoFields='parent_idx')
@@ -1309,7 +1309,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10, ploidy=sim.HAPLODIPLOID, loci=[5, 5],
     infoFields=['father_idx', 'mother_idx'])
@@ -1335,7 +1335,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(20, loci=8)
 # every chromosomes are different. :-)
@@ -1357,7 +1357,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000, 1000], loci=2,
     infoFields=['father_idx', 'mother_idx'])
@@ -1384,7 +1384,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000], loci=2,
     infoFields=['father_idx', 'mother_idx'])
@@ -1412,7 +1412,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000], loci=2,
     infoFields='mark')
@@ -1447,7 +1447,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=10)
 # five copies of the same population
@@ -1495,7 +1495,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(50, loci=[10], ploidy=1),
     rep=3)
@@ -1560,7 +1560,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 # First stage: use the standard random mating scheme, do not use any
 # information field for efficiency considerations.
@@ -1600,7 +1600,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 def mutator(pop, param):
@@ -1641,7 +1641,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, ancGen=2, infoFields=['ind_id', 'father_id', 'mother_id'])
 pop.evolve(
@@ -1706,7 +1706,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000, 1000])
 sim.initSex(pop, maleFreq=0.3, subPops=0)
@@ -1723,7 +1723,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[20, 30], loci=[5, 7])
 # by allele frequency
@@ -1761,7 +1761,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[5], loci=[2], infoFields=['sex', 'age'])
@@ -1780,7 +1780,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[10, 10], loci=[20, 30], infoFields='gen',
     ancGen=-1)
@@ -1802,7 +1802,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(100, loci=2),
     rep=5)
@@ -1833,7 +1833,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=1000, loci=1)
 verbose = True
@@ -1862,7 +1862,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(
     sim.Population(size=1000, loci=1),
@@ -1898,7 +1898,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(
     sim.Population(size=100, loci=1),
@@ -1925,7 +1925,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(100), rep=10)
 simu.evolve(
@@ -1946,7 +1946,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(10000, loci=[100]*5), rep=2)
 simu.evolve(
@@ -1970,7 +1970,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(100, loci=1),
     rep=2)
@@ -1998,7 +1998,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=1,
     infoFields=['mother_idx', 'father_idx'])
@@ -2027,7 +2027,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(20, loci=1, infoFields='a')
@@ -2048,7 +2048,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=1, infoFields=['a', 'b', 'c'])
 sim.initGenotype(pop, freq=[0.2, 0.8])
@@ -2070,7 +2070,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000]*3, infoFields='migrate_to')
 pop.evolve(
@@ -2097,7 +2097,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000]*3, infoFields='migrate_to')
 pop.evolve(
@@ -2137,7 +2137,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000]*2, infoFields='migrate_to')
 pop.setVirtualSplitter(sim.SexSplitter())
@@ -2172,7 +2172,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([10]*2, infoFields='migrate_to')
 pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
@@ -2187,7 +2187,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000)
 pop.evolve(
@@ -2208,7 +2208,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def demo(gen, pop):
     if gen < 2:
@@ -2235,7 +2235,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields='x')
@@ -2254,7 +2254,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([500]*2)
 pop.evolve(
@@ -2275,7 +2275,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([500]*2)
 pop.evolve(
@@ -2296,7 +2296,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(size=[1000], loci=[100]),
     rep=2)
@@ -2325,7 +2325,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000], loci=3, lociPos=[0, 1, 1.1])
 pop.evolve(
@@ -2349,7 +2349,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 simu = sim.Simulator(sim.Population(size=[1000], loci=[100]),
     rep=2)
@@ -2378,7 +2378,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=[1000, 2000], infoFields='ind_id')
 pop.evolve(
@@ -2408,7 +2408,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2000], loci=1)
 pop.evolve(
@@ -2438,7 +2438,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2000], loci=1*3)
 pop.evolve(
@@ -2461,7 +2461,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2000], loci=[1, 1], infoFields='fitness')
 pop.evolve(
@@ -2487,7 +2487,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2000], loci=1,
     alleleNames=['A', 'C', 'G', 'T'])
@@ -2514,7 +2514,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=1000, loci=[1, 1])
 pop.evolve(
@@ -2548,7 +2548,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 def incAllele(allele):
@@ -2580,7 +2580,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(5000, loci=[1, 1])
 pop.evolve(
@@ -2617,7 +2617,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(5000, loci=[3, 3])
 pop.evolve(
@@ -2651,7 +2651,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(5000, loci=[3, 3])
@@ -2692,7 +2692,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=1, infoFields='fitness')
 pop.evolve(
@@ -2721,7 +2721,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def fragileX(geno):
     '''A disease model where an individual has increased risk of 
@@ -2792,7 +2792,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2000], loci=1)
 pop.evolve(
@@ -2820,7 +2820,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 
 def infSitesMutate(pop, param):
@@ -2883,7 +2883,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([5000]*3, loci=5)
 pop.evolve(
@@ -2911,7 +2911,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10000, loci=1)
 pop.setVirtualSplitter(sim.CombinedSplitter(
@@ -2953,7 +2953,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10000, loci=1)
 pop.setVirtualSplitter(sim.AffectionSplitter())
@@ -2982,7 +2982,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=[1, 1, 1], chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
 sim.initGenotype(pop, freq=[0.01, 0.05, 0.94])
@@ -3003,7 +3003,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=1)
 pop.evolve(
@@ -3027,7 +3027,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import viewVars
 pop = sim.Population(100, loci=3)
@@ -3045,7 +3045,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population([500], infoFields='anc')
@@ -3080,7 +3080,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([1000]*2, loci=3)
 sim.initGenotype(pop, freq=[0.2, 0.8], subPops=0)
@@ -3099,7 +3099,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import *
 from simuPOP.sampling import drawCaseControlSample
@@ -3137,7 +3137,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import migrIslandRates
 simu = sim.Simulator(sim.Population([5000]*3, loci=10, infoFields='migrate_to'),
@@ -3166,7 +3166,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population([1000], loci=1)
 pop.setVirtualSplitter(sim.ProportionSplitter([0.4, 0.4, 0.2]))
@@ -3199,7 +3199,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[1000]*10, loci=1, infoFields='x')
 # tag the first individual of each subpopulation.
@@ -3227,7 +3227,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 sim.IdTagger().reset(1)
 #end_ignore
 pop = sim.Population(1000, loci=1, infoFields=['fitness', 'avgFitness'])
@@ -3258,7 +3258,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 sim.IdTagger().reset(1)
 #end_ignore
 pop = sim.Population(10, infoFields='ind_id', ancGen=1)
@@ -3284,7 +3284,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 sim.IdTagger().reset(1)
 #end_ignore
 pop = sim.Population(100, infoFields=['ind_id', 'father_id', 'mother_id'])
@@ -3316,7 +3316,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 def randomMove(x, y):
@@ -3354,7 +3354,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=[1], infoFields=['aff', 'numOfAff'])
 # define virtual subpopulations by affection sim.status
@@ -3397,7 +3397,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=2000, loci=2)
 sim.initGenotype(pop, freq=[.2, .8])
@@ -3418,7 +3418,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(5000, loci=3)
 pop.evolve(
@@ -3443,7 +3443,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(5000, loci=3)
 sim.initGenotype(pop, freq=[0.2]*5)
@@ -3463,7 +3463,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=2000, loci=[1]*2, infoFields=['p', 'smoking'])
@@ -3521,7 +3521,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=5000, loci=2, infoFields=['qtrait1', 'qtrait2', 'age'])
@@ -3557,7 +3557,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(4000, loci=1, infoFields='fitness')
 simu = sim.Simulator(pop, rep=3)
@@ -3585,7 +3585,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10000, loci=1)
 simu = sim.Simulator(pop, rep=3)
@@ -3615,7 +3615,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=1000, loci=1, infoFields='fitness')
 s1 = .1
@@ -3644,7 +3644,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=1000, loci=1, infoFields='fitness')
 s1 = .1
@@ -3670,7 +3670,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=10000, ploidy=1, loci=[1,1], infoFields='fitness')
 pop.evolve(
@@ -3698,7 +3698,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=10000, loci=2, infoFields='fitness')
 pop.evolve(
@@ -3732,7 +3732,7 @@ simuOpt.setOptions(quiet=True)
 import simuPOP as sim
 import random
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=2000, loci=[1]*2, infoFields=['fitness', 'smoking'])
 s1 = .02
@@ -3781,7 +3781,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=2000, loci=1, infoFields='fitness')
 pop.evolve(
@@ -3812,7 +3812,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[5000, 5000], loci=1, infoFields='fitness')
 pop.setVirtualSplitter(sim.SexSplitter())
@@ -3845,7 +3845,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import Trajectory, simulateForwardTrajectory
 
@@ -3882,7 +3882,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import Trajectory, simulateBackwardTrajectory
 from math import exp
@@ -3927,7 +3927,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import ProgressBar
 pop = sim.Population(10000, loci=[10], infoFields='index')
@@ -3947,7 +3947,7 @@ simuOpt.setOptions(quiet=True, gui=False)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import viewVars
 pop = sim.Population([1000, 2000], loci=3)
@@ -3967,7 +3967,7 @@ simuOpt.setOptions(quiet=True, gui=False)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.utils import saveCSV
 pop = sim.Population(size=[10], loci=[2, 3],
@@ -3999,7 +3999,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.plotter import VarPlotter
 pop = sim.Population(size=1000, loci=2)
@@ -4029,7 +4029,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
 from simuPOP.plotter import VarPlotter
@@ -4060,7 +4060,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
 from simuPOP.plotter import VarPlotter
@@ -4109,7 +4109,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
 from simuPOP.plotter import ScatterPlotter
@@ -4159,7 +4159,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
 from simuPOP.plotter import HistPlotter, QQPlotter, BoxPlotter
@@ -4215,7 +4215,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import types, simuOpt
 options = [
@@ -4345,7 +4345,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.sampling import drawRandomSample
 pop = sim.Population([2000]*5, loci=1)
@@ -4365,7 +4365,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.sampling import drawCaseControlSamples
 pop = sim.Population([10000], loci=5)
@@ -4386,7 +4386,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12347)
+sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import indexToID, plotPedigree
 pop = sim.Population(size=15, loci=5, infoFields=['father_idx', 'mother_idx'], ancGen=2)
@@ -4417,7 +4417,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12347)
+sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawAffectedSibpairSample, plotPedigree
 pop = sim.loadPopulation('log/Pedigree.pop')
@@ -4433,7 +4433,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12347)
+sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawNuclearFamilySample, plotPedigree
 pop = sim.loadPopulation('log/Pedigree.pop')
@@ -4451,7 +4451,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12347)
+sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawThreeGenFamilySample, plotPedigree
 pop = sim.loadPopulation('log/Pedigree.pop')
@@ -4468,7 +4468,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12347)
+sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawCombinedSample, AffectedSibpairSampler, NuclearFamilySampler, plotPedigree
 pop = sim.loadPopulation('log/Pedigree.pop')
@@ -4487,7 +4487,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 # create an age-structured population with a disease
 import random
@@ -4510,7 +4510,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 # create an age-structured population with a disease
 import random
@@ -4539,7 +4539,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import math
 def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
@@ -4579,7 +4579,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 class ne(sim.PyOperator):
     '''Define an operator that calculates effective number of
@@ -4621,7 +4621,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 
 #begin_ignore
@@ -4911,7 +4911,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 def simulate():
@@ -4947,7 +4947,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 # redirect system stderr
 import sys
@@ -4992,7 +4992,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 class dynaMutator(sim.PyOperator):
     '''This mutator mutates commom loci with low mutation rate and rare
@@ -5039,7 +5039,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 from simuPOP import *
 #begin_ignore
-getRNG().setSeed(12345)
+getRNG().set(seed=12345)
 #end_ignore
 def RandomMating(numOffspring=1., sexMode=RANDOM_SEX,
         ops=MendelianGenoTransmitter(), subPopSize=[],
@@ -5061,7 +5061,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=5*3, infoFields='parent_idx')
 pop.evolve(
@@ -5086,7 +5086,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def traj(gen):
     return [0.5 + gen * 0.01]
@@ -5117,7 +5117,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(10, loci=[5]*5,
     # one autosome, two sex chromosomes, and two mitochondrial chromosomes
@@ -5145,7 +5145,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 from simuPOP import *
 #begin_ignore
-getRNG().setSeed(12345)
+getRNG().set(seed=12345)
 #end_ignore
 class sexSpecificRecombinator(PyOperator):
     def __init__(self, intensity=0, rates=0, loci=[], convMode=NO_CONVERSION,
@@ -5189,7 +5189,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 def func():
     i = 1
@@ -5211,7 +5211,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 from random import randint
 def randomChooser(pop, sp):
@@ -5332,7 +5332,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 
 # The class myParentsChooser is defined in module myParentsChooser
@@ -5380,7 +5380,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().setSeed(12345)
+sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 N = 10000
