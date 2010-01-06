@@ -30,22 +30,26 @@ using std::max;
 
 namespace simuPOP {
 
-void GenoTransmitter::initialize(const Population & pop)
+void GenoTransmitter::initialize(const Individual & ind) const
 {
-	m_hasCustomizedChroms = !pop.customizedChroms().empty();
+	m_hasCustomizedChroms = !ind.customizedChroms().empty();
 	m_lociToCopy.clear();
-	for (UINT ch = 0; ch < pop.numChrom(); ++ch)
-		if (pop.chromType(ch) == CUSTOMIZED)
+	for (UINT ch = 0; ch < ind.numChrom(); ++ch)
+		if (ind.chromType(ch) == CUSTOMIZED)
 			m_lociToCopy.push_back(0);
 		else
-			m_lociToCopy.push_back(pop.numLoci(ch));
-	m_ploidy = pop.ploidy();
-	m_chromIdx = pop.chromIndex();
+			m_lociToCopy.push_back(ind.numLoci(ch));
+	m_ploidy = ind.ploidy();
+	m_chromIdx = ind.chromIndex();
+	setInitialized();
 }
 
 
 void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int chrom) const
 {
+	if (!initialized())
+		initialize(ind);
+
 #ifdef BINARYALLELE
 	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
 #else
@@ -59,6 +63,9 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int ch
 void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
                                      Individual & offspring, int ploidy, int chrom) const
 {
+	if (!initialized())
+		initialize(offspring);
+
 #ifdef BINARYALLELE
 	copyGenotype(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
 		offspring.genoBegin(ploidy) + m_chromIdx[chrom],
@@ -76,6 +83,9 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 void GenoTransmitter::copyChromosomes(const Individual & parent,
                                       int parPloidy, Individual & offspring, int ploidy) const
 {
+	if (!initialized())
+		initialize(offspring);
+
 	// troublesome ...
 	if (m_hasCustomizedChroms) {
 		for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
@@ -110,6 +120,9 @@ string CloneGenoTransmitter::describe(bool format)
 bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                              Individual * dad, Individual * mom) const
 {
+	if (!initialized())
+		initialize(*offspring);
+
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError,
 		"Both parents are invalid");
 
@@ -154,18 +167,21 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator of
 }
 
 
-void MendelianGenoTransmitter::initialize(const Population & pop)
+void MendelianGenoTransmitter::initialize(const Individual & ind) const
 {
-	GenoTransmitter::initialize(pop);
-	m_chromX = pop.chromX();
-	m_chromY = pop.chromY();
-	m_numChrom = pop.numChrom();
+	GenoTransmitter::initialize(ind);
+	m_chromX = ind.chromX();
+	m_chromY = ind.chromY();
+	m_numChrom = ind.numChrom();
 }
 
 
 void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
                                                 Individual & offspring, int ploidy) const
 {
+	if (!initialized())
+		initialize(offspring);
+
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
 
@@ -274,11 +290,11 @@ Individual * dad, Individual * mom) const
 }
 
 
-void HaplodiploidGenoTransmitter::initialize(const Population & pop)
+void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 {
-	DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
-		"Haplodiploid populations do not use sex chromosomes");
-	MendelianGenoTransmitter::initialize(pop);
+	DBG_FAILIF(ind.chromX() >= 0 || ind.chromY() >= 0, ValueError,
+		"Haplodiploid indulations do not use sex chromosomes");
+	MendelianGenoTransmitter::initialize(ind);
 }
 
 
@@ -297,17 +313,17 @@ Individual * dad, Individual * mom) const
 }
 
 
-void MitochondrialGenoTransmitter::initialize(const Population & pop)
+void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 {
-	GenoTransmitter::initialize(pop);
+	GenoTransmitter::initialize(ind);
 	if (m_chroms.empty()) {
-		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
-			if (pop.chromType(ch) == CUSTOMIZED)
+		for (UINT ch = 0; ch < ind.numChrom(); ++ch)
+			if (ind.chromType(ch) == CUSTOMIZED)
 				m_mitoChroms.push_back(ch);
 	} else {
 #ifndef OPTIMIZED
 		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
-			DBG_ASSERT(pop.chromType(ch) == CUSTOMIZED, ValueError,
+			DBG_ASSERT(ind.chromType(ch) == CUSTOMIZED, ValueError,
 				"Chromosome " + toStr(ch) + " is not of CUSTOMIZED type.");
 		}
 #endif
@@ -317,11 +333,11 @@ void MitochondrialGenoTransmitter::initialize(const Population & pop)
 	if (m_mitoChroms.empty())
 		return;
 
-	m_numLoci = pop.numLoci(m_mitoChroms[0]);
+	m_numLoci = ind.numLoci(m_mitoChroms[0]);
 
 #ifndef OPTIMIZED
 	for (UINT ch = 1; ch < m_mitoChroms.size(); ++ch) {
-		DBG_FAILIF(pop.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
+		DBG_FAILIF(ind.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
 			"All mitochondrial chromosomes should have the same number of loci");
 	}
 #endif
@@ -331,6 +347,9 @@ void MitochondrialGenoTransmitter::initialize(const Population & pop)
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
 	Individual * dad, Individual * mom) const
 {
+	if (!initialized())
+		initialize(*offspring);
+
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
 
@@ -429,15 +448,15 @@ int Recombinator::markersConverted(size_t index, const Individual & ind) const
 }
 
 
-void Recombinator::initialize(const Population & pop)
+void Recombinator::initializeRecombinator(const Individual & ind, size_t popSize) const
 {
-	GenoTransmitter::initialize(pop);
+	GenoTransmitter::initialize(ind);
 
-	m_chromX = pop.chromX();
-	m_chromY = pop.chromY();
-	if (!pop.customizedChroms().empty()) {
-		m_customizedBegin = pop.chromBegin(pop.customizedChroms()[0]);
-		m_customizedEnd = pop.chromEnd(pop.customizedChroms().back());
+	m_chromX = ind.chromX();
+	m_chromY = ind.chromY();
+	if (!ind.customizedChroms().empty()) {
+		m_customizedBegin = ind.chromBegin(ind.customizedChroms()[0]);
+		m_customizedEnd = ind.chromEnd(ind.customizedChroms().back());
 	}
 	// prepare m_bt
 	vectorf vecP;
@@ -460,16 +479,16 @@ void Recombinator::initialize(const Population & pop)
 
 	m_recBeforeLoci.clear();
 	vecP.clear();
-	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-		UINT chBegin = pop.chromBegin(ch);
-		UINT chEnd = pop.chromEnd(ch);
+	for (UINT ch = 0; ch < ind.numChrom(); ++ch) {
+		UINT chBegin = ind.chromBegin(ch);
+		UINT chEnd = ind.chromEnd(ch);
 
 		if (chBegin == chEnd)
 			continue;
 
-		if (pop.chromType(ch) == CUSTOMIZED) {
+		if (ind.chromType(ch) == CUSTOMIZED) {
 			// recombine before customized chromosome.
-			if (pop.numChrom() != ch + 1 && pop.chromType(ch + 1) != CUSTOMIZED) {
+			if (ind.numChrom() != ch + 1 && ind.chromType(ch + 1) != CUSTOMIZED) {
 				m_recBeforeLoci.push_back(chEnd);
 				vecP.push_back(0.5);
 			}
@@ -480,7 +499,7 @@ void Recombinator::initialize(const Population & pop)
 			// get loci distance * m_rates and then recombinant points
 			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
 				m_recBeforeLoci.push_back(loc + 1);
-				double r = useLociDist ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * m_intensity) : m_rates[0];
+				double r = useLociDist ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : m_rates[0];
 
 				DBG_WARNING(fcmp_gt(r, 0.5),
 					"Recombination m_rates after marker " + toStr(loc) + " is out of range ("
@@ -500,7 +519,7 @@ void Recombinator::initialize(const Population & pop)
 				if (pos != loci.end()) {
 					double r = 0;
 					if (useLociDist)
-						r = m_intensity > 0 ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * m_intensity) : r;
+						r = m_intensity > 0 ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : r;
 					else if (m_rates.size() == 1 && !useLociDist)
 						r = max(m_rates[0], 0.);
 					else
@@ -526,14 +545,16 @@ void Recombinator::initialize(const Population & pop)
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
 
-	DBG_FAILIF(pop.chromType(pop.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != pop.totNumLoci(),
+	DBG_FAILIF(ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(),
 		SystemError,
 		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
 
 	DBG_ASSERT(vecP.back() == .5, SystemError,
 		"The last elem of m_rates should be half.");
 
-	m_bt.setParameter(vecP, pop.popSize());
+	// if the operator is called directly, there is no way to know population size so we use a
+	// default number.
+	m_bt.setParameter(vecP, popSize == 0 ? 1024 : popSize);
 
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
@@ -542,18 +563,22 @@ void Recombinator::initialize(const Population & pop)
 	//
 	// In addition, the second algorithm is really difficult in the
 	// handling of sex chromosomes etc.
-	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > pop.numChrom()
+	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
 	else
 		m_algorithm = 1;
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
+	//
+	setInitialized();
 }
 
 
 void Recombinator::transmitGenotype(const Individual & parent,
                                     Individual & offspring, int ploidy) const
 {
+	if (!initialized())
+		initializeRecombinator(offspring);
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
 
@@ -823,6 +848,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                      Individual * dad, Individual * mom) const
 {
+	// this is called in transmitGenotype
+	if (!initialized())
+		initializeRecombinator(*offspring, pop.popSize());
+
 	DBG_FAILIF(dad == NULL && mom == NULL,
 		ValueError, "None of the parents is invalid.");
 

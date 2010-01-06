@@ -95,7 +95,7 @@ public:
 	/** HIDDEN Initialize a base genotype operator for a population. This function should be
 	 *  called before any other functions are used to transmit genotype.
 	 */
-	void initialize(const Population & pop);
+	virtual void initialize(const Individual & ind) const;
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop,
@@ -205,10 +205,10 @@ public:
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
 
-	/** Initialize a base genotype operator for a population. This function should be
+	/** HIDDEN Initialize a base genotype operator for a population. This function should be
 	 *  called before function \c transmitGenotype is used to transmit genotype.
 	 */
-	void initialize(const Population & pop);
+	void initialize(const Individual & ind) const;
 
 	/** Transmit genotype from parent to offspring, and fill the \e ploidy
 	 *  homologous set of chromosomes. This function does not set genotypes of
@@ -314,7 +314,7 @@ public:
 
 
 	/// HIDDEN
-	void initialize(const Population & pop);
+	void initialize(const Individual & ind) const;
 
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop,
@@ -368,7 +368,7 @@ public:
 
 
 	/// HIDDEN
-	void initialize(const Population & pop);
+	void initialize(const Individual & ind) const;
 
 	/// CPPONLY
 	virtual bool applyDuringMating(Population & pop,
@@ -526,11 +526,11 @@ public:
 	string describe(bool format = true);
 
 
-	/** Initialize a Recombinator for the genotypic structure of population
+	/** HIDDEN Initialize a Recombinator for the genotypic structure of population
 	 *  \e pop. This function should be called before a Recombinator is
 	 *  explicitly applied to a population.
 	 */
-	void initialize(const Population & pop);
+	void initializeRecombinator(const Individual & ind, size_t popSize = 0) const;
 
 	/** This function transmits genotypes from a \e parent to the \e ploidy-th
 	 *  homologous set of chromosomes of an \e offspring. It can be used, for
