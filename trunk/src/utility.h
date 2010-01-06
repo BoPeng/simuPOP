@@ -1437,20 +1437,12 @@ public:
 	///
 	~RNG();
 
-	/** Use another underlying RNG for the current RNG object. The handling of
-	 *  parameters \e rng and \e seed is the same as \c RNG::RNG(name, seed).
+	/** Replace the existing random number generator using RNG \e name with
+	 *  seed \e seed. If \e seed is 0, a random seed will be used. If \e name
+	 *  is empty, use the existing RNG but reset the seed.
 	 *  <group>1-setup</group>
 	 */
-	void setRNG(const char * name = NULL, unsigned long seed = 0);
-
-	/** Set random seed for this random number generator. If seed is 0, method
-	 *  described in \c setRNG is used.
-	 *  <group>1-setup</group>
-	 */
-	void setSeed(unsigned long seed = 0)
-	{
-		setRNG(name(), seed);
-	}
+	void set(const char * name = NULL, unsigned long seed = 0);
 
 
 	/** Return the name of the current random number generator.
@@ -1844,9 +1836,6 @@ private:
 
 /// return the currently used random number generator
 RNG & getRNG();
-
-/// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
-void setRNG(const string rng = string(), unsigned long seed = 0);
 
 
 // ////////////////////////////////////////////////////////////

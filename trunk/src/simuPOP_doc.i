@@ -1013,10 +1013,6 @@ Details:
 
 %feature("docstring") simuPOP::ContextMutator "
 
-Function form:
-
-    contextMutate
-
 Details:
 
     This context-dependent mutator accepts a list of mutators and use
@@ -2116,10 +2112,6 @@ Usage:
 
 %feature("docstring") simuPOP::IdTagger "
 
-Function form:
-
-    tagID
-
 Details:
 
     An IdTagger gives a unique ID for each individual it is applies
@@ -2591,10 +2583,6 @@ Usage:
 
 %feature("docstring") simuPOP::InfoEval "
 
-Function form:
-
-    infoEval
-
 Details:
 
     Unlike operator PyEval and PyExec that work at the population
@@ -2669,10 +2657,6 @@ Usage:
 %feature("docstring") simuPOP::InfoEval::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InfoExec "
-
-Function form:
-
-    infoExec
 
 Details:
 
@@ -2903,10 +2887,6 @@ Usage:
 
 %feature("docstring") simuPOP::InitGenotype "
 
-Function form:
-
-    initGenotype
-
 Details:
 
     This operator assigns alleles at all or part of loci with given
@@ -2959,10 +2939,6 @@ Usage:
 
 %feature("docstring") simuPOP::InitInfo "
 
-Function form:
-
-    initInfo
-
 Details:
 
     This operator initializes given information fields with a sequence
@@ -3011,10 +2987,6 @@ Usage:
 %feature("docstring") simuPOP::InitInfo::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitSex "
-
-Function form:
-
-    initSex
 
 Details:
 
@@ -3093,10 +3065,6 @@ Usage:
 
 %feature("docstring") simuPOP::KAlleleMutator "
 
-Function form:
-
-    kAlleleMutate
-
 Details:
 
     This mutator implements a k-allele mutation model that assumes k
@@ -3142,10 +3110,6 @@ Usage:
 %feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MaPenetrance "
-
-Function form:
-
-    maPenetrance
 
 Details:
 
@@ -3203,12 +3167,6 @@ Usage:
 
 %feature("docstring") simuPOP::MapPenetrance "
 
-Function form:
-
-    mapPenetrance
-
-Applicability: all ploidy
-
 Details:
 
     This penetrance operator assigns individual affection status using
@@ -3254,8 +3212,6 @@ Usage:
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MapSelector "
-
-Applicability: all ploidy
 
 Details:
 
@@ -3403,10 +3359,6 @@ Usage:
 
 %feature("docstring") simuPOP::MatrixMutator "
 
-Function form:
-
-    matrixMutate
-
 Details:
 
     A matrix mutator mutates alleles 0, 1, ..., n-1 using a n by n
@@ -3511,10 +3463,6 @@ Details:
 "; 
 
 %feature("docstring") simuPOP::MergeSubPops "
-
-Function form:
-
-    mergeSubPops
 
 Details:
 
@@ -3706,10 +3654,6 @@ Details:
 
 %feature("docstring") simuPOP::MixedMutator "
 
-Function form:
-
-    mixedMutate
-
 Details:
 
     This mixed mutator accepts a list of mutators and use one of them
@@ -3747,10 +3691,6 @@ Details:
 %feature("docstring") simuPOP::MixedMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MlPenetrance "
-
-Function form:
-
-    mlPenetrance
 
 Details:
 
@@ -4448,10 +4388,6 @@ Usage:
 %ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::PointMutator "
-
-Function form:
-
-    pointMutate
 
 Details:
 
@@ -5706,10 +5642,6 @@ Details:
 
 %feature("docstring") simuPOP::PyEval "
 
-Function form:
-
-    pyEval
-
 Details:
 
     A PyEval operator evaluates a Python expression in a population's
@@ -5768,10 +5700,6 @@ Usage:
 %feature("docstring") simuPOP::PyEval::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyExec "
-
-Function form:
-
-    pyExec
 
 Details:
 
@@ -5913,10 +5841,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::PyMutator "
-
-Function form:
-
-    pyMutate
 
 Details:
 
@@ -6150,10 +6074,6 @@ Usage:
 
 %feature("docstring") simuPOP::PyPenetrance "
 
-Function form:
-
-    pyPenetrance
-
 Details:
 
     This penetrance operator assigns penetrance values by calling a
@@ -6233,10 +6153,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::PyQuanTrait "
-
-Function form:
-
-    pyQuanTrait
 
 Details:
 
@@ -6659,10 +6575,6 @@ Details:
 
 %feature("docstring") simuPOP::ResizeSubPops "
 
-Function form:
-
-    resizeSubPops
-
 Details:
 
     This operator resizes subpopulations to specified sizes.
@@ -6752,30 +6664,17 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RNG::setRNG "
+%feature("docstring") simuPOP::RNG::set "
 
 Usage:
 
-    x.setRNG(name=None, seed=0)
+    x.set(name=None, seed=0)
 
 Details:
 
-    Use another underlying RNG for the current RNG object. The
-    handling of parameters rng and seed is the same as RNG::RNG(name,
-    seed).
-
-"; 
-
-%feature("docstring") simuPOP::RNG::setSeed "
-
-Usage:
-
-    x.setSeed(seed=0)
-
-Details:
-
-    Set random seed for this random number generator. If seed is 0,
-    method described in setRNG is used.
+    Replace the existing random number generator using RNGname with
+    seed seed. If seed is 0, a random seed will be used. If name is
+    empty, use the existing RNG but reset the seed.
 
 "; 
 
@@ -7508,10 +7407,6 @@ Usage:
 
 %feature("docstring") simuPOP::SplitSubPops "
 
-Function form:
-
-    splitSubPops
-
 Details:
 
     Split a given list of subpopulations according to either sizes of
@@ -7588,10 +7483,6 @@ Usage:
 %feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Stat "
-
-Function form:
-
-    stat
 
 Details:
 
@@ -8310,10 +8201,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::StepwiseMutator "
-
-Function form:
-
-    stepwqiseMutate
 
 Details:
 
@@ -9054,20 +8941,6 @@ Description:
 Usage:
 
     getRNG()
-
-"; 
-
-%feature("docstring") simuPOP::setRNG "
-
-Description:
-
-    set random number generator. If seed=0 (default), a random seed
-    will be given. If rng=\"\", seed will be set to the current random
-    number generator.
-
-Usage:
-
-    setRNG(rng=\"\", seed=0)
 
 "; 
 

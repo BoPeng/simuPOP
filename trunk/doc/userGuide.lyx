@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -22766,14 +22766,14 @@ AvailableRNG
 
 , 
 \family typewriter
-setRNG(name, seed)
+getRNG.set(name, seed)
 \family default
 )
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
-setRNG
+getRNG
 \end_layout
 
 \end_inset

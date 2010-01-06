@@ -198,7 +198,6 @@ protected:
  *  corresponding row of the rate matrix. Only one mutation rate matrix can
  *  be specified which will be used for all specified loci.
  #
- *  <funcForm>matrixMutate</funcForm>
  */
 class MatrixMutator : public BaseMutator
 {
@@ -251,7 +250,6 @@ private:
  *  allelic states (alleles 0, 1, 2, ..., \e k-1) at each locus. When a
  *  mutation event happens, it mutates an allele to any other states with equal
  *  probability.
- *  <funcForm>kAlleleMutate</funcForm>
  */
 class KAlleleMutator : public BaseMutator
 {
@@ -315,7 +313,6 @@ private:
  *  with equal probability. More complex models (generalized stepwise mutation
  *  model) are also allowed. Note that an allele cannot be mutated beyond
  *  boundaries (0 and maximum allowed allele).
- *  <funcForm>stepwqiseMutate</funcForm>
  */
 class StepwiseMutator : public BaseMutator
 {
@@ -385,7 +382,6 @@ private:
 
 /** This hybrid mutator accepts a Python function that determines how to mutate
  *  an allele when an mutation event happens.
- *  <funcForm>pyMutate</funcForm>
  */
 class PyMutator : public BaseMutator
 {
@@ -443,7 +439,6 @@ private:
 
 /** This mixed mutator accepts a list of mutators and use one of them to mutate
  *  an allele when an mutation event happens.
- *  <funcForm>mixedMutate</funcForm>
  */
 class MixedMutator : public BaseMutator
 {
@@ -504,7 +499,6 @@ private:
 
 /** This context-dependent mutator accepts a list of mutators and use one of
  *  them to mutate an allele depending on the context of the mutated allele.
- *  <funcForm>contextMutate</funcForm>
  */
 class ContextMutator : public BaseMutator
 {
@@ -581,7 +575,6 @@ private:
  *  this mutator do not happen randomly. Instead, it happens to specific loci
  *  and mutate an allele to a specific state, regardless of its original state.
  *  This mutator is usually used to introduce a mutant to a population.
- *  <funcForm>pointMutate</funcForm>
  */
 class PointMutator : public BaseOperator
 {

@@ -4933,7 +4933,7 @@ random.seed(seed)
 print '%.4f' % simulate()
 # will yield different result
 print '%.4f' % simulate()
-sim.setRNG(seed=seed)
+sim.getRNG.set(seed=seed)
 random.seed(seed)
 # will yield identical result because the same seeds are used
 print '%.4f' % simulate()

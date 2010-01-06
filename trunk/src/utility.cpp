@@ -2338,7 +2338,7 @@ void closeOutput(const string & output)
 // Random number generator
 RNG::RNG(const char * rng, unsigned long seed) : m_RNG(NULL)
 {
-	setRNG(rng, seed);
+	set(rng, seed);
 }
 
 
@@ -2441,14 +2441,14 @@ unsigned long RNG::generateRandomSeed()
 #endif
 
 // choose an random number generator.
-void RNG::setRNG(const char * rng, unsigned long seed)
+void RNG::set(const char * rng, unsigned long seed)
 {
 	const char * rng_name = rng;
-
 	// if RNG name is not given, try GSL_RNG_TYPE
-	if (rng_name == NULL)
+	if (m_RNG == NULL && rng_name == NULL)
 		rng_name = getenv("GSL_RNG_TYPE");
-
+	
+	// if a name is given ..... replace the existing RNG
 	if (rng_name != NULL && rng_name[0] != '\0') {
 		// locate the RNG
 		const gsl_rng_type ** t, ** t0 = gsl_rng_types_setup();
@@ -2475,13 +2475,11 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 		if (*t == 0)
 			throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
 				+ " not recognized or can not generate full range (0-2^32-1) of integers.");
-	} else {
-		// free current RNG
-		if (m_RNG != NULL)
-			gsl_rng_free(m_RNG);
-
+	} else if (m_RNG == NULL)
+		// no name is given so we use a default one (mt19937)
 		m_RNG = gsl_rng_alloc(gsl_rng_mt19937);
-	}
+	
+	// in the case that a name is not given, and m_RNG already exists, just set seed.
 
 	// generate seed
 	if (seed == 0)
@@ -3278,14 +3276,6 @@ RNG g_RNG;
 RNG & getRNG()
 {
     return g_RNG;
-}
-
-
-// set global rng
-// this is temporary since getRNG() might not exist in the future
-void setRNG(const string r, unsigned long seed)
-{
-    getRNG().setRNG(r.c_str(), seed);
 }
 
 

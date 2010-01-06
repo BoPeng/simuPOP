@@ -169,7 +169,6 @@ protected:
  *  resulting subpopulations, proportion of individuals, or an information
  *  field. The resulting subpopulations will have the same name as the
  *  original subpopulation.
- *  <funcForm>splitSubPops</funcForm>
  */
 class SplitSubPops : public BaseOperator
 {
@@ -270,7 +269,6 @@ private:
 /** This operator merges subpopulations \e subPops to a single subpopulation.
  *  If \c subPops is ignored, all subpopulations will be merged. Virtual
  *  subpopulations are not allowed in \e subPops.
- *  <funcForm>mergeSubPops</funcForm>
  */
 class MergeSubPops : public BaseOperator
 {
@@ -328,7 +326,6 @@ private:
 
 /** This operator resizes subpopulations to specified sizes. individuals are
  *  added or removed depending on the new subpopulation sizes.
- *  <funcForm>resizeSubPops</funcForm>
  */
 class ResizeSubPops : public BaseOperator
 {

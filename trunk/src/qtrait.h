@@ -128,8 +128,6 @@ private:
  *  loci, generation number, a reference to an individual, and values at
  *  specified information fields to respective parameters of this function.
  *  The return values will be assigned to specified trait fields.
- *
- *  <funcForm>pyQuanTrait</funcForm>
  */
 class PyQuanTrait : public BaseQuanTrait
 {

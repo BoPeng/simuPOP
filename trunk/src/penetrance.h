@@ -139,8 +139,6 @@ private:
 
 /** This penetrance operator assigns individual affection status using a
  *  user-specified penetrance dictionary.
- *  <applicability>all ploidy</applicability>
- *  <funcForm>mapPenetrance</funcForm>
  */
 class MapPenetrance : public BasePenetrance
 {
@@ -204,7 +202,6 @@ private:
  *  non-wildtype alleles \c a, this operator assign Individual penetrance
  *  according to genotype \c AA, \c Aa, \c aa in the diploid case, and
  *  \c A and \c a in the haploid case.
- *  <funcForm>maPenetrance</funcForm>
  */
 class MaPenetrance : public BasePenetrance
 {
@@ -278,7 +275,6 @@ private:
  *  supported. Please refer to Neil Rish (1989) "Linkage Strategies for
  *  Genetically Complex Traits" for some analysis of these models.
  *
- *  <funcForm>mlPenetrance</funcForm>
  */
 class MlPenetrance : public BasePenetrance
 {
@@ -348,8 +344,6 @@ private:
  *  specified information fields to respective parameters of this function.
  *  The returned penetrance values will be used to determine the affection
  *  status of each individual.
- *
- *  <funcForm>pyPenetrance</funcForm>
  */
 class PyPenetrance : public BasePenetrance
 {
