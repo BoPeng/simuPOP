@@ -291,8 +291,6 @@ Details:
 
 %ignore simuPOP::BaseOperator::isActive(UINT rep, long gen) const;
 
-%ignore simuPOP::BaseOperator::isCompatible(const Population &pop) const;
-
 %ignore simuPOP::BaseOperator::infoSize() const;
 
 %ignore simuPOP::BaseOperator::infoField(UINT idx) const;
@@ -323,10 +321,6 @@ Details:
 %feature("docstring") simuPOP::BaseOperator::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseOperator::noOutput() const;
-
-%ignore simuPOP::BaseOperator::initialized() const;
-
-%ignore simuPOP::BaseOperator::setInitialized() const;
 
 %ignore simuPOP::BaseOperator::applicableSubPops() const;
 
@@ -1855,9 +1849,11 @@ Details:
 
 %feature("docstring") simuPOP::GenoTransmitter::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::GenoTransmitter::initialize "Obsolete or undocumented function."
+%ignore simuPOP::GenoTransmitter::initialize(const Individual &ind) const;
 
 %ignore simuPOP::GenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%ignore simuPOP::GenoTransmitter::initializeIfNeeded(const Individual &ind) const;
 
 %feature("docstring") simuPOP::GenotypeSplitter "
 
@@ -6642,7 +6638,7 @@ Usage:
 
 %feature("docstring") simuPOP::Recombinator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Recombinator::initializeRecombinator "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Recombinator::initialize "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Recombinator::transmitGenotype "
 

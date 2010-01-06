@@ -51,7 +51,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
+		m_lastGenoStru(MaxTraitIndex), m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
 	}
 
@@ -92,7 +92,7 @@ public:
 	}
 
 
-	/** HIDDEN Initialize a base genotype operator for a population. This function should be
+	/** CPPONLY Initialize a base genotype operator for a population. This function should be
 	 *  called before any other functions are used to transmit genotype.
 	 */
 	virtual void initialize(const Individual & ind) const;
@@ -107,7 +107,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	virtual void initializeIfNeeded(const Individual & ind) const;
+
 protected:
+	// record the last handled population type. If this is change,
+	// everything has to be changed.
+	mutable TraitIndexType m_lastGenoStru;
 	// cache some genostructor information for
 	// faster performance
 	mutable UINT m_ploidy;
@@ -530,7 +536,7 @@ public:
 	 *  \e pop. This function should be called before a Recombinator is
 	 *  explicitly applied to a population.
 	 */
-	void initializeRecombinator(const Individual & ind, size_t popSize = 0) const;
+	void initialize(const Individual & ind) const;
 
 	/** This function transmits genotypes from a \e parent to the \e ploidy-th
 	 *  homologous set of chromosomes of an \e offspring. It can be used, for
@@ -580,6 +586,9 @@ private:
 	mutable int m_algorithm;
 
 	mutable ostream * m_debugOutput;
+
+	mutable ULONG m_intendedSize;
+
 };
 
 }
