@@ -393,11 +393,18 @@ public:
 	typedef vectoru::iterator iterator;
 	typedef vectoru::const_iterator const_iterator;
 
+private:
+	enum listStatus {
+		REGULAR = 0,
+		ALL_AVAIL = 1,
+		UNSPECIFIED = 2
+	};
+
 public:
 	uintList(PyObject * obj = NULL);
 
 	/// CPPONLY
-	uintList(const vectoru & values) : m_elems(values), m_allAvail(false)
+	uintList(const vectoru & values) : m_elems(values), m_status(REGULAR)
 	{
 	}
 
@@ -405,9 +412,13 @@ public:
 	/// CPPONLY
 	bool allAvail() const
 	{
-		return m_allAvail;
+		return m_status == ALL_AVAIL;
 	}
 
+	bool unspecified() const
+	{
+		return m_status == UNSPECIFIED;
+	}
 
 	/// CPPONLY
 	const vectoru & elems() const
@@ -420,7 +431,7 @@ protected:
 	vectoru m_elems;
 
 private:
-	bool m_allAvail;
+	listStatus m_status;
 };
 
 

@@ -344,7 +344,7 @@ int Population::__cmp__(const Population & rhs) const
 }
 
 
-Individual & Population::indByID(double fid, int ancGen, const string & idField)
+Individual & Population::indByID(double fid, const uintList & ancGen, const string & idField)
 {
 	ULONG id = static_cast<ULONG>(fid + 0.5);
 
@@ -353,10 +353,15 @@ Individual & Population::indByID(double fid, int ancGen, const string & idField)
 
 	UINT idx = infoIdx(idField);
 
-	for (UINT gen = 0; gen <= ancestralGens(); ++gen) {
-		// only search specific generation
-		if (ancGen != -1 && static_cast<UINT>(ancGen) != gen)
-			continue;
+	vectoru gens = ancGen.elems();
+	if (ancGen.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGen.unspecified())
+		gens.push_back(m_curAncestralGen);
+	
+	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		int gen = gens[genIdx];
 		vector<Individual> * inds = NULL;
 		// search in current, not necessarily the present generation
 		if (gen == m_curAncestralGen)
@@ -376,10 +381,6 @@ Individual & Population::indByID(double fid, int ancGen, const string & idField)
 				return (*inds)[i];
 		}
 	}
-	// if an individual can not be found in the specified generation, search
-	// all ancestral generations.
-	if (ancGen != -1)
-		return indByID(id, -1, idField);
 	// if still cannot be found, raise an IndexError.
 	throw IndexError("No individual with ID " + toStr(id) + " could be found.");
 	// this is just to suppress a warning.
@@ -1717,7 +1718,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 
 
 Population & Population::extract(const uintList & extractedLoci, const stringList & infoFieldList,
-                                 const subPopList & _subPops, int ancGen) const
+                                 const subPopList & _subPops, const uintList & ancGen) const
 {
 	Population & pop = *new Population();
 
@@ -1811,13 +1812,18 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 	vectoru::iterator infoPtr = infoList.begin();
 	vectoru::iterator infoEnd = infoList.end();
 	//
-	// copy individuals, from ancestor to current.
-	int depth = ancestralGens();
-	if (ancGen >= 0 && ancGen < depth)
-		depth = ancGen;
+	vectoru gens = ancGen.elems();
+	if (ancGen.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGen.unspecified())
+		gens.push_back(m_curAncestralGen);
+	std::sort(gens.begin(), gens.end());
+	
 	// ancestral depth can be -1
 	pop.setAncestralDepth(m_ancestralGens);
-	for (; depth >= 0; --depth) {
+	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		int depth = gens[genIdx];
 		const_cast<Population *>(this)->useAncestralGen(depth);
 		sortIndividuals();
 		// determine the number of individuals
@@ -1935,13 +1941,13 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) +
 			"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
 		// now put them to use
-		if (depth == 0) { // current generation
+		if (genIdx == 0) { // current generation
 			pop.m_inds.swap(new_inds);
 			pop.m_genotype.swap(new_genotype);
 			pop.m_info.swap(new_info);
 		} else {
-			pop.m_ancestralPops.push_front(popData());
-			popData & pd = pop.m_ancestralPops.front();
+			pop.m_ancestralPops.push_back(popData());
+			popData & pd = pop.m_ancestralPops.back();
 			pd.m_subPopSize.swap(spSizes);
 			pd.m_genotype.swap(new_genotype);
 			pd.m_info.swap(new_info);

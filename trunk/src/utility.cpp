@@ -548,17 +548,16 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 }
 
 
-uintList::uintList(PyObject * obj) : m_elems(), m_allAvail(false)
+uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 {
-	if (obj == NULL || obj == Py_None)
+	if (obj == NULL)
 		// accept NULL
-		m_allAvail = true;
+		m_status = ALL_AVAIL;
 	else if (PyBool_Check(obj))
 		// accept True/False
-		m_allAvail = obj == Py_True;
+		m_status = obj == Py_True ? ALL_AVAIL : UNSPECIFIED;
 	else if (PyNumber_Check(obj)) {
 		// accept a number
-		m_allAvail = false;
 		m_elems.push_back(static_cast<UINT>(PyInt_AS_LONG(obj)));
 	} else if (PySequence_Check(obj)) {
 		m_elems.resize(PySequence_Size(obj));

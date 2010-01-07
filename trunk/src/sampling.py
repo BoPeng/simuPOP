@@ -434,7 +434,7 @@ class PedigreeSampler(BaseSampler):
         self.motherField = motherField
         self.pedigree = None
 
-    def prepareSample(self, pop, loci=[], infoFields=[], ancGen=-1):
+    def prepareSample(self, pop, loci=[], infoFields=[], ancGen=ALL_AVAIL):
         '''
         Prepare self.pedigree, some pedigree sampler might need additional loci and
         information fields for this sampler.

@@ -545,21 +545,19 @@ public:
 
 	/** Return a reference to individual with \e id stored in information
 	 *  field \e idField (default to \c ind_id). This function by default
-	 *  search the present and all ancestral generations (\c ancGen=-1),
-	 *  but you can suggest a specific generation if you know which
-	 *  generation to search (\c ancGen=0 for present generation, \c ancGen=1
-	 *  for parental generation, and so on). This function will search this
-	 *  generation first but will search the whole population if an
-	 *  individual with \e id is not found. If no individual with \e id is
-	 *  found, an \c IndexError will be raised. A float \e id is acceptable
-	 *  as long as it rounds closely to an integer. Note that this function
-	 *  uses a dynamic searching algorithm which tends to be slow. If you need
-	 *  to look for multiple individuals from a static population, you might
-	 *  want to convert a population object to a pedigree object and use
-	 *  function <tt>Pedigree.indByID</tt>.
+	 *  search the present and all ancestral generations (\c ancGen=ALL_AVAIL),
+	 *  but you can limit the search in specific generations if you know which
+	 *  generations to search (<tt>ancGen=[0,1]</tt> for present and
+	 *  parental generations) or \c UNSPECIFIED to search only the current
+	 *  generation. If no individual with \e id is found, an \c IndexError will
+	 *  be raised. A float \e id is acceptable as long as it rounds closely to
+	 *  an integer. Note that this function uses a dynamic searching algorithm
+	 *  which tends to be slow. If you need to look for multiple individuals
+	 *  from a static population, you might want to convert a population
+	 *  object to a pedigree object and use function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
-	Individual & indByID(double id, int ancGen = -1, const string & idField = "ind_id");
+	Individual & indByID(double id, const uintList & ancGen = uintList(), const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
@@ -1072,14 +1070,14 @@ public:
 	 *  all male individuals from a subpopulation using a \c SexSplitter()).
 	 *  If a list of loci is specified, only genotypes at specified loci are
 	 *  extracted. If a list of \e infoFields is specified, only these
-	 *  information fields are extracted. If \e ancGen is not \c -1 (default,
-	 *  meaing all ancestral generations), only \e ancGen ancestral generations
+	 *  information fields are extracted. If \e ancGen is not \c ALL_AVAIL (default,
+	 *  meaing all ancestral generations), only specified ancestral generations
 	 *  will be extracted.
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
 	Population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
-		const subPopList & subPops = subPopList(), int ancGen = -1) const;
+		const subPopList & subPops = subPopList(), const uintList & ancGen = uintList()) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
