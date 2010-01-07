@@ -39,7 +39,7 @@ namespace simuPOP {
 
 Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	const stringList & infoFields, const uintList & ancGens, const string & idField,
-	const string & fatherField, const string & motherField)
+	const string & fatherField, const string & motherField, bool stealPop)
 	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
 	m_idIdx(-1), m_fatherIdx(-1), m_motherIdx(-1)
 {
@@ -52,9 +52,27 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	if (!m_motherField.empty() && find(extractFields.begin(), extractFields.end(), motherField) == extractFields.end())
 		extractFields.push_back(motherField);
 	//
-	Population & ped = pop.extract(loci, extractFields, subPopList(), ancGens);
-
-	swap(ped);
+	if (stealPop) {
+		// swap and leaving an empty population
+		swap(const_cast<Population &>(pop));
+		// Remove information fields.
+		vectorstr removedFields;
+		for (size_t i = 0; i < infoSize(); ++i)
+			if (find(extractFields.begin(), extractFields.end(), infoField(i)) == extractFields.end())
+				removedFields.push_back(infoField(i));
+		if (!removedFields.empty())
+			removeInfoFields(removedFields);
+		// Remove loci
+		if (!loci.allAvail())
+			removeLoci(vectoru(false), loci.elems());
+		// remove individuals???
+		if (!ancGens.allAvail())
+			keepAncestralGens(ancGens);
+	} else {
+		// leaving population intact
+		Population & ped = pop.extract(loci, extractFields, subPopList(), ancGens);
+		swap(ped);
+	}
 
 	DBG_FAILIF(m_idField.empty() || !pop.hasInfoField(m_idField), ValueError,
 		"A valid ID information field is needed to create a pedigree object.");
@@ -67,7 +85,7 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	m_fatherIdx = m_fatherField.empty() ? -1 : static_cast<int>(infoIdx(fatherField));
 	m_motherIdx = m_motherField.empty() ? -1 : static_cast<int>(infoIdx(motherField));
 
-    buildIDMap();
+	buildIDMap();
 }
 
 
@@ -82,7 +100,7 @@ Pedigree::Pedigree(const Pedigree & rhs) :
 void Pedigree::buildIDMap()
 {
 	// build an ID map
-    m_idMap.clear();
+	m_idMap.clear();
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
@@ -820,61 +838,71 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 
 
 void Pedigree::removeIndividuals(const uintList & indexes,
-    const floatList & IDs, const string & idField, PyObject * filter)
+                                 const floatList & IDs, const string & idField, PyObject * filter)
 {
-    Population::removeIndividuals(indexes, IDs, idField, filter);
-    buildIDMap();
+	Population::removeIndividuals(indexes, IDs, idField, filter);
+	buildIDMap();
 }
+
 
 void Pedigree::removeSubPops(const subPopList & subPops)
 {
-    Population::removeSubPops(subPops);
-    buildIDMap();
+	Population::removeSubPops(subPops);
+	buildIDMap();
 }
+
 
 void Pedigree::push(Population & pop)
 {
-    Population::push(pop);
-    buildIDMap();
+	Population::push(pop);
+	buildIDMap();
 }
 
+
 void Pedigree::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
-    const string & chromName, const stringMatrix & alleleNames,
-    UINT chromType)
+                        const string & chromName, const stringMatrix & alleleNames,
+                        UINT chromType)
 {
-    Population::addChrom(lociPos, lociNames, chromName, alleleNames, chromType);
-    buildIDMap();
+	Population::addChrom(lociPos, lociNames, chromName, alleleNames, chromType);
+	buildIDMap();
 }
+
 
 void Pedigree::addChromFrom(const Population & pop)
 {
-    Population::addChromFrom(pop);
-    buildIDMap();
+	Population::addChromFrom(pop);
+	buildIDMap();
 }
+
 
 void Pedigree::addIndFrom(const Population & pop)
 {
-    Population::addIndFrom(pop);
-    buildIDMap();
+	Population::addIndFrom(pop);
+	buildIDMap();
 }
+
 
 UINT Pedigree::mergeSubPops(const uintList & subPops, const string & name)
 {
-    UINT res = Population::mergeSubPops(subPops, name);
-    buildIDMap();
-    return res;
+	UINT res = Population::mergeSubPops(subPops, name);
+
+	buildIDMap();
+	return res;
 }
+
 
 void Pedigree::resize(const uintList & sizes, bool propagate)
 {
-    Population::resize(sizes, propagate);
-    buildIDMap();
+	Population::resize(sizes, propagate);
+	buildIDMap();
 }
+
 
 void Pedigree::setSubPopByIndInfo(const string & field)
 {
-    Population::setSubPopByIndInfo(field);
-    buildIDMap();
+	Population::setSubPopByIndInfo(field);
+	buildIDMap();
 }
+
 
 }

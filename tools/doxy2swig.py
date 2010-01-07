@@ -447,6 +447,7 @@ class Doxy2SWIG:
              txt = '='.join(txt.split('=')[:-1])
         self.content[-1]['cppArgs'] = txt
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
+        txt = re.sub(r'uintList(false)', r'UNSPECIFIED', txt)
         txt = re.sub(r'stringList\((["\w]+),\s*(["\w]+)\)', r'[\1@ \2]', txt)
         txt = re.sub(r'vectorstr\(1, ([^)]+)\)', r'[\1]', txt)
         txt = re.sub(r'(.*)vector(str|u|i)\(1,\s*([\w"\d]+)\)(.*)', r'\1\3\4', txt)

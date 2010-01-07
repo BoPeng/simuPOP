@@ -401,10 +401,16 @@ private:
 	};
 
 public:
-	uintList(PyObject * obj = NULL);
+	uintList(PyObject * obj);
 
 	/// CPPONLY
 	uintList(const vectoru & values) : m_elems(values), m_status(REGULAR)
+	{
+	}
+
+
+	/// CPPONLY
+	uintList(bool status = true) : m_elems(), m_status(status ? ALL_AVAIL : UNSPECIFIED)
 	{
 	}
 

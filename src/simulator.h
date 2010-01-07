@@ -114,10 +114,10 @@ public:
 	 *  single population object is also acceptable. Contents of passed
 	 *  populations are by default moved to the simulator to avoid duplication
 	 *  of potentially large population objects, leaving empty populations
-	 *  behind. This behavior can be changed by setting \e steal to \c False,
+	 *  behind. This behavior can be changed by setting \e stealPops to \c False,
 	 *  in which case populations are copied to the simulator.
 	 */
-	Simulator(PyObject * pops, UINT rep = 1, bool steal = true);
+	Simulator(PyObject * pops, UINT rep = 1, bool stealPops = true);
 
 	// destroy a simulator along with all its populations
 	~Simulator();
@@ -158,7 +158,7 @@ public:
 	 *  unchanged.
 	 *  <group>4-modify</group>
 	 */
-	void add(const Population & pop, bool steal = true);
+	void add(const Population & pop, bool stealPop = true);
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.

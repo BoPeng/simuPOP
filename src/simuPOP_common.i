@@ -375,6 +375,7 @@ def allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
 
 Population.allIndividuals = allIndividuals
 
+
 def _new_Migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate

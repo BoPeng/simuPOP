@@ -268,8 +268,9 @@ public:
 	 */
 	Population * clone() const;
 
-	/** HIDDEN (do not see a need to expose this function yet.)
-	 *  swap the content of two populations
+	/** Swap the content of two population objects, which can be handy in some
+	 *  particular circumstances. For example, you could swap out a population
+	 *  in a simulator.
 	 *  <group>1-pop</group>
 	 */
 	void swap(Population & rhs)
@@ -1099,7 +1100,7 @@ public:
 	 *  specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const uintList & loci = vectoru(), const uintList & keep = vectoru());
+	void removeLoci(const uintList & loci = uintList(false), const uintList & keep = uintList(false));
 
 	/** Recode alleles at \e loci (default to all loci in a population) to
 	 *  other values according to parameter \e alleles. This parameter can
@@ -1301,6 +1302,9 @@ public:
 	 *  <group>6-ancestral</group>
 	 */
 	void setAncestralDepth(int depth);
+
+	/// CPPONLY remove certain ancestral generations
+	void keepAncestralGens(const uintList & ancGens);
 
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the
