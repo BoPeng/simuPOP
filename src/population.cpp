@@ -850,7 +850,7 @@ void Population::removeSubPops(const subPopList & subPops)
 				// will be kept
 				if (!oldInd->marked()) {
 					++newSize;
-					if (oldPtr != newPtr) {
+					if (oldInd != newInd) {
 						*newInd = *oldInd;
 						copy(oldPtr, oldPtr + step, newPtr);
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
@@ -923,7 +923,7 @@ void Population::removeMarkedIndividuals()
 			// will be kept
 			if (!oldInd->marked()) {
 				++newSize;
-				if (oldPtr != newPtr) {
+				if (oldInd != newInd) {
 					*newInd = *oldInd;
 					copy(oldPtr, oldPtr + step, newPtr);
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
@@ -963,7 +963,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	if (IDs.empty() && indexes.empty() && filter == NULL)
 		return;
 
-	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 1, ValueError,
+	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 2, ValueError,
 		"Please specify only one of parameters indexes, IDs and filter");
 
 	if (!indexes.empty()) {
@@ -1681,7 +1681,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		return pop;
 	}
 
-	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 1, ValueError,
+	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 2, ValueError,
 		"Please specify only one of parameters indexes, IDs and filter");
 
 	if (!indexes.empty()) {

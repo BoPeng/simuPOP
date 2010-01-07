@@ -623,6 +623,21 @@ class TestPopulation(unittest.TestCase):
             for ind in pop1.individuals():
                 self.assertEqual(ind, pop.indByID(ind.ind_id), gen)
         self.assertEqual(sum(sz), sum(sz1) + len(exclude))
+        # remove multiple individual
+        pop = Population(10, infoFields='x')
+        pop.setIndInfo([1, 2, 2, 3, 4, 5, 2, 3, 4, 3], 'x')
+        pop.removeIndividuals(IDs=2, idField='x')
+        self.assertEqual(pop.popSize(), 7)
+        self.assertEqual(pop.indInfo('x'), (1, 3, 4, 5, 3, 4, 3))
+        pop.removeIndividuals(IDs=[2,3,4], idField='x')
+        self.assertEqual(pop.popSize(), 2)
+        self.assertEqual(pop.indInfo('x'), (1, 5))
+        # by filter function
+        pop = Population(10, infoFields='x')
+        pop.setIndInfo([1, 2, 2, 3, 4, 5, 2, 3, 4, 3], 'x')
+        pop.removeIndividuals(filter=lambda ind: ind.x in [3, 4])
+        self.assertEqual(pop.popSize(), 5)
+        self.assertEqual(pop.indInfo('x'), (1, 2, 2, 5, 2))
 
     def testExtractSubPops(self):
         'Testing Population::extractSubPops()'
@@ -665,6 +680,30 @@ class TestPopulation(unittest.TestCase):
         pop1 = pop.extractSubPops([(0,1), 1])
         self.assertEqual(pop1.numSubPop(), 2)
         self.assertEqual(pop1.subPopSizes(), (0, 20))
+        # remove multiple individual
+        pop = Population(10, infoFields='x')
+        pop.setIndInfo([1, 2, 2, 3, 4, 5, 2, 3, 4, 3], 'x')
+        pop1 = pop.extractIndividuals(IDs=2, idField='x')
+        self.assertEqual(pop1.popSize(), 3)
+        self.assertEqual(pop1.indInfo('x'), (2, 2, 2))
+        pop1 = pop.extractIndividuals(IDs=[2,3,4], idField='x')
+        self.assertEqual(pop1.popSize(), 8)
+        self.assertEqual(pop1.indInfo('x'), (2, 2, 3, 4, 2, 3, 4, 3))
+        # by filter function
+        pop = Population(10, infoFields='x')
+        pop.setIndInfo([1, 2, 2, 3, 4, 5, 2, 3, 4, 3], 'x')
+        pop1 = pop.extractIndividuals(filter=lambda ind: ind.x in [3, 4])
+        self.assertEqual(pop1.popSize(), 5)
+        self.assertEqual(pop1.indInfo('x'), (3, 4, 3, 4, 4))
+
+    def testExtractSubPops(self):
+        'Testing Population::extractSubPops()'
+        pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50], subPopNames=['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+        initSex(pop)
+        initGenotype(pop, freq=[0.5, 0.5])
+        self.assertEqual(pop.numSubPop(), 7)
+        pop1 = pop.extractSubPops([x for x in range(7) if pop.subPopSize(x) != 0])
+        self.assertEqual(pop1.numSubPop(), 4)
     
     def testRearrangedExtractSubPops(self):
         'Testing Population::extractSubPops(subPops, true)'
