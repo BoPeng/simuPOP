@@ -1705,13 +1705,21 @@ def idString(IDs):
 
 print '''GrandParents: %d, %d
 Children: %s
-Children's spouses: %s
-Children's parents: %s
+Spouses of children: %s
+Parents of children: %s
 GrandChildren: %s
-GrandChildren's parents: %s ''' % \
+Parents of grandChildren: %s ''' % \
 (grandFather, grandMother, idString(children), idString(childrenSpouse),
     idString(childrenParents), idString(grandChildren), idString(grandChildrenParents))
 
+# let us look at the structure of this complete pedigree using another method
+famSz = ped.identifyFamilies()
+# it is amazing that there is a huge family that connects almost everyone
+len(famSz), max(famSz)
+# if we only look at the last two generations, things are much better
+ped.addInfoFields('ped_id')
+famSz = ped.identifyFamilies(pedField='ped_id', ancGens=[0,1])
+len(famSz), max(famSz)
 #end_file
 
 
@@ -4455,6 +4463,15 @@ from simuPOP.sampling import drawNuclearFamilySample, plotPedigree
 pop = sim.loadPopulation('log/Pedigree.pop')
 sample = drawNuclearFamilySample(pop, families=2, numOffspring=(2,4),
     affectedParents=(1,2), affectedOffspring=(1, 3))
+# try to separate two families?
+sample = sim.Pedigree(sample, loci=sim.ALL_AVAIL, infoFields=sim.ALL_AVAIL)
+sample.addInfoFields('ped_id')
+# return size of families
+sz = sample.identifyFamilies(pedField='ped_id')
+print sz
+ped1 = sample.extractIndividuals(IDs=0, idField='ped_id')
+# print the ID of all individuals in the first pedigree
+print [ind.ind_id for ind in ped1.allIndividuals()]
 plotPedigree(sample, filename='log/nuclerFamily.png')
 #end_file
 

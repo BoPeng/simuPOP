@@ -359,7 +359,7 @@ Details:
 
 Usage:
 
-    BasePenetrance(ancGens=ALL_AVAIL, begin=0, end=-1, step=1,
+    BasePenetrance(ancGens=UNSPECIFIED, begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -448,8 +448,8 @@ Details:
 
 Usage:
 
-    BaseQuanTrait(ancGens=ALL_AVAIL, begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    BaseQuanTrait(ancGens=UNSPECIFIED, begin=0, end=-1, step=1,
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -1136,7 +1136,7 @@ Details:
 
 Usage:
 
-    Dumper(genotype=True, structure=True, ancGens=ALL_AVAIL,
+    Dumper(genotype=True, structure=True, ancGens=UNSPECIFIED,
       width=1, max=100, loci=[], output=\">\", begin=0, end=-1, step=1,
       at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
@@ -3127,7 +3127,7 @@ Details:
 
 Usage:
 
-    MaPenetrance(loci, penetrance, wildtype=0, ancGens=ALL_AVAIL,
+    MaPenetrance(loci, penetrance, wildtype=0, ancGens=UNSPECIFIED,
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
@@ -3178,7 +3178,7 @@ Details:
 
 Usage:
 
-    MapPenetrance(loci, penetrance, ancGens=ALL_AVAIL, begin=0,
+    MapPenetrance(loci, penetrance, ancGens=UNSPECIFIED, begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=[])
 
@@ -3711,7 +3711,7 @@ Details:
 
 Usage:
 
-    MlPenetrance(ops, mode=MULTIPLICATIVE, ancGens=ALL_AVAIL,
+    MlPenetrance(ops, mode=MULTIPLICATIVE, ancGens=UNSPECIFIED,
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
@@ -4143,9 +4143,11 @@ Details:
     object from a population object. Compared to the Population class,
     a Pedigree object is optimized for access individuals by their
     IDs, regardless of population structure and ancestral generations.
-    Note that although the pedigree class is derived from the
-    population class, functions such as removeSubPops that alter
-    population structure are disabled.
+    Note that the implementation of some algorithms rely on the fact
+    that parental IDs are smaller than their offspring because
+    individual IDs are assigned sequentially during evolution.
+    Pedigrees with manually assigned IDs should try to obey such a
+    rule.
 
 "; 
 
@@ -5315,7 +5317,7 @@ Details:
 
 Usage:
 
-    x.removeLoci(loci=ALL_AVAIL, keep=ALL_AVAIL)
+    x.removeLoci(loci=UNSPECIFIED, keep=UNSPECIFIED)
 
 Details:
 
@@ -6154,8 +6156,9 @@ Details:
 
 Usage:
 
-    PyPenetrance(func, loci=[], ancGens=ALL_AVAIL, begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    PyPenetrance(func, loci=[], ancGens=UNSPECIFIED, begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[])
 
 Details:
 
@@ -9050,17 +9053,16 @@ Usage:
 
 Description:
 
-    Evolve the current population \\e gen generations using mating
-    scheme \\e matingScheme and operators \\e initOps (applied before
-    evolution), \\e preOps (applied to the parental population at the
-    beginning of each life cycle), \\e postOps (applied to the
-    offspring population at the end of each life cycle) and \\e
-    finalOps (applied at the end of evolution). More specifically,
-    this function creates a \\e Simulator using the current Population,
-    call its \\e evolve function using passed parameters and then
-    replace the current population with the evolved population. Please
-    refer to function \\c Simulator.evolve for more details about each
-    parameter.
+    Evolve the current population gen generations using mating scheme
+    matingScheme and operators initOps (applied before evolution),
+    preOps (applied to the parental population at the beginning of
+    each life cycle), postOps (applied to the offspring population at
+    the end of each life cycle) and finalOps (applied at the end of
+    evolution). More specifically, this function creates a Simulator
+    using the current population, call its evolve function using
+    passed parameters and then replace the current population with the
+    evolved population. Please refer to function Simulator.evolve for
+    more details about each parameter.
 
 Usage:
 
@@ -9075,8 +9077,8 @@ Description:
 
     Return an iterator that iterat through all (virtual)
     subpopulations in all ancestral generations. A list of (virtual)
-    subpopulations (\\e subPops) and a list of ancestral generations
-    (\\e ancGens, can be a single number) could be specified to iterate
+    subpopulations (subPops) and a list of ancestral generations
+    (ancGens, can be a single number) could be specified to iterate
     through only selected subpopulation and generations.
 
 Usage:
@@ -9145,17 +9147,16 @@ Usage:
 
 Details:
 
-    Evolve the current population \\e gen generations using mating
-    scheme \\e matingScheme and operators \\e initOps (applied before
-    evolution), \\e preOps (applied to the parental population at the
-    beginning of each life cycle), \\e postOps (applied to the
-    offspring population at the end of each life cycle) and \\e
-    finalOps (applied at the end of evolution). More specifically,
-    this function creates a \\e Simulator using the current Population,
-    call its \\e evolve function using passed parameters and then
-    replace the current population with the evolved population. Please
-    refer to function \\c Simulator.evolve for more details about each
-    parameter.
+    Evolve the current population gen generations using mating scheme
+    matingScheme and operators initOps (applied before evolution),
+    preOps (applied to the parental population at the beginning of
+    each life cycle), postOps (applied to the offspring population at
+    the end of each life cycle) and finalOps (applied at the end of
+    evolution). More specifically, this function creates a Simulator
+    using the current population, call its evolve function using
+    passed parameters and then replace the current population with the
+    evolved population. Please refer to function Simulator.evolve for
+    more details about each parameter.
 
 "; 
 
@@ -9168,17 +9169,16 @@ Usage:
 
 Details:
 
-    Evolve the current population \\e gen generations using mating
-    scheme \\e matingScheme and operators \\e initOps (applied before
-    evolution), \\e preOps (applied to the parental population at the
-    beginning of each life cycle), \\e postOps (applied to the
-    offspring population at the end of each life cycle) and \\e
-    finalOps (applied at the end of evolution). More specifically,
-    this function creates a \\e Simulator using the current Population,
-    call its \\e evolve function using passed parameters and then
-    replace the current population with the evolved population. Please
-    refer to function \\c Simulator.evolve for more details about each
-    parameter.
+    Evolve the current population gen generations using mating scheme
+    matingScheme and operators initOps (applied before evolution),
+    preOps (applied to the parental population at the beginning of
+    each life cycle), postOps (applied to the offspring population at
+    the end of each life cycle) and finalOps (applied at the end of
+    evolution). More specifically, this function creates a Simulator
+    using the current population, call its evolve function using
+    passed parameters and then replace the current population with the
+    evolved population. Please refer to function Simulator.evolve for
+    more details about each parameter.
 
 "; 
 

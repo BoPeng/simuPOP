@@ -8605,7 +8605,15 @@ Population.extractIndividuals()
 simuPOP.sampling
 \family default
  module works.
- 
+ In addition, function 
+\family typewriter
+Pedigree.identifyFamilies
+\family default
+ groups all related individuals into families and assign a family ID to
+ all family members.
+ You might be surprised in how large this kind of family can be when parents
+ are allowed to have multiple spouses.
+  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/locateRelative.log"

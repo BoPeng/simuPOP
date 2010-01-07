@@ -323,15 +323,16 @@ UNSPECIFIED = False
 
 def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     finalOps=[], gen=-1, dryrun=False):
-    '''Evolve the current population \e gen generations using mating scheme
-    \e matingScheme and operators \e initOps (applied before evolution),
-    \e preOps (applied to the parental population at the beginning of each
-    life cycle), \e postOps (applied to the offspring population at the end of
-    each life cycle) and \e finalOps (applied at the end of evolution). More
-    specifically, this function creates a \e Simulator using the current
-    Population, call its \e evolve function using passed parameters and then
-    replace the current population with the evolved population. Please refer to
-    function \c Simulator.evolve for more details about each parameter.'''
+    '''Evolve the current population <em>gen</em> generations using mating
+    scheme <em>matingScheme</em> and operators <em>initOps</em> (applied before
+    evolution), <em>preOps</em> (applied to the parental population at the
+    beginning of each life cycle), <em>postOps</em> (applied to the offspring
+    population at the end of each life cycle) and <em>finalOps</em> (applied at
+    the end of evolution). More specifically, this function creates a
+    <em>Simulator</em> using the current population, call its <em>evolve</em>
+    function using passed parameters and then replace the current population
+    with the evolved population. Please refer to function 
+    <tt>Simulator.evolve</tt> for more details about each parameter.'''
     if dryrun:
         print describeEvolProcess(initOps, preOPs, matingScheme, postOps, finalOps, gen, 1)
         return (0,)
@@ -350,9 +351,9 @@ Population.evolve = evolve_pop
 def allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations
     in all ancestral generations. A list of (virtual) subpopulations
-    (\e subPops) and a list of ancestral generations (\e ancGens, can be a
-    single number) could be specified to iterate through only selected 
-    subpopulation and generations.
+    (<em>subPops</em>) and a list of ancestral generations (<em>ancGens</em>,
+    can be a single number) could be specified to iterate through only
+    selected subpopulation and generations.
     '''
     if ancGens is ALL_AVAIL:
         gens = range(self.ancestralGens() + 1)

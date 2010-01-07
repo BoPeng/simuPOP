@@ -251,16 +251,20 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
 
+	UINT idIdx = pop.infoIdx(m_idField);
 	// record to one or two information fields
 	size_t is = infoSize();
 	if (is == 1) {
+		UINT idx = pop.infoIdx(infoField(0));
 		if (dad != NULL)
-			offspring->setInfo(dad->info(m_idField), infoField(0));
+			offspring->setInfo(dad->info(idIdx), idx);
 		else if (mom != NULL)
-			offspring->setInfo(mom->info(m_idField), infoField(0));
+			offspring->setInfo(mom->info(idIdx), idx);
 	} else if (is == 2) {
-		offspring->setInfo(dad == NULL ? -1 : dad->info(m_idField), infoField(0));
-		offspring->setInfo(mom == NULL ? -1 : mom->info(m_idField), infoField(1));
+		UINT idx = pop.infoIdx(infoField(0));
+		UINT idx1 = pop.infoIdx(infoField(1));
+		offspring->setInfo(dad == NULL ? -1 : dad->info(idIdx), idx);
+		offspring->setInfo(mom == NULL ? -1 : mom->info(idIdx), idx1);
 	}
 
 	if (noOutput())
