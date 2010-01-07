@@ -123,13 +123,13 @@ public:
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting
-	 *  parameter \e ancGen to the greatest ancestral generation you would like
+	 *  parameter \e ancGens to certain ancestral generations you would like
 	 *  to process.
 	 *  <group>4-locate</group>
 	 */
 	void locateRelatives(RelativeType relType, const vectorstr & resultFields = vectorstr(),
 		SexChoice sex = ANY_SEX, AffectionStatus affectionStatus = ANY_AFFECTION_STATUS,
-		int ancGen = -1);
+		const uintList & ancGens = uintList());
 
 	/** Trace a relative path in a population and record the result in the
 	 *  given information fields \e resultFields. This function is used to
@@ -159,14 +159,16 @@ public:
 	 *  and \c off2 from these siblings are located and are used to locate
 	 *  their female offspring. The results are father or mother's brother's
 	 *  daughters. Their indexes will be saved in each individuals information
-	 *  fields \e resultFields. If a non-negative \e ancGen is given, only
-	 *  individuals in these ancestral generations will be processed.
+	 *  fields \e resultFields. If a list of ancestral generations is given in
+	 *  parameter \e ancGens is given, only individuals in these ancestral
+	 *  generations will be processed.
 	 *  <group>4-locate</group>
 	 */
 	bool traceRelatives(const stringMatrix & fieldPath,
 		const uintList & sex = vectoru(),
 		const uintList & affectionStatus = vectoru(),
-		const stringList & resultFields = vectorstr(), int ancGen = -1);
+		const stringList & resultFields = vectorstr(),
+		const uintList & ancGens = uintList());
 
 	/** Return a list of IDs of individuals who have non-negative values at
 	 *  information fields \e infoFields. Additional requirements could be
@@ -176,14 +178,27 @@ public:
 	 *  \c AFFECTED, \c UNAFFECTED or \c ANY_AFFECTION_STATUS (default). This
 	 *  function by default check all individuals in all ancestral generations,
 	 *  but you could limit the search using parameter \e subPops (a list of
-	 *  (virtual) subpopulations) and (recent ancestral generations) \e ancGen.
+	 *  (virtual) subpopulations) and ancestral generations \e ancGens.
 	 *  Relatives fall out of specified subpopulations and ancestral generaions
 	 *  will be considered invalid.
 	 *  <group>4-locate</group>
 	 */
 	vectoru individualsWithRelatives(const stringList & infoFields, const uintList & sex = vectoru(),
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
-		int ancGen = -1);
+		const uintList & ancGens = uintList());
+
+	/** This function goes through all individuals in a pedigree and group
+	 *  related individuals into families. If an information field \e pedField
+	 *  is given, indexes of families will be assigned to this field of each
+	 *  family member. The return value is a list of family sizes corresponding
+	 *  to families 0, 1, 2, ... etc. If a list of (virtual) subpopulations
+	 *  (parameter \e subPops) or ancestral generations are specified
+	 *  (parameter \e ancGens), the search will be limited to individuals in
+	 *  these subpopulations and generations.
+	 *  <group>4-locate</group>
+	 */
+	vectoru identifyFamilies(const string & pedField = string(), const subPopList & subPops = subPopList(),
+		const uintList & ancGens = uintList());
 
 	/** HIDDEN This function has the potential to change individuals in a
 	 *  population so the ID map needs to be rebuilt.
@@ -245,17 +260,23 @@ private:
 	// they are called only once. The reason this is separated is because
 	// they are too long when putting in one function.
 
-	void locateSelf(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
+	void locateSelf(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens);
 
-	void locateSpouse(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen, bool excludeOutbred);
+	void locateSpouse(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens, bool excludeOutbred);
 
-	void locateSibling(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
+	void locateSibling(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens);
 
-	void locateFullSibling(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
+	void locateFullSibling(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens);
 
-	void locateOffspring(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
+	void locateOffspring(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens);
 
-	void locateCommonOffspring(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
+	void locateCommonOffspring(SexChoice relSex, AffectionStatus relAffection,
+		const vectorstr & relFields, const vectoru & ancGens);
 
 private:
 	const string m_idField;

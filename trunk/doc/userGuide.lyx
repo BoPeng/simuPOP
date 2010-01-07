@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2607,6 +2607,10 @@ loci
 \family typewriter
 reps
 \family default
+, 
+\family typewriter
+ancGen
+\family default
  and 
 \family typewriter
 subPops
@@ -2625,8 +2629,9 @@ reps
 \family typewriter
 subPops
 \family default
- are widely used in simuPOP to specify which loci, replicates or (virtual)
- subpulations a function or operator is applied to.
+ are widely used in simuPOP to specify which loci, replicates, ancestral
+ generations, or (virtual) subpulations a function or operator is applied
+ to.
  These parameter accepts a list of values such as 
 \family typewriter
 [1, 2]
@@ -2686,6 +2691,12 @@ Recombinator(loci=ALL_AVAIL)
 \family default
  will recombine at all applicable loci, which will vary from population
  to population.
+ Value 
+\family typewriter
+UNSPECIFIED
+\family default
+ is sometimes used as default parameter of these parameters, indicating
+ that no value has been specified.
 \end_layout
 
 \begin_layout Subsection
@@ -17447,11 +17458,11 @@ subPops=[(0, 0)]
  This operator by default only dump the present generation but you can set
  
 \family typewriter
-ancGen
+ancGens
 \family default
- to a positive number or 
+ to a list of generation numbers or 
 \family typewriter
--1
+ALL_AVAIL
 \family default
  to dump part or all ancestral generations.
  Finally, if there are more than 10 alleles, you can set the 

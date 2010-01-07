@@ -130,6 +130,7 @@ bool Dumper::apply(Population & pop) const
 	if (m_showStructure)
 		displayStructure(pop, out);
 
+	UINT oldGen = pop.curAncestralGen();
 	if (m_showGenotype) {
 		subPopList subPops = applicableSubPops();
 		if (subPops.allAvail())
@@ -140,17 +141,20 @@ bool Dumper::apply(Population & pop) const
 		if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
 			out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
 
-		int ancGen = m_ancGen;
-		// ancGen can be -1
-		if (ancGen < 0 || ancGen > static_cast<int>(pop.ancestralGens()))
-			ancGen = pop.ancestralGens();
-		for (int gen = 1; gen <= ancGen; ++gen) {
-			pop.useAncestralGen(gen);
+		vectoru gens = m_ancGens.elems();
+		if (m_ancGens.allAvail())
+			for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+				gens.push_back(gen);
+		else if (m_ancGens.unspecified())
+			gens.push_back(pop.curAncestralGen());
+
+		for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
+			pop.useAncestralGen(gens[genIdx]);
 			subPopList subPops = applicableSubPops();
 			if (subPops.allAvail())
 				subPops.useSubPopsFrom(pop);
 
-			out << endl << "Ancestry population " << gen << endl;
+			out << endl << "Ancestry population " << gens[genIdx] << endl;
 			UINT cnt = displayGenotype(pop, subPops, out);
 			if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
 				out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
@@ -158,7 +162,7 @@ bool Dumper::apply(Population & pop) const
 			out << endl;
 		}                                                                         // next ancestry
 		// IMPORTANT. Reset ancestral pop
-		pop.useAncestralGen(0);
+		pop.useAncestralGen(oldGen);
 	}
 	this->closeOstream();
 	return true;
