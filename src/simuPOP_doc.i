@@ -4152,7 +4152,7 @@ Details:
 
 Usage:
 
-    Pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+    Pedigree(pop, loci=[], infoFields=[], ancGens=ALL_AVAIL,
       idField=\"ind_id\", fatherField=\"father_id\",
       motherField=\"mother_id\")
 
@@ -4162,7 +4162,7 @@ Details:
     (parameter loci, default to no locus), information fields
     (parameter infoFields, default to no information field besides
     idField, fatherField and motherField), and ancestral generations
-    (parameter ancGen, default to all ancestral generations). By
+    (parameter ancGens, default to all ancestral generations). By
     default, information field father_id (parameter fatherField) and
     mother_id (parameter motherField) are used to locate parents
     identified by ind_id (parameter idField), which should store an
@@ -4868,24 +4868,22 @@ Details:
 
 Usage:
 
-    x.indByID(id, ancGen=-1, idField=\"ind_id\")
+    x.indByID(id, ancGens=ALL_AVAIL, idField=\"ind_id\")
 
 Details:
 
     Return a reference to individual with id stored in information
     field idField (default to ind_id). This function by default search
-    the present and all ancestral generations (ancGen=-1), but you can
-    suggest a specific generation if you know which generation to
-    search (ancGen=0 for present generation, ancGen=1 for parental
-    generation, and so on). This function will search this generation
-    first but will search the whole population if an individual with
-    id is not found. If no individual with id is found, an IndexError
-    will be raised. A float id is acceptable as long as it rounds
-    closely to an integer. Note that this function uses a dynamic
-    searching algorithm which tends to be slow. If you need to look
-    for multiple individuals from a static population, you might want
-    to convert a population object to a pedigree object and use
-    function Pedigree.indByID.
+    the present and all ancestral generations (ancGen=ALL_AVAIL), but
+    you can limit the search in specific generations if you know which
+    generations to search (ancGens=[0,1] for present and parental
+    generations) or UNSPECIFIED to search only the current generation.
+    If no individual with id is found, an IndexError will be raised. A
+    float id is acceptable as long as it rounds closely to an integer.
+    Note that this function uses a dynamic searching algorithm which
+    tends to be slow. If you need to look for multiple individuals
+    from a static population, you might want to convert a population
+    object to a pedigree object and use function Pedigree.indByID.
 
 "; 
 
@@ -4920,7 +4918,10 @@ Details:
 
     Return an iterator that can be used to iterate through all
     individuals in a population (if subPop=[], default), or a
-    (virtual) subpopulation (subPop=spID or (spID, vspID)).
+    (virtual) subpopulation (subPop=spID or (spID, vspID)). If you
+    would like to iterate through multiple subpopulations in multiple
+    ancestral generations, please use function
+    Population.allIndividuals().
 
 "; 
 
@@ -5241,7 +5242,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::extract(const uintList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), int ancGen=-1) const;
+%ignore simuPOP::Population::extract(const uintList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), const uintList &ancGens=uintList()) const;
 
 %feature("docstring") simuPOP::Population::removeLoci "
 
@@ -5299,7 +5300,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::curAncestralGen() const;
+%feature("docstring") simuPOP::Population::curAncestralGen "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Population::ancestralGens "
 
@@ -5397,15 +5398,16 @@ Details:
 
 Usage:
 
-    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
+    x.updateInfoFieldsFrom(fields, pop, fromFields=[],
+      ancGens=ALL_AVAIL)
 
 Details:
 
     Update information fields fields from fromFields of another
     population (or Pedigree) pop. Two populations should have the same
     number of individuals. If fromFields is not specified, it is
-    assumed to be the same as fields. If ancGen is not -1, only the
-    most recent ancGen generations are updated.
+    assumed to be the same as fields. If ancGens is not ALL_AVAIL,
+    only the specified ancestral generations are updated.
 
 "; 
 
@@ -8613,6 +8615,14 @@ Usage:
 
 %ignore simuPOP::uintList::allAvail() const;
 
+%feature("docstring") simuPOP::uintList::unspecified "
+
+Usage:
+
+    x.unspecified()
+
+"; 
+
 %ignore simuPOP::uintList::elems() const;
 
 %feature("docstring") simuPOP::uintListFunc "
@@ -9001,6 +9011,22 @@ Usage:
 
 "; 
 
+%feature("docstring") allIndividuals "
+
+Description:
+
+    Return an iterator that iterat through all (virtual)
+    subpopulations in all ancestral generations. A list of (virtual)
+    subpopulations (\\e subPops) and a list of ancestral generations
+    (\\e ancGens, can be a single number) could be specified to iterate
+    through only selected subpopulation and generations.
+
+Usage:
+
+    allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+"; 
+
 %feature("docstring") _new_Migrator "
 
 Usage:
@@ -9057,6 +9083,29 @@ Details:
 Usage:
 
     x.evolve(initOps=[], preOps=[], matingScheme=None,
+      postOps=[],finalOps=[], gen=-1, dryrun=False)
+
+Details:
+
+    Evolve the current population \\e gen generations using mating
+    scheme \\e matingScheme and operators \\e initOps (applied before
+    evolution), \\e preOps (applied to the parental population at the
+    beginning of each life cycle), \\e postOps (applied to the
+    offspring population at the end of each life cycle) and \\e
+    finalOps (applied at the end of evolution). More specifically,
+    this function creates a \\e Simulator using the current Population,
+    call its \\e evolve function using passed parameters and then
+    replace the current population with the evolved population. Please
+    refer to function \\c Simulator.evolve for more details about each
+    parameter.
+
+"; 
+
+%feature("docstring") simuPOP::population::allIndividuals "
+
+Usage:
+
+    x.evolve_pop(initOps=[], preOps=[], matingScheme=None,
       postOps=[],finalOps=[], gen=-1, dryrun=False)
 
 Details:
