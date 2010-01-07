@@ -183,6 +183,8 @@ public:
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
+    /** 
+     */
 private:
 	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
 
