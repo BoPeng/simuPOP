@@ -537,7 +537,7 @@ class Doxy2SWIG:
         all_individuals = [x for x in self.content if 'allIndividuals' in x['Name']][0]
         self.content.extend([
             {'Name': u'simuPOP::population::dvars',
-             'type': u'memberofclass_simuPOP::population',
+             'type': u'memberofclass_simuPOP::Population',
              'Description': '',
              'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
@@ -546,7 +546,7 @@ class Doxy2SWIG:
              'Usage': u'x.dvars(subPop=[])',
              },
             {'Name': u'simuPOP::simulator::dvars',
-             'type': u'memberofclass_simuPOP::simulator',
+             'type': u'memberofclass_simuPOP::Simulator',
              'Description': '',
              'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
@@ -555,13 +555,13 @@ class Doxy2SWIG:
              'Usage': u'x.dvars(rep, subPop=[])',
              },
             {'Name': u'simuPOP::population::evolve',
-             'type': u'memberofclass_simuPOP::population',
+             'type': u'memberofclass_simuPOP::Population',
              'Description': '',
              'Details': ur'<group>7-evolve</group>' + evolve_pop['Description'],
              'Usage': 'x.' + evolve_pop['Usage'].replace('evolve_pop', 'evolve').replace('self, ', ''),
             },
             {'Name': u'simuPOP::population::allIndividuals',
-             'type': u'memberofclass_simuPOP::population',
+             'type': u'memberofclass_simuPOP::Population',
              'Description': '',
              'Details': ur'<group>4-ind</group>' + evolve_pop['Description'],
              'Usage': 'x.' + evolve_pop['Usage'].replace('self, ', ''),

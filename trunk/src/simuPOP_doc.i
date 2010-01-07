@@ -5048,20 +5048,28 @@ Details:
 
 Usage:
 
-    x.removeIndividuals(indexes=[], IDs=[], idField=\"ind_id\")
+    x.removeIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
+      filter=None)
 
 Details:
 
-    remove individual(s) either by absolute indexes (parameter index)
-    or their IDs (parameter IDs). In the latter form, an unique ID for
-    all individual should be saved in an information field idField
-    (default to \"ind_id\"). If indexes are used, individuals can only
-    be removed from the current generation. If IDs are used,
-    individuals from all ancestral generations could be removed. An
-    IndexError will be raised if an index is out of bound, or if no
-    individual is found for a given ID. This function does not affect
-    subpopulation structure in the sense that a subpopulation will be
-    kept even if all individuals from it are removed.
+    remove individual(s) by absolute indexes (parameter index) or
+    their IDs (parameter IDs), or using a filter function (paramter
+    filter). If indexes are used, only individuals at the current
+    generation will be removed. If IDs are used, all individuals with
+    one of the IDs at information field idField (default to \"ind_id\")
+    will be removed. Although \"ind_id\" usually stores unique IDs of
+    individuals, this function is frequently used to remove groups of
+    individuals with the same value at an information field. An
+    IndexError will be raised if an index is out of bound, but no
+    error will be given if an invalid ID is specified. In the last
+    case, a user-defined function with parameter ind should be
+    provided. All individuals, including ancestors if there are
+    multiple ancestral generations, will be passed to this function.
+    Individuals that returns True will be removed. This function does
+    not affect subpopulation structure in the sense that a
+    subpopulation will be kept even if all individuals from it are
+    removed.
 
 "; 
 
@@ -5224,21 +5232,27 @@ Details:
 
 Usage:
 
-    x.extractIndividuals(indexes=[], IDs=[], idField=\"ind_id\")
+    x.extractIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
+      filter=None)
 
 Details:
 
     Extract individuals with given absolute indexes (parameter
-    indexes), or IDs (parameter IDs, stored in information field
-    idField, default to ind_id). If a list of absolute indexes are
-    specified, the present generation will be extracted and form a
-    one-generational population. If a list of IDs are specified, this
-    function will look through all ancestral generations and extract
-    individuals with given ID. Extracted individuals will be in their
-    original ancestral generations and subpopulations, even if some
-    subpopulations or generations are empty. An IndexError will be
-    raised if an index is out of bound or if an invalid ID is
-    encountered.
+    indexes), IDs (parameter IDs, stored in information field idField,
+    default to ind_id), or a filter function (parameter filter). If a
+    list of absolute indexes are specified, the present generation
+    will be extracted and form a one-generational population. If a
+    list of IDs are specified, this function will look through all
+    ancestral generations and extract individuals with given ID.
+    Individuals with shared IDs are allowed. In the last case, a
+    Python function with one parameter ind should be provided. All
+    individuals, including ancestors if there are multiple ancestral
+    generations, will be passed to this function. Individuals that
+    returns True will be extracted. Extracted individuals will be in
+    their original ancestral generations and subpopulations, even if
+    some subpopulations or generations are empty. An IndexError will
+    be raised if an index is out of bound but no error will be given
+    if an invalid ID is encountered.
 
 "; 
 

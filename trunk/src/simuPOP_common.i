@@ -321,29 +321,6 @@ import exceptions, types
 ALL_AVAIL = True
 UNSPECIFIED = False
 
-def unsupportedPedigreeOperation(*args, **kwargs):
-    'This function is not supported in the pedigree class'
-    raise exceptions.ValueError('Changing pedigree structure using this function is disallowed.')
-
-Pedigree.removeIndividuals = unsupportedPedigreeOperation
-Pedigree.removeSubPops = unsupportedPedigreeOperation
-Pedigree.extractIndividuals = unsupportedPedigreeOperation
-Pedigree.extractSubPops = unsupportedPedigreeOperation
-Pedigree.push = unsupportedPedigreeOperation
-Pedigree.setAncestralDepth = unsupportedPedigreeOperation
-Pedigree.addChrom = unsupportedPedigreeOperation
-Pedigree.addChromFrom = unsupportedPedigreeOperation
-Pedigree.addIndFrom = unsupportedPedigreeOperation
-Pedigree.addLoci = unsupportedPedigreeOperation
-Pedigree.addLociFrom = unsupportedPedigreeOperation
-Pedigree.mergeSubPops = unsupportedPedigreeOperation
-Pedigree.recodeAlleles = unsupportedPedigreeOperation
-Pedigree.removeLoci = unsupportedPedigreeOperation
-Pedigree.resize = unsupportedPedigreeOperation
-Pedigree.setSubPopByIndInfo = unsupportedPedigreeOperation
-Pedigree.splitSubPop = unsupportedPedigreeOperation
-
-
 def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     finalOps=[], gen=-1, dryrun=False):
     '''Evolve the current population \e gen generations using mating scheme
@@ -358,6 +335,8 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     if dryrun:
         print describeEvolProcess(initOps, preOPs, matingScheme, postOps, finalOps, gen, 1)
         return (0,)
+    if isinstance(self, Pedigree):
+        raise ValueError("Evolving a pedigree object directly is not allowed.")
     # create a simulator with self
     simu = Simulator(self)
     # evolve
