@@ -534,6 +534,7 @@ class Doxy2SWIG:
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
         evolve_pop = [x for x in self.content if 'evolve_pop' in x['Name']][0]
+        all_individuals = [x for x in self.content if 'allIndividuals' in x['Name']][0]
         self.content.extend([
             {'Name': u'simuPOP::population::dvars',
              'type': u'memberofclass_simuPOP::population',
@@ -558,6 +559,12 @@ class Doxy2SWIG:
              'Description': '',
              'Details': ur'<group>7-evolve</group>' + evolve_pop['Description'],
              'Usage': 'x.' + evolve_pop['Usage'].replace('evolve_pop', 'evolve').replace('self, ', ''),
+            },
+            {'Name': u'simuPOP::population::allIndividuals',
+             'type': u'memberofclass_simuPOP::population',
+             'Description': '',
+             'Details': ur'<group>4-ind</group>' + evolve_pop['Description'],
+             'Usage': 'x.' + evolve_pop['Usage'].replace('self, ', ''),
             },
         ])
         # change a few usages:
