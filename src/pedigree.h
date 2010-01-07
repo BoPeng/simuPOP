@@ -51,7 +51,7 @@ public:
 	 *  (parameter \e loci, default to no locus), information fields
 	 *  (parameter \e infoFields, default to no information field besides
 	 *  \e idField, \e fatherField and \e motherField), and ancestral
-	 *  generations (parameter \e ancGen, default to all ancestral generations).
+	 *  generations (parameter \e ancGens, default to all ancestral generations).
 	 *  By default, information field \c father_id (parameter \e fatherField)
 	 *  and \c mother_id (parameter \e motherField) are used to locate parents
 	 *  identified by \c ind_id (parameter \e idField), which should store an
@@ -67,7 +67,7 @@ public:
 	 */
 	Pedigree(const Population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(), 
-        const uintList & ancGen = uintList(),
+        const uintList & ancGens = uintList(),
 		const string & idField = "ind_id", const string & fatherField = "father_id",
 		const string & motherField = "mother_id");
 

@@ -547,7 +547,7 @@ public:
 	 *  field \e idField (default to \c ind_id). This function by default
 	 *  search the present and all ancestral generations (\c ancGen=ALL_AVAIL),
 	 *  but you can limit the search in specific generations if you know which
-	 *  generations to search (<tt>ancGen=[0,1]</tt> for present and
+	 *  generations to search (<tt>ancGens=[0,1]</tt> for present and
 	 *  parental generations) or \c UNSPECIFIED to search only the current
 	 *  generation. If no individual with \e id is found, an \c IndexError will
 	 *  be raised. A float \e id is acceptable as long as it rounds closely to
@@ -557,7 +557,7 @@ public:
 	 *  object to a pedigree object and use function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
-	Individual & indByID(double id, const uintList & ancGen = uintList(), const string & idField = "ind_id");
+	Individual & indByID(double id, const uintList & ancGens = uintList(), const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
@@ -1070,14 +1070,14 @@ public:
 	 *  all male individuals from a subpopulation using a \c SexSplitter()).
 	 *  If a list of loci is specified, only genotypes at specified loci are
 	 *  extracted. If a list of \e infoFields is specified, only these
-	 *  information fields are extracted. If \e ancGen is not \c ALL_AVAIL (default,
+	 *  information fields are extracted. If \e ancGens is not \c ALL_AVAIL (default,
 	 *  meaing all ancestral generations), only specified ancestral generations
 	 *  will be extracted.
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
 	Population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
-		const subPopList & subPops = subPopList(), const uintList & ancGen = uintList()) const;
+		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
