@@ -63,13 +63,15 @@ public:
 	 *  assign unique IDs and construct parental IDs from index based
 	 *  relationship recorded by operator \c ParentsTagger. A pedigree object
 	 *  could be constructed with one or no parent but certain functions such
-	 *  as relative tracking will not be available for such pedigrees.
+	 *  as relative tracking will not be available for such pedigrees. In case
+	 *  that your are no longer using your population object, you could steal
+	 *  the content from the population by setting \e stealPop to \c True.
 	 */
 	Pedigree(const Population & pop, const uintList & loci = vectoru(),
 		const stringList & infoFields = vectorstr(),
 		const uintList & ancGens = uintList(),
 		const string & idField = "ind_id", const string & fatherField = "father_id",
-		const string & motherField = "mother_id");
+		const string & motherField = "mother_id", bool stealPop = false);
 
 	/// CPPONLY copy constructor
 	Pedigree(const Pedigree & rhs);
@@ -183,57 +185,57 @@ public:
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void removeIndividuals(const uintList & indexes = vectoru(),
 		const floatList & IDs = vectorf(), const string & idField = "ind_id",
 		PyObject * filter = NULL);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void removeSubPops(const subPopList & subPops);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void push(Population & pop);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
 		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
 		UINT chromType = AUTOSOME);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void addChromFrom(const Population & pop);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void addIndFrom(const Population & pop);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	UINT mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void resize(const uintList & sizes, bool propagate = false);
-    
-    /** HIDDEN This function has the potential to change individuals in a
-     *  population so the ID map needs to be rebuilt.
-     */
+
+	/** HIDDEN This function has the potential to change individuals in a
+	 *  population so the ID map needs to be rebuilt.
+	 */
 	void setSubPopByIndInfo(const string & field);
 
 private:
-    void buildIDMap();
+	void buildIDMap();
 
 	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
 

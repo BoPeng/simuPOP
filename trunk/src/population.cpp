@@ -2001,16 +2001,21 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 
 void Population::removeLoci(const uintList & lociList, const uintList & keepList)
 {
-	const vectoru & loci = lociList.elems();
-	const vectoru & keep = keepList.elems();
-
-	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
-		"Please specify only one of parameters loci and keep");
-
-	if (loci.empty() && keep.empty())
+	if (lociList.unspecified() && keepList.unspecified())
 		return;
 
-	vectoru kept = keep;
+	DBG_FAILIF(lociList.unspecified() + keepList.unspecified() != 1, ValueError,
+		"Please specify only one of parameters loci and keep");
+
+	vectoru loci = lociList.elems();
+	if (lociList.allAvail())
+		for (size_t i = 0; i < totNumLoci(); ++i)
+			loci.push_back(i);
+	vectoru kept = keepList.elems();
+	if (keepList.allAvail())
+		for (size_t i = 0; i < totNumLoci(); ++i)
+			kept.push_back(i);
+
 	// kept must be in order so that genotypes could be copied correctly
 	std::sort(kept.begin(), kept.end());
 	UINT oldTotNumLoci = totNumLoci();
@@ -2379,6 +2384,46 @@ void Population::setAncestralDepth(int depth)
 		"Failed to change ancestral Depth");
 
 	m_ancestralGens = depth;
+}
+
+
+void Population::keepAncestralGens(const uintList & ancGens)
+{
+	if (ancGens.allAvail())
+		return;
+
+	useAncestralGen(0);
+	vectoru gens = ancGens.elems();
+	std::sort(gens.begin(), gens.end());
+	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		size_t depth = gens[genIdx];
+		if (genIdx == 0) {
+			// move to current generation
+			if (depth != 0) { // move that gen to current
+				popData & pd = m_ancestralPops[depth - 1];
+				pd.swap(*this);
+				m_popSize = m_inds.size();
+				setSubPopStru(m_subPopSize, m_subPopNames);
+			}
+		} else {
+			// switch around in popData
+			if (depth != genIdx) {
+				// depth is the existing place
+				// genIdx is the new location
+				popData & pd = m_ancestralPops[depth - 1];
+				popData & pd1 = m_ancestralPops[genIdx - 1];
+				pd1.m_subPopSize.swap(pd.m_subPopSize);
+				pd1.m_subPopNames.swap(pd.m_subPopNames);
+				pd1.m_genotype.swap(pd.m_genotype);
+				pd1.m_info.swap(pd.m_info);
+				pd1.m_inds.swap(pd.m_inds);
+				std::swap(pd1.m_indOrdered, pd.m_indOrdered);
+			}
+		}
+	}
+	for (size_t genIdx = gens.size(); genIdx <= m_ancestralPops.size(); ++genIdx)
+		m_ancestralPops.pop_back();
+	m_curAncestralGen = 0;
 }
 
 
