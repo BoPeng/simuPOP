@@ -183,9 +183,58 @@ public:
 		const uintList & affectionStatus = vectoru(), const subPopList & subPops = subPopList(),
 		int ancGen = -1);
 
-    /** 
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
      */
+	void removeIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void removeSubPops(const subPopList & subPops);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void push(Population & pop);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
+		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
+		UINT chromType = AUTOSOME);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void addChromFrom(const Population & pop);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void addIndFrom(const Population & pop);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	UINT mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void resize(const uintList & sizes, bool propagate = false);
+    
+    /** HIDDEN This function has the potential to change individuals in a
+     *  population so the ID map needs to be rebuilt.
+     */
+	void setSubPopByIndInfo(const string & field);
+
 private:
+    void buildIDMap();
+
 	bool acceptableSex(Sex mySex, Sex relSex, SexChoice choice);
 
 	bool acceptableAffectionStatus(bool affected, AffectionStatus choice);
@@ -207,15 +256,15 @@ private:
 	void locateCommonOffspring(SexChoice relSex, AffectionStatus relAffection, const vectorstr & relFields, int ancGen);
 
 private:
-	string m_idField;
-	string m_fatherField;
-	string m_motherField;
+	const string m_idField;
+	const string m_fatherField;
+	const string m_motherField;
 
 	int m_idIdx;
 	int m_fatherIdx;
 	int m_motherIdx;
 
-	std::map<ULONG, Individual *> m_idMap;
+	mutable std::map<ULONG, Individual *> m_idMap;
 };
 
 // /// A pedigree manipulation class

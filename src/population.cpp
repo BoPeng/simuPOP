@@ -982,7 +982,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		// remove by ID
 		// first, build a map
 		std::map<ULONG, bool > idMap;
-		for (size_t i = 0; i < IDs.size(); ++i) 
+		for (size_t i = 0; i < IDs.size(); ++i)
 			idMap[IDs[i]] = true;
 
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
@@ -1003,7 +1003,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
 			"Passed filter function should accept one parameter with name ind");
 		PyObject * args = PyTuple_New(1);
-		
+
 		//
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			useAncestralGen(depth);
@@ -1666,7 +1666,7 @@ Population & Population::extractMarkedIndividuals() const
 
 Population & Population::extractIndividuals(const uintList & indexList,
                                             const floatList & IDList, const string & idField,
-											PyObject * filter) const
+                                            PyObject * filter) const
 {
 	const vectoru & indexes = indexList.elems();
 	const vectorf & IDs = IDList.elems();
@@ -1699,7 +1699,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		// remove by ID
 		// first, build a map
 		std::map<ULONG, bool > idMap;
-		for (size_t i = 0; i < IDs.size(); ++i) 
+		for (size_t i = 0; i < IDs.size(); ++i)
 			idMap[IDs[i]] = true;
 
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
@@ -1719,7 +1719,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
 			"Passed filter function should accept one parameter with name ind");
 		PyObject * args = PyTuple_New(1);
-		
+
 		//
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			const_cast<Population *>(this)->useAncestralGen(depth);
@@ -1728,7 +1728,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 			ConstRawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
 				PyTuple_SET_ITEM(args, 0, pyIndObj(static_cast<void *>(
-					const_cast<Individual*>(&*it))));
+						                                               const_cast<Individual *>(&*it))));
 				if (func(PyObj_As_Bool, args))
 					it->setMarked(true);
 			}

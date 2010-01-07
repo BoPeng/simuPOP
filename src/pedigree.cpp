@@ -67,7 +67,22 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	m_fatherIdx = m_fatherField.empty() ? -1 : static_cast<int>(infoIdx(fatherField));
 	m_motherIdx = m_motherField.empty() ? -1 : static_cast<int>(infoIdx(motherField));
 
+    buildIDMap();
+}
+
+
+Pedigree::Pedigree(const Pedigree & rhs) :
+	Population(rhs),
+	m_idField(rhs.m_idField), m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
+	m_idIdx(rhs.m_idIdx), m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
+{
+}
+
+
+void Pedigree::buildIDMap()
+{
 	// build an ID map
+    m_idMap.clear();
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
@@ -79,14 +94,6 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 			m_idMap[id] = &*it;
 		}
 	}
-}
-
-
-Pedigree::Pedigree(const Pedigree & rhs) :
-	Population(rhs),
-	m_idField(rhs.m_idField), m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
-	m_idIdx(rhs.m_idIdx), m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
-{
 }
 
 
@@ -812,385 +819,62 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 }
 
 
-// const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
-//
-// Pedigree::Pedigree(int numParents, const string & pedfile)
-//  : m_numParents(numParents)
-// {
-//  DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
-//      "individuals in a pedigree can have one or two parents");
-//
-//  if (!pedfile.empty())
-//      load(pedfile);
-// }
-////
-// vectoru Pedigree::subPopSizes(ULONG gen)
-// {
-//  CHECK_GEN(gen);
-//  return m_pedSize[gen];
-// }
-//
-//
-// ULONG Pedigree::subPopSize(ULONG gen, SubPopID subPop)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//
-//  return m_pedSize[gen][subPop];
-// }
-//
-//
-// void Pedigree::addGen(const vectoru & sizes)
-// {
-//  ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
-//
-//  m_paternal.push_back(vectoru(popSize));
-//  if (m_numParents == 2)
-//      m_maternal.push_back(vectoru(popSize));
-//  if (m_info.size() > 0) {
-//      UINT infoSize = m_infoNames.size();
-//      m_info.push_back(vector<vectorf>(popSize));
-//      for (size_t i = 0; i < popSize; ++i)
-//          m_info.back()[i].resize(infoSize);
-//  }
-//  m_pedSize.push_back(sizes);
-// }
-//
-//
-// void Pedigree::load(const string & filename)
-// {
-//  m_paternal.clear();
-//  m_maternal.clear();
-//  m_pedSize.clear();
-//
-//  ifstream ifs(filename.c_str());
-//
-//  DBG_FAILIF(!ifs, SystemError, "Can not open pedigree file " + filename + " to read");
-//
-//  string line;
-//  while (getline(ifs, line)) {
-//      istringstream input(line);
-//      long int idx;
-//      vectoru values;
-//      vectoru sizes;
-//      while (!input.eof()) {
-//          input >> idx;
-//          values.push_back(idx == -1 ? UnusedIndividual : static_cast<ULONG>(idx));
-//          input >> ws;
-//          if (input.peek() == '#') {
-//              // ignore '#'
-//              input.ignore();
-//              // start reading population size.
-//              while (!input.eof()) {
-//                  input >> idx;
-//                  sizes.push_back(idx);
-//                  input >> ws;
-//              }
-//              // exit the outer loop
-//              break;
-//          }
-//      }
-//      // check if things are all right
-//      // determine number of parents...
-//      ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
-//      DBG_FAILIF(popSize != 0 && values.empty(),
-//          ValueError, "No parent is read");
-//      if (popSize == 0 && values.empty())
-//          continue;
-//      if (m_numParents == 0)
-//          m_numParents = values.size() / popSize;
-//      DBG_ASSERT(m_numParents * popSize == values.size(), ValueError,
-//          "Number of parents does not match subpopulation sizes.\n"
-//          "Line: " + toStr(m_paternal.size() + 1) + ", individuals read: "
-//          + toStr(values.size()) +
-//          ", Pop size: " + toStr(popSize));
-//      m_pedSize.push_back(vectoru());
-//      m_pedSize.back().swap(sizes);
-//      if (m_numParents == 1) {
-//          m_paternal.push_back(vectoru());
-//          m_paternal.back().swap(values);
-//      } else if (m_numParents == 2) {
-//          m_paternal.push_back(vectoru(popSize));
-//          m_maternal.push_back(vectoru(popSize));
-//          for (size_t i = 0; i < popSize; ++i) {
-//              m_paternal.back()[i] = values[2 * i];
-//              m_maternal.back()[i] = values[2 * i + 1];
-//          }
-//      } else {
-//          DBG_ASSERT(false, SystemError,
-//              "Sorry, pedigree does not support more than two parents");
-//      }
-//  }
-//  ifs.close();
-// }
-//
-//
-// void Pedigree::loadInfo(const string & filename, const string & name)
-// {
-//  vectorstr names(1, name);
-//
-//  loadInfo(filename, names);
-// }
-//
-//
-// void Pedigree::loadInfo(const string & filename, const vectorstr & names)
-// {
-//  ifstream afs(filename.c_str());
-//
-//  DBG_FAILIF(!afs, SystemError, "Can not open auxiliary information Pedigree" + filename + " to read");
-//  size_t gen = 0;
-//  size_t numInfo = names.size();
-//
-//  for (size_t i = 0; i < numInfo; ++i) {
-//      DBG_ASSERT(find(m_infoNames.begin(), m_infoNames.end(), names[i]) == m_infoNames.end(),
-//          ValueError, "Information " + names[i] + " has already been loaded");
-//      m_infoNames.push_back(names[i]);
-//  }
-//  string line;
-//  while (getline(afs, line)) {
-//      istringstream input(line);
-//      vectorf values;
-//      double value;
-//      while (!input.eof()) {
-//          input >> value;
-//          values.push_back(value);
-//          input >> ws;
-//      }
-//      DBG_FAILIF(gen >= m_paternal.size(), ValueError,
-//          "Information pedigree is larger than parental Pedigree");
-//      ULONG size = m_paternal[gen].size();
-//
-//      DBG_FAILIF(numInfo * size != values.size(), ValueError,
-//          "At generation " + toStr(gen) + ", number of information read is "
-//          + toStr(values.size()) + ", which is not a multiple of number of individuals "
-//          + toStr(m_paternal[gen].size()));
-//      //
-//      if (m_info.size() <= gen)
-//          m_info.push_back(vector<vectorf>(size));
-//      DBG_FAILIF(m_info.size() < gen + 1, ValueError,
-//          "Error loading information Pedigree");
-//      size_t idx = 0;
-//      for (size_t i = 0; i < size; ++i)
-//          for (size_t j = 0; j < numInfo; ++j, ++idx)
-//              m_info[gen][i].push_back(values[idx]);
-//      //
-//      gen++;
-//  }
-//  afs.close();
-// }
-//
-//
-// void Pedigree::addInfo(const string & name, double init)
-// {
-//  DBG_ASSERT(find(m_infoNames.begin(), m_infoNames.end(), name) == m_infoNames.end(),
-//      ValueError, "Information " + name + " has already been loaded");
-//  m_infoNames.push_back(name);
-//
-//  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-//      ULONG size = m_paternal[gen].size();
-//      if (m_info.size() <= gen)
-//          m_info.push_back(vector<vectorf>(size));
-//      DBG_FAILIF(m_info.size() < gen + 1, ValueError,
-//          "Error loading information Pedigree");
-//      for (size_t i = 0; i < size; ++i)
-//          m_info[gen][i].push_back(init);
-//  }
-// }
-//
-//
-// void Pedigree::save(const string & filename)
-// {
-//  ofstream ofs(filename.c_str());
-//
-//  DBG_FAILIF(!ofs, SystemError, "Can not open pedigree file " + filename + " to write.");
-//
-//  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-//      size_t sz = m_paternal[gen].size();
-//      for (size_t idx = 0; idx < sz; ++idx) {
-//          if (m_paternal[gen][idx] == UnusedIndividual)
-//              ofs << -1;
-//          else
-//              ofs << m_paternal[gen][idx];
-//          if (m_numParents == 2) {
-//              if (m_maternal[gen][idx] == UnusedIndividual)
-//                  ofs << "\t-1";
-//              else
-//                  ofs << '\t' << m_maternal[gen][idx];
-//          }
-//          ofs << '\t';
-//      }
-//      ofs << "#\t";
-//      for (size_t idx = 0; idx < m_pedSize[gen].size(); ++idx)
-//          ofs << m_pedSize[gen][idx] << '\t';
-//      ofs << '\n';
-//  }
-//  ofs.close();
-// }
-//
-//
-// void Pedigree::saveInfo(const string & filename, const string & name)
-// {
-//  vectorstr names(1, name);
-//
-//  saveInfo(filename, names);
-// }
-//
-//
-// void Pedigree::saveInfo(const string & filename, const vectorstr & names)
-// {
-//  vectoru idx;
-//
-//  for (size_t i = 0; i < names.size(); ++i) {
-//      size_t j = 0;
-//      for (; j < m_infoNames.size(); ++j) {
-//          if (m_infoNames[j] == names[i]) {
-//              idx.push_back(j);
-//              break;
-//          }
-//      }
-//      DBG_FAILIF(j == m_infoNames.size(), ValueError, "Invalid information name: " + names[i]);
-//  }
-//
-//  ofstream afs(filename.c_str());
-//  DBG_FAILIF(!afs, SystemError, "Can not open information pedigree file " + filename + " to write.");
-//
-//  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-//      size_t sz = m_paternal[gen].size();
-//      for (size_t i = 0; i < sz; ++i)
-//          for (size_t j = 0; j < idx.size(); ++j)
-//              afs << m_info[gen][i][j] << '\t';
-//      afs << '\n';
-//  }
-//  afs.close();
-// }
-//
-//
-// void Pedigree::selectIndividuals(const vectoru & inds)
-// {
-//  DBG_FAILIF(m_paternal.empty(), ValueError,
-//      "Can not select individuals from an empty Pedigree");
-//
-//  size_t size = m_paternal.back().size();
-//  vector<bool> used(size, false);
-//  vectoru::const_iterator it = inds.begin();
-//  vectoru::const_iterator it_end = inds.end();
-//  for (; it != it_end; ++it) {
-//      DBG_FAILIF(*it >= size, IndexError,
-//          "Index exceeded the size of the last generation");
-//      used[*it] = true;
-//  }
-//  for (size_t idx = 0; idx < size; ++idx)
-//      if (!used[idx]) {
-//          m_paternal.back()[idx] = UnusedIndividual;
-//          if (m_numParents == 2)
-//              m_maternal.back()[idx] = UnusedIndividual;
-//      }
-// }
-//
-//
-// void Pedigree::markUnrelated()
-// {
-//  if (m_paternal.size() <= 1)
-//      return;
-//
-//  vector<bool> used;
-//  // starting from the last generation, gen=0 etc will be replaced.
-//  for (size_t gen = m_paternal.size() - 1; gen > 0; --gen) {
-//      used.clear();
-//      used.resize(m_paternal[gen - 1].size(), false);
-//      for (size_t idx = 0; idx < m_paternal[gen].size(); ++idx)
-//          if (m_paternal[gen][idx] != UnusedIndividual)
-//              used[m_paternal[gen][idx]] = true;
-//      if (m_numParents == 2)
-//          for (size_t idx = 0; idx < m_maternal[gen].size(); ++idx)
-//              if (m_maternal[gen][idx] != UnusedIndividual)
-//                  used[m_maternal[gen][idx]] = true;
-//      for (size_t idx = 0; idx < m_paternal[gen - 1].size(); ++idx)
-//          if (!used[idx]) {
-//              m_paternal[gen - 1][idx] = UnusedIndividual;
-//              if (m_numParents == 2)
-//                  m_maternal[gen - 1][idx] = UnusedIndividual;
-//          }
-//  }
-// }
-//
-//
-// void Pedigree::removeUnrelated(bool shift_index)
-// {
-//  if (m_paternal.size() <= 1)
-//      return;
-//
-//  // starting from the last generation, gen=0 etc will be replaced.
-//  if (shift_index) {
-//      for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
-//          vectoru & curGen = m_paternal[gen];
-//          vectoru & nextGen = m_paternal[gen + 1];
-//          size_t shift = 0;
-//          for (size_t idx = 0; idx < curGen.size(); ++idx)
-//              if (curGen[idx] == UnusedIndividual) {
-//                  // the next generation, with value > idx will be shifted by 1.
-//                  for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
-//                      if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
-//                          nextGen[idx1]--;
-//                  shift++;
-//              }
-//      }
-//      // maternal
-//      if (m_numParents == 2) {
-//          for (size_t gen = 0; gen < m_maternal.size() - 1; ++gen) {
-//              vectoru & curGen = m_maternal[gen];
-//              vectoru & nextGen = m_maternal[gen + 1];
-//              size_t shift = 0;
-//              for (size_t idx = 0; idx < curGen.size(); ++idx)
-//                  if (curGen[idx] == UnusedIndividual) {
-//                      // the next generation, with value > idx will be shifted by 1.
-//                      for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
-//                          if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
-//                              nextGen[idx1]--;
-//                      shift++;
-//                  }
-//          }
-//      }
-//  }
-//  // adjust m_pedSize
-//  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-//      size_t idx = 0;
-//      for (UINT sp = 0; sp < m_pedSize[gen].size(); ++sp) {
-//          UINT spSize = m_pedSize[gen][sp];
-//          for (size_t i = 0; i < spSize; ++i, ++idx)
-//              if (m_paternal[gen][idx] == UnusedIndividual)
-//                  m_pedSize[gen][sp]--;
-//      }
-//  }
-//  // remove individuals
-//  // new pedigree generation entries
-//  vectoru l_pat;
-//  vectoru l_mat;
-//  vector<vectorf> l_info;
-//  for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-//      l_pat.clear();
-//      l_mat.clear();
-//      l_info.clear();
-//      for (size_t idx = 0; idx < m_paternal[gen].size(); ++idx)
-//          if (m_paternal[gen][idx] != UnusedIndividual) {
-//              l_pat.push_back(m_paternal[gen][idx]);
-//              if (m_numParents == 2) {
-//                  DBG_ASSERT(m_maternal[gen][idx] != UnusedIndividual,
-//                      ValueError, "Inconsistent maternal and matermal Pedigree");
-//                  l_mat.push_back(m_maternal[gen][idx]);
-//              }
-//              if (!m_info.empty())
-//                  l_info.push_back(m_info[gen][idx]);
-//          }
-//      m_paternal[gen].swap(l_pat);
-//      if (m_numParents == 2)
-//          m_maternal[gen].swap(l_mat);
-//      if (!m_info.empty())
-//          m_info[gen].swap(l_info);
-//  }
-// }
-//
-//
+void Pedigree::removeIndividuals(const uintList & indexes,
+    const floatList & IDs, const string & idField, PyObject * filter)
+{
+    Population::removeIndividuals(indexes, IDs, idField, filter);
+    buildIDMap();
 }
 
+void Pedigree::removeSubPops(const subPopList & subPops)
+{
+    Population::removeSubPops(subPops);
+    buildIDMap();
+}
 
+void Pedigree::push(Population & pop)
+{
+    Population::push(pop);
+    buildIDMap();
+}
+
+void Pedigree::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
+    const string & chromName, const stringMatrix & alleleNames,
+    UINT chromType)
+{
+    Population::addChrom(lociPos, lociNames, chromName, alleleNames, chromType);
+    buildIDMap();
+}
+
+void Pedigree::addChromFrom(const Population & pop)
+{
+    Population::addChromFrom(pop);
+    buildIDMap();
+}
+
+void Pedigree::addIndFrom(const Population & pop)
+{
+    Population::addIndFrom(pop);
+    buildIDMap();
+}
+
+UINT Pedigree::mergeSubPops(const uintList & subPops, const string & name)
+{
+    UINT res = Population::mergeSubPops(subPops, name);
+    buildIDMap();
+    return res;
+}
+
+void Pedigree::resize(const uintList & sizes, bool propagate)
+{
+    Population::resize(sizes, propagate);
+    buildIDMap();
+}
+
+void Pedigree::setSubPopByIndInfo(const string & field)
+{
+    Population::setSubPopByIndInfo(field);
+    buildIDMap();
+}
+
+}
