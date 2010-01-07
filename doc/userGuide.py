@@ -475,7 +475,7 @@ sim.getRNG().set(seed=12345)
 # create a sim.population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
 pop = sim.Population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
-pop.setIndInfo(range(11, 20), 'x')
+pop.setIndInfo(range(10, 20), 'x')
 pop1 = pop.clone()
 pop1.setIndInfo(range(10), 'x')
 pop.push(pop1)
@@ -492,9 +492,14 @@ for ind in pop.individuals(1):
     print ind.x,
 
 # Access individuals in VSPs
-pop.setVirtualSplitter(sim.InfoSplitter(cutoff=[3, 7], field='x'))
+pop.setVirtualSplitter(sim.InfoSplitter(cutoff=[3, 7, 17], field='x'))
 for ind in pop.individuals([1, 1]):
     print ind.x,
+
+# Access all individuals in all ancestral generations
+print [ind.x for ind in pop.allIndividuals()]
+# or only specified subpopulations or ancestral generations
+print [ind.x for ind in pop.allIndividuals(subPops=[(0,2), (1,3)], ancGens=1)]
 
 # Access individuals in ancetral generations
 pop.ancestor(5, 1).x        # absolute index

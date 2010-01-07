@@ -368,6 +368,34 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
 
 Population.evolve = evolve_pop
 
+def allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
+    '''Return an iterator that iterat through all (virtual) subpopulations
+    in all ancestral generations. A list of (virtual) subpopulations
+    (\e subPops) and a list of ancestral generations (\e ancGens, can be a
+    single number) could be specified to iterate through only selected 
+    subpopulation and generations.
+    '''
+    if ancGens is ALL_AVAIL:
+        gens = range(self.ancestralGens() + 1)
+    elif hasattr(ancGens, '__iter__'):
+        gens = ancGens
+    else:
+        gens = [ancGens]
+    #
+    curGen = self.curAncestralGen()
+    for gen in gens:
+        self.useAncestralGen(gen)
+        if subPops is ALL_AVAIL:
+            for ind in self.individuals():
+                yield ind
+        else:
+            for subPop in subPops:
+                for ind in self.individuals(subPop):
+                    yield ind
+    self.useAncestralGen(curGen)
+
+Population.allIndividuals = allIndividuals
+
 def _new_Migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate
