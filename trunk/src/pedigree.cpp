@@ -43,7 +43,7 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
 	m_idIdx(-1), m_fatherIdx(-1), m_motherIdx(-1)
 {
-	vectorstr extractFields = infoFields.elems();
+	vectorstr extractFields = infoFields.allAvail() ? pop.infoFields() : infoFields.elems();
 
 	if (!m_idField.empty() && find(extractFields.begin(), extractFields.end(), idField) == extractFields.end())
 		extractFields.push_back(idField);
@@ -860,7 +860,143 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & subPops,
                                    const uintList & ancGens)
 {
-	return vectoru();
+	// step 1: Mark eligible individuals and collect IDs
+	std::map<ULONG, int> famID;
+
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
+
+	// mark eligible Individuals
+	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+		useAncestralGen(ans);
+		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+			markIndividuals(vspID(), false);
+			continue;
+		}
+		if (subPops.allAvail())
+			markIndividuals(vspID(), true);
+		else {
+			markIndividuals(vspID(), false);
+			subPopList::const_iterator sp = subPops.begin();
+			subPopList::const_iterator spEnd = subPops.end();
+			for (; sp != spEnd; ++sp)
+				markIndividuals(*sp, true);
+		}
+		// collect ID.
+		RawIndIterator it = rawIndBegin();
+		RawIndIterator itEnd = rawIndEnd();
+		for (; it != itEnd; ++it)
+			if (it->marked())
+				famID[static_cast<ULONG>(it->info(m_idIdx) + 0.5)] = -1;
+	}
+	// step 2: decide family ID
+	UINT famCount = 0;
+	//
+	std::map<ULONG, int>::iterator it = famID.begin();
+	std::map<ULONG, int>::iterator it_end = famID.end();
+	for (; it != it_end; ++it) {
+		// CASE ONE: if this guy is someone's parent, and has already been processed
+		if (it->second >= 0)
+			continue;
+		// this guy should exist
+		Individual * ind = m_idMap[it->first];
+		Individual * dad = NULL;
+		Individual * mom = NULL;
+		int dadFam = -2;
+		int momFam = -2;
+		// try to identify father and mother....
+		if (m_fatherIdx != -1) {
+			ULONG dad_id = static_cast<ULONG>(ind->info(m_fatherIdx) + 0.5);
+			// ok father
+			std::map<ULONG, int>::iterator dad_fam = famID.find(dad_id);
+			// because father exists in famID
+			if (dad_fam != famID.end()) {
+				dadFam = dad_fam->second;
+				dad = m_idMap[dad_id];
+			}
+		}
+		if (m_motherIdx != -1) {
+			ULONG mom_id = static_cast<ULONG>(ind->info(m_motherIdx) + 0.5);
+			// ok mother
+			std::map<ULONG, int>::iterator mom_fam = famID.find(mom_id);
+			// because father exists in famID
+			if (mom_fam != famID.end()) {
+				momFam = mom_fam->second;
+				mom = m_idMap[mom_id];
+			}
+		}
+		// CASE TWO: no parent
+		if (dad == NULL && mom == NULL) {
+			it->second = famCount++;
+		} else if (dad != NULL && mom == NULL) {
+			// CASE THREE: One father
+			if (dadFam >= 0)
+				// follow dad fam
+				it->second = dadFam;
+			else {
+				it->second = famCount;
+				famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = famCount;
+				++famCount;
+			}
+		} else if (dad == NULL && mom != NULL) {
+			// CASE FOUR: One mother
+			if (momFam >= 0)
+				// follow mom fam
+				it->second = momFam;
+			else {
+				it->second = famCount;
+				famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = famCount;
+				++famCount;
+			}
+		} else if (dadFam < 0 && momFam < 0) {
+			// CASE FIVE: fresh father and mother
+			it->second = famCount;
+			famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = famCount;
+			famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = famCount;
+			++famCount;
+		} else if (dadFam >= 0 && momFam < 0) {
+			// CASE SIX: fresh mother
+			it->second = dadFam;
+			famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = dadFam;
+		} else if (dadFam < 0 && momFam >= 0) {
+			// CASE SEVEN: fresh father
+			it->second = momFam;
+			famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = momFam;
+		} else if (dadFam == momFam) {
+			// CASE EIGHT: a sibling?
+			it->second = momFam;
+		} else {
+			// CASE NINE: we have a conflict.
+			int oldID = std::max(dadFam, momFam);
+			int newID = std::min(dadFam, momFam);
+			// everyone with the large ID need to be converted to small ID.
+			it->second = newID;
+			std::map<ULONG, int>::iterator iit = famID.begin();
+			std::map<ULONG, int>::iterator iit_end = famID.end();
+			for (; iit != iit_end; ++iit) {
+				if (iit->second == oldID)
+					iit->second = newID;
+				if (iit->second > oldID)
+					--iit->second;
+			}
+			--famCount;
+		}
+	}
+	int pedIdx = pedField.empty() ? -1 : infoIdx(pedField);
+	// return result
+	vectoru famSize(famCount, 0);
+	it = famID.begin();
+	for (; it != it_end; ++it) {
+		int famID = it->second;
+		++famSize[famID];
+		if (pedIdx >= 0)
+			m_idMap[it->first]->setInfo(famID, static_cast<UINT>(pedIdx));
+	}
+	return famSize;
 }
 
 

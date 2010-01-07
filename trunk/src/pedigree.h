@@ -40,9 +40,11 @@ namespace simuPOP {
  *  all individuals is needed to create a pedigree object from a population
  *  object. Compared to the \c Population class, a \c Pedigree object is
  *  optimized for access individuals by their IDs, regardless of population
- *  structure and ancestral generations. Note that although the pedigree class
- *  is derived from the population class, functions such as \c removeSubPops
- *  that alter population structure are disabled.
+ *  structure and ancestral generations. Note that the implementation of
+ *  some algorithms rely on the fact that parental IDs are smaller than their
+ *  offspring because individual IDs are assigned sequentially during
+ *  evolution. Pedigrees with manually assigned IDs should try to obey such
+ *  a rule.
  */
 class Pedigree : public Population
 {
@@ -197,7 +199,8 @@ public:
 	 *  these subpopulations and generations.
 	 *  <group>4-locate</group>
 	 */
-	vectoru identifyFamilies(const string & pedField = string(), const subPopList & subPops = subPopList(),
+	vectoru identifyFamilies(const string & pedField = string(),
+		const subPopList & subPops = subPopList(),
 		const uintList & ancGens = uintList());
 
 	/** HIDDEN This function has the potential to change individuals in a
