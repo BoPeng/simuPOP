@@ -1822,7 +1822,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 	
 	// ancestral depth can be -1
 	pop.setAncestralDepth(m_ancestralGens);
-	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
+	for (int genIdx = gens.size() - 1; genIdx >= 0; --genIdx) {
 		int depth = gens[genIdx];
 		const_cast<Population *>(this)->useAncestralGen(depth);
 		sortIndividuals();
@@ -1946,8 +1946,8 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			pop.m_genotype.swap(new_genotype);
 			pop.m_info.swap(new_info);
 		} else {
-			pop.m_ancestralPops.push_back(popData());
-			popData & pd = pop.m_ancestralPops.back();
+			pop.m_ancestralPops.push_front(popData());
+			popData & pd = pop.m_ancestralPops.front();
 			pd.m_subPopSize.swap(spSizes);
 			pd.m_genotype.swap(new_genotype);
 			pd.m_info.swap(new_info);
@@ -2260,16 +2260,21 @@ void Population::removeInfoFields(const stringList & fieldList)
 
 
 void Population::updateInfoFieldsFrom(const stringList & fieldList, const Population & pop,
-                                      const stringList & fromFieldList, int ancGen)
+                                      const stringList & fromFieldList, const uintList & ancGens)
 {
 	const vectorstr & fields = fieldList.elems();
 	const vectorstr & fromFields = fromFieldList.elems();
 
-	int depth = ancestralGens();
-
-	if (ancGen > 0 && ancGen < depth)
-		depth = ancGen;
-	for (; depth >= 0; --depth) {
+    int oldGen = m_curAncestralGen;
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(m_curAncestralGen);
+	//
+	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		int depth = gens[genIdx];
 		useAncestralGen(depth);
 		const_cast<Population &>(pop).useAncestralGen(depth);
 		DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
@@ -2281,6 +2286,7 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 			setIndInfo(const_cast<Population &>(pop).indInfo(fromIdx), toIdx);
 		}
 	}
+	useAncestralGen(oldGen);
 }
 
 
