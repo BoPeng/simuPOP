@@ -359,7 +359,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
-	
+
 	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		int gen = gens[genIdx];
 		vector<Individual> * inds = NULL;
@@ -1819,7 +1819,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
 	std::sort(gens.begin(), gens.end());
-	
+
 	// ancestral depth can be -1
 	pop.setAncestralDepth(m_ancestralGens);
 	for (int genIdx = gens.size() - 1; genIdx >= 0; --genIdx) {
@@ -2265,8 +2265,9 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 	const vectorstr & fields = fieldList.elems();
 	const vectorstr & fromFields = fromFieldList.elems();
 
-    int oldGen = m_curAncestralGen;
+	int oldGen = m_curAncestralGen;
 	vectoru gens = ancGens.elems();
+
 	if (ancGens.allAvail())
 		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);

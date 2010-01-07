@@ -66,8 +66,8 @@ public:
 	 *  as relative tracking will not be available for such pedigrees.
 	 */
 	Pedigree(const Population & pop, const uintList & loci = vectoru(),
-		const stringList & infoFields = vectorstr(), 
-        const uintList & ancGens = uintList(),
+		const stringList & infoFields = vectorstr(),
+		const uintList & ancGens = uintList(),
 		const string & idField = "ind_id", const string & fatherField = "father_id",
 		const string & motherField = "mother_id");
 

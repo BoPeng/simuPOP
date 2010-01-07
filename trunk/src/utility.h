@@ -415,10 +415,12 @@ public:
 		return m_status == ALL_AVAIL;
 	}
 
+
 	bool unspecified() const
 	{
 		return m_status == UNSPECIFIED;
 	}
+
 
 	/// CPPONLY
 	const vectoru & elems() const

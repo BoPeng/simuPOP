@@ -599,8 +599,8 @@ public:
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
 	 *  subpopulation (<tt>subPop=spID</tt> or <tt>(spID, vspID)</tt>). If you
-     *  would like to iterate through multiple subpopulations in multiple
-     *  ancestral generations, please use function \c Population.allIndividuals().
+	 *  would like to iterate through multiple subpopulations in multiple
+	 *  ancestral generations, please use function \c Population.allIndividuals().
 	 *  <group>4-ind</group>
 	 */
 	pyIndIterator individuals(vspID subPop = vspID())
