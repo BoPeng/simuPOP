@@ -1333,6 +1333,40 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.ind_id, id)
         self.assertRaises(exceptions.IndexError, pop.indByID, 8000)
  
+    def testIdentifyFamilies(self):
+        'Testing Pedigree::identifyFamily'
+        pop = Population(100, infoFields=['ind_id', 'ped_id'], ancGen=1)
+        tagID(pop, reset=True)
+        ped = Pedigree(pop, fatherField='', motherField='', infoFields=ALL_AVAIL)
+        pedSize = ped.identifyFamilies(pedField='ped_id')
+        self.assertEqual(pedSize, tuple([1]*100))
+        self.assertEqual(ped.indInfo('ped_id'), tuple(range(100)))
+        pop.evolve(
+            matingScheme=RandomSelection(ops=[
+                CloneGenoTransmitter(), IdTagger()]),
+            gen = 1
+        )
+        ped = Pedigree(pop, fatherField='', motherField='', infoFields=ALL_AVAIL)
+        pedSize = ped.identifyFamilies(pedField='ped_id')
+        self.assertEqual(pedSize, tuple([1]*200))
+        #
+        pop = Population(100, infoFields=['ind_id', 'father_id', 'ped_id'], ancGen=1)
+        tagID(pop, reset=True)
+        pop.evolve(
+            matingScheme=RandomSelection(ops=[
+                CloneGenoTransmitter(), IdTagger(),
+                    PedigreeTagger(infoFields='father_id')]),
+            gen = 1
+        )
+        ped = Pedigree(pop, motherField='', infoFields=ALL_AVAIL)
+        pedSize = ped.identifyFamilies(pedField='ped_id')
+        self.assertEqual(sum(pedSize), 200)
+        for idx, sz in enumerate(pedSize):
+            if sz > 1:
+                p = ped.extractIndividuals(IDs=idx, idField='ped_id')
+                self.assertEqual(len(list(p.allIndividuals())), sz)
+        #
+
 
 if __name__ == '__main__':
     unittest.main()

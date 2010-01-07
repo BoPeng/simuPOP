@@ -92,8 +92,13 @@ __all__ = [
 import exceptions
 import random
 
+
 from simuPOP import ALL_AVAIL, Pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
-    MALE, AFFECTED, tagID
+    MALE, AFFECTED, tagID, getRNG
+
+# set random seed so that python random module could also be replayed with saved
+# simuPOP seed.
+random.seed(getRNG().seed())
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
