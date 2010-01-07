@@ -7953,7 +7953,7 @@ stolen
  after it is used to create a simulator.
  If you would like to keep the populations, you could set parameter 
 \family typewriter
-steal
+stealPops
 \family default
  to 
 \family typewriter

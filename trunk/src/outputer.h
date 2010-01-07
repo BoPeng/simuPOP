@@ -105,7 +105,7 @@ public:
 	 *  class \c BaseOperator for a detailed explanation for common parameters
 	 *  such as \e output and \e stage.
 	 */
-	Dumper(bool genotype = true, bool structure = true, const uintList & ancGens = uintList(false),
+	Dumper(bool genotype = true, bool structure = true, const uintList & ancGens = uintList(NULL),
 		int width = 1, UINT max = 100, const uintList & loci = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),

@@ -78,7 +78,7 @@ public:
 	 *  \e reps). If an informatio field is given, penetrance value will be
 	 *  stored in this information field of each individual.
 	 */
-	BasePenetrance(const uintList & ancGens = uintList(),
+	BasePenetrance(const uintList & ancGens = uintList(NULL),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
@@ -157,7 +157,7 @@ public:
 	 *  dictionary keys.
 	 */
 	MapPenetrance(const uintList & loci, const tupleDict & penetrance,
-		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
@@ -226,7 +226,7 @@ public:
 	 *  chromosomes.
 	 */
 	MaPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
-		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
@@ -295,7 +295,7 @@ public:
 	 *  zero or greater than 1.
 	 */
 	MlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
-		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
@@ -356,7 +356,7 @@ public:
 	 */
 	PyPenetrance(PyObject * func,
 		const uintList & loci = vectoru(),
-		const uintList & ancGens = uintList(),
+		const uintList & ancGens = uintList(NULL),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(),

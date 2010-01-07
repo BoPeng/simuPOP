@@ -434,7 +434,7 @@ class PedigreeSampler(BaseSampler):
         self.motherField = motherField
         self.pedigree = None
 
-    def prepareSample(self, pop, loci=[], infoFields=[], ancGen=ALL_AVAIL):
+    def prepareSample(self, pop, loci=[], infoFields=[], ancGens=ALL_AVAIL):
         '''
         Prepare self.pedigree, some pedigree sampler might need additional loci and
         information fields for this sampler.
@@ -443,7 +443,7 @@ class PedigreeSampler(BaseSampler):
         BaseSampler.prepareSample(self, pop, isSequence(self.families))
         # get self.pedigree
         self.pedigree = Pedigree(self.pop, loci, infoFields,
-            ancGen, self.idField, self.fatherField, self.motherField)
+            ancGens, self.idField, self.fatherField, self.motherField)
         # Your prepareSample should define selected_IDs, which should be the
         # anchor individuals of each Pedigree, typically father or grandfather.
         # Other family members will be looked up through function self.family.

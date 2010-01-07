@@ -186,8 +186,7 @@ class TestUtility(unittest.TestCase):
         sd = random.randint(100, 10000)
         getRNG().set(name, sd)
         seq = [getRNG().randInt(10000) for x in range(100)]
-        getRNG().set:browse confirm e
-        (name, sd)
+        getRNG().set(name, sd)
         seq1 = [getRNG().randInt(10000) for x in range(100)]
         self.assertEqual(seq, seq1)
         # randBit need to be treated separately because it uses

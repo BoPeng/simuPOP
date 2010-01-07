@@ -183,7 +183,7 @@ public:
 	 *  unused genotype locations and customized chromosomes.
 	 */
 	InitGenotype(const vectorf & freq = vectorf(),
-		const uintList & genotype = uintList(), const vectorf & prop = vectorf(),
+		const uintList & genotype = vectoru(), const vectorf & prop = vectorf(),
 		const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),

@@ -1100,7 +1100,7 @@ public:
 	 *  specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const uintList & loci = uintList(false), const uintList & keep = uintList(false));
+	void removeLoci(const uintList & loci = uintList(NULL), const uintList & keep = uintList(NULL));
 
 	/** Recode alleles at \e loci (default to all loci in a population) to
 	 *  other values according to parameter \e alleles. This parameter can

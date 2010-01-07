@@ -1808,7 +1808,7 @@ sim.initGenotype(pop1, freq=[0]*50 + [0.1]*10)
 pop1.setIndInfo(2, 'gen')
 pop.push(pop1)
 sim.dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
-    max=10, structure=False, ancGen=-1)
+    max=10, structure=False)
 #end_file
 
 #begin_file log/SavePopulation.py
