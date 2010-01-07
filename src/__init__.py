@@ -90,6 +90,7 @@ __all__ = [
     # 
     'HAPLODIPLOID',
     'ALL_AVAIL',
+    'UNSPECIFIED',
     #
     # Major simuPOP classes
     'Population',

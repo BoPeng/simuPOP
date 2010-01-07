@@ -319,6 +319,7 @@ import exceptions, types
 # this case, a devoted constant is easier to remember.
 #
 ALL_AVAIL = True
+UNSPECIFIED = False
 
 def unsupportedPedigreeOperation(*args, **kwargs):
     'This function is not supported in the pedigree class'
