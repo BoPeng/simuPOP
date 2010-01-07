@@ -929,20 +929,27 @@ public:
 	/// CPPONLY
 	void removeMarkedIndividuals();
 
-	/** remove individual(s) either by absolute indexes (parameter \e index) or
-	 *  their IDs (parameter \e IDs). In the latter form, an unique ID for all
-	 *  individual should be saved in an information field \e idField (default
-	 *  to \c "ind_id"). If indexes are used, individuals can only be removed
-	 *  from the current generation. If IDs are used, individuals from all
-	 *  ancestral generations could be removed. An \c IndexError will be raised
-	 *  if an index is out of bound, or if no individual is found for a given
-	 *  ID. This function does not affect subpopulation structure in the sense
-	 *  that a subpopulation will be kept even if all individuals from it are
-	 *  removed.
+	/** remove individual(s) by absolute indexes (parameter \e index) or
+	 *  their IDs (parameter \e IDs), or using a filter function (paramter
+	 *  \e filter). If indexes are used, only individuals at the current
+	 *  generation will be removed. If IDs are used, all individuals with
+	 *  one of the IDs at information field \e idField (default to \c "ind_id")
+	 *  will be removed. Although \c "ind_id" usually stores unique IDs of
+	 *  individuals, this function is frequently used to remove groups of
+	 *  individuals with the same value at an information field. An
+	 *  \c IndexError will be raised if an index is out of bound, but no
+	 *  error will be given if an invalid ID is specified. In the last
+	 *  case, a user-defined function with parameter \c ind should be
+	 *  provided. All individuals, including ancestors if there are multiple
+	 *  ancestral generations, will be passed to this function. Individuals
+	 *  that returns \c True will be removed. This function does not affect
+	 *  subpopulation structure in the sense that a subpopulation will be
+	 *  kept even if all individuals from it are removed.
 	 *  <group>7-manipulate</group>
 	 */
 	void removeIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idField = "ind_id");
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL);
 
 	/** Merge subpopulations \e subPops. If \e subPops is \c ALL_AVAIL (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
@@ -1047,19 +1054,25 @@ public:
 	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
-	 *  or IDs (parameter \e IDs, stored in information field \e idField,
-	 *  default to \c ind_id). If a list of absolute indexes are specified, the
-	 *  present generation will be extracted and form a one-generational
-	 *  population. If a list of IDs are specified, this function will look
-	 *  through all ancestral generations and extract individuals with given ID.
-	 *  Extracted individuals will be in their original ancestral generations
-	 *  and subpopulations, even if some subpopulations or generations are
-	 *  empty. An \c IndexError will be raised if an index is out of bound or
-	 *  if an invalid ID is encountered.
+	 *  IDs (parameter \e IDs, stored in information field \e idField,
+	 *  default to \c ind_id), or a filter function (parameter \e filter). If a
+	 *  list of absolute indexes are specified, the present generation will be
+	 *  extracted and form a one-generational population. If a list of IDs are
+	 *  specified, this function will look through all ancestral generations
+	 *  and extract individuals with given ID. Individuals with shared IDs are
+	 *  allowed. In the last case, a Python function with one parameter \c ind
+	 *  should be provided. All individuals, including ancestors if there are
+	 *  multiple ancestral generations, will be passed to this function.
+	 *  Individuals that returns \c True will be extracted. Extracted
+	 *  individuals will be in their original ancestral generations and
+	 *  subpopulations, even if some subpopulations or generations are empty.
+	 *  An \c IndexError will be raised if an index is out of bound but no
+	 *  error will be given if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
 	 */
 	Population & extractIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idField = "ind_id") const;
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL) const;
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all

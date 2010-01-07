@@ -361,7 +361,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 		gens.push_back(m_curAncestralGen);
 
 	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
-		int gen = gens[genIdx];
+		UINT gen = gens[genIdx];
 		vector<Individual> * inds = NULL;
 		// search in current, not necessarily the present generation
 		if (gen == m_curAncestralGen)
@@ -955,16 +955,16 @@ void Population::removeMarkedIndividuals()
 
 
 void Population::removeIndividuals(const uintList & indexList, const floatList & IDList,
-                                   const string & idField)
+                                   const string & idField, PyObject * filter)
 {
 	const vectoru & indexes = indexList.elems();
 	const vectorf & IDs = IDList.elems();
 
-	if (IDs.empty() && indexes.empty())
+	if (IDs.empty() && indexes.empty() && filter == NULL)
 		return;
 
-	DBG_FAILIF(!IDs.empty() && !indexes.empty(), ValueError,
-		"Please specify only one of parameters indexes and IDs");
+	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 1, ValueError,
+		"Please specify only one of parameters indexes, IDs and filter");
 
 	if (!indexes.empty()) {
 		markIndividuals(vspID(), false);
@@ -976,35 +976,48 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		removeMarkedIndividuals();
 		return;
 	}
-	// remove by ID
-	// first, build a map
-	std::map<ULONG, const Individual *> idMap;
-	UINT idIdx = infoIdx(idField);
-
 	int curGen = m_curAncestralGen;
-	for (int depth = ancestralGens(); depth >= 0; --depth) {
-		useAncestralGen(depth);
-		markIndividuals(vspID(), false);
-		RawIndIterator it = rawIndBegin();
-		RawIndIterator itEnd = rawIndEnd();
-		for (; it != itEnd; ++it) {
-			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
-			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
-				"individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
-			idMap[id] = &*it;
+	if (!IDs.empty()) {
+		UINT fieldIdx = infoIdx(idField);
+		// remove by ID
+		// first, build a map
+		std::map<ULONG, bool > idMap;
+		for (size_t i = 0; i < IDs.size(); ++i) 
+			idMap[IDs[i]] = true;
+
+		for (int depth = ancestralGens(); depth >= 0; --depth) {
+			useAncestralGen(depth);
+			markIndividuals(vspID(), false);
+			RawIndIterator it = rawIndBegin();
+			RawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it) {
+				ULONG id = static_cast<ULONG>(it->info(fieldIdx) + 0.5);
+				if (idMap.find(id) != idMap.end())
+					it->setMarked(true);
+			}
+			removeMarkedIndividuals();
 		}
 	}
-	// mark those guys
-	for (size_t i = 0; i < IDs.size(); ++i) {
-		ULONG id = static_cast<ULONG>(IDs[i] + 0.5);
-		DBG_FAILIF(idMap.find(id) == idMap.end(), IndexError,
-			"No individuals with ID " + toStr(id) + " is found.");
-		idMap[id]->setMarked(true);
-	}
-	// remove these Individuals
-	for (int depth = ancestralGens(); depth >= 0; --depth) {
-		useAncestralGen(depth);
-		removeMarkedIndividuals();
+	if (filter != NULL) {
+		pyFunc func(filter);
+		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
+			"Passed filter function should accept one parameter with name ind");
+		PyObject * args = PyTuple_New(1);
+		
+		//
+		for (int depth = ancestralGens(); depth >= 0; --depth) {
+			useAncestralGen(depth);
+			markIndividuals(vspID(), false);
+			RawIndIterator it = rawIndBegin();
+			RawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it) {
+				PyTuple_SET_ITEM(args, 0, pyIndObj(static_cast<void *>(&*it)));
+				if (func(PyObj_As_Bool, args))
+					it->setMarked(true);
+			}
+			removeMarkedIndividuals();
+		}
+		Py_XDECREF(args);
 	}
 	useAncestralGen(curGen);
 }
@@ -1652,13 +1665,14 @@ Population & Population::extractMarkedIndividuals() const
 
 
 Population & Population::extractIndividuals(const uintList & indexList,
-                                            const floatList & IDList, const string & idField) const
+                                            const floatList & IDList, const string & idField,
+											PyObject * filter) const
 {
 	const vectoru & indexes = indexList.elems();
 	const vectorf & IDs = IDList.elems();
 
-	if (IDs.empty() && indexes.empty()) {
-		// extract these Individuals
+	if (IDs.empty() && indexes.empty() && filter == NULL) {
+		// extract no individuals
 		Population & pop = *new Population();
 		pop.setGenoStruIdx(genoStruIdx());
 		incGenoStruRef();
@@ -1667,8 +1681,8 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		return pop;
 	}
 
-	DBG_FAILIF(!IDs.empty() && !indexes.empty(), ValueError,
-		"Please specify only one of parameters indexes and IDs");
+	DBG_FAILIF(IDs.empty() + indexes.empty() + (filter == NULL) != 1, ValueError,
+		"Please specify only one of parameters indexes, IDs and filter");
 
 	if (!indexes.empty()) {
 		markIndividuals(vspID(), false);
@@ -1679,28 +1693,47 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		}
 		return extractMarkedIndividuals();
 	}
-	// extract by ID
-	// first, build a map
-	std::map<ULONG, const Individual *> idMap;
-	UINT idIdx = infoIdx(idField);
-
 	int curGen = m_curAncestralGen;
-	for (int depth = ancestralGens(); depth >= 0; --depth) {
-		const_cast<Population *>(this)->useAncestralGen(depth);
-		markIndividuals(vspID(), false);
-		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
-			ULONG id = static_cast<ULONG>(it->info(idIdx) + 0.5);
-			DBG_FAILIF(idMap.find(id) != idMap.end(), IndexError,
-				"individual IDs are not unique. If this is an age-structured population, please remove parental generations.");
-			idMap[id] = &*it;
+	if (!IDs.empty()) {
+		UINT fieldIdx = infoIdx(idField);
+		// remove by ID
+		// first, build a map
+		std::map<ULONG, bool > idMap;
+		for (size_t i = 0; i < IDs.size(); ++i) 
+			idMap[IDs[i]] = true;
+
+		for (int depth = ancestralGens(); depth >= 0; --depth) {
+			const_cast<Population *>(this)->useAncestralGen(depth);
+			markIndividuals(vspID(), false);
+			ConstRawIndIterator it = rawIndBegin();
+			ConstRawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it) {
+				ULONG id = static_cast<ULONG>(it->info(fieldIdx) + 0.5);
+				if (idMap.find(id) != idMap.end())
+					it->setMarked(true);
+			}
 		}
 	}
-	// mark those guys
-	for (size_t i = 0; i < IDs.size(); ++i) {
-		ULONG id = static_cast<ULONG>(IDs[i] + 0.5);
-		DBG_FAILIF(idMap.find(id) == idMap.end(), IndexError,
-			"No individuals with ID " + toStr(id) + " is found.");
-		idMap[id]->setMarked(true);
+	if (filter != NULL) {
+		pyFunc func(filter);
+		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
+			"Passed filter function should accept one parameter with name ind");
+		PyObject * args = PyTuple_New(1);
+		
+		//
+		for (int depth = ancestralGens(); depth >= 0; --depth) {
+			const_cast<Population *>(this)->useAncestralGen(depth);
+			markIndividuals(vspID(), false);
+			ConstRawIndIterator it = rawIndBegin();
+			ConstRawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it) {
+				PyTuple_SET_ITEM(args, 0, pyIndObj(static_cast<void *>(
+					const_cast<Individual*>(&*it))));
+				if (func(PyObj_As_Bool, args))
+					it->setMarked(true);
+			}
+		}
+		Py_XDECREF(args);
 	}
 	Population * allPop = NULL;
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
