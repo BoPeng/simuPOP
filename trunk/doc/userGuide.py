@@ -659,6 +659,14 @@ pop.setVirtualSplitter(sim.InfoSplitter(field='age', cutoff=[20, 60]))
 # remove individuals
 pop.removeIndividuals(indexes=range(0, 300, 10))
 print pop.subPopSizes()
+# remove individuals using IDs
+pop.setIndInfo([1, 2, 3, 4], field='age')
+pop.removeIndividuals(IDs=[2, 4], idField='age')
+# remove indiviuals using a filter function
+sim.initSex(pop)
+pop.removeIndividuals(filter=lambda ind: ind.sex() == sim.MALE)
+print [pop.individual(x).sex() for x in range(8)]
+#
 # remove subpopulation
 pop.removeSubPops(1)
 print pop.subPopSizes()
@@ -3303,17 +3311,17 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(ops=[
         sim.IdTagger(),
-        sim.PedigreeTagger(output=">>sim.Pedigree.txt"),
+        sim.PedigreeTagger(output=">>pedigree.txt"),
         sim.MendelianGenoTransmitter()]
     ),
     gen = 100
 )
-ped = open('sim.Pedigree.txt')
+ped = open('pedigree.txt')
 print ''.join(ped.readlines()[100:105])
 #begin_ignore
 ped.close()
 import os
-os.remove('sim.Pedigree.txt')
+os.remove('pedigree.txt')
 #end_ignore
 #end_file
 
@@ -3388,7 +3396,7 @@ pop.evolve(
         # calculate mean 'numOfAff' of offspring, for unaffected and affected subpopulations.
         sim.Stat(meanOfInfo='numOfAff', subPops=[(0,0), (0,1)], vars=['meanOfInfo_sp']),
         # print mean number of affected parents for unaffected and affected offspring.
-        sim.PyEval(r"'sim.MEAN number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
+        sim.PyEval(r"'Mean number of affected parents: %.2f (unaff), %.2f (aff)\n' % "
             "(subPop[(0,0)]['meanOfInfo']['numOfAff'], subPop[(0,1)]['meanOfInfo']['numOfAff'])")
     ],
     gen = 5
@@ -3899,7 +3907,7 @@ def Nt(gen):
     return int((10**4) * exp(.00115 * gen))
 
 def fitness(gen, sp):
-    'sim.CONSTANT positive selection pressure.'
+    'Constant positive selection pressure.'
     return [1, 1.01, 1.02]
 
 # simulate a trajectory backward in time, from generation 1000
@@ -4679,7 +4687,6 @@ class ne(sim.PyOperator):
                 ne[loc] = 0
             else:
                 ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
-        
         # save the result to the sim.Population.
         pop.dvars().ne = ne
         return True
@@ -4799,9 +4806,9 @@ options = [
     },
     {'longarg': 'k=',
      'default': 200,
-     'label': 'sim.MAXIMUM allelic sim.state',
+     'label': 'Maximum allelic state',
      'allowedTypes': [types.IntType],
-     'description': 'sim.MAXIMUM allelic sim.state for a k-allele mutation model',
+     'description': 'Maximum allelic state for a k-allele mutation model',
      'validate': simuOpt.valueGT(1),
     },
 ]
@@ -4845,12 +4852,12 @@ class ne(sim.PyOperator):
         sim.stat(pop, alleleFreq=self.loci)
         ne = {}
         for loc in self.loci:
-            freq = pop.dvars().alleleFreq[loc][1:]
+            freq = pop.dvars().alleleFreq[loc]
             sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
         # save the result to the sim.Population.
         pop.dvars().ne = ne
         return True
@@ -4876,15 +4883,15 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
         ],
         matingScheme=sim.RandomMating(subPopSize=demo_func),
         postOps=[
-            sim.KAlleleMutator(rate=mu, maxAllele=k),
+            sim.KAlleleMutator(rates=mu, k=k),
             sim.MaSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
-            ne(loci=0, step=100),
+            ne(loci=(0,), step=100),
             sim.PyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
                 step=100),
         ],
         gen = G0 + G1
     )
-    return simu.extract(0)
+    return pop
 
 if __name__ == '__main__':
     # get parameters

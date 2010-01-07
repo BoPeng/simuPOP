@@ -4687,10 +4687,54 @@ removeIndividauls
 extractIndividuals
 \family default
  could be used to remove or extract individuals from the present generation
- by indexes or from all ancestral generations by IDs.
+ by indexes or from all ancestral generations by IDs or a Python filter
+ function.
  The present population structure will be kept, even if some subpopulations
  are left empty.
- Functions 
+ For example, you could remove the first thirty individuals of a population
+ using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.removeIndividuals(indexes=range(30))
+\end_layout
+
+\end_inset
+
+or remove all individuals at age 20 or 30 using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.removeIndividuals(IDs=(20, 30), idField='age')
+\end_layout
+
+\end_inset
+
+or remove all individuals with age between 20 and 30 using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.removeIndividuals(filter=lambda ind: ind.age >=20 and ind.age <=30)
+\end_layout
+
+\end_inset
+
+.
+ In the last example, a Python lambda function is defined to avoid the definitio
+n of a named function.
+\end_layout
+
+\begin_layout Standard
+Functions 
 \family typewriter
 removeSubPops
 \family default
@@ -21476,8 +21520,9 @@ Simulation scenario
 \end_layout
 
 \begin_layout Standard
+Reich and Lander 
 \begin_inset CommandInset citation
-LatexCommand citet
+LatexCommand citeyearpar
 key "Reich2001a"
 
 \end_inset
@@ -21525,13 +21570,7 @@ Demographic model
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Reich2001a"
-
-\end_inset
-
- used a very simple instant population growth model.
+The original paper used a very simple instant population growth model.
  Under the model assumption, a population with an initial population size
  
 \begin_inset Formula $N_{0}$
@@ -21811,7 +21850,7 @@ status open
 
 \begin_layout Plain Layout
 
-KAlleleMutator(rates=mu, maxAllele=k)
+KAlleleMutator(k=k, rates=mu)
 \end_layout
 
 \end_inset
@@ -22481,7 +22520,7 @@ status open
 
 \begin_layout Plain Layout
 
-par = simuOpt.simuOpt(options, __doc__)
+par = simuOpt.Params(options, __doc__)
 \end_layout
 
 \begin_layout Plain Layout
