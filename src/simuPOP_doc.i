@@ -2896,9 +2896,9 @@ Details:
 
 Usage:
 
-    InitGenotype(freq=[], genotype=ALL_AVAIL, prop=[],
-      loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    InitGenotype(freq=[], genotype=[], prop=[], loci=ALL_AVAIL,
+      ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8677,7 +8677,7 @@ Usage:
 
 Usage:
 
-    uintList(obj)
+    uintList(obj=Py_True)
 
 "; 
 

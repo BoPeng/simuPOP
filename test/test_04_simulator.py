@@ -59,7 +59,7 @@ class TestSimulator(unittest.TestCase):
         'Testing the construction of Simulator'
         pop = Population(size=[20, 80], loci=1)
         pop1 = Population(size=[20, 40], loci=2)
-        simu = Simulator([pop, pop1], steal=False)
+        simu = Simulator([pop, pop1], stealPops=False)
         self.assertEqual(pop.popSize(), 100)
         self.assertEqual(pop1.popSize(), 60)
         self.assertEqual(simu.population(0).popSize(), 100)
@@ -73,7 +73,7 @@ class TestSimulator(unittest.TestCase):
         # rep
         pop = Population(size=[20, 80], loci=1)
         pop1 = Population(size=[20, 40], loci=2)
-        simu = Simulator([pop, pop1], rep=3, steal=False)
+        simu = Simulator([pop, pop1], rep=3, stealPops=False)
         self.assertEqual(pop.popSize(), 100)
         self.assertEqual(pop1.popSize(), 60)
         self.assertEqual(simu.population(2).popSize(), 100)
@@ -105,7 +105,7 @@ class TestSimulator(unittest.TestCase):
         # add without strealing
         pop = Population(size=[300, 500], loci=1)
         repnum = simu.numRep()
-        simu.add(pop, steal=False)
+        simu.add(pop, stealPop=False)
         self.assertEqual(simu.numRep(), repnum + 1)
         self.assertEqual(pop.subPopSizes(), (300, 500))
 

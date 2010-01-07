@@ -387,6 +387,8 @@ private:
 };
 
 
+// At the CPP level, uintList() is ALL_AVAIL, uintList(vectoru()) is regular empty, uintList(NULL) is UNSPECIFIED
+// At the Python level True is ALL_AVAIL, a list if regular, False is UNSPECIFIED
 class uintList
 {
 public:
@@ -401,16 +403,10 @@ private:
 	};
 
 public:
-	uintList(PyObject * obj);
+	uintList(PyObject * obj = Py_True);
 
 	/// CPPONLY
 	uintList(const vectoru & values) : m_elems(values), m_status(REGULAR)
-	{
-	}
-
-
-	/// CPPONLY
-	uintList(bool status = true) : m_elems(), m_status(status ? ALL_AVAIL : UNSPECIFIED)
 	{
 	}
 

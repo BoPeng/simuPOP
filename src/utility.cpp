@@ -552,7 +552,7 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 {
 	if (obj == NULL)
 		// accept NULL
-		m_status = ALL_AVAIL;
+		m_status = UNSPECIFIED;
 	else if (PyBool_Check(obj))
 		// accept True/False
 		m_status = obj == Py_True ? ALL_AVAIL : UNSPECIFIED;
@@ -564,12 +564,12 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 		// assign values
 		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
-			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of loci.");
+			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of integers.");
 			m_elems[i] = static_cast<UINT>(PyInt_AS_LONG(item));
 			Py_DECREF(item);
 		}
 	} else {
-		DBG_FAILIF(true, ValueError, "Invalid input for a list of loci.");
+		DBG_FAILIF(true, ValueError, "Invalid input for a list of integers.");
 	}
 }
 
