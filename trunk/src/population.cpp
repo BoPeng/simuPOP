@@ -344,7 +344,7 @@ int Population::__cmp__(const Population & rhs) const
 }
 
 
-Individual & Population::indByID(double fid, const uintList & ancGen, const string & idField)
+Individual & Population::indByID(double fid, const uintList & ancGens, const string & idField)
 {
 	ULONG id = static_cast<ULONG>(fid + 0.5);
 
@@ -353,11 +353,11 @@ Individual & Population::indByID(double fid, const uintList & ancGen, const stri
 
 	UINT idx = infoIdx(idField);
 
-	vectoru gens = ancGen.elems();
-	if (ancGen.allAvail())
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
 		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
-	else if (ancGen.unspecified())
+	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
 	
 	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
@@ -1718,7 +1718,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 
 
 Population & Population::extract(const uintList & extractedLoci, const stringList & infoFieldList,
-                                 const subPopList & _subPops, const uintList & ancGen) const
+                                 const subPopList & _subPops, const uintList & ancGens) const
 {
 	Population & pop = *new Population();
 
@@ -1812,11 +1812,11 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 	vectoru::iterator infoPtr = infoList.begin();
 	vectoru::iterator infoEnd = infoList.end();
 	//
-	vectoru gens = ancGen.elems();
-	if (ancGen.allAvail())
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
 		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
-	else if (ancGen.unspecified())
+	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
 	std::sort(gens.begin(), gens.end());
 	
