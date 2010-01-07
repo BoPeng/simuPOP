@@ -1270,12 +1270,13 @@ public:
 	/** Update information fields \e fields from \e fromFields of another
 	 *  population (or Pedigree) \e pop. Two populations should have the same
 	 *  number of individuals. If \e fromFields is not specified, it is assumed
-	 *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
-	 *  recent \e ancGen generations are updated.
+	 *  to be the same as \e fields. If \e ancGens is not \c ALL_AVAIL, only
+	 *  the specified ancestral generations are updated.
 	 *  <group>8-info</group>
 	 */
 	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
-		const stringList & fromFields = vectorstr(), int ancGen = -1);
+		const stringList & fromFields = vectorstr(),
+		const uintList & ancGens = uintList());
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
