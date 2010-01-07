@@ -98,20 +98,20 @@ public:
 	 *  \c True) and genotype (if \e genotype is \c True) to an \e output (
 	 *  default to standard terminal output). Because a population can be large,
 	 *  this operator will only output the first 100 (parameter \e max)
-	 *  individuals of the present generation (parameter \e ancGen). All loci
+	 *  individuals of the present generation (parameter \e ancGens). All loci
 	 *  will be outputed unless parameter \e loci are used to specify a subset
 	 *  of loci. If a list of (virtual) subpopulations are specified, this
 	 *  operator will only output individuals in these outputs. Please refer to
 	 *  class \c BaseOperator for a detailed explanation for common parameters
 	 *  such as \e output and \e stage.
 	 */
-	Dumper(bool genotype = true, bool structure = true, int ancGen = 0,
+	Dumper(bool genotype = true, bool structure = true, const uintList & ancGens = uintList(false),
 		int width = 1, UINT max = 100, const uintList & loci = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
+		m_showGenotype(genotype), m_showStructure(structure), m_ancGens(ancGens), m_width(width),
 		m_loci(loci.elems()), m_max(max)
 	{
 	}
@@ -152,7 +152,7 @@ private:
 	const bool m_showStructure;
 
 	///
-	const int m_ancGen;
+	const uintList m_ancGens;
 
 	/// disp width when outputing alleles
 	const int m_width;

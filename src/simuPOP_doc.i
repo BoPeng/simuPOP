@@ -348,10 +348,10 @@ Details:
     penetrance values will be saved to this field for future analysis.
     When a penetrance operator is applied to a population, it is only
     applied to the current generation. You can, however, use parameter
-    ancGen=-1 to set affection status for all ancestral generations,
-    or a generation index to apply to only ancestral generation
-    younger than ancGen. Note that this parameter is ignored if the
-    operator is applied during mating.
+    ancGens to set affection status for all ancestral generations
+    (ALL_AVAIL), or individuals in specified generations if a list of
+    ancestral generations is specified. Note that this parameter is
+    ignored if the operator is applied during mating.
 
 "; 
 
@@ -359,19 +359,19 @@ Details:
 
 Usage:
 
-    BasePenetrance(ancGen=0, begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    BasePenetrance(ancGens=ALL_AVAIL, begin=0, end=-1, step=1,
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Create a base penetrance operator. If ancGen=0 (default), only the
-    current generation will be applied. If ancGen=-1, affection status
-    of all ancestral generations will be set. If a positive number is
-    given, ancestral generations with index <= ancGen will be applied.
-    A penetrance operator can be applied to specified (virtual)
-    subpopulations (parameter subPops) and replicates (parameter
-    reps). If an informatio field is given, penetrance value will be
-    stored in this information field of each individual.
+    Create a base penetrance operator. This operator assign individual
+    affection status in the present generation (default). If ALL_AVAIL
+    or a list of ancestral generations are spcified in parameter
+    ancGens, individuals in specified ancestral generations will be
+    processed. A penetrance operator can be applied to specified
+    (virtual) subpopulations (parameter subPops) and replicates
+    (parameter reps). If an informatio field is given, penetrance
+    value will be stored in this information field of each individual.
 
 "; 
 
@@ -448,18 +448,18 @@ Details:
 
 Usage:
 
-    BaseQuanTrait(ancGen=-1, begin=0, end=-1, step=1, at=[],
+    BaseQuanTrait(ancGens=ALL_AVAIL, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Create a base quantitative trait operator. If ancGen=0 (default),
-    only the current generation will be applied. If ancGen=-1, the
-    trait fields (infoFields) of all ancestral generations will be
-    set. If a positive number is given, ancestral generations with
-    index <= ancGen will be applied. A quantitative trait operator can
-    be applied to specified (virtual) subpopulations (parameter
-    subPops) and replicates (parameter reps).
+    Create a base quantitative trait operator. This operator assigns
+    one or more quantitative traits to trait fields in the present
+    generation (default). If ALL_AVAIL or a list of ancestral
+    generations are specified, this operator will be applied to
+    individuals in these generations as well. A quantitative trait
+    operator can be applied to specified (virtual) subpopulations
+    (parameter subPops) and replicates (parameter reps).
 
 "; 
 
@@ -1136,9 +1136,9 @@ Details:
 
 Usage:
 
-    Dumper(genotype=True, structure=True, ancGen=0, width=1,
-      max=100, loci=[], output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    Dumper(genotype=True, structure=True, ancGens=ALL_AVAIL,
+      width=1, max=100, loci=[], output=\">\", begin=0, end=-1, step=1,
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -1146,8 +1146,8 @@ Details:
     is True) and genotype (if genotype is True) to an output ( default
     to standard terminal output). Because a population can be large,
     this operator will only output the first 100 (parameter max)
-    individuals of the present generation (parameter ancGen). All loci
-    will be outputed unless parameter loci are used to specify a
+    individuals of the present generation (parameter ancGens). All
+    loci will be outputed unless parameter loci are used to specify a
     subset of loci. If a list of (virtual) subpopulations are
     specified, this operator will only output individuals in these
     outputs. Please refer to class BaseOperator for a detailed
@@ -3127,9 +3127,9 @@ Details:
 
 Usage:
 
-    MaPenetrance(loci, penetrance, wildtype=0, ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
+    MaPenetrance(loci, penetrance, wildtype=0, ancGens=ALL_AVAIL,
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3178,8 +3178,9 @@ Details:
 
 Usage:
 
-    MapPenetrance(loci, penetrance, ancGen=0, begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    MapPenetrance(loci, penetrance, ancGens=ALL_AVAIL, begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[])
 
 Details:
 
@@ -3710,9 +3711,9 @@ Details:
 
 Usage:
 
-    MlPenetrance(ops, mode=MULTIPLICATIVE, ancGen=0, begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
+    MlPenetrance(ops, mode=MULTIPLICATIVE, ancGens=ALL_AVAIL,
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -4154,7 +4155,7 @@ Usage:
 
     Pedigree(pop, loci=[], infoFields=[], ancGens=ALL_AVAIL,
       idField=\"ind_id\", fatherField=\"father_id\",
-      motherField=\"mother_id\")
+      motherField=\"mother_id\", stealPop=False)
 
 Details:
 
@@ -4175,7 +4176,9 @@ Details:
     construct parental IDs from index based relationship recorded by
     operator ParentsTagger. A pedigree object could be constructed
     with one or no parent but certain functions such as relative
-    tracking will not be available for such pedigrees.
+    tracking will not be available for such pedigrees. In case that
+    your are no longer using your population object, you could steal
+    the content from the population by setting stealPop to True.
 
 "; 
 
@@ -4226,7 +4229,7 @@ Details:
 Usage:
 
     x.locateRelatives(relType, resultFields=[], sex=ANY_SEX,
-      affectionStatus=ANY_AFFECTION_STATUS, ancGen=-1)
+      affectionStatus=ANY_AFFECTION_STATUS, ancGens=ALL_AVAIL)
 
 Details:
 
@@ -4253,8 +4256,8 @@ Details:
     ANY_AFFECTION_STATUS (default). Only relatives with specified
     properties will be located.  This function will by default go
     through all ancestral generations and locate relatives for all
-    individuals. This can be changed by setting parameter ancGen to
-    the greatest ancestral generation you would like to process.
+    individuals. This can be changed by setting parameter ancGens to
+    certain ancestral generations you would like to process.
 
 "; 
 
@@ -4263,7 +4266,7 @@ Details:
 Usage:
 
     x.traceRelatives(fieldPath, sex=[], affectionStatus=[],
-      resultFields=[], ancGen=-1)
+      resultFields=[], ancGens=ALL_AVAIL)
 
 Details:
 
@@ -4292,9 +4295,9 @@ Details:
     off1 and off2 from these siblings are located and are used to
     locate their female offspring. The results are father or mother's
     brother's daughters. Their indexes will be saved in each
-    individuals information fields resultFields. If a non-negative
-    ancGen is given, only individuals in these ancestral generations
-    will be processed.
+    individuals information fields resultFields. If a list of
+    ancestral generations is given in parameter ancGens is given, only
+    individuals in these ancestral generations will be processed.
 
 "; 
 
@@ -4303,7 +4306,7 @@ Details:
 Usage:
 
     x.individualsWithRelatives(infoFields, sex=[],
-      affectionStatus=[], subPops=ALL_AVAIL, ancGen=-1)
+      affectionStatus=[], subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
 
 Details:
 
@@ -4315,11 +4318,49 @@ Details:
     ANY_AFFECTION_STATUS (default). This function by default check all
     individuals in all ancestral generations, but you could limit the
     search using parameter subPops (a list of (virtual)
-    subpopulations) and (recent ancestral generations) ancGen.
-    Relatives fall out of specified subpopulations and ancestral
-    generaions will be considered invalid.
+    subpopulations) and ancestral generations ancGens. Relatives fall
+    out of specified subpopulations and ancestral generaions will be
+    considered invalid.
 
 "; 
+
+%feature("docstring") simuPOP::Pedigree::identifyFamilies "
+
+Usage:
+
+    x.identifyFamilies(pedField=\"\", subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
+
+Details:
+
+    This function goes through all individuals in a pedigree and group
+    related individuals into families. If an information field
+    pedField is given, indexes of families will be assigned to this
+    field of each family member. The return value is a list of family
+    sizes corresponding to families 0, 1, 2, ... etc. If a list of
+    (virtual) subpopulations (parameter subPops) or ancestral
+    generations are specified (parameter ancGens), the search will be
+    limited to individuals in these subpopulations and generations.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::removeIndividuals "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::removeSubPops "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::push "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::addChrom "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::addChromFrom "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::addIndFrom "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::mergeSubPops "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::resize "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::setSubPopByIndInfo "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PedigreeTagger "
 
@@ -4612,7 +4653,19 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::swap "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Population::swap "
+
+Usage:
+
+    x.swap(rhs)
+
+Details:
+
+    Swap the content of two population objects, which can be handy in
+    some particular circumstances. For example, you could swap out a
+    population in a simulator.
+
+"; 
 
 %feature("docstring") simuPOP::Population::~Population "
 
@@ -5262,7 +5315,7 @@ Details:
 
 Usage:
 
-    x.removeLoci(loci=[], keep=[])
+    x.removeLoci(loci=ALL_AVAIL, keep=ALL_AVAIL)
 
 Details:
 
@@ -5441,6 +5494,8 @@ Details:
     removed.
 
 "; 
+
+%ignore simuPOP::Population::keepAncestralGens(const uintList &ancGens);
 
 %feature("docstring") simuPOP::Population::useAncestralGen "
 
@@ -6099,8 +6154,8 @@ Details:
 
 Usage:
 
-    PyPenetrance(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    PyPenetrance(func, loci=[], ancGens=ALL_AVAIL, begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -6178,8 +6233,8 @@ Details:
 
 Usage:
 
-    PyQuanTrait(func, loci=[], ancGen=0, begin=0, end=-1, step=1,
-      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    PyQuanTrait(func, loci=[], ancGens=ALL_AVAIL, begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -7218,7 +7273,7 @@ Details:
 
 Usage:
 
-    Simulator(pops, rep=1, steal=True)
+    Simulator(pops, rep=1, stealPops=True)
 
 Details:
 
@@ -7227,8 +7282,9 @@ Details:
     population object is also acceptable. Contents of passed
     populations are by default moved to the simulator to avoid
     duplication of potentially large population objects, leaving empty
-    populations behind. This behavior can be changed by setting steal
-    to False, in which case populations are copied to the simulator.
+    populations behind. This behavior can be changed by setting
+    stealPops to False, in which case populations are copied to the
+    simulator.
 
 "; 
 
@@ -7289,7 +7345,7 @@ Details:
 
 Usage:
 
-    x.add(pop, steal=True)
+    x.add(pop, stealPop=True)
 
 Details:
 
@@ -8621,7 +8677,7 @@ Usage:
 
 Usage:
 
-    uintList(obj=None)
+    uintList(obj)
 
 "; 
 
@@ -8987,18 +9043,6 @@ Details:
 Usage:
 
     _swig_repr(self)
-
-"; 
-
-%feature("docstring") unsupportedPedigreeOperation "
-
-Description:
-
-    This function is not supported in the pedigree class
-
-Usage:
-
-    unsupportedPedigreeOperation(*args, **kwargs)
 
 "; 
 

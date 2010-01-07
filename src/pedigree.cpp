@@ -164,7 +164,8 @@ bool Pedigree::acceptableAffectionStatus(bool affected, AffectionStatus choice)
 
 
 void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFields,
-                               SexChoice sexChoice, AffectionStatus affectionChoice, int ancGen)
+                               SexChoice sexChoice, AffectionStatus affectionChoice,
+                               const uintList & ancGens)
 {
 	DBG_ASSERT(sexChoice == ANY_SEX || sexChoice == MALE_ONLY || sexChoice == FEMALE_ONLY
 		|| sexChoice == SAME_SEX || sexChoice == OPPOSITE_SEX, ValueError,
@@ -175,24 +176,31 @@ void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 		"Relative affection status can only be one of AFFECTED, UNAFFECTED and ANY_AFFECTION_STATUS.");
 
 	UINT oldGen = curAncestralGen();
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
+
 	switch (relType) {
 	case SPOUSE:
-		locateSpouse(sexChoice, affectionChoice, resultFields, ancGen, false);
+		locateSpouse(sexChoice, affectionChoice, resultFields, gens, false);
 		break;
 	case OUTBRED_SPOUSE:
-		locateSpouse(sexChoice, affectionChoice, resultFields, ancGen, true);
+		locateSpouse(sexChoice, affectionChoice, resultFields, gens, true);
 		break;
 	case OFFSPRING:
-		locateOffspring(sexChoice, affectionChoice, resultFields, ancGen);
+		locateOffspring(sexChoice, affectionChoice, resultFields, gens);
 		break;
 	case SIBLING:
-		locateSibling(sexChoice, affectionChoice, resultFields, ancGen);
+		locateSibling(sexChoice, affectionChoice, resultFields, gens);
 		break;
 	case FULLSIBLING:
-		locateFullSibling(sexChoice, affectionChoice, resultFields, ancGen);
+		locateFullSibling(sexChoice, affectionChoice, resultFields, gens);
 		break;
 	case COMMON_OFFSPRING:
-		locateCommonOffspring(sexChoice, affectionChoice, resultFields, ancGen);
+		locateCommonOffspring(sexChoice, affectionChoice, resultFields, gens);
 		break;
 	default:
 		throw ValueError("Unrecognized relative type");
@@ -201,7 +209,8 @@ void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 }
 
 
-void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen, bool excludeOutbred)
+void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields,
+                            const vectoru & ancGens, bool excludeOutbred)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -220,9 +229,8 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 	vectori spouseIdx(maxSpouse);
 
 	// clear all fields
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < maxSpouse; ++i) {
 			spouseIdx[i] = infoIdx(resultFields[i]);
 			// clear these fields for the last generation
@@ -235,8 +243,8 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 	// find all the couples
 	typedef std::pair<ULONG, ULONG> couple;
 	vector<couple> couples;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
@@ -306,7 +314,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 }
 
 
-void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, const vectoru & ancGens)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -316,9 +324,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 	vectori offspringIdx(maxOffspring);
 
 	// clear offspring fields
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-	for (unsigned ans = topGen; ans >= 0; --ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < maxOffspring; ++i) {
 			offspringIdx[i] = infoIdx(resultFields[i]);
 			// clear these fields for the last generation
@@ -330,8 +337,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 
 	// use individual ID
 	std::map<ULONG, UINT> numOffspring;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
 			// everyone has one or two parents.
 			double p = individual(i).info(m_fatherIdx);
@@ -367,7 +374,7 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 }
 
 
-void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, const vectoru & ancGens)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -379,8 +386,8 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 		siblingIdx[i] = infoIdx(resultFields[i]);
 
 	// clear all fields
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (IndIterator it = indIterator(); it.valid(); ++it)
 			for (size_t i = 0; i < maxSibling; ++i)
 				it->setInfo(-1, siblingIdx[i]);
@@ -388,8 +395,8 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 
 	// find all single families
 	map<ULONG, vectoru> families;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
@@ -460,7 +467,7 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 }
 
 
-void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, const vectoru & ancGens)
 {
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
@@ -474,9 +481,9 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 	for (size_t i = 0; i < maxSibling; ++i)
 		siblingIdx[i] = infoIdx(resultFields[i]);
 
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
-	// clear all fields
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
+		// clear all fields
 		for (IndIterator it = indIterator(); it.valid(); ++it)
 			for (size_t i = 0; i < maxSibling; ++i)
 				it->setInfo(-1, siblingIdx[i]);
@@ -485,8 +492,8 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 	// find all full families
 	typedef std::pair<ULONG, ULONG> couple;
 	map<couple, vectoru> families;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
@@ -550,7 +557,8 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 }
 
 
-void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affectionChoice, const vectorstr & resultFields, int ancGen)
+void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affectionChoice,
+                                     const vectorstr & resultFields, const vectoru & ancGens)
 {
 	DBG_ASSERT(numParents() == 2, ValueError,
 		"This relative only exists when there are two parents for each indidivual");
@@ -558,15 +566,14 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	DBG_ASSERT(resultFields.size() >= 2, ValueError,
 		"Please provide at least one information field for spouse and one for offspring.");
 
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
 	UINT maxOffspring = resultFields.size() - 1;
 
 	vectori offspringIdx(maxOffspring);
 	int spouseIdx = infoIdx(resultFields[0]);
 
 	// clear all fields
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < maxOffspring; ++i) {
 			offspringIdx[i] = infoIdx(resultFields[i + 1]);
 			// clear these fields for the last generation
@@ -580,8 +587,8 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	// find all full families
 	typedef std::pair<ULONG, ULONG> couple;
 	map<couple, vectoru> families;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
+		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
@@ -645,7 +652,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 
 bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
                               const uintList & sexChoiceList,  const uintList & affectionChoiceList,
-                              const stringList & resultFieldList, int ancGen)
+                              const stringList & resultFieldList, const uintList & ancGens)
 {
 	const matrixstr & pathFields = fieldPath.elems();
 	const vectoru & sexChoice = sexChoiceList.elems();
@@ -660,7 +667,12 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 		ValueError,
 		"Parameter affectionChoice, if given, should have the same length of pathFields");
 
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
 
 	vectori resultIdx(resultFields.size());
 	for (size_t i = 0; i < resultIdx.size(); ++i)
@@ -668,8 +680,8 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 	vectoru numResult(popSize(), 0);
 	UINT maxResult = resultIdx.size();
 	// clear values
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		useAncestralGen(gens[genIdx]);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind)
 			for (size_t i = 0; i < maxResult; ++i)
 				ind->setInfo(-1, resultIdx[i]);
@@ -699,8 +711,8 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 	}
 
 	ULONG idx = 0;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
-		useAncestralGen(ans);
+	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		useAncestralGen(gens[genIdx]);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
 			Sex mySex = ind->sex();
 			vectoru inds = vectoru(1, static_cast<ULONG>(ind->info(m_idIdx)));
@@ -746,7 +758,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 
 vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, const uintList & sexChoiceList,
                                            const uintList & affectionChoiceList,
-                                           const subPopList & subPops, int ancGen)
+                                           const subPopList & subPops, const uintList & ancGens)
 {
 	const vectoru & sexChoice = sexChoiceList.elems();
 	const vectoru & affectionChoice = affectionChoiceList.elems();
@@ -782,11 +794,17 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
+
 	// mark eligible Individuals
-	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
 	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
-		if (ans > topGen) {
+		if (std::find(gens.begin(), gens.end(), ans) == gens.end()) {
 			markIndividuals(vspID(), false);
 			continue;
 		}
@@ -802,7 +820,9 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 	}
 
 	vectoru IDs;
-	for (unsigned ans = 0; ans <= topGen; ++ans) {
+	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
+		if (std::find(gens.begin(), gens.end(), ans) == gens.end())
+			continue;
 		useAncestralGen(ans);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
 			if (!ind->marked())
@@ -834,6 +854,13 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 	}
 	useAncestralGen(0);
 	return IDs;
+}
+
+
+vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & subPops,
+                                   const uintList & ancGens)
+{
+	return vectoru();
 }
 
 

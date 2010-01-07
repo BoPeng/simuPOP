@@ -60,29 +60,30 @@ namespace simuPOP {
  *  future analysis.
  *
  *  When a penetrance operator is applied to a population, it is only applied
- *  to the current generation. You can, however, use parameter \e ancGen=-1 to
- *  set affection status for all ancestral generations, or a generation index
- *  to apply to only ancestral generation younger than \e ancGen. Note that
- *  this parameter is ignored if the operator is applied during mating.
+ *  to the current generation. You can, however, use parameter \e ancGens to
+ *  set affection status for all ancestral generations (\c ALL_AVAIL), or
+ *  individuals in specified generations if a list of ancestral generations
+ *  is specified. Note that this parameter is ignored if the operator is
+ *  applied during mating.
  */
 class BasePenetrance : public BaseOperator
 {
 public:
-	/** Create a base penetrance operator. If \e ancGen=0 (default), only the
-	 *  current generation will be applied. If \e ancGen=-1, affection status
-	 *  of all ancestral generations will be set. If a positive number is
-	 *  given, ancestral generations with index <= ancGen will be applied. A
+	/** Create a base penetrance operator. This operator assign individual
+	 *  affection status in the present generation (default). If \c ALL_AVAIL
+	 *  or a list of ancestral generations are spcified in parameter \e ancGens,
+	 *  individuals in specified ancestral generations will be processed. A
 	 *  penetrance operator can be applied to specified (virtual)
 	 *  subpopulations (parameter \e subPops) and replicates (parameter
 	 *  \e reps). If an informatio field is given, penetrance value will be
 	 *  stored in this information field of each individual.
 	 */
-	BasePenetrance(int ancGen = 0,
+	BasePenetrance(const uintList & ancGens = uintList(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
 		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
-		m_ancGen(ancGen)
+		m_ancGens(ancGens)
 	{
 	}
 
@@ -134,7 +135,7 @@ public:
 
 private:
 	/// how to handle ancestral gen
-	const int m_ancGen;
+	const uintList m_ancGens;
 };
 
 /** This penetrance operator assigns individual affection status using a
@@ -156,10 +157,10 @@ public:
 	 *  dictionary keys.
 	 */
 	MapPenetrance(const uintList & loci, const tupleDict & penetrance,
-		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(penetrance)
 	{
 	};
@@ -225,10 +226,10 @@ public:
 	 *  chromosomes.
 	 */
 	MaPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
-		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_penetrance(penetrance), m_wildtype(wildtype.elems())
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -294,10 +295,10 @@ public:
 	 *  zero or greater than 1.
 	 */
 	MlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
-		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
+		const uintList & ancGens = uintList(), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
 		m_peneOps(ops), m_mode(mode)
 	{
 		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -355,12 +356,12 @@ public:
 	 */
 	PyPenetrance(PyObject * func,
 		const uintList & loci = vectoru(),
-		int ancGen = 0,
+		const uintList & ancGens = uintList(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BasePenetrance(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");

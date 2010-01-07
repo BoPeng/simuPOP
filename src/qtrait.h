@@ -57,19 +57,19 @@ namespace simuPOP {
 class BaseQuanTrait : public BaseOperator
 {
 public:
-	/** Create a base quantitative trait operator. If \e ancGen=0 (default),
-	 *  only the current generation will be applied. If \e ancGen=-1, the trait
-	 *  fields (\e infoFields) of all ancestral generations will be set. If a
-	 *  positive number is given, ancestral generations with index <= ancGen
-	 *  will be applied. A quantitative trait operator can be applied to
+	/** Create a base quantitative trait operator. This operator assigns one
+	 *  or more quantitative traits to trait fields in the present generation
+	 *  (default). If \c ALL_AVAIL or a list of ancestral generations are
+	 *  specified, this operator will be applied to individuals in these
+	 *  generations as well. A quantitative trait operator can be applied to
 	 *  specified (virtual) subpopulations (parameter \e subPops) and
 	 *  replicates (parameter \e reps).
 	 */
-	BaseQuanTrait(int ancGen = -1,  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	BaseQuanTrait(const uintList & ancGens = uintList(false),  int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
 		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
-		m_ancGen(ancGen)
+		m_ancGens(ancGens)
 	{
 		DBG_ASSERT(infoSize() >= 1, ValueError,
 			"Please specify at least one quantitative trait field");
@@ -115,7 +115,7 @@ public:
 
 private:
 	/// how to handle ancestral gen
-	const int m_ancGen;
+	const uintList m_ancGens;
 
 };
 
@@ -141,10 +141,10 @@ public:
 	 *  values will be accepted and be assigned to each trait field.
 	 */
 	PyQuanTrait(PyObject * func, const uintList & loci = vectoru(),
-		int ancGen = 0, int begin = 0, int end = -1, int step = 1,
+		const uintList ancGens = uintList(false), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BaseQuanTrait(ancGen, begin, end, step, at, reps, subPops, infoFields),
+		BaseQuanTrait(ancGens, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci.elems())
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");

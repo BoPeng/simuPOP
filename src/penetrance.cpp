@@ -36,18 +36,16 @@ bool BasePenetrance::apply(Population & pop) const
 	if (savePene)
 		infoIdx = pop.infoIdx(infoField(0));
 
-	UINT ansGen = 0;
+	vectoru gens = m_ancGens.elems();
+	if (m_ancGens.allAvail())
+		for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (m_ancGens.unspecified())
+		gens.push_back(pop.curAncestralGen());
+
 	UINT oldGen = pop.curAncestralGen();
-	if (m_ancGen == -1)
-		ansGen = pop.ancestralGens();
-	else if (m_ancGen > 0) {
-		if (static_cast<UINT>(m_ancGen) > pop.ancestralGens())
-			ansGen = pop.ancestralGens();
-		else
-			ansGen = m_ancGen;
-	}
-	for (UINT i = 0; i <= ansGen; ++i) {
-		pop.useAncestralGen(i);
+	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
+		pop.useAncestralGen(gens[genIdx]);
 
 		subPopList subPops = applicableSubPops();
 
