@@ -7,7 +7,9 @@ TODO:
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
-version 1.0.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.0 - Rev 3372 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
   - CHG: Using a new method to communicate with user-provided Python functions.
 		Basically, parameter names are now used to tell simuPOP what information
