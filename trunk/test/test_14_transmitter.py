@@ -701,9 +701,9 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        assert simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2),0) == 0
+        self.assertEqual(simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2),0), 0)
         assert (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    < 0.01
-        assert simu.dvars(0).haploFreq[(3,4)].setdefault((a1,a2),0) == 0
+        self.assertEqual(simu.dvars(0).haploFreq[(3,4)].setdefault((a1,a2),0), 0)
         assert (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
         assert (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2) < 0.01
 

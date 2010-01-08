@@ -23,12 +23,12 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ])
-        assert pop.subPopSizes() == (1900, 4050, 4050)
+        self.assertEqual(pop.subPopSizes(), (1900, 4050, 4050))
         migrate(pop, mode=BY_COUNTS,
             rate = [ [0, 50, 50],
                              [50, 0, 0],
                              [50, 0, 0] ])
-        assert pop.subPopSizes() == (1900, 4050, 4050)
+        self.assertEqual(pop.subPopSizes(), (1900, 4050, 4050))
         # rate should be a matrix
         self.assertRaises(exceptions.ValueError,
             migrate, pop, [ [0, 50],
@@ -252,17 +252,17 @@ class TestMigrator(unittest.TestCase):
             subPops = [0], toSubPops = [1,2],
             rate = [.05, .05] )
         stat(pop, alleleFreq=[0])
-        assert pop.dvars().alleleFreq[0][1] == af
+        self.assertEqual(pop.dvars().alleleFreq[0][1], af)
         migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
-        assert pop.dvars().alleleFreq[0][1] == af
+        self.assertEqual(pop.dvars().alleleFreq[0][1], af)
         migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
-        assert pop.dvars().alleleFreq[0][1] == af
+        self.assertEqual(pop.dvars().alleleFreq[0][1], af)
 
 
     def testSplitSubPops(self):
