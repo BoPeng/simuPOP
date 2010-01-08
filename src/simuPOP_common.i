@@ -380,6 +380,8 @@ def as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mo
     '''Convert the existing population object to a pedigree. After this function
     pedigree function should magically be usable for this function.
     '''
+    if isinstance(self, Pedigree):
+        return
     ped = Pedigree(self, loci=ALL_AVAIL, infoFields=ALL_AVAIL, ancGens=ALL_AVAIL,
         idField=idField, fatherField=fatherField, motherField=motherField,
         stealPop=True)
@@ -392,6 +394,8 @@ Population.asPedigree = as_pedigree
 def as_population(self):
     '''Convert the existing pedigree object to a population. This function will
     behave like a regular population after this function call.'''
+    if isinstance(self, Population):
+        return
     pop = population(0)
     # the pedigree data has been swapped to pop
     pop.swap(self)
