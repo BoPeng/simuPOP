@@ -348,7 +348,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
 
 Population.evolve = evolve_pop
 
-def allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
+def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations
     in all ancestral generations. A list of (virtual) subpopulations
     (<em>subPops</em>) and a list of ancestral generations (<em>ancGens</em>,
@@ -374,8 +374,33 @@ def allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                     yield ind
     self.useAncestralGen(curGen)
 
-Population.allIndividuals = allIndividuals
+Population.allIndividuals = all_individuals
 
+def as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    '''Convert the existing population object to a pedigree. After this function
+    pedigree function should magically be usable for this function.
+    '''
+    print self.infoFields()
+    ped = Pedigree(self, loci=ALL_AVAIL, infoFields=ALL_AVAIL, ancGens=ALL_AVAIL,
+        idField=idField, fatherField=fatherField, motherField=motherField,
+        stealPop=True)
+    # swap ped and this object. (I do not know if this is the right thing to do)
+    self.__class__, ped.__class__ = ped.__class__, self.__class__
+    self.this, ped.this = ped.this, self.this
+
+Population.asPedigree = as_pedigree
+
+def as_population(self):
+    '''Convert the existing pedigree object to a population. This function will
+    behave like a regular population after this function call.'''
+    pop = population(0)
+    # the pedigree data has been swapped to pop
+    pop.swap(self)
+    # swap ped and this object. (I do not know if this is the right thing to do)
+    self.__class__, pop.__class__ = pop.__class__, self.__class__
+    self.this, pop.this = pop.this, self.this
+
+Pedigree.asPopulation = as_population
 
 def _new_Migrator(self, rate=[], *args, **kwargs):
     # parameter rate

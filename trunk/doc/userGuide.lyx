@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -8437,7 +8437,7 @@ ip between individuals.
 \family typewriter
 simuPOP.sampling
 \family default
- module to identify eligible Pedigrees but future development will allow
+ module to identify eligible pedigrees but future development will allow
  a mating scheme to follow a complete pedigree constructed manually or saved
  from a previous evolutionary process.
  This will allow, for example, to repeat the same evolutionary process for
@@ -8445,12 +8445,12 @@ simuPOP.sampling
 \end_layout
 
 \begin_layout Standard
-A pedigree is created from a population object with an ID field (default
+A new pedigree is created from a population object with an ID field (default
  to 
 \family typewriter
 ind_id
 \family default
-), and two parental ID fields (default to 
+), and two optional parental ID fields (default to 
 \family typewriter
 father_id
 \family default
@@ -8459,10 +8459,68 @@ father_id
 mother_id
 \family default
 ).
- Genotype information and additional information fields can be copied to
- a pedigree object if needed.
+ For example, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+ped = Pedigree(pop, infoFields=ALL_AVAIL)
+\end_layout
+
+\end_inset
+
+will create a pedigree object from population 
+\family typewriter
+pop
+\family default
+ with information fields 
+\family typewriter
+ind_id
+\family default
+, 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+, copying all available information fields.
  The ID field should have a unique ID for each individual and the parental
  ID fields should record the ID of his or her parents.
+ Genotype information and additional information fields can be copied to
+ a pedigree object if needed.
+ The population object is unchanged.
+\end_layout
+
+\begin_layout Standard
+Another method is to directly convert a population object to a pedigree
+ object, using member function 
+\family typewriter
+asPedigree
+\family default
+ of a population class.
+ For example,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.asPedigree()
+\end_layout
+
+\end_inset
+
+will convert the existing population to a pedigree object.
+ Object pop can then be able to call all pedigree member functions.
+ Once your task is done, you can convert the object back to a population
+ using the 
+\family typewriter
+Pedigree.asPopulation()
+\family default
+ member function of the object.
 \end_layout
 
 \begin_layout Standard
