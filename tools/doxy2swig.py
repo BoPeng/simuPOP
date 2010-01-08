@@ -536,8 +536,10 @@ class Doxy2SWIG:
         # Add additional entries manually
         evolve_pop = [x for x in self.content if 'evolve_pop' in x['Name']][0]
         all_individuals = [x for x in self.content if 'allIndividuals' in x['Name']][0]
+        evolve_pop['ignore'] = True
+        all_individuals['ignore'] = True
         self.content.extend([
-            {'Name': u'simuPOP::population::dvars',
+            {'Name': u'simuPOP::Population::dvars',
              'type': u'memberofclass_simuPOP::Population',
              'Description': '',
              'Details': ur'<group>9-var1</group>' \
@@ -546,7 +548,7 @@ class Doxy2SWIG:
              'cppArgs': u'(vspID subPop=[])',
              'Usage': u'x.dvars(subPop=[])',
              },
-            {'Name': u'simuPOP::simulator::dvars',
+            {'Name': u'simuPOP::Simulator::dvars',
              'type': u'memberofclass_simuPOP::Simulator',
              'Description': '',
              'Details': ur'<group>9-var1</group>' \
@@ -555,7 +557,7 @@ class Doxy2SWIG:
              'cppArgs': u'(int rep, vspID subPop=[])',
              'Usage': u'x.dvars(rep, subPop=[])',
              },
-            {'Name': u'simuPOP::population::evolve',
+            {'Name': u'simuPOP::Population::evolve',
              'type': u'memberofclass_simuPOP::Population',
              'Description': '',
              'Details': ur'<group>7-evolve</group>' + evolve_pop['Description'],
@@ -564,8 +566,8 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::population::allIndividuals',
              'type': u'memberofclass_simuPOP::Population',
              'Description': '',
-             'Details': ur'<group>4-ind</group>' + evolve_pop['Description'],
-             'Usage': 'x.' + evolve_pop['Usage'].replace('self, ', ''),
+             'Details': ur'<group>4-ind</group>' + all_individuals['Description'],
+             'Usage': 'x.' + all_individuals['Usage'].replace('self, ', ''),
             },
         ])
         # change a few usages:
