@@ -9112,7 +9112,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::dvars "
+%feature("docstring") simuPOP::Population::dvars "
 
 Usage:
 
@@ -9125,7 +9125,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::dvars "
+%feature("docstring") simuPOP::Simulator::dvars "
 
 Usage:
 
@@ -9138,7 +9138,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::evolve "
+%feature("docstring") simuPOP::Population::evolve "
 
 Usage:
 
@@ -9164,21 +9164,15 @@ Details:
 
 Usage:
 
-    x.evolve_pop(initOps=[], preOps=[], matingScheme=None,
-      postOps=[],finalOps=[], gen=-1, dryrun=False)
+    x.allIndividuals(subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
 
 Details:
 
-    Evolve the current population gen generations using mating scheme
-    matingScheme and operators initOps (applied before evolution),
-    preOps (applied to the parental population at the beginning of
-    each life cycle), postOps (applied to the offspring population at
-    the end of each life cycle) and finalOps (applied at the end of
-    evolution). More specifically, this function creates a Simulator
-    using the current population, call its evolve function using
-    passed parameters and then replace the current population with the
-    evolved population. Please refer to function Simulator.evolve for
-    more details about each parameter.
+    Return an iterator that iterat through all (virtual)
+    subpopulations in all ancestral generations. A list of (virtual)
+    subpopulations (subPops) and a list of ancestral generations
+    (ancGens, can be a single number) could be specified to iterate
+    through only selected subpopulation and generations.
 
 "; 
 
