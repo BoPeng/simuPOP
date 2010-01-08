@@ -84,7 +84,8 @@ class TestMatingSchemes(unittest.TestCase):
         #
         mean = sum(num)/3.
         for i in range(3):
-            assert num[i] < mean + 50 and num[i] > mean - 50
+            assert num[i] < mean + 50
+            assert num[i] > mean - 50
         # GEOMETRIC_DISTRIBUTION
         p = 0.33
         cnt = self.getFamSize( numOffspring=(GEOMETRIC_DISTRIBUTION, p), N=10000)
