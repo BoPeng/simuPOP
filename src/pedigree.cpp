@@ -74,11 +74,11 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 		swap(ped);
 	}
 
-	DBG_FAILIF(m_idField.empty() || !pop.hasInfoField(m_idField), ValueError,
+	DBG_FAILIF(m_idField.empty() || !hasInfoField(m_idField), ValueError,
 		"A valid ID information field is needed to create a pedigree object.");
-	DBG_FAILIF(!m_fatherField.empty() && !pop.hasInfoField(m_fatherField), ValueError,
+	DBG_FAILIF(!m_fatherField.empty() && !hasInfoField(m_fatherField), ValueError,
 		"Invalid father information field " + m_fatherField);
-	DBG_FAILIF(!m_motherField.empty() && !pop.hasInfoField(m_motherField), ValueError,
+	DBG_FAILIF(!m_motherField.empty() && !hasInfoField(m_motherField), ValueError,
 		"Invalid mother information field " + m_motherField);
 
 	m_idIdx = static_cast<int>(infoIdx(idField));

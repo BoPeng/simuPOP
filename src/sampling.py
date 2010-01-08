@@ -139,6 +139,8 @@ def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
     motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
     pedigree to a format that is recognizable by R's ``'kinship'`` library.
+    *ped* can be a population or a pedigree object, as long as there are
+    valid *idField*, *fatherField* and *motherField* fields in the population.
     Aliased arguments could be used to pass parameters to functions
     ``pedigree``, ``plot`` and ``par``. Please refer to module
     ``simuPOP.plotter`` for details about aliased arguments. This function

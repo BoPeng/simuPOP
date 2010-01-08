@@ -534,10 +534,6 @@ class Doxy2SWIG:
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
-        evolve_pop = [x for x in self.content if 'evolve_pop' in x['Name']][0]
-        all_individuals = [x for x in self.content if 'allIndividuals' in x['Name']][0]
-        evolve_pop['ignore'] = True
-        all_individuals['ignore'] = True
         self.content.extend([
             {'Name': u'simuPOP::Population::dvars',
              'type': u'memberofclass_simuPOP::Population',
@@ -556,20 +552,23 @@ class Doxy2SWIG:
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(int rep, vspID subPop=[])',
              'Usage': u'x.dvars(rep, subPop=[])',
-             },
-            {'Name': u'simuPOP::Population::evolve',
-             'type': u'memberofclass_simuPOP::Population',
-             'Description': '',
-             'Details': ur'<group>7-evolve</group>' + evolve_pop['Description'],
-             'Usage': 'x.' + evolve_pop['Usage'].replace('evolve_pop', 'evolve').replace('self, ', ''),
-            },
-            {'Name': u'simuPOP::population::allIndividuals',
-             'type': u'memberofclass_simuPOP::Population',
-             'Description': '',
-             'Details': ur'<group>4-ind</group>' + all_individuals['Description'],
-             'Usage': 'x.' + all_individuals['Usage'].replace('self, ', ''),
             },
         ])
+        for func,realClass,realFunc,group in [
+                ('evolve_pop', 'Population', 'evolve', '7-evolve'),
+                ('all_individuals', 'Population', 'allIndividuals', '4-ind'),
+                ('as_pedigree', 'Population', 'asPedigree', '1-popConvert'),
+                ('as_population', 'Pedigree', 'asPopulation', '1-pedConvert')]:
+            entry = [x for x in self.content if func in x['Name']][0]
+            entry['ignore'] = True
+            self.context.extend([
+                {'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
+                 'type': u'memberofclass_simuPOP::%s' % realClass,
+                 'Description': '',
+                 'Details': ur'<group>%s</group>' % group + entry['Description'],
+                 'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', ''),
+                },
+            ])
         # change a few usages:
         print "Number of entries: ", len(self.content)
         def myhash(entry):
