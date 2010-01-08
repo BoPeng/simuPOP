@@ -71,18 +71,22 @@ class TestInitialization(unittest.TestCase):
         if moduleInfo()['alleleType'] == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
-                assert freq0 >= freqLow[0] and freq0 <= freqHigh[0]
+                assert freq0 >= freqLow[0]
+                assert freq0 <= freqHigh[0]
             else:    # 0 and 1, but group all other freq.
                 f0 = [freqLow[0], sum(freqLow[1:])]
                 f1 = [freqHigh[0], sum(freqHigh[1:])]
                 freq0 = geno.count(0)*1.0 / len(geno)
                 freq1 = geno.count(1)*1.0 / len(geno)
-                assert freq0 >= f0[0] and freq0 <= f1[0]
-                assert freq1 >= f0[1] and freq1 <= f1[1]
+                assert freq0 >= f0[0] 
+                assert freq0 <= f1[0]
+                assert freq1 >= f0[1] 
+                assert freq1 <= f1[1]
         else:    # all loci
             for i in range(len(freqLow)):
                 freq = geno.count(i)*1.0 / len(geno)
-                assert freq >= freqLow[i] and freq <= freqHigh[i]
+                assert freq >= freqLow[i] 
+                assert freq <= freqHigh[i]
 
     
     def testInitSex(self):
@@ -101,7 +105,8 @@ class TestInitialization(unittest.TestCase):
             if ind.sex() == MALE:
                 count += 1
         print count
-        assert count / 1500. > 0.25 and count /1500. < 0.35
+        assert count / 1500. > 0.25 
+        assert count /1500. < 0.35
         # male proportion
         initSex(pop, maleProp=0.4)
         count = 0

@@ -765,12 +765,10 @@ class TestTransmitters(unittest.TestCase):
                 matingScheme = RandomMating(ops=Recombinator(rates=r)),
                     gen=1)
             hf = simu.dvars(0).haploFreq[(0,1)]
-            assert not ((hf.setdefault((0,0),0) - prop[i][0]) > 0.01 or \
-                (hf.setdefault((0,1),0) - prop[i][1]) > 0.01 or \
-                (hf.setdefault((1,0),0) - prop[i][2]) > 0.01 or \
-                (hf.setdefault((1,1),0) - prop[i][3]) > 0.01), \
-                "Recombination results in potentially wrong proportions." +    \
-                str( genoDad[i]) + ' crossing ' + str(genoMom[i])
+            assert abs(hf[(0,0)]) - prop[i][0] <= 0.01
+            assert abs(hf[(0,1)]) - prop[i][1] <= 0.01
+            assert abs(hf[(1,0)]) - prop[i][2] <= 0.01
+            assert abs(hf[(1,1)]) - prop[i][3] <= 0.01
 
 
     def testLDDecay(self):
@@ -791,10 +789,7 @@ class TestTransmitters(unittest.TestCase):
             matingScheme = RandomMating(ops=Recombinator(rates=r) ),
             gen=9)
         # check the change of LD, hopefully, the variation is not too high.
-        assert abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02, \
-            "Decay of LD is not as expected: " + str(simu.dvars(0).LD[0][1]) + " vs expected " \
-            + str( 0.25*(1-r)**10 )
-
+        assert abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02 
 
 #     def testNoMaleRec(self):
 #         'Testing recombination of male chromosome. This is currently wrong.'
