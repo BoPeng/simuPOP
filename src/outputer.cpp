@@ -132,15 +132,6 @@ bool Dumper::apply(Population & pop) const
 
 	UINT oldGen = pop.curAncestralGen();
 	if (m_showGenotype) {
-		subPopList subPops = applicableSubPops();
-		if (subPops.allAvail())
-			subPops.useSubPopsFrom(pop);
-
-		UINT cnt = displayGenotype(pop, subPops, out);
-
-		if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
-			out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
-
 		vectoru gens = m_ancGens.elems();
 		if (m_ancGens.allAvail())
 			for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
@@ -154,7 +145,8 @@ bool Dumper::apply(Population & pop) const
 			if (subPops.allAvail())
 				subPops.useSubPopsFrom(pop);
 
-			out << endl << "Ancestry population " << gens[genIdx] << endl;
+			if (gens[genIdx] != 0)
+				out << "Ancestral population " << gens[genIdx] << endl;
 			UINT cnt = displayGenotype(pop, subPops, out);
 			if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
 				out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
