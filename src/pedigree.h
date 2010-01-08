@@ -94,6 +94,7 @@ public:
 	/** Return the number of parents each individual has. This function returns
 	 *  the number of information fields used to store parental indexes, even
 	 *  if one of the fields are unused.
+	 *  HIDDEN
 	 *  <group>2-info</group>
 	 */
 	UINT numParents();
