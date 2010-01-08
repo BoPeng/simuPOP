@@ -4212,19 +4212,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Pedigree::numParents "
-
-Usage:
-
-    x.numParents()
-
-Details:
-
-    Return the number of parents each individual has. This function
-    returns the number of information fields used to store parental
-    indexes, even if one of the fields are unused.
-
-"; 
+%feature("docstring") simuPOP::Pedigree::numParents "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pedigree::locateRelatives "
 
@@ -9071,7 +9059,7 @@ Usage:
 
 "; 
 
-%feature("docstring") allIndividuals "
+%feature("docstring") all_individuals "
 
 Description:
 
@@ -9083,7 +9071,36 @@ Description:
 
 Usage:
 
-    allIndividuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+    all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+"; 
+
+%feature("docstring") as_pedigree "
+
+Description:
+
+    Convert the existing population object to a pedigree. After this
+    function pedigree function should magically be usable for this
+    function.
+
+Usage:
+
+    as_pedigree(self, idField='ind_id', fatherField='father_id',
+      motherField='mother_id')
+
+"; 
+
+%feature("docstring") as_population "
+
+Description:
+
+    Convert the existing pedigree object to a population. This
+    function will behave like a regular population after this function
+    call.
+
+Usage:
+
+    as_population(self)
 
 "; 
 
@@ -9160,7 +9177,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::allIndividuals "
+%feature("docstring") simuPOP::Population::allIndividuals "
 
 Usage:
 
@@ -9173,6 +9190,35 @@ Details:
     subpopulations (subPops) and a list of ancestral generations
     (ancGens, can be a single number) could be specified to iterate
     through only selected subpopulation and generations.
+
+"; 
+
+%feature("docstring") simuPOP::Population::asPedigree "
+
+Usage:
+
+    x.asPedigree(idField='ind_id', fatherField='father_id',
+      motherField='mother_id')
+
+Details:
+
+    Convert the existing population object to a pedigree. After this
+    function pedigree function should magically be usable for this
+    function.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::asPopulation "
+
+Usage:
+
+    x.asPopulation()
+
+Details:
+
+    Convert the existing pedigree object to a population. This
+    function will behave like a regular population after this function
+    call.
 
 "; 
 

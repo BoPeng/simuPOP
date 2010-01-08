@@ -552,7 +552,7 @@ class Doxy2SWIG:
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(int rep, vspID subPop=[])',
              'Usage': u'x.dvars(rep, subPop=[])',
-            },
+            }
         ])
         for func,realClass,realFunc,group in [
                 ('evolve_pop', 'Population', 'evolve', '7-evolve'),
@@ -561,14 +561,12 @@ class Doxy2SWIG:
                 ('as_population', 'Pedigree', 'asPopulation', '1-pedConvert')]:
             entry = [x for x in self.content if func in x['Name']][0]
             entry['ignore'] = True
-            self.context.extend([
-                {'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
+            self.content.append({'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
                  'type': u'memberofclass_simuPOP::%s' % realClass,
                  'Description': '',
                  'Details': ur'<group>%s</group>' % group + entry['Description'],
-                 'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', ''),
-                },
-            ])
+                 'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', '').replace('self)', ')'),
+                })
         # change a few usages:
         print "Number of entries: ", len(self.content)
         def myhash(entry):
@@ -1198,7 +1196,7 @@ class Doxy2SWIG:
                 out = open(os.path.join(dir, refName), 'w')
                 funcname = mem['Name']
                 print >> out, '\nFunction %s' % funcname
-                print >> out, '-' * (8 + len(funcname))
+                print >> out, '-' * (9 + len(funcname))
                 print >> out
                 print >> out, '\n.. function::',
                 if mem.has_key('Usage') and mem['Usage'] != '':
