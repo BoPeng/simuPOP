@@ -11,7 +11,22 @@
 import os, sys, time, shutil
 
 release_file = 'simuPOP_version.py'
+user_guide = 'doc/userGuide.lyx'
+ref_manual = 'doc/refManual.lyx'
 
+def setReleaseInManual(filename, rel, rev):
+    '''Replace Release x.x.x with Rev: with proper value during release'''
+    file = open(filename)
+    content = file.readlines()
+    for line in content:
+        if line.startswith('\\setreleaseinfo'):
+            line = r'\setreleaseinfo{Release %s (\mbox{Rev: %s})}' % (rel, rev)
+            break
+    file.close()
+    file = open(filename, 'w')
+    file.write(''.join(content))
+    file.close()
+        
 def cmdOutput(cmd):
     ''' utility function: run a command and get its output as a string
         cmd: command to run
@@ -81,6 +96,8 @@ def setVersionRevision(release):
         rev = '9999'
     # replace simuPOP.release
     (old_ver, old_rev) = writeReleaseFile(release, rev)
+    setReleaseInManual(user_guide, release, rev)
+    setReleaseInManual(ref_manual, release, rev)
     return (release, rev, old_ver, old_rev)
     
 

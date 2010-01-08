@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6,7 +6,8 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.0.0 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 1.0.0 (\mbox{Rev: 3372})}
+% file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -8465,6 +8466,7 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 ped = Pedigree(pop, infoFields=ALL_AVAIL)
 \end_layout
 
