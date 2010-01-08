@@ -288,9 +288,9 @@ class Teststat(unittest.TestCase):
         #        2	-0.103	 0.102	-0.229	 0.228
         #    All	-0.103	 0.102	-0.229	 0.228	 0.373	 0.051	-0.102	 0.550
         stat(pop, structure=[0])
-        assert pop.vars().has_key('F_st')
-        assert not pop.vars().has_key('f_it')
-        assert not pop.vars().has_key('f_st')
+        self.assertTrue(pop.vars().has_key('F_st'))
+        self.assertTrue(not pop.vars().has_key('f_it'))
+        self.assertTrue(not pop.vars().has_key('f_st'))
         stat(pop, structure=[0], vars=['f_is', 'f_it', 'f_st', 'F_is', 'F_it'])
         self.assertAlmostEqual(pop.dvars().f_is[0], -0.2290202)
         self.assertAlmostEqual(pop.dvars().f_it[0], -0.1034594)
@@ -450,9 +450,9 @@ class Teststat(unittest.TestCase):
         pop = Population(size=[500,100,1000], ploidy=2, loci = [5])
         initGenotype(pop, freq=[.2, .3, .5])
         stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
-        assert pop.vars().has_key('alleleFreq')
-        assert pop.vars().has_key('LD')
-        assert pop.vars().has_key('haploFreq')
+        self.assertTrue(pop.vars().has_key('alleleFreq'))
+        self.assertTrue(pop.vars().has_key('LD'))
+        self.assertTrue(pop.vars().has_key('haploFreq'))
         pop.dvars().LD[1][2]
         pop.dvars().LD[1][4]
         pop.dvars().alleleFreq[1][0]

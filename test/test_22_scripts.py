@@ -26,8 +26,8 @@ class TestScripts(unittest.TestCase):
             os.remove('hapmap_22.bin')
         import loadHapMap
         loadHapMap.loadHapMap([21, 22], '.')
-        assert os.path.isfile('hapmap_21.bin')
-        assert os.path.isfile('hapmap_22.bin')
+        self.assertTrue(os.path.isfile('hapmap_21.bin'))
+        self.assertTrue(os.path.isfile('hapmap_22.bin'))
         pass
 
     def TestSimuCDCV(self):
