@@ -308,22 +308,32 @@ class Teststat(unittest.TestCase):
             initGenotype(pop, genotype=[0]*10, subPops=[(0,0)])
             initGenotype(pop, genotype=[1]*10, subPops=[(0,1)])
             stat(pop, haploFreq=[[0,1,5],[2,5]])
-            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05
-            assert abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05
+            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05, 
+            "abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05, 
+            "abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05, 
+            "abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05, 
+            "abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
         else:
             pop.setVirtualSplitter(ProportionSplitter([.2, .3, .5]))
             initGenotype(pop, genotype=[1]*10, subPops=[(1,0), (0,0)])
             initGenotype(pop, genotype=[2]*10, subPops=[(1,1), (0,1)])
             initGenotype(pop, genotype=[3]*10, subPops=[(1,2), (0,2)])
             stat(pop, haploFreq=[[0,1,5], [2,5]])
-            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05
-            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05
-            assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) < 0.05
-            assert abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) < 0.05
+            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05, 
+            "abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05, 
+            "abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05, 
+            "abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) < 0.05, 
+            "abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) < 0.05, 
+            "abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) < 0.05, 
+            "abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
 
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
