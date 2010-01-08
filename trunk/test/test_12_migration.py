@@ -93,22 +93,22 @@ class TestMigrator(unittest.TestCase):
                              [0.025, 0, 0] ])
         # print pop.subPopSizes()
         self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "abs(pop.subPopSize(0) - 2000) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
         self.assertTrue(abs(pop.subPopSize(1) - 4000) < 100, 
-            "abs(pop.subPopSize(1) - 4000) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4000)))
         self.assertTrue(abs(pop.subPopSize(2) - 4000) < 100, 
-            "abs(pop.subPopSize(2) - 4000) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4000)))
         migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
         # print pop.subPopSizes()
         self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "abs(pop.subPopSize(0) - 2000) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
         self.assertTrue(abs(pop.subPopSize(1) - 4500) < 100, 
-            "abs(pop.subPopSize(1) - 4500) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - 4500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4500)))
         self.assertTrue(abs(pop.subPopSize(2) - 3500) < 100, 
-            "abs(pop.subPopSize(2) - 3500) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - 3500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3500)))
 
     def testmigrateFromTo(self):
         'Testing parameter from and to of Migrators'
@@ -119,22 +119,22 @@ class TestMigrator(unittest.TestCase):
             rate = [.05, .05] )
         # print pop.subPopSizes()
         self.assertTrue(abs(pop.subPopSize(0) - 1800) < 50, 
-            "abs(pop.subPopSize(0) - 1800) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - 1800) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 1800)))
         self.assertTrue(abs(pop.subPopSize(1) - 4100) < 50, 
-            "abs(pop.subPopSize(1) - 4100) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4100)))
         self.assertTrue(abs(pop.subPopSize(2) - 4100) < 50, 
-            "abs(pop.subPopSize(2) - 4100) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4100)))
         # other parameter form can be used as well
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         migrate(pop, mode=BY_PROBABILITY,
             subPops = 0, toSubPops = [1,2],
             rate = [[.05, .05]] )
         self.assertTrue(abs(pop.subPopSize(0) - 1800) < 50, 
-            "abs(pop.subPopSize(0) - 1800) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - 1800) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 1800)))
         self.assertTrue(abs(pop.subPopSize(1) - 4100) < 50, 
-            "abs(pop.subPopSize(1) - 4100) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4100)))
         self.assertTrue(abs(pop.subPopSize(2) - 4100) < 50, 
-            "abs(pop.subPopSize(2) - 4100) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4100)))
 
 
     def testmigrateBySexAndCounts(self):
@@ -235,11 +235,11 @@ class TestMigrator(unittest.TestCase):
         # 4000 male -> 400 to 0
         # 4000 male -> 400 to 0
         self.assertTrue(abs(pop.subPopSize(0) - 2800) < 100, 
-            "abs(pop.subPopSize(0) - 2800) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - 2800) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2800)))
         self.assertTrue(abs(pop.subPopSize(1) - 3600) < 100, 
-            "abs(pop.subPopSize(1) - 3600) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - 3600) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 3600)))
         self.assertTrue(abs(pop.subPopSize(2) - 3600) < 100, 
-            "abs(pop.subPopSize(2) - 3600) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - 3600) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3600)))
         v = pop.subPopSizes()
         vf = pop.subPopSize([0, 1])
         vm = pop.subPopSize([0, 0])
@@ -252,11 +252,11 @@ class TestMigrator(unittest.TestCase):
         # 3600 male no
         # 3600 male no
         self.assertTrue(abs(pop.subPopSize(0) - vm - vf*0.8) < 100, 
-            "abs(pop.subPopSize(0) - vm - vf*0.8) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(0) - vm - vf*0.8) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - vm - vf*0.8)))
         self.assertTrue(abs(pop.subPopSize(1) - v[1] - vf*0.1) < 100, 
-            "abs(pop.subPopSize(1) - v[1] - vf*0.1) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(1) - v[1] - vf*0.1) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - v[1] - vf*0.1)))
         self.assertTrue(abs(pop.subPopSize(2) - v[1] - vf*0.1) < 100, 
-            "abs(pop.subPopSize(2) - v[1] - vf*0.1) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.subPopSize(2) - v[1] - vf*0.1) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - v[1] - vf*0.1)))
 
 
     def testMigrConstAlleleFreq(self):

@@ -462,15 +462,15 @@ class TestTransmitters(unittest.TestCase):
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.05) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.05)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.05) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.05)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05)))
         # compare to the next test
         pop = Population(10000, loci=[3,4])
         initSex(pop)
@@ -481,41 +481,41 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         # 0.5
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30)))
         # 0.25
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30)))
         # no recombination.
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5)))
         #
         # alrorithm 0?
         #
@@ -528,41 +528,41 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         # 0.5
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30)))
         # 0.25
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30)))
         # no recombination.
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5)))
 
     def testConversionRate(self):
         'Testing to see if we actually convert at this rate '
@@ -579,50 +579,50 @@ class TestTransmitters(unittest.TestCase):
         #print rec.convCounts()
         # 0.5
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30)))
         # 0.25
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30)))
         # r/2 recombination induced recombination
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,1)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,1)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,1)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,1)] - 0.2)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(1,0)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(1,0)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(1,0)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(1,0)] - 0.2)))
         # copied
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5)))
         #
         # length 2
         pop = Population(10000, loci=[3,4])
@@ -634,50 +634,50 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         #
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30)))
         # 0.25
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30)))
         # copied
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5)))
         # r/2 recombination induced recombination
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2)))
         #
         # algorithm 0??
         pop = Population(10000, loci=[3,10])
@@ -690,50 +690,50 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         #
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30)))
         # 0.25
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25)))
         # r/2
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30)))
         # copied
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5)))
         # r/2 recombination induced recombination
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2)))
 
 
     def testAtLociRecRates(self):
@@ -753,17 +753,17 @@ class TestTransmitters(unittest.TestCase):
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
         self.assertTrue((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01, 
-            "(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05)))
         self.assertTrue((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) < 0.01, 
-            "(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075)))
         try:    # do not have this haplotype
             simu.dvars(0).haploFreq[(3,4)][(a1,a2)]
         except exceptions.KeyError:
             pass
         self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
-            "(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
         self.assertTrue((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) < 0.01, 
-            "(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15)))
 
     def testRecIntensity(self):
         'Testing recombination intensity'
@@ -781,15 +781,15 @@ class TestTransmitters(unittest.TestCase):
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
         self.assertTrue((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01, 
-            "(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05)))
         self.assertTrue((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    < 0.01, 
-            "(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)   ))
         self.assertTrue((simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)    < 0.01, 
-            "(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)    is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)    (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)   ))
         self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
-            "(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
         self.assertTrue((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)    < 0.01, 
-            "(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)    is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)    (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)   ))
 
 
     def testRecIntensityAfterLoci(self):
@@ -809,12 +809,12 @@ class TestTransmitters(unittest.TestCase):
         #print simu.dvars(0).haploFreq
         self.assertEqual(simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2),0), 0)
         self.assertTrue((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    < 0.01, 
-            "(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)   ))
         self.assertEqual(simu.dvars(0).haploFreq[(3,4)].setdefault((a1,a2),0), 0)
         self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
-            "(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
         self.assertTrue((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2) < 0.01, 
-            "(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)))
 
 
     def testNoNewAllele(self):
@@ -852,11 +852,11 @@ class TestTransmitters(unittest.TestCase):
         self.assertEqual(simu.dvars(0).haploFreq[(2,4)].setdefault((a1,a2), 0), 0.)
         self.assertEqual(simu.dvars(0).haploFreq[(5,6)].setdefault((a1,a2), 0), 0.)
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,2)].setdefault((a1,a2), 0) - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,2)].setdefault((a1,a2), 0) - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,2)].setdefault((a1,a2), 0) - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,2)].setdefault((a1,a2), 0) - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(0,6)].setdefault((a1,a2), 0) - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(0,6)].setdefault((a1,a2), 0) - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(0,6)].setdefault((a1,a2), 0) - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(0,6)].setdefault((a1,a2), 0) - 0.25)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(3,6)].setdefault((a1,a2), 0) - 0.25) < 0.01, 
-            "abs(simu.dvars(0).haploFreq[(3,6)].setdefault((a1,a2), 0) - 0.25) is supposed to be less than 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).haploFreq[(3,6)].setdefault((a1,a2), 0) - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(3,6)].setdefault((a1,a2), 0) - 0.25)))
 
 
     def testRecProportion(self):
@@ -878,13 +878,13 @@ class TestTransmitters(unittest.TestCase):
                     gen=1)
             hf = simu.dvars(0).haploFreq[(0,1)]
             self.assertTrue(abs(hf[(0,0)] - prop[i][0]) <= 0.01, 
-            "abs(hf[(0,0)]) - prop[i][0] is supposed to be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(hf[(0,0)]) - prop[i][0] (test value %f) be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(hf[(0,0)]) - prop[i][0]))
             self.assertTrue(abs(hf[(0,1)] - prop[i][1]) <= 0.01, 
-            "abs(hf[(0,1)]) - prop[i][1] is supposed to be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(hf[(0,1)]) - prop[i][1] (test value %f) be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(hf[(0,1)]) - prop[i][1]))
             self.assertTrue(abs(hf[(1,0)] - prop[i][2]) <= 0.01, 
-            "abs(hf[(1,0)]) - prop[i][2] is supposed to be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(hf[(1,0)]) - prop[i][2] (test value %f) be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(hf[(1,0)]) - prop[i][2]))
             self.assertTrue(abs(hf[(1,1)] - prop[i][3]) <= 0.01, 
-            "abs(hf[(1,1)]) - prop[i][3] is supposed to be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(hf[(1,1)]) - prop[i][3] (test value %f) be less than or equal to 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(hf[(1,1)]) - prop[i][3]))
 
 
     def testLDDecay(self):
@@ -906,7 +906,7 @@ class TestTransmitters(unittest.TestCase):
             gen=9)
         # check the change of LD, hopefully, the variation is not too high.
         self.assertTrue(abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02 , 
-            "abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) is supposed to be less than 0.02 . This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) (test value %f) be less than 0.02 . This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10)))
 
 #     def testNoMaleRec(self):
 #         'Testing recombination of male chromosome. This is currently wrong.'

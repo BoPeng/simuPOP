@@ -72,29 +72,29 @@ class TestInitialization(unittest.TestCase):
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
                 self.assertTrue(freq0 >= freqLow[0], 
-            "freq0 is supposed to be greater than or equal to freqLow[0]. This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq0 (test value %f) be greater than or equal to freqLow[0]. This test may occasionally fail due to the randomness of outcome." % (freq0))
                 self.assertTrue(freq0 <= freqHigh[0], 
-            "freq0 is supposed to be less than or equal to freqHigh[0]. This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq0 (test value %f) be less than or equal to freqHigh[0]. This test may occasionally fail due to the randomness of outcome." % (freq0))
             else:    # 0 and 1, but group all other freq.
                 f0 = [freqLow[0], sum(freqLow[1:])]
                 f1 = [freqHigh[0], sum(freqHigh[1:])]
                 freq0 = geno.count(0)*1.0 / len(geno)
                 freq1 = geno.count(1)*1.0 / len(geno)
                 self.assertTrue(freq0 >= f0[0] , 
-            "freq0 is supposed to be greater than or equal to f0[0] . This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq0 (test value %f) be greater than or equal to f0[0] . This test may occasionally fail due to the randomness of outcome." % (freq0))
                 self.assertTrue(freq0 <= f1[0], 
-            "freq0 is supposed to be less than or equal to f1[0]. This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq0 (test value %f) be less than or equal to f1[0]. This test may occasionally fail due to the randomness of outcome." % (freq0))
                 self.assertTrue(freq1 >= f0[1] , 
-            "freq1 is supposed to be greater than or equal to f0[1] . This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq1 (test value %f) be greater than or equal to f0[1] . This test may occasionally fail due to the randomness of outcome." % (freq1))
                 self.assertTrue(freq1 <= f1[1], 
-            "freq1 is supposed to be less than or equal to f1[1]. This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq1 (test value %f) be less than or equal to f1[1]. This test may occasionally fail due to the randomness of outcome." % (freq1))
         else:    # all loci
             for i in range(len(freqLow)):
                 freq = geno.count(i)*1.0 / len(geno)
                 self.assertTrue(freq >= freqLow[i] , 
-            "freq is supposed to be greater than or equal to freqLow[i] . This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq (test value %f) be greater than or equal to freqLow[i] . This test may occasionally fail due to the randomness of outcome." % (freq))
                 self.assertTrue(freq <= freqHigh[i], 
-            "freq is supposed to be less than or equal to freqHigh[i]. This test may occasionally fail due to the randomness of outcome.")
+            "Expression freq (test value %f) be less than or equal to freqHigh[i]. This test may occasionally fail due to the randomness of outcome." % (freq))
 
     
     def testInitSex(self):
@@ -114,9 +114,9 @@ class TestInitialization(unittest.TestCase):
                 count += 1
         print count
         self.assertTrue(count / 1500. > 0.25 , 
-            "count / 1500. is supposed to be greater than to 0.25 . This test may occasionally fail due to the randomness of outcome.")
+            "Expression count / 1500. (test value %f) be greater than to 0.25 . This test may occasionally fail due to the randomness of outcome." % (count / 1500.))
         self.assertTrue(count /1500. < 0.35, 
-            "count /1500. is supposed to be less than 0.35. This test may occasionally fail due to the randomness of outcome.")
+            "Expression count /1500. (test value %f) be less than 0.35. This test may occasionally fail due to the randomness of outcome." % (count /1500.))
         # male proportion
         initSex(pop, maleProp=0.4)
         count = 0

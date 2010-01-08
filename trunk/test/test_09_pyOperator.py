@@ -26,7 +26,7 @@ class TestPyOperator(unittest.TestCase):
         stat(pop, alleleFreq=[0])
         # allelic frequency was assigned to be 0.2
         self.assertTrue(abs(pop.dvars().alleleFreq[0][0] - 0.2) < 0.05, 
-            "abs(pop.dvars().alleleFreq[0][0] - 0.2) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.dvars().alleleFreq[0][0] - 0.2) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().alleleFreq[0][0] - 0.2)))
         return True
 
     def testSimpleFunc(self):
@@ -51,7 +51,7 @@ class TestPyOperator(unittest.TestCase):
         ' para is (allele, freq) pair '
         stat(pop, alleleFreq=[0])
         self.assertTrue(abs(pop.dvars().alleleFreq[0][param[0]] - param[1]) < 0.05, 
-            "abs(pop.dvars().alleleFreq[0][param[0]] - param[1]) is supposed to be less than 0.05. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(pop.dvars().alleleFreq[0][param[0]] - param[1]) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().alleleFreq[0][param[0]] - param[1])))
         return True
 
     def testFuncWithParam(self):

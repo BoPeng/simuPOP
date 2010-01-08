@@ -44,13 +44,13 @@ class TestPenetrance(unittest.TestCase):
             penetrance={(0,0):0, (0,1):.3, (1,1):.5})
         stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertTrue(abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100, 
-            "abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5)))
         self.assertTrue(abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30, 
-            "abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) is supposed to be less than 30. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) (test value %f) be less than 30. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5)))
         self.assertTrue(abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) < 15, 
-            "abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) is supposed to be less than 15. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) (test value %f) be less than 15. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5)))
         self.assertTrue(abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) < 50, 
-            "abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5)))
 
 
 
@@ -90,13 +90,13 @@ class TestPenetrance(unittest.TestCase):
             penetrance=[0, .3, .5])
         stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertTrue(abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) < 100, 
-            "abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars().numOfAffected - 880*0.3 - 545*0.5)))
         self.assertTrue(abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) < 30, 
-            "abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) is supposed to be less than 30. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5) (test value %f) be less than 30. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(0).numOfAffected - 250*0.3 - 125*0.5)))
         self.assertTrue(abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) < 15, 
-            "abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) is supposed to be less than 15. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5) (test value %f) be less than 15. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(1).numOfAffected - 30*0.3 - 20*0.5)))
         self.assertTrue(abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) < 50, 
-            "abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(2).numOfAffected - 600*0.3 - 400*0.5)))
 
 
     def testMultiLocusmaPenetrance(self):
@@ -145,13 +145,13 @@ class TestPenetrance(unittest.TestCase):
         pyPenetrance(self.pop, loci = 0, func=pen)
         stat(self.pop, numOfAffected=1, vars=['numOfAffected', 'numOfAffected_sp'])
         self.assertTrue(abs(self.pop.dvars().numOfAffected -  880*0.5 - 545) < 100, 
-            "abs(self.pop.dvars().numOfAffected -  880*0.5 - 545) is supposed to be less than 100. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars().numOfAffected -  880*0.5 - 545) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars().numOfAffected -  880*0.5 - 545)))
         self.assertTrue(abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) < 30, 
-            "abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) is supposed to be less than 30. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) (test value %f) be less than 30. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125)))
         self.assertTrue(abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) < 15, 
-            "abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) is supposed to be less than 15. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) (test value %f) be less than 15. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20)))
         self.assertTrue(abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) < 50, 
-            "abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) is supposed to be less than 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400)))
 
     def testAncestralPenetrance(self):
         'Testing the ancestralGen parameter... '

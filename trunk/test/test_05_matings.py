@@ -85,9 +85,9 @@ class TestMatingSchemes(unittest.TestCase):
         mean = sum(num)/3.
         for i in range(3):
             self.assertTrue(num[i] < mean + 50, 
-            "num[i] is supposed to be less than mean + 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression num[i] (test value %f) be less than mean + 50. This test may occasionally fail due to the randomness of outcome." % (num[i]))
             self.assertTrue(num[i] > mean - 50, 
-            "num[i] is supposed to be greater than to mean - 50. This test may occasionally fail due to the randomness of outcome.")
+            "Expression num[i] (test value %f) be greater than to mean - 50. This test may occasionally fail due to the randomness of outcome." % (num[i]))
         # GEOMETRIC_DISTRIBUTION
         p = 0.33
         cnt = self.getFamSize( numOffspring=(GEOMETRIC_DISTRIBUTION, p), N=10000)
