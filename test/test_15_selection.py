@@ -250,7 +250,8 @@ class TestSelector(unittest.TestCase):
         for ind in pop.individuals():
             #print ind.genotype(), ind.info('fitness')
             if 0 in ind.genotype():
-                assert ind.info('fitness') > 0.25
+                self.assertTrue(ind.info('fitness') > 0.25, 
+            "ind.info('fitness') is supposed to be greater than to 0.25. This test may occasionally fail due to the randomness of outcome.")
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
         initGenotype(pop, freq=[.2, 0, .3, .4, .1])
@@ -259,7 +260,8 @@ class TestSelector(unittest.TestCase):
         for ind in pop.individuals():
             # print ind.genotype(), ind.info('fitness')
             if 0 in ind.genotype() or 2 in ind.genotype():
-                assert ind.info('fitness') > 0.25
+                self.assertTrue(ind.info('fitness') > 0.25, 
+            "ind.info('fitness') is supposed to be greater than to 0.25. This test may occasionally fail due to the randomness of outcome.")
 
     def TestAgeOfDistinction(self):
         '''Testing selection in a long time, this is a long test, and
