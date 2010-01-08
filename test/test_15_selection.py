@@ -234,13 +234,13 @@ class TestSelector(unittest.TestCase):
         MaSelector(loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0]).apply(pop)
         for ind in pop.individuals():
             if ind.genotype() == (0,0):
-                assert ind.info('fitness') == 1
+                self.assertEqual(ind.info('fitness'), 1)
             elif ind.genotype() == (0,1):
-                assert ind.info('fitness') == 0.5
+                self.assertEqual(ind.info('fitness'), 0.5)
             elif ind.genotype() == (1,0):
-                assert ind.info('fitness') == 0.5
+                self.assertEqual(ind.info('fitness'), 0.5)
             elif ind.genotype() == (1,1):
-                assert ind.info('fitness') == 0.25
+                self.assertEqual(ind.info('fitness'), 0.25)
         #
         # selector on a population with selection on is not allowed
         # explicitly walk around this.

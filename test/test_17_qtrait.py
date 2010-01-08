@@ -48,14 +48,14 @@ class TestQuanTrait(unittest.TestCase):
         pop = Population(1000, loci=[3,5], infoFields=['qtrait'])
         initGenotype(pop, freq=[.3, .7])
         def qt1(geno):
-            assert len(geno) == 4
+            self.assertEqual(len(geno), 4)
             return random.normalvariate(0, 0.5*sum(geno) )
         pyQuanTrait(pop, loci=[2,6], func=qt1, infoFields='qtrait')
         # multi-fields
         pop = Population(1000, loci=[3,5], infoFields=['qtrait1', 'qtrait2'])
         initGenotype(pop, freq=[.3, .7])
         def qt1(geno):
-            assert len(geno) == 4
+            self.assertEqual(len(geno), 4)
             return random.normalvariate(0, 0.5*sum(geno) ), 1
         pyQuanTrait(pop, loci=[2,6], func=qt1, infoFields=['qtrait1', 'qtrait2'])
 

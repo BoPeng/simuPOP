@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, random, math, sets, exceptions
+import unittest, os, sys, random, math, exceptions
 
 class TestMatingSchemes(unittest.TestCase):
 
@@ -168,8 +168,8 @@ class TestMatingSchemes(unittest.TestCase):
             matingScheme =  MonogamousMating(numOffspring=2, sexMode=(NUM_OF_MALES, 1),
                 ops=[MendelianGenoTransmitter(), ParentsTagger()]),
             gen = 5)
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
+        self.assertEqual(len(set(simu.population(0).indInfo('father_idx'))), 1000)
+        self.assertEqual(len(set(simu.population(0).indInfo('mother_idx'))), 1000)
         pop = simu.extract(0)
         self.assertEqual([ind.sex() for ind in pop.individuals()], [1,2]*1000)
                

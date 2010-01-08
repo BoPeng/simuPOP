@@ -76,7 +76,7 @@ class TestPyOperator(unittest.TestCase):
             postOps = PyOperator(self.myFuncAsTerminator),
             matingScheme=RandomMating(),
             gen = 10 )
-        assert simu.dvars(0).gen == 4
+        self.assertEqual(simu.dvars(0).gen, 4)
 
     def dynaMutator(self, pop, param):
         ''' this mutator mutate common loci with low mutation rate
