@@ -8,6 +8,7 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
 version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - BUG: Fix a bug in the output of ancestral generations.
 
 version 1.0.0 - Rev 3372 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
