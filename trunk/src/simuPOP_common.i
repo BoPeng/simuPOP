@@ -380,7 +380,6 @@ def as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mo
     '''Convert the existing population object to a pedigree. After this function
     pedigree function should magically be usable for this function.
     '''
-    print self.infoFields()
     ped = Pedigree(self, loci=ALL_AVAIL, infoFields=ALL_AVAIL, ancGens=ALL_AVAIL,
         idField=idField, fatherField=fatherField, motherField=motherField,
         stealPop=True)
