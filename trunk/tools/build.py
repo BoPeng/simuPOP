@@ -20,7 +20,7 @@ def setReleaseInManual(filename, rel, rev):
     content = file.readlines()
     for idx,line in enumerate(content):
         if line.startswith('\\setreleaseinfo'):
-            content[idx] = r'\setreleaseinfo{Release %s (\mbox{Rev: %s})}' % (rel, rev)
+            content[idx] = '\\setreleaseinfo{Release %s (\\mbox{Rev: %s})}\n' % (rel, rev)
             break
     file.close()
     file = open(filename, 'w')
