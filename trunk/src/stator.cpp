@@ -182,8 +182,9 @@ bool InfoEval::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-	if (!m_usePopVars)
+	if (!m_usePopVars) {
 		Py_DECREF(dict);
+	}
 	return true;
 }
 
@@ -200,8 +201,9 @@ bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
 		out << res;
 		this->closeOstream();
 	}
-	if (!m_usePopVars)
+	if (!m_usePopVars) {
 		Py_DECREF(dict);
+	}
 	return true;
 }
 
@@ -267,8 +269,9 @@ bool InfoExec::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-	if (dict && !m_usePopVars)
+	if (dict && !m_usePopVars) {
 		Py_DECREF(dict);
+	}
 	return true;
 }
 
@@ -279,8 +282,9 @@ bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	evalInfo(&*offspring, dict, true);
-	if (!m_usePopVars)
+	if (!m_usePopVars) {
 		Py_DECREF(dict);
+	}
 	return true;
 }
 
