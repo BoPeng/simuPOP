@@ -18,9 +18,9 @@ def setReleaseInManual(filename, rel, rev):
     '''Replace Release x.x.x with Rev: with proper value during release'''
     file = open(filename)
     content = file.readlines()
-    for line in content:
+    for idx,line in enumerate(content):
         if line.startswith('\\setreleaseinfo'):
-            line = r'\setreleaseinfo{Release %s (\mbox{Rev: %s})}' % (rel, rev)
+            content[idx] = r'\setreleaseinfo{Release %s (\mbox{Rev: %s})}' % (rel, rev)
             break
     file.close()
     file = open(filename, 'w')
@@ -90,8 +90,8 @@ def setVersionRevision(release):
         if ':' in rev:
             rev = rev.split(':')[0]
         if rev.endswith('M'):
-            print 'Please commit all changes before releasing a source package'
-            sys.exit(1)
+            rev = rev[:-1]
+            print 'Warning: Please commit all changes before releasing a source package'
     else:
         rev = '9999'
     # replace simuPOP.release
