@@ -578,7 +578,7 @@ bool TicToc::apply(Population & pop) const
 			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
 			    << "s\t Overall time: "
 			    << static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC
-			    << "s" << endl;
+			    << "s" << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
 		this->closeOstream();
 	}
 	return true;
