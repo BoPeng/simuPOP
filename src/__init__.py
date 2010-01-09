@@ -94,6 +94,8 @@ __all__ = [
     #
     # Major simuPOP classes
     'Population',
+    # This is just to make help(Individual) available to users.
+    'Individual',
     'Simulator',
     'Pedigree',
     # splitters
