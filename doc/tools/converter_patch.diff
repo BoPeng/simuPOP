@@ -1,6 +1,6 @@
 Index: latexparser.py
 ===================================================================
---- latexparser.py	(revision 70273)
+--- latexparser.py	(revision 76658)
 +++ latexparser.py	(working copy)
 @@ -17,6 +17,7 @@
       DefinitionsNode, ProductionListNode
@@ -380,7 +380,7 @@ Index: latexparser.py
          # a usecase for nonlocal :)
 Index: restwriter.py
 ===================================================================
---- restwriter.py	(revision 70273)
+--- restwriter.py	(revision 76658)
 +++ restwriter.py	(working copy)
 @@ -481,6 +481,8 @@
          if envname == 'notice':
@@ -396,7 +396,7 @@ Index: restwriter.py
          cmdname = node.cmdname
          if cmdname == 'label':
 -            labelname = self.labelprefix + text(node.args[0]).lower()
-+            labelname = self.labelprefix + text(node.args[0]).replace(':', '-')
++            labelname = self.labelprefix + text(node.args[0]).replace(':', '_').replace('-', '_')
              if self.no_flushing:
                  # in section
                  self.sectionlabel = labelname
@@ -520,24 +520,21 @@ Index: restwriter.py
          elif cmdname in ('b', 'textrm', 'email'):
              self.visit_node(content)
          elif cmdname == 'token':
-@@ -904,8 +989,12 @@
+@@ -904,8 +989,9 @@
              self.visit_wrapped('`', self.get_textonly_node(content, 'var',
                                                             warn=1), '`')
          elif cmdname == 'ref':
 -            self.curpar.append(':ref:`%s%s`' % (self.labelprefix,
 -                                                text(node.args[0]).lower()))
-+            ref_text = text(node.args[0]).replace(':', '-')
++            ref_text = text(node.args[0]).replace(':', '_').replace('-', '_')
 +            print ref_text
-+            if ref_text.startswith('cha-'):
-+                self.curpar.append(':ref:`%s%s`' % (self.labelprefix, ref_text))
-+            else:
-+                self.curpar.append('`%s%s`_' % (self.labelprefix, ref_text))
++            self.curpar.append(':ref:`%s <%s%s>`' % (ref_text, self.labelprefix, ref_text))
          elif cmdname == 'refmodule':
              self.visit_wrapped(':mod:`', node.args[1], '`', noescape=True)
          elif cmdname == 'optional':
 Index: docnodes.py
 ===================================================================
---- docnodes.py	(revision 70273)
+--- docnodes.py	(revision 76658)
 +++ docnodes.py	(working copy)
 @@ -163,6 +163,8 @@
      'geq': u'\N{GREATER-THAN OR EQUAL TO}',
