@@ -266,11 +266,22 @@ class TestPerformance(unittest.TestCase):
             # 102.22, 126.53, 
             #
             # On the new mac workstation with more RAM
+            # (There seems to be a need for memory usage profiling)
             #
             # op:
             # 0.27, 0.38, 1.1
             # 3.02, 4.31, 13.16
-            # 43.73
+            # 43.73, 81.66              (86.99M RAM)
+            #
+            # baop:
+            # 0.31, 0.44, 1.24
+            # 3.49, 4.88, 14.84
+            # 48.36, 80.85              (92.87M RAM)
+            #
+            # laop:
+            # 0.27, 0.40, 1.19
+            # 3.22, 4.56, 14.61
+            # 56.10, 91.41               (103.81M RAM)
 
 
 
