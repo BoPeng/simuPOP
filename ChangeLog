@@ -1,7 +1,8 @@
 ChangeLog of simuPOP
 
 TODO:
-  - Improve the describe() function of all operators.
+  - Improve the describe() function of all operators. Move the describeEvolProvess
+	function to the Python level so that it can describe Python modules.
   - Implement an event driven demographic class.
 
 Known Bugs:
