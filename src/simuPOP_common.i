@@ -334,7 +334,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=None, postOps=[],
     with the evolved population. Please refer to function 
     <tt>Simulator.evolve</tt> for more details about each parameter.'''
     if dryrun:
-        print describeEvolProcess(initOps, preOPs, matingScheme, postOps, finalOps, gen, 1)
+        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
         return (0,)
     if isinstance(self, Pedigree):
         raise ValueError("Evolving a pedigree object directly is not allowed.")

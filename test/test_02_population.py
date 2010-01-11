@@ -1367,6 +1367,11 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(len(list(p.allIndividuals())), sz)
         #
 
+    def testDescribeEvolProcess(self):
+        'Testing population::evolve(dryrun=True'
+        pop = Population(100, loci=3)
+        pop.evolve(preOps=InitSex(),
+            matingScheme=RandomMating(), dryrun=True)
 
 if __name__ == '__main__':
     unittest.main()
