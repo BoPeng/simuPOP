@@ -921,8 +921,8 @@ class Doxy2SWIG:
         # first handle glocal functions
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
-            print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-            funcname = self.latexName(entry['Name'].replace('simuPOP::','', 1))
+            funcname = self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+            print >> out, '\\newcommand{\\%sRef}{' % funcname
             print >> out, '\n\\subsection{Function \\texttt{%s}\index{%s}}' % (funcname, funcname)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 func_name = entry['Usage'].split('(')[0]
