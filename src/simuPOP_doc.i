@@ -289,7 +289,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false) const;
 
-%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen) const;
+%feature("docstring") simuPOP::BaseOperator::isActive "Obsolete or undocumented function."
 
 %ignore simuPOP::BaseOperator::infoSize() const;
 
@@ -316,7 +316,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::closeOstream() const;
 
-%ignore simuPOP::BaseOperator::applicability(bool subPops=true, bool gen=true) const;
+%feature("docstring") simuPOP::BaseOperator::applicability "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseOperator::describe "Obsolete or undocumented function."
 
@@ -1991,7 +1991,7 @@ Details:
     subpopulations. The size of the offspring generation is determined
     by parameter subPopSize, which can be a list of subpopulation
     sizes or a Python function that returns a list of subpopulation
-    sizes at each generation. Please refer to HomoMating for a
+    sizes at each generation. Please refer to class MatingScheme for a
     detailed explanation of this parameter.  Each mating scheme
     defined in matingSchemes can be applied to one or more (virtual)
     subpopulation. If parameter subPops is not specified, a mating
@@ -2065,22 +2065,12 @@ Details:
     an offspring population according to parameter subPopSize. This
     parameter can be a list of subpopulation sizes (or a number if
     there is only one subpopulation) or a Python function which will
-    be called at each generation, just before mating, to determine the
-    subpopulation sizes of the offspring generation. The function
-    should be defined with one or both parameters of gen and pop where
-    gen is the current generation number and pop is the parental
-    population just before mating. The return value of this function
-    should be a list of subpopulation sizes for the offspring
-    generation. A single number can be returned if there is only one
-    subpopulation. The passed parental population is usually used to
-    determine offspring population size from parental population size
-    but you can also modify this population to prepare for mating. A
-    common practice is to split and merge parental populations in this
-    function so that you demographic related information and actions
-    could be implemented in the same function.  If this mating shcme
-    is used within a heterogeneous mating scheme. Parameters subPops
-    and weight are used to determine which (virtual) subpopulations
-    this mating scheme will be applied to, and how many offspring this
+    be called at each generation to determine the subpopulation sizes
+    of the offspring generation. Please refer to class MatingScheme
+    for details about this parameter.  If this mating shcme is used
+    within a heterogeneous mating scheme. Parameters subPops and
+    weight are used to determine which (virtual) subpopulations this
+    mating scheme will be applied to, and how many offspring this
     mating scheme will produce. Please refer to mating scheme
     HeteroMating for the use of these two parameters.
 
@@ -3315,9 +3305,15 @@ Usage:
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::MatingScheme "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MatingScheme "
 
-%ignore simuPOP::MatingScheme::isCompatible(const Population &pop) const;
+Details:
+
+    This mating scheme is the base class of all mating schemes. It
+    evolves a population generation by generation but does not
+    actually transmit genotype.
+
+"; 
 
 %feature("docstring") simuPOP::MatingScheme::MatingScheme "
 
@@ -3327,8 +3323,24 @@ Usage:
 
 Details:
 
-    Create a mating scheme. subPopSize can be used to determine
-    subpopulatio sizes of an offspring generation.
+    Create a base mating scheme that evolves a population without
+    transmitting genotypes. At each generation, this mating scheme
+    creates an offspring generation according to parameter subPopSize,
+    which can be a list of subpopulation sizes (or a number if there
+    is only one subpopulation) or a Python function which will be
+    called at each generation, just before mating, to determine the
+    subpopulation sizes of the offspring generation. The function
+    should be defined with one or both parameters of gen and pop where
+    gen is the current generation number and pop is the parental
+    population just before mating. The return value of this function
+    should be a list of subpopulation sizes for the offspring
+    generation. A single number can be returned if there is only one
+    subpopulation. The passed parental population is usually used to
+    determine offspring population size from parental population size
+    but you can also modify this population to prepare for mating. A
+    common practice is to split and merge parental populations in this
+    function so that you demographic related information and actions
+    could be implemented in the same function.
 
 "; 
 
@@ -8861,23 +8873,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::describeEvolProcess "
-
-Usage:
-
-    describeEvolProcess(initOps=[], preOps=[],
-      matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1,
-      numRep=1)
-
-Details:
-
-    This function takes the same parameters as Simulator.evolve and
-    output a description of how an evolutionary process will be
-    executed. It is recommended that you call this function if you
-    have any doubt how your simulation will proceed.
-
-"; 
-
 %feature("docstring") simuPOP::turnOnDebug "
 
 Usage:
@@ -8981,7 +8976,7 @@ Details:
 
 %ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
 
-%ignore simuPOP::formatText(const string &text);
+%feature("docstring") simuPOP::formatDescription "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::getRNG "
 

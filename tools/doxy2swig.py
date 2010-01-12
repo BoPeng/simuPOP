@@ -735,6 +735,9 @@ class Doxy2SWIG:
             for transmitter in [ 'HaplodiploidGenoTransmitter', 'MendelianGenoTransmitter', 'MitochondrialGenoTransmitter',
                 'SelfingGenoTransmitter', 'CloneGenoTransmitter', 'Recombinator']:
                 text = text.replace('ops=%s' % eval('sim.' + transmitter+'()'), 'ops=%s' % (transmitter+'()'))
+            for ms in ['MatingScheme']:
+                text = text.replace('matingScheme=%s' % eval('sim.' + ms+'()'),
+                    'matingScheme=%s' % (ms+'()'))
         except Exception, e:
             print e
             pass

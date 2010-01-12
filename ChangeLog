@@ -10,6 +10,7 @@ Known Bugs:
 
 version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - BUG: Fix a typo that breaks the dryrun parameter of population.evolve().
+  - NEW: Document base mating scheme MatingScheme() and allow it to be used.
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
