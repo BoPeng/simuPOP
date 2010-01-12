@@ -173,15 +173,14 @@ public:
 	 */
 	//@{
 
-	/// CPPONLY determine if this operator is active
-	/**
+	/** CPPONLY determine if this operator is active
 	   Determine if this operator is active under the conditions such as the current
 	   replicate, current generation, ending generation etc.
 	   \note This function will be called by Simulators before applying.
 	 */
 	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false) const;
 
-	/** CPPONLY
+	/** HIDDEN
 	 * Another version of isActive when negative gen is not considered.
 	 */
 	bool isActive(UINT rep, long gen) const;
@@ -248,7 +247,7 @@ public:
 	}
 
 
-	/// CPPONLY say something about the applicability of this operator.
+	/// HIDDEN say something about the applicability of this operator.
 	string applicability(bool subPops = true, bool gen = true) const;
 
 

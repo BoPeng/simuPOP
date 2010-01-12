@@ -455,7 +455,7 @@ string IfElse::describe(bool format) const
 		if (!m_elseOps.empty())
 			desc += ", and otherwise apply operators \n" + elseDesc;
 	}
-	return format ? formatText(desc) : desc;
+	return format ? formatDescription(desc) : desc;
 }
 
 

@@ -138,7 +138,7 @@ string OffspringGenerator::describe(bool format) const
 	for (; iop != iopEnd; ++iop)
 		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
 	desc += "</ul>\n";
-	return format ? formatText(desc) : desc;
+	return format ? formatDescription(desc) : desc;
 }
 
 
@@ -219,7 +219,7 @@ string ControlledOffspringGenerator::describe(bool format) const
 	for (; iop != iopEnd; ++iop)
 		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
 	desc += "</ul>\nwhile controlling allele frequency";
-	return format ? formatText(desc) : desc;
+	return format ? formatDescription(desc) : desc;
 }
 
 
@@ -1270,7 +1270,7 @@ string HomoMating::describe(bool format) const
 	              + m_ParentChooser->describe(false) + "\n<li>"
 	              + m_OffspringGenerator->describe(false) + "</ul>\n";
 
-	return format ? formatText(desc) : desc;
+	return format ? formatDescription(desc) : desc;
 }
 
 
@@ -1348,7 +1348,7 @@ string HeteroMating::describe(bool format) const
 		}
 	}
 	desc += "</ul>\n";
-	return format ? formatText(desc) : desc;
+	return format ? formatDescription(desc) : desc;
 }
 
 

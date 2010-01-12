@@ -2702,7 +2702,7 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 }
 
 
-string formatText(const string & text)
+string formatDescription(const string & text)
 {
 	vectorstr lines;
 	// break from newline

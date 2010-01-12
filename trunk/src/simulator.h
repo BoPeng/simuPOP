@@ -277,20 +277,6 @@ private:
 
 };
 
-/** This function takes the same parameters as \c Simulator.evolve and
- *  output a description of how an evolutionary process will be executed.
- *  It is recommended that you call this function if you have any doubt how
- *  your simulation will proceed.
- */
-string describeEvolProcess(
-	const opList & initOps = opList(),
-	const opList & preOps = opList(),
-	const MatingScheme & matingScheme = MatingScheme(),
-	const opList & postOps = opList(),
-	const opList & finalOps = opList(),
-	int gen = -1,
-	UINT numRep = 1);
-
 }
 
 #endif

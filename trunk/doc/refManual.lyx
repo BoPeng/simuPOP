@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -495,6 +495,13 @@ mating scheme
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+MatingSchemeRef
+\end_layout
 
 \begin_layout Plain Layout
 
