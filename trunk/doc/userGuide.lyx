@@ -8107,9 +8107,21 @@ True
 .
  Note that this example calls the 
 \family typewriter
-evolve
+simulator.evolve
 \family default
- function twice so the second part starts at generation 5.
+ function twice.
+ The first call does not specify a mating scheme so a default empty mating
+ scheme (
+\family typewriter
+MatingScheme
+\family default
+) that does not transmit genotype is used.
+ Populations start from the beginning of the fifth generation when the second
+ 
+\family typewriter
+simulator.evole
+\family default
+ function is called.
 \end_layout
 
 \begin_layout Standard
