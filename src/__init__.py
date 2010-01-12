@@ -358,10 +358,10 @@ BaseOperator.__deepcopy__ = _deepcopy
 
 def describeEvolProcess(initOps = [], preOps = [], matingScheme = None,
     postOps = [], finalOps = [], gen = -1, numRep = 1):
-    '''This function takes the same parameters as \c Simulator.evolve and
+    '''This function takes the same parameters as <tt>Simulator.evolve</tt> and
     output a description of how an evolutionary process will be executed. It is
-    It is recommended that you call this function if you have any doubt how
-    your simulation will proceed.'''
+    recommended that you call this function if you have any doubt on how your
+    simulation will proceed.'''
     allDesc = [''] * numRep
 
     # handle single inputs
