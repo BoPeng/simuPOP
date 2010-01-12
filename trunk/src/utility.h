@@ -1634,7 +1634,7 @@ double hweTest(const vectoru & cnt);
 /// CPPONLY
 void propToCount(const vectorf & prop, ULONG N, vectoru & count);
 
-/// HIDDEN
+/// CPPONLY
 string formatDescription(const string & text);
 
 // weighted sampling using Walker's alias algorithm

@@ -193,7 +193,10 @@ vectoru Simulator::evolve(
                           const opList & finalOps,
                           int gens, bool dryrun)
 {
-	// parameter dryrun is handled at the Python level.
+	if (dryrun) {
+		cerr << describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gens, numRep()) << endl;
+		return vectoru(numRep());
+	}
 
 	if (numRep() == 0)
 		return vectoru();
@@ -415,6 +418,93 @@ int Simulator::__cmp__(const Simulator & rhs) const
 			return 1;
 
 	return 0;
+}
+
+
+string describeEvolProcess(const opList & initOps,
+                           const opList & preOps,
+                           const MatingScheme & matingScheme,
+                           const opList & postOps,
+                           const opList & finalOps,
+                           int gen, UINT numRep)
+{
+	vectorstr allDesc(numRep, "");
+
+	// assuming all active replicates.
+	vector<bool> activeReps(numRep);
+
+	for (UINT curRep = 0; curRep < numRep; curRep++) {
+		ostringstream desc;
+
+		if (initOps.empty())
+			desc << "No operator is used to initialize Population (initOps).\n";
+		else {
+			desc << "Apply pre-evolution operators to the initial population (initOps).\n<ul>\n";
+			for (size_t it = 0; it < initOps.size(); ++it)
+				desc << "<li>" << initOps[it]->describe(false) << " " << initOps[it]->applicability(true, false) << endl;
+			desc << "</ul>\n";
+		}
+		if (gen < 0)
+			desc << "\nEvolve a population indefinitely until an operator determines it." << endl;
+		else
+			desc << "\nEvolve a population for " << gen << " generations" << endl;
+		desc << "<ul>\n";
+		if (preOps.empty())
+			desc << "<li>No operator is applied to the parental generation (preOps)." << endl;
+		else {
+			desc << "<li>Apply pre-mating operators to the parental generation (preOps)\n<ul>\n";
+			for (size_t it = 0; it < preOps.size(); ++it)
+				if (preOps[it]->isActive(curRep, 0, 0, activeReps, true))
+					desc << "<li>" << preOps[it]->describe(false) << " " << preOps[it]->applicability() << endl;
+			desc << "</ul>\n";
+		}
+		desc	<< "\n<li>Populate an offspring populaton from the parental population using mating scheme "
+		        << matingScheme.describe(false) << endl;
+		//
+		if (postOps.empty())
+			desc << "\n<li>No operator is applied to the offspring population (postOps)." << endl;
+		else {
+			desc << "\n<li>Apply post-mating operators to the offspring population (postOps).\n<ul>\n";
+			for (size_t it = 0; it < postOps.size(); ++it)
+				if (postOps[it]->isActive(curRep, 0, 0, activeReps, true))
+					desc << "<li>" << postOps[it]->describe(false) << " " << postOps[it]->applicability() << endl;
+			desc << "</ul>\n";
+		}
+		desc << "</ul>\n\n";
+		if (finalOps.empty() )
+			desc << "No operator is applied to the final population (finalOps)." << endl;
+		else {
+			desc << "Apply post-evolution operators (finalOps)\n<ul>\n";
+			for (size_t it = 0; it < finalOps.size(); ++it)
+				desc << "<li>" << finalOps[it]->describe(false) << " " << finalOps[it]->applicability(true, false) << endl;
+			desc << "</ul>\n";
+		}
+		allDesc[curRep] = desc.str();
+	}
+	ostringstream desc;
+	vectoru reps;
+	for (UINT curRep = 0; curRep < numRep; curRep++) {
+		if (reps.empty())
+			reps.push_back(curRep);
+		else {
+			if (allDesc[curRep] == allDesc[curRep - 1])
+				reps.push_back(curRep);
+			else {
+				desc << "Replicate";
+				for (size_t i = 0; i < reps.size(); ++i)
+					desc << " " << i;
+				desc << ":\n" << allDesc[curRep - 1] << "\n";
+				reps.clear();
+				reps.push_back(curRep);
+			}
+		}
+	}
+	// reps should not be empty
+	desc << "Replicate";
+	for (size_t i = 0; i < reps.size(); ++i)
+		desc << " " << i;
+	desc << ":\n" << allDesc.back();
+	return formatDescription(desc.str());
 }
 
 

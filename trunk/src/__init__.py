@@ -356,84 +356,99 @@ Simulator.__deepcopy__ = _deepcopy
 BaseOperator.__deepcopy__ = _deepcopy
 
 
-def describeEvolProcess(initOps = [], preOps = [], matingScheme = None,
-    postOps = [], finalOps = [], gen = -1, numRep = 1):
-    '''This function takes the same parameters as ``Simulator.evolve`` and
-    output a description of how an evolutionary process will be executed. It is
-    recommended that you call this function if you have any doubt on how your
-    simulation will proceed.'''
-    allDesc = [''] * numRep
+##
+## This is the result of an attemp to move describeEvolProcess from the C++
+## level to the Python level so that it can correctly call the 'describe'
+## function of a derived operator or mating scheme if they define a 'describe'
+## function.
+##
+## This change has been temporarily reverted because many simuPOP components
+## such as HomoMating, OffspringGenerator accepts such objects but cannot
+## call the Python level 'describe' function correctly. Because this function
+## can only describe customized pre or post mating operators and homogeneous
+## mating schemes, it does not appear to be a good idea to expose (although
+## still hidden) functions such as BaseOperator.applicability() to the Python
+## interface.
+## 
 
-    # handle single inputs
-    if not hasattr(initOps, '__iter__'):
-        initOps = [initOps]
-    if not hasattr(preOps, '__iter__'):
-        preOps = [preOps]
-    if not hasattr(postOps, '__iter__'):
-        postOps = [postOps]
-    if not hasattr(finalOps, '__iter__'):
-        finalOps = [finalOps]
-
-    for curRep in range(numRep):
-        desc = ''
-        if not initOps:
-            desc += 'No operator is used to initialize Population (initOps).\n'
-        else:
-            desc += 'Apply pre-evolution operators to the initial population (initOps).\n<ul>\n'
-            for op in initOps:
-                desc += '<li>' + op.describe(False) + ' ' + op.applicability(True, False) + '\n'
-            desc += '</ul>\n'
-        if gen < 0:
-            desc += '\nEvolve a population indefinitely until an operator determines it.\n'
-        else:
-            desc += '\nEvolve a population for %s generations\n' % gen
-        desc += '<ul>\n'
-        if not preOps:
-            desc += '<li>No operator is applied to the parental generation (preOps).\n'
-        else:
-            desc += '<li>Apply pre-mating operators to the parental generation (preOps)\n<ul>\n'
-            for op in preOps:
-                if op.isActive(curRep, 0):
-                    desc += '<li>' + op.describe(False) + ' ' + op.applicability() + '\n'
-            desc += '</ul>\n'
-        #
-        desc += '\n<li>Populate an offspring populaton from the parental population using mating scheme ' \
-            + matingScheme.describe(False) + '\n'
-        #
-        if not postOps:
-            desc += '\n<li>No operator is applied to the offspring population (postOps).\n'
-        else:
-            desc += '\n<li>Apply post-mating operators to the offspring population (postOps).\n<ul>\n'
-            for op in postOps:
-                if op.isActive(curRep, 0):
-                    desc += '<li>' + op.describe(False) + ' ' + op.applicability() + '\n'
-            desc += '</ul>\n'
-        desc += '</ul>\n\n'
-        #
-        if not finalOps:
-            desc += 'No operator is applied to the final population (finalOps).\n'
-        else:
-            desc += 'Apply post-evolution operators (finalOps)\n<ul>\n'
-            for op in finalOps:
-                desc += '<li>' + op.describe(False) + ' ' + op.applicability(True, False) + '\n'
-            desc += '</ul>\n'
-        #
-        allDesc[curRep] = desc
-    #
-    reps = []
-    for curRep in range(numRep):
-        if not reps:
-            reps.append(str(curRep))
-        else:
-            if allDesc[curRep] == allDesc[curRep - 1]:
-                reps.append(str(curRep))
-            else:
-                desc += 'Replicate' + ' '.join(reps)
-                desc += ':\n' + allDesc[curRep - 1] + '\n'
-                reps = [str(curRep)]
-    #
-    desc += 'Replicate' + ' '.join(reps) + ':\n' + allDesc[-1]
-    return formatDescription(desc)
+## def describeEvolProcess(initOps = [], preOps = [], matingScheme = None,
+##     postOps = [], finalOps = [], gen = -1, numRep = 1):
+##     '''This function takes the same parameters as ``Simulator.evolve`` and
+##     output a description of how an evolutionary process will be executed. It is
+##     recommended that you call this function if you have any doubt on how your
+##     simulation will proceed.'''
+##     allDesc = [''] * numRep
+## 
+##     # handle single inputs
+##     if not hasattr(initOps, '__iter__'):
+##         initOps = [initOps]
+##     if not hasattr(preOps, '__iter__'):
+##         preOps = [preOps]
+##     if not hasattr(postOps, '__iter__'):
+##         postOps = [postOps]
+##     if not hasattr(finalOps, '__iter__'):
+##         finalOps = [finalOps]
+## 
+##     for curRep in range(numRep):
+##         desc = ''
+##         if not initOps:
+##             desc += 'No operator is used to initialize Population (initOps).\n'
+##         else:
+##             desc += 'Apply pre-evolution operators to the initial population (initOps).\n<ul>\n'
+##             for op in initOps:
+##                 desc += '<li>' + op.describe(False) + ' ' + op.applicability(True, False) + '\n'
+##             desc += '</ul>\n'
+##         if gen < 0:
+##             desc += '\nEvolve a population indefinitely until an operator determines it.\n'
+##         else:
+##             desc += '\nEvolve a population for %s generations\n' % gen
+##         desc += '<ul>\n'
+##         if not preOps:
+##             desc += '<li>No operator is applied to the parental generation (preOps).\n'
+##         else:
+##             desc += '<li>Apply pre-mating operators to the parental generation (preOps)\n<ul>\n'
+##             for op in preOps:
+##                 if op.isActive(curRep, 0):
+##                     desc += '<li>' + op.describe(False) + ' ' + op.applicability() + '\n'
+##             desc += '</ul>\n'
+##         #
+##         desc += '\n<li>Populate an offspring populaton from the parental population using mating scheme ' \
+##             + matingScheme.describe(False) + '\n'
+##         #
+##         if not postOps:
+##             desc += '\n<li>No operator is applied to the offspring population (postOps).\n'
+##         else:
+##             desc += '\n<li>Apply post-mating operators to the offspring population (postOps).\n<ul>\n'
+##             for op in postOps:
+##                 if op.isActive(curRep, 0):
+##                     desc += '<li>' + op.describe(False) + ' ' + op.applicability() + '\n'
+##             desc += '</ul>\n'
+##         desc += '</ul>\n\n'
+##         #
+##         if not finalOps:
+##             desc += 'No operator is applied to the final population (finalOps).\n'
+##         else:
+##             desc += 'Apply post-evolution operators (finalOps)\n<ul>\n'
+##             for op in finalOps:
+##                 desc += '<li>' + op.describe(False) + ' ' + op.applicability(True, False) + '\n'
+##             desc += '</ul>\n'
+##         #
+##         allDesc[curRep] = desc
+##     #
+##     reps = []
+##     for curRep in range(numRep):
+##         if not reps:
+##             reps.append(str(curRep))
+##         else:
+##             if allDesc[curRep] == allDesc[curRep - 1]:
+##                 reps.append(str(curRep))
+##             else:
+##                 desc += 'Replicate' + ' '.join(reps)
+##                 desc += ':\n' + allDesc[curRep - 1] + '\n'
+##                 reps = [str(curRep)]
+##     #
+##     desc += 'Replicate' + ' '.join(reps) + ':\n' + allDesc[-1]
+##     return formatDescription(desc)
 
 class WithArgs:
     '''This class wraps around a user-provided function and provides an

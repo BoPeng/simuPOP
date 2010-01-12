@@ -180,8 +180,7 @@ public:
 	 */
 	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false) const;
 
-	/** HIDDEN
-	 * Another version of isActive when negative gen is not considered.
+	/** CPPONLY Another version of isActive when negative gen is not considered.
 	 */
 	bool isActive(UINT rep, long gen) const;
 
@@ -247,7 +246,7 @@ public:
 	}
 
 
-	/// HIDDEN say something about the applicability of this operator.
+	/// CPPONLY say something about the applicability of this operator.
 	string applicability(bool subPops = true, bool gen = true) const;
 
 
