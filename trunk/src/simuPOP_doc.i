@@ -9049,8 +9049,9 @@ Description:
 
 Usage:
 
-    evolve_pop(self, initOps=[], preOps=[], matingScheme=None,
-      postOps=[],finalOps=[], gen=-1, dryrun=False)
+    evolve_pop(self, initOps=[], preOps=[],
+      matingScheme=MatingScheme(), postOps=[],finalOps=[], gen=-1,
+      dryrun=False)
 
 "; 
 
@@ -9154,7 +9155,7 @@ Details:
 
 Usage:
 
-    x.evolve(initOps=[], preOps=[], matingScheme=None,
+    x.evolve(initOps=[], preOps=[], matingScheme=MatingScheme(),
       postOps=[],finalOps=[], gen=-1, dryrun=False)
 
 Details:

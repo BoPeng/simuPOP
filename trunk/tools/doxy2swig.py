@@ -922,13 +922,15 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+            funcname = self.latexName(entry['Name'].replace('simuPOP::','', 1))
+            print >> out, '\n\\subsection{Function \\texttt{%s}\index{%s}}' % (funcname, funcname)
             if entry.has_key('Usage') and entry['Usage'] != '':
                 func_name = entry['Usage'].split('(')[0]
                 func_body = entry['Usage'][len(func_name):].lstrip('(').rstrip(')')
                 print >> out, '\\par\n\\begin{funcdesc}{%s}{%s}\n\\par' % \
                     (self.latex_text(func_name), self.latex_text(func_body))
             else:
-                print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
+                print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % funcname
             if entry['Doc'] == '':
                 print >> out, r'FIXME: No document.\par'
             else:
@@ -1153,11 +1155,15 @@ class Doxy2SWIG:
             refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
             print 'Writing reference for global function ', refName
             out = open(os.path.join(dir, refName), 'w')
+            funcname = entry['Name'].replace('simuPOP::', '', 1)
+            print >> out, '\nFunction %s' % funcname
+            print >> out, '-' * (9 + len(funcname))
+            print >> out
             print >> out, '\n.. function::',
             if entry.has_key('Usage') and entry['Usage'] != '':
                 print >> out, self.wrap_reST(entry['Usage'], '')
             else:
-                print >> out, '%s()' % entry['Name'].replace('simuPOP::', '', 1)
+                print >> out, '%s()' % funcname
             #
             print >> out
             if entry['Doc'] != '':

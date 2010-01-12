@@ -798,22 +798,22 @@ class MatingScheme
 {
 public:
 	/** Create a base mating scheme that evolves a population without
-     *  transmitting genotypes. At each generation, this mating scheme
-     *  creates an offspring generation according to parameter \e subPopSize,
+	 *  transmitting genotypes. At each generation, this mating scheme
+	 *  creates an offspring generation according to parameter \e subPopSize,
 	 *  which can be a list of subpopulation sizes (or a number if there is
-     *  only one subpopulation) or a Python function which will be called at
-     *  each generation, just before mating, to determine the subpopulation
-     *  sizes of the offspring generation. The function should be defined
-     *  with one or both parameters of \c gen and \c pop where \c gen is the
-     *  current generation number and \c pop is the parental population just
-     *  before mating. The return value of this function should be a list of
-     *  subpopulation sizes for the offspring generation. A single number can
-     *  be returned if there is only one subpopulation. The passed parental
-     *  population is usually used to determine offspring population size from
-     *  parental population size but you can also modify this population to
-     *  prepare for mating. A common practice is to split and merge parental
-     *  populations in this function so that you demographic related
-     *  information and actions could be implemented in the same function.
+	 *  only one subpopulation) or a Python function which will be called at
+	 *  each generation, just before mating, to determine the subpopulation
+	 *  sizes of the offspring generation. The function should be defined
+	 *  with one or both parameters of \c gen and \c pop where \c gen is the
+	 *  current generation number and \c pop is the parental population just
+	 *  before mating. The return value of this function should be a list of
+	 *  subpopulation sizes for the offspring generation. A single number can
+	 *  be returned if there is only one subpopulation. The passed parental
+	 *  population is usually used to determine offspring population size from
+	 *  parental population size but you can also modify this population to
+	 *  prepare for mating. A common practice is to split and merge parental
+	 *  populations in this function so that you demographic related
+	 *  information and actions could be implemented in the same function.
 	 */
 	MatingScheme(const uintListFunc & subPopSize = uintListFunc());
 
@@ -969,14 +969,14 @@ class HomoMating : public MatingScheme
 public:
 	/** Create a homogeneous mating scheme using a parent chooser \e chooser
 	 *  and an offspring generator \e generator.
-     *
+	 *
 	 *  If this mating scheme is used directly in a simulator, it will be
 	 *  responsible for creating an offspring population according to parameter
 	 *  \e subPopSize. This parameter can be a list of subpopulation sizes (or
-     *  a number if there is only one subpopulation) or a Python function which
-     *  will be called at each generation to determine the subpopulation sizes
-     *  of the offspring generation. Please refer to class \c MatingScheme
-     *  for details about this parameter.
+	 *  a number if there is only one subpopulation) or a Python function which
+	 *  will be called at each generation to determine the subpopulation sizes
+	 *  of the offspring generation. Please refer to class \c MatingScheme
+	 *  for details about this parameter.
 	 *
 	 *  If this mating shcme is used within a heterogeneous mating scheme.
 	 *  Parameters \e subPops and \e weight are used to determine which (virtual)
