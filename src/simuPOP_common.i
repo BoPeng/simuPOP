@@ -338,24 +338,15 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps
         return (0,)
     if isinstance(self, Pedigree):
         raise ValueError("Evolving a pedigree object directly is not allowed.")
-    if isinstance(self, Simulator):
-        if dryrun:
-            print describeEvolProcess(initOps, preOPs, matingScheme, postOps, finalOps, gen, self.numRep())
-            return (0,)
-        else:
-            return cppModule.Simulator_evolve(self, initOps, preOps, matingScheme, postOps, finalOps, gen)
-    if not isinstance(self, Population):
-        raise ValueError('The caller of the evolve function is not a population or a simulator')
     # create a simulator with self
     simu = Simulator(self)
     # evolve
-    gen = cppModule.Simulator_evolve(simu, initOps, preOps, matingScheme, postOps, finalOps, gen)
+    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
     # get the evolved population
     self.swap(simu.population(0))
     return gen[0]
 
 Population.evolve = evolve_pop
-Simulator.evolve = evolve_pop
 
 def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations

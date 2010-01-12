@@ -289,7 +289,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false) const;
 
-%feature("docstring") simuPOP::BaseOperator::isActive "Obsolete or undocumented function."
+%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen) const;
 
 %ignore simuPOP::BaseOperator::infoSize() const;
 
@@ -316,7 +316,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::closeOstream() const;
 
-%feature("docstring") simuPOP::BaseOperator::applicability "Obsolete or undocumented function."
+%ignore simuPOP::BaseOperator::applicability(bool subPops=true, bool gen=true) const;
 
 %feature("docstring") simuPOP::BaseOperator::describe "Obsolete or undocumented function."
 
@@ -8873,6 +8873,23 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::describeEvolProcess "
+
+Usage:
+
+    describeEvolProcess(initOps=[], preOps=[],
+      matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1,
+      numRep=1)
+
+Details:
+
+    This function takes the same parameters as Simulator.evolve and
+    output a description of how an evolutionary process will be
+    executed. It is recommended that you call this function if you
+    have any doubt how your simulation will proceed.
+
+"; 
+
 %feature("docstring") simuPOP::turnOnDebug "
 
 Usage:
@@ -8976,7 +8993,7 @@ Details:
 
 %ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
 
-%feature("docstring") simuPOP::formatDescription "Obsolete or undocumented function."
+%ignore simuPOP::formatDescription(const string &text);
 
 %feature("docstring") simuPOP::getRNG "
 

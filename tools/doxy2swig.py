@@ -1161,7 +1161,7 @@ class Doxy2SWIG:
             print >> out
             print >> out, '\n.. function::',
             if entry.has_key('Usage') and entry['Usage'] != '':
-                print >> out, self.wrap_reST(entry['Usage'], '')
+                print >> out, entry['Usage']
             else:
                 print >> out, '%s()' % funcname
             #
