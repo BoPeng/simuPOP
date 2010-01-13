@@ -585,14 +585,14 @@ intList::intList(PyObject * obj) : m_elems(), m_allAvail(false)
 	else if (PyNumber_Check(obj)) {
 		// accept a number
 		m_allAvail = false;
-		m_elems.push_back(PyInt_AS_LONG(obj));
+		m_elems.push_back(PyInt_AsLong(obj));
 	} else if (PySequence_Check(obj)) {
 		m_elems.resize(PySequence_Size(obj));
 		// assign values
 		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of rep.");
-			m_elems[i] = PyInt_AS_LONG(item);
+			m_elems[i] = PyInt_AsLong(item);
 			Py_DECREF(item);
 		}
 	} else {
@@ -614,7 +614,7 @@ void PyObj_As_Bool(PyObject * obj, bool & val)
 	} else if (obj == Py_True)
 		val = true;
 	else
-		val = PyInt_AS_LONG(obj) ? true : false;
+		val = PyInt_AsLong(obj) ? true : false;
 }
 
 
@@ -629,7 +629,7 @@ void PyObj_As_Int(PyObject * obj, long int & val)
 	if (res == NULL)
 		throw ValueError("Can not convert object to an integer");
 
-	val = static_cast<int>(PyInt_AS_LONG(res));
+	val = static_cast<int>(PyInt_AsLong(res));
 	Py_DECREF(res);
 }
 
@@ -1308,7 +1308,7 @@ PyObject * load_none(const string & str, size_t & offset)
 
 void save_int(string & str, PyObject * args)
 {
-	long l = PyInt_AS_LONG((PyIntObject *)args);
+	long l = PyInt_AsLong((PyIntObject *)args);
 
 	// type + string + ' '
 	str += 'i' + toStr(l) + ' ';
@@ -1331,7 +1331,7 @@ PyObject * load_int(const string & str, size_t & offset)
 
 void save_long(string & str, PyObject * args)
 {
-	long l = PyInt_AS_LONG(args);
+	long l = PyInt_AsLong(args);
 
 	// type +  string + ' '
 	str += 'i' + toStr(l) + ' ';

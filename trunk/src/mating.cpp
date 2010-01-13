@@ -1004,7 +1004,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 		for (size_t i = 0; i < 2; ++i) {
 			PyObject * v = PySequence_GetItem(item, i);
 			if (PyInt_Check(v) || PyLong_Check(v)) {
-				ULONG idx = static_cast<ULONG>(PyInt_AS_LONG(v));
+				ULONG idx = static_cast<ULONG>(PyInt_AsLong(v));
 				DBG_ASSERT(idx < m_size, ValueError, "Returned parent index (" + toStr(idx) +
 					") is greater than subpopulation size " + toStr(m_size));
 				parents[i] = &*(m_begin + idx);
