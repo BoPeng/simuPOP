@@ -1723,6 +1723,49 @@ len(famSz), max(famSz)
 #end_file
 
 
+
+#begin_file log/locateFamilies.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population(1000, ancGen=-1, infoFields=['ind_id', 'father_id', 'mother_id'])
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.IdTagger(),
+    ],
+    matingScheme=sim.RandomMating(
+        numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4),
+        ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.IdTagger(),
+            sim.PedigreeTagger()
+        ],
+    ),
+    gen = 19
+)
+# we now have the complete pedigree of 20 generations
+pop.asPedigree()
+# total number of individuals should be 20 * 1000
+# how many families do we have?
+fam = pop.identifyFamilies()
+len(fam)
+# but how many families with more than 1 individual?
+# The rest of them must be in the initial generation
+len([x for x in fam if x > 1])
+# let us look backward. allAnc are the ancestors who have offspring in the
+# last generation. You can see this is a small number compared the number of
+# ancestors.
+allAnc = pop.identifyAncestors()
+len(allAnc)
+#end_file
+
+
 #begin_file log/InitSex.py
 #begin_ignore
 import simuOpt

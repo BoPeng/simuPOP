@@ -8677,19 +8677,86 @@ Population.extractIndividuals()
 simuPOP.sampling
 \family default
  module works.
- In addition, function 
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/locateRelative.log"
+lstparams "caption={Locate close and distant relatives of individuals},label={locateRelative}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+Pedigree
+\family default
+ class provides some other functions that allows you to identify related
+ individuals.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+Function 
+\family typewriter
+Pedigree.identifyAncestors
+\family default
+ identifies all ancestors of specified individuals or all individuals at
+ the present generation.
+ In a diaploid population when there is only one parent, you can see that
+ only a small portion of ancestors have offspring in the last generation.
+\end_layout
+
+\begin_layout Itemize
+Function 
+\family typewriter
+Pedigree.identifyOffspring
+\family default
+ identifies all offspring of specified individuals across multiple generations.
+ 
+\end_layout
+
+\begin_layout Itemize
+Function 
 \family typewriter
 Pedigree.identifyFamilies
 \family default
  groups all related individuals into families and assign a family ID to
  all family members.
- You might be surprised in how large this kind of family can be when parents
+ You might be surprised by how large this kind of family can be when parents
  are allowed to have multiple spouses.
-  
+ 
+\end_layout
+
+\begin_layout Standard
+All these functions support parameters 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+ancGens
+\family default
+ so that you can limit your search in specific subpopulations and ancestral
+ generations.
+ For example, you can limit your search to all male individuals to find
+ out someone's male offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "locateFamilies"
+
+\end_inset
+
+ demonstrates how to use these functions to analyze the structure of a complete
+ pedigree.
+ 
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/locateRelative.log"
-lstparams "caption={Locate close and distant relatives of individuals},label={locateRelative}"
+filename "log/locateFamilies.log"
+lstparams "caption={Identify all ancestors, offspring or all related individuals},label={locateFamilies}"
 
 \end_inset
 
