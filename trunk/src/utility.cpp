@@ -558,14 +558,14 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 		m_status = obj == Py_True ? ALL_AVAIL : UNSPECIFIED;
 	else if (PyNumber_Check(obj)) {
 		// accept a number
-		m_elems.push_back(static_cast<UINT>(PyInt_AS_LONG(obj)));
+		m_elems.push_back(static_cast<UINT>(PyInt_AsLong(obj)));
 	} else if (PySequence_Check(obj)) {
 		m_elems.resize(PySequence_Size(obj));
 		// assign values
 		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			DBG_ASSERT(PyNumber_Check(item), ValueError, "Invalid input for a list of integers.");
-			m_elems[i] = static_cast<UINT>(PyInt_AS_LONG(item));
+			m_elems[i] = static_cast<UINT>(PyInt_AsLong(item));
 			Py_DECREF(item);
 		}
 	} else {

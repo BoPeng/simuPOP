@@ -1,16 +1,12 @@
 ChangeLog of simuPOP
 
-TODO:
-  - Improve the describe() function of all operators. Move the describeEvolProvess
-	function to the Python level so that it can describe Python modules.
-  - Implement an event driven demographic class.
-
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
 version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - BUG: Fix a typo that breaks the dryrun parameter of population.evolve().
-  - NEW: Document base mating scheme MatingScheme() and allow it to be used.
+  - NEW: Document base mating scheme MatingScheme() and allow it to be used explicitly.
+  - NEW: Accept float numbers as input when a list of integers is required.
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
