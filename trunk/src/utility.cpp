@@ -1308,7 +1308,7 @@ PyObject * load_none(const string & str, size_t & offset)
 
 void save_int(string & str, PyObject * args)
 {
-	long l = PyInt_AsLong((PyIntObject *)args);
+	long l = PyInt_AsLong(args);
 
 	// type + string + ' '
 	str += 'i' + toStr(l) + ' ';

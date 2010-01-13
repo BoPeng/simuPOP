@@ -667,6 +667,8 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 		ValueError,
 		"Parameter affectionChoice, if given, should have the same length of pathFields");
 
+	UINT oldGen = curAncestralGen();
+
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
 		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
@@ -751,7 +753,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 					ind->setInfo(inds[i], resultIdx[i]);
 		}
 	}
-	useAncestralGen(0);
+	useAncestralGen(oldGen);
 	return true;
 }
 
@@ -801,6 +803,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
+	UINT oldGen = curAncestralGen();
 	// mark eligible Individuals
 	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
@@ -852,7 +855,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 				IDs.push_back(static_cast<ULONG>(ind->info(m_idIdx) + 0.5));
 		}
 	}
-	useAncestralGen(0);
+	useAncestralGen(oldGen);
 	return IDs;
 }
 
@@ -870,6 +873,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
+	UINT oldGen = curAncestralGen();
 	// mark eligible Individuals
 	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
@@ -996,6 +1000,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 		if (pedIdx >= 0)
 			m_idMap[it->first]->setInfo(famID, static_cast<UINT>(pedIdx));
 	}
+	useAncestralGen(oldGen);
 	return famSize;
 }
 
