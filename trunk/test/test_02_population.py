@@ -1367,6 +1367,66 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(len(list(p.allIndividuals())), sz)
         #
 
+    def testIdentifyAncestors(self):
+        'Testing pedigree::identifyAncestors'
+        pop = Population(100, infoFields=['ind_id', 'father_id'], ancGen=1)
+        tagID(pop, reset=True)
+        pop.evolve(
+            matingScheme=RandomSelection(ops=[
+                CloneGenoTransmitter(), IdTagger(),
+                    PedigreeTagger(infoFields='father_id')]),
+            gen = 1
+        )
+        ped = Pedigree(pop, motherField='', infoFields=ALL_AVAIL)
+        IDs = ped.identifyAncestors()
+        self.assertTrue(len(IDs) > 100)
+        # two parents
+        pop = Population(100, infoFields=['ind_id', 'father_id', 'mother_id'], ancGen=3)
+        tagID(pop, reset=True)
+        pop.evolve(
+            initOps = InitSex(),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger()]),
+            gen = 5
+        )
+        pop.asPedigree()
+        IDs = pop.identifyAncestors()
+        self.assertTrue(len(IDs) > 200)
+        # ancestors of selected parents
+        IDs = pop.identifyAncestors(501)
+        self.assertTrue(len(IDs) > 1 + 2 + 4)
+
+    def testIdentifyOffspring(self):
+        'Testing pedigree::offspring'
+        pop = Population(100, infoFields=['ind_id', 'father_id'], ancGen=1)
+        tagID(pop, reset=True)
+        pop.evolve(
+            matingScheme=RandomSelection(ops=[
+                CloneGenoTransmitter(), IdTagger(),
+                    PedigreeTagger(infoFields='father_id')]),
+            gen = 1
+        )
+        ped = Pedigree(pop, motherField='', infoFields=ALL_AVAIL)
+        IDs = ped.identifyOffspring(1)
+        # two parents
+        pop = Population(100, infoFields=['ind_id', 'father_id', 'mother_id'], ancGen=3)
+        tagID(pop, reset=True)
+        pop.evolve(
+            initOps = InitSex(),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger()]),
+            gen = 5
+        )
+        pop.asPedigree()
+        pop.useAncestralGen(3)
+        anc = pop.indInfo('ind_id')[:10]
+        IDs = pop.identifyOffspring(anc)
+        len(IDs) > 20
+
     def testDescribeEvolProcess(self):
         'Testing population::evolve(dryrun=True'
         pop = Population(100, loci=3)

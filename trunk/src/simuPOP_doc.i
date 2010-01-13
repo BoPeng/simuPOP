@@ -4346,6 +4346,51 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Pedigree::identifyAncestors "
+
+Usage:
+
+    x.identifyAncestors(IDs=ALL_AVAIL, subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
+
+Details:
+
+    If a list of individuals (IDs) is given, this function traces
+    backward in time and find all ancestors of these individuals. If
+    IDs is ALL_AVAIL, ancestors of all individuals in the present
+    generation will be located. If a list of (virtual) subpopulations
+    (subPops) or ancestral geneartions (ancGens) is given, the search
+    will be limited to individuals in these subpopulations and
+    generations. This could be used to, for example, find all fathers
+    of IDs. This function returns a list of IDs, which includes valid
+    specified IDs. Invalid IDs will be silently ignored. Note that
+    parameters subPops and ancGens will limit starting IDs if IDs is
+    set to ALL_AVAIL, but specified IDs will not be trimmed according
+    to these parameters.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::identifyOffspring "
+
+Usage:
+
+    x.identifyOffspring(IDs=[], subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
+
+Details:
+
+    This function traces forward in time and find all offspring of
+    individuals specified in parameter IDs. If a list of (virtual)
+    subpopulations (subPops) or ancestral geneartions (ancGens) is
+    given, the search will be limited to individuals in these
+    subpopulations and generations. This could be used to, for
+    example, find all male offspring of IDs. This function returns a
+    list of IDs, which includes valid starting IDs. Invalid IDs are
+    silently ignored. Note that parameters subPops and ancGens will
+    limit search result but will not be used to trim specified IDs.
+
+"; 
+
 %feature("docstring") simuPOP::Pedigree::removeIndividuals "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pedigree::removeSubPops "Obsolete or undocumented function."

@@ -204,6 +204,38 @@ public:
 		const subPopList & subPops = subPopList(),
 		const uintList & ancGens = uintList());
 
+	/** If a list of individuals (\e IDs) is given, this function traces
+	 *  backward in time and find all ancestors of these individuals. If \e IDs
+	 *  is \c ALL_AVAIL, ancestors of all individuals in the present generation
+	 *  will be located. If a list of (virtual) subpopulations (\e subPops) or
+	 *  ancestral geneartions (\e ancGens) is given, the search will be limited
+	 *  to individuals in these subpopulations and generations. This could be
+	 *  used to, for example, find all fathers of \e IDs. This function returns
+	 *  a list of IDs, which includes valid specified IDs. Invalid IDs will be
+	 *  silently ignored. Note that parameters \e subPops and \e ancGens will
+	 *  limit starting IDs if \c IDs is set to \c ALL_AVAIL, but specified
+	 *  IDs will not be trimmed according to these parameters.
+	 *  <group>4-locate</group>
+	 */
+	vectoru identifyAncestors(const uintList & IDs = uintList(),
+		const subPopList & subPops = subPopList(),
+		const uintList & ancGens = uintList());
+
+	/** This function traces forward in time and find all offspring of
+	 *  individuals specified in parameter \e IDs. If a list of (virtual)
+	 *  subpopulations (\e subPops) or ancestral geneartions (\e ancGens) is
+	 *  given, the search will be limited to individuals in these
+	 *  subpopulations and generations. This could be used to, for example,
+	 *  find all male offspring of \e IDs. This function returns a list of IDs,
+	 *  which includes valid starting \e IDs. Invalid IDs are silently ignored.
+	 *  Note that parameters \e subPops and \e ancGens will limit search result
+	 *  but will not be used to trim specified \e IDs.
+	 *  <group>4-locate</group>
+	 */
+	vectoru identifyOffspring(const uintList & IDs = vectoru(),
+		const subPopList & subPops = subPopList(),
+		const uintList & ancGens = uintList());
+
 	/** HIDDEN This function has the potential to change individuals in a
 	 *  population so the ID map needs to be rebuilt.
 	 */

@@ -1000,6 +1000,194 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 }
 
 
+vectoru Pedigree::identifyAncestors(const uintList & IDs,
+                                    const subPopList & subPops,
+                                    const uintList & ancGens)
+{
+	vectoru gens = ancGens.elems();
+
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
+
+	UINT oldGen = curAncestralGen();
+	// mark eligible Individuals
+	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+		useAncestralGen(ans);
+		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+			markIndividuals(vspID(), false);
+			continue;
+		}
+		if (subPops.allAvail())
+			markIndividuals(vspID(), true);
+		else {
+			markIndividuals(vspID(), false);
+			subPopList::const_iterator sp = subPops.begin();
+			subPopList::const_iterator spEnd = subPops.end();
+			for (; sp != spEnd; ++sp)
+				markIndividuals(*sp, true);
+		}
+	}
+	useAncestralGen(oldGen);
+
+	// step 2: source IDs
+	vectoru res;
+	if (IDs.allAvail()) {
+		RawIndIterator it = rawIndBegin();
+		RawIndIterator itEnd = rawIndEnd();
+		for (; it != itEnd; ++it)
+			if (it->marked())
+				res.push_back(static_cast<ULONG>(it->info(m_idIdx) + 0.5));
+	} else {
+		const vectoru & inputIDs = IDs.elems();
+		res.reserve(inputIDs.size());
+		for (size_t i = 0; i < inputIDs.size(); ++i)
+			if (m_idMap.find(inputIDs[i]) != m_idMap.end())
+				res.push_back(inputIDs[i]);
+	}
+	// step 3: trace back like a spider
+	size_t start = 0;
+	while (true) {
+		size_t end = res.size();
+		if (start == end)
+			break;
+		for (size_t i = start; i < end; ++i) {
+			ULONG ID = res[i];
+			// true ID starts from 1
+			ULONG father_ID = 0;
+			ULONG mother_ID = 0;
+			try {
+				// if this ID exists
+				Individual & ind = indByID(ID);
+				if (m_fatherIdx != -1)
+					father_ID = static_cast<ULONG>(ind.info(m_fatherIdx) + 0.5);
+				if (m_motherIdx != -1)
+					mother_ID = static_cast<ULONG>(ind.info(m_motherIdx) + 0.5);
+			} catch (IndexError &) {
+				//
+			}
+			if (father_ID) {
+				try {
+					Individual & father = indByID(father_ID);
+					if (father.marked()) {
+						res.push_back(father_ID);
+						// this father is already included
+						father.setMarked(false);
+					}
+				} catch (IndexError &) {
+					///
+				}
+			}
+			if (mother_ID) {
+				try {
+					Individual & mother = indByID(mother_ID);
+					if (mother.marked()) {
+						res.push_back(mother_ID);
+						// this mother is already included
+						mother.setMarked(false);
+					}
+				} catch (IndexError &) {
+					///
+				}
+			}
+		}
+		// all parents of individuals between start and end has been located
+		// start to find the parent of these parents
+		start = end;
+	}
+	return res;
+}
+
+
+vectoru Pedigree::identifyOffspring(const uintList & IDs,
+                                    const subPopList & subPops,
+                                    const uintList & ancGens)
+{
+	// record offspring of everyone
+	std::map<ULONG, vectoru> offspringMap;
+	vectoru gens = ancGens.elems();
+	if (ancGens.allAvail())
+		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+			gens.push_back(gen);
+	else if (ancGens.unspecified())
+		gens.push_back(curAncestralGen());
+
+	// mark eligible Individuals
+	UINT oldGen = curAncestralGen();
+	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+		useAncestralGen(ans);
+		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+			markIndividuals(vspID(), false);
+			continue;
+		}
+		if (subPops.allAvail())
+			markIndividuals(vspID(), true);
+		else {
+			markIndividuals(vspID(), false);
+			subPopList::const_iterator sp = subPops.begin();
+			subPopList::const_iterator spEnd = subPops.end();
+			for (; sp != spEnd; ++sp)
+				markIndividuals(*sp, true);
+		}
+		// collect ID.
+		RawIndIterator it = rawIndBegin();
+		RawIndIterator itEnd = rawIndEnd();
+		for (; it != itEnd; ++it) {
+			// I am a valid offspring
+			if (it->marked()) {
+				ULONG myID = static_cast<ULONG>(it->info(m_idIdx) + 0.5);
+				ULONG fatherID = m_fatherIdx == -1 ? 0 : static_cast<ULONG>(it->info(m_fatherIdx) + 0.5);
+				ULONG motherID = m_motherIdx == -1 ? 0 : static_cast<ULONG>(it->info(m_motherIdx) + 0.5);
+				// we do not care if father or mother is valid.
+				if (fatherID) {
+					if (offspringMap.find(fatherID) == offspringMap.end())
+						offspringMap[fatherID] = vectoru(1, myID);
+					else
+						offspringMap[fatherID].push_back(myID);
+				}
+				if (motherID) {
+					if (offspringMap.find(motherID) == offspringMap.end())
+						offspringMap[motherID] = vectoru(1, myID);
+					else
+						offspringMap[motherID].push_back(myID);
+				}
+			}
+		}
+	}
+	useAncestralGen(oldGen);
+
+	// step 2: locate all offspring
+	vectoru res;
+	const vectoru & inputIDs = IDs.elems();
+	res.reserve(inputIDs.size());
+	for (size_t i = 0; i < inputIDs.size(); ++i)
+		if (m_idMap.find(inputIDs[i]) != m_idMap.end())
+			res.push_back(inputIDs[i]);
+	size_t start = 0;
+	while (true) {
+		size_t end = res.size();
+		if (start == end)
+			break;
+		for (size_t i = start; i < end; ++i) {
+			ULONG ID = res[i];
+			if (offspringMap.find(ID) == offspringMap.end())
+				continue;
+			res.insert(res.end(), offspringMap[ID].begin(), offspringMap[ID].end());
+		}
+		// all offspring of individuals between start and end has been located
+		// start to find the offspring of these offspring
+		start = end;
+	}
+	// return a unique list
+	std::sort(res.begin(), res.end());
+	vectoru::iterator new_end = std::unique(res.begin(), res.end());
+	res.erase(new_end, res.end());
+	return res;
+}
+
+
 void Pedigree::removeIndividuals(const uintList & indexes,
                                  const floatList & IDs, const string & idField, PyObject * filter)
 {
