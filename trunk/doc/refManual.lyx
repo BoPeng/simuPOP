@@ -519,13 +519,6 @@ HeteroMatingRef
 
 \begin_layout Plain Layout
 
-%
-\backslash
-PedigreeMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
 
 \backslash
 SequentialParentChooserRef
@@ -564,6 +557,13 @@ PolyParentsChooserRef
 
 \backslash
 PyParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+PedigreeParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -647,6 +647,13 @@ simuPOPSelfMatingRef
 
 \backslash
 simuPOPControlledRandomMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPedigreeMatingRef
 \end_layout
 
 \end_inset
@@ -1286,6 +1293,13 @@ PedigreeTaggerRef
 
 \backslash
 PyTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+PedIndCopierRef
 \end_layout
 
 \end_inset

@@ -78,6 +78,39 @@ public:
 	/// CPPONLY copy constructor
 	Pedigree(const Pedigree & rhs);
 
+	/// CPPONLY
+	ULONG idIdx() const
+	{
+		return m_idIdx;
+	}
+
+
+	/// CPPONLY Return the ID of the father of individual id.
+	/// return 0 if id is zero or invalid, or father_idx is -1.
+	ULONG fatherOf(ULONG id) const
+	{
+		if (id == 0 || m_fatherIdx == -1)
+			return 0;
+		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
+		if (it == m_idMap.end())
+			return 0;
+		return static_cast<ULONG>(it->second->info(m_fatherIdx) + 0.5);
+	}
+
+
+	/// CPPONLY Return the ID of the mother of individual id.
+	/// return 0 if id is zero or invalid, or mother_idx is -1.
+	ULONG motherOf(ULONG id) const
+	{
+		if (id == 0 || m_motherIdx == -1)
+			return 0;
+		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
+		if (it == m_idMap.end())
+			return 0;
+		return static_cast<ULONG>(it->second->info(m_motherIdx) + 0.5);
+	}
+
+
 	/** Create a cloned copy of a Pedigree.
 	 *  <group>1-ped</group>
 	 */
@@ -88,7 +121,7 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>4-ind</group>
 	 */
-	Individual & indByID(double id);
+	Individual & indByID(double id) const;
 
 
 	/** Return the number of parents each individual has. This function returns

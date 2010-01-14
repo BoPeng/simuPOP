@@ -1354,7 +1354,7 @@ public:
 	PyObject * dict(int subPop = -1);
 
 	/// CPPONLY
-	SharedVariables & getVars()
+	SharedVariables & getVars() const
 	{
 		return m_vars;
 	}
@@ -1694,7 +1694,7 @@ private:
 	int m_ancestralGens;
 
 	/// shared variables for this population
-	SharedVariables m_vars;
+	mutable SharedVariables m_vars;
 
 	/// store previous populations
 	/// need to store: subPopSize, genotype and m_inds

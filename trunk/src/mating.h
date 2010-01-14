@@ -89,7 +89,7 @@ public:
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
 	 *  default value is usually \e RANDOM_SEX which assign \c MALE or \c FEMALE
 	 *  to each individual randomly, with equal probabilities. If \c NO_SEX is
-	 *  given, all individuals will be \c MALE. \e sexMode can also be one of
+	 *  given, offspring sex will not be changed. \e sexMode can also be one of
 	 *  <tt>(PROB_OF_MALES, p)</tt>, <tt>(NUM_OF_MALES, n)</tt>, and
 	 *  <tt>(NUM_OF_FEMALES, n)</tt>. The first case specifies the probability
 	 *  of male for each offspring. The next two cases specifies the number of
@@ -713,6 +713,66 @@ private:
    }; */
 
 
+/** This parent chooser goes through individuals in a specified \c Pedigree
+ *  object and look up parent or parents in a population according to the IDs
+ *  of parents. More specifically, if the pedigree object has \c N ancestral
+ *  generations, it will start from the \c N-1 ancestral generation, go through
+ *  all individuals, find the IDs of their parents, and look up and return
+ *  the corresponding parents in the passed population. This parent choose also
+ *  record the ID of the current offspring to the pedigrees local namespace as
+ *  variable \c cur_ind_id. This parent chooser is usually used to replay an
+ *  evolutionary process recorded by a pedigree object. (Virtual) subpopulation
+ *  is not supported by this parent chooser.
+ */
+class PedigreeParentsChooser : public ParentChooser
+{
+public:
+	/*  Creates a parent chooser that locate parents from a population
+	 *  according to IDs of parents of the offspring recorded in a Pedigree
+	 *  object \e ped. The ID of the current offspring is written to the
+	 *  local namespace of the pedigree object as variable \c cur_ind_id.
+	 *  The id field of the population could be specified by parameter
+	 *  \e idField.
+	 */
+	PedigreeParentsChooser(const Pedigree & ped, const string & idField = "ind_id") :
+		ParentChooser(), m_ped(ped), m_idField(idField), m_gen(ped.ancestralGens()), m_index(0)
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a Python mating scheme
+	virtual ParentChooser * clone() const
+	{
+		return new PedigreeParentsChooser(*this);
+	}
+
+
+	/// HIDDEN describe a pedigree mating scheme.
+	virtual string describe(bool format = true) const
+	{
+		return "<simuPOP.PedigreeParentsChooser> chooses parents according to their IDs specified in a pedigree object.";
+	}
+
+
+	/// CPPONLY
+	void initialize(Population & pop, SubPopID sp);
+
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
+	IndividualPair chooseParents(RawIndIterator basePtr);
+
+private:
+	const Pedigree & m_ped;
+
+	const string m_idField;
+
+	mutable int m_gen;
+
+	mutable int m_index;
+
+	mutable std::map<ULONG, Individual *> m_idMap;
+};
+
+
 /** This parent chooser accept a Python generator function that repeatedly
  *  yields one or two parents, which can be references to individual objects
  *  or indexes relative to each subpopulation. The parent chooser calls the
@@ -879,84 +939,6 @@ protected:
 	uintListFunc m_subPopSize;
 };
 
-/*  A pedigree mating scheme that evolves a population following a
- *  pedigree object.
- */
-/*
-   class PedigreeMating : public MatingScheme
-   {
-   public:
- */
-/*  Creates a mating scheme that evolve a population following a pedigree
- *  object \e ped. Considering this pedigree as a population with \c N
- *  ancestral generations, the starting population is the greatest ancestral
- *  generation of \e ped. The mating scheme creates an offspring generation
- *  that match the size of generation \c N-1 and chooses parents according
- *  to the parents of individuals at this generation. Depending on the \e gen
- *  parameter of the simulator, the process continues generation by
- *  generation for \c N generations if \c gen >= N), or \c gen generations
- *  if \c gen < \c N. During the evolution, an offspring generator
- *  \e generator is used to produce one offspring at a time, regardless of
- *  the \e numOffspring setting of this offspring generator. If individuals
- *  in pedigree \e ped has only one parent, the offspring generator should
- *  be compatible.
- *
- *  By default, the pedigree mating scheme does not set offspring sex and
- *  affection status using sex and affection status of corresponding
- *  individuals in the Pedigree. However, if such information is valid
- *  in the pedigree object \e ped, you can set parameters \e setSex and/or
- *  \e setAffection to \c True to set sex and/of affection status to
- *  offspring during the evolutionary process. Similarly, you can specify
- *  some information fields in \e copyFields to copy some information
- *  fields from pedigree to the evolving population. Note that these
- *  information will be copied also to the starting population (from the
- *  greatest ancestral generation in \e ped).
- */
-/*
-   PedigreeMating(const pedigree & ped, const OffspringGenerator & generator,
-   bool setSex = false, bool setAffection = false,
-   const vectorstr & copyFields = vectorstr());
-
-   /// destructor
-   ~PedigreeMating();
-
-   /// CPPONLY
-   PedigreeMating(const PedigreeMating & rhs);
-
-
-   /// HIDDEN Deep copy of a Python mating scheme
-   virtual MatingScheme * clone() const
-   {
-   return new PedigreeMating(*this);
-   }
-
-
-   /// HIDDEN describe a pedigree mating scheme.
-   virtual string describe(bool format = true) const
-   {
-   return "<simuPOP.PedigreeMating> A pedigree mating scheme";
-   }
-
-
-   /// CPPONLY
-   bool prepareScratchPop(Population & pop, Population & scratch);
-
-   /// CPPONLY
-   virtual bool mate(Population & pop, Population & scratch);
-
-   private:
-   pedigree m_ped;
-
-   OffspringGenerator * m_generator;
-
-   int m_parentalPopSize;
-
-   bool m_setSex;
-   bool m_setAffection;
-
-   vectorstr m_copyFields;
-   };
- */
 
 /** A homogeneous mating scheme that uses a parent chooser to choose parents
  *  from a prental generation, and an offspring generator to generate offspring

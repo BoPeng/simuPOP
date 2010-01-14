@@ -109,7 +109,7 @@ Sex OffspringGenerator::getSex(int count)
 	int mode = static_cast<int>(m_sexMode[0]);
 
 	if (mode == NO_SEX)
-		return MALE;
+		return INVALID_SEX;
 	else if (mode == RANDOM_SEX)
 		return getRNG().randBit() ? MALE : FEMALE;
 	else if (mode == PROB_OF_MALES)
@@ -915,6 +915,48 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
    }
  */
 
+void PedigreeParentsChooser::initialize(Population & pop, SubPopID sp)
+{
+	if (sp == 0) {
+		UINT idIdx = pop.infoIdx(m_idField);
+		m_index = 0;
+		m_gen--;
+		m_idMap.clear();
+		RawIndIterator it = pop.rawIndBegin();
+		RawIndIterator it_end = pop.rawIndEnd();
+		for (; it != it_end; ++it)
+			m_idMap[static_cast<ULONG>(it->info(idIdx) + 0.5)] = &*it;
+	}
+}
+
+
+ParentChooser::IndividualPair PedigreeParentsChooser::chooseParents(RawIndIterator basePtr)
+{
+	const Individual & ind = m_ped.ancestor(m_index, m_gen);
+	ULONG my_id = static_cast<ULONG>(ind.info(m_ped.idIdx() + 0.5));
+	ULONG father_id = m_ped.fatherOf(my_id);
+	ULONG mother_id = m_ped.motherOf(my_id);
+	Individual * dad = NULL;
+	Individual * mom = NULL;
+
+	if (father_id) {
+		std::map<ULONG, Individual *>::iterator dad_it = m_idMap.find(father_id);
+		if (dad_it != m_idMap.end())
+			dad = &*(dad_it->second);
+	}
+	if (mother_id) {
+		std::map<ULONG, Individual *>::iterator mom_it = m_idMap.find(mother_id);
+		if (mom_it != m_idMap.end())
+			mom = &*(mom_it->second);
+	}
+	// save current id to ped
+	m_ped.getVars().setIntVar("cur_ind_id", my_id);
+	// aim to the next individual
+	++m_index;
+	return std::make_pair(dad, mom);
+}
+
+
 PyParentsChooser::PyParentsChooser(PyObject * pc)
 	: ParentChooser(), m_func(pc), m_popObj(NULL),
 	m_generator(NULL), m_parIterator(NULL)
@@ -1121,137 +1163,6 @@ void MatingScheme::submitScratch(Population & pop, Population & scratch)
 	scratch.validate("after push and discard");
 }
 
-
-/*
-   PedigreeMating::PedigreeMating(const pedigree & ped,
-    const OffspringGenerator & generator, bool setSex, bool setAffection,
-    const vectorstr & copyFields)
-    : MatingScheme(uintListFunc()), m_ped(ped),
-    m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
-   {
-    m_generator = generator.clone();
-   }
-
-
-   PedigreeMating::PedigreeMating(const PedigreeMating & rhs)
-    : mating(rhs), m_ped(rhs.m_ped), m_setSex(rhs.m_setSex),
-    m_setAffection(rhs.m_setAffection), m_copyFields(rhs.m_copyFields)
-   {
-    m_generator = rhs.m_generator->clone();
-    DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
-        "Passed pedigree.has no ancestral generation.");
-    // scroll to the greatest generation, but this generation
-    // should have no parental generation.
-    m_ped.useAncestralGen(m_ped.ancestralGens());
-   }
-
-
-   PedigreeMating::~PedigreeMating()
-   {
-    delete m_generator;
-   }
-
-
-   bool PedigreeMating::prepareScratchPop(Population & pop, Population & scratch)
-   {
-    if (scratch.genoStruIdx() != pop.genoStruIdx())
-        scratch.fitGenoStru(pop.genoStruIdx());
-
-    DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
-        "Evolving generation does not have the same number of subpopulation as the Pedigree.");
-    for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-        DBG_WARNING(pop.subPopSize(sp) > m_ped.subPopSize(sp),
-            "Giving population has more individuals than the Pedigree."
-            "Some of the parents will be ignored");
-        DBG_FAILIF(pop.subPopSize(sp) < m_ped.subPopSize(sp), ValueError,
-            "Given population has less individuals in subpopulation " + toStr(sp)
- + " than the Pedigree. PedigreeMating cannot continue.");
-    }
-    if (m_ped.curAncestralGen() == 0)
-        return false;
-
-    // copy information to the greatest ancestral generation
-    if (m_ped.curAncestralGen() == m_ped.ancestralGens() &&
-        (m_setSex || m_setAffection || !m_copyFields.empty())) {
-        vectoru infoIdx;
-        vectoru pedInfoIdx;
-        for (size_t i = 0; i < m_copyFields.size(); ++i) {
-            infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
-            pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
-        }
-        for (size_t it = 0; it < pop.popSize(); ++it) {
-            Individual & ind = pop.ind(it);
-            Individual & pedInd = m_ped.ind(it);
-            if (m_setSex)
-                ind.setSex(pedInd.sex());
-            if (m_setAffection)
-                ind.setAffected(pedInd.affected());
-            for (size_t i = 0; i < m_copyFields.size(); ++i)
-                ind.setInfo(pedInd.info(pedInfoIdx[i]), infoIdx[i]);
-        }
-    }
-    m_parentalPopSize = m_ped.popSize();
-    m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
-    scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
-    return true;
-   }
-
-
-   bool PedigreeMating::mate(Population & pop, Population & scratch)
-   {
-    // scrtach will have the right structure.
-    if (!prepareScratchPop(pop, scratch))
-        return false;
-    vectoru infoIdx;
-    vectoru pedInfoIdx;
-    for (size_t i = 0; i < m_copyFields.size(); ++i) {
-        infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
-        pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
-    }
-
-    for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
-        if (!m_generator->initialized())
-            m_generator->initialize(pop, sp);
-
-        RawIndIterator it = scratch.rawIndBegin(sp);
-        RawIndIterator itEnd;
-        for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
-            int father_idx = m_ped.father(i);
-            DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
-                "Parental index " + toStr(father_idx) + " out of range of 0 - "
- + toStr(m_parentalPopSize - 1));
-            Individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
-
-            int mother_idx = m_ped.mother(i);
-            DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
-                "Parental index " + toStr(mother_idx) + " out of range of 0 - "
- + toStr(m_parentalPopSize - 1));
-            Individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
-
-            if (m_setSex)
-                it->setSex(m_ped.ind(i, sp).sex());
-            if (m_setAffection)
-                it->setAffected(m_ped.ind(i, sp).affected());
-            for (size_t i = 0; i < m_copyFields.size(); ++i)
-                it->setInfo(m_ped.ind(i, sp).info(pedInfoIdx[i]), infoIdx[i]);
-
-            //
-            itEnd = it + 1;
-            // whatever the numOffspring function returns for this
-            // offspring generator, only generate one offspring.
-            UINT numOff = m_generator->generateOffspring(pop, dad, mom,
-                it, itEnd);
-            (void)numOff;
-            DBG_FAILIF(numOff != 1, RuntimeError,
-                "Generation of offspring must succeed in PedigreeMating");
-        }
-        m_generator->finalize(pop);
-    }
-
-    submitScratch(pop, scratch);
-    return true;
-   }
- */
 
 HomoMating::HomoMating(ParentChooser & chooser,
 	OffspringGenerator & generator,

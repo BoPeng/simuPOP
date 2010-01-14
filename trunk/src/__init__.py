@@ -111,7 +111,6 @@ __all__ = [
     'MatingScheme',
     'HomoMating',
     'HeteroMating',
-    #'PedigreeMating',
     'OffspringGenerator',
     'ControlledOffspringGenerator',
     'RandomParentChooser',
@@ -119,7 +118,7 @@ __all__ = [
     'SequentialParentChooser',
     'RandomParentsChooser',
     'SequentialParentsChooser',
-    #'infoParentsChooser',
+    'PedigreeParentsChooser',
     'ParentChooser',
     'PolyParentsChooser',
     #
@@ -132,6 +131,7 @@ __all__ = [
     #'consanguineousMating',
     'ControlledRandomMating',
     'PolygamousMating',
+    'PedigreeMating',
     #
     #
     # Operators
@@ -186,6 +186,7 @@ __all__ = [
     #
     'IdTagger',
     'InheritTagger',
+    'PedIndCopier',
     'ParentsTagger',
     'PedigreeTagger',
     'PyTagger',
@@ -687,6 +688,35 @@ class ControlledRandomMating(HomoMating):
                 subPops = subPops,
                 weight = weight)
 
+
+class PedigreeMating(HomoMating):
+    '''A homogeneous mating that evolves a population following a pedigree
+    object. In order to use this mating scheme, you should have a population
+    object that 
+    '''
+    def __init__(self, pedigree, sexMode = RANDOM_SEX,
+            ops = [PedIndCopier(), MendelianGenoTransmitter()]):
+        '''
+        '''
+        if pedigree.ancestralGens() == 0:
+            raise ValueError('Passed pedigree object has no ancetral generation.')
+        self.pedPopSize = []
+        # we do not care about the topmost ancestral generation.
+        for gen in range(pedigree.ancestralGens() - 1, -1, -1):
+            pedigree.useAncestralGen(gen)
+            self.pedPopSize.append(pedigree.subPopSizes())
+        HomoMating.__init__(self,
+            chooser = PedigreeParentsChooser(pedigree),
+            generator = OffspringGenerator(ops, 1, sexMode),
+            subPopSize = self.pedDemoFunc,
+            subPops = ALL_AVAIL,
+            weight = 0)
+
+    def _pedDemoFunc(self, gen):
+        # self.pedPopSize(gen) is the size of N - gen ancestral generation of
+        # pedigree. For example, at generation 0, we are contructing generation
+        # N - 1, at generation N, we are constructing generation 0.
+        return self.pedPopSize[gen]
 
 
 class SNPMutator(MatrixMutator):

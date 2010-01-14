@@ -243,6 +243,7 @@ public:
 			RESETFLAG(m_flags, m_flagFemale);
 		else
 			SETFLAG(m_flags, m_flagFemale);
+		// sex can also be INVALID_SEX, but we do not care about it.
 	}
 
 
