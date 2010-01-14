@@ -4511,11 +4511,45 @@ Details:
 
     An tagger that locate an individual according to the \"cur_ind_id\"
     variable in a pedigree's local namespace, set offspring ID to this
-    value and copy, optionally, sex, affection status, specified loci
-    and information fields from the offspring in the pedigree to
+    value and copy, optionally, sex, affection status, and information
+    fields from the corresponding individual in the pedigree to
     offspring in the population.
 
 "; 
+
+%feature("docstring") simuPOP::PedIndCopier::PedIndCopier "
+
+Usage:
+
+    PedIndCopier(ped, sex=True, affectionStatus=False,
+      idField=\"ind_id\", begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, output=\"\", infoFields=[])
+
+Details:
+
+    Creates a during-mating operator that first locate an individual
+    in a passed Pedigree object ped according to its ID saved in
+    variable \"cur_ind_id\" in the local namespace of ped. The ID is
+    then used to assign field idField of the offspring. Optionally,
+    sex (if sex is True), affection status (if affectionStatus is
+    True), and specified information fields (infoFields) could be
+    copied from the pedigree individual to the offspring.
+
+"; 
+
+%feature("docstring") simuPOP::PedIndCopier::~PedIndCopier "
+
+Usage:
+
+    x.~PedIndCopier()
+
+"; 
+
+%feature("docstring") simuPOP::PedIndCopier::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PedIndCopier::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PedIndCopier::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::PointMutator "
 

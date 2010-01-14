@@ -949,6 +949,7 @@ ParentChooser::IndividualPair PedigreeParentsChooser::chooseParents(RawIndIterat
 		if (mom_it != m_idMap.end())
 			mom = &*(mom_it->second);
 	}
+	DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and " << mother_id << endl);
 	// save current id to ped
 	m_ped.getVars().setIntVar("cur_ind_id", my_id);
 	// aim to the next individual

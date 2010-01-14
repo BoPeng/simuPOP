@@ -691,32 +691,52 @@ class ControlledRandomMating(HomoMating):
 
 class PedigreeMating(HomoMating):
     '''A homogeneous mating that evolves a population following a pedigree
-    object. In order to use this mating scheme, you should have a population
-    object that 
+    object. In order to use this mating scheme, the population should all
+    individuals in the topmost ancestral generation of the pedigree, at least
+    all parents who have offspring in the next generation. 
     '''
-    def __init__(self, pedigree, sexMode = RANDOM_SEX,
-            ops = [PedIndCopier(), MendelianGenoTransmitter()]):
+    def __init__(self, ped, sexMode = NO_SEX, ops = [MendelianGenoTransmitter()]):
+        '''Create a homogeneous mating scheme that chooses parents according to
+        parental IDs specified by a ``Pedigree`` object *ped*. An operator
+        ``PedIndCopier`` is used to set offspring ID and sex according to ID
+        sex of the corresponding individual in the pedigree. This overrides
+        sex set by the offspring generator (determined by parameter *sexMode*).
+        If you do not want to copy individual sex, you can override default
+        operators in the *ops* parameter. Note that ``PedIndCopier`` could also
+        be used to copy affection status and information fields.
         '''
-        '''
-        if pedigree.ancestralGens() == 0:
+        if ped.ancestralGens() == 0:
             raise ValueError('Passed pedigree object has no ancetral generation.')
         self.pedPopSize = []
         # we do not care about the topmost ancestral generation.
-        for gen in range(pedigree.ancestralGens() - 1, -1, -1):
-            pedigree.useAncestralGen(gen)
-            self.pedPopSize.append(pedigree.subPopSizes())
+        for gen in range(ped.ancestralGens(), -1, -1):
+            ped.useAncestralGen(gen)
+            self.pedPopSize.append(ped.subPopSizes())
         HomoMating.__init__(self,
-            chooser = PedigreeParentsChooser(pedigree),
-            generator = OffspringGenerator(ops, 1, sexMode),
-            subPopSize = self.pedDemoFunc,
+            chooser = PedigreeParentsChooser(ped),
+            generator = OffspringGenerator([PedIndCopier(ped)] + ops, 1, sexMode),
+            subPopSize = self._pedDemoFunc,
             subPops = ALL_AVAIL,
             weight = 0)
 
-    def _pedDemoFunc(self, gen):
+    def _pedDemoFunc(self, gen, pop):
         # self.pedPopSize(gen) is the size of N - gen ancestral generation of
         # pedigree. For example, at generation 0, we are contructing generation
-        # N - 1, at generation N, we are constructing generation 0.
-        return self.pedPopSize[gen]
+        # N - 1, at generation N, we a re constructing generation 0.
+        offSize = self.pedPopSize[gen+1]
+        # adjust number of subpopulations if they mismatch. Because the parents
+        # are obtained from across the population, exact split of parental population
+        # does not matter.
+        if pop.numSubPop() != len(offSize):
+            if pop.popSize() == sum(offSize):
+                pop.setSubPopStru(offSize)
+            elif pop.numSubPop() > len(offSize):
+                # 5, need 2, merge 0, 1, 2, 3
+                pop.mergeSubPops(range(pop.numSubPop() - len(offSize) + 1))
+            else:
+                # we need to fake some subpopulations
+                pop.splitSubPop(0, [0]*(len(offSize) - pop.numSubPop()) + [pop.subPopSize(0)])
+        return offSize
 
 
 class SNPMutator(MatrixMutator):
