@@ -127,7 +127,7 @@ UINT Pedigree::numParents()
 }
 
 
-Individual & Pedigree::indByID(double fid)
+Individual & Pedigree::indByID(double fid) const
 {
 	// essentially m_idMap(static_cast<ULONG>(fid))
 	//

@@ -24514,6 +24514,115 @@ lstparams "caption={Example of the evolution of age-structured population.},labe
 
 \end_layout
 
+\begin_layout Section
+Evolve a population following a specified pedigree structure **
+\end_layout
+
+\begin_layout Standard
+There are some applications where you would like to repeat the same evolutionary
+ process repeatedly using the same pedigree structure.
+ For example, a gene-dropping simulation method basically initialize leaves
+ of a pedigree with random genotypes and pass the genotypes along the pedigree
+ according to Mendelian laws.
+ This can be done in simuPOP using a pedigree mating scheme.
+\end_layout
+
+\begin_layout Standard
+A pedigree mating scheme takes a pedigree as input, define a demographic
+ model according to the subpopulation sizes of this pedigree at each ancestral
+ generation, and use a 
+\family typewriter
+PedigreeParentsChooser
+\family default
+ to choose parents according to IDs of parents of each offspring.
+ To use this mating scheme, you should
+\end_layout
+
+\begin_layout Itemize
+Prepare a pedigree object with 
+\family typewriter
+N
+\family default
+ ancestral generations (and a present generation).
+ Parental information should be available at the present, parental, ..., and
+ 
+\family typewriter
+N-1
+\family default
+ ancestral generations.
+ This object could be created by evolving a population with 
+\family typewriter
+ancGen
+\family default
+ set to -1 with parental information tracked by operators 
+\family typewriter
+idTagger()
+\family default
+ and 
+\family typewriter
+pedigreeTagger()
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Prepare a population and assign individuals with unique IDs.
+ Because individuals in such a population will parent offsprings at the
+ 
+\family typewriter
+N-1
+\family default
+ ancestral generation of the pedigree object.
+ It is a good idea to assign 
+\family typewriter
+ind_id
+\family default
+ using 
+\family typewriter
+ped.indInfo('father_id')
+\family default
+ and 
+\family typewriter
+ped.infInfo('mother_id')
+\family default
+ of the 
+\family typewriter
+N-1
+\family default
+ ancestral generation of 
+\family typewriter
+ped
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Evolve the population using a 
+\family typewriter
+PedigreeMating
+\family default
+ mating scheme for 
+\family typewriter
+N
+\family default
+ or less generations.
+\end_layout
+
+\begin_layout Standard
+If the way genotypes are transmitted in your simulation is sex-dependent,
+ for example if you are using a 
+\family typewriter
+MendelianGenoTransmitter()
+\family default
+ with sex chromosomes, the above procedure might not work as expected because
+ the sex of offspring assigned by your offspring generator will not match
+ those of the pedigree.
+ Some genotype transmitter might even raise an error if two parents with
+ the same sex are selected because parents are selected by IDs.
+ A common practice to avoid this problem is to define a during mating operator
+ that is called before any genotype transmitter
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex

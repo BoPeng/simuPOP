@@ -149,7 +149,8 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 // For genotypic structure
 enum Sex {
 	MALE = 1,
-	FEMALE = 2
+	FEMALE = 2,
+	INVALID_SEX = 3,   // this one is for internal use
 };
 
 // For genotypic structure

@@ -24,6 +24,9 @@
  */
 
 #include "tagger.h"
+#include "pedigree.h"
+
+using std::ostringstream;
 
 namespace simuPOP {
 
@@ -79,6 +82,75 @@ bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
 }
 
 
+string PedIndCopier::describe(bool format) const
+{
+	ostringstream desc;
+
+	desc << "<simuPOP.PedIndCopier> set " << m_idField << " and copy ";
+	if (m_sex)
+		desc << "sex, ";
+	if (m_affectionStatus)
+		desc << "affection status, ";
+	if (m_fromLoci.allAvail())
+		desc << "genotype at all loci, ";
+	else if (!m_fromLoci.elems().empty())
+		desc << "genotype at loci " << m_fromLoci.elems() << ", ";
+	if (infoFields().allAvail())
+		desc << "all information fields, ";
+	else if (infoSize() > 0)
+		desc << "information fields " << infoFields().elems() << ", ";
+	desc << "from corresponding pedigree individual to offspring.";
+	return desc.str();
+}
+
+
+bool PedIndCopier::applyDuringMating(Population & pop, RawIndIterator offspring,
+                                     Individual * dad, Individual * mom) const
+{
+	DBG_ASSERT(m_ped.getVars().hasVar("cur_ind_id"), SystemError,
+		"No variable cur_ind_id in the local namespace of the pedigree.");
+	ULONG id = m_ped.getVars().getVarAsInt("cur_ind_id");
+	offspring->setInfo(id, m_idField);
+
+	const Individual & pedInd = m_ped.indByID(id);
+	if (m_sex)
+		offspring->setSex(pedInd.sex());
+
+	if (m_affectionStatus)
+		offspring->setAffected(pedInd.affected());
+
+	vectoru fromLoci = m_fromLoci.elems();
+	if (m_fromLoci.allAvail())
+		for (size_t i = 0; i < pedInd.totNumLoci(); ++i)
+			fromLoci.push_back(i);
+	if (!fromLoci.empty()) {
+		UINT ply = offspring->ploidy();
+		if (m_toLoci.unspecified()) {
+			DBG_FAILIF(offspring->totNumLoci() < fromLoci.size(), RuntimeError,
+				"Could not copy loci from ped ind to offspring");
+			for (size_t i = 0; i < fromLoci.size(); ++i)
+				for (size_t p = 0; p < ply; ++p)
+					offspring->setAllele(pedInd.allele(fromLoci[i], p), fromLoci[i], p);
+		} else {
+			const vectoru & toLoci = m_toLoci.elems();
+
+			DBG_FAILIF(toLoci.size() != fromLoci.size(), RuntimeError,
+				"Cannot copy genotype because numbers of from and to loci are different.");
+
+			for (size_t i = 0; i < fromLoci.size(); ++i)
+				for (size_t p = 0; p < ply; ++p)
+					offspring->setAllele(pedInd.allele(fromLoci[i], p), toLoci[i], p);
+		}
+	}
+
+	for (size_t i = 0; i < infoSize(); ++i) {
+		const string field = infoField(i);
+		offspring->setInfo(pedInd.info(field), field);
+	}
+	return true;
+}
+
+
 bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
@@ -123,6 +195,29 @@ bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring
 		}
 	}
 	return true;
+}
+
+
+string InheritTagger::describe(bool format) const
+{
+	ostringstream desc;
+
+	desc << "<simuPOP.InheritTagger> ";
+	if (m_mode == PATERNAL)
+		desc << "pass information fields " << infoFields().elems() << " from father to offspring";
+	else if (m_mode == MATERNAL)
+		desc << "pass information fields " << infoFields().elems() << " from mother to offspring";
+	else if (m_mode == MEAN)
+		desc << "pass the mean value of information fields " << infoFields().elems() << " of parents to offspring";
+	else if (m_mode == MAXIMUM)
+		desc << "pass the maximum value of information fields " << infoFields().elems() << " of parents to offspring";
+	else if (m_mode == MINIMUM)
+		desc << "pass the minimum value of information fields " << infoFields().elems() << " of parents to offspring";
+	else if (m_mode == SUMMATION)
+		desc << "pass the sum of information fields " << infoFields().elems() << " of parents to offspring";
+	else if (m_mode == MULTIPLICATION)
+		desc << "pass the product of information fields " << infoFields().elems() << " of parents to offspring";
+	return desc.str();
 }
 
 

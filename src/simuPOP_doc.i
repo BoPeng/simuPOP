@@ -3898,8 +3898,8 @@ Details:
     distributions and their parameters.  Parameter sexMode is used to
     control the sex of each offspring. Its default value is usually
     RANDOM_SEX which assign MALE or FEMALE to each individual
-    randomly, with equal probabilities. If NO_SEX is given, all
-    individuals will be MALE. sexMode can also be one of
+    randomly, with equal probabilities. If NO_SEX is given, offspring
+    sex will not be changed. sexMode can also be one of
     (PROB_OF_MALES, p), (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n).
     The first case specifies the probability of male for each
     offspring. The next two cases specifies the number of male or
@@ -4198,6 +4198,12 @@ Details:
 
 %ignore simuPOP::Pedigree::Pedigree(const Pedigree &rhs);
 
+%ignore simuPOP::Pedigree::idIdx() const;
+
+%ignore simuPOP::Pedigree::fatherOf(ULONG id) const;
+
+%ignore simuPOP::Pedigree::motherOf(ULONG id) const;
+
 %feature("docstring") simuPOP::Pedigree::clone "
 
 Usage:
@@ -4409,6 +4415,40 @@ Details:
 
 %feature("docstring") simuPOP::Pedigree::setSubPopByIndInfo "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::PedigreeParentsChooser "
+
+Details:
+
+    This parent chooser goes through individuals in a specified
+    Pedigree object and look up parent or parents in a population
+    according to the IDs of parents. More specifically, if the
+    pedigree object has N ancestral generations, it will start from
+    the N-1 ancestral generation, go through all individuals, find the
+    IDs of their parents, and look up and return the corresponding
+    parents in the passed population. This parent choose also record
+    the ID of the current offspring to the pedigrees local namespace
+    as variable cur_ind_id. This parent chooser is usually used to
+    replay an evolutionary process recorded by a pedigree object.
+    (Virtual) subpopulation is not supported by this parent chooser.
+
+"; 
+
+%feature("docstring") simuPOP::PedigreeParentsChooser::PedigreeParentsChooser "
+
+Usage:
+
+    PedigreeParentsChooser(ped, idField=\"ind_id\")
+
+"; 
+
+%feature("docstring") simuPOP::PedigreeParentsChooser::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PedigreeParentsChooser::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PedigreeParentsChooser::initialize(Population &pop, SubPopID sp);
+
+%ignore simuPOP::PedigreeParentsChooser::chooseParents(RawIndIterator basePtr);
+
 %feature("docstring") simuPOP::PedigreeTagger "
 
 Details:
@@ -4464,6 +4504,18 @@ Usage:
 %feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::PedIndCopier "
+
+Details:
+
+    An tagger that locate an individual according to the \"cur_ind_id\"
+    variable in a pedigree's local namespace, set offspring ID to this
+    value and copy, optionally, sex, affection status, specified loci
+    and information fields from the offspring in the pedigree to
+    offspring in the population.
+
+"; 
 
 %feature("docstring") simuPOP::PointMutator "
 
@@ -5596,7 +5648,7 @@ Details:
 
 %ignore simuPOP::Population::dict(int subPop=-1);
 
-%ignore simuPOP::Population::getVars();
+%ignore simuPOP::Population::getVars() const;
 
 %ignore simuPOP::Population::setDict(PyObject *dict);
 
