@@ -5536,3 +5536,69 @@ sample = sampling.drawNuclearFamilySample(pop, families=2, numOffspring=(2,3),
 sim.dump(sample)
 
 #end_file
+
+
+#begin_file log/pedigreeMating.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+# create a population without any genotype
+from simuPOP.utils import migrSteppingStoneRates
+ped = sim.Population(size=[1000]*5, ancGen=-1, 
+    infoFields=['ind_id', 'father_id', 'mother_id', 'migrate_to'])
+ped.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.IdTagger(),
+    ],
+    preOps=sim.Migrator(rate=migrSteppingStoneRates(0.1, 5)),
+    matingScheme=sim.RandomMating(
+        numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4),
+        ops=[
+            # we do not even need a genotype transmitter...
+            sim.IdTagger(),
+            sim.PedigreeTagger(),
+        ]),
+    gen=100
+)
+# convert itself to a pedigree object
+ped.asPedigree()
+# we should have 100 ancestral generations
+N = ped.ancestralGens()
+# We should have 101 * 1000 * 5 individuals, but how many actually
+# contribute genotype to the last generation?
+anc = ped.identifyAncestors()
+len(anc)
+# remove individuals who do not contribute genotype to the last generation
+allIDs = [x.ind_id for x in ped.allIndividuals()]
+removedIDs = list(set(allIDs) - set(anc))
+ped.removeIndividuals(IDs=removedIDs)
+# now create a top most population, but we do not need all of them
+# so we record only used individuals
+IDs = [x.ind_id for x in ped.allIndividuals(ancGens=N)]
+sex = [x.sex() for x in ped.allIndividuals(ancGens=N)]
+# create a population, this time with genotype. Note that we do not need
+# populaton structure because PedigreeMating disregard population structure.
+pop = sim.Population(size=len(IDs), loci=1000, infoFields='ind_id')
+# manually set IDs
+pop.setIndInfo(IDs, field='ind_id')
+pop.evolve(
+    initOps=sim.InitGenotype(freq=[0.4, 0.6]),
+    # we do not need migration, or set number of offspring,
+    # or demographic model.
+    matingScheme=sim.PedigreeMating(ped),
+    gen=100
+)
+# let us compare the pedigree and the population object
+print ped.indInfo('ind_id')[:5]
+print pop.indInfo('ind_id')[:5]
+print [ped.individual(x).sex() for x in range(5)]
+print [pop.individual(x).sex() for x in range(5)]
+print ped.subPopSizes()
+print pop.subPopSizes()
+#end_file

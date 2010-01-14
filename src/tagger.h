@@ -106,32 +106,33 @@ public:
 
 /** An tagger that locate an individual according to the "cur_ind_id" variable
  *  in a pedigree's local namespace, set offspring ID to this value and copy,
- *  optionally, sex, affection status, specified loci and information fields
- *  from the offspring in the pedigree to offspring in the population.
+ *  optionally, sex, affection status, and information fields from the
+ *  corresponding individual in the pedigree to offspring in the population.
  */
 class PedIndCopier : public BaseOperator
 {
+public:
 	/** Creates a during-mating operator that first locate an individual in a
 	 *  passed \c Pedigree object \e ped according to its ID saved in variable
 	 *  "cur_ind_id" in the local namespace of \e ped. The ID is then used to
 	 *  assign field \e idField of the offspring. Optionally, sex (if \e sex is
-	 *  \c True), affection status (if \e affectionStatus is \c True), certain
-	 *  information fields (\e infoFields) are copied from the pedigree
-	 *  individual to the offspring. If \e fromLoci is specified, genotype at
-	 *  \e fromLoci in the pedigree individual will also be copied to \e toLoci
-	 *  of the offspring. \c fromLoci can be \c ALL_AVAIL and \c toLoci is
-	 *  assumed to be the same as \c fromLoci.
+	 *  \c True), affection status (if \e affectionStatus is \c True), and
+	 *  specified information fields (\e infoFields) could be copied from the
+	 *  pedigree individual to the offspring.
 	 */
 	PedIndCopier(const Pedigree & ped, bool sex = true, bool affectionStatus = false,
-		const uintList & fromLoci = vectoru(), const uintList & toLoci = uintList(NULL),
-		int begin = 0, int end = -1, int step = 1,
+		const string & idField = "ind_id", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringFunc & output = "",
-		const stringList & infoFields = vectorstr(),
-		const string & idField = "ind_id") :
+		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_ped(ped), m_sex(sex), m_affectionStatus(affectionStatus),
-		m_fromLoci(fromLoci), m_toLoci(toLoci), m_idField(idField)
+		m_idField(idField)
+	{
+	}
+
+
+	virtual ~PedIndCopier()
 	{
 	}
 
@@ -154,9 +155,7 @@ private:
 
 	const bool m_sex;
 	const bool m_affectionStatus;
-	const uintList m_fromLoci;
-	const uintList m_toLoci;
-	const string & m_idField;
+	const string m_idField;
 };
 
 

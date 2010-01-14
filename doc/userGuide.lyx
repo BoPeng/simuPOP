@@ -24535,7 +24535,17 @@ A pedigree mating scheme takes a pedigree as input, define a demographic
 PedigreeParentsChooser
 \family default
  to choose parents according to IDs of parents of each offspring.
- To use this mating scheme, you should
+ A 
+\family typewriter
+PedIndCopier
+\family default
+ operator is used before 
+\family typewriter
+MendelianGenoTransmitter
+\family default
+ to set the ID and sex of offspring to the corresponding ID in the pedigree
+ object.
+ In order to use this mating scheme, you should
 \end_layout
 
 \begin_layout Itemize
@@ -24609,18 +24619,27 @@ N
 \end_layout
 
 \begin_layout Standard
-If the way genotypes are transmitted in your simulation is sex-dependent,
- for example if you are using a 
-\family typewriter
-MendelianGenoTransmitter()
-\family default
- with sex chromosomes, the above procedure might not work as expected because
- the sex of offspring assigned by your offspring generator will not match
- those of the pedigree.
- Some genotype transmitter might even raise an error if two parents with
- the same sex are selected because parents are selected by IDs.
- A common practice to avoid this problem is to define a during mating operator
- that is called before any genotype transmitter
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pedigreeMating"
+
+\end_inset
+
+ demonstrates how to create a complete pedigree by evolving a population
+ without genotype, and then replay the evolutionary process using another
+ population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pedigreeMating.log"
+lstparams "caption={Use a pedigree mating scheme to replay an evolutionary process.},label={pedigreeMating}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

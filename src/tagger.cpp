@@ -91,13 +91,7 @@ string PedIndCopier::describe(bool format) const
 		desc << "sex, ";
 	if (m_affectionStatus)
 		desc << "affection status, ";
-	if (m_fromLoci.allAvail())
-		desc << "genotype at all loci, ";
-	else if (!m_fromLoci.elems().empty())
-		desc << "genotype at loci " << m_fromLoci.elems() << ", ";
-	if (infoFields().allAvail())
-		desc << "all information fields, ";
-	else if (infoSize() > 0)
+	if (infoSize() > 0)
 		desc << "information fields " << infoFields().elems() << ", ";
 	desc << "from corresponding pedigree individual to offspring.";
 	return desc.str();
@@ -109,8 +103,10 @@ bool PedIndCopier::applyDuringMating(Population & pop, RawIndIterator offspring,
 {
 	DBG_ASSERT(m_ped.getVars().hasVar("cur_ind_id"), SystemError,
 		"No variable cur_ind_id in the local namespace of the pedigree.");
+
 	ULONG id = m_ped.getVars().getVarAsInt("cur_ind_id");
 	offspring->setInfo(id, m_idField);
+	DBG_DO(DBG_TAGGER, cerr << "Setting new ID " << id << endl);
 
 	const Individual & pedInd = m_ped.indByID(id);
 	if (m_sex)
@@ -118,30 +114,6 @@ bool PedIndCopier::applyDuringMating(Population & pop, RawIndIterator offspring,
 
 	if (m_affectionStatus)
 		offspring->setAffected(pedInd.affected());
-
-	vectoru fromLoci = m_fromLoci.elems();
-	if (m_fromLoci.allAvail())
-		for (size_t i = 0; i < pedInd.totNumLoci(); ++i)
-			fromLoci.push_back(i);
-	if (!fromLoci.empty()) {
-		UINT ply = offspring->ploidy();
-		if (m_toLoci.unspecified()) {
-			DBG_FAILIF(offspring->totNumLoci() < fromLoci.size(), RuntimeError,
-				"Could not copy loci from ped ind to offspring");
-			for (size_t i = 0; i < fromLoci.size(); ++i)
-				for (size_t p = 0; p < ply; ++p)
-					offspring->setAllele(pedInd.allele(fromLoci[i], p), fromLoci[i], p);
-		} else {
-			const vectoru & toLoci = m_toLoci.elems();
-
-			DBG_FAILIF(toLoci.size() != fromLoci.size(), RuntimeError,
-				"Cannot copy genotype because numbers of from and to loci are different.");
-
-			for (size_t i = 0; i < fromLoci.size(); ++i)
-				for (size_t p = 0; p < ply; ++p)
-					offspring->setAllele(pedInd.allele(fromLoci[i], p), toLoci[i], p);
-		}
-	}
 
 	for (size_t i = 0; i < infoSize(); ++i) {
 		const string field = infoField(i);
