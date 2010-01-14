@@ -38,7 +38,7 @@ The saved populations have the following features:
 
 1. Different populations are saved in different files. These populations
   may not be merged directly because they have different set of markers.
-  SubPopulation name is specified ('CEU', 'YRI' or 'JPT+CHT'.
+  Subpopulation name is specified ('CEU', 'YRI' or 'JPT+CHT'.
 
 2. Chromosome name is saved as "1", "2", "3", ...
 
@@ -134,8 +134,8 @@ def _getPopSize(numLoci, ch, sample, dest, logger=None):
     return count/2
     
 
-def load_Population(pop, ch, sample, dest, logger=None):
-    '''Load Population from file, with type (subpopulation type)'''
+def load_population(pop, ch, sample, dest, logger=None):
+    '''Load population from file, with type (subpopulation type)'''
 # For the CEU and YRI the haplotypes are arranged as follows:
 #  
 # row 1 - trio 1 parent 1 transmitted haplotype
@@ -150,12 +150,12 @@ def load_Population(pop, ch, sample, dest, logger=None):
 # .
 # For the JPT+CHB the haplotypes are arranged as
 #  
-# row 1 - Individual 1 haplotype 1
-# row 2 - Individual 1 haplotype 2
-# row 3 - Individual 2 haplotype 1
-# row 4 - Individual 2 haplotype 2
-# row 5 - Individual 3 haplotype 1
-# row 6 - Individual 3 haplotype 2
+# row 1 - individual 1 haplotype 1
+# row 2 - individual 1 haplotype 2
+# row 3 - individual 2 haplotype 1
+# row 4 - individual 2 haplotype 2
+# row 5 - individual 3 haplotype 1
+# row 6 - individual 3 haplotype 2
 # .
 # .
 # We are loading row by row, so actually only load the parents of CEU and YRI
@@ -167,7 +167,7 @@ def load_Population(pop, ch, sample, dest, logger=None):
         genotype = [int(x) for x in line.split()]
         ind = line_no / 2
         ploidy = line_no % 2
-        # always chromosome 0, because each population.has only one chromosome
+        # always chromosome 0, because each population has only one chromosome
         pop.individual(ind).setGenotype(genotype, ploidy)
 
 
@@ -244,7 +244,7 @@ def set_map_dist(pop, ch, dest, logger=None):
 
     
 def loadHapMapPop(chrom, popName, logger=None):
-    '''Download and import the specified chromosome of a hapmap Population.
+    '''Download and import the specified chromosome of a hapmap population.
     If a directory is specified, the loaded population will be saved in
     simuPOP format with filename HapMap_XXX_chrY.pop where XXX is population
     name and Y is chromosome number. If a file already exists, this function
@@ -275,7 +275,7 @@ def loadHapMapPop(chrom, popName, logger=None):
     pop = Population(size=popSize, ploidy=2, loci=[len(lociPos)],
         lociPos=lociPos, lociNames=lociName, chromNames=[str(chrom)],
         alleleNames=alleleNames, subPopNames=[popName])
-    load_Population(pop, chrom, popName, tmpdir, logger)
+    load_population(pop, chrom, popName, tmpdir, logger)
     set_map_dist(pop, chrom, tmpdir, logger)
     pop.dvars().HapMap_rel = release
     shutil.rmtree(tmpdir)
@@ -319,7 +319,7 @@ if __name__ == '__main__':
             try:
                 if os.path.isfile(popFile):
                     # test if this file is OK.
-                    LoadPopulation(popFile)
+                    loadPopulation(popFile)
                     logger.info("Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile)
                     continue
             except:
