@@ -109,7 +109,7 @@ Sex OffspringGenerator::getSex(int count)
 	int mode = static_cast<int>(m_sexMode[0]);
 
 	if (mode == NO_SEX)
-		return INVALID_SEX;
+		return MALE;
 	else if (mode == RANDOM_SEX)
 		return getRNG().randBit() ? MALE : FEMALE;
 	else if (mode == PROB_OF_MALES)
@@ -188,16 +188,53 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 }
 
 
-ControlledOffspringGenerator::ControlledOffspringGenerator(
-	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
-	const opList & ops, const floatListFunc & numOffspring,
-	const floatList & sexMode)
-	: OffspringGenerator(ops, numOffspring, sexMode),
-	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
-	m_expAlleles(), m_totAllele(), m_curAllele()
+UINT PedigreeOffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
+                                                   RawIndIterator & it,
+                                                   RawIndIterator & itEnd)
 {
-	if (!m_freqFunc.isValid())
-		throw ValueError("Please specify a valid frequency function");
+	DBG_ASSERT(initialized(), ValueError,
+		"Offspring generator is not initialized before used to generate offspring");
+
+	if (it == itEnd)
+		return 0;
+
+	// set sex, during mating operator will try to
+	// follow the offspring sex (e.g. pass X or Y chromosome)
+	ULONG id = m_ped.curInd();
+	it->setInfo(id, m_idField);
+	if (sexMode() != NO_SEX)
+		it->setSex(getSex(0));
+	else
+		it->setSex(m_ped.indByID(id).sex());
+	//
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop) {
+		try {
+			if (!(*iop)->isActive(pop.rep(), pop.gen()))
+				continue;
+			if (!(*iop)->applyDuringMating(pop, it, dad, mom))
+				return 0;
+		} catch (Exception e) {
+			cerr	<< "One of the transmitters " << (*iop)->describe()
+			        << " throws an exception.\n" << e.message() << "\n" << endl;
+			throw e;
+		}
+	}
+	return 1;
+}
+
+
+string PedigreeOffspringGenerator::describe(bool format) const
+{
+	string desc = "<simuPOP.PedigreeOffspringGenerator> produces offspring with ID and sex from a corresponding individual in a pedigree object and apply operators\n<ul>\n";
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+
+	for (; iop != iopEnd; ++iop)
+		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
+	desc += "</ul>\n";
+	return format ? formatDescription(desc) : desc;
 }
 
 
@@ -951,7 +988,7 @@ ParentChooser::IndividualPair PedigreeParentsChooser::chooseParents(RawIndIterat
 	}
 	DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and " << mother_id << endl);
 	// save current id to ped
-	m_ped.getVars().setIntVar("cur_ind_id", my_id);
+	m_ped.setCurInd(my_id);
 	// aim to the next individual
 	++m_index;
 	return std::make_pair(dad, mom);

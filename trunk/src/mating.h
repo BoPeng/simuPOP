@@ -140,6 +140,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	int sexMode()
+	{
+		return static_cast<int>(m_sexMode[0]);
+	}
+
+
 	/** CPPONLY
 	 *  Return the number of offspring of a genaration \e gen
 	 *  This is called whenever a family size is needed.
@@ -165,6 +172,43 @@ protected:
 
 protected:
 	bool m_initialized;
+};
+
+
+/** A pedigree offspring generator is created with a \c Pedigree object. When
+ *  an offspring is created, it looks up its corresponding individual in the
+ *  pedigree, copy the ID and sex from that individual before applying any
+ *  during mating operator.
+ */
+class PedigreeOffspringGenerator : public OffspringGenerator
+{
+public:
+	PedigreeOffspringGenerator(const Pedigree & ped, const opList & ops = vectorop(),
+		const floatList & sexMode = NO_SEX, const string & idField = "ind_id")
+		: OffspringGenerator(ops, 1, sexMode), m_ped(ped), m_idField(idField)
+	{
+	}
+
+
+	/// CPPONLY
+	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd);
+
+	/// HIDDEN Deep copy of a controlled random mating scheme
+	virtual OffspringGenerator * clone() const
+	{
+		return new PedigreeOffspringGenerator(*this);
+	}
+
+
+	/// HIDDEN describe a controlled offspring generator
+	virtual string describe(bool format = true) const;
+
+private:
+	const Pedigree & m_ped;
+
+	const string m_idField;
 };
 
 

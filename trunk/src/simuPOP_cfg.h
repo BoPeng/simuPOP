@@ -149,8 +149,7 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 // For genotypic structure
 enum Sex {
 	MALE = 1,
-	FEMALE = 2,
-	INVALID_SEX = 3,   // this one is for internal use
+	FEMALE = 2
 };
 
 // For genotypic structure
@@ -440,7 +439,7 @@ public:
 
 // check range.
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
-#define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE && sex != INVALID_SEX, IndexError, "Wrong sex info. Male " + toStr(MALE) + " or Fenamle " + toStr(FEMALE) + " only.")
+#define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, "Wrong sex info. Male " + toStr(MALE) + " or Fenamle " + toStr(FEMALE) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numSubPop() - 1))
 #define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidSubPopID && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 ~ " + toStr(numChrom() - 1))

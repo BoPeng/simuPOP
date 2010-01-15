@@ -112,6 +112,7 @@ __all__ = [
     'HomoMating',
     'HeteroMating',
     'OffspringGenerator',
+    'PedigreeOffspringGenerator',
     'ControlledOffspringGenerator',
     'RandomParentChooser',
     'PyParentsChooser',
@@ -186,7 +187,6 @@ __all__ = [
     #
     'IdTagger',
     'InheritTagger',
-    'PedIndCopier',
     'ParentsTagger',
     'PedigreeTagger',
     'PyTagger',
@@ -695,15 +695,9 @@ class PedigreeMating(HomoMating):
     individuals in the topmost ancestral generation of the pedigree, at least
     all parents who have offspring in the next generation. 
     '''
-    def __init__(self, ped, sexMode = NO_SEX, ops = [MendelianGenoTransmitter()]):
+    def __init__(self, ped, sexMode = NO_SEX, ops = MendelianGenoTransmitter()):
         '''Create a homogeneous mating scheme that chooses parents according to
-        parental IDs specified by a ``Pedigree`` object *ped*. An operator
-        ``PedIndCopier`` is used to set offspring ID and sex according to ID
-        sex of the corresponding individual in the pedigree. This overrides
-        sex set by the offspring generator (determined by parameter *sexMode*).
-        If you do not want to copy individual sex, you can override default
-        operators in the *ops* parameter. Note that ``PedIndCopier`` could also
-        be used to copy affection status and information fields.
+        parental IDs specified by a ``Pedigree`` object *ped*.
         '''
         if ped.ancestralGens() == 0:
             raise ValueError('Passed pedigree object has no ancetral generation.')
@@ -714,7 +708,7 @@ class PedigreeMating(HomoMating):
             self.pedPopSize.append(ped.subPopSizes())
         HomoMating.__init__(self,
             chooser = PedigreeParentsChooser(ped),
-            generator = OffspringGenerator([PedIndCopier(ped)] + ops, 1, sexMode),
+            generator = PedigreeOffspringGenerator(ped, ops, sexMode),
             subPopSize = self._pedDemoFunc,
             subPops = ALL_AVAIL,
             weight = 0)

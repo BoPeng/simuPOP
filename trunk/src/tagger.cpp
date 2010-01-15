@@ -82,47 +82,6 @@ bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
 }
 
 
-string PedIndCopier::describe(bool format) const
-{
-	ostringstream desc;
-
-	desc << "<simuPOP.PedIndCopier> set " << m_idField << " and copy ";
-	if (m_sex)
-		desc << "sex, ";
-	if (m_affectionStatus)
-		desc << "affection status, ";
-	if (infoSize() > 0)
-		desc << "information fields " << infoFields().elems() << ", ";
-	desc << "from corresponding pedigree individual to offspring.";
-	return desc.str();
-}
-
-
-bool PedIndCopier::applyDuringMating(Population & pop, RawIndIterator offspring,
-                                     Individual * dad, Individual * mom) const
-{
-	DBG_ASSERT(m_ped.getVars().hasVar("cur_ind_id"), SystemError,
-		"No variable cur_ind_id in the local namespace of the pedigree.");
-
-	ULONG id = m_ped.getVars().getVarAsInt("cur_ind_id");
-	offspring->setInfo(id, m_idField);
-	DBG_DO(DBG_TAGGER, cerr << "Setting new ID " << id << endl);
-
-	const Individual & pedInd = m_ped.indByID(id);
-	if (m_sex)
-		offspring->setSex(pedInd.sex());
-
-	if (m_affectionStatus)
-		offspring->setAffected(pedInd.affected());
-
-	for (size_t i = 0; i < infoSize(); ++i) {
-		const string field = infoField(i);
-		offspring->setInfo(pedInd.info(field), field);
-	}
-	return true;
-}
-
-
 bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {

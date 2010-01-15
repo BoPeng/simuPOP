@@ -41,7 +41,7 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 	const stringList & infoFields, const uintList & ancGens, const string & idField,
 	const string & fatherField, const string & motherField, bool stealPop)
 	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
-	m_idIdx(-1), m_fatherIdx(-1), m_motherIdx(-1)
+	m_idIdx(-1), m_fatherIdx(-1), m_motherIdx(-1), m_curIndID(0)
 {
 	vectorstr extractFields = infoFields.allAvail() ? pop.infoFields() : infoFields.elems();
 
