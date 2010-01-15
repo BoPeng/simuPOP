@@ -318,6 +318,20 @@ public:
 	 */
 	void setSubPopByIndInfo(const string & field);
 
+	/// CPPONLY
+	void setCurInd(ULONG id) const
+	{
+		m_curIndID = id;
+	}
+
+
+	/// CPPONLY
+	ULONG curInd() const
+	{
+		return m_curIndID;
+	}
+
+
 private:
 	void buildIDMap();
 
@@ -357,6 +371,8 @@ private:
 	int m_motherIdx;
 
 	mutable std::map<ULONG, Individual *> m_idMap;
+
+	mutable ULONG m_curIndID;
 };
 
 // /// A pedigree manipulation class
