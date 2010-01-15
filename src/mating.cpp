@@ -173,8 +173,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 					break;
 				}
 			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -188,53 +188,17 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 }
 
 
-UINT PedigreeOffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
-                                                   RawIndIterator & it,
-                                                   RawIndIterator & itEnd)
+ControlledOffspringGenerator::ControlledOffspringGenerator(
+	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
+	const opList & ops, const floatListFunc & numOffspring,
+	const floatList & sexMode)
+	: OffspringGenerator(ops, numOffspring, sexMode),
+	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
+	m_expAlleles(), m_totAllele(), m_curAllele()
+
 {
-	DBG_ASSERT(initialized(), ValueError,
-		"Offspring generator is not initialized before used to generate offspring");
-
-	if (it == itEnd)
-		return 0;
-
-	// set sex, during mating operator will try to
-	// follow the offspring sex (e.g. pass X or Y chromosome)
-	ULONG id = m_ped.curInd();
-	it->setInfo(id, m_idField);
-	if (sexMode() != NO_SEX)
-		it->setSex(getSex(0));
-	else
-		it->setSex(m_ped.indByID(id).sex());
-	//
-	opList::const_iterator iop = m_transmitters.begin();
-	opList::const_iterator iopEnd = m_transmitters.end();
-	for (; iop != iopEnd; ++iop) {
-		try {
-			if (!(*iop)->isActive(pop.rep(), pop.gen()))
-				continue;
-			if (!(*iop)->applyDuringMating(pop, it, dad, mom))
-				return 0;
-		} catch (Exception e) {
-			cerr	<< "One of the transmitters " << (*iop)->describe()
-			        << " throws an exception.\n" << e.message() << "\n" << endl;
-			throw e;
-		}
-	}
-	return 1;
-}
-
-
-string PedigreeOffspringGenerator::describe(bool format) const
-{
-	string desc = "<simuPOP.PedigreeOffspringGenerator> produces offspring with ID and sex from a corresponding individual in a pedigree object and apply operators\n<ul>\n";
-	opList::const_iterator iop = m_transmitters.begin();
-	opList::const_iterator iopEnd = m_transmitters.end();
-
-	for (; iop != iopEnd; ++iop)
-		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
-	desc += "</ul>\n";
-	return format ? formatDescription(desc) : desc;
+	if (!m_freqFunc.isValid())
+		throw ValueError("Please specify a valid frequency function");
 }
 
 
@@ -952,48 +916,6 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
    }
  */
 
-void PedigreeParentsChooser::initialize(Population & pop, SubPopID sp)
-{
-	if (sp == 0) {
-		UINT idIdx = pop.infoIdx(m_idField);
-		m_index = 0;
-		m_gen--;
-		m_idMap.clear();
-		RawIndIterator it = pop.rawIndBegin();
-		RawIndIterator it_end = pop.rawIndEnd();
-		for (; it != it_end; ++it)
-			m_idMap[static_cast<ULONG>(it->info(idIdx) + 0.5)] = &*it;
-	}
-}
-
-
-ParentChooser::IndividualPair PedigreeParentsChooser::chooseParents(RawIndIterator basePtr)
-{
-	const Individual & ind = m_ped.ancestor(m_index, m_gen);
-	ULONG my_id = static_cast<ULONG>(ind.info(m_ped.idIdx() + 0.5));
-	ULONG father_id = m_ped.fatherOf(my_id);
-	ULONG mother_id = m_ped.motherOf(my_id);
-	Individual * dad = NULL;
-	Individual * mom = NULL;
-
-	if (father_id) {
-		std::map<ULONG, Individual *>::iterator dad_it = m_idMap.find(father_id);
-		if (dad_it != m_idMap.end())
-			dad = &*(dad_it->second);
-	}
-	if (mother_id) {
-		std::map<ULONG, Individual *>::iterator mom_it = m_idMap.find(mother_id);
-		if (mom_it != m_idMap.end())
-			mom = &*(mom_it->second);
-	}
-	DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and " << mother_id << endl);
-	// save current id to ped
-	m_ped.setCurInd(my_id);
-	// aim to the next individual
-	++m_index;
-	return std::make_pair(dad, mom);
-}
-
 
 PyParentsChooser::PyParentsChooser(PyObject * pc)
 	: ParentChooser(), m_func(pc), m_popObj(NULL),
@@ -1255,6 +1177,94 @@ bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
 }
 
 
+bool PedigreeMating::mate(Population & pop, Population & scratch)
+{
+    if (m_gen == -1)
+        return false;
+
+	// scrtach will have the right structure.
+	if (scratch.genoStruIdx() != pop.genoStruIdx())
+		scratch.fitGenoStru(pop.genoStruIdx());
+    //
+	UINT oldGen = m_ped.curAncestralGen();
+	const_cast<Pedigree &>(m_ped).useAncestralGen(m_gen);
+	DBG_DO(DBG_MATING, cerr << "Producing offspring generation of size " << m_ped.subPopSizes() << 
+        " using generation " << m_gen << " of the pedigree." << endl);
+	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
+	scratch.setVirtualSplitter(pop.virtualSplitter());
+	scratch.clearInfo();
+	const_cast<Pedigree &>(m_ped).useAncestralGen(oldGen);
+
+	// build an index for parents
+	std::map<ULONG, Individual *> idMap;
+	UINT idIdx = pop.infoIdx(m_idField);
+	RawIndIterator it = pop.rawIndBegin();
+	RawIndIterator it_end = pop.rawIndEnd();
+	for (; it != it_end; ++it)
+		idMap[static_cast<ULONG>(it->info(idIdx) + 0.5)] = &*it;
+
+	it = scratch.rawIndBegin();
+	it_end = scratch.rawIndEnd();
+	for (size_t i = 0; it != it_end; ++it, ++i) {
+		const Individual & pedInd = m_ped.ancestor(i, m_gen);
+
+		ULONG my_id = static_cast<ULONG>(pedInd.info(m_ped.idIdx()) + 0.5);
+		ULONG father_id = m_ped.fatherOf(my_id);
+		ULONG mother_id = m_ped.motherOf(my_id);
+		Individual * dad = NULL;
+		Individual * mom = NULL;
+
+		if (father_id) {
+			std::map<ULONG, Individual *>::iterator dad_it = idMap.find(father_id);
+			if (dad_it != idMap.end())
+				dad = &*(dad_it->second);
+		}
+		if (mother_id) {
+			std::map<ULONG, Individual *>::iterator mom_it = idMap.find(mother_id);
+			if (mom_it != idMap.end())
+				mom = &*(mom_it->second);
+		}
+		DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
+            << mother_id << " for offspring " << my_id << endl);
+
+		// copy sex
+		it->setSex(pedInd.sex());
+		// copy id
+		it->setInfo(my_id, m_idField);
+
+		//
+		opList::const_iterator iop = m_transmitters.begin();
+		opList::const_iterator iopEnd = m_transmitters.end();
+		for (; iop != iopEnd; ++iop) {
+			try {
+				if ((*iop)->isActive(pop.rep(), pop.gen()))
+					(*iop)->applyDuringMating(pop, it, dad, mom);
+			} catch (Exception e) {
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
+				throw e;
+			}
+		}
+	}
+	submitScratch(pop, scratch);
+	--m_gen;
+	return true;
+}
+
+
+string PedigreeMating::describe(bool format) const
+{
+	string desc = "<simuPOP.PedigreeMating> evolves a population following a pedigree, using operators\n<ul>\n";
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+
+	for (; iop != iopEnd; ++iop)
+		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
+	desc += "</ul>\n";
+	return format ? formatDescription(desc) : desc;
+}
+
+
 HeteroMating::HeteroMating(const vectormating & matingSchemes,
 	const uintListFunc & subPopSize,
 	bool shuffleOffspring)
@@ -1393,8 +1403,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(sps[i]);
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
-			                    << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
+			                   << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1440,8 +1450,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "VSP sizes in subpop " << sp << " is "
-			                    << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
+			                   << vspSize << endl);
 
 		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
 			SystemError, "Failed to determine subpopulation size");
