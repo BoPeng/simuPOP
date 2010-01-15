@@ -5585,12 +5585,13 @@ sex = [x.sex() for x in ped.allIndividuals(ancGens=N)]
 # create a population, this time with genotype. Note that we do not need
 # populaton structure because PedigreeMating disregard population structure.
 pop = sim.Population(size=len(IDs), loci=1000, infoFields='ind_id')
-# manually set IDs
-pop.setIndInfo(IDs, field='ind_id')
+# manually initialize ID and sex
+sim.initInfo(pop, IDs, infoFields='ind_id')
+sim.initSex(pop, sex=sex)
 pop.evolve(
     initOps=sim.InitGenotype(freq=[0.4, 0.6]),
     # we do not need migration, or set number of offspring,
-    # or demographic model.
+    # or demographic model, but we do need a genotype transmitter
     matingScheme=sim.PedigreeMating(ped, 
         ops=sim.MendelianGenoTransmitter()),
     gen=100
