@@ -173,8 +173,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 					break;
 				}
 			} catch (Exception e) {
-				cerr << "One of the transmitters " << (*iop)->describe()
-				     << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr	<< "One of the transmitters " << (*iop)->describe()
+				        << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -1179,17 +1179,17 @@ bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
 
 bool PedigreeMating::mate(Population & pop, Population & scratch)
 {
-    if (m_gen == -1)
-        return false;
+	if (m_gen == -1)
+		return false;
 
 	// scrtach will have the right structure.
 	if (scratch.genoStruIdx() != pop.genoStruIdx())
 		scratch.fitGenoStru(pop.genoStruIdx());
-    //
+	//
 	UINT oldGen = m_ped.curAncestralGen();
 	const_cast<Pedigree &>(m_ped).useAncestralGen(m_gen);
-	DBG_DO(DBG_MATING, cerr << "Producing offspring generation of size " << m_ped.subPopSizes() << 
-        " using generation " << m_gen << " of the pedigree." << endl);
+	DBG_DO(DBG_MATING, cerr << "Producing offspring generation of size " << m_ped.subPopSizes() <<
+		" using generation " << m_gen << " of the pedigree." << endl);
 	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
 	scratch.setVirtualSplitter(pop.virtualSplitter());
 	scratch.clearInfo();
@@ -1225,7 +1225,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 				mom = &*(mom_it->second);
 		}
 		DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
-            << mother_id << " for offspring " << my_id << endl);
+			                    << mother_id << " for offspring " << my_id << endl);
 
 		// copy sex
 		it->setSex(pedInd.sex());
@@ -1240,8 +1240,8 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 				if ((*iop)->isActive(pop.rep(), pop.gen()))
 					(*iop)->applyDuringMating(pop, it, dad, mom);
 			} catch (Exception e) {
-				cerr << "One of the transmitters " << (*iop)->describe()
-				     << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr	<< "One of the transmitters " << (*iop)->describe()
+				        << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -1403,8 +1403,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(sps[i]);
 		}
-		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
-			                   << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
+			                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1450,8 +1450,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
-			                   << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cerr	<< "VSP sizes in subpop " << sp << " is "
+			                    << vspSize << endl);
 
 		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
 			SystemError, "Failed to determine subpopulation size");

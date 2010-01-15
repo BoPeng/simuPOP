@@ -4415,39 +4415,59 @@ Details:
 
 %feature("docstring") simuPOP::Pedigree::setSubPopByIndInfo "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::PedigreeParentsChooser "
+%feature("docstring") simuPOP::PedigreeMating "
 
 Details:
 
-    This parent chooser goes through individuals in a specified
-    Pedigree object and look up parent or parents in a population
-    according to the IDs of parents. More specifically, if the
-    pedigree object has N ancestral generations, it will start from
-    the N-1 ancestral generation, go through all individuals, find the
-    IDs of their parents, and look up and return the corresponding
-    parents in the passed population. This parent choose also record
-    the ID of the current offspring to the pedigrees local namespace
-    as variable cur_ind_id. This parent chooser is usually used to
-    replay an evolutionary process recorded by a pedigree object.
-    (Virtual) subpopulation is not supported by this parent chooser.
+    This mating scheme evolves a population following an existing
+    pedigree structure. If the Pedigree object has N ancestral
+    generations and a present generation, it can be used to evolve a
+    population for N generations, starting from the topmost ancestral
+    generation. At the k-th generation, this mating scheme produces an
+    offspring generation according to subpopulation structure of the
+    N-k-1 ancestral generation in the pedigree object (e.g. producing
+    the offspring population of generation 0 according to the N-1
+    ancestral generation of the pedigree object ). For each offspring,
+    this mating scheme copies individual ID and sex from the
+    corresponing individual in the pedigree object. It then locates
+    the parents of each offspring using their IDs in the pedigree
+    object. A list of during mating operators are then used to
+    transmit parental genotype to the offspring.
 
 "; 
 
-%feature("docstring") simuPOP::PedigreeParentsChooser::PedigreeParentsChooser "
+%feature("docstring") simuPOP::PedigreeMating::PedigreeMating "
 
 Usage:
 
-    PedigreeParentsChooser(ped, idField=\"ind_id\")
+    PedigreeMating(ped, ops, idField=\"ind_id\")
+
+Details:
+
+    Creates a pedigree mating scheme that evolves a population
+    according to Pedigree object ped. The evolved population should
+    contain individuals with ID (at information field idField, default
+    to 'ind_id') that match those individual in the topmost ancestral
+    generation who have offspring. After parents of each individuals
+    are determined from their IDs, a list of during-mating operators
+    ops are applied to transmit genotypes. The return value of these
+    operators are not checked.
 
 "; 
 
-%feature("docstring") simuPOP::PedigreeParentsChooser::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::PedigreeMating::~PedigreeMating "
 
-%feature("docstring") simuPOP::PedigreeParentsChooser::describe "Obsolete or undocumented function."
+Usage:
 
-%ignore simuPOP::PedigreeParentsChooser::initialize(Population &pop, SubPopID sp);
+    x.~PedigreeMating()
 
-%ignore simuPOP::PedigreeParentsChooser::chooseParents(RawIndIterator basePtr);
+"; 
+
+%feature("docstring") simuPOP::PedigreeMating::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PedigreeMating::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PedigreeMating::mate(Population &pop, Population &scratch);
 
 %feature("docstring") simuPOP::PedigreeTagger "
 
@@ -4504,52 +4524,6 @@ Usage:
 %feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::PedIndCopier "
-
-Details:
-
-    An tagger that locate an individual according to the \"cur_ind_id\"
-    variable in a pedigree's local namespace, set offspring ID to this
-    value and copy, optionally, sex, affection status, and information
-    fields from the corresponding individual in the pedigree to
-    offspring in the population.
-
-"; 
-
-%feature("docstring") simuPOP::PedIndCopier::PedIndCopier "
-
-Usage:
-
-    PedIndCopier(ped, sex=True, affectionStatus=False,
-      idField=\"ind_id\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, output=\"\", infoFields=[])
-
-Details:
-
-    Creates a during-mating operator that first locate an individual
-    in a passed Pedigree object ped according to its ID saved in
-    variable \"cur_ind_id\" in the local namespace of ped. The ID is
-    then used to assign field idField of the offspring. Optionally,
-    sex (if sex is True), affection status (if affectionStatus is
-    True), and specified information fields (infoFields) could be
-    copied from the pedigree individual to the offspring.
-
-"; 
-
-%feature("docstring") simuPOP::PedIndCopier::~PedIndCopier "
-
-Usage:
-
-    x.~PedIndCopier()
-
-"; 
-
-%feature("docstring") simuPOP::PedIndCopier::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PedIndCopier::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::PedIndCopier::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::PointMutator "
 
