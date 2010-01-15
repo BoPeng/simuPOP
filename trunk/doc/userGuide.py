@@ -5591,7 +5591,8 @@ pop.evolve(
     initOps=sim.InitGenotype(freq=[0.4, 0.6]),
     # we do not need migration, or set number of offspring,
     # or demographic model.
-    matingScheme=sim.PedigreeMating(ped),
+    matingScheme=sim.PedigreeMating(ped, 
+        ops=sim.MendelianGenoTransmitter()),
     gen=100
 )
 # let us compare the pedigree and the population object

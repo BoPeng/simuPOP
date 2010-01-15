@@ -175,43 +175,6 @@ protected:
 };
 
 
-/** A pedigree offspring generator is created with a \c Pedigree object. When
- *  an offspring is created, it looks up its corresponding individual in the
- *  pedigree, copy the ID and sex from that individual before applying any
- *  during mating operator.
- */
-class PedigreeOffspringGenerator : public OffspringGenerator
-{
-public:
-	PedigreeOffspringGenerator(const Pedigree & ped, const opList & ops = vectorop(),
-		const floatList & sexMode = NO_SEX, const string & idField = "ind_id")
-		: OffspringGenerator(ops, 1, sexMode), m_ped(ped), m_idField(idField)
-	{
-	}
-
-
-	/// CPPONLY
-	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd);
-
-	/// HIDDEN Deep copy of a controlled random mating scheme
-	virtual OffspringGenerator * clone() const
-	{
-		return new PedigreeOffspringGenerator(*this);
-	}
-
-
-	/// HIDDEN describe a controlled offspring generator
-	virtual string describe(bool format = true) const;
-
-private:
-	const Pedigree & m_ped;
-
-	const string m_idField;
-};
-
-
 /** This offspring generator populates an offspring population and controls
  *  allele frequencies at specified loci. At each generation, expected allele
  *  frequencies at these loci are passed from a user defined allele frequency
@@ -757,66 +720,6 @@ private:
    }; */
 
 
-/** This parent chooser goes through individuals in a specified \c Pedigree
- *  object and look up parent or parents in a population according to the IDs
- *  of parents. More specifically, if the pedigree object has \c N ancestral
- *  generations, it will start from the \c N-1 ancestral generation, go through
- *  all individuals, find the IDs of their parents, and look up and return
- *  the corresponding parents in the passed population. This parent choose also
- *  record the ID of the current offspring to the pedigrees local namespace as
- *  variable \c cur_ind_id. This parent chooser is usually used to replay an
- *  evolutionary process recorded by a pedigree object. (Virtual) subpopulation
- *  is not supported by this parent chooser.
- */
-class PedigreeParentsChooser : public ParentChooser
-{
-public:
-	/*  Creates a parent chooser that locate parents from a population
-	 *  according to IDs of parents of the offspring recorded in a Pedigree
-	 *  object \e ped. The ID of the current offspring is written to the
-	 *  local namespace of the pedigree object as variable \c cur_ind_id.
-	 *  The id field of the population could be specified by parameter
-	 *  \e idField.
-	 */
-	PedigreeParentsChooser(const Pedigree & ped, const string & idField = "ind_id") :
-		ParentChooser(), m_ped(ped), m_idField(idField), m_gen(ped.ancestralGens()), m_index(0)
-	{
-	}
-
-
-	/// HIDDEN Deep copy of a Python mating scheme
-	virtual ParentChooser * clone() const
-	{
-		return new PedigreeParentsChooser(*this);
-	}
-
-
-	/// HIDDEN describe a pedigree mating scheme.
-	virtual string describe(bool format = true) const
-	{
-		return "<simuPOP.PedigreeParentsChooser> chooses parents according to their IDs specified in a pedigree object.";
-	}
-
-
-	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
-
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
-
-private:
-	const Pedigree & m_ped;
-
-	const string m_idField;
-
-	mutable int m_gen;
-
-	mutable int m_index;
-
-	mutable std::map<ULONG, Individual *> m_idMap;
-};
-
-
 /** This parent chooser accept a Python generator function that repeatedly
  *  yields one or two parents, which can be references to individual objects
  *  or indexes relative to each subpopulation. The parent chooser calls the
@@ -1073,6 +976,89 @@ private:
 	double m_weight;
 
 };
+
+
+/** This mating scheme evolves a population following an existing pedigree
+ *  structure. If the \c Pedigree object has \c N ancestral generations and a
+ *  present generation, it can be used to evolve a population for \c N
+ *  generations, starting from the topmost ancestral generation. At the \e k-th
+ *  generation, this mating scheme produces an offspring generation according
+ *  to subpopulation structure of the <tt>N-k-1</tt> ancestral generation in
+ *  the pedigree object (e.g. producing the offspring population of generation
+ *  0 according to the <tt>N-1</tt> ancestral generation of the pedigree object
+ *  ). For each offspring, this mating scheme copies individual ID and sex from
+ *  the corresponing individual in the pedigree object. It then locates the
+ *  parents of each offspring using their IDs in the pedigree object. A list of
+ *  during mating operators are then used to transmit parental genotype to
+ *  the offspring.
+ *
+ *  To use this mating scheme, you should prepare the population so that it
+ *  contains individuals with IDs matching this generation, or at least
+ *  individuals who have offspring in the next topmost ancestral generation.
+ *  Because parents are chosen by their parents, subpopulation structure is
+ *  ignored and migration will have no effect on the evolutionary process. No
+ *  \c IdTagger should be used to assign IDs to offspring because re-labeling
+ *  IDs will confuse this mating scheme.
+ *
+ *  This mating scheme copies individual sex from pedigree individual to each
+ *  offspring because individual sex may affect the way genotypes are
+ *  transmitted (e.g. a \c MendelianGenoTransmitter() with sex chromosomes).
+ *  If you would like to reset sex or copy more information from the pedigree
+ *  individual, you could define a Python during-mating operator using the
+ *  pedigree object as \e param. In this function, you can look up the
+ *  pedigree individual using <tt>param.indByID(off.ind_id)</tt> and perform
+ *  desired operations to offspring.
+ */
+class PedigreeMating : public MatingScheme
+{
+public:
+	/*  Creates a pedigree mating scheme that evolves a population according to
+	 *  \c Pedigree object \e ped. The evolved population should contain
+	 *  individuals with ID (at information field \e idField, default to
+	 *  \c 'ind_id') that match those individual in the topmost ancestral
+	 *  generation who have offspring. After parents of each individuals are
+	 *  determined from their IDs, a list of during-mating operators
+	 *  \e ops are applied to transmit genotypes. The return value of these
+	 *  operators are not checked.
+	 */
+	PedigreeMating(const Pedigree & ped, const opList & ops,
+		const string & idField = "ind_id") :
+		m_ped(ped), m_transmitters(ops), m_idField(idField), m_gen(ped.ancestralGens() - 1)
+	{
+	}
+
+
+	~PedigreeMating()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a Python mating scheme
+	virtual MatingScheme * clone() const
+	{
+		return new PedigreeMating(*this);
+	}
+
+
+	/// HIDDEN describe a pedigree mating scheme.
+	virtual string describe(bool format = true) const;
+
+	/** CPPONLY
+	 *  Generate an offspring population \e scratch from parental population
+	 *  \e pop.
+	 */
+	virtual bool mate(Population & pop, Population & scratch);
+
+private:
+	const Pedigree & m_ped;
+
+	opList m_transmitters;
+
+	const string m_idField;
+
+	mutable int m_gen;
+};
+
 
 typedef std::vector<HomoMating *> vectormating;
 

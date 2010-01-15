@@ -9,8 +9,7 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Accept float numbers as input when a list of integers is required.
 
   - EXPERIMENTAL: Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
-  - EXPERIMENTAL: Add opertors PedIndCopier, parents chooser PedigreeParentsChooser,
-		and a mating scheme PedigreeMating.
+  - EXPERIMENTAL: Add a mating scheme PedigreeMating.
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
