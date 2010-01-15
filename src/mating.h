@@ -991,23 +991,6 @@ private:
  *  parents of each offspring using their IDs in the pedigree object. A list of
  *  during mating operators are then used to transmit parental genotype to
  *  the offspring.
- *
- *  To use this mating scheme, you should prepare the population so that it
- *  contains individuals with IDs matching this generation, or at least
- *  individuals who have offspring in the next topmost ancestral generation.
- *  Because parents are chosen by their parents, subpopulation structure is
- *  ignored and migration will have no effect on the evolutionary process. No
- *  \c IdTagger should be used to assign IDs to offspring because re-labeling
- *  IDs will confuse this mating scheme.
- *
- *  This mating scheme copies individual sex from pedigree individual to each
- *  offspring because individual sex may affect the way genotypes are
- *  transmitted (e.g. a \c MendelianGenoTransmitter() with sex chromosomes).
- *  If you would like to reset sex or copy more information from the pedigree
- *  individual, you could define a Python during-mating operator using the
- *  pedigree object as \e param. In this function, you can look up the
- *  pedigree individual using <tt>param.indByID(off.ind_id)</tt> and perform
- *  desired operations to offspring.
  */
 class PedigreeMating : public MatingScheme
 {
