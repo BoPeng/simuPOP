@@ -140,13 +140,6 @@ public:
 	}
 
 
-	/// CPPONLY
-	int sexMode()
-	{
-		return static_cast<int>(m_sexMode[0]);
-	}
-
-
 	/** CPPONLY
 	 *  Return the number of offspring of a genaration \e gen
 	 *  This is called whenever a family size is needed.
@@ -995,7 +988,7 @@ private:
 class PedigreeMating : public MatingScheme
 {
 public:
-	/*  Creates a pedigree mating scheme that evolves a population according to
+	/** Creates a pedigree mating scheme that evolves a population according to
 	 *  \c Pedigree object \e ped. The evolved population should contain
 	 *  individuals with ID (at information field \e idField, default to
 	 *  \c 'ind_id') that match those individual in the topmost ancestral
