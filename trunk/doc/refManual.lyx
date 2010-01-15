@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -521,6 +521,13 @@ HeteroMatingRef
 
 
 \backslash
+PedigreeMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 SequentialParentChooserRef
 \end_layout
 
@@ -557,13 +564,6 @@ PolyParentsChooserRef
 
 \backslash
 PyParentsChooserRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-PedigreeParentsChooserRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -647,13 +647,6 @@ simuPOPSelfMatingRef
 
 \backslash
 simuPOPControlledRandomMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPPedigreeMatingRef
 \end_layout
 
 \end_inset
@@ -1293,13 +1286,6 @@ PedigreeTaggerRef
 
 \backslash
 PyTaggerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-PedIndCopierRef
 \end_layout
 
 \end_inset

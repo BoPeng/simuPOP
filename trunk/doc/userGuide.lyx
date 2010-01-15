@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6574,6 +6574,17 @@ heterogeneous mating scheme
  Because the division of virtual subpopulations can be arbitrary, this mating
  scheme can be used to simulate mating in heterogeneous populations such
  as populations with age structure.
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+pedigree mating scheme
+\series default
+ evolves a population by following the pedigree structure of a pedigree.
+ This mating scheme is used to a replay a recorded or manually created evolution
+ary process.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -24528,24 +24539,50 @@ There are some applications where you would like to repeat the same evolutionary
 \end_layout
 
 \begin_layout Standard
-A pedigree mating scheme takes a pedigree as input, define a demographic
- model according to the subpopulation sizes of this pedigree at each ancestral
- generation, and use a 
+A pedigree mating scheme 
+\series bold
+PedigreeMating
+\series default
+ evolves a population following an existing pedigree structure.
+ If the  
 \family typewriter
-PedigreeParentsChooser
+Pedigree
 \family default
- to choose parents according to IDs of parents of each offspring.
- A 
+ object has 
 \family typewriter
-PedIndCopier
+N
 \family default
- operator is used before 
+ ancestral generations and a present generation, it can be used to evolve
+ a population for 
 \family typewriter
-MendelianGenoTransmitter
+N
 \family default
- to set the ID and sex of offspring to the corresponding ID in the pedigree
+ generations, starting from the topmost ancestral generation.
+ At the 
+\emph on
+k
+\emph default
+-th generation, this mating scheme produces an offspring generation according
+ to subpopulation structure of the 
+\family typewriter
+N-k-1
+\family default
+ ancestral generation in the pedigree object (e.g.
+ producing the offspring population of generation 0 according to the 
+\family typewriter
+N-1
+\family default
+ ancestral generation of the pedigree object).
+ For each offspring, this mating scheme copies individual ID and sex from
+ the corresponing individual in the pedigree object.
+ It then locates the parents of each offspring using their IDs in the pedigree
  object.
- In order to use this mating scheme, you should
+ A list of during mating operators are then used to transmit parental genotype
+ to the offspring.
+\end_layout
+
+\begin_layout Standard
+To use this mating scheme, you should 
 \end_layout
 
 \begin_layout Itemize
@@ -24576,14 +24613,16 @@ pedigreeTagger()
 \end_layout
 
 \begin_layout Itemize
-Prepare a population and assign individuals with unique IDs.
+Prepare the population so that it contains individuals with IDs matching
+ this generation, or at least individuals who have offspring in the next
+ topmost ancestral generation.
  Because individuals in such a population will parent offsprings at the
  
 \family typewriter
 N-1
 \family default
- ancestral generation of the pedigree object.
- It is a good idea to assign 
+ ancestral generation of the pedigree object, it is a good idea to assign
+ 
 \family typewriter
 ind_id
 \family default
@@ -24616,6 +24655,22 @@ PedigreeMating
 N
 \family default
  or less generations.
+ Because parents are chosen by their IDs, subpopulation structure is ignored
+ and migration will have no effect on the evolutionary process.
+ No 
+\family typewriter
+IdTagger
+\family default
+ should be used to assign IDs to offspring because re-labeling IDs will
+ confuse this mating scheme.
+ This mating scheme copies individual sex from pedigree individual to each
+ offspring because individual sex may affect the way genotypes are transmitted
+ (e.g.
+ a 
+\family typewriter
+MendelianGenoTransmitter()
+\family default
+ with sex chromosomes).
 \end_layout
 
 \begin_layout Standard
@@ -24640,6 +24695,25 @@ lstparams "caption={Use a pedigree mating scheme to replay an evolutionary proce
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+If you would like to reset sex or copy more information from the pedigree
+ individual, you could define a Python during-mating operator using the
+ 
+\family typewriter
+Pedigree
+\family default
+ object as 
+\emph on
+param
+\emph default
+.
+ In this function, you can look up the pedigree individual using 
+\family typewriter
+param.indByID(off.ind_id)
+\family default
+ and copy desired information to offspring.
 \end_layout
 
 \begin_layout Standard
