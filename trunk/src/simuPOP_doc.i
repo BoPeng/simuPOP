@@ -5443,13 +5443,17 @@ Details:
     Recode alleles at loci (default to all loci in a population) to
     other values according to parameter alleles. This parameter can a
     list of new allele numbers for alleles 0, 1, 2, ... (allele x will
-    be recoded to newAlleles[x]) or a Python function. In the latter
-    case, each allele and the index of the locus it resides are passed
-    to this function. The return value will become the new allele. A
-    new list of allele names could be specified for these loci.
-    Different sets of names could be specified for each locus if a
-    nested list of names are given. This function recode alleles for
-    all subpopulations in all ancestral generations.
+    be recoded to newAlleles[x]) or a Python function, which should
+    accept one or both parameters allele (existing allele) and locus
+    (index of locus). The return value will become the new allele.
+    Because calling a function for each allele tends to be slow, use
+    of this parameter should be limited to special cases for small
+    populations (e.g. return random alleles to simulate genotyping
+    error of a sample). A new list of allele names could be specified
+    for these loci. Different sets of names could be specified for
+    each locus if a nested list of names are given. This function
+    recode alleles for all subpopulations in all ancestral
+    generations.
 
 "; 
 
