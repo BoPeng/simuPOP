@@ -381,7 +381,7 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 }
 
 
-GenoStructure & GenoStruTrait::gsAddChromFromStru(size_t idx) const
+const GenoStructure GenoStruTrait::gsAddChromFromStru(size_t idx) const
 {
 	GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
 	GenoStructure & gs2 = s_genoStruRepository[idx];
@@ -433,12 +433,12 @@ GenoStructure & GenoStruTrait::gsAddChromFromStru(size_t idx) const
 	vectoru chromTypes = gs1.m_chromTypes;
 	chromTypes.insert(chromTypes.end(), gs2.m_chromTypes.begin(), gs2.m_chromTypes.end());
 	//
-	return *new GenoStructure(gs1.m_ploidy, numLoci, chromTypes, gs1.m_haplodiploid, lociPos,
+	return GenoStructure(gs1.m_ploidy, numLoci, chromTypes, gs1.m_haplodiploid, lociPos,
 		chromNames, alleleNames, lociNames, gs1.m_infoFields);
 }
 
 
-GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const
+const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const
 {
 	GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
 	GenoStructure & gs2 = s_genoStruRepository[idx];
@@ -544,15 +544,15 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, v
 	}
 
 	//
-	GenoStructure * ret = new GenoStructure(gs1.m_ploidy, loci, chromTypes, gs1.m_haplodiploid, lociPos,
+	GenoStructure ret = GenoStructure(gs1.m_ploidy, loci, chromTypes, gs1.m_haplodiploid, lociPos,
 		chromNames, alleleNames, lociNames, gs1.m_infoFields);
 	index1.clear();
 	UINT locIdx = 0;
 	for (size_t ch = 0; ch < gs1.m_numLoci.size(); ++ch) {
 		for (size_t loc = 0; loc < gs1.m_numLoci[ch]; ++loc, ++locIdx) {
 			double pos = gs1.m_lociPos[locIdx];
-			index1.push_back(find(ret->m_lociPos.begin() + ret->m_chromIndex[ch],
-					ret->m_lociPos.begin() + ret->m_chromIndex[ch + 1], pos) - ret->m_lociPos.begin());
+			index1.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
+					ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
 		}
 	}
 	index2.clear();
@@ -560,15 +560,15 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index1, v
 	for (size_t ch = 0; ch < gs2.m_numLoci.size(); ++ch) {
 		for (size_t loc = 0; loc < gs2.m_numLoci[ch]; ++loc, ++locIdx) {
 			double pos = gs2.m_lociPos[locIdx];
-			index2.push_back(find(ret->m_lociPos.begin() + ret->m_chromIndex[ch],
-					ret->m_lociPos.begin() + ret->m_chromIndex[ch + 1], pos) - ret->m_lociPos.begin());
+			index2.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
+					ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
 		}
 	}
-	return *ret;
+	return ret;
 }
 
 
-GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
+const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & loci,
                                             vectoru & kept)
 {
 	if (kept.empty()) {
@@ -599,12 +599,12 @@ GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 	// for common allele names
 	if (alleleNames.empty())
 		alleleNames = gs.m_alleleNames;
-	return *new GenoStructure(gs.m_ploidy, numLoci, gs.m_chromTypes, isHaplodiploid(),
+	return GenoStructure(gs.m_ploidy, numLoci, gs.m_chromTypes, isHaplodiploid(),
 		lociPos, gs.m_chromNames, alleleNames, lociNames, gs.m_infoFields);
 }
 
 
-GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectorstr & lociNames,
+const GenoStructure GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectorstr & lociNames,
                                           const string & chromName, const matrixstr & alleleNames, UINT chromType) const
 {
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
@@ -660,18 +660,18 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 	vectoru newChromTypes = gs.m_chromTypes;
 	newChromTypes.push_back(chromType);
 
-	return *new GenoStructure(gs.m_ploidy, newLoci, newChromTypes, gs.m_haplodiploid,
+	return GenoStructure(gs.m_ploidy, newLoci, newChromTypes, gs.m_haplodiploid,
 		newLociPos, newChromNames, newAlleleNames, newLociNames, gs.m_infoFields);
 }
 
 
-GenoStructure & GenoStruTrait::gsSetAlleleNames(const uintList & loci_, const matrixstr & alleleNames)
+const GenoStructure GenoStruTrait::gsSetAlleleNames(const uintList & loci_, const matrixstr & alleleNames)
 {
 	GenoStructure gs = s_genoStruRepository[m_genoStruIdx];
 
 	// if alleleNames is used totally redefined ...
 	if (loci_.allAvail())
-		return *new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
+		return GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
 			gs.m_lociPos, gs.m_chromNames, alleleNames, gs.m_lociNames, gs.m_infoFields);
 
 	const vectoru & loci = loci_.elems();
@@ -707,12 +707,12 @@ GenoStructure & GenoStruTrait::gsSetAlleleNames(const uintList & loci_, const ma
 		}
 	}
 	// replace common alleles
-	return *new GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
+	return GenoStructure(gs.m_ploidy, gs.m_numLoci, gs.m_chromTypes, gs.m_haplodiploid,
 		gs.m_lociPos, gs.m_chromNames, names, gs.m_lociNames, gs.m_infoFields);
 }
 
 
-GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
+const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
                                          const vectorstr & lociNames, const matrixstr & alleleNames,
                                          vectoru & newIndex) const
 {
@@ -786,16 +786,16 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 	}
 
 	// set newIndex
-	GenoStructure * ret = new GenoStructure(gs.m_ploidy, newLoci, gs.m_chromTypes, gs.m_haplodiploid,
+	GenoStructure ret = GenoStructure(gs.m_ploidy, newLoci, gs.m_chromTypes, gs.m_haplodiploid,
 		newLociPos, gs.m_chromNames, newAlleleNames, newLociNames, gs.m_infoFields);
 	newIndex.clear();
 	for (size_t i = 0; i < lociPos.size(); ++i) {
 		ULONG ch = chrom[i];
 		double pos = lociPos[i];
-		newIndex.push_back(find(ret->m_lociPos.begin() + ret->m_chromIndex[ch],
-				ret->m_lociPos.begin() + ret->m_chromIndex[ch + 1], pos) - ret->m_lociPos.begin());
+		newIndex.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
+				ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
 	}
-	return *ret;
+	return ret;
 }
 
 
@@ -878,23 +878,23 @@ UINT GenoStruTrait::infoIdx(const string & name) const
 }
 
 
-GenoStructure & GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
+const GenoStructure GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 {
-	GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
+	GenoStructure gs = GenoStructure(s_genoStruRepository[m_genoStruIdx]);
 
-	gs->m_infoFields.insert(gs->m_infoFields.end(), fields.begin(), fields.end());
-	gs->m_refCount = 0;
-	return *gs;
+	gs.m_infoFields.insert(gs.m_infoFields.end(), fields.begin(), fields.end());
+	gs.m_refCount = 0;
+	return gs;
 }
 
 
-GenoStructure & GenoStruTrait::gsSetInfoFields(const vectorstr & fields)
+const GenoStructure GenoStruTrait::gsSetInfoFields(const vectorstr & fields)
 {
-	GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);
+	GenoStructure gs = GenoStructure(s_genoStruRepository[m_genoStruIdx]);
 
-	gs->m_infoFields = fields;
-	gs->m_refCount = 0;
-	return *gs;
+	gs.m_infoFields = fields;
+	gs.m_refCount = 0;
+	return gs;
 }
 
 

@@ -337,14 +337,14 @@ public:
 	 *  Add chromosomes from another genotypic structure and
 	 *  create a new structure.
 	 */
-	GenoStructure & gsAddChromFromStru(size_t idx) const;
+	const GenoStructure gsAddChromFromStru(size_t idx) const;
 
 	/** CPPONLY
 	 *  Add loci (merge loci on the same chromsoomes) from another genotypic
 	 *  structure and create a new structure. index1 and index2 are used
 	 *  to return the indexes of old loci in the new structure.
 	 */
-	GenoStructure & gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const;
+	const GenoStructure gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const;
 
 	/** CPPONLY
 	 *  Remove a list of loci from the current genotypic structure
@@ -352,26 +352,26 @@ public:
 	 *  of the remaining loci. However, if a non-empty kept is passed
 	 *  it will be used directly (loci is ignored).
 	 */
-	GenoStructure & gsRemoveLoci(const vectoru & loci, vectoru & kept);
+	const GenoStructure gsRemoveLoci(const vectoru & loci, vectoru & kept);
 
 	/** CPPONLY
 	 *  add a new chromosome to genotype structure and create a new structure.
 	 */
-	GenoStructure & gsAddChrom(const vectorf & lociPos,
+	const GenoStructure gsAddChrom(const vectorf & lociPos,
 		const vectorstr & lociNames, const string & chromName,
 		const matrixstr & alleleNames, UINT chromType) const;
 
 	/** CPPONLY
 	 *  Create a geno structure using new allele names.
 	 */
-	GenoStructure & gsSetAlleleNames(const uintList & loci, const matrixstr & alleleNames);
+	const GenoStructure gsSetAlleleNames(const uintList & loci, const matrixstr & alleleNames);
 
 	/** CPPONLY
 	 *  add some loci to genotype structure, newIndex
 	 *  is used to return the indexes of these loci in the new
 	 *  structure
 	 */
-	GenoStructure & gsAddLoci(const vectoru & chrom, const vectorf & pos,
+	const GenoStructure gsAddLoci(const vectoru & chrom, const vectorf & pos,
 		const vectorstr & lociNames, const matrixstr & alleleNames, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure
@@ -803,10 +803,10 @@ public:
 	   \note Should only be called by Population::requestInfoField.
 	   Right now, do not allow dynamic addition of these fields.
 	 */
-	GenoStructure & gsAddInfoFields(const vectorstr & fields);
+	const GenoStructure gsAddInfoFields(const vectorstr & fields);
 
 	/// CPPONLY should should only be called from population
-	GenoStructure & gsSetInfoFields(const vectorstr & fields);
+	const GenoStructure gsSetInfoFields(const vectorstr & fields);
 
 	/// CPPONLY swap a geno structure with the current one
 	void swap(GenoStruTrait & rhs)
