@@ -2127,7 +2127,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
 						if (alleleIndex != -1)
-							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr+i))));
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + i))));
 						if (locusIndex != -1)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(i));
 						*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
@@ -2136,7 +2136,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						if (alleleIndex != -1)
-							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr+loci[i]))));
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + loci[i]))));
 						if (locusIndex != -1)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(loci[i]));
 

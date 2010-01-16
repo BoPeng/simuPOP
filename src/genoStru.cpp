@@ -569,7 +569,7 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 
 
 const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & loci,
-                                            vectoru & kept)
+                                                vectoru & kept)
 {
 	if (kept.empty()) {
 		for (size_t loc = 0; loc < totNumLoci(); ++loc) {
@@ -605,7 +605,7 @@ const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 
 
 const GenoStructure GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectorstr & lociNames,
-                                          const string & chromName, const matrixstr & alleleNames, UINT chromType) const
+                                              const string & chromName, const matrixstr & alleleNames, UINT chromType) const
 {
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
 		"Please specify locus name for all inserted loci.");
@@ -713,8 +713,8 @@ const GenoStructure GenoStruTrait::gsSetAlleleNames(const uintList & loci_, cons
 
 
 const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
-                                         const vectorstr & lociNames, const matrixstr & alleleNames,
-                                         vectoru & newIndex) const
+                                             const vectorstr & lociNames, const matrixstr & alleleNames,
+                                             vectoru & newIndex) const
 {
 	DBG_ASSERT(chrom.size() == lociPos.size(), ValueError,
 		"Please specify chromosome and position for all inserted loci.");
