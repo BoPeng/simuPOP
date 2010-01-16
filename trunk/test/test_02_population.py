@@ -830,7 +830,18 @@ class TestPopulation(unittest.TestCase):
         #
         pop.recodeAlleles(func, loci=1)
         self.assertEqual(pop.genotype(), [0, 1, 0, 0, 0, 0, 0, 0, 0] * (pop.popSize()*pop.ploidy()))
-        # FIXME: recode specified loci.
+        # recode specified loci.
+        pop = self.getPop(size=[10, 20], loci=[4, 5], ancGen=0)
+        initSex(pop)
+        initGenotype(pop, freq=[0, .2, .8])
+        pop.recodeAlleles([0]*5, loci=(2, 4))
+        for ind in pop.individuals():
+            for loc in range(9):
+                for p in range(2):
+                    if loc in [2, 4]:
+                        self.assertEqual(ind.allele(loc, p), 0)
+                    else:
+                        self.assertNotEqual(ind.allele(loc, p), 0)
         # FIXME: recode ancestral generations.
 
     def testResize(self):

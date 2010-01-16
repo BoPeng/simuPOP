@@ -2058,6 +2058,8 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 	const matrixstr & alleleNames = alleleNamesMatrix.elems();
 
 	const vectoru & loci = loci_.elems();
+	if (!loci_.allAvail() && loci.empty())
+		return;
 
 	DBG_FAILIF(alleleNames.size() > 1 &&
 		((loci_.allAvail() && alleleNames.size() != totNumLoci()) ||
@@ -2076,6 +2078,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 		}
 	}
 
+	UINT oldGen = curAncestralGen();
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 
@@ -2086,7 +2089,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
 					DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
-						ValueError, "Allele " + toStr(int(*ptr)) + " can not be recoded");
+						ValueError, "Allele " + toStr(static_cast<UINT>(*ptr)) + " can not be recoded");
 					*ptr = ToAllele(map[*ptr]);
 				}
 			} else {
@@ -2095,33 +2098,56 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 				for (; ptr != ptrEnd; ptr += numLoci) {
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
-						DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
-							ValueError, "Allele " + toStr(int(*ptr)) + " can not be recoded");
-						*(ptr + loci[i]) = ToAllele(map[*(ptr + loci[i])]);
+						GenoIterator allele = ptr + loci[i];
+						DBG_FAILIF(static_cast<UINT>(*allele) >= map.size(),
+							ValueError, "Allele " + toStr(static_cast<UINT>(*allele)) + " can not be recoded");
+						*allele = ToAllele(map[*allele]);
 					}
 				}
 			}
-			continue;
 		} else {
 			pyFunc func = newAlleles.func();
+			PyObject * args = PyTuple_New(func.numArgs());
+			int alleleIndex = -1;
+			int locusIndex = -1;
+			for (int i = 0; i < func.numArgs(); ++i) {
+				const string & arg = func.arg(i);
+				if (arg == "allele")
+					alleleIndex = i;
+				else if (arg == "locus")
+					locusIndex = i;
+				else {
+					DBG_FAILIF(true, ValueError,
+						"Only parameters 'allele' and 'locus' are acceptable in a user-provided recode function.");
+				}
+			}
 			UINT numLoci = totNumLoci();
 			UINT iEnd = loci.size();
 			for (; ptr != ptrEnd; ptr += numLoci) {
 				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
-						*(ptr + i) = ToAllele(func(PyObj_As_Int, "(ii)",
-								static_cast<int>(*(ptr + i)), i));
+						if (alleleIndex != -1)
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr+i))));
+						if (locusIndex != -1)
+							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(i));
+						*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
 					}
 				} else {
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
-						*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, "(ii)",
-								static_cast<int>(*(ptr + loci[i])), loci[i]));
+						if (alleleIndex != -1)
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr+loci[i]))));
+						if (locusIndex != -1)
+							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(loci[i]));
+
+						*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
 					}
 				}
 			}
+			Py_DECREF(args);
 		}
 	}
+	useAncestralGen(oldGen);
 }
 
 
