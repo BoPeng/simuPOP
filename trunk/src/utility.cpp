@@ -608,13 +608,7 @@ intList::intList(PyObject * obj) : m_elems(), m_allAvail(false)
 // utility functions: python => C++ conversion
 void PyObj_As_Bool(PyObject * obj, bool & val)
 {
-	if (obj == NULL || obj == Py_False || obj == Py_None) {
-		val = false;
-		return;
-	} else if (obj == Py_True)
-		val = true;
-	else
-		val = PyInt_AsLong(obj) ? true : false;
+	val = PyObject_IsTrue(obj);
 }
 
 
