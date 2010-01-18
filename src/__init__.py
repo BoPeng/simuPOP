@@ -290,10 +290,22 @@ else:
     else:
         from simuPOP_std import *
 
-if simuOptions['Revision'] is not None and simuRev() < simuOptions['Revision']:
-    raise ImportError('simuPOP version %s (revision %d) is installed ' % (simuVer(), simuRev()) +
-        'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
-        'Please consider upgrading your simuPOP installation.')
+if simuOptions['Version'] is not None:
+    expMajor, expMinor, expRelease = [int(x) for x in simuOptions['Version'].rstrip('svn').split('.')]
+    myMajor, myMinor, myRelease = [int(x) for x in moduleInfo()['version'].rstrip('svn').split('.')]
+    if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
+        (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
+        raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
+            (moduleInfo()['version'], simuOptions['Version']) + 
+            'Please upgrade your simuPOP installation.')
+
+if simuOptions['Revision'] is not None:
+    ver = moduleInfo()['version']
+    rev = moduleInfo()['revision']
+    if rev < simuOptions['Revision']:
+        raise ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
+            'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
+            'Please upgrade your simuPOP installation.')
 
 if not simuOptions['Quiet']:
     info = moduleInfo()

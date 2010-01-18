@@ -103,6 +103,7 @@ simuOptions = {
     'AlleleType': 'short',
     'Debug': [],
     'Quiet': False,
+    'Version': None,
     'Revision': None,
     'GUI': True,
 }
@@ -144,7 +145,8 @@ elif _gui == 'Tkinter':
 elif _gui is not None:
     print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
 
-def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None, revision=None):
+def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
+        debug=None, version=None, revision=None):
     '''Set options before simuPOP is loaded to control which simuPOP module to
     load, and how the module should be loaded.
 
@@ -187,6 +189,11 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None
         available, will be used. Note that setting ``debug=[]`` will remove
         any debug code that might have been by variable ``SIMUDEBUG``.
 
+    version
+        A version string (e.g. 1.0.0) indicating the required version number
+        for the simuPOP module to be loaded. simuPOP will fail to load if the
+        installed version is older than the required version.
+
     revision
         A number indicating the required revision number for the simuPOP module
         to be loaded. simuPOP will fail to load if the installed simuPOP is
@@ -219,6 +226,15 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None
             simuOptions['Debug'] = [debug]
         else:
             simuOptions['Debug'] = debug
+    # Version
+    if type(version) == type(''):
+        try:
+            major, minor, release = [int(x) for x in version.rstrip('svn').split('.')]
+        except:
+            print 'Invalid version string %s' % simuOptions['Version']
+        simuOptions['Version'] = version
+    elif version is not None:
+        raise exceptions.TypeError('A version string is expected for parameter version.')
     # Revision
     if type(revision) == type(1):
         simuOptions['Revision'] = revision
