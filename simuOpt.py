@@ -724,12 +724,10 @@ class _tkParamDialog(_paramDialog):
                     val = _getParamValue(self.options[g], self.entryWidgets[g].get())
                 elif self.entryWidgets[g].winfo_class() == "Listbox":    # a listbox
                     sel = self.entryWidgets[g].curselection()
-                    if len(sel) == 1:
-                        items = self.entryWidgets[g].get(sel)
+                    if self.options[g].has_key('chooseOneOf'):
+                        items = self.options[g]['chooseOneOf'][int(sel)]
                     else:
-                        items = []
-                        for s in sel:
-                            items.append(self.entryWidgets[g].get(s))
+                        items = [self.options[g]['chooseFrom'][int(x)] for x in sel]
                     val = _getParamValue(self.options[g], items)
                 elif self.entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
                     # gets 0/1 for false/true
