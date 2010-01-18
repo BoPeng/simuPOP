@@ -10,6 +10,7 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
 
   - NEW: Document base mating scheme MatingScheme() and allow it to be used explicitly.
   - NEW: Accept float numbers as input when a list of integers is required.
+  - NEW: simuPOP.utils.migrSteppingStoneRates returns [[1]] when n=1 (instead of raising an Error).
 
   - EXPERIMENTAL: Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
   - EXPERIMENTAL: Add a mating scheme PedigreeMating.

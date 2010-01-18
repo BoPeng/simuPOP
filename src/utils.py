@@ -205,9 +205,11 @@ or non-circular
            0   m/2 X   m/2 ......0
            ...
            ...              m   X
+
+    This function returns [[1]] when there is only one subpopulation.
     '''
     if n < 2:
-        raise exceptions.ValueError("Can not define step stone model for n < 2")
+        return [[1]]
     elif n == 2:
         return [[1-r,r],[r,1-r]]
     # the normal case (n>2)
