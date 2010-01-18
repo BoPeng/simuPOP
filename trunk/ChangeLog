@@ -8,6 +8,8 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug in population.recodeAlleles when a single locus is specified.
   - BUG: Fix a memory leak bug when modifying an existing genotype structure.
   - BUG: Fix parameter revision of function simuOpt.setOptions.
+  - BUG: Fix a bug for getting integer 'chooseFrom' values using Tkinter based parameter
+        input dialog (simuOpt.Params).
 
   - NEW: Document base mating scheme MatingScheme() and allow it to be used explicitly.
   - NEW: Accept float numbers as input when a list of integers is required.
