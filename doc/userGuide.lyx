@@ -2717,7 +2717,16 @@ ALL_AVAIL
 \family typewriter
 subPops=[(ALL_AVAIL, 1)]
 \family default
- to specify a specific virtual subpopulation for all subpopulations.
+ to specify a specific virtual subpopulation for all subpopulations, or
+ 
+\family typewriter
+subPops=[(1, ALL_AVAIL)]
+\family default
+ or even 
+\family typewriter
+subPops=[(ALL_AVAIL, ALL_AVAIL)]
+\family default
+ to specify all virtual subpopulations in specified or all subpopulations.
  This becomes handy when you, for example, would like to list all male individua
 ls in a population, regardless of number of subpopulations.
 \end_layout

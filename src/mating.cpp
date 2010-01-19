@@ -1299,10 +1299,8 @@ string HeteroMating::describe(bool format) const
 				if (i != 0)
 					desc += ", ";
 				if (sp.isVirtual()) {
-					if (sp.allAvail())
-						desc += "(ALL_AVAIL, " + toStr(sp.virtualSubPop()) + ")";
-					else
-						desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
+					desc += "(" + (sp.allAvailSP() ? "ALL_AVAIL" : toStr(sp.subPop())) + ", " +
+					        (sp.allAvailVSP() ? "ALL_AVAIL" : toStr(sp.virtualSubPop())) + ")";
 				} else
 					desc += toStr(sp.subPop());
 			}

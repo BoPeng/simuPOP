@@ -608,7 +608,7 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
 			"Can not call individuals when there is activated virtual subpopulation");
-		DBG_FAILIF(subPop.allAvail(), ValueError, "Invalid (virtual) subpopulation ID.")
+		DBG_FAILIF(subPop.allAvailSP() || subPop.allAvailVSP(), ValueError, "Invalid (virtual) subpopulation ID.")
 		if (!subPop.valid())
 			return pyIndIterator(m_inds.begin(), m_inds.end(), true, vspFunctor());
 

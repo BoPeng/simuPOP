@@ -353,9 +353,10 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     in all ancestral generations. A list of (virtual) subpopulations
     (<em>subPops</em>) and a list of ancestral generations (<em>ancGens</em>,
     can be a single number) could be specified to iterate through only
-    selected subpopulation and generations. Virtual subpopulation of type
-    (ALL_AVAIL, vspID) is acceptable to iterate through a specific VSP of
-    all subpopulations.
+    selected subpopulation and generations. Value <tt>ALL_AVAIL</tt> is acceptable
+    in the specification of <tt>sp</tt> and/or <tt>vsp</tt> in specifying
+    a virtual subpopulation <tt>(sp, vsp)</tt> for the iteration through
+    all or specific virtual subpopulation in all or specific subpopulations.
     '''
     if ancGens is ALL_AVAIL:
         gens = range(self.ancestralGens() + 1)
@@ -372,12 +373,31 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                 yield ind
         else:
             for subPop in subPops:
-                if hasattr(subPop, '__iter__') and subPop[0] is ALL_AVAIL:
-                    if len(subPop) != 2 or subPop[1] is ALL_AVAIL:
+                if hasattr(subPop, '__iter__'):
+                    if len(subPop) != 2:
                         raise exceptions.ValueError('Invalid subpopulation ID %s' % subPop)
-                    for sp in range(self.numSubPop()):
-                        for ind in self.individuals([sp, subPop[1]]):
-                            yield ind
+                    if subPop[0] is ALL_AVAIL:
+                        # (ALL_AVAIL, ALL_AVAIL)
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
+                            for sp in range(self.numSubPop()):
+                                for vsp in range(self.numVirtualSubPop()):
+                                    for ind in self.individuals([sp, vsp]):
+                                        yield ind
+                        # (ALL_AVAIL, vsp)
+                        else:
+                            for sp in range(self.numSubPop()):
+                                for ind in self.individuals([sp, subPop[1]]):
+                                    yield ind
+                    else:
+                        # (sp, ALL_AVAIL)
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
+                                for vsp in range(self.numVirtualSubPop()):
+                                    for ind in self.individuals([subPop[0], vsp]):
+                                        yield ind
+                        # (sp, vsp)
+                        else:
+                            for ind in self.individuals(subPop):
+                                yield ind
                 else:
                     for ind in self.individuals(subPop):
                         yield ind

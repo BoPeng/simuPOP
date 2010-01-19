@@ -20,8 +20,8 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
 
   - EXPERIMENTAL: Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
   - EXPERIMENTAL: Add a mating scheme PedigreeMating.
-  - EXPERIMENTAL: Accept (ALL_AVAIL, vsp) in a virtual subpopulation list to go through
-		a virtual subpopulation of all subpopulations.
+  - EXPERIMENTAL: Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through
+		specific or all virtual subpopulation of specific or all subpopulations.
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
