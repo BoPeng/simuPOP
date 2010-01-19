@@ -8890,7 +8890,7 @@ Details:
 
 Usage:
 
-    vspID(subPop)
+    vspID(subPop, allAvailSP=False, allAvailVSP=False)
 
 "; 
 
@@ -8910,27 +8910,17 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::vspID::allAvail "
+%ignore simuPOP::vspID::valid() const;
+
+%ignore simuPOP::vspID::isVirtual() const;
+
+%ignore simuPOP::vspID::allAvailSP() const;
+
+%feature("docstring") simuPOP::vspID::allAvailVSP "
 
 Usage:
 
-    x.allAvail()
-
-"; 
-
-%feature("docstring") simuPOP::vspID::valid "
-
-Usage:
-
-    x.valid()
-
-"; 
-
-%feature("docstring") simuPOP::vspID::isVirtual "
-
-Usage:
-
-    x.isVirtual()
+    x.allAvailVSP()
 
 "; 
 
@@ -9207,7 +9197,11 @@ Description:
     subpopulations in all ancestral generations. A list of (virtual)
     subpopulations (subPops) and a list of ancestral generations
     (ancGens, can be a single number) could be specified to iterate
-    through only selected subpopulation and generations.
+    through only selected subpopulation and generations. Value
+    ALL_AVAIL is acceptable in the specification of sp and/or vsp in
+    specifying a virtual subpopulation (sp, vsp) for the iteration
+    through all or specific virtual subpopulation in all or specific
+    subpopulations.
 
 Usage:
 
@@ -9329,7 +9323,11 @@ Details:
     subpopulations in all ancestral generations. A list of (virtual)
     subpopulations (subPops) and a list of ancestral generations
     (ancGens, can be a single number) could be specified to iterate
-    through only selected subpopulation and generations.
+    through only selected subpopulation and generations. Value
+    ALL_AVAIL is acceptable in the specification of sp and/or vsp in
+    specifying a virtual subpopulation (sp, vsp) for the iteration
+    through all or specific virtual subpopulation in all or specific
+    subpopulations.
 
 "; 
 

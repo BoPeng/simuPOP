@@ -57,13 +57,11 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 					"Invalid virtual subpopulation ID");
 				PyObject * sp = PySequence_GetItem(item, 0);
 				PyObject * vsp = PySequence_GetItem(item, 1);
-				DBG_ASSERT(PyNumber_Check(vsp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
-				if (sp == Py_True)
-					m_subPops[i] = vspID(InvalidSubPopID, PyInt_AsLong(vsp));
-				else {
-					DBG_ASSERT(PyNumber_Check(sp), ValueError, "Invalid vsp id for a list of (virtual) subpopulations.");
-					m_subPops[i] = vspID(PyInt_AsLong(sp), PyInt_AsLong(vsp));
-				}
+				DBG_ASSERT(sp == Py_True || PyNumber_Check(sp), ValueError, "Invalid vsp id for a list of (virtual) subpopulations.");
+				DBG_ASSERT(vsp == Py_True || PyNumber_Check(vsp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
+				m_subPops[i] = vspID(sp == Py_True ? InvalidSubPopID : PyInt_AsLong(sp),
+					vsp == Py_True ? InvalidSubPopID : PyInt_AsLong(vsp),
+					sp == Py_True, vsp == Py_True);
 				Py_DECREF(sp);
 				Py_DECREF(vsp);
 			} else {
@@ -101,11 +99,27 @@ subPopList subPopList::expandFrom(const Population & pop) const
 		vectorvsp::const_iterator it = m_subPops.begin();
 		vectorvsp::const_iterator it_end = m_subPops.end();
 		for (; it != it_end; ++it) {
-			if (it->allAvail())
-				for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-					vsps.push_back(vspID(sp, it->virtualSubPop()));
-			else
-				vsps.push_back(*it);
+			if (it->allAvailSP()) {
+				for (size_t sp = 0; sp < pop.numSubPop(); ++sp) {
+					if (it->allAvailVSP()) {
+						if (pop.numVirtualSubPop() == 0)
+							vsps.push_back(vspID(sp));
+						else
+							for (size_t vsp = 0; vsp < pop.numVirtualSubPop(); ++vsp)
+								vsps.push_back(vspID(sp, vsp));
+					} else
+						vsps.push_back(vspID(sp, it->virtualSubPop()));
+				}
+			} else {
+				if (it->allAvailVSP()) {
+					if (pop.numVirtualSubPop() == 0)
+						vsps.push_back(vspID(it->subPop()));
+					else
+						for (size_t vsp = 0; vsp < pop.numVirtualSubPop(); ++vsp)
+							vsps.push_back(vspID(it->subPop(), vsp));
+				} else
+					vsps.push_back(*it);
+			}
 		}
 	}
 	return subPopList(vsps);

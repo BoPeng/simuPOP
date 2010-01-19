@@ -47,22 +47,28 @@ class Population;
 class vspID
 {
 public:
-	vspID(const vectori & subPop)
+	vspID(const vectori & subPop, bool allAvailSP = false, bool allAvailVSP = false)
 	{
 		DBG_FAILIF(subPop.size() > 2, ValueError,
 			"VSP should be specified as a subPop and virtualSubPop ID pair");
 		m_subPop = subPop.size() > 0 && subPop[0] >= 0 ? subPop[0] : InvalidSubPopID;
 		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
+		m_allAvailSP = allAvailSP;
+		m_allAvailVSP = allAvailVSP;
 	}
 
 
-	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID)
+	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID,
+		bool allAvailSP = false, bool allAvailVSP = false)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{
 		if (m_subPop < 0)
 			m_subPop = InvalidSubPopID;
 		if (m_virtualSubPop < 0)
 			m_virtualSubPop = InvalidSubPopID;
+
+		m_allAvailSP = allAvailSP;
+		m_allAvailVSP = allAvailVSP;
 	}
 
 
@@ -72,15 +78,50 @@ public:
 	}
 
 
-	SubPopID subPop() const { return m_subPop; }
-	SubPopID virtualSubPop() const { return m_virtualSubPop; }
-	bool allAvail() const { return m_subPop == InvalidSubPopID && m_virtualSubPop != InvalidSubPopID; }
-	bool valid() const { return m_subPop != InvalidSubPopID; }
-	bool isVirtual() const { return m_virtualSubPop != InvalidSubPopID; }
+	SubPopID subPop() const
+	{
+		return m_subPop;
+	}
+
+
+	SubPopID virtualSubPop() const
+	{
+		return m_virtualSubPop;
+	}
+
+
+	/// CPPONLY
+	bool valid() const
+	{
+		return m_subPop != InvalidSubPopID;
+	}
+
+
+	/// CPPONLY
+	bool isVirtual() const
+	{
+		return m_virtualSubPop != InvalidSubPopID;
+	}
+
+
+	/// CPPONLY
+	bool allAvailSP() const
+	{
+		return m_allAvailSP;
+	}
+
+
+	bool allAvailVSP() const
+	{
+		return m_allAvailVSP;
+	}
+
 
 private:
 	SubPopID m_subPop;
 	SubPopID m_virtualSubPop;
+	bool m_allAvailSP;
+	bool m_allAvailVSP;
 };
 
 ostream & operator<<(ostream & out, const vspID & vsp);

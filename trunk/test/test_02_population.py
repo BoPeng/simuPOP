@@ -1476,6 +1476,20 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.allIndividuals(subPops=[(ALL_AVAIL,1)]):
             self.assertEqual(ind.sex(), FEMALE)
         self.assertEqual(len(sex), 500)
+        # this is also OK
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(0, ALL_AVAIL)])]
+        self.assertEqual(len(sex), 600)
+        self.assertEqual(sex[:250], [MALE]*250)
+        self.assertEqual(sex[250:500], [FEMALE]*250)
+        self.assertEqual(sex[500:550], [MALE]*50)
+        self.assertEqual(sex[550:600], [FEMALE]*50)
+        # this is also OK
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(ALL_AVAIL, ALL_AVAIL)])]
+        self.assertEqual(len(sex), 2000)
+        self.assertEqual(sex[:250], [MALE]*250)
+        self.assertEqual(sex[250:500], [FEMALE]*250)
+        self.assertEqual(sex[500:550], [MALE]*50)
+        self.assertEqual(sex[550:600], [FEMALE]*50)
 
 if __name__ == '__main__':
     unittest.main()

@@ -3135,7 +3135,7 @@ pop.evolve(
     ]),
     postOps=[
         sim.Stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
-            subPops=[(0,x) for x in range(5)]),
+            subPops=[(0, sim.ALL_AVAIL)]),
         sim.PyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \
             "(meanOfInfo['anc'], varOfInfo['anc'], " + \
             "', '.join(['%4d' % x for x in subPopSize]))")
@@ -3564,7 +3564,7 @@ pop.evolve(
     initOps=[
         sim.InitSex(),
         sim.InitGenotype(freq=[.5, .5]),
-        sim.PyOutput('Calculate prevalence in smoker and non-smokers'),
+        sim.PyOutput('Calculate prevalence in smoker and non-smokers\n'),
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
@@ -3572,7 +3572,7 @@ pop.evolve(
         sim.InitInfo(lambda : random.randint(0,1), infoFields='smoking'),
         # assign affection status
         sim.PyPenetrance(loci=[0, 1], func=penet),
-        sim.Stat(numOfAffected=True, subPops=[(0,0),(0,1)], 
+        sim.Stat(numOfAffected=True, subPops=[(0, sim.ALL_AVAIL)], 
             vars='propOfAffected_sp', step=20),
         sim.PyEval(r"'Non-smoker: %.2f%%\tSmoker: %.2f%%\n' % "
             "(subPop[(0,0)]['propOfAffected']*100, subPop[(0,1)]['propOfAffected']*100)",
@@ -3611,7 +3611,7 @@ pop.evolve(
         # use random age for simplicity
         sim.InitInfo(lambda:random.randint(20, 75), infoFields='age'),
         sim.PyQuanTrait(loci=(0,1), func=qtrait, infoFields=['qtrait1', 'qtrait2']),
-        sim.Stat(meanOfInfo=['qtrait1'], subPops=[(0,0), (0,1)],
+        sim.Stat(meanOfInfo=['qtrait1'], subPops=[(0, sim.ALL_AVAIL)],
             vars='meanOfInfo_sp'),
         sim.PyEval(r"'Mean of trait1: %.3f (age < 40), %.3f (age >=40)\n' % "
             "(subPop[(0,0)]['meanOfInfo']['qtrait1'], subPop[(0,1)]['meanOfInfo']['qtrait1'])"),
@@ -3898,7 +3898,7 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=[0], subPops=[(0,0), (0,1), (1,0), (1,1)],
+        sim.Stat(alleleFreq=[0], subPops=[(sim.ALL_AVAIL, sim.ALL_AVAIL)],
             vars='alleleFreq_sp', step=50),
         sim.PyEval(r"'%.4f\t%.4f\t%.4f\t%.4f\n' % "
             "tuple([subPop[x]['alleleFreq'][0][1] for x in ((0,0),(0,1),(1,0),(1,1))])",
@@ -5487,7 +5487,7 @@ def pene(geno, age, ind):
 def outputstat(pop):
     'Calculate and output statistics'
     sim.stat(pop, popSize=True, numOfAffected=True,
-        subPops=[(0,0), (0,1), (0,2), (0,3)],
+        subPops=[(0, sim.ALL_AVAIL)],
         vars=['popSize_sp', 'propOfAffected_sp'])
     for sp in range(3):
         print '%s: %.3f%% (size %d)' % (pop.subPopName((0,sp)),
