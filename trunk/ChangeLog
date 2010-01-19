@@ -8,8 +8,8 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug in population.recodeAlleles when a single locus is specified.
   - BUG: Fix a memory leak bug when modifying an existing genotype structure.
   - BUG: Fix parameter revision of function simuOpt.setOptions.
-  - BUG: Fix a bug for getting integer 'chooseFrom' values using Tkinter based parameter
-	input dialog (simuOpt.Params).
+  - BUG: Fix a bug for getting integer 'chooseFrom' values and the setting of default
+		True/False value. using Tkinter based parameter input dialog (simuOpt.Params),
   - BUG: Fix a bug that crashes simuPOP when the recombination rate between
 	two loci are really small (e.g. 1e-17).
 

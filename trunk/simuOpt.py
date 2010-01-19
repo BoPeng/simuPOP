@@ -725,7 +725,7 @@ class _tkParamDialog(_paramDialog):
                 elif self.entryWidgets[g].winfo_class() == "Listbox":    # a listbox
                     sel = self.entryWidgets[g].curselection()
                     if self.options[g].has_key('chooseOneOf'):
-                        items = self.options[g]['chooseOneOf'][int(sel)]
+                        items = self.options[g]['chooseOneOf'][int(sel[0])]
                     else:
                         items = [self.options[g]['chooseFrom'][int(x)] for x in sel]
                     val = _getParamValue(self.options[g], items)
@@ -834,7 +834,7 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, padx=5,
                     sticky=tk.W)
                 rowIndex += 1
-                self.entryWidgets[g].deselect()
+                #self.entryWidgets[g].deselect()
             else:
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
