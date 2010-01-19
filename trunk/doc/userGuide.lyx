@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2698,6 +2698,28 @@ UNSPECIFIED
 \family default
  is sometimes used as default parameter of these parameters, indicating
  that no value has been specified.
+\end_layout
+
+\begin_layout Standard
+Besides 
+\family typewriter
+subPops=ALL_AVAIL
+\family default
+, which means 
+\family typewriter
+subPops=[0,1,2,3]
+\family default
+ for a population with 4 subpopulations, 
+\family typewriter
+ALL_AVAIL
+\family default
+ could also be used as 
+\family typewriter
+subPops=[(ALL_AVAIL, 1)]
+\family default
+ to specify a specific virtual subpopulation for all subpopulations.
+ This becomes handy when you, for example, would like to list all male individua
+ls in a population, regardless of number of subpopulations.
 \end_layout
 
 \begin_layout Subsection
@@ -17613,6 +17635,11 @@ subPops=[(0, 0)]
 \family default
  to output, for example, only the first virtual subpopulation in subpopulation
  0.
+ Multiple virtual subpopulations are allowed and you can even use 
+\family typewriter
+subPops=[(ALL_AVAIL, 0)]
+\family default
+ to go through a specific virtual subpopulation of all subpopulations.
  This operator by default only dump the present generation but you can set
  
 \family typewriter

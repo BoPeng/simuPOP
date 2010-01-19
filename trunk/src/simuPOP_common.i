@@ -353,7 +353,9 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     in all ancestral generations. A list of (virtual) subpopulations
     (<em>subPops</em>) and a list of ancestral generations (<em>ancGens</em>,
     can be a single number) could be specified to iterate through only
-    selected subpopulation and generations.
+    selected subpopulation and generations. Virtual subpopulation of type
+    (ALL_AVAIL, vspID) is acceptable to iterate through a specific VSP of
+    all subpopulations.
     '''
     if ancGens is ALL_AVAIL:
         gens = range(self.ancestralGens() + 1)
@@ -370,9 +372,11 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                 yield ind
         else:
             for subPop in subPops:
-                if subPop.allAvail():
-                    for sp in range(pop.numSubPop()):
-                        for ind in self.individuals([sp, subPop.virtualSubPop()]):
+                if hasattr(subPop, '__iter__') and subPop[0] is ALL_AVAIL:
+                    if len(subPop) != 2 or subPop[1] is ALL_AVAIL:
+                        raise exceptions.ValueError('Invalid subpopulation ID %s' % subPop)
+                    for sp in range(self.numSubPop()):
+                        for ind in self.individuals([sp, subPop[1]]):
                             yield ind
                 else:
                     for ind in self.individuals(subPop):

@@ -608,11 +608,8 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
 			"Can not call individuals when there is activated virtual subpopulation");
+		DBG_FAILIF(subPop.allAvail(), ValueError, "Invalid (virtual) subpopulation ID.")
 		if (!subPop.valid())
-			// if a virtual subpopulation is activated, this will
-			// iterate through virtual subpopulation. However,
-			// users are not supposed to manually activate subpopulation
-			// so this feature is CPPONLY
 			return pyIndIterator(m_inds.begin(), m_inds.end(), true, vspFunctor());
 
 		SubPopID spID = subPop.subPop();

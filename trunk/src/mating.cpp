@@ -1298,9 +1298,12 @@ string HeteroMating::describe(bool format) const
 				vspID sp = subPops[i];
 				if (i != 0)
 					desc += ", ";
-				if (sp.isVirtual())
-					desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
-				else
+				if (sp.isVirtual()) {
+					if (sp.allAvail())
+						desc += "(ALL_AVAIL, " + toStr(sp.virtualSubPop()) + ")";
+					else
+						desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
+				} else
 					desc += toStr(sp.subPop());
 			}
 			desc += ".\n";
@@ -1353,10 +1356,15 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
-			subPopList subPops = (*it)->subPops();
-			if (subPops.allAvail()) {
+			subPopList subPops = (*it)->subPops().expandFrom(pop);
+			subPopList::const_iterator vsp = subPops.begin();
+			subPopList::const_iterator vspEnd = subPops.end();
+			for (; vsp != vspEnd; ++vsp) {
+				if (vsp->subPop() != sp)
+					continue;
+				// if it is used for this subpop, or all subpopulations
 				m.push_back(*it);
-				sps.push_back(vspID(sp));
+				sps.push_back(*vsp);
 				double w = (*it)->weight();
 				// less than zero...
 				if (fcmp_lt(w, 0.)) {
@@ -1365,25 +1373,6 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				} else {
 					w_pos.push_back(w);
 					w_neg.push_back(0);
-				}
-			} else {
-				subPopList::const_iterator vsp = subPops.begin();
-				subPopList::const_iterator vspEnd = subPops.end();
-				for (; vsp != vspEnd; ++vsp) {
-					if (vsp->subPop() != sp)
-						continue;
-					// if it is used for this subpop, or all subpopulations
-					m.push_back(*it);
-					sps.push_back(*vsp);
-					double w = (*it)->weight();
-					// less than zero...
-					if (fcmp_lt(w, 0.)) {
-						w_pos.push_back(0);
-						w_neg.push_back(-w);
-					} else {
-						w_pos.push_back(w);
-						w_neg.push_back(0);
-					}
 				}
 			}
 		}
