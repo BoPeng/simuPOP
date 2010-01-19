@@ -3073,9 +3073,12 @@ void Bernullitrials::doTrial()
             UINT i = 0;
             while (true) {
                 // i moves at least one.
-                i += m_RNG->randGeometric(prob);
+                ULONG step = m_RNG->randGeometric(prob);
+		if (step == 0)
+			// gsl_ran_geometric sometimes return 0 when prob is really small.
+			break;
+                i += step;
                 if (i <= m_N)
-					// succ[i-1] = true;
 					setBit(ptr, i - 1);
                 else
 					break;
@@ -3089,9 +3092,12 @@ void Bernullitrials::doTrial()
             UINT i = 0;
             prob = 1. - prob;
             while (true) {
-                i += m_RNG->randGeometric(prob);
+                ULONG step = m_RNG->randGeometric(prob);
+		if (step == 0)
+			// gsl_ran_geometric sometimes return 0 when prob is really small.
+			break;
+                i += step;
                 if (i <= m_N)
-					// succ[i-1] = false;
 					unsetBit(ptr, i - 1);
                 else
 					break;
