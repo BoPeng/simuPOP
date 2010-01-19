@@ -1672,7 +1672,8 @@ class Params:
                     continue
                 elif i > 0 and cmdArgs[i-1] in ['--config', '--gui']:
                     continue
-                raise exceptions.ValueError("Unprocessed command line argument: " + cmdArgs[i])
+                raise exceptions.ValueError('Command line argument %s is not process.' % cmdArgs[i] +
+                    'You may have misspelled the argument name or passed it an invalid value.')
         #
         if self.gui == False:
             return self.termGetParam()
