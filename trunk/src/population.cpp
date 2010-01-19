@@ -1756,12 +1756,9 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 	Population & pop = *new Population();
 
 	// the usual whole population, easy case.
-	subPopList subPops = _subPops;
+	subPopList subPops = _subPops.expandFrom(*this);
 
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(*this);
-
-	bool removeInd = !subPops.allAvail();
+	bool removeInd = !_subPops.allAvail();
 	bool removeLoci = !extractedLoci.allAvail();
 	const vectoru & loci = extractedLoci.elems();
 	bool removeInfo = !infoFieldList.allAvail();

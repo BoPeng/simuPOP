@@ -162,13 +162,11 @@ bool InfoEval::apply(Population & pop) const
 {
 	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	subPopList subPops = applicableSubPops();
-
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = applicableSubPops(pop);
 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
+
 	for ( ; sp != spEnd; ++sp) {
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
@@ -221,9 +219,7 @@ bool InfoExec::apply(Population & pop) const
 	if (m_simpleStmt.operation() == simpleStmt::NoOperation)
 		dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	subPopList subPops = applicableSubPops();
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = applicableSubPops(pop);
 
 	simpleStmt::OperationType oType = m_simpleStmt.operation();
 	string oVar = m_simpleStmt.var();
@@ -438,9 +434,7 @@ bool statPopSize::apply(Population & pop) const
 	ULONG popSize = 0;
 	vectori spSize;
 	// for each (virtual) subpopulation
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
@@ -490,9 +484,7 @@ bool statNumOfMales::apply(Population & pop) const
 	ULONG allFemaleCnt = 0;
 	ULONG allTotalCnt = 0;
 	// for each subpopulation.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
@@ -572,9 +564,7 @@ bool statNumOfAffected::apply(Population & pop) const
 	ULONG allUnaffectedCnt = 0;
 	ULONG allTotalCnt = 0;
 	// for each subpopulation.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
@@ -661,9 +651,7 @@ bool statAlleleFreq::apply(Population & pop) const
 	ALLELECNTLIST alleleCnt(m_loci.size());
 	vectoru allAllelesCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
@@ -818,9 +806,7 @@ bool statHeteroFreq::apply(Population & pop) const
 	intDict allHomoCnt;
 
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
@@ -946,9 +932,7 @@ bool statGenoFreq::apply(Population & pop) const
 	vector<tupleDict> genotypeCnt(m_loci.size());
 	vectoru allGenotypeCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
@@ -1094,9 +1078,7 @@ bool statHaploFreq::apply(Population & pop) const
 	vector<tupleDict> haplotypeCnt(m_loci.size());
 	vectoru allHaplotypeCnt(m_loci.size());
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
@@ -1325,9 +1307,7 @@ bool statInfo::apply(Population & pop) const
 	vectorf allMaxVal(0);
 	vectorf allMinVal(0);
 	// for each subpopulation.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
@@ -1753,9 +1733,7 @@ bool statLD::apply(Population & pop) const
 	HAPLOCNTLIST allHaploCnt(m_LD.size());
 
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
@@ -2075,9 +2053,7 @@ bool statAssociation::apply(Population & pop) const
 	GENOCNTLIST allCaseGenoCnt(nLoci);
 	GENOCNTLIST allCtrlGenoCnt(nLoci);
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
@@ -2284,9 +2260,7 @@ bool statNeutrality::apply(Population & pop) const
 	// count for all specified subpopulations
 	HAPLOLIST allHaplotypes;
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	UINT ply = pop.ploidy();
@@ -2500,9 +2474,7 @@ bool statStructure::apply(Population & pop) const
 #endif
 
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	// count for all specified subpopulations
@@ -2655,9 +2627,7 @@ bool statHWE::apply(Population & pop) const
 	UINT nLoci = m_loci.size();
 	GENOCNTLIST allGenoCnt(nLoci);
 	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops;
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {

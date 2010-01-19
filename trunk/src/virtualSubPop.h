@@ -74,6 +74,7 @@ public:
 
 	SubPopID subPop() const { return m_subPop; }
 	SubPopID virtualSubPop() const { return m_virtualSubPop; }
+	bool allAvail() const { return m_subPop == InvalidSubPopID; }
 	bool valid() const { return m_subPop != InvalidSubPopID; }
 	bool isVirtual() const { return m_virtualSubPop != InvalidSubPopID; }
 
@@ -196,8 +197,8 @@ public:
 	}
 
 
-	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
-	void useSubPopsFrom(const Population & pop);
+	/// expand ALL_AVAIL and [(ALL_AVAIL, vsp), ...] according to pop
+	subPopList expandFrom(const Population & pop) const;
 
 private:
 	vectorvsp m_subPops;

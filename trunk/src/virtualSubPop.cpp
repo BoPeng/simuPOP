@@ -29,14 +29,86 @@
 
 namespace simuPOP {
 
-void subPopList::useSubPopsFrom(const Population & pop)
+
+subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
+{
+	if (obj == NULL || obj == Py_None)
+		// accept NULL
+		m_allAvail = true;
+	else if (PyBool_Check(obj)) {
+		// accept True/False
+		m_allAvail = obj == Py_True;
+		return;
+	} else if (PyNumber_Check(obj)) {
+		// accept a number
+		m_allAvail = false;
+		m_subPops.push_back(vspID(PyInt_AsLong(obj)));
+	} else if (PySequence_Check(obj)) {
+		m_subPops.resize(PySequence_Size(obj));
+		// assign values
+		for (size_t i = 0, iEnd = m_subPops.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			DBG_FAILIF(PyBool_Check(item), ValueError,
+				"Invalid input for a (virtual) subpopulation in a subpopulation list.");
+			if (PyNumber_Check(item))           // subpopulation
+				m_subPops[i] = vspID(PyInt_AsLong(item));
+			else if (PySequence_Check(item)) {  // virtual subpopulation
+				DBG_ASSERT(PySequence_Size(item) == 2, ValueError,
+					"Invalid virtual subpopulation ID");
+				PyObject * sp = PySequence_GetItem(item, 0);
+				PyObject * vsp = PySequence_GetItem(item, 1);
+				DBG_ASSERT(PyNumber_Check(vsp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
+				if (sp == Py_True)
+					m_subPops[i] = vspID(InvalidSubPopID, PyInt_AsLong(vsp));
+				else {
+					DBG_ASSERT(PyNumber_Check(sp), ValueError, "Invalid vsp id for a list of (virtual) subpopulations.");
+					m_subPops[i] = vspID(PyInt_AsLong(sp), PyInt_AsLong(vsp));
+				}
+				Py_DECREF(sp);
+				Py_DECREF(vsp);
+			} else {
+				DBG_FAILIF(true, ValueError, "Invalid input for a list of (virtual) subpopulations.");
+			}
+			Py_DECREF(item);
+		}
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid input for a list of (virtual) subpopulations.");
+	}
+}
+
+
+subPopList::subPopList(const vectorvsp & subPops)
+	: m_subPops(subPops), m_allAvail(false)
+{
+	for (size_t i = 0; i < m_subPops.size(); ++i) {
+		DBG_ASSERT(m_subPops[i].valid(), ValueError,
+			"Invalid subpopulation ID");
+	}
+}
+
+
+subPopList subPopList::expandFrom(const Population & pop) const
 {
 	DBG_FAILIF(m_allAvail && !m_subPops.empty(), SystemError,
 		"Only when no subpopulation is specified can this function be called."
 		"This is likely caused by the use of persistent subPops for different populations.");
-	DBG_ASSERT(m_allAvail, SystemError, "Cannot use all subpopulations in non-allAvail mode");
-	for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-		m_subPops.push_back(vspID(sp));
+	vectorvsp vsps;
+	if (allAvail()) {
+		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+			vsps.push_back(vspID(sp));
+	} else {
+		// otherwise, handle vsps such as (ALL_AVAIL, vsp)
+		vectorvsp::const_iterator it = m_subPops.begin();
+		vectorvsp::const_iterator it_end = m_subPops.end();
+		for (; it != it_end; ++it) {
+			if (it->allAvail())
+				for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+					vsps.push_back(vspID(sp, it->virtualSubPop()));
+			else
+				vsps.push_back(*it);
+		}
+	}
+	return subPopList(vsps);
 }
 
 
