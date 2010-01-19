@@ -267,7 +267,11 @@ public:
 
 
 	/// CPPONLY
-	subPopList applicableSubPops() const { return m_subPops; }
+	subPopList applicableSubPops(const Population & pop) const
+	{
+		return m_subPops.expandFrom(pop);
+	}
+
 
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc

@@ -98,10 +98,7 @@ bool BaseMutator::apply(Population & pop) const
 	pyFunc mapOutFunc = m_mapOut.func();
 	// mutate each mutable locus
 
-	subPopList subPops = applicableSubPops();
-	// the usual whole population, easy case.
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = applicableSubPops(pop);
 
 	Bernullitrials bt(getRNG());
 
@@ -401,14 +398,11 @@ void ContextMutator::mutate(AlleleRef allele, UINT locus) const
 
 bool PointMutator::apply(Population & pop) const
 {
-	subPopList subPops = applicableSubPops();
-
-	// the usual whole population, easy case.
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = applicableSubPops(pop);
 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
+
 	for (; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);

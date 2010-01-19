@@ -46,11 +46,7 @@ bool BaseQuanTrait::apply(Population & pop) const
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		pop.useAncestralGen(gens[genIdx]);
 
-		subPopList subPops = applicableSubPops();
-
-		// the usual whole population, easy case.
-		if (subPops.allAvail())
-			subPops.useSubPopsFrom(pop);
+		subPopList subPops = applicableSubPops(pop);
 
 		subPopList::const_iterator sp = subPops.begin();
 		subPopList::const_iterator spEnd = subPops.end();

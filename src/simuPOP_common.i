@@ -370,8 +370,13 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                 yield ind
         else:
             for subPop in subPops:
-                for ind in self.individuals(subPop):
-                    yield ind
+                if subPop.allAvail():
+                    for sp in range(pop.numSubPop()):
+                        for ind in self.individuals([sp, subPop.virtualSubPop()]):
+                            yield ind
+                else:
+                    for ind in self.individuals(subPop):
+                        yield ind
     self.useAncestralGen(curGen)
 
 Population.allIndividuals = all_individuals

@@ -30,14 +30,11 @@ bool BaseSelector::apply(Population & pop) const
 {
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
-	subPopList subPops = applicableSubPops();
-
-	// the usual whole population, easy case.
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	subPopList subPops = applicableSubPops(pop);
 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
+
 	for (; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);

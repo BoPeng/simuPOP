@@ -141,9 +141,7 @@ bool Dumper::apply(Population & pop) const
 
 		for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 			pop.useAncestralGen(gens[genIdx]);
-			subPopList subPops = applicableSubPops();
-			if (subPops.allAvail())
-				subPops.useSubPopsFrom(pop);
+			subPopList subPops = applicableSubPops(pop);
 
 			if (gens[genIdx] != 0)
 				out << "Ancestral population " << gens[genIdx] << endl;

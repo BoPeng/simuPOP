@@ -53,7 +53,7 @@ bool Migrator::apply(Population & pop) const
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));
 
-	subPopList fromSubPops = applicableSubPops();
+	subPopList fromSubPops = applicableSubPops(pop);
 
 	vectorinfo oldInfo;
 
@@ -75,9 +75,7 @@ bool Migrator::apply(Population & pop) const
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), RuntimeError,
 		"Migration can not be applied to activated virtual subpopulations");
 
-	if (fromSubPops.allAvail())
-		fromSubPops.useSubPopsFrom(pop);
-
+	// This one does not support ALL_AVAIL
 	vectoru toSubPops = m_to.elems();
 	if (m_to.allAvail())
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
@@ -235,15 +233,11 @@ struct compareVSP
 
 bool SplitSubPops::apply(Population & pop) const
 {
-	subPopList subPops = applicableSubPops();
+	subPopList subPops = applicableSubPops(pop);
 
 	// we have to split from top to bottom subpopulations
 	// because split will change subpopulation index
-	if (subPops.allAvail())
-		for (int i = pop.numSubPop() - 1; i >= 0; --i)
-			subPops.push_back(vspID(i));
-	else
-		std::sort(subPops.begin(), subPops.end(), compareVSP());
+	std::sort(subPops.begin(), subPops.end(), compareVSP());
 
 	for (size_t i = 0; i < subPops.size(); ++i) {
 		SubPopID sp = subPops[i].subPop();
@@ -289,17 +283,12 @@ bool SplitSubPops::apply(Population & pop) const
 
 bool MergeSubPops::apply(Population & pop) const
 {
-	subPopList sp = applicableSubPops();
+	const subPopList sp = applicableSubPops(pop);
 
 	vectoru subPops(sp.size());
 
-	if (sp.allAvail()) {
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			subPops[i] = i;
-	} else {
-		for (size_t i = 0; i < sp.size(); ++i)
-			subPops[i] = sp[i].subPop();
-	}
+	for (size_t i = 0; i < sp.size(); ++i)
+		subPops[i] = sp[i].subPop();
 	pop.mergeSubPops(subPops, m_name);
 	return true;
 }
@@ -309,29 +298,20 @@ bool ResizeSubPops::apply(Population & pop) const
 {
 	vectoru newSizes = pop.subPopSizes();
 
-	subPopList subPops = applicableSubPops();
+	const subPopList subPops = applicableSubPops(pop);
 
 	DBG_FAILIF(subPops.empty() && m_sizes.size() != pop.numSubPop()
 		&& m_proportions.size() != pop.numSubPop(), ValueError,
 		"Please specify new subpopulation size for all subpopulations.");
 
-	if (subPops.empty()) {
-		for (size_t i = 0; i < pop.numSubPop(); ++i) {
-			if (m_sizes.empty())
-				newSizes[i] = static_cast<ULONG>(newSizes[i] * m_proportions[i]);
-			else
-				newSizes[i] = m_sizes[i];
-		}
-	} else {
-		for (size_t i = 0; i < subPops.size(); ++i) {
-			DBG_FAILIF(static_cast<UINT>(subPops[i].subPop()) >= pop.numSubPop(), IndexError,
-				"Subpopulation index " + toStr(subPops[i].subPop()) + " out of range of 0 ~ "
-				+ toStr(pop.numSubPop() - 1));
-			if (m_sizes.empty())
-				newSizes[subPops[i].subPop()] = static_cast<ULONG>(newSizes[subPops[i].subPop()] * m_proportions[i]);
-			else
-				newSizes[subPops[i].subPop()] = m_sizes[i];
-		}
+	for (size_t i = 0; i < subPops.size(); ++i) {
+		DBG_FAILIF(static_cast<UINT>(subPops[i].subPop()) >= pop.numSubPop(), IndexError,
+			"Subpopulation index " + toStr(subPops[i].subPop()) + " out of range of 0 ~ "
+			+ toStr(pop.numSubPop() - 1));
+		if (m_sizes.empty())
+			newSizes[subPops[i].subPop()] = static_cast<ULONG>(newSizes[subPops[i].subPop()] * m_proportions[i]);
+		else
+			newSizes[subPops[i].subPop()] = m_sizes[i];
 	}
 	DBG_DO(DBG_MIGRATOR, cerr << "Resize subpopulations to size " << newSizes << endl);
 	pop.resize(newSizes, m_propagate);

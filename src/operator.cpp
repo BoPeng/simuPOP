@@ -27,57 +27,6 @@
 
 namespace simuPOP {
 
-subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
-{
-	if (obj == NULL || obj == Py_None)
-		// accept NULL
-		m_allAvail = true;
-	else if (PyBool_Check(obj)) {
-		// accept True/False
-		m_allAvail = obj == Py_True;
-		return;
-	} else if (PyNumber_Check(obj)) {
-		// accept a number
-		m_allAvail = false;
-		m_subPops.push_back(vspID(PyInt_AsLong(obj)));
-	} else if (PySequence_Check(obj)) {
-		m_subPops.resize(PySequence_Size(obj));
-		// assign values
-		for (size_t i = 0, iEnd = m_subPops.size(); i < iEnd; ++i) {
-			PyObject * item = PySequence_GetItem(obj, i);
-			if (PyNumber_Check(item))           // subpopulation
-				m_subPops[i] = vspID(PyInt_AsLong(item));
-			else if (PySequence_Check(item)) {  // virtual subpopulation
-				DBG_ASSERT(PySequence_Size(item) == 2, ValueError,
-					"Invalid virtual subpopulation ID");
-				PyObject * sp = PySequence_GetItem(item, 0);
-				PyObject * vsp = PySequence_GetItem(item, 1);
-				DBG_ASSERT(PyNumber_Check(sp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
-				DBG_ASSERT(PyNumber_Check(vsp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
-				m_subPops[i] = vspID(PyInt_AsLong(sp), PyInt_AsLong(vsp));
-				Py_DECREF(sp);
-				Py_DECREF(vsp);
-			} else {
-				DBG_FAILIF(true, ValueError, "Invalid input for a list of (virtual) subpopulations.");
-			}
-			Py_DECREF(item);
-		}
-	} else {
-		DBG_FAILIF(true, ValueError, "Invalid input for a list of (virtual) subpopulations.");
-	}
-}
-
-
-subPopList::subPopList(const vectorvsp & subPops)
-	: m_subPops(subPops), m_allAvail(false)
-{
-	for (size_t i = 0; i < m_subPops.size(); ++i) {
-		DBG_ASSERT(m_subPops[i].valid(), ValueError,
-			"Invalid subpopulation ID");
-	}
-}
-
-
 bool BaseOperator::isActive(UINT rep, long gen) const
 {
 	if (!m_reps.match(rep))

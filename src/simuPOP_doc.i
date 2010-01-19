@@ -322,7 +322,7 @@ Details:
 
 %ignore simuPOP::BaseOperator::noOutput() const;
 
-%ignore simuPOP::BaseOperator::applicableSubPops() const;
+%ignore simuPOP::BaseOperator::applicableSubPops(const Population &pop) const;
 
 %feature("docstring") simuPOP::BasePenetrance "
 
@@ -8621,7 +8621,17 @@ Usage:
 
 %ignore simuPOP::subPopList::end() const;
 
-%ignore simuPOP::subPopList::useSubPopsFrom(const Population &pop);
+%feature("docstring") simuPOP::subPopList::expandFrom "
+
+Description:
+
+    expand ALL_AVAIL and [(ALL_AVAIL, vsp), ...] according to pop
+
+Usage:
+
+    x.expandFrom(pop)
+
+"; 
 
 %feature("docstring") simuPOP::SummaryTagger "
 
@@ -8897,6 +8907,14 @@ Usage:
 Usage:
 
     x.virtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::vspID::allAvail "
+
+Usage:
+
+    x.allAvail()
 
 "; 
 

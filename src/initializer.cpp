@@ -45,14 +45,12 @@ string InitSex::describe(bool format) const
 
 bool InitSex::apply(Population & pop) const
 {
-	subPopList subPops = applicableSubPops();
-
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	const subPopList subPops = applicableSubPops(pop);
 
 	size_t idx = 0;
-	subPopList::iterator sp = subPops.begin();
-	subPopList::iterator sp_end = subPops.end();
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator sp_end = subPops.end();
+
 	for (; sp != sp_end; ++sp) {
 		Weightedsampler ws(getRNG());
 		if (m_maleProp >= 0) {
@@ -107,13 +105,9 @@ bool InitInfo::apply(Population & pop) const
 	for (size_t i = 0; i < infoIdx.size(); ++i)
 		infoIdx[i] = pop.infoIdx(infoField(i));
 
-	subPopList subPops = applicableSubPops();
-
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
-
-	subPopList::iterator sp = subPops.begin();
-	subPopList::iterator sp_end = subPops.end();
+	const subPopList subPops = applicableSubPops(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator sp_end = subPops.end();
 	size_t idx = 0;
 	const vectorf & values = m_values.elems();
 
@@ -177,12 +171,10 @@ string InitGenotype::describe(bool format) const
 
 bool InitGenotype::apply(Population & pop) const
 {
-	subPopList subPops = applicableSubPops();
-
-	if (subPops.allAvail())
-		subPops.useSubPopsFrom(pop);
+	const subPopList subPops = applicableSubPops(pop);
 
 	vectoru loci = m_loci.elems();
+
 	if (m_loci.allAvail())
 		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
 			loci.push_back(i);
@@ -194,8 +186,8 @@ bool InitGenotype::apply(Population & pop) const
 
 	pop.sortIndividuals();
 
-	subPopList::iterator sp = subPops.begin();
-	subPopList::iterator sp_end = subPops.end();
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator sp_end = subPops.end();
 	size_t sz = m_genotype.size();
 	for (size_t idx = 0; sp != sp_end; ++sp) {
 		// will go through virtual subpopulation if sp is virtual
