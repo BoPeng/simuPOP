@@ -1444,6 +1444,39 @@ class TestPopulation(unittest.TestCase):
         pop.evolve(preOps=InitSex(),
             matingScheme=RandomMating(), dryrun=True)
 
+    def testAllIndividuals(self):
+        'Testing population::allIndividuals'
+        pop = Population([100]*10, loci=3, ancGen=-1)
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        pop1 = pop.clone()
+        pop1.mergeSubPops(range(5))
+        self.assertEqual(pop1.numSubPop(), 6)
+        pop.push(pop1)
+        #
+        sex = [x.sex() for x in pop.allIndividuals()]
+        self.assertEqual(len(sex), 2000)
+        sex = [x.sex() for x in pop.allIndividuals(ancGens=1)]
+        self.assertEqual(len(sex), 1000)
+        # virtual subpopulation
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(0,0)], ancGens=1)]
+        self.assertEqual(len(sex), 50)
+        def goThrough():
+            [x.sex() for x in pop.allIndividuals(subPops=[(x,0) for x in range(10)], ancGens=0)]
+        self.assertRaises(exceptions.IndexError, goThrough)
+        # this is OK
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(x,0) for x in range(10)], ancGens=1)]
+        for ind in pop.allIndividuals(subPops=[(x,0) for x in range(10)], ancGens=1):
+            self.assertEqual(ind.sex(), MALE)
+        self.assertEqual(len(sex), 500)
+        # this is also OK
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(ALL_AVAIL,0)])]
+        self.assertEqual(len(sex), 1000)
+        sex = [x.sex() for x in pop.allIndividuals(subPops=[(ALL_AVAIL,1)], ancGens=0)]
+        for ind in pop.allIndividuals(subPops=[(ALL_AVAIL,1)]):
+            self.assertEqual(ind.sex(), FEMALE)
+        self.assertEqual(len(sex), 500)
+
 if __name__ == '__main__':
     unittest.main()
 

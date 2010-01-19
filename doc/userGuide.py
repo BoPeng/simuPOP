@@ -1851,6 +1851,7 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[10, 10], loci=[20, 30], infoFields='gen',
     ancGen=-1)
+sim.initSex(pop)
 pop.setVirtualSplitter(sim.SexSplitter())
 pop1 = pop.clone()
 sim.initGenotype(pop, freq=[0]*20 + [0.1]*10)
@@ -1859,6 +1860,9 @@ sim.initGenotype(pop1, freq=[0]*50 + [0.1]*10)
 pop1.setIndInfo(2, 'gen')
 pop.push(pop1)
 sim.dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
+    max=10, structure=False)
+# list all male individuals in all subpopulations
+sim.dump(pop, width=3, loci=[5, 6, 30], subPops=[(sim.ALL_AVAIL, 0)],
     max=10, structure=False)
 #end_file
 
