@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -16191,7 +16191,7 @@ vars
 , these variables will be set for all or specified (virtual) subpopulations.
  
 \series bold
-At the Python level, these variables of dictionaries of default dictionaries.
+At the Python level, these variables are dictionaries of default dictionaries.
 
 \series default
  That is to say, 
