@@ -110,15 +110,15 @@ bool Migrator::apply(Population & pop) const
 				double sum = accumulate(migrationRate[i].begin(), migrationRate[i].end(), 0.0);
 				//
 				vectoru::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
-				if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
-					if (fcmp_gt(sum, 1.0) )
+				if (spTo == toSubPops.end()) {                        // if no to, only check if sum <= 1
+					if (fcmp_gt(sum, 1.0))
 						throw ValueError("Sum of migrate rate from one subPop should <= 1");
 					// adding i->i item
 					migrationRate[i].push_back(1.0 - sum);
 				} else {                                                          // if not, set r[i][i]
 					double & self = migrationRate[i][ spTo - toSubPops.begin() ];
 					sum -= self;
-					if (fcmp_gt(sum, 1.0) )
+					if (fcmp_gt(sum, 1.0))
 						throw ValueError("Sum of migrate rate from one subPop should <= 1");
 					// reset to-my-self probability/proportion
 					self = 1.0 - sum;

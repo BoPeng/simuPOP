@@ -38,11 +38,11 @@ bool BaseOperator::isActive(UINT rep, long gen) const
 	if (ISSETFLAG(m_flags, m_flagAtAllGen))
 		return true;
 
-	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin))
 		return gen == 0;
 
 	// at gen has higher priority.
-	if (!m_atGen.empty() ) {
+	if (!m_atGen.empty()) {
 		// chech atGen.
 		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd; ++i) {
 			int atGen = m_atGen[i];
@@ -89,14 +89,14 @@ bool BaseOperator::isActive(UINT rep, long gen, long end,
 	DBG_FAILIF(end > 0 && gen > end, IndexError,
 		"Current generation can not be bigger than ending generation.");
 
-	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+	if (ISSETFLAG(m_flags, m_flagOnlyAtBegin))
 		return gen == 0;
 
 	if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) && end > 0)
 		return gen == end;
 
 	// at Gen has higher priority.
-	if (!m_atGen.empty() ) {
+	if (!m_atGen.empty()) {
 		// chech atGen.
 		for (size_t i = 0, iEnd = m_atGen.size(); i < iEnd; ++i) {
 			int atGen = m_atGen[i];
@@ -126,7 +126,7 @@ bool BaseOperator::isActive(UINT rep, long gen, long end,
 			return false;
 
 		// can only check positive begin + every
-		if ( ( ((gen - m_beginGen) % m_stepGen) == 0) && (m_endGen < 0 || m_endGen >= gen) )
+		if ( ( ((gen - m_beginGen) % m_stepGen) == 0) && (m_endGen < 0 || m_endGen >= gen))
 			return true;
 		else
 			return false;
@@ -151,7 +151,7 @@ void BaseOperator::setFlags()
 	RESETFLAG(m_flags, m_flagOnlyAtEnd);
 
 	// atGen has higher priority: if it is not empty, use it.
-	if (m_atGen.empty() ) {
+	if (m_atGen.empty()) {
 		if (m_beginGen == 0 && m_endGen == 0)
 			SETFLAG(m_flags, m_flagOnlyAtBegin);
 
@@ -195,11 +195,11 @@ string BaseOperator::applicability(bool subPops, bool gen) const
 	if (gen) {
 		if (ISSETFLAG(m_flags, m_flagAtAllGen))
 			desc += "";
-		else if (ISSETFLAG(m_flags, m_flagOnlyAtBegin) )
+		else if (ISSETFLAG(m_flags, m_flagOnlyAtBegin))
 			desc += "at generation 0";
-		else if (ISSETFLAG(m_flags, m_flagOnlyAtEnd) )
+		else if (ISSETFLAG(m_flags, m_flagOnlyAtEnd))
 			desc += "at ending generation";
-		else if (!m_atGen.empty() ) {
+		else if (!m_atGen.empty()) {
 			if (m_atGen.size() == 1)
 				desc += "at generation";
 			else
@@ -299,7 +299,7 @@ bool Pause::apply(Population & pop) const
 		// stop on any key
 		if (m_stopOnKeyStroke == static_cast<char>(true)) {
 			// check if key is already pressed
-			if (!simuPOP_kbhit() )
+			if (!simuPOP_kbhit())
 				return true;
 		} else {
 			// get all keys

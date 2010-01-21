@@ -225,7 +225,7 @@ public:
 	 */
 	Sex sex() const
 	{
-		if (ISSETFLAG(m_flags, m_flagFemale) )
+		if (ISSETFLAG(m_flags, m_flagFemale))
 			return FEMALE;
 		else
 			return MALE;
@@ -471,7 +471,7 @@ public:
 	//@{
 
 	/// CPPONLY
-	void display(ostream & out, int width = 1, const vectoru & loci = vectoru() );
+	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
 
 	//@}
 

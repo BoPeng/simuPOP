@@ -79,7 +79,7 @@ bool PyEval::apply(Population & pop) const
 {
 	string res = evaluate(pop);
 
-	if (!this->noOutput() ) {
+	if (!this->noOutput()) {
 		ostream & out = this->getOstream(pop.dict());
 		out << res;
 		this->closeOstream();
@@ -172,7 +172,7 @@ bool InfoEval::apply(Population & pop) const
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			string res = evalInfo(&*ind, dict, false) ;
-			if (!this->noOutput() ) {
+			if (!this->noOutput()) {
 				ostream & out = this->getOstream(pop.dict());
 				out << res;
 				this->closeOstream();
@@ -194,7 +194,7 @@ bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
 
 	string res = evalInfo(&*offspring, dict, false);
 
-	if (!this->noOutput() ) {
+	if (!this->noOutput()) {
 		ostream & out = this->getOstream(pop.dict());
 		out << res;
 		this->closeOstream();
@@ -2432,7 +2432,7 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 			h_bar /= n;
 
 			// a, b, c
-			a += n_bar / n_c * (s_2 - (p_bar * (1 - p_bar) - (r - 1.) / r * s_2 - h_bar / 4.) / (n_bar - 1.) );
+			a += n_bar / n_c * (s_2 - (p_bar * (1 - p_bar) - (r - 1.) / r * s_2 - h_bar / 4.) / (n_bar - 1.));
 			b += n_bar / (n_bar - 1) * (p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1) / (4. * n_bar) * h_bar);
 			c += h_bar / 2.;
 

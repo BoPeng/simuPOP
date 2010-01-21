@@ -1006,7 +1006,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 		for (size_t i = 0; i < 2; ++i) {
 			PyObject * v = PySequence_GetItem(item, i);
 			if (PyInt_Check(v) || PyLong_Check(v)) {
-				ULONG idx = static_cast<ULONG>(PyInt_AsLong(v));
+				ULONG idx = PyInt_AsLong(v);
 				DBG_ASSERT(idx < m_size, ValueError, "Returned parent index (" + toStr(idx) +
 					") is greater than subpopulation size " + toStr(m_size));
 				parents[i] = &*(m_begin + idx);
@@ -1097,7 +1097,7 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
 		ValueError, "number of subPopulaitons must agree.\n Pre: "
-		+ toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
+		+ toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop()));
 	return true;
 }
 
@@ -1201,14 +1201,14 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
 	for (; it != it_end; ++it)
-		idMap[static_cast<ULONG>(it->info(idIdx) + 0.5)] = &*it;
+		idMap[toID(it->info(idIdx))] = &*it;
 
 	it = scratch.rawIndBegin();
 	it_end = scratch.rawIndEnd();
 	for (size_t i = 0; it != it_end; ++it, ++i) {
 		const Individual & pedInd = m_ped.ancestor(i, m_gen);
 
-		ULONG my_id = static_cast<ULONG>(pedInd.info(m_ped.idIdx()) + 0.5);
+		ULONG my_id = toID(pedInd.info(m_ped.idIdx()));
 		ULONG father_id = m_ped.fatherOf(my_id);
 		ULONG mother_id = m_ped.motherOf(my_id);
 		Individual * dad = NULL;

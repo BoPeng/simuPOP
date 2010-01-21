@@ -104,7 +104,7 @@ void Pedigree::buildIDMap()
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
-			ULONG id = static_cast<ULONG>(it->info(m_idIdx) + 0.5);
+			ULONG id = toID(it->info(m_idIdx));
 			DBG_WARNING(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Different individuals share the same ID " + toStr(id) +
 				"so only the latest Individual will be used. If this is an "
@@ -129,9 +129,9 @@ UINT Pedigree::numParents()
 
 Individual & Pedigree::indByID(double fid) const
 {
-	// essentially m_idMap(static_cast<ULONG>(fid))
+	// essentially m_idMap(toID(fid))
 	//
-	ULONG id = static_cast<ULONG>(fid + 0.5);
+	ULONG id = toID(fid);
 
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
 		"individual ID has to be integer (or a double round to full iteger).");
@@ -263,7 +263,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 						// pass
 					}
 				}
-				couples.push_back(couple(static_cast<ULONG>(f + 0.5), static_cast<ULONG>(m + 0.5)));
+				couples.push_back(couple(toID(f), toID(m)));
 			}
 		}
 	}
@@ -347,8 +347,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 				continue;
 			try {
 				// but the parents might not exist
-				ULONG pp = static_cast<ULONG>(p);
-				ULONG mm = static_cast<ULONG>(m);
+				ULONG pp = toID(p);
+				ULONG mm = toID(m);
 				Individual & fa = indByID(pp);
 				Individual & ma = indByID(mm);
 				// add child as father's offspring
@@ -401,9 +401,9 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
 			if (f >= 0)
-				families[static_cast<ULONG>(f)].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
+				families[toID(f)].push_back(toID(individual(i).info(m_idIdx)));
 			if (m >= 0)
-				families[static_cast<ULONG>(m)].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
+				families[toID(m)].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each single-parent family
@@ -498,7 +498,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
 			if (f >= 0 && m >= 0)
-				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
+				families[couple(toID(f), toID(m))].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each single-parent family
@@ -593,7 +593,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
 			if (f >= 0 && m >= 0)
-				families[couple(static_cast<ULONG>(f), static_cast<ULONG>(m))].push_back(static_cast<ULONG>(individual(i).info(m_idIdx)));
+				families[couple(toID(f), toID(m))].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
 	// look in each family
@@ -611,8 +611,8 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 			// spouse
 			double fa_spouse = fa.info(spouseIdx);
 			double ma_spouse = ma.info(spouseIdx);
-			bool valid_fa = fa_spouse != -1 && static_cast<ULONG>(fa_spouse) == m;
-			bool valid_ma = ma_spouse != -1 && static_cast<ULONG>(ma_spouse) == p;
+			bool valid_fa = fa_spouse != -1 && toID(fa_spouse) == m;
+			bool valid_ma = ma_spouse != -1 && toID(ma_spouse) == p;
 			if (!valid_fa && !valid_ma)
 				continue;
 			// offspring
@@ -717,7 +717,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 		useAncestralGen(gens[genIdx]);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
 			Sex mySex = ind->sex();
-			vectoru inds = vectoru(1, static_cast<ULONG>(ind->info(m_idIdx)));
+			vectoru inds = vectoru(1, toID(ind->info(m_idIdx)));
 			// go through the path
 			for (size_t path = 0; path < pathFields.size(); ++path) {
 				DBG_DO(DBG_POPULATION, cerr << "Start of path " << path
@@ -739,7 +739,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 							continue;
 						if (!acceptableAffectionStatus(sind.affected(), affection))
 							continue;
-						newInds.push_back(static_cast<ULONG>(sID + 0.5));
+						newInds.push_back(toID(sID));
 					}
 				}
 				inds.swap(newInds);
@@ -852,7 +852,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 				}
 			}
 			if (valid)
-				IDs.push_back(static_cast<ULONG>(ind->info(m_idIdx) + 0.5));
+				IDs.push_back(toID(ind->info(m_idIdx)));
 		}
 	}
 	useAncestralGen(oldGen);
@@ -895,7 +895,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 		RawIndIterator itEnd = rawIndEnd();
 		for (; it != itEnd; ++it)
 			if (it->marked())
-				famID[static_cast<ULONG>(it->info(m_idIdx) + 0.5)] = -1;
+				famID[toID(it->info(m_idIdx))] = -1;
 	}
 	// step 2: decide family ID
 	UINT famCount = 0;
@@ -914,7 +914,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 		int momFam = -2;
 		// try to identify father and mother....
 		if (m_fatherIdx != -1) {
-			ULONG dad_id = static_cast<ULONG>(ind->info(m_fatherIdx) + 0.5);
+			ULONG dad_id = toID(ind->info(m_fatherIdx));
 			// ok father
 			std::map<ULONG, int>::iterator dad_fam = famID.find(dad_id);
 			// because father exists in famID
@@ -924,7 +924,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 			}
 		}
 		if (m_motherIdx != -1) {
-			ULONG mom_id = static_cast<ULONG>(ind->info(m_motherIdx) + 0.5);
+			ULONG mom_id = toID(ind->info(m_motherIdx));
 			// ok mother
 			std::map<ULONG, int>::iterator mom_fam = famID.find(mom_id);
 			// because father exists in famID
@@ -943,7 +943,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 				it->second = dadFam;
 			else {
 				it->second = famCount;
-				famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = famCount;
+				famID[toID(dad->info(m_idIdx))] = famCount;
 				++famCount;
 			}
 		} else if (dad == NULL && mom != NULL) {
@@ -953,23 +953,23 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 				it->second = momFam;
 			else {
 				it->second = famCount;
-				famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = famCount;
+				famID[toID(mom->info(m_idIdx))] = famCount;
 				++famCount;
 			}
 		} else if (dadFam < 0 && momFam < 0) {
 			// CASE FIVE: fresh father and mother
 			it->second = famCount;
-			famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = famCount;
-			famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = famCount;
+			famID[toID(mom->info(m_idIdx))] = famCount;
+			famID[toID(dad->info(m_idIdx))] = famCount;
 			++famCount;
 		} else if (dadFam >= 0 && momFam < 0) {
 			// CASE SIX: fresh mother
 			it->second = dadFam;
-			famID[static_cast<ULONG>(mom->info(m_idIdx) + 0.5)] = dadFam;
+			famID[toID(mom->info(m_idIdx))] = dadFam;
 		} else if (dadFam < 0 && momFam >= 0) {
 			// CASE SEVEN: fresh father
 			it->second = momFam;
-			famID[static_cast<ULONG>(dad->info(m_idIdx) + 0.5)] = momFam;
+			famID[toID(dad->info(m_idIdx))] = momFam;
 		} else if (dadFam == momFam) {
 			// CASE EIGHT: a sibling?
 			it->second = momFam;
@@ -1044,7 +1044,7 @@ vectoru Pedigree::identifyAncestors(const uintList & IDs,
 		RawIndIterator itEnd = rawIndEnd();
 		for (; it != itEnd; ++it)
 			if (it->marked())
-				res.push_back(static_cast<ULONG>(it->info(m_idIdx) + 0.5));
+				res.push_back(toID(it->info(m_idIdx)));
 	} else {
 		const vectoru & inputIDs = IDs.elems();
 		res.reserve(inputIDs.size());
@@ -1067,9 +1067,9 @@ vectoru Pedigree::identifyAncestors(const uintList & IDs,
 				// if this ID exists
 				Individual & ind = indByID(ID);
 				if (m_fatherIdx != -1)
-					father_ID = static_cast<ULONG>(ind.info(m_fatherIdx) + 0.5);
+					father_ID = toID(ind.info(m_fatherIdx));
 				if (m_motherIdx != -1)
-					mother_ID = static_cast<ULONG>(ind.info(m_motherIdx) + 0.5);
+					mother_ID = toID(ind.info(m_motherIdx));
 			} catch (IndexError &) {
 				//
 			}
@@ -1142,9 +1142,9 @@ vectoru Pedigree::identifyOffspring(const uintList & IDs,
 		for (; it != itEnd; ++it) {
 			// I am a valid offspring
 			if (it->marked()) {
-				ULONG myID = static_cast<ULONG>(it->info(m_idIdx) + 0.5);
-				ULONG fatherID = m_fatherIdx == -1 ? 0 : static_cast<ULONG>(it->info(m_fatherIdx) + 0.5);
-				ULONG motherID = m_motherIdx == -1 ? 0 : static_cast<ULONG>(it->info(m_motherIdx) + 0.5);
+				ULONG myID = toID(it->info(m_idIdx));
+				ULONG fatherID = m_fatherIdx == -1 ? 0 : toID(it->info(m_fatherIdx));
+				ULONG motherID = m_motherIdx == -1 ? 0 : toID(it->info(m_motherIdx));
 				// we do not care if father or mother is valid.
 				if (fatherID) {
 					if (offspringMap.find(fatherID) == offspringMap.end())

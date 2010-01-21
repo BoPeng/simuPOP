@@ -110,7 +110,7 @@ public:
 		if (m_rates.size() > 1 && m_loci.elems().empty())
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
-		if (m_rates.size() > 1 && !m_loci.elems().empty() && m_rates.size() != m_loci.elems().size() )
+		if (m_rates.size() > 1 && !m_loci.elems().empty() && m_rates.size() != m_loci.elems().size())
 			throw ValueError("If both rates and loci are specified, they should have the same length.");
 	}
 
@@ -131,7 +131,7 @@ public:
 	/// CPPONLY set an array of mutation rates
 	void setRate(const vectorf & rates, const uintList & loci)
 	{
-		if (rates.size() != 1 && rates.size() != loci.elems().size() )
+		if (rates.size() != 1 && rates.size() != loci.elems().size())
 			throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
 
 		m_rates = rates;

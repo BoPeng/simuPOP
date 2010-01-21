@@ -471,7 +471,7 @@ string describeEvolProcess(const opList & initOps,
 			desc << "</ul>\n";
 		}
 		desc << "</ul>\n\n";
-		if (finalOps.empty() )
+		if (finalOps.empty())
 			desc << "No operator is applied to the final population (finalOps)." << endl;
 		else {
 			desc << "Apply post-evolution operators (finalOps)\n<ul>\n";

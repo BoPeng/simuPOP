@@ -73,7 +73,7 @@ void Dumper::displayStructure(const Population & pop, ostream & out) const
 				out << ",";
 			if (i % 5 == 0)
 				out << "\n ";
-			out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
+			out << " " << pop.locusName(pop.absLocusIndex(ch, i)) << " ("
 			    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
 		}
 		out << endl;
