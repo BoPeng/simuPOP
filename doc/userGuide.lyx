@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -8488,15 +8488,39 @@ Pedigree
 \family default
  object is basically a static population object that is used to track relationsh
 ip between individuals.
- It is currently used in the 
+ An unique ID is required for all individuals so that individuals could
+ be identified easily using their IDs.
+ Individuals in a pedigree usually have one or two information fields to
+ record the IDs of their parents.
+ Operators 
+\family typewriter
+IdTagger
+\family default
+ and 
+\family typewriter
+PedigreeTagger
+\family default
+ are usually used to maintain these information fields which are, although
+ customizable, almost always 
+\family typewriter
+ind_id
+\family default
+, 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+.
+ After pedigrees are identified, population operations could be applied,
+ for example, to extracted identified pedigrees from an existing population.
+ This is basically how module 
 \family typewriter
 simuPOP.sampling
 \family default
- module to identify eligible pedigrees but future development will allow
- a mating scheme to follow a complete pedigree constructed manually or saved
- from a previous evolutionary process.
- This will allow, for example, to repeat the same evolutionary process for
- different chromosomes when a large number of loci are simulated.
+ works.
 \end_layout
 
 \begin_layout Standard
@@ -8543,7 +8567,7 @@ father_id
 mother_id
 \family default
 , copying all available information fields.
- The ID field should have a unique ID for each individual and the parental
+ The ID field should have an unique ID for each individual and the parental
  ID fields should record the ID of his or her parents.
  Genotype information and additional information fields can be copied to
  a pedigree object if needed.
