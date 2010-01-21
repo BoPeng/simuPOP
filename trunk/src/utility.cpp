@@ -338,7 +338,7 @@ namespace std {
 ostream & operator<<(ostream & out, const strDict & dict)
 {
 	out << "{";
-	if (!dict.empty() ) {
+	if (!dict.empty()) {
 		strDict::const_iterator it = dict.begin();
 
 		out << it->first << ":" << it->second;
@@ -355,7 +355,7 @@ ostream & operator<<(ostream & out, const strDict & dict)
 ostream & operator<<(ostream & out, const intDict & dict)
 {
 	out << "{";
-	if (!dict.empty() ) {
+	if (!dict.empty()) {
 		intDict::const_iterator it = dict.begin();
 
 		out << it->first << ":" << it->second;
@@ -830,7 +830,7 @@ next:
 		// look for index
 		s = ++i;
 		for ( ; name[i] != ']'; i++)
-			if (!isdigit(name[i]) )
+			if (!isdigit(name[i]))
 				throw ValueError("Expecting numbers: " + name);
 
 		// get index
@@ -838,7 +838,7 @@ next:
 		// not exist
 		//
 		// create subPop, ...
-		if (curChild == NULL || !PyList_Check(curChild) ) {
+		if (curChild == NULL || !PyList_Check(curChild)) {
 			// Py_XDECREF(curChild);
 			// create a sequence with this name
 			curChild = PyList_New(idx + 1);
@@ -913,7 +913,7 @@ next:
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
 		// not exist
-		if (curChild == NULL || !PyDict_Check(curChild) ) {
+		if (curChild == NULL || !PyDict_Check(curChild)) {
 			// create dictionary with given key, append
 			curChild = PyDict_New();
 			// keep this
@@ -991,7 +991,7 @@ next:
 		// look for index
 		s = ++i;
 		for ( ; name[i] != ']'; i++)
-			if (!isdigit(name[i]) )
+			if (!isdigit(name[i]))
 				throw ValueError("Expecting numbers: " + name);
 
 		// get index
@@ -1093,7 +1093,7 @@ next:
 		// look for index
 		s = ++i;
 		for ( ; name[i] != ']'; i++)
-			if (!isdigit(name[i]) )
+			if (!isdigit(name[i]))
 				throw ValueError("Expecting numbers: " + name);
 
 		// get index
@@ -2073,7 +2073,7 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 
 	ostreamMapIterator it = m_ostreams.find(name);
 
-	if (it == m_ostreams.end() ) {                            // not found.
+	if (it == m_ostreams.end()) {                            // not found.
 
 		DBG_DO(DBG_UTILITY, cerr << "Create new file " << name << endl);
 
@@ -2090,9 +2090,9 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 			throw ValueError("file " + name + " has already opened as normal file.");
 		else if (readable && it->second.type() == StreamElem::OFSTREAM)
 			it->second.makeReadable();
-		else if (realAppend && !it->second.append() )
+		else if (realAppend && !it->second.append())
 			it->second.makeAppend(true);
-		else if (!realAppend && it->second.append() )
+		else if (!realAppend && it->second.append())
 			it->second.makeAppend(false);
 
 		return it->second.stream();
@@ -2186,16 +2186,16 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 		DBG_DO(DBG_UTILITY, cerr << "Filename " << m_filename << endl);
 
 		analyzeOutputString(m_filename);
-		if (ISSETFLAG(m_flags, m_flagNoOutput) )
+		if (ISSETFLAG(m_flags, m_flagNoOutput))
 			return cnull();
 
 		// if using cerr, return it.
-		if (ISSETFLAG(m_flags, m_flagUseDefault) )
+		if (ISSETFLAG(m_flags, m_flagUseDefault))
 			return cerr;
 	}
 	filename = m_filename;
 
-	if (ISSETFLAG(m_flags, m_flagAppend) ) {
+	if (ISSETFLAG(m_flags, m_flagAppend)) {
 
 		DBG_DO(DBG_UTILITY, cerr	<< "Get a persistent file: "
 			                        << filename << endl);
@@ -2207,16 +2207,16 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 		DBG_DO(DBG_UTILITY, cerr	<< "File is not persistent : "
 			                        << filename << endl);
 
-		if (!ostreamManager().hasOstream(filename) ) {
+		if (!ostreamManager().hasOstream(filename)) {
 			if (readable)
 				SETFLAG(m_flags, m_flagReadable);
 			else
 				RESETFLAG(m_flags, m_flagReadable);
 
 			if (readable)
-				m_filePtr = new fstream(filename.c_str() );
+				m_filePtr = new fstream(filename.c_str());
 			else
-				m_filePtr = new ofstream(filename.c_str() );
+				m_filePtr = new ofstream(filename.c_str());
 
 			if (m_filePtr == NULL || !*m_filePtr)
 				throw SystemError("Can not create file " + filename);
@@ -2263,7 +2263,7 @@ void StreamProvider::closeOstream()
 
 void StreamProvider::analyzeOutputString(const string & output)
 {
-	if (output.empty() ) {
+	if (output.empty()) {
 		SETFLAG(m_flags, m_flagNoOutput);
 		RESETFLAG(m_flags, m_flagCloseAfterUse);
 		return;
@@ -3310,7 +3310,7 @@ protected:
     int overflow(int c)
     {
         // write out current buffer
-        if (pbase() != pptr() ) {
+        if (pbase() != pptr()) {
             // the end of string might not be \0
             char_type * endPtr = pptr();
             char_type endChar = *endPtr;
@@ -3331,7 +3331,7 @@ protected:
         // push character c in
         if (c != EOF) {
             // unbuffered, write out this character, do not put into buffer
-            if (pbase() == epptr() ) {
+            if (pbase() == epptr()) {
                 if (m_type == StdOut)
 					PySys_WriteStdout("%c", c);
                 else

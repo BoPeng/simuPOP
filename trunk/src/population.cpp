@@ -309,12 +309,12 @@ void Population::deactivateVirtualSubPop(SubPopID subPop) const
 
 int Population::__cmp__(const Population & rhs) const
 {
-	if (genoStruIdx() != rhs.genoStruIdx() ) {
+	if (genoStruIdx() != rhs.genoStruIdx()) {
 		DBG_DO(DBG_POPULATION, cerr << "Genotype structures are different" << endl);
 		return 1;
 	}
 
-	if (popSize() != rhs.popSize() ) {
+	if (popSize() != rhs.popSize()) {
 		DBG_DO(DBG_POPULATION, cerr << "population sizes are different" << endl);
 		return 1;
 	}
@@ -346,7 +346,7 @@ int Population::__cmp__(const Population & rhs) const
 
 Individual & Population::indByID(double fid, const uintList & ancGens, const string & idField)
 {
-	ULONG id = static_cast<ULONG>(fid + 0.5);
+	ULONG id = toID(fid);
 
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
 		"individual ID has to be integer (or a double round to full iteger).");
@@ -372,12 +372,12 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 		ULONG startID = (*inds)[0].intInfo(idx);
 		if (idx >= startID && startID + (*inds).size() > id) {
 			Individual & ind = (*inds)[id - startID];
-			if (static_cast<ULONG>(ind.intInfo(idx)) == id)
+			if (toID(ind.intInfo(idx)) == id)
 				return ind;
 		}
 		// now we have to search all individuals
 		for (size_t i = 0; i < (*inds).size(); ++i) {
-			if (static_cast<ULONG>((*inds)[i].intInfo(idx)) == id)
+			if (toID((*inds)[i].intInfo(idx)) == id)
 				return (*inds)[i];
 		}
 	}
@@ -390,7 +390,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 
 Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 {
-	ULONG idx = static_cast<ULONG>(fidx + 0.5);
+	ULONG idx = toID(fidx);
 
 	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
 		"individual index has to be integer (or a double round to full iteger).");
@@ -428,7 +428,7 @@ Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 
 const Individual & Population::ancestor(double fidx, UINT gen, vspID vsp) const
 {
-	ULONG idx = static_cast<ULONG>(fidx + 0.5);
+	ULONG idx = toID(fidx);
 
 	DBG_FAILIF(fabs(fidx - idx) > 1e-8, ValueError,
 		"individual index has to be integer (or a double round to full iteger).");
@@ -991,7 +991,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 			RawIndIterator it = rawIndBegin();
 			RawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				ULONG id = static_cast<ULONG>(it->info(fieldIdx) + 0.5);
+				ULONG id = toID(it->info(fieldIdx));
 				if (idMap.find(id) != idMap.end())
 					it->setMarked(true);
 			}
@@ -1708,7 +1708,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 			ConstRawIndIterator it = rawIndBegin();
 			ConstRawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				ULONG id = static_cast<ULONG>(it->info(fieldIdx) + 0.5);
+				ULONG id = toID(it->info(fieldIdx));
 				if (idMap.find(id) != idMap.end())
 					it->setMarked(true);
 			}
@@ -2529,7 +2529,7 @@ PyObject * Population::vars(vspID vsp)
 	}
 
 	DBG_ASSERT(static_cast<UINT>(vsp.subPop()) < numSubPop(),
-		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
+		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
 
 	if (!m_vars.hasVar("subPop"))
 		throw ValueError("Population local namespace does not have key 'subPop'. "
@@ -2563,7 +2563,7 @@ PyObject * Population::dict(int subPop)
 		return m_vars.dict();
 	else {
 		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
-			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
+			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
 
 		DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
 			"subPop statistics does not exist yet.");

@@ -40,7 +40,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	m_infoFields(infoFields), m_refCount(0)
 {
 	DBG_ASSERT(ploidy >= 1, ValueError,
-		"Ploidy must be >= 1. Given " + toStr(ploidy) );
+		"Ploidy must be >= 1. Given " + toStr(ploidy));
 
 	// default: one chromosome, one locus
 	// otherwise, Loci copies from loci
@@ -66,7 +66,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		ValueError, "Please specify a common set allele names or names for all loci.");
 
 	// if lociPos not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
-	if (m_lociPos.empty() ) {
+	if (m_lociPos.empty()) {
 		m_lociPos.resize(m_totNumLoci);
 		for (size_t i = 0; i < m_numLoci.size(); ++i)
 			for (size_t j = 0; j < m_numLoci[i]; j++)

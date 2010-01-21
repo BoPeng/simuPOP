@@ -864,7 +864,7 @@ bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
 		"Uninitialized Recombinator");
 
-	if (infoSize() == 1 && !noOutput() )
+	if (infoSize() == 1 && !noOutput())
 		m_debugOutput = &getOstream(pop.dict());
 	else
 		m_debugOutput = NULL;

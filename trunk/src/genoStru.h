@@ -301,7 +301,7 @@ public:
 	{
 		DBG_FAILIF(idx >= s_genoStruRepository.size(), IndexError,
 			"Index " + toStr(idx) + " to geno structure repository should be less than " +
-			toStr(s_genoStruRepository.size() ) );
+			toStr(s_genoStruRepository.size()) );
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 

@@ -149,7 +149,7 @@ ostream & operator<<(ostream & out, const pair<T1, T2> & pair)
 template<class T>
 ostream & operator<<(ostream & out, const vector<T> & vec)
 {
-	if (!vec.empty() ) {
+	if (!vec.empty()) {
 		typename vector<T>::const_iterator it = vec.begin();
 		out << *it;
 		for (++it; it != vec.end(); ++it)

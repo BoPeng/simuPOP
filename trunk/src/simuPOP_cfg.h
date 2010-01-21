@@ -69,6 +69,7 @@ using std::string;
 /// This is not the most effecient method, but it is convenient to use.
 #include "boost/lexical_cast.hpp"
 #define toStr(val) (boost::lexical_cast < string > (val))
+#define toID(val)  (static_cast<ULONG>((val) + 0.5))
 
 /// needed by the following typedefs
 #include <vector>

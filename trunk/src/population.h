@@ -526,7 +526,7 @@ public:
 	 */
 	Individual & individual(double idx, vspID subPop = vspID())
 	{
-		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
+		ULONG intIdx = toID(idx);
 
 		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
@@ -564,7 +564,7 @@ public:
 	 */
 	const Individual & individual(double idx, vspID subPop = vspID()) const
 	{
-		ULONG intIdx = static_cast<ULONG>(idx + 0.5);
+		ULONG intIdx = toID(idx);
 
 		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
@@ -1390,7 +1390,7 @@ public:
 	 */
 	PyObject * evaluate(const string & expr = string(), const string & stmts = string())
 	{
-		return Expression(expr, stmts, m_vars.dict() ).evaluate();
+		return Expression(expr, stmts, m_vars.dict()).evaluate();
 	}
 
 
@@ -1399,7 +1399,7 @@ public:
 	 */
 	void execute(const string & stmts = string())
 	{
-		Expression("", stmts, m_vars.dict() ).evaluate();
+		Expression("", stmts, m_vars.dict()).evaluate();
 	}
 
 
@@ -1557,7 +1557,7 @@ private:
 
 		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
 
-		if (m_popSize != m_inds.size() ) {
+		if (m_popSize != m_inds.size()) {
 			throw ValueError("Number of individuals does not match population size.\n"
 				             "Please use the same (binary, short or long) module to save and load files.");
 		}

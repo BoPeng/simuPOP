@@ -94,7 +94,7 @@ public:
 		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
 		if (it == m_idMap.end())
 			return 0;
-		return static_cast<ULONG>(it->second->info(m_fatherIdx) + 0.5);
+		return toID(it->second->info(m_fatherIdx));
 	}
 
 
@@ -107,7 +107,7 @@ public:
 		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
 		if (it == m_idMap.end())
 			return 0;
-		return static_cast<ULONG>(it->second->info(m_motherIdx) + 0.5);
+		return toID(it->second->info(m_motherIdx));
 	}
 
 

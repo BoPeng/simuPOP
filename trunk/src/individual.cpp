@@ -55,13 +55,13 @@ Individual & Individual::copyFrom(const Individual & rhs)
 
 bool Individual::operator==(const Individual & rhs) const
 {
-	if (genoStruIdx() != rhs.genoStruIdx() ) {
+	if (genoStruIdx() != rhs.genoStruIdx()) {
 		DBG_DO(DBG_POPULATION, cerr << "Geno stru different" << endl);
 		return false;
 	}
 
 	if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
-	    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
+	    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected)) {
 		DBG_DO(DBG_POPULATION, cerr << "Flags different: sex "
 			                        << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
 			                        << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
@@ -70,11 +70,11 @@ bool Individual::operator==(const Individual & rhs) const
 	}
 
 	for (UINT i = 0, iEnd = genoSize(); i < iEnd; ++i)
-		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) )
+		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 			return false;
 
 	for (UINT i = 0, iEnd = infoSize(); i < iEnd; ++i)
-		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i) ) {
+		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i)) {
 			DBG_DO(DBG_POPULATION, cerr << "Information field " << infoField(i) << " differ" << endl);
 			return false;
 		}
@@ -133,7 +133,7 @@ UINT Individual::allele(UINT idx, int p, int chrom) const
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() ));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<UINT>(p));
@@ -273,7 +273,7 @@ void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
 		CHECKRANGEPLOIDY(static_cast<UINT>(p));
 		CHECKRANGECHROM(static_cast<UINT>(chrom));
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom) ) = allele;
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 	}
 }
 
@@ -321,7 +321,7 @@ void Individual::setGenotype(const vectora & geno, const uintList & ply, const u
 
 void Individual::swap(Individual & ind, bool swapContent)
 {
-	if (genoStruIdx() != ind.genoStruIdx() )
+	if (genoStruIdx() != ind.genoStruIdx())
 		throw SystemError("Can only swap individuals with different geno structure.");
 
 	std::swap(m_infoPtr, ind.m_infoPtr);
