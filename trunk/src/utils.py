@@ -361,9 +361,9 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
             # genotype
             for loc in loci:
                 if genoCode is None:
-                    values.extend([ind.alleleChar(0, p) for p in range(ploidy)])
+                    values.extend([ind.alleleChar(loc, p) for p in range(ploidy)])
                 else:
-                    genotype = [ind.allele(0, p) for p in range(ploidy)]
+                    genotype = [ind.allele(loc, p) for p in range(ploidy)]
                     if isinstance(genoCode, dict):
                         code = genoCode[tuple(genotype)]
                     else:
