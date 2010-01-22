@@ -23325,6 +23325,127 @@ lstparams "caption={Turn on and off debug information during evolution.},label={
 \end_layout
 
 \begin_layout Section
+Import and export dataset in other formats
+\end_layout
+
+\begin_layout Standard
+simuPOP uses its own binary (yet portable) file format to load and save
+ populations because no standard file format can handle ancestral generations,
+ information fields and population variables.
+ However, it is often needed to create a simuPOP population using genotype
+ data from an external file in another format, and to save a simuPOP population
+ in another format so that it could be analyzed using other genetic analysis
+ software.
+\end_layout
+
+\begin_layout Standard
+Except for 
+\family typewriter
+utils.saveCSV
+\family default
+ which saves a population in comma separated format and does not aim at
+ any particular application, simuPOP does not provide any built-in function
+ to import and export files in other formats.
+ Instead, a number of utility modules are provided in the Import/Export
+ section of the simuPOP online cookbook (
+\family typewriter
+http://simupop.sourceforge.net/cookbook
+\family default
+).
+ These modules are maintained by the simuPOP community and it is expected
+ that support for more file formats will be added by users like you.
+\end_layout
+
+\begin_layout Standard
+Unless there are specific requirements in the order and labeling of individuals,
+ exporting a simuPOP population is usually straightforward.
+ Functions that are useful in such occasions include structural functions
+ 
+\family typewriter
+Population.numSubPop()
+\family default
+, 
+\family typewriter
+Population.subPopName(), Population.popSize()
+\family default
+ and 
+\family typewriter
+Population.subPopSizes()
+\family default
+, 
+\family typewriter
+and
+\family default
+ individual access functions 
+\family typewriter
+Population.individual()
+\family default
+ and 
+\family typewriter
+Population.individuals()
+\family default
+ and individual population access functions such as 
+\family typewriter
+Individual.allele()
+\family default
+ and 
+\family typewriter
+Individual.info()
+\family default
+.
+ Function 
+\family typewriter
+saveFSTAT
+\family default
+ in the cookbook module 
+\family typewriter
+fstatUtil
+\family default
+ or 
+\family typewriter
+saveCSV
+\family default
+ in module 
+\family typewriter
+simuPOP.utils
+\family default
+ are good examples you can follow.
+\end_layout
+
+\begin_layout Standard
+If you would like to import data from a file, you generally need to first
+ scan the file for information such as number and names of chromosomes,
+ loci, alleles, subpopulation, and individuals.
+ After you create a population without genotype information from these parameter
+s, you can scan the file for the second time and fill the population with
+ genotypes and other information.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "importData"
+
+\end_inset
+
+ demonstrates how to define a function to import from a file that is saved
+ by function 
+\family typewriter
+utils.saveCSV
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/importData.log"
+lstparams "caption={Import a population from another file format},label={importData}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Define your own operators *
 \end_layout
 
