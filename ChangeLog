@@ -12,6 +12,7 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
 		True/False value. using Tkinter based parameter input dialog (simuOpt.Params),
   - BUG: Fix a bug that crashes simuPOP when the recombination rate between
 	two loci are really small (e.g. 1e-17).
+  - BUG: Fix a bug in utils.saveCSV that outputs only the first allele.
 
   - NEW: Document base mating scheme MatingScheme() and allow it to be used explicitly.
   - NEW: Accept float numbers as input when a list of integers is required.
