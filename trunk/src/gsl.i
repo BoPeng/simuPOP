@@ -76,6 +76,71 @@ double gsl_ran_gamma_pdf (const double x, const double a, const double b)
     }
 }
 
+/* this function is copied from randist/binomial.c to avoid including
+ * more files. log1p is replaced by gsl_log1p to avoid a compiling program
+ *  caused by the order of inclusion file.
+ */
+extern double gsl_log1p (const double x);
+
+double
+gsl_ran_binomial_pdf (const unsigned int k, const double p,
+                      const unsigned int n)
+{
+  if (k > n)
+    {
+      return 0;
+    }
+  else
+    {
+      double P;
+
+      if (p == 0) 
+        {
+          P = (k == 0) ? 1 : 0;
+        }
+      else if (p == 1)
+        {
+          P = (k == n) ? 1 : 0;
+        }
+      else
+        {
+          double ln_Cnk = gsl_sf_lnchoose (n, k);
+          P = ln_Cnk + k * log (p) + (n - k) * gsl_log1p (-p);
+          P = exp (P);
+        }
+
+      return P;
+    }
+}
+
+double
+gsl_ran_beta_pdf (const double x, const double a, const double b)
+{
+  if (x < 0 || x > 1)
+    {
+      return 0 ;
+    }
+  else 
+    {
+      double p;
+
+      double gab = gsl_sf_lngamma (a + b);
+      double ga = gsl_sf_lngamma (a);
+      double gb = gsl_sf_lngamma (b);
+      
+      if (x == 0.0 || x == 1.0) 
+        {
+          p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
+        }
+      else
+        {
+          p = exp (gab - ga - gb + log(x) * (a - 1)  + gsl_log1p(-x) * (b - 1));
+        }
+
+      return p;
+    }
+}
+
 %}
 
 %init
@@ -106,3 +171,14 @@ extern double gsl_cdf_gamma_P(double x, double a, double b);
 extern double gsl_cdf_gamma_Q(double x, double a, double b); 
 extern double gsl_cdf_gamma_Pinv(double P, double a, double b); 
 extern double gsl_cdf_gamma_Qinv(double Q, double a, double b); 
+
+extern double gsl_cdf_binomial_P(unsigned int k, double p, unsigned int n); 
+extern double gsl_cdf_binomial_Q(unsigned int k, double p, unsigned int n); 
+/* This function is copied into this interface file to avoid inclusion of other
+   cdf functions. */
+/* extern double gsl_ran_binomial_pdf(unsigned int k, double p, unsigned int n); */
+
+extern double gsl_cdf_beta_P(double x, double a, double b); 
+extern double gsl_cdf_beta_Q(double x, double a, double b); 
+extern double gsl_cdf_beta_Pinv(double P, double a, double b); 
+extern double gsl_cdf_beta_Qinv(double Q, double a, double b); 
