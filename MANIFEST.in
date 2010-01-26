@@ -133,6 +133,7 @@ include gsl/randist/gauss.c
 include gsl/randist/gausszig.c
 include gsl/randist/gamma.c
 include gsl/randist/beta.c
+include gsl/specfunc/beta.c
 include gsl/specfunc/zeta.c
 include gsl/specfunc/gamma.c
 include gsl/specfunc/log.c
@@ -196,6 +197,10 @@ include gsl/rng/knuthran2.c
 include gsl/rng/ranmar.c
 include gsl/rng/ranlux.c
 include gsl/rng/knuthran2002.c
+include gsl/cdf/beta.c
+include gsl/cdf/betainv.c
+include gsl/cdf/beta_inc.c
+include gsl/cdf/binomial.c
 include gsl/cdf/gauss.c
 include gsl/cdf/gaussinv.c
 include gsl/cdf/exponential.c

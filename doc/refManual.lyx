@@ -2228,6 +2228,60 @@ gsl_cdf_gamma_Pinv(P, a, b)
 gsl_cdf_gamma_Qinv(Q, a, b)
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+gsl_ran_gamma_pdf(x, a, b)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_beta_P(x, a, b) 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_beta_Q(x, a, b) 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_beta_Pinv(P, a, b) 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_beta_Qinv(Q, a, b)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_ran_beta_pdf(x, a, b)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_binomial_P(k, p, n)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_binomial_Q(k, p, n)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_ran_binomial_pdf(k, p, n)
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex

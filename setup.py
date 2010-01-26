@@ -283,6 +283,7 @@ GSL_FILES = [
     'gsl/sys/invhyp.c',
     'gsl/sys/expm1.c',
     'gsl/complex/math.c',
+    'gsl/specfunc/beta.c',
     'gsl/specfunc/elementary.c',
     'gsl/specfunc/erfc.c',
     'gsl/specfunc/exp.c',
@@ -293,13 +294,18 @@ GSL_FILES = [
     'gsl/specfunc/gamma_inc.c',
     'gsl/specfunc/trig.c',
     'gsl/specfunc/zeta.c',
+    'gsl/cdf/beta.c',
+    'gsl/cdf/betainv.c',
+    'gsl/cdf/binomial.c',
     'gsl/cdf/gauss.c',
     'gsl/cdf/gaussinv.c',
     'gsl/cdf/exponential.c',
     'gsl/cdf/exponentialinv.c',
-    # function gsl_ran_gamma_pdf is copied to gsl.i to avoid subsequent
-    # inclusion of RNG related functions.
+    # pdf functions for gamma, binomial and beta distributions are copied to gsl.i
+    # to avoid subsequent inclusion of RNG related functions.
     #'gsl/randist/gamma.c',
+    #'gsl/randist/binomial.c',
+    #'gsl/randist/beta.c',
     'gsl/cdf/gamma.c',
     'gsl/cdf/gammainv.c',
     'gsl/cdf/chisq.c',
@@ -498,7 +504,7 @@ if __name__ == '__main__':
     EXT_MODULES = [
         Extension('simuPOP._gsl',
             sources = GSL_FILES + ['src/gsl_wrap.c'],
-            include_dirs = ['.'],
+            include_dirs = ['gsl', 'gsl/specfunc', '.'],
         )
     ]
     for modu in MODULES:
