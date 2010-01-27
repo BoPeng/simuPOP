@@ -2192,10 +2192,11 @@ Details:
 
     Create a conditional operator that will apply operators ifOps if
     condition cond is met and elseOps otherwise. If a Python
-    expression is given to parameter cond, the expression will be
-    evalulated in each population's local namespace when this operator
-    is applied. If a fixed value is given, the condition when the
-    operator is created always holds. The applicability of ifOps and
+    expression (a string) is given to parameter cond, the expression
+    will be evalulated in each population's local namespace when this
+    operator is applied. Otherwise, parameter cond will be treated as
+    a fixed condition (converted to True or False) upon which one set
+    of operators is always applied. The applicability of ifOps and
     elseOps are controlled by parameters begin, end, step, at and rep
     of both the IfElse operator and individual operators but ifOps and
     elseOps opeartors does not support negative indexes for replicate
