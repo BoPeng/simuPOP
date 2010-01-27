@@ -944,10 +944,11 @@ class TrajectorySimulator:
         # _Nt() expects parameter gen
         if callable(self.N):
             nt = self.N(gen)
+            # the return value of a demographic function sometimes is not integer.
             if type(nt) in [type(1), type(1L)]:
-                return [nt]
+                return [int(nt)]
             else:
-                return nt
+                return int(nt)
         else:
             # a constant list
             return self.N

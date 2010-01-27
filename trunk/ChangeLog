@@ -20,6 +20,8 @@ version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add parameter version to function simuOpt.setOptions.
   - NEW: Add pdf/cdf for binomial and beta distributions to module simuPOP.gsl.
   - NEW: Send a proper error message when condition of an IfElse operator is failed to evaluate.
+  - NEW: Allow trajectory simulation program to handle float population size because float
+		population size is accepted in simuPOP core.
 
   - EXPERIMENTAL: Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
   - EXPERIMENTAL: Add a mating scheme PedigreeMating.
