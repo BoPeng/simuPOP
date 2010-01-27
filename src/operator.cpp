@@ -365,7 +365,7 @@ IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_cond(), m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
-	if (PyString_Check(cond) && (PyString_Size(cond) != 0))
+	if (PyString_Check(cond))
 		const_cast<IfElse *>(this)->m_cond.setExpr(PyString_AsString(cond));
 	else {
 		bool c;
