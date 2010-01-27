@@ -4,29 +4,35 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
 version 1.0.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
-  - BUG: Fix a typo that breaks the dryrun parameter of population.evolve().
-  - BUG: Fix a bug in population.recodeAlleles when a single locus is specified.
-  - BUG: Fix a memory leak bug when modifying an existing genotype structure.
-  - BUG: Fix parameter revision of function simuOpt.setOptions.
-  - BUG: Fix a bug for getting integer 'chooseFrom' values and the setting of default
+
+Bugs:
+  - Fix a typo that breaks the dryrun parameter of population.evolve().
+  - Fix a bug in population.recodeAlleles when a single locus is specified.
+  - Fix a memory leak bug when modifying an existing genotype structure.
+  - Fix parameter revision of function simuOpt.setOptions.
+  - Fix a bug for getting integer 'chooseFrom' values and the setting of default
 		True/False value. using Tkinter based parameter input dialog (simuOpt.Params),
-  - BUG: Fix a bug that crashes simuPOP when the recombination rate between
+  - Fix a bug that crashes simuPOP when the recombination rate between
 	    two loci are really small (e.g. 1e-17).
-  - BUG: Fix a bug in utils.saveCSV that outputs only the first allele.
+  - Fix a bug in utils.saveCSV that outputs only the first allele.
 
-  - NEW: Document base mating scheme MatingScheme() and allow it to be used explicitly.
-  - NEW: Accept float numbers as input when a list of integers is required.
-  - NEW: simuPOP.utils.migrSteppingStoneRates returns [[1]] when n=1 (instead of raising an Error).
-  - NEW: Add parameter version to function simuOpt.setOptions.
-  - NEW: Add pdf/cdf for binomial and beta distributions to module simuPOP.gsl.
-  - NEW: Send a proper error message when condition of an IfElse operator is failed to evaluate.
-  - NEW: Allow trajectory simulation program to handle float population size because float
-		population size is accepted in simuPOP core.
-
-  - EXPERIMENTAL: Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
-  - EXPERIMENTAL: Add a mating scheme PedigreeMating.
-  - EXPERIMENTAL: Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through
+New feature:
+  - Add parameter version to function simuOpt.setOptions.
+  - Add pdf and cdf functions for binomial and beta distributions to module simuPOP.gsl.
+  - Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through
 		specific or all virtual subpopulation of specific or all subpopulations.
+  - (experimental) Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
+  - (experimental) Add a mating scheme PedigreeMating.
+
+New features (minor):
+  - Document base mating scheme MatingScheme() and allow it to be used explicitly.
+  - Accept float numbers as input when a list of integers is required.
+  - simuPOP.utils.migrSteppingStoneRates returns [[1]] when n=1 (instead of raising an Error).
+  - Send a proper error message when condition of an IfElse operator is failed to evaluate.
+  - Allow trajectory simulation program to handle float population size because float
+		population size is accepted in simuPOP core.
+  - Logging more useful information for the simulation of allele frequency trajectory.
+
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
   - BUG: Fix a bug in simuOpt.valueListOf when a list of values is passed.
