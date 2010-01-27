@@ -948,7 +948,7 @@ class TrajectorySimulator:
             if type(nt) in [type(1), type(1L)]:
                 return [int(nt)]
             else:
-                return int(nt)
+                return [int(x) for x in nt]
         else:
             # a constant list
             return self.N
@@ -1129,8 +1129,9 @@ class TrajectorySimulator:
         ``endFreq`` at generation ``endGen``. During the evolution, multiple
         subpopulations can be merged into one, and one population can be split
         into several subpopulations. The number of subpopulation is determined
-        by the demographic function. The function raises an exception if the 
-        simulated Trajectory does not fall into ``destFeq``.
+        by the demographic function. The function returns the ending allele
+        frequency if the simulated Trajectory does not fall into ``destFeq``,
+        and a ``Trajectory`` object otherwise.
         '''
         # initialize a trajectory
         # freq is assumed to be at the beginning of the beginGen.
@@ -1185,8 +1186,8 @@ class TrajectorySimulator:
             #
             assert len(endingXt) == len(Nt)
             # set frequency at the end of this generation
-            if self.logger is not None:
-                self.logger.debug('Gen=%d, xt=%s'  % (gen, endingXt))           
+            #if self.logger:
+            #    self.logger.debug('Gen=%d, xt=%s'  % (gen, endingXt))           
             xt._setFreq(endingXt, gen)
             # and now we go to the next generation...
         # not we have a trajectory... is it valid?
@@ -1198,9 +1199,9 @@ class TrajectorySimulator:
                 for sp in range(len(Nt)):
                     if freq[sp][loc] < endFreq[sp * self.nLoci + loc][0] or \
                         freq[sp][loc] > endFreq[sp * self.nLoci + loc][1]:
-                        if self.logger is not None:
-                            self.logger.info('Forward Trajectory restarted, hitting allele requency %s' % freq)
-                        return None
+                        if self.logger:
+                            self.logger.debug('Forward Trajectory restarted, hitting allele requency %s' % freq)
+                        return freq
             # case 2: combined allele frequency
             else:
                 allFreq = 0
@@ -1208,13 +1209,27 @@ class TrajectorySimulator:
                     allFreq += freq[sp][loc] * Nt[sp]
                 allFreq /= sum(Nt)
                 if allFreq < endFreq[loc][0] or allFreq > endFreq[loc][1]:
-                    if self.logger is not None:
-                        self.logger.info('Forward Trajectory restarted, hitting allele frequency %s (combined %.3f)' \
+                    if self.logger:
+                        self.logger.debug('Forward Trajectory restarted, hitting allele frequency %s (combined %.3f)' \
                             % (freq, allFreq))
-                    return None
-        if self.logger is not None:
+                    return allFreq
+        if self.logger:
             self.logger.info('Forward Trajectory succeed, hitting allele frequency %s' % freq)
         return xt
+
+    def _avgOfNestedList(self, value):
+        '''Take average of each element of a nested list of the same shape. For
+        example, _avgOfNestedList([[1,[2,3]], [2,[3,4]]]) would return
+        [1.5, [2.5, 3.5]]. This is used to return summary statistics of failed
+        attempts.
+        '''
+        if type(value[0]) in [type(()), type([])]:
+            avg = []
+            for i in range(len(value[0])):
+                avg.append(self._avgOfNestedList([val[i] for val in value]))
+        else:
+            return float(sum(value)) / len(value)
+        return avg
 
     def _simuBackward(self, endGen, freq, minMutAge, maxMutAge):
         '''Simulates a trajectory backward from allele frequency ``freq`` at
@@ -1271,7 +1286,7 @@ class TrajectorySimulator:
             #
             assert len(beginXt) == len(Nt)
             # set frequency at the end of this generation
-            if self.logger is not None:
+            if self.logger:
                 self.logger.debug('Gen=%d, xt=%s'  % (gen - 1, beginXt)) 
             #
             xt._setFreq(beginXt, gen - 1)
@@ -1291,30 +1306,30 @@ class TrajectorySimulator:
                         # success
                         doneSP[sp] = True
                         if endGen - gen < minMutAge:
-                            if self.logger is not None:
-                                self.logger.info('Backward failed - Trajectory too short. gen = %d subPop=%d locus = %d' \
+                            if self.logger:
+                                self.logger.debug('Backward failed - Trajectory too short. gen = %d subPop=%d locus = %d' \
                                     % (gen, sp, loc))
-                            return None
-                        if self.logger is not None:
-                            self.logger.info('Backward success: gen = %d subPop=%d locus = %d' % (gen, sp, loc))
+                            return (gen, beginXt)
+                        if self.logger:
+                            self.logger.debug('Backward success: gen = %d subPop=%d locus = %d' % (gen, sp, loc))
                         break
                     elif beginXt[sp][loc] == 1: # fixed
-                        if self.logger is not None:
-                            self.logger.info('Backward failed - allele gets fixed. gen = %d subPop=%d locus = %d' \
+                        if self.logger:
+                            self.logger.debug('Backward failed - allele gets fixed. gen = %d subPop=%d locus = %d' \
                                     % (gen, sp, loc))
-                        return None
+                        return (gen, beginXt)
                 if False not in doneSP:
                     done[loc] = True
             if False not in done:
                 # success
-                if self.logger is not None:
+                if self.logger:
                     self.logger.info('Backward Trajectory succeded at gen = %d' % gen)
                 return xt
             # go back gen == 0 and not successful, or if the Trajectory is too long
             if gen == 0 or gen + self.maxMutAge < endGen:
-                if self.logger is not None:
-                    self.logger.info('Backward failed - Trajectory too long. gen = %d' % gen)
-                return None
+                if self.logger:
+                    self.logger.debug('Backward failed - Trajectory too long. gen = %d' % gen)
+                return (gen, beginXt)
             
     def simuForward(self, beginGen, endGen, beginFreq, endFreq, maxAttempts=10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
@@ -1390,12 +1405,21 @@ class TrajectorySimulator:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
             if rng[0] >= rng[1]:
                 raise exceptions.ValueError('Invalid frequency range %s' % rng)
+        failedFreq = []
         for failedCount in range(maxAttempts):
             xt = self._simuForward(freq, endFreq, beginGen, endGen)
-            if xt is not None:
+            if isinstance(xt, Trajectory):
+                if self.logger:
+                    self.logger.info('Simulation succeed after %d attempts with average ending frequencies %s.' \
+                        % (failedCount, self._avgOfNestedList(failedFreq)))
                 return xt
-        if self.logger is not None:
-            self.logger.info('Simulation failed after %d attempts' % failedCount)
+            else:
+                failedFreq.append(xt)
+        if self.logger:
+            self.logger.info('Simulation failed after %d attempts with ending frequencies:' % failedCount)
+            for freq in failedFreq:
+                self.logger.info('    %s' % freq)
+            self.logger.info('With average frequencies %s' % self._avgOfNestedList(failedFreq))
         return None
     
     def simuBackward(self, endGen, endFreq, minMutAge=None, maxMutAge=None,
@@ -1458,12 +1482,21 @@ class TrajectorySimulator:
         else:
             raise exceptions.ValueError("Invalid ending frequency list")
         #
+        failedFreq = []
         for failedCount in range(maxAttempts):
             xt = self._simuBackward(endGen, freq, minMutAge, maxMutAge)
-            if xt is not None:
+            if isinstance(xt, Trajectory):
+                if self.logger:
+                    self.logger.info('Simulation succeeded after %d attempts with average generation and frequencies' \
+                        % (failedCount, self._avgOfNestedList(failedFreq)))
                 return xt
-        if self.logger is not None:
-            self.logger.info('Simulation failed after %d attempts' % failedCount)
+            else:
+                failedFreq.append(xt)
+        if self.logger:
+            self.logger.info('Simulation failed after %d attempts, with generation and frequency' % failedCount)
+            for freq in failedFreq:
+                self.logger.info('    %s' % freq)
+            self.logger.info('With average starting generation and frequencies %s' % self._avgOfNestedList(failedFreq))
         return None
 
 
@@ -1477,11 +1510,15 @@ def simulateForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1,
     into specified ranges (*endFreq*). ``None`` will be returned if no valid
     Trajectory is simulated after ``maxAttempts`` attempts. Please refer to
     class ``Trajectory``, ``TrajectorySimulator`` and their member functions
-    for more details about allowed input for these parameters.
+    for more details about allowed input for these parameters. If a *logger*
+    object is given, it will send detailed debug information at ``DEBUG``
+    level and ending allele frequencies at the ``INFO`` level. The latter
+    can be used to adjust your fitness model and/or ending allele frequency
+    if a trajectory is difficult to obtain because of parameter mismatch.
     '''
     return TrajectorySimulator(N, nLoci, fitness, logger).simuForward(
         beginGen, endGen, beginFreq, endFreq, maxAttempts)
-    
+
 def simulateBackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
         minMutAge=None, maxMutAge=None, maxAttempts=1000, logger=None):
     '''Given a demographic model (*N*) and the fitness of genotype at one or
@@ -1492,7 +1529,11 @@ def simulateBackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
     ``maxMutAge`` (if specified). ``None`` will be returned if no valid
     Trajectory is simulated after ``maxAttempts`` attempts. Please refer to
     class ``Trajectory``, ``TrajectorySimulator`` and their member functions
-    for more details about allowed input for these parameters.
+    for more details about allowed input for these parameters. If a *logger*
+    object is given, it will send detailed debug information at ``DEBUG``
+    level and ending generation and frequency at the ``INFO`` level. The latter
+    can be used to adjust your fitness model and/or ending allele frequency
+    if a trajectory is difficult to obtain because of parameter mismatch.
     '''
     return TrajectorySimulator(N, nLoci, fitness, logger).simuBackward(
         endGen, endFreq, minMutAge, maxMutAge, maxAttempts)
