@@ -40,6 +40,20 @@ class TestIfElseOperator(unittest.TestCase):
         )
         self.assertEqual(pop.dvars().gen, 1000)
 
+    def testIfElseConstantExpre(self):
+        'Testing operator IfElse with constant expression'
+        def evolveGen(cond):
+            pop = Population(100, loci=[2])
+            return pop.evolve(
+                postOps = IfElse(cond, NoneOp(), TerminateIf("True")),
+                gen = 10)
+        self.assertEqual(evolveGen(''), 1)
+        self.assertEqual(evolveGen([]), 1)
+        self.assertEqual(evolveGen(False), 1)
+        self.assertEqual(evolveGen(True), 10)
+        self.assertEqual(evolveGen('False'), 1)
+        self.assertEqual(evolveGen('True'), 10)
+
     def testIfElseOperators(self):
         'Testing opeartor IfElse with multiple operators'
         simu = Simulator(Population(1000, loci=[2]))
