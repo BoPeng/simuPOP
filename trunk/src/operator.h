@@ -512,13 +512,14 @@ class IfElse : public BaseOperator
 public:
 	/** Create a conditional operator that will apply operators \e ifOps if
 	 *  condition \e cond is met and \e elseOps otherwise. If a Python
-	 *  expression is given to parameter \e cond, the expression will be
-	 *  evalulated in each population's local namespace when this operator
-	 *  is applied. If a fixed value is given, the condition when the operator
-	 *  is created always holds. The applicability of \e ifOps and \e elseOps
-	 *  are controlled by parameters \e begin, \e end, \e step, \e at and
-	 *  \e rep of both the \c IfElse operator and individual operators but
-	 *  \e ifOps and \e elseOps opeartors does not support negative indexes
+	 *  expression (a non-empty string) is given to parameter \e cond, the
+	 *  expression will be evalulated in each population's local namespace when
+	 *  this operator is applied. Otherwise, parameter \e cond will be treated
+	 *  as a fixed condition (converted to \c True or \c False) upon which one
+	 *  set of operators is always applied. The applicability of \e ifOps and
+	 *  \e elseOps are controlled by parameters \e begin, \e end, \e step,
+	 *  \e at and \e rep of both the \c IfElse operator and individual operators
+	 *  but \e ifOps and \e elseOps opeartors does not support negative indexes
 	 *  for replicate and generation numbers.
 	 */
 	IfElse(PyObject * cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
