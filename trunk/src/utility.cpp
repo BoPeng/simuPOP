@@ -608,7 +608,7 @@ intList::intList(PyObject * obj) : m_elems(), m_allAvail(false)
 // utility functions: python => C++ conversion
 void PyObj_As_Bool(PyObject * obj, bool & val)
 {
-	val = PyObject_IsTrue(obj);
+	val = PyObject_IsTrue(obj) == 1;
 }
 
 
@@ -1751,7 +1751,7 @@ PyObject * Expression::evaluate() const
 				PyErr_Clear();
 			}
 #endif
-			throw RuntimeError("Evalulation of statements failed");
+			throw RuntimeError("Evalulation of statements '" + m_stmtsString + "' failed");
 		} else {
 			Py_DECREF(res);
 			res = NULL;
@@ -1768,7 +1768,7 @@ PyObject * Expression::evaluate() const
 				PyErr_Clear();
 			}
 #endif
-			throw RuntimeError("Evalulation of expression failed");
+			throw RuntimeError("Evalulation of expression '" + m_exprString + "' failed");
 		}
 	}
 

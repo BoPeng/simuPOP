@@ -53,6 +53,7 @@ class TestIfElseOperator(unittest.TestCase):
         self.assertEqual(evolveGen(True), 10)
         self.assertEqual(evolveGen('False'), 1)
         self.assertEqual(evolveGen('True'), 10)
+        self.assertRaises(exceptions.RuntimeError, evolveGen, 'nonsense')
 
     def testIfElseOperators(self):
         'Testing opeartor IfElse with multiple operators'
