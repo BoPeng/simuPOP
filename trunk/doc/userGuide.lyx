@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -17513,6 +17513,227 @@ If performance becomes a problem, you might want to have a look at the source
 \end_layout
 
 \begin_layout Section
+Conditional operators
+\end_layout
+
+\begin_layout Subsection
+Conditional operator (operator 
+\family typewriter
+IfElse
+\family default
+) *
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+IfElse
+\family default
+ provides a simple way to conditionally apply an operator.
+ The condition can be a fixed condition or a expression (a string) that
+ will be evaluated in a population's local namespace when it is applied
+ to the population.
+\end_layout
+
+\begin_layout Standard
+The first case is used to control the execution of certain operators depending
+ on user input.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "IfElseFixed"
+
+\end_inset
+
+ determines whether or not some outputs should be given depending on a variable
+ 
+\family typewriter
+verbose
+\family default
+.
+ Note that the applicability of the conditional operators are determined
+ by the 
+\family typewriter
+IfElse
+\family default
+ operator and individual opearators.
+ That is to say, the parameters 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+at
+\family default
+, and 
+\family typewriter
+reps
+\family default
+ of operators in 
+\family typewriter
+ifOps
+\family default
+ and 
+\family typewriter
+elseOps
+\family default
+ are only honored when operator 
+\family typewriter
+IfElse
+\family default
+ is applied.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/IfElseFixed.log"
+lstparams "caption={A conditional opeartor with fixed condition},label={IfElseFixed}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When a string is specified, it will be considered as an expression and be
+ evaluated in a population's namespace.
+ The return value will be used to determine if an operator should be executed.
+ For example, you can re-introduce a mutant if it gets lost in the population,
+ output a warning when certain condition is met, or record the occurance
+ of certain events in a population.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "IfElse"
+
+\end_inset
+
+ records the number of generations the frequency of an allele goes below
+ 0.4 and beyong 0.6 before it gets lost or fixed in the population.
+ Note that a list of else-operators can also be executed when the condition
+ is not met.
+ If more complicated logic is involved, a Python operator (
+\family typewriter
+PyOperator
+\family default
+) should be used.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/IfElse.log"
+lstparams "caption={A conditional opeartor with dynamic condition},label={IfElse}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conditionally terminate an evolutionary process (operator 
+\family typewriter
+TerminateIf
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator TerminateIf has been described and used in several examples such
+ as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simuGen"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "expression"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "IfElse"
+
+\end_inset
+
+.
+ This operator accept an Python expression and terminate the evolution of
+ the population being applied if the expression is evaluated to be 
+\family typewriter
+True
+\family default
+.
+ This operator is well suited for situations where the number of generations
+ to evolve cannot be determined in advance.
+\end_layout
+
+\begin_layout Standard
+If a 
+\family typewriter
+TerminateIf
+\family default
+ operator is applied to the offspring generation (post-mating, default),
+ the evolutionary cycle is considered to be completed.
+ If the evolution is terminated before mating, the evolutionary cycle is
+ condered to be imcomplete.
+ Such a difference can be important if the number of generations that have
+ been involved is important for your analysis.
+\end_layout
+
+\begin_layout Standard
+A less-known feature of operator 
+\family typewriter
+TerminateIf
+\family default
+ is its ability to terminate the evolution of all replicates, using parameter
+ 
+\family typewriter
+stopAll=True
+\family default
+.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "TerminateIf"
+
+\end_inset
+
+ terminates the evolution of all populations when one of the populations
+ gets fixed.
+ The return value of 
+\family typewriter
+simu.evolve
+\family default
+ shows that some populations have evolved one generation less than the populatio
+n being fixed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/TerminateIf.log"
+lstparams "caption={Terminate the evolution of all populations in a simulator},label={TerminateIf}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Miscellaneous operators
 \end_layout
 
@@ -17766,220 +17987,6 @@ snapshot_5_20.pop
 LatexCommand lstinputlisting
 filename "log/SavePopulation.log"
 lstparams "caption={Save snapshots of an evolving population},label={SavePopulation}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Conditional operator (operator 
-\family typewriter
-IfElse
-\family default
-) *
-\end_layout
-
-\begin_layout Standard
-Operator 
-\family typewriter
-IfElse
-\family default
- provides a simple way to conditionally apply an operator.
- The condition can be a fixed condition or a expression that will be evaluated
- in a population's local namespace when it is applied to the population.
-\end_layout
-
-\begin_layout Standard
-The first case is used to control the execution of certain operators depending
- on user input.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "IfElseFixed"
-
-\end_inset
-
- determines whether or not some outputs should be given depending on a variable
- 
-\family typewriter
-verbose
-\family default
-.
- Note that the applicability of the conditional operators are determined
- by the 
-\family typewriter
-IfElse
-\family default
- operator and Individual opearators.
- That is to say, the parameters 
-\family typewriter
-begin
-\family default
-, 
-\family typewriter
-step
-\family default
-, 
-\family typewriter
-end
-\family default
-, 
-\family typewriter
-at
-\family default
-, and 
-\family typewriter
-reps
-\family default
- of operators in 
-\family typewriter
-ifOps
-\family default
- and 
-\family typewriter
-elseOps
-\family default
- are only honored when operator 
-\family typewriter
-IfElse
-\family default
- is applied.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/IfElseFixed.log"
-lstparams "caption={A conditional opeartor with fixed condition},label={IfElseFixed}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The expression form of this operator is more useful.
- For example, you can re-introduce a mutant if it gets lost in the population,
- output a warning when certain condition is met, or record the occurance
- of certain events in a population.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "IfElse"
-
-\end_inset
-
- records the number of generations the frequency of an allele goes below
- 0.4 and beyong 0.6 before it gets lost or fixed in the population.
- Note that an else-operator can also be executed when the condition is not
- met.
- If more complicated logic is involved, a Python operator (
-\family typewriter
-PyOperator
-\family default
-) should be used.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/IfElse.log"
-lstparams "caption={A conditional opeartor with dynamic condition},label={IfElse}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Conditionally terminate an evolutionary process (operator 
-\family typewriter
-TerminateIf
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-Operator TerminateIf has been described and used in several examples such
- as Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "simuGen"
-
-\end_inset
-
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "expression"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "IfElse"
-
-\end_inset
-
-.
- This operator accept an Python expression and terminate the evolution of
- the population being applied if the expression is evaluated to be 
-\family typewriter
-True
-\family default
-.
- This operator is well suited for situations where the number of generations
- to evolve cannot be determined in advance.
-\end_layout
-
-\begin_layout Standard
-If a 
-\family typewriter
-TerminateIf
-\family default
- operator is applied to the offspring generation (post-mating, default),
- the evolutionary cycle is considered to be completed.
- If the evolution is terminated before mating, the evolutionary cycle is
- condered to be imcomplete.
- Such a difference can be important if the number of generations that have
- been involved is important for your analysis.
-\end_layout
-
-\begin_layout Standard
-A less-known feature of operator 
-\family typewriter
-TerminateIf
-\family default
- is its ability to terminate the evolution of all replicates, using parameter
- 
-\family typewriter
-stopAll=True
-\family default
-.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "TerminateIf"
-
-\end_inset
-
- terminates the evolution of all populations when one of the populations
- gets fixed.
- The return value of 
-\family typewriter
-simu.evolve
-\family default
- shows that some populations have evolved one generation less than the populatio
-n being fixed.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/TerminateIf.log"
-lstparams "caption={Terminate the evolution of all populations in a simulator},label={TerminateIf}"
 
 \end_inset
 

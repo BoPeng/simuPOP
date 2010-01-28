@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1219,26 +1219,6 @@ PySelectorRef
 \end_layout
 
 \begin_layout Section
-Statistics Calculation
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-StatRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Tagging operators
 \end_layout
 
@@ -1294,12 +1274,39 @@ PyTaggerRef
 \end_layout
 
 \begin_layout Section
-Terminator
+Statistics Calculation
 \end_layout
 
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+StatRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conditional operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IfElseRef
+\end_layout
 
 \begin_layout Plain Layout
 
@@ -1360,13 +1367,6 @@ DumperRef
 
 \backslash
 SavePopulationRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-IfElseRef
 \end_layout
 
 \begin_layout Plain Layout
