@@ -228,7 +228,7 @@ or non-circular
 
 
 def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
-        subPops=ALL_AVAIL, genoCode=None,
+        subPops=ALL_AVAIL, genoCode=None, infoCode=None,
         sexCode={MALE: 'M', FEMALE: 'F'},
         affectionCode={True: 'A', False: 'U'}, sep=', '):
     '''Save a simuPOP population ``pop`` in csv format. Columns of this
@@ -266,6 +266,10 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     subPops
         A list of (virtual) subpopulations. If specified, only individuals
         from these subpopulations will be outputed.
+
+    infoCode
+        A format string that is used to format all information fields. If
+        unspecified, ``str(value)`` will be used for each information field.
 
     genoCode
         How to output genotype at specified loci. Acceptable values include
@@ -336,22 +340,28 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         except:
             colPerGenotype = 1
     # header
-    names = [x for x in infoFields]
-    if sexCode is not None:
-        names.append('sex')
-    if affectionCode is not None:
-        names.append('aff')
-    if colPerGenotype == 1:
-        names.extend([pop.locusName(loc) for loc in loci])
-    elif colPerGenotype > 1:
-        for loc in loci:
-            names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
-    # output header
-    print >> out, sep.join(names)
+    if header:
+        names = [x for x in infoFields]
+        if sexCode is not None:
+            names.append('sex')
+        if affectionCode is not None:
+            names.append('aff')
+        if colPerGenotype == 1:
+            names.extend([pop.locusName(loc) for loc in loci])
+        elif colPerGenotype > 1:
+            for loc in loci:
+                names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+        # output header
+        print >> out, sep.join(names)
     for subPop in subPops:
         for ind in pop.individuals(subPop):
             # information fields
-            values = [str(ind.info(x)) for x in infoFields]
+            if infoCode is None:
+                values = [str(ind.info(x)) for x in infoFields]
+            elif type(infoCode) == type(''):
+                values = [infoCode % tuple([ind.info(x) for x in infoFields])]
+            else:
+                raise ValueError('Parameter infoCode can only be None or a format string.')
             # sex
             if sexCode is not None:
                 values.append(str(sexCode[ind.sex()]))
@@ -1223,6 +1233,8 @@ class TrajectorySimulator:
         [1.5, [2.5, 3.5]]. This is used to return summary statistics of failed
         attempts.
         '''
+        if len(value) == 0:
+            return []
         if type(value[0]) in [type(()), type([])]:
             avg = []
             for i in range(len(value[0])):
@@ -1403,8 +1415,8 @@ class TrajectorySimulator:
         for rng in endFreq:
             if len(rng) != 2:
                 raise exceptions.ValueError('Please specify frequency range of each marker')
-            if rng[0] >= rng[1]:
-                raise exceptions.ValueError('Invalid frequency range %s' % rng)
+            if rng[0] > rng[1]:
+                raise exceptions.ValueError('Invalid frequency range %f - %f' % (rng[0], rng[1]))
         failedFreq = []
         for failedCount in range(maxAttempts):
             xt = self._simuForward(freq, endFreq, beginGen, endGen)
