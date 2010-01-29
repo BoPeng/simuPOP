@@ -4051,11 +4051,11 @@ sim.maPenetrance(pop, loci=0, penetrance=(0.2, 0.2, 0.4))
 # no filename so output to standard output
 saveCSV(pop, infoFields='age')
 # change affection code and how to output genotype
-saveCSV(pop, infoFields='age', affectionCode={True: 1, False: 2},
-    genoCode={(0,0):'AA', (0,1):'AB', (1,0):'AB', (1,1):'BB'})
+saveCSV(pop, infoFields='age', affectionFormatter={True: 1, False: 2},
+    genoFormatter={(0,0):'AA', (0,1):'AB', (1,0):'AB', (1,1):'BB'})
 # save to a file
-saveCSV(pop, filename='pop.csv', infoFields='age', affectionCode={True: 1, False: 2},
-    genoCode=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')
+saveCSV(pop, filename='pop.csv', infoFields='age', affectionFormatter={True: 1, False: 2},
+    genoFormatter=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')
 print open('pop.csv').read()
 #begin_ignore
 import os
@@ -5113,8 +5113,8 @@ pop = sim.Population(size=[10], loci=[3, 2], lociNames=['rs1', 'rs2', 'rs3', 'rs
 sim.initSex(pop)
 sim.initGenotype(pop, freq=[0.5, 0.5])
 # output sex but not affection status.
-saveCSV(pop, filename='sample.csv', affectionCode=None,
-    sexCode={sim.MALE:1, sim.FEMALE:2})
+saveCSV(pop, filename='sample.csv', affectionFormatter=None,
+    sexFormatter={sim.MALE:1, sim.FEMALE:2})
 # have a look at the file
 print open('sample.csv').read()
 pop1 = importData('sample.csv')
