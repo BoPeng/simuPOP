@@ -14,7 +14,7 @@ Bugs:
 		True/False value. using Tkinter based parameter input dialog (simuOpt.Params),
   - Fix a bug that crashes simuPOP when the recombination rate between
 	    two loci are really small (e.g. 1e-17).
-  - Fix a bug in utils.saveCSV that outputs only the first allele.
+  - Fix the header parameter and a bug in utils.saveCSV that outputs only the first allele.
 
 New feature:
   - Add parameter version to function simuOpt.setOptions.
@@ -32,6 +32,7 @@ New features (minor):
   - Allow trajectory simulation program to handle float population size because float
 		population size is accepted in simuPOP core.
   - Logging more useful information for the simulation of allele frequency trajectory.
+  - Add parameter infoCode to function utils.saveCSV.
 
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
