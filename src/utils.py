@@ -47,11 +47,12 @@ __all__ = [
     'simulateForwardTrajectory',
 ]
 
-import exceptions, operator, types, os, sys, re
+import exceptions
+import sys
 
 from simuOpt import simuOptions
 
-from simuPOP import MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL
+from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL
 
 def viewVars(var, gui=None):
     '''
@@ -293,12 +294,17 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     ``affectionFormatter`` but can still be used.
     '''
     # handle obsolete parameters affectionCode, sexCode and genoCode
-    # DBG_OBSOLETE should cause a warning here.
     if kwargs.has_key('genoCode'):
+        if moduleInfo()['debug']['DBG_COMPATIBILITY']:
+            print >> sys.stderr, 'WARNING: Parameter genoCode is obsolete. Use genoFormatter instead.'
         genoFormatter = kwargs['genoCode']
     if kwargs.has_key('sexCode'):
+        if moduleInfo()['debug']['DBG_COMPATIBILITY']:
+            print >> sys.stderr, 'WARNING: Parameter sexCode is obsolete. Use sexFormatter instead.'
         sexFormatter = kwargs['sexCode']
     if kwargs.has_key('affectionCode'):
+        if moduleInfo()['debug']['DBG_COMPATIBILITY']:
+            print >> sys.stderr, 'WARNING: Parameter genoCode is obsolete. Use sexFormatter instead.'
         affectionFormatter = kwargs['affectionCode']
     # parameter pop
     if not isinstance(pop, Population):
