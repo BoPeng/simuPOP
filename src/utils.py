@@ -228,13 +228,13 @@ or non-circular
 
 
 def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
-        subPops=ALL_AVAIL, genoCode=None, infoCode=None,
-        sexCode={MALE: 'M', FEMALE: 'F'},
-        affectionCode={True: 'A', False: 'U'}, sep=', '):
+        subPops=ALL_AVAIL, genoFormatter=None, infoFormatter=None,
+        sexFormatter={MALE: 'M', FEMALE: 'F'},
+        affectionFormatter={True: 'A', False: 'U'}, sep=', ', **kwargs):
     '''Save a simuPOP population ``pop`` in csv format. Columns of this
     file is arranged in the order of information fields (``infoFields``),
-    sex (if ``sexCode`` is not ``None``), affection status (if
-    ``affectionCode`` is not ``None``), and genotype (if ``genoCode`` is
+    sex (if ``sexFormatter`` is not ``None``), affection status (if
+    ``affectionFormatter`` is not ``None``), and genotype (if ``genoFormatter`` is
     not ``None``). This function only output individuals in the present
     generation of population ``pop``. This function accepts the following
     parameters:
@@ -258,36 +258,48 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
 
     header
         Whether or not a header should be written. These headers will include
-        information fields, sex (if ``sexCode`` is not ``None``), affection
-        status (if ``affectionCode`` is not ``None``) and loci names. If
+        information fields, sex (if ``sexFormatter`` is not ``None``), affection
+        status (if ``affectionFormatter`` is not ``None``) and loci names. If
         genotype at a locus needs more than one column, ``_1``, ``_2`` etc will
-        be appended to loci names.
+        be appended to loci names. Alternatively, a complete header (a string)
+        or a list of column names could be specified directly.
 
     subPops
         A list of (virtual) subpopulations. If specified, only individuals
         from these subpopulations will be outputed.
 
-    infoCode
+    infoFormatter
         A format string that is used to format all information fields. If
         unspecified, ``str(value)`` will be used for each information field.
 
-    genoCode
+    genoFormatter
         How to output genotype at specified loci. Acceptable values include
         ``None`` (output allele names), a dictionary with genotype as keys,
-        (e.g. ``genoCode={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
+        (e.g. ``genoFormatter={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
         with genotype (as a tuple of integers) as inputs. The dictionary value
         or the return value of this function can be a single or a list of
         number or strings.
 
-    sexCode
+    sexFormatter
         How to output individual sex. Acceptable values include ``None`` (no
         output) or a dictionary with keys ``MALE`` and ``FEMALE``.
 
-    affectionCode
+    affectionFormatter
         How to output individual affection status. Acceptable values include
         ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
 
+    Parameters ``genoCode``, ``sexCode``, and ``affectionCode`` from version
+    1.0.0 have been renamed to ``genoFormatter``, ``sexFormatter`` and 
+    ``affectionFormatter`` but can still be used.
     '''
+    # handle obsolete parameters affectionCode, sexCode and genoCode
+    # DBG_OBSOLETE should cause a warning here.
+    if kwargs.has_key('genoCode'):
+        genoFormatter = kwargs['genoCode']
+    if kwargs.has_key('sexCode'):
+        sexFormatter = kwargs['sexCode']
+    if kwargs.has_key('affectionCode'):
+        affectionFormatter = kwargs['affectionCode']
     # parameter pop
     if not isinstance(pop, Population):
         raise ValueError("Passed population should either be a population object")
@@ -322,16 +334,16 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     ploidy = pop.ploidy()
     colPerGenotype = 0
     if len(loci) > 0 and pop.totNumLoci() > 0 and pop.popSize() > 0:
-        if genoCode is None:
+        if genoFormatter is None:
             value = [0]*ploidy
-        elif isinstance(genoCode, dict):
-            if len(genoCode) == 0:
-                raise ValueError("genoCode cannot be empty")
-            value = genoCode.values()[0]
+        elif isinstance(genoFormatter, dict):
+            if len(genoFormatter) == 0:
+                raise ValueError("genoFormatter cannot be empty")
+            value = genoFormatter.values()[0]
         else:
-            if not callable(genoCode):
-                raise ValueError("genoCode should be a None, a dictionary or a callable function")
-            value = genoCode(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
+            if not callable(genoFormatter):
+                raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
+            value = genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
         try:
             if type(value) == type(''):
                 colPerGenotype = 1
@@ -340,11 +352,11 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         except:
             colPerGenotype = 1
     # header
-    if header:
+    if header is True:
         names = [x for x in infoFields]
-        if sexCode is not None:
+        if sexFormatter is not None:
             names.append('sex')
-        if affectionCode is not None:
+        if affectionFormatter is not None:
             names.append('aff')
         if colPerGenotype == 1:
             names.extend([pop.locusName(loc) for loc in loci])
@@ -353,31 +365,35 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
                 names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
         # output header
         print >> out, sep.join(names)
+    elif type(header) == type(''):
+        print >> out, header
+    elif type(header) in [type(()), type([])]:
+        print >> out, sep.join(header)
     for subPop in subPops:
         for ind in pop.individuals(subPop):
             # information fields
-            if infoCode is None:
+            if infoFormatter is None:
                 values = [str(ind.info(x)) for x in infoFields]
-            elif type(infoCode) == type(''):
-                values = [infoCode % tuple([ind.info(x) for x in infoFields])]
+            elif type(infoFormatter) == type(''):
+                values = [infoFormatter % tuple([ind.info(x) for x in infoFields])]
             else:
-                raise ValueError('Parameter infoCode can only be None or a format string.')
+                raise ValueError('Parameter infoFormatter can only be None or a format string.')
             # sex
-            if sexCode is not None:
-                values.append(str(sexCode[ind.sex()]))
+            if sexFormatter is not None:
+                values.append(str(sexFormatter[ind.sex()]))
             # affection status
-            if affectionCode is not None:
-                values.append(str(affectionCode[ind.affected()]))
+            if affectionFormatter is not None:
+                values.append(str(affectionFormatter[ind.affected()]))
             # genotype
             for loc in loci:
-                if genoCode is None:
+                if genoFormatter is None:
                     values.extend([ind.alleleChar(loc, p) for p in range(ploidy)])
                 else:
                     genotype = [ind.allele(loc, p) for p in range(ploidy)]
-                    if isinstance(genoCode, dict):
-                        code = genoCode[tuple(genotype)]
+                    if isinstance(genoFormatter, dict):
+                        code = genoFormatter[tuple(genotype)]
                     else:
-                        code = genoCode(genotype)
+                        code = genoFormatter(genotype)
                     if type(code) in [type([]), type(())]:
                         values.extend(['%s' % x for x in code])
                     else:
@@ -1096,10 +1112,15 @@ class TrajectorySimulator:
         xt = []
         for loc in range(self.nLoci):
             x = curXt[loc]
-            # if current allele freq in subpop sp at locus loc has already been 0 or 1,
-            # set it to be 0 or 1 for previous gens
-            if x in [0, 1]:
+            # if current allele freq in subpop sp at locus loc has already been 0,
+            # it to be 0 for previous gens
+            if x == 0:
                 xt.append(x)
+                continue
+            # if current allele freq in subop sp is 1, we assume that it just reaches
+            # here by losing one allele
+            if x == 1:
+                xt.append(float(2 * Nt - 1) / (2 * Nt))
                 continue
             # In the interaction case, s1, s2 will be different
             # from subpopulation to subpopulation.
@@ -1210,7 +1231,7 @@ class TrajectorySimulator:
                     if freq[sp][loc] < endFreq[sp * self.nLoci + loc][0] or \
                         freq[sp][loc] > endFreq[sp * self.nLoci + loc][1]:
                         if self.logger:
-                            self.logger.debug('Forward Trajectory restarted, hitting allele requency %s' % freq)
+                            self.logger.debug('Forward Trajectory restarted, hitting allele requency ' + str(freq))
                         return freq
             # case 2: combined allele frequency
             else:
@@ -1224,7 +1245,7 @@ class TrajectorySimulator:
                             % (freq, allFreq))
                     return allFreq
         if self.logger:
-            self.logger.info('Forward Trajectory succeed, hitting allele frequency %s' % freq)
+            self.logger.info('Forward Trajectory succeed, hitting allele frequency ' + str(freq))
         return xt
 
     def _avgOfNestedList(self, value):
@@ -1428,10 +1449,11 @@ class TrajectorySimulator:
             else:
                 failedFreq.append(xt)
         if self.logger:
-            self.logger.info('Simulation failed after %d attempts with ending frequencies:' % failedCount)
+            self.logger.debug('Ending frequencies:')
             for freq in failedFreq:
-                self.logger.info('    %s' % freq)
-            self.logger.info('With average frequencies %s' % self._avgOfNestedList(failedFreq))
+                self.logger.debug('    ' + str(freq))
+            self.logger.info(('Simulation failed after %d attempts with average frequencies ' % failedCount) \
+                + str(self._avgOfNestedList(failedFreq)))
         return None
     
     def simuBackward(self, endGen, endFreq, minMutAge=None, maxMutAge=None,
@@ -1499,16 +1521,17 @@ class TrajectorySimulator:
             xt = self._simuBackward(endGen, freq, minMutAge, maxMutAge)
             if isinstance(xt, Trajectory):
                 if self.logger:
-                    self.logger.info('Simulation succeeded after %d attempts with average generation and frequencies' \
-                        % (failedCount, self._avgOfNestedList(failedFreq)))
+                    self.logger.info(('Simulation succeeded after %d attempts with average generation and frequencies' \
+                        % failedCount) + str(self._avgOfNestedList(failedFreq)))
                 return xt
             else:
                 failedFreq.append(xt)
         if self.logger:
-            self.logger.info('Simulation failed after %d attempts, with generation and frequency' % failedCount)
+            self.logger.debug('Beginning generation and frequencies:')
             for freq in failedFreq:
-                self.logger.info('    %s' % freq)
-            self.logger.info('With average starting generation and frequencies %s' % self._avgOfNestedList(failedFreq))
+                self.logger.debug('    ' + str(freq))
+            self.logger.info(('Simulation failed after %d attempts with average starting generation and frequencies ' % failedCount) \
+                + str(self._avgOfNestedList(failedFreq)))
         return None
 
 

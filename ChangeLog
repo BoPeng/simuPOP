@@ -14,10 +14,10 @@ Bugs:
 		True/False value. using Tkinter based parameter input dialog (simuOpt.Params),
   - Fix a bug that crashes simuPOP when the recombination rate between
 	    two loci are really small (e.g. 1e-17).
-  - Fix the header parameter and a bug in utils.saveCSV that outputs only the first allele.
+  - Fix a bug and expand the use of parameter 'header' in function utils.saveCSV.
 
 New feature:
-  - Add parameter version to function simuOpt.setOptions.
+  - Add parameter 'version' to function simuOpt.setOptions.
   - Add pdf and cdf functions for binomial and beta distributions to module simuPOP.gsl.
   - Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through
 		specific or all virtual subpopulation of specific or all subpopulations.
@@ -32,7 +32,10 @@ New features (minor):
   - Allow trajectory simulation program to handle float population size because float
 		population size is accepted in simuPOP core.
   - Logging more useful information for the simulation of allele frequency trajectory.
-  - Add parameter infoCode to function utils.saveCSV.
+  - Add parameter 'infoFormatter' to function utils.saveCSV. Rename parameters
+		'genoCode', 'sexCode', and 'affectionCode' to 'genoFormatter', 'sexFormatter',
+		and 'affectionFormatter'. The old parameters can still be used.
+  - Allow the backward trajectory simulation algorithm to simulate from fixed alleles.
 
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)

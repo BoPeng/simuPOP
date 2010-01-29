@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -18782,11 +18782,11 @@ Access, manipulate and extract parameters
 \begin_layout Standard
 If 
 \family typewriter
-simuOpt.getParam
+Params.getParam
 \family default
  runs successfully, the 
 \family typewriter
-simuOpt
+Params
 \family default
  object should have valid value for each parameter.
  They can be retrieved as attributes (such as 
@@ -18875,17 +18875,13 @@ simuOpt
 Params.asDict()
 \family default
 ) but could be used just like regular parameters.
- Note that the same operations for 
-\family typewriter
-simuOpt
-\family default
- parameters change the value of these parameters.
+ 
 \end_layout
 
 \begin_layout Standard
 Additional attributes can be used to create a 
 \family typewriter
-simuOpt
+Params
 \family default
  object without user interaction.
  For example, objects 
@@ -18903,7 +18899,7 @@ reference "useSimuOpt"
 
 \end_inset
 
- are created easily with needed attributes.
+ are created with needed attributes.
  They can be passed to functions where a 
 \family typewriter
 Params
@@ -19505,8 +19501,24 @@ simuPOP.utils
  It allows you to save individual information fields, sex, affection status
  and genotype (in that order).
  Because this function allows you to output these information in different
- formats, this function can already be used to export a simuPOP population
- to formats that are recognizable by some populat software applications.
+ formats using parameters 
+\family typewriter
+infoFormatter
+\family default
+, 
+\family typewriter
+sexFormatter
+\family default
+, 
+\family typewriter
+affectionFormatter
+\family default
+, and 
+\family typewriter
+genoFormatter
+\family default
+, this function can already be used to export a simuPOP population to formats
+ that are recognizable by some populat software applications.
 \end_layout
 
 \begin_layout Standard
