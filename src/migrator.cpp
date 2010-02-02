@@ -54,6 +54,8 @@ bool Migrator::apply(Population & pop) const
 	UINT info = pop.infoIdx(infoField(0));
 
 	subPopList fromSubPops = applicableSubPops(pop);
+	DBG_FAILIF(m_mode != BY_IND_INFO && fromSubPops.size() != m_rate.size(),
+		ValueError, "Number of 'from' subpopulations should match number of rows of migration rate matrix.");
 
 	vectorinfo oldInfo;
 

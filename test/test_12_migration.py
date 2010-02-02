@@ -39,6 +39,7 @@ class TestMigrator(unittest.TestCase):
         'Testing migrate by proportion'
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
+        self.assertRaises(exceptions.ValueError, migrate, pop, rate=[1, 0.1])
         migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
