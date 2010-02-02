@@ -37,6 +37,8 @@ New features (minor):
 		and 'affectionFormatter'. The old parameters can still be used.
   - Allow the backward trajectory simulation algorithm to simulate from fixed alleles.
   - Allow --param=True/False/1/0/true/false from command line for true/false options.
+  - Raise a ValueError when the number of rows of a migration matrix does not match
+		the number of subpopulations.
 
 
 version 1.0.0 - Rev 3388 (Jan 8, 2010)
