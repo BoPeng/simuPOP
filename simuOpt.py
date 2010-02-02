@@ -1112,7 +1112,10 @@ class Params:
         of argument ``-c``. If a value is expected, a comma should be appened
         to the option name. For example, ``'p:'`` matches command line option
         ``-p=100`` or ``-p 100``. An options that does not expect a value is
-        displayed in the parameter input dialog as an on/off switch.
+        displayed in the parameter input dialog as an on/off switch. Such
+        options can be set to ``True`` by ``-arg`` or ``-arg=True`` or set to
+        ``False`` by ``-arg=False`` from commandline. Values ``1``, ``0``,
+        ``true`` or ``false`` are also acceptable.
 
     longarg
         Long command line option name.  For example ``'version'``  checks the
@@ -1121,7 +1124,11 @@ class Params:
         ``'mu='`` matches command line option ``--mu=0.001`` or ``--mu 0.001``.
         **This item defines the name of an option and cannot be ignored**.
         An options that does not expect a value is displayed in the parameter
-        input dialog as an on/off switch.
+        input dialog as an on/off switch. Such options can be set to ``True``
+        by ``--longarg`` or ``--longarg=True`` or set to ``False`` by
+        ``--longarg=False`` from commandline. Values ``1``, ``0``, ``true``
+        or ``false`` are also acceptable.
+
 
     label
         The label of the input field in a parameter input dialog. It will also
@@ -1434,17 +1441,44 @@ class Params:
             if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
                 continue
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
-                if '--' + opt['longarg'] in cmdArgs:
-                    idx = cmdArgs.index('--'+opt['longarg'])
-                elif opt.has_key('arg') and '-' + opt['arg'] in cmdArgs:
-                    idx = cmdArgs.index('-' + opt['arg'])
-                else:
-                    continue
-                if idx in self.processedArgs:
-                    raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
-                self.processedArgs.append(idx)
-                opt['value'] = True
-                opt['processed'] = True
+                value = None
+                indexes = []
+                for idx,arg in enumerate(cmdArgs):
+                    if arg == '--' + opt['longarg']:
+                        value = True
+                        indexes.append(idx)
+                        if idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['True', 'true', '1']:
+                            indexes.append(idx+1)
+                        elif idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['False', 'false', '0']:
+                            value = False
+                            indexes.append(idx+1)
+                    elif arg in ['--%s=%s' % (opt['longarg'], x) for x in  ['True', 'true', '1']]:
+                        value = True
+                        indexes.append(idx)
+                    elif arg in ['--%s=%s' % (opt['longarg'], x) for x in  ['False', 'false', '0']]:
+                        value = False
+                        indexes.append(idx)
+                    elif opt.has_key('arg') and arg == '-' + opt['arg']:
+                        value = True
+                        indexes.append(idx)
+                        if idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['True', 'true', '1']:
+                            indexes.append(idx+1)
+                        elif idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['False', 'false', '0']:
+                            value = False
+                            indexes.append(idx+1)
+                    elif opt.has_key('arg') and arg in ['-%s=%s' % (opt['arg'], x) for x in  ['True', 'true', '1']]:
+                        value = True
+                        indexes.append(idx)
+                    elif opt.has_key('arg') and arg in ['-%s=%s' % (opt['arg'], x) for x in  ['False', 'false', '0']]:
+                        value = False
+                        indexes.append(idx)
+                if value is not None:
+                    for idx in indexes:
+                        if idx in self.processedArgs:
+                            raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
+                        self.processedArgs.append(idx)
+                    opt['value'] = value
+                    opt['processed'] = True
                 continue
             # this is a more complicated case
             name = opt['longarg'].rstrip('=')
