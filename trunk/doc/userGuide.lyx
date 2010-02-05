@@ -6831,6 +6831,33 @@ lstparams "caption={Use a demographic function to control population size},label
 
 \end_layout
 
+\begin_layout Standard
+If the size of the offspring generation can not be determined directly from
+ generation number, you can pass the parental population as parameter 
+\family typewriter
+pop
+\family default
+ to the demographic function.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoFunc1"
+
+\end_inset
+
+ implements a demographic model where a population expand at random numbers
+ at each generation.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoFunc1.log"
+lstparams "caption={Use parental population to determine the size of offspring population},label={demoFunc1}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Advanced use of demographic functions 
 \begin_inset CommandInset label
