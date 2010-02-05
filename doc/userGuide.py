@@ -1117,6 +1117,31 @@ pop.evolve(
 )
 #end_file
 
+#begin_file log/demoFunc1.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+import random
+def demo(pop):
+    return [x + random.randint(50, 100) for x in pop.subPopSizes()]
+
+pop = sim.Population(size=[500, 1000], infoFields='migrate_to')
+pop.evolve(
+    initOps=sim.InitSex(),
+    matingScheme=sim.RandomMating(subPopSize=demo),
+    postOps=[
+        sim.Stat(popSize=True),
+        sim.PyEval(r'"%s\n" % subPopSize')
+    ],
+    gen = 3
+)
+#end_file
+
 
 #begin_file log/advancedDemoFunc.py
 #begin_ignore
