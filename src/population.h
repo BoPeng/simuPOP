@@ -41,10 +41,6 @@ using std::pair;
 #include <functional>
 using std::equal_to;
 
-#include <fstream>
-using std::ifstream;
-using std::ofstream;
-
 // used to save history Population
 // 0 (first parental) 1, ...., n
 #include <deque>
@@ -1764,7 +1760,7 @@ public:
 
 };
 
-/** load a population from a file.
+/** load a population from a file saved by <tt>Population::save()</tt>.
  */
 Population & loadPopulation(const string & file);
 
