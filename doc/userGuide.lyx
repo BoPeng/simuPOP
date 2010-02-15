@@ -8508,6 +8508,10 @@ lstparams "caption={A Python mutator that adds new loci to populations.},label={
 Pedigrees
 \end_layout
 
+\begin_layout Subsection
+Create a pedigree object
+\end_layout
+
 \begin_layout Standard
 A 
 \family typewriter
@@ -8551,8 +8555,8 @@ simuPOP.sampling
 \end_layout
 
 \begin_layout Standard
-A new pedigree is created from a population object with an ID field (default
- to 
+A new pedigree can be created from a population object with an ID field
+ (default to 
 \family typewriter
 ind_id
 \family default
@@ -8628,6 +8632,57 @@ will convert the existing population to a pedigree object.
 Pedigree.asPopulation()
 \family default
  member function of the object.
+\end_layout
+
+\begin_layout Standard
+A pedigree object without genotype can also be created from a file saved
+ by operator 
+\family typewriter
+PedigreeTagger
+\family default
+ using function 
+\family typewriter
+loadPedigree
+\family default
+.
+ This file records the IDs of offspring and their parents during the evolution
+ of a population.
+ Because only IDs of offspring and their parents are recorded, the loaded
+ pedigree does not have any genotype information.
+ It also does not contain ancestors in the top-most generation who do not
+ have offspring in the next generation.
+ Because sex could be determined only for individuals who have offspring
+ (father or mother), ancestors who do not have offspring and individuals
+ in the last generation are all assumed to be males.
+ The loaded pedigree does not have subpopulation information either.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "loadPedigree"
+
+\end_inset
+
+ demonstrates how to save a complete pedigree and load it using function
+ 
+\family typewriter
+loadPedigree
+\family default
+.
+ The number of males in each generation is not correctly recovered because
+ of the incomplete information saved to the pedigree file.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/loadPedigree.log"
+lstparams "caption={Save and create a complete pedigree},label={loadPedigree}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Locate close and remote relatives of each individual
 \end_layout
 
 \begin_layout Standard
@@ -8779,6 +8834,10 @@ lstparams "caption={Locate close and distant relatives of individuals},label={lo
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Identify pedigrees (related individuals)
 \end_layout
 
 \begin_layout Standard
@@ -24941,6 +25000,42 @@ param
 param.indByID(off.ind_id)
 \family default
  and copy desired information to offspring.
+\end_layout
+
+\begin_layout Standard
+The pedigree object could also be loaded from a disk file saved by operator
+ 
+\family typewriter
+PedigreeTagger
+\family default
+.
+ Because incomplete information is saved to this file, the loaded pedigree
+ object does not have population structure and sex information at the present
+ generation.
+ It can nevertheless be used to direct the evolution of a population if
+ such information is not important.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pedigreeMatingFromFile"
+
+\end_inset
+
+ loads a pedigree object from file 
+\family typewriter
+pedigree.ped
+\family default
+ and evolves a population, this time does not remove ancestors who do not
+ have offspring in the last generation.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pedigreeMatingFromFile.log"
+lstparams "caption={Use a loaded pedigree to replay an evolutionary process.},label={pedigreeMatingFromFile}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

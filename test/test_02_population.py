@@ -1491,6 +1491,55 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(sex[500:550], [MALE]*50)
         self.assertEqual(sex[550:600], [FEMALE]*50)
 
+    def testLoadPedigree(self):
+        'Testing function loadPedigree'
+        pop = Population(500, infoFields=['ind_id', 'father_id'])
+        tagID(pop, reset=True)
+        pop.evolve(
+            matingScheme=RandomSelection(ops=[
+                CloneGenoTransmitter(), IdTagger(),
+                    PedigreeTagger(infoFields='father_id', output='>>test.ped')]),
+            gen = 10
+        )
+        ped = loadPedigree('test.ped', motherField='')
+        self.assertEqual(ped.ancestralGens(), 10)
+        for gen in range(11):
+            ped.useAncestralGen(gen)
+            if gen == 10:
+                self.assertTrue(ped.popSize() < 500)
+            else:
+                self.assertEqual(ped.popSize(), 500)
+        self.assertEqual(ped.individual(0).father_id, 0)
+        ped.useAncestralGen(0)
+        self.assertNotEqual(ped.individual(0).father_id, 0)
+        # two parents
+        pop = Population(500, infoFields=['ind_id', 'father_id', 'mother_id'])
+        tagID(pop, reset=True)
+        pop.evolve(
+            initOps = InitSex(),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger(output='>>test.ped')]),
+            gen = 20
+        )
+        #
+        ped = loadPedigree('test.ped')
+        self.assertEqual(ped.ancestralGens(), 20)
+        for gen in range(21):
+            ped.useAncestralGen(gen)
+            if gen == 20:
+                self.assertTrue(ped.popSize() < 500)
+            else:
+                self.assertEqual(ped.popSize(), 500)
+        self.assertEqual(ped.individual(0).father_id, 0)
+        self.assertEqual(ped.individual(0).mother_id, 0)
+        ped.useAncestralGen(0)
+        self.assertNotEqual(ped.individual(0).father_id, 0)
+        self.assertNotEqual(ped.individual(0).mother_id, 0)
+        # two parents
+        #os.remove('test.ped')
+
 if __name__ == '__main__':
     unittest.main()
 
