@@ -4507,8 +4507,14 @@ Details:
     offspring, father, and mother if a valid output stream is
     specified. The output will be in the format of off_id father_id
     mother_id. father_id or mother_id will be ignored if only one
-    parent is involved. This operator ignores parameter stage, and
-    subPops.
+    parent is involved. The output should be in the form of
+    '>>filename' so that parental IDs of all individuals are saved.
+    This file can be loaded by function loadPedigree to reconstruct a
+    complete pedigree. Due to imcomplete information, a pedigree
+    object create in this way does not contain parents who do not have
+    offspring in the top-most ancestral generation, and does not
+    contain sex information for individuals in the present generation.
+    This operator ignores parameter stage, and subPops.
 
 "; 
 
@@ -8987,7 +8993,7 @@ Usage:
 
 Details:
 
-    load a population from a file.
+    load a population from a file saved by Population::save().
 
 "; 
 
