@@ -1002,7 +1002,7 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
     be lined up from teh top most ancestral generation.
     '''
     parentMap = {}
-    numParents = -1
+    maxParents = -1
     # get all IDs
     input = open(file)
     parents = []
@@ -1010,20 +1010,18 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
         fields = [int(x) for x in line.split()]
         if len(fields) == 0:
             continue
-        if numParents == -1:
-            numParents = len(fields) - 1
-        elif numParents != len(fields) - 1:
-            raise RuntimeError('Number of parents mismatch at line: %s' % line)
         #
         if parentMap.has_key(fields[0]):
             raise RuntimeError('Offspring ID is not unique: %s' % fields[0])
+        if len(fields) - 1 > maxParents:
+            maxParents = len(fields) - 1
         # add to parent map
         parentMap[fields[0]] = fields[1:]
         parents.extend(fields[1:])
     # ready to create population
     fields = [x for x in (idField, fatherField, motherField) if x != '']
-    if len(fields) < numParents + 1:
-        raise RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (numParents + 1))
+    if len(fields) < maxParents + 1:
+        raise RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (maxParents + 1))
     # empty file
     if len(parentMap) == 0:
         return Population(infoFields=fields)
@@ -1040,10 +1038,7 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
     while True:
         if len(parents) == 0:
             break
-        if numParents == 1:
-            offspring = [x for x,y in parentMap.iteritems() if y[0] in parents]
-        else:
-            offspring = [x for x,y in parentMap.iteritems() if y[0] in parents or y[1] in parents]
+        offspring = [x for x,y in parentMap.iteritems() if True in [z in parents for z in y]]
         if len(offspring) == 0:
             break
         offspring.sort()
@@ -1051,20 +1046,26 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
         offPop = Population(size=len(offspring), infoFields=fields)
         # set ID
         offPop.setIndInfo(offspring, fields[0])
-        fatherIDs = [parentMap[x][0] for x in offspring]
-        offPop.setIndInfo(fatherIDs, fields[1])
-        if numParents == 2:
-            motherIDs = [parentMap[x][1] for x in offspring]
-            offPop.setIndInfo(motherIDs, fields[2])
-        #print 'have %s offsprig' % len(offspring)
-        # set sex of parents
+        fatherIDs = []
+        motherIDs = []
+        hasMotherID = False
         for ind in offspring:
             p = parentMap[ind]
+            fatherIDs.append(p[0])
+            if len(p) > 1:
+                motherIDs.append(p[1])
+                hasMotherID = True
+            else:
+                motherIDs.append(0)
+            #
             pop.indByID(p[0]).setSex(MALE)
             if len(p) > 1:
                 pop.indByID(p[1]).setSex(FEMALE)
             # this offspring has been handled
             parentMap.pop(ind)
+        offPop.setIndInfo(fatherIDs, fields[1])
+        if hasMotherID:
+            offPop.setIndInfo(motherIDs, fields[2])
         # parents become the offspring of the next generation
         parents = set(offspring)
         # push offspring population in
