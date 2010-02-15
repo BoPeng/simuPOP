@@ -241,6 +241,7 @@ __all__ = [
     'closeOutput',
     'describeEvolProcess',
     'loadPopulation',
+    'loadPedigree',
     'moduleInfo',
     'turnOffDebug',
     'turnOnDebug',
@@ -269,7 +270,7 @@ __all__ = [
 # get options
 from simuOpt import simuOptions
 import os, sys
-from exceptions import ImportError
+from exceptions import ImportError, RuntimeError, TypeError
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
@@ -345,8 +346,8 @@ class _dw(object):
     def __init__(self, var):
         try:
             self.__dict__ = var
-        except exceptions.TypeError:
-            raise exceptions.TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
+        except TypeError:
+            raise TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
     def clear(self):
         self.__dict__.clear()
     def __repr__(self):
@@ -976,6 +977,97 @@ def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
     PyQuanTrait(func, loci, ancGens, *args, **kwargs).apply(pop)
 
 
-
-
+def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    '''Load a pedigree from a file saved by operator *PedigreeTagger*. This
+    file contains the ID of each offspring and their parent(s). Because this
+    file does not contain generation information, generations to which
+    offspring belong are determined by the parent-offspring relationships.
+    Individuals without parents are assumed to be in the top-most ancestral
+    generation. The loaded population does not have any genotype information.
+    Although sex of of all parents could be determined by their parental roles
+    (father or mother), the sex of individuals in the last generation can not
+    be  determined. IDs of each individual and their parents are saved to
+    information fields *idField*, *fatherField* and *motherField*. This
+    function can also handle single-parent pedigree. The parent field
+    is assumed to be *fatherField* if both fields are given (default).
+    
+    If you would like to prepare a pedigree file by yourself, it is important
+    to remember that only numeric IDs are allowed, there is no family ID or
+    generation ID so individual IDs should be unique across all generations.
+    The order at which offsprng is specified is not important because this
+    function essentially creates a top-most ancestral generation using IDs
+    without parents, and creates the next generation using offspring of these
+    parents, and so on until all generations are recreated. That is to say,
+    if you have a mixture of pedigrees with different generations, they will
+    be lined up from teh top most ancestral generation.
+    '''
+    parentMap = {}
+    numParents = -1
+    # get all IDs
+    input = open(file)
+    parents = []
+    for line in input.readlines():
+        fields = [int(x) for x in line.split()]
+        if len(fields) == 0:
+            continue
+        if numParents == -1:
+            numParents = len(fields) - 1
+        elif numParents != len(fields) - 1:
+            raise RuntimeError('Number of parents mismatch at line: %s' % line)
+        #
+        if parentMap.has_key(fields[0]):
+            raise RuntimeError('Offspring ID is not unique: %s' % fields[0])
+        # add to parent map
+        parentMap[fields[0]] = fields[1:]
+        parents.extend(fields[1:])
+    # ready to create population
+    fields = [x for x in (idField, fatherField, motherField) if x != '']
+    if len(fields) < numParents + 1:
+        raise RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (numParents + 1))
+    # empty file
+    if len(parentMap) == 0:
+        return Population(infoFields=fields)
+    # top most generation....
+    parents = set(parents) - set(parentMap.keys())
+    if len(parents) == 0:
+        raise RuntimeError('No parents in the top-most ancestral generation')
+    pop = Population(size=len(parents), infoFields=fields, ancGen=-1)
+    # set individual IDs, but no parental ID.
+    pop.setIndInfo(sorted(parents), fields[0])
+    # this is to make indByID run faster.
+    pop.asPedigree(idField=idField, fatherField=fatherField, motherField=motherField)
+    # create other generations
+    while True:
+        if len(parents) == 0:
+            break
+        if numParents == 1:
+            offspring = [x for x,y in parentMap.iteritems() if y[0] in parents]
+        else:
+            offspring = [x for x,y in parentMap.iteritems() if y[0] in parents or y[1] in parents]
+        if len(offspring) == 0:
+            break
+        offspring.sort()
+        # create offspring generation
+        offPop = Population(size=len(offspring), infoFields=fields)
+        # set ID
+        offPop.setIndInfo(offspring, fields[0])
+        fatherIDs = [parentMap[x][0] for x in offspring]
+        offPop.setIndInfo(fatherIDs, fields[1])
+        if numParents == 2:
+            motherIDs = [parentMap[x][1] for x in offspring]
+            offPop.setIndInfo(motherIDs, fields[2])
+        #print 'have %s offsprig' % len(offspring)
+        # set sex of parents
+        for ind in offspring:
+            p = parentMap[ind]
+            pop.indByID(p[0]).setSex(MALE)
+            if len(p) > 1:
+                pop.indByID(p[1]).setSex(FEMALE)
+            # this offspring has been handled
+            parentMap.pop(ind)
+        # parents become the offspring of the next generation
+        parents = set(offspring)
+        # push offspring population in
+        pop.push(offPop)
+    return pop
 

@@ -304,8 +304,14 @@ public:
 	 *  ID of offspring, father, and mother if a valid output stream is
 	 *  specified. The output will be in the format of
 	 *  <tt>off_id father_id mother_id</tt>. \c father_id or \c mother_id will
-	 *  be ignored if only one parent is involved. This operator ignores
-	 *  parameter \e stage, and \e subPops.
+	 *  be ignored if only one parent is involved. The output should be in the
+	 *  form of \c '>>filename' so that parental IDs of all individuals are
+	 *  saved. This file can be loaded by function \c loadPedigree to
+	 *  reconstruct a complete pedigree. Due to imcomplete information, a
+	 *  pedigree object create in this way does not contain parents who do not
+	 *  have offspring in the top-most ancestral generation, and does not contain
+	 *  sex information for individuals in the present generation. This operator
+	 *  ignores parameter \e stage, and \e subPops.
 	 */
 	PedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),

@@ -1674,6 +1674,53 @@ for pop in simu.populations():
 
 #end_file
 
+#begin_file log/loadPedigree.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population([500, 500], infoFields=['ind_id', 'father_id', 'mother_id'])
+# a random expansion demographic model
+import random
+def demoModel(pop):
+    return [x+random.randint(100, 200) for x in pop.subPopSizes()]
+
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.IdTagger(),
+    ],
+    matingScheme=sim.RandomMating(
+        numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4),
+        ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.IdTagger(),
+            sim.PedigreeTagger(output='>>pedigree.ped')
+        ],
+        subPopSize=demoModel,
+    ),
+    postOps=[
+        sim.Stat(popSize=True, numOfMales=True),
+        sim.PyEval(r"'Popsize: %s, number of males: %d\n' % (subPopSize, numOfMales)")
+    ],
+    gen = 5
+)
+#
+ped = sim.loadPedigree('pedigree.ped')
+for gen in range(ped.ancestralGens(), -1, -1):
+    ped.useAncestralGen(gen)
+    sim.stat(ped, numOfMales=True)
+    print 'PopSize:%s, number of males: %d' % (ped.subPopSizes(), ped.dvars().numOfMales)
+
+#begin_ignore
+import os
+os.remove('pedigree.ped')
+#end_file
+
 
 #begin_file log/locateRelative.py
 #begin_ignore
@@ -5648,7 +5695,7 @@ ped.evolve(
         ops=[
             # we do not even need a genotype transmitter...
             sim.IdTagger(),
-            sim.PedigreeTagger(),
+            sim.PedigreeTagger(output='>>pedigree.ped'),
         ]),
     gen=100
 )
@@ -5689,4 +5736,47 @@ print [ped.individual(x).sex() for x in range(5)]
 print [pop.individual(x).sex() for x in range(5)]
 print ped.subPopSizes()
 print pop.subPopSizes()
+#end_file
+
+
+#begin_file log/pedigreeMatingFromFile.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+# use a pedigree object recovered from a file saved by operator PedigreeTagger
+ped = sim.loadPedigree('pedigree.ped')
+# create a top most population, but we do not need all of them
+# so we record only used individuals
+IDs = [x.ind_id for x in ped.allIndividuals(ancGens=ped.ancestralGens())]
+sex = [x.sex() for x in ped.allIndividuals(ancGens=ped.ancestralGens())]
+# create a population, this time with genotype. Note that we do not need
+# populaton structure because PedigreeMating disregard population structure.
+pop = sim.Population(size=len(IDs), loci=1000, infoFields='ind_id')
+# manually initialize ID and sex
+sim.initInfo(pop, IDs, infoFields='ind_id')
+sim.initSex(pop, sex=sex)
+pop.evolve(
+    initOps=sim.InitGenotype(freq=[0.4, 0.6]),
+    # we do not need migration, or set number of offspring,
+    # or demographic model, but we do need a genotype transmitter
+    matingScheme=sim.PedigreeMating(ped, 
+        ops=sim.MendelianGenoTransmitter()),
+    gen=100
+)
+# 
+print pop.indInfo('ind_id')[:5]
+# The last generation has all male individuals due to incomplete 
+# information of the pedigree object
+print [pop.individual(x).sex() for x in range(5)]
+# The pedigree object does not have population structure either.
+print pop.subPopSizes()
+#begin_ignore
+#import os
+#os.remove('pedigree.ped')
+#end_ignore
 #end_file
