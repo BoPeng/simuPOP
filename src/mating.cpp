@@ -1216,13 +1216,15 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 
 		if (father_id) {
 			std::map<ULONG, Individual *>::iterator dad_it = idMap.find(father_id);
-			if (dad_it != idMap.end())
-				dad = &*(dad_it->second);
+			DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
+                "Could not locate individual with ID " + toStr(father_id));
+    		dad = &*(dad_it->second);
 		}
 		if (mother_id) {
 			std::map<ULONG, Individual *>::iterator mom_it = idMap.find(mother_id);
-			if (mom_it != idMap.end())
-				mom = &*(mom_it->second);
+			DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
+                "Could not locate individual with ID " + toStr(mother_id));
+			mom = &*(mom_it->second);
 		}
 		DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
 			                    << mother_id << " for offspring " << my_id << endl);
@@ -1231,7 +1233,6 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		it->setSex(pedInd.sex());
 		// copy id
 		it->setInfo(my_id, m_idField);
-
 		//
 		opList::const_iterator iop = m_transmitters.begin();
 		opList::const_iterator iopEnd = m_transmitters.end();
@@ -1245,6 +1246,9 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 				throw e;
 			}
 		}
+        // copy individual ID again, just to make sure that even if during mating operators
+        // changes ID, pedigree mating could proceed normally.
+		it->setInfo(my_id, m_idField);
 	}
 	submitScratch(pop, scratch);
 	--m_gen;

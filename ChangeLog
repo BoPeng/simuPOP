@@ -24,6 +24,7 @@ New feature:
   - Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
   - Add a mating scheme PedigreeMating.
   - Add function loadPedigree to load pedigrees saved by operator PedigreeTagger.
+  - Operator IfElse now accepts a user-defined function.
 
 New features (minor):
   - Document base mating scheme MatingScheme() and allow it to be used explicitly.

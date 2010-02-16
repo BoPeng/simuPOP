@@ -5695,7 +5695,7 @@ ped.evolve(
         ops=[
             # we do not even need a genotype transmitter...
             sim.IdTagger(),
-            sim.PedigreeTagger(output='>>pedigree.ped'),
+            sim.PedigreeTagger(),
         ]),
     gen=100
 )
@@ -5739,7 +5739,7 @@ print pop.subPopSizes()
 #end_file
 
 
-#begin_file log/pedigreeMatingFromFile.py
+#begin_file log/pedigreeMatingAgeStructured.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -5748,8 +5748,55 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().set(seed=12345)
 #end_ignore
+
+import random
+N = 10000
+pop = sim.Population(N, infoFields=['age', 'ind_id', 'father_id', 'mother_id'])
+# we simulate age 0, 1, 2, 3 
+pop.setVirtualSplitter(sim.InfoSplitter(field='age', values=[0, 1, 2, 3]))
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        # random assign age
+        sim.InitInfo(lambda: random.randint(0, 3), infoFields='age'),
+        # random genotype
+        sim.InitGenotype(freq=[0.5, 0.5]),
+        # assign an unique ID to everyone.
+        sim.IdTagger(),
+    ],
+    # increase the age of everyone by 1 before mating.
+    preOps=sim.InfoExec('age += 1'),
+    matingScheme=sim.HeteroMating([
+        # age 1, 2 will be copied
+        sim.CloneMating(
+            ops=[
+                # This will set offspring ID
+                sim.CloneGenoTransmitter(),
+                # new ID for offspring in order to track pedigree
+                sim.IdTagger(),
+                # both offspring and parental IDs will be the same
+                sim.PedigreeTagger(output='>>structured.ped'),
+            ],
+            subPops=[(0,1), (0,2)],
+            weight=-1
+        ),
+        # age 2 produce offspring
+        sim.RandomMating(
+            ops=[
+                # new ID for offspring
+                sim.IdTagger(),
+                # record complete pedigree
+                sim.PedigreeTagger(output='>>structured.ped'),
+                sim.MendelianGenoTransmitter(),   # transmit genotype
+            ],
+            subPops=[(0,2)]
+        )]
+    ),
+    gen=20
+)
+
 # use a pedigree object recovered from a file saved by operator PedigreeTagger
-ped = sim.loadPedigree('pedigree.ped')
+ped = sim.loadPedigree('structured.ped')
 # create a top most population, but we do not need all of them
 # so we record only used individuals
 IDs = [x.ind_id for x in ped.allIndividuals(ancGens=ped.ancestralGens())]
@@ -5765,7 +5812,10 @@ pop.evolve(
     # we do not need migration, or set number of offspring,
     # or demographic model, but we do need a genotype transmitter
     matingScheme=sim.PedigreeMating(ped, 
-        ops=sim.MendelianGenoTransmitter()),
+        ops=sim.IfElse(lambda mom: mom is None,
+                sim.CloneGenoTransmitter(),
+                sim.MendelianGenoTransmitter())
+    ),
     gen=100
 )
 # 
@@ -5776,7 +5826,7 @@ print [pop.individual(x).sex() for x in range(5)]
 # The pedigree object does not have population structure either.
 print pop.subPopSizes()
 #begin_ignore
-#import os
-#os.remove('pedigree.ped')
+import os
+os.remove('structured.ped')
 #end_ignore
 #end_file

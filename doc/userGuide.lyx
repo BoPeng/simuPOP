@@ -17616,9 +17616,9 @@ Operator
 IfElse
 \family default
  provides a simple way to conditionally apply an operator.
- The condition can be a fixed condition or a expression (a string) that
- will be evaluated in a population's local namespace when it is applied
- to the population.
+ The condition can be a fixed condition, a expression (a string) that will
+ be evaluated in a population's local namespace or a user-defined function
+ when it is applied to the population.
 \end_layout
 
 \begin_layout Standard
@@ -17707,11 +17707,7 @@ reference "IfElse"
  0.4 and beyong 0.6 before it gets lost or fixed in the population.
  Note that a list of else-operators can also be executed when the condition
  is not met.
- If more complicated logic is involved, a Python operator (
-\family typewriter
-PyOperator
-\family default
-) should be used.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -17723,6 +17719,58 @@ lstparams "caption={A conditional opeartor with dynamic condition},label={IfElse
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+In the last case, a user-defined function can be specified.
+ This function should accept parameter 
+\family typewriter
+pop
+\family default
+ when the operator is applied to a population, and one or more parameters
+ 
+\family typewriter
+pop
+\family default
+, 
+\family typewriter
+off
+\family default
+, 
+\family typewriter
+dad
+\family default
+ and 
+\family typewriter
+mom
+\family default
+ when it is applied during-mating.
+ The later could be used to apply different during-mating operators for
+ different types of parents or offspring.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pedigreeMatingAgeStructured"
+
+\end_inset
+
+ in Chapter 6 uses a 
+\family typewriter
+CloneGenoTransmitter
+\family default
+ when only one parent is available (when parameter 
+\family typewriter
+mom
+\family default
+ is 
+\family typewriter
+None
+\family default
+), and a 
+\family typewriter
+MendelianGenoTransmitter
+\family default
+ when two parents are available.
 \end_layout
 
 \begin_layout Subsection
@@ -25003,39 +25051,85 @@ param.indByID(off.ind_id)
 \end_layout
 
 \begin_layout Standard
-The pedigree object could also be loaded from a disk file saved by operator
- 
+As long as unique IDs are used for individuals in different generations,
+ the same technique could be used for overlapping generations as well.
+ Even if some individuals are copied from generation to generation, separate
+ IDs should be assigned to these individuals so that a pedigree could be
+ correctly constructed.
+ Because these individuals are copied from a single parent, the pedigree
+ object will have mixed number of parents (some individuals have one parent,
+ some have two).
+ If 
 \family typewriter
 PedigreeTagger
 \family default
+ operators are used to record parental information, such a pedigree could
+ be loaded by function 
+\family typewriter
+loadPedigree
+\family default
 .
- Because incomplete information is saved to this file, the loaded pedigree
- object does not have population structure and sex information at the present
- generation.
- It can nevertheless be used to direct the evolution of a population if
- such information is not important.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "pedigreeMatingFromFile"
+reference "pedigreeMatingAgeStructured"
 
 \end_inset
 
- loads a pedigree object from file 
-\family typewriter
-pedigree.ped
-\family default
- and evolves a population, this time does not remove ancestors who do not
- have offspring in the last generation.
+ evolves an age-structured population.
+ Instead of saving all ancestral generations to a population object and
+ convert it to a pedigree, this example saves the complete pedigree to file
  
+\family typewriter
+structure.ped
+\family default
+ and load the pedigree using function 
+\family typewriter
+loadPedigree
+\family default
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pedigreeMatingFromFile.log"
-lstparams "caption={Use a loaded pedigree to replay an evolutionary process.},label={pedigreeMatingFromFile}"
+filename "log/pedigreeMatingAgeStructured.log"
+lstparams "caption={Replay an evolutionary process of an age-structured population},label={pedigreeMatingAgeStructured}"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The pedigree is then used to repeat the evolutionary process.
+ However, because some individuals were produced sexually using 
+\family typewriter
+MendelianGenoTransmitter
+\family default
+ and some were copied using 
+\family typewriter
+CloneGenoTransitter
+\family default
+, an 
+\family typewriter
+IfElse
+\family default
+ operator has to be used to transmit genotypes correctly.
+ This example uses the function condition of the 
+\family typewriter
+IfElse
+\family default
+ operator and makes use of the fact that parent 
+\family typewriter
+mom
+\family default
+ will be 
+\family typewriter
+None
+\family default
+ if an individual is copied from his or her father.
+ 
 \end_layout
 
 \begin_layout Standard
