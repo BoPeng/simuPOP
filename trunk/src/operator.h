@@ -500,11 +500,11 @@ public:
 
 };
 
-/** This operator accepts an expression that will be evaluated when this
- *  operator is applied. A list of if-operators will be applied when the
- *  expression returns \c True. Otherwise a list of else-operators will be
- *  applied. If a value is passed directly, it will be considered as a fixed
- *  condition upon which one of \e ifOps or \e elseOps will be called.
+/** This operator uses a condition, which can be a fixed condition, an
+ *  expression or a user-defined function, to determine which operators to be
+ *  applied when this operator is applied. A list of if-operators will be
+ *  applied when the condition is \c True. Otherwise a list of else-operators
+ *  will be applied. 
  */
 class IfElse : public BaseOperator
 {
@@ -514,12 +514,16 @@ public:
 	 *  condition \e cond is met and \e elseOps otherwise. If a Python
 	 *  expression (a string) is given to parameter \e cond, the expression
 	 *  will be evalulated in each population's local namespace when this
-	 *  operator is applied. Otherwise, parameter \e cond will be treated
-	 *  as a fixed condition (converted to \c True or \c False) upon which one
-	 *  set of operators is always applied. The applicability of \e ifOps and
-	 *  \e elseOps are controlled by parameters \e begin, \e end, \e step,
-	 *  \e at and \e rep of both the \c IfElse operator and individual operators
-	 *  but \e ifOps and \e elseOps opeartors does not support negative indexes
+	 *  operator is applied. When a Python function is specified, it accepts
+	 *  parameter \c pop when it is applied to a population, and one or more
+	 *  parameters \c pop, \c off, \c dad or \c mom when it is applied during
+	 *  mating. The return value of this function should be \c True or \c False.
+	 *  Otherwise, parameter \e cond will be treated as a fixed condition
+	 *  (converted to \c True or \c False) upon which one set of operators is
+	 *  always applied. The applicability of \e ifOps and \e elseOps are
+	 *  controlled by parameters \e begin, \e end, \e step,  \e at and \e rep
+	 *  of both the \c IfElse operator and individual operators but \e ifOps
+	 *  and \e elseOps opeartors does not support negative indexes
 	 *  for replicate and generation numbers.
 	 */
 	IfElse(PyObject * cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
@@ -554,6 +558,7 @@ public:
 private:
 	/// These will be kept constant (they are set in constructor only)
 	Expression m_cond;
+	pyFunc m_func;
 	int m_fixedCond;
 
 	const opList m_ifOps;

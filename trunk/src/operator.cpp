@@ -363,11 +363,11 @@ IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
 	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
-	m_cond(), m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
+	m_cond(PyString_Check(cond) ? PyString_AsString(cond) : ""),
+	m_func(PyCallable_Check(cond) ? cond : NULL),
+	m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
-	if (PyString_Check(cond))
-		const_cast<IfElse *>(this)->m_cond.setExpr(PyString_AsString(cond));
-	else {
+	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
 		bool c;
 		PyObj_As_Bool(cond, c);
 		const_cast<IfElse *>(this)->m_fixedCond = c ? 1 : 0;
@@ -399,6 +399,8 @@ string IfElse::describe(bool format) const
 	}
 	if (m_fixedCond != -1)
 		desc += " always apply opertors\n" + (m_fixedCond == 1 ? ifDesc : elseDesc);
+	else if (m_func.isValid())
+		desc += " apply operators\n" + ifDesc + "\n<indent>if function " + m_func.name() + " returns True";
 	else {
 		desc += " apply operators \n" + ifDesc + "\n<indent>if " + m_cond.expr();
 		if (!m_elseOps.empty())
@@ -411,8 +413,35 @@ string IfElse::describe(bool format) const
 bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
-	m_cond.setLocalDict(pop.dict());
-	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
+	bool res = true;
+	if (m_fixedCond != -1)
+		res = m_fixedCond == 1;
+	else if (m_func.isValid()) {
+		PyObject * args = PyTuple_New(m_func.numArgs());
+
+		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+		for (int i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else if (arg == "off")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
+			else if (arg == "dad")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
+			else if (arg == "mom")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
+			else {
+				DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', and 'mom' are acceptable in "
+											 "function" + m_func.name());
+			}
+		}
+		res = m_func(PyObj_As_Bool, args);
+		Py_XDECREF(args);
+	} else {
+		m_cond.setLocalDict(pop.dict());
+		res = m_cond.valueAsBool();
+	}
 
 	if (res && !m_ifOps.empty()) {
 		opList::const_iterator it = m_ifOps.begin();
@@ -443,8 +472,29 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 
 bool IfElse::apply(Population & pop) const
 {
-	m_cond.setLocalDict(pop.dict());
-	bool res = m_fixedCond == -1 ? m_cond.valueAsBool() : m_fixedCond == 1;
+	bool res = true;
+	if (m_fixedCond != -1)
+		res = m_fixedCond == 1;
+	else if (m_func.isValid()) {
+		PyObject * args = PyTuple_New(m_func.numArgs());
+
+		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+		for (int i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else {
+				DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', and 'mom' are acceptable in "
+											 "function" + m_func.name());
+			}
+		}
+		res = m_func(PyObj_As_Bool, args);
+		Py_XDECREF(args);
+	} else {
+		m_cond.setLocalDict(pop.dict());
+		res = m_cond.valueAsBool();
+	}
 
 	if (res && !m_ifOps.empty()) {
 		const vectorop & ops = m_ifOps.elems();
