@@ -714,7 +714,7 @@ loadPopulationRef
 
 
 \backslash
-loadPedigreeRef
+simuPOPloadPedigreeRef
 \end_layout
 
 \begin_layout Plain Layout
