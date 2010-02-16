@@ -930,13 +930,13 @@ def pointMutate(pop, *args, **kwargs):
     PointMutator(*args, **kwargs).apply(pop)
 
 def stat(pop, *args, **kwargs):
-    '''Apply operator ``Stat`` with specified parameters to population ``pop``.
+    '''Apply operator ``Stat`` with specified parameters to population *pop*.
     Resulting statistics could be accessed from the local namespace of ``pop``
     using functions ``pop.vars()`` or ``pop.dvars()``'''
     Stat(*args, **kwargs).apply(pop)
 
 def tagID(pop, reset=False, *args, **kwargs):
-    '''Apply operator ``IdTagger`` to population ``pop`` to assign a unique ID
+    '''Apply operator ``IdTagger`` to population *pop* to assign a unique ID
     to all individuals in the population. Individuals ID will starts from a
     system wide index. You can reset this start ID using parameter ``reset``
     which can be ``True`` (reset to 1) or a non-negative number (start from
@@ -947,38 +947,38 @@ def tagID(pop, reset=False, *args, **kwargs):
     IdTagger(*args, **kwargs).apply(pop)
 
 def mapPenetrance(pop, loci, penetrance, ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
+    '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     MapPenetrance(loci, penetrance, ancGens, *args, **kwargs).apply(pop)
 
 def maPenetrance(pop, loci, penetrance, wildtype=0, ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``MaPenetrance`` to population ``pop``. Unlike the
+    '''Apply opertor ``MaPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     MaPenetrance(loci, penetrance, wildtype, ancGens, *args, **kwargs).apply(pop)
 
 def mlPenetrance(pop, ops, mode, ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
+    '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     MlPenetrance(ops, mode, ancGens, *args, **kwargs).apply(pop)
 
 def pyPenetrance(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``MapPenetrance`` to population ``pop``. Unlike the
+    '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyPenetrance(func, loci, ancGens, *args, **kwargs).apply(pop)
 
 def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``PyQuanTrait`` to population ``pop``. Unlike the
+    '''Apply opertor ``PyQuanTrait`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyQuanTrait(func, loci, ancGens, *args, **kwargs).apply(pop)
 
 
 def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='mother_id'):
-    '''Load a pedigree from a file saved by operator *PedigreeTagger*. This
+    '''Load a pedigree from a file saved by operator ``PedigreeTagger``. This
     file contains the ID of each offspring and their parent(s). Because this
     file does not contain generation information, generations to which
     offspring belong are determined by the parent-offspring relationships.
