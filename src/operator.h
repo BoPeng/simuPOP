@@ -504,7 +504,7 @@ public:
  *  expression or a user-defined function, to determine which operators to be
  *  applied when this operator is applied. A list of if-operators will be
  *  applied when the condition is \c True. Otherwise a list of else-operators
- *  will be applied. 
+ *  will be applied.
  */
 class IfElse : public BaseOperator
 {

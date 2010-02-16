@@ -414,6 +414,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
 	bool res = true;
+
 	if (m_fixedCond != -1)
 		res = m_fixedCond == 1;
 	else if (m_func.isValid()) {
@@ -433,7 +434,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
 			else {
 				DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', and 'mom' are acceptable in "
-											 "function" + m_func.name());
+					                         "function" + m_func.name());
 			}
 		}
 		res = m_func(PyObj_As_Bool, args);
@@ -473,6 +474,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 bool IfElse::apply(Population & pop) const
 {
 	bool res = true;
+
 	if (m_fixedCond != -1)
 		res = m_fixedCond == 1;
 	else if (m_func.isValid()) {
@@ -486,7 +488,7 @@ bool IfElse::apply(Population & pop) const
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
 			else {
 				DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', and 'mom' are acceptable in "
-											 "function" + m_func.name());
+					                         "function" + m_func.name());
 			}
 		}
 		res = m_func(PyObj_As_Bool, args);
