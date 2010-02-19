@@ -306,6 +306,9 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         if moduleInfo()['debug']['DBG_COMPATIBILITY']:
             print >> sys.stderr, 'WARNING: Parameter genoCode is obsolete. Use sexFormatter instead.'
         affectionFormatter = kwargs['affectionCode']
+    for key in kwargs.keys():
+        if key not in ('genoCode', 'sexCode', 'affectionCode'):
+            raise ValueError("Unrecognized keyword parameter %s" % key)
     # parameter pop
     if not isinstance(pop, Population):
         raise ValueError("Passed population should either be a population object")
