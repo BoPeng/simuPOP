@@ -21,7 +21,7 @@ New feature:
   - Add pdf and cdf functions for binomial and beta distributions to module simuPOP.gsl.
   - Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through
 		specific or all virtual subpopulation of specific or all subpopulations.
-  - Add functions pedigree.identifyAncestors and pedigree.identifyOffspring.
+  - Add functions pedigree.identifyAncestors and pedigree.identifyOffspring and pedigree.save.
   - Add a mating scheme PedigreeMating.
   - Add function loadPedigree to load pedigrees saved by operator PedigreeTagger.
   - Operator IfElse now accepts a user-defined function.

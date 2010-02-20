@@ -270,7 +270,7 @@ __all__ = [
 # get options
 from simuOpt import simuOptions
 import os, sys
-from exceptions import ImportError, RuntimeError, TypeError
+import exceptions
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
@@ -296,7 +296,7 @@ if simuOptions['Version'] is not None:
     myMajor, myMinor, myRelease = [int(x) for x in moduleInfo()['version'].rstrip('svn').split('.')]
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
-        raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
+        raise exceptions.ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
             (moduleInfo()['version'], simuOptions['Version']) + 
             'Please upgrade your simuPOP installation.')
 
@@ -304,7 +304,7 @@ if simuOptions['Revision'] is not None:
     ver = moduleInfo()['version']
     rev = moduleInfo()['revision']
     if rev < simuOptions['Revision']:
-        raise ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
+        raise exceptions.ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
             'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
             'Please upgrade your simuPOP installation.')
 
@@ -347,7 +347,7 @@ class _dw(object):
         try:
             self.__dict__ = var
         except TypeError:
-            raise TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
+            raise exceptions.TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
     def clear(self):
         self.__dict__.clear()
     def __repr__(self):
@@ -730,7 +730,7 @@ class AcgtMutator(MatrixMutator):
         if model == 'JC69':
             if type(rate) in [type(()), type([])]:
                 if len(rate) != 1:
-                    raise ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
+                    raise exceptions.ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
                 mu = rate[0]
             else:
                 mu = rate
@@ -740,7 +740,7 @@ class AcgtMutator(MatrixMutator):
                  [mu/4., mu/4., mu/4., 0    ]]
         elif model == 'K80':
             if len(rate) != 2:
-                raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
+                raise exceptions.ValueError('A Kimura 2-parameter model requires two parameters mu and k')
             mu, k = rate
             m = [[0,       mu/4.,   mu*k/4., mu/4.  ],
                  [mu/4.,   0,       mu/4.,   mu*k/4.],
@@ -748,74 +748,74 @@ class AcgtMutator(MatrixMutator):
                  [mu/4.,   mu*k/4., mu/4.,   0      ]]
         elif model == 'F81':
             if len(rate) != 4:
-                raise ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
+                raise exceptions.ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
             mu, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
+                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,      mu*piC, mu*piG, mu*piT],
                  [mu*piA, 0,      mu*piG, mu*piT],
                  [mu*piA, mu*piC, 0,      mu*piT],
                  [mu*piA, mu*piC, mu*piG, 0     ]]
         elif model == 'HKY85':
             if len(rate) != 5:
-                raise ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
+                raise exceptions.ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
             mu, k, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
+                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,        mu*piC,   mu*k*piG, mu*piT  ],
                  [mu*piA,   0,        mu*piG,   mu*k*piT],
                  [mu*k*piA, mu*piC,   0,        mu*piT  ],
                  [mu*piA,   mu*k*piC, mu*piG,   0       ]]
         elif model == 'T92':
             if len(rate) != 2:
-                raise ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
+                raise exceptions.ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
             mu, piGC = rate
             piG = piC = piGC/2.
             piA = piT = (1 - piGC)/2.
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
+                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,      mu*piC, mu*piG, mu*piT],
                  [mu*piA, 0,      mu*piG, mu*piT],
                  [mu*piA, mu*piC, 0,      mu*piT],
                  [mu*piA, mu*piC, mu*piG, 0     ]]
         elif model == 'TN93':
             if len(rate) != 6:
-                raise ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
+                raise exceptions.ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
             mu, k1, k2, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
+                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,         mu*piC,    mu*k1*piG, mu*piT   ],
                  [mu*piA,    0,         mu*piG,    mu*k2*piT],
                  [mu*k1*piA, mu*piC,    0,         mu*piT   ],
                  [mu*piA,    mu*k2*piC, mu*piG,    0        ]]
         elif model == 'GTR':
             if len(rate) != 9:
-                raise ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
+                raise exceptions.ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
             x1, x2, x3, x4, x5, x6, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
+                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,  piA*x1/piC, piA*x2/piG, piA*x3/piT],
                  [x1, 0,          piC*x4/piG, piC*x5/piT],
                  [x2, x4,         0,          piG*x6/piT],
                  [x3, x5,         x6,         0         ]]
         elif model == 'general':
             if len(rate) != 12:
-                raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
+                raise exceptions.ValueError('Please specify 12 parameters for this general nucleotide mutation model')
             m = [[0,       rate[0],  rate[1],  rate[2]],
                  [rate[3], 0,        rate[4],  rate[5]],
                  [rate[6], rate[7],  0,        rate[8]],
                  [rate[9], rate[10], rate[11], 0      ]]
         else:
-            raise ValueError('Unrecognized nucleotide mutation model %s' % model)
+            raise exceptions.ValueError('Unrecognized nucleotide mutation model %s' % model)
         MatrixMutator.__init__(self, m, *args, **kwargs)
 
 
@@ -977,80 +977,174 @@ def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
     PyQuanTrait(func, loci, ancGens, *args, **kwargs).apply(pop)
 
 
-def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='mother_id'):
-    '''Load a pedigree from a file saved by operator ``PedigreeTagger``. This
-    file contains the ID of each offspring and their parent(s). Because this
-    file does not contain generation information, generations to which
-    offspring belong are determined by the parent-offspring relationships.
-    Individuals without parents are assumed to be in the top-most ancestral
-    generation. The loaded population does not have any genotype information.
-    Although sex of of all parents could be determined by their parental roles
-    (father or mother), the sex of individuals in the last generation can not
-    be  determined. IDs of each individual and their parents are saved to
-    information fields *idField*, *fatherField* and *motherField*. This
-    function can also handle single-parent pedigree. The parent field
-    is assumed to be *fatherField* if both fields are given (default).
+def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='mother_id',
+        infoFields=[], loci=[], *args, **kwargs):
+    '''Load a pedigree from a file saved by operator ``PedigreeTagger`` or
+    function ``Pedigree.save``. This file contains the ID of each offspring
+    and their parent(s) and optionally sex ('M' or 'F'), affection status ('A'
+    or 'U'), values of information fields and genotype at some loci. IDs of
+    each individual and their parents are loaded to information fields *idField*,
+    *fatherField* and *motherField*. Note that only numeric IDs are allowed, and
+    individual IDs should be unique across all generations.
     
-    If you would like to prepare a pedigree file by yourself, it is important
-    to remember that only numeric IDs are allowed, there is no family ID or
-    generation ID so individual IDs should be unique across all generations.
-    The order at which offsprng is specified is not important because this
-    function essentially creates a top-most ancestral generation using IDs
-    without parents, and creates the next generation using offspring of these
-    parents, and so on until all generations are recreated. That is to say,
-    if you have a mixture of pedigrees with different generations, they will
-    be lined up from teh top most ancestral generation.
+    Because this file does not contain generation information, generations to
+    which offspring belong are determined by the parent-offspring relationships.
+    Individuals without parents are assumed to be in the top-most ancestral
+    generation. This is the case for individuals in the top-most ancestral
+    generation if the file is saved by function ``Pedigree.save()``, and for
+    individuals who only appear as another individual's parent, if the file is
+    saved by operator ``PedigreeTagger``. The order at which offsprng is
+    specified is not important because this function essentially creates a
+    top-most ancestral generation using IDs without parents, and creates the
+    next generation using offspring of these parents, and so on until
+    all generations are recreated. That is to say, if you have a mixture of
+    pedigrees with different generations, they will be lined up from the top
+    most ancestral generation.
+    
+    If individual sex is not specified, sex of of all parents are determined
+    by their parental roles (father or mother) but the sex of individuals in
+    the last generation can not be determined so they will all be males. If
+    additional information fields are given, their names have to be specified
+    using parameter *infoFields*. The rest of the columns are assued to be
+    alleles. If \e loci is not specified, the number of loci is calculated by
+    number of columns divided by *ploidy* (default to 2). Otherwise, parameter
+    *loci* should the number of loci on each chromosome. Additional parameters
+    such as *ploidy*, *chromTypes*, *lociPos*, *chromNames*, *alleleNames*,
+    *lociNames* could be used to specified the genotype structured of the
+    loaded pedigree.    
     '''
-    parentMap = {}
+    if type(infoFields) == type(''):
+        infoFields = [infoFields]
+    for field in infoFields:
+        if field in [idField, fatherField, motherField]:
+            raise exceptions.ValueError('Information field name cannot duplicate that of idField, fatherField or motherField')
+    numLoci = loci
+    if 'ploidy' in kwargs.keys():
+        ploidy = kwargs['ploidy']
+        kwargs.pop('ploidy')
+    else:
+        ploidy = 2
+    individualInfo = {}
     maxParents = -1
     # get all IDs
     input = open(file)
+    top_parents = []
     parents = []
     for line in input.readlines():
-        fields = [int(x) for x in line.split()]
+        # analyze each line....
+        fields = line.split()
         if len(fields) == 0:
             continue
+        ind_id = int(fields[0])
+        if individualInfo.has_key(ind_id):
+            raise exceptions.RuntimeError('Offspring ID is not unique: %s' % ind_id)
+        if len(fields) < 2:
+            raise exceptions.RuntimeError('A line in a pedigree file must have at least two columns')
+        ind_parents = [int(fields[1])]
+        ind_sex = 'M'
+        ind_affectionStatus = 'U'
+        ind_genotype = []
+        ind_fields = []
+        if len(fields) > 2:
+            if fields[2] in ['M', 'F']:
+                ind_sex = fields[2]
+                if len(fields) > 3 and fields[3] in ['A', 'U']:
+                    ind_affectionStatus = fields[3]
+                    start_col = 4
+                else:
+                    start_col = 3
+            else:
+                ind_parents.append(int(fields[2]))
+                #
+                if len(fields) > 3 and fields[3] in ['M', 'F']:
+                    ind_sex = fields[3]
+                    if len(fields) > 4 and fields[4] in ['A', 'U']:
+                        ind_affectionStatus = fields[4]
+                        start_col = 5
+                    else:
+                        start_col = 4
+                else:
+                    start_col = 3
+            # information fields and genotype
+            start_geno = start_col + len(infoFields)
+            if start_geno > len(fields):
+                raise exceptions.RuntimeError('Insufficient number of columns (%d required, %d exist).\n' % (start_geno, len(fields)) + line + '\n')
+            if len(infoFields) > 0:
+                ind_fields = [float(x) for x in fields[start_col : start_geno]]
+            if start_geno < len(fields):
+                ind_genotype = [int(x) for x in fields[start_geno:]]
+                if numLoci == []:
+                    if len(ind_genotype) % ploidy != 0:
+                        raise exceptions.RuntimeError('Incorrect number of columns with %d information fields and %d genotype columns' % (len(infoFields), len(ind_genotype)))
+                    numLoci = [len(ind_genotype) / ploidy]
         #
-        if parentMap.has_key(fields[0]):
-            raise RuntimeError('Offspring ID is not unique: %s' % fields[0])
-        if len(fields) - 1 > maxParents:
-            maxParents = len(fields) - 1
+        if len(ind_parents) > maxParents:
+            maxParents = len(ind_parents)
         # add to parent map
-        parentMap[fields[0]] = fields[1:]
-        parents.extend(fields[1:])
+        ind_parents = [x for x in ind_parents if x != 0]
+        if len(ind_parents) == 0:
+            top_parents.append(ind_id)
+        individualInfo[ind_id] = [ind_parents, ind_sex, ind_affectionStatus, ind_fields, ind_genotype]
+        parents.extend(ind_parents)
     # ready to create population
-    fields = [x for x in (idField, fatherField, motherField) if x != '']
+    fields = [x for x in (idField, fatherField, motherField) if x != ''][:(maxParents+1)]
     if len(fields) < maxParents + 1:
-        raise RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (maxParents + 1))
+        raise exceptions.RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (maxParents + 1))
+    if maxParents == 1 and fatherField != '' and motherField != '':
+        motherField = ''
+    # additional information fields
+    fields += infoFields
     # empty file
-    if len(parentMap) == 0:
+    if len(individualInfo) == 0:
         return Population(infoFields=fields)
-    # top most generation....
-    parents = set(parents) - set(parentMap.keys())
+    # top most generation consists of
+    #  top_parents:  individuals with no parent (ID=0)
+    #  parents: being parents to others less
+    #    - offspring: who have parents.
+    parents = set(top_parents) | (set(parents) - set(individualInfo.keys()))
     if len(parents) == 0:
-        raise RuntimeError('No parents in the top-most ancestral generation')
-    pop = Population(size=len(parents), infoFields=fields, ancGen=-1)
+        raise exceptions.RuntimeError('No parents in the top-most ancestral generation')
+    pop = Population(size=len(parents), ploidy=ploidy, loci=numLoci, infoFields=fields, ancGen=-1, *args, **kwargs)
     # set individual IDs, but no parental ID.
     pop.setIndInfo(sorted(parents), fields[0])
     # this is to make indByID run faster.
     pop.asPedigree(idField=idField, fatherField=fatherField, motherField=motherField)
+    numLoci = pop.totNumLoci()
+    # set information
+    for id in top_parents:
+        ind = pop.indByID(id)
+        info = individualInfo[id]
+        if info[1] == 'F':
+            ind.setSex(FEMALE)
+        if info[2] == 'A':
+            ind.setAffected(True)
+        if len(info[3]) > 0:
+            if len(info[3]) != len(infoFields):
+                raise exceptions.RuntimeError('Number of specified (%d) and required (%d) information fields do not match' % (len(info[3]), len(infoFields)))
+            for idx,field in enumerate(infoFields):
+                ind.setInfo(info[3][idx], field)
+        if len(info[4]) > 0:
+            if len(info[4]) != numLoci * ploidy:
+                raise exceptions.RuntimeError('Number of specified (%d) and required (%d) number of alleles do not match' % (len(info[4]), numLoci*ploidy))
+            ind.setGenotype(info[4][0::2] + info[4][1::2])
     # create other generations
     while True:
         if len(parents) == 0:
             break
-        offspring = [x for x,y in parentMap.iteritems() if True in [z in parents for z in y]]
+        offspring = [x for x,y in individualInfo.iteritems() if True in [z in parents for z in y[0]]]
         if len(offspring) == 0:
             break
         offspring.sort()
         # create offspring generation
-        offPop = Population(size=len(offspring), infoFields=fields)
+        offPop = Population(size=len(offspring), ploidy=ploidy, loci=numLoci, infoFields=fields)
         # set ID
         offPop.setIndInfo(offspring, fields[0])
         fatherIDs = []
         motherIDs = []
         hasMotherID = False
-        for ind in offspring:
-            p = parentMap[ind]
+        for idx,ind in enumerate(offspring):
+            info = individualInfo.pop(ind)
+            p = info[0]
             fatherIDs.append(p[0])
             if len(p) > 1:
                 motherIDs.append(p[1])
@@ -1061,8 +1155,21 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
             pop.indByID(p[0]).setSex(MALE)
             if len(p) > 1:
                 pop.indByID(p[1]).setSex(FEMALE)
-            # this offspring has been handled
-            parentMap.pop(ind)
+            #
+            off = offPop.individual(idx)
+            if info[1] == 'F':
+                off.setSex(FEMALE)
+            if info[2] == 'A':
+                off.setAffected(True)
+            if len(info[3]) > 0:
+                if len(info[3]) != len(infoFields):
+                    raise exceptions.RuntimeError('Number of specified (%d) and required (%d) information fields do not match' % (len(info[3]), len(infoFields)))
+                for idx,field in enumerate(infoFields):
+                    off.setInfo(info[3][idx], field)
+            if len(info[4]) > 0:
+                if len(info[4]) != numLoci * ploidy:
+                    raise exceptions.RuntimeError('Number of specified (%d) and required (%d) number of alleles do not match' % (len(info[4]), numLoci*ploidy))
+                off.setGenotype(info[4][0::2] + info[4][1::2])
         offPop.setIndInfo(fatherIDs, fields[1])
         if hasMotherID:
             offPop.setIndInfo(motherIDs, fields[2])

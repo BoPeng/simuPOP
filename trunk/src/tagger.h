@@ -301,26 +301,33 @@ public:
 	 *  (father if both pedigree are valid).
 	 *
 	 *  This operator by default does not send any output but will output the
-	 *  ID of offspring, father, and mother if a valid output stream is
+	 *  ID of offspring, IDs of his or her parent(s), sex and affection status
+	 *  of offspring, and values at specified information fields
+	 *  (\e outputFields) and loci (\e outputLoci) if a valid output stream is
 	 *  specified. The output will be in the format of
-	 *  <tt>off_id father_id mother_id</tt>. \c father_id or \c mother_id will
-	 *  be ignored if only one parent is involved. The output should be in the
-	 *  form of \c '>>filename' so that parental IDs of all individuals are
-	 *  saved. This file can be loaded by function \c loadPedigree to
-	 *  reconstruct a complete pedigree. Due to imcomplete information, a
-	 *  pedigree object create in this way does not contain parents who do not
-	 *  have offspring in the top-most ancestral generation, and does not contain
-	 *  sex information for individuals in the present generation. This operator
-	 *  ignores parameter \e stage, and \e subPops.
+	 *  <tt>off_id father_id mother_id M/F A/U fields genotype</tt>.
+	 *  \c father_id or \c mother_id will be ignored if only one parent is
+	 *  involved. The output should be in the form of \c '>>filename' so that
+	 *  parental IDs of all individuals are saved. This file can be loaded by
+	 *  function \c loadPedigree to reconstruct a complete pedigree. Due to
+	 *  imcomplete information, a pedigree object create in this way does not
+	 *  contain parents who do not have offspring in the top-most ancestral
+	 *  generation. Note that offspring sex, affection status and genotype
+	 *  may be changed by during-mating operators that are applied after this
+	 *  operator so it is recommended that this operator is used after all
+	 *  other during-mating operators are applied. This operator ignores
+	 *  parameters \e stage, and \e subPops.
 	 */
 	PedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
+		const stringList & outputFields = vectorstr(), const uintList & outputLoci = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("father_id", "mother_id")) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_idField(idField)
+		m_idField(idField), m_outputFields(outputFields), m_outputLoci(outputLoci)
 	{
-	};
+	}
+
 
 	virtual ~PedigreeTagger()
 	{
@@ -345,6 +352,8 @@ public:
 
 private:
 	const string m_idField;
+	stringList m_outputFields;
+	uintList m_outputLoci;
 };
 
 
