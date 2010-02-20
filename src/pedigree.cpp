@@ -24,9 +24,9 @@
  */
 
 #include "pedigree.h"
-// #include <fstream>
+#include <fstream>
 // using std::ifstream;
-// using std::ofstream;
+using std::ofstream;
 //
 // #include <sstream>
 // using std::istringstream;
@@ -118,6 +118,61 @@ void Pedigree::buildIDMap()
 Pedigree * Pedigree::clone() const
 {
 	return new Pedigree(*this);
+}
+
+
+void Pedigree::save(const string & filename, const stringList & fieldList,
+                    const uintList & lociList) const
+{
+	ofstream file(filename.c_str());
+
+	if (!file)
+		throw RuntimeError("Cannot open file " + filename + " for write.");
+
+	vectorstr fields = fieldList.allAvail() ? infoFields() : fieldList.elems();
+	vectoru indexes;
+	for (size_t i = 0; i < fields.size(); ++i)
+		indexes.push_back(infoIdx(fields[i]));
+
+	UINT ply = ploidy();
+	vectoru loci = lociList.elems();
+	if (lociList.allAvail())
+		for (size_t i = 0; i < totNumLoci(); ++i)
+			loci.push_back(i);
+
+	UINT curGen = curAncestralGen();
+	for (int gen = ancestralGens(); gen >= 0; --gen) {
+		const_cast<Pedigree *>(this)->useAncestralGen(gen);
+		ConstRawIndIterator it = rawIndBegin();
+		ConstRawIndIterator it_end = rawIndEnd();
+		for (; it != it_end; ++it) {
+			file << toID(it->info(m_idIdx));
+			if (m_fatherIdx != -1) {
+				ULONG fatherID = toID(it->info(m_fatherIdx));
+				if (m_idMap.find(fatherID) != m_idMap.end())
+					file << " " << fatherID;
+				else
+					file << " 0";
+			}
+			if (m_motherIdx != -1) {
+				ULONG motherID = toID(it->info(m_motherIdx));
+				if (m_idMap.find(motherID) != m_idMap.end())
+					file << " " << motherID;
+				else
+					file << " 0";
+			}
+			file	<< (it->sex() == MALE ? " M" : " F")
+			        << (it->affected() ? " A" : " U");
+			for (size_t i = 0; i < indexes.size(); ++i)
+				file << " " << it->info(indexes[i]);
+			for (size_t i = 0; i < loci.size(); ++i)
+				for (size_t p = 0; p < ply; ++p)
+					file << " " << it->allele(loci[i], p);
+			file << "\n";
+		}
+	}
+	const_cast<Pedigree *>(this)->useAncestralGen(curGen);
+	file.close();
 }
 
 

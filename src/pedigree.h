@@ -116,6 +116,26 @@ public:
 	 */
 	Pedigree * clone() const;
 
+	/** Save a pedigree to file \e filename. This function goes through all
+	 *  individuals of a pedigree and outputs in each line the ID of individual,
+	 *  IDs of his or her parents, sex (\c 'M' or \c 'F'), affection status
+	 *  (\c 'A' or \c 'U'), values of specified information fields
+	 *  \e infoFields and genotypes at specified loci (parameter \c loci, which
+	 *  can be a list of loci or \c ALL_AVAIL). Allele numbers, instead of
+	 *  their names are outputed. Two columns are used for each locus if the
+	 *  population is diploid. This file can be loaded using function
+	 *  \c loadPedigree although additional information such as names of
+	 *  information fields need to be specified. This format differs from a
+	 *  \c .ped file used in some genetic analysis software in that there is
+	 *  no family ID and IDs of all individuals have to be unique. Note that
+	 *  parental IDs will be set to zero if the parent is not in the pedigree
+	 *  object. Therefore, the parents of individuals in the top-most ancestral
+	 *  generation will always be zero.
+	 *  <group>1-ped</group>
+	 */
+	void save(const string & filename, const stringList & infoFields = vectorstr(),
+		const uintList & loci = vectoru()) const;
+
 	/** Return a reference to individual with \e id. An \c IndexError will be
 	 *  raised if no individual with \e id is found. An float \e id is
 	 *  acceptable as long as it rounds closely to an integer.

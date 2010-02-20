@@ -1491,16 +1491,31 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(sex[500:550], [MALE]*50)
         self.assertEqual(sex[550:600], [FEMALE]*50)
 
-    def testLoadPedigree(self):
+    def testSaveLoadPedigree(self):
         'Testing function loadPedigree'
-        pop = Population(500, infoFields=['ind_id', 'father_id'])
+        pop = Population(500, infoFields=['ind_id', 'father_id'], ancGen=-1, loci=[1])
         tagID(pop, reset=True)
         pop.evolve(
+            initOps = InitGenotype(freq=[0.5, 0.5]),
             matingScheme=RandomSelection(ops=[
                 CloneGenoTransmitter(), IdTagger(),
                     PedigreeTagger(infoFields='father_id', output='>>test.ped')]),
             gen = 10
         )
+        #
+        pop.asPedigree(motherField='')
+        pop.save('test1.ped', loci=0)
+        ped1 = loadPedigree('test1.ped')
+        ped1.save('test2.ped', loci=0)
+        ped2 = loadPedigree('test2.ped')
+        self.assertEqual(ped1, ped2)
+        #
+        pop.save('test1.ped', loci=0, infoFields='ind_id')
+        ped1 = loadPedigree('test1.ped', infoFields='ind_id1')
+        ped1.save('test2.ped', loci=0, infoFields='ind_id')
+        ped2 = loadPedigree('test2.ped', infoFields='ind_id1')
+        self.assertEqual(ped1, ped2)
+        #
         ped = loadPedigree('test.ped', motherField='')
         self.assertEqual(ped.ancestralGens(), 10)
         for gen in range(11):
@@ -1513,16 +1528,32 @@ class TestPopulation(unittest.TestCase):
         ped.useAncestralGen(0)
         self.assertNotEqual(ped.individual(0).father_id, 0)
         # two parents
-        pop = Population(500, infoFields=['ind_id', 'father_id', 'mother_id'])
+        pop = Population(500, loci=[2], ancGen=-1, infoFields=['ind_id', 'father_id', 'mother_id'])
         tagID(pop, reset=True)
         pop.evolve(
-            initOps = InitSex(),
+            initOps = [
+                InitSex(),
+                InitGenotype(freq=[0.5, 0.5]),
+            ],
             matingScheme=RandomMating(ops=[
                 MendelianGenoTransmitter(),
                 IdTagger(),
                 PedigreeTagger(output='>>test.ped')]),
             gen = 20
         )
+        #
+        pop.asPedigree()
+        pop.save('test1.ped', loci=0)
+        ped1 = loadPedigree('test1.ped')
+        ped1.save('test2.ped', loci=0)
+        ped2 = loadPedigree('test2.ped')
+        self.assertEqual(ped1, ped2)
+        #
+        pop.save('test1.ped', loci=0, infoFields='ind_id')
+        ped1 = loadPedigree('test1.ped', infoFields='ind_id1')
+        ped1.save('test2.ped', loci=0, infoFields='ind_id')
+        ped2 = loadPedigree('test2.ped', infoFields='ind_id1')
+        self.assertEqual(ped1, ped2)
         #
         ped = loadPedigree('test.ped')
         self.assertEqual(ped.ancestralGens(), 20)
@@ -1537,8 +1568,9 @@ class TestPopulation(unittest.TestCase):
         ped.useAncestralGen(0)
         self.assertNotEqual(ped.individual(0).father_id, 0)
         self.assertNotEqual(ped.individual(0).mother_id, 0)
-        # two parents
-        #os.remove('test.ped')
+        # cleanup
+        for file in ['test.ped', 'test1.ped', 'test2.ped']:
+            os.remove(file)
 
 if __name__ == '__main__':
     unittest.main()

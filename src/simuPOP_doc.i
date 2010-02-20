@@ -4220,6 +4220,32 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Pedigree::save "
+
+Usage:
+
+    x.save(filename, infoFields=[], loci=[])
+
+Details:
+
+    Save a pedigree to file filename. This function goes through all
+    individuals of a pedigree and outputs in each line the ID of
+    individual, IDs of his or her parents, sex ('M' or 'F'), affection
+    status ('A' or 'U'), values of specified information fields
+    infoFields and genotypes at specified loci (parameter loci, which
+    can be a list of loci or ALL_AVAIL). Allele numbers, instead of
+    their names are outputed. Two columns are used for each locus if
+    the population is diploid. This file can be loaded using function
+    loadPedigree although additional information such as names of
+    information fields need to be specified. This format differs from
+    a .ped file used in some genetic analysis software in that there
+    is no family ID and IDs of all individuals have to be unique. Note
+    that parental IDs will be set to zero if the parent is not in the
+    pedigree object. Therefore, the parents of individuals in the top-
+    most ancestral generation will always be zero.
+
+"; 
+
 %feature("docstring") simuPOP::Pedigree::indByID "
 
 Usage:
@@ -4491,9 +4517,9 @@ Details:
 
 Usage:
 
-    PedigreeTagger(idField=\"ind_id\", output=\"\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[\"father_id\", \"mother_id\"])
+    PedigreeTagger(idField=\"ind_id\", output=\"\", outputFields=[],
+      outputLoci=[], begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[\"father_id\", \"mother_id\"])
 
 Details:
 
@@ -4507,17 +4533,22 @@ Details:
     field is given, it will be used to record the ID of the first
     valid parent (father if both pedigree are valid).  This operator
     by default does not send any output but will output the ID of
-    offspring, father, and mother if a valid output stream is
+    offspring, IDs of his or her parent(s), sex and affection status
+    of offspring, and values at specified information fields
+    (outputFields) and loci (outputLoci) if a valid output stream is
     specified. The output will be in the format of off_id father_id
-    mother_id. father_id or mother_id will be ignored if only one
-    parent is involved. The output should be in the form of
-    '>>filename' so that parental IDs of all individuals are saved.
-    This file can be loaded by function loadPedigree to reconstruct a
-    complete pedigree. Due to imcomplete information, a pedigree
-    object create in this way does not contain parents who do not have
-    offspring in the top-most ancestral generation, and does not
-    contain sex information for individuals in the present generation.
-    This operator ignores parameter stage, and subPops.
+    mother_id M/F A/U fields genotype. father_id or mother_id will be
+    ignored if only one parent is involved. The output should be in
+    the form of '>>filename' so that parental IDs of all individuals
+    are saved. This file can be loaded by function loadPedigree to
+    reconstruct a complete pedigree. Due to imcomplete information, a
+    pedigree object create in this way does not contain parents who do
+    not have offspring in the top-most ancestral generation. Note that
+    offspring sex, affection status and genotype may be changed by
+    during-mating operators that are applied after this operator so it
+    is recommended that this operator is used after all other during-
+    mating operators are applied. This operator ignores parameters
+    stage, and subPops.
 
 "; 
 

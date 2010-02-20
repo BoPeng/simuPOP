@@ -302,6 +302,28 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 		out << ' ' << dad->info(m_idField);
 	if (mom != NULL)
 		out << ' ' << mom->info(m_idField);
+	out << (offspring->sex() == MALE ? " M" : " F")
+	    << (offspring->affected() ? " A" : " U");
+	if (m_outputFields.allAvail())
+		for (size_t i = 0; i < pop.infoSize(); ++i)
+			out << ' ' << offspring->info(i);
+	else if (!m_outputFields.elems().empty()) {
+		const vectorstr & fields = m_outputFields.elems();
+		for (size_t i = 0; i < fields.size(); ++i)
+			out << ' ' << offspring->info(fields[i]);
+	}
+	if (m_outputLoci.allAvail()) {
+		UINT pldy = pop.ploidy();
+		for (size_t i = 0; i < pop.totNumLoci(); ++i)
+			for (size_t p = 0; p < pldy; ++p)
+				out << ' ' << offspring->allele(i, p);
+	} else if (!m_outputLoci.elems().empty()) {
+		UINT pldy = pop.ploidy();
+		const vectoru & loci = m_outputLoci.elems();
+		for (size_t i = 0; i < loci.size(); ++i)
+			for (size_t p = 0; p < pldy; ++p)
+				out << ' ' << offspring->allele(loci[i], p);
+	}
 	out << '\n';
 	return true;
 }
