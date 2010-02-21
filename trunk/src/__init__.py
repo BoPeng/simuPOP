@@ -1025,7 +1025,7 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
     else:
         ploidy = 2
     individualInfo = {}
-    maxParents = -1
+    maxParents = 0
     # get all IDs
     input = open(file)
     top_parents = []
@@ -1040,43 +1040,33 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
             raise exceptions.RuntimeError('Offspring ID is not unique: %s' % ind_id)
         if len(fields) < 2:
             raise exceptions.RuntimeError('A line in a pedigree file must have at least two columns')
-        ind_parents = [int(fields[1])]
-        ind_sex = 'M'
         ind_affectionStatus = 'U'
+        sex_col = 0
+        for index in (1, 2, 3):
+            if len(fields) > index and fields[index] in ('M', 'F'):
+                sex_col = index
+                break
+        if sex_col == 0:
+            raise exceptions.RuntimeError('A pedigree file must have a sex column with value M or F')
+        ind_parents = [int(fields[x]) for x in range(1, sex_col)]
+        ind_sex = fields[sex_col]
+        if len(fields) > sex_col + 1 and fields[sex_col + 1] in ['A', 'U']:
+            ind_affectionStatus = fields[sex_col + 1]
+            start_col = sex_col + 2
+        else:
+            start_col = sex_col + 1
+        # information fields and genotype
+        start_geno = start_col + len(infoFields)
+        if start_geno > len(fields):
+            raise exceptions.RuntimeError('Insufficient number of columns (%d required, %d exist).\n' % (start_geno, len(fields)) + line + '\n')
+        ind_fields = [float(x) for x in fields[start_col : start_geno]]
         ind_genotype = []
-        ind_fields = []
-        if len(fields) > 2:
-            if fields[2] in ['M', 'F']:
-                ind_sex = fields[2]
-                if len(fields) > 3 and fields[3] in ['A', 'U']:
-                    ind_affectionStatus = fields[3]
-                    start_col = 4
-                else:
-                    start_col = 3
-            else:
-                ind_parents.append(int(fields[2]))
-                #
-                if len(fields) > 3 and fields[3] in ['M', 'F']:
-                    ind_sex = fields[3]
-                    if len(fields) > 4 and fields[4] in ['A', 'U']:
-                        ind_affectionStatus = fields[4]
-                        start_col = 5
-                    else:
-                        start_col = 4
-                else:
-                    start_col = 3
-            # information fields and genotype
-            start_geno = start_col + len(infoFields)
-            if start_geno > len(fields):
-                raise exceptions.RuntimeError('Insufficient number of columns (%d required, %d exist).\n' % (start_geno, len(fields)) + line + '\n')
-            if len(infoFields) > 0:
-                ind_fields = [float(x) for x in fields[start_col : start_geno]]
-            if start_geno < len(fields):
-                ind_genotype = [int(x) for x in fields[start_geno:]]
-                if numLoci == []:
-                    if len(ind_genotype) % ploidy != 0:
-                        raise exceptions.RuntimeError('Incorrect number of columns with %d information fields and %d genotype columns' % (len(infoFields), len(ind_genotype)))
-                    numLoci = [len(ind_genotype) / ploidy]
+        if start_geno < len(fields):
+            ind_genotype = [int(x) for x in fields[start_geno:]]
+            if numLoci == []:
+                if len(ind_genotype) % ploidy != 0:
+                    raise exceptions.RuntimeError('Incorrect number of columns with %d information fields and %d genotype columns' % (len(infoFields), len(ind_genotype)))
+                numLoci = [len(ind_genotype) / ploidy]
         #
         if len(ind_parents) > maxParents:
             maxParents = len(ind_parents)
@@ -1090,8 +1080,13 @@ def loadPedigree(file, idField='ind_id', fatherField='father_id', motherField='m
     fields = [x for x in (idField, fatherField, motherField) if x != ''][:(maxParents+1)]
     if len(fields) < maxParents + 1:
         raise exceptions.RuntimeError('At least %s valid information fields are needed to store ID and parental information.' % (maxParents + 1))
-    if maxParents == 1 and fatherField != '' and motherField != '':
+    if maxParents == 0:
+        fatherField = ''
         motherField = ''
+    elif maxParents == 1 and fatherField != '' and motherField != '':
+        motherField = ''
+    elif maxParents == 2 and (fatherField == '' or motherField == ''):
+        raise exceptins.RuntimeError('Two parental fields are needed to store parental information of this pedigree.')
     # additional information fields
     fields += infoFields
     # empty file

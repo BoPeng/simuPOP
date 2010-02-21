@@ -1491,6 +1491,17 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(sex[500:550], [MALE]*50)
         self.assertEqual(sex[550:600], [FEMALE]*50)
 
+    def testIDOnlyPedigree(self):
+        'Testing pedigrees with only individual ID'
+        pop = Population(500, ancGen=1, infoFields='ind_id')
+        initSex(pop)
+        tagID(pop)
+        pop.asPedigree(fatherField='', motherField='')
+        pop.save('ind.ped')
+        ped = loadPedigree('ind.ped')
+        os.remove('ind.ped')
+
+
     def testSaveLoadPedigree(self):
         'Testing function loadPedigree'
         pop = Population(500, infoFields=['ind_id', 'father_id'], ancGen=-1, loci=[1])

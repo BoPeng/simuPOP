@@ -107,7 +107,7 @@ void Pedigree::buildIDMap()
 			ULONG id = toID(it->info(m_idIdx));
 			DBG_WARNING(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Different individuals share the same ID " + toStr(id) +
-				"so only the latest Individual will be used. If this is an "
+				" so only the latest Individual will be used. If this is an "
 				"age-structured population, you may want to remove parental generations.");
 			m_idMap[id] = &*it;
 		}
