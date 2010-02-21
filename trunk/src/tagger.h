@@ -300,23 +300,29 @@ public:
 	 *  is given, it will be used to record the ID of the first valid parent
 	 *  (father if both pedigree are valid).
 	 *
-	 *  This operator by default does not send any output but will output the
-	 *  ID of offspring, IDs of his or her parent(s), sex and affection status
-	 *  of offspring, and values at specified information fields
-	 *  (\e outputFields) and loci (\e outputLoci) if a valid output stream is
-	 *  specified. The output will be in the format of
-	 *  <tt>off_id father_id mother_id M/F A/U fields genotype</tt>.
-	 *  \c father_id or \c mother_id will be ignored if only one parent is
-	 *  involved. The output should be in the form of \c '>>filename' so that
-	 *  parental IDs of all individuals are saved. This file can be loaded by
-	 *  function \c loadPedigree to reconstruct a complete pedigree. Due to
-	 *  imcomplete information, a pedigree object create in this way does not
-	 *  contain parents who do not have offspring in the top-most ancestral
-	 *  generation. Note that offspring sex, affection status and genotype
-	 *  may be changed by during-mating operators that are applied after this
-	 *  operator so it is recommended that this operator is used after all
-	 *  other during-mating operators are applied. This operator ignores
-	 *  parameters \e stage, and \e subPops.
+	 *  This operator by default does not send any output. If a valid output
+	 *  stream is given (should be in the form of \c '>>filename' so that
+	 *  output will be concatenated), this operator will output the ID of
+	 *  offspring, IDs of his or her parent(s), sex and affection status of
+	 *  offspring, and values at specified information fields (\e outputFields)
+	 *  and loci (\e outputLoci) in the format of  <tt>off_id father_id
+	 *  mother_id M/F A/U fields genotype</tt>. \c father_id or \c mother_id
+	 *  will be ignored if only one parent is involved. This file format
+	 *  can be loaded using function \c loadPedigree.
+	 *
+	 *  Because only offspring will be outputed, individuals in the top-most
+	 *  ancestral generation will not be outputed. This is usually not a
+	 *  problem because individuals who have offspring in the next generation
+	 *  will be constructed by function \c loadPedigree, although their
+	 *  information fields and genotype will be missing. If you would like
+	 *  to create a file with complete pedigree information, you can apply
+	 *  this operator before evolution in the \e initOps parameter of functions
+	 *  \c Population.evolve or \c Simulator.evolve. This will output all
+	 *  individuals in the initial population (the top-most ancestral
+	 *  population after evolution) in the same format. Note that sex,
+	 *  affection status and genotype can be changed by other operators so this
+	 *  operator should usually be applied after all other operators are
+	 *  applied.
 	 */
 	PedigreeTagger(const string & idField = "ind_id", const stringFunc & output = "",
 		const stringList & outputFields = vectorstr(), const uintList & outputLoci = vectoru(),
@@ -344,11 +350,19 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const;
 
+	/** HIDDEN If an output stream is specified, output current population. */
+	virtual bool apply(Population & pop) const;
+
 	/** CPPONLY
 	 * apply the \c PedigreeTagger
 	 */
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
+
+private:
+
+	void outputIndividual(ostream & out, const Individual * ind,
+		const vectoru & IDs) const;
 
 private:
 	const string m_idField;

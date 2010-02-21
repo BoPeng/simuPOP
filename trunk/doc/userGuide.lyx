@@ -8635,8 +8635,11 @@ Pedigree.asPopulation()
 \end_layout
 
 \begin_layout Standard
-A pedigree object without genotype can also be created from a file saved
- by operator 
+A pedigree object can also be created from a file saved by function 
+\family typewriter
+Pedigree.save()
+\family default
+ or operator 
 \family typewriter
 PedigreeTagger
 \family default
@@ -8645,40 +8648,11 @@ PedigreeTagger
 loadPedigree
 \family default
 .
- This file records the IDs of offspring and their parents during the evolution
- of a population.
- Because only IDs of offspring and their parents are recorded, the loaded
- pedigree does not have any genotype information.
- It also does not contain ancestors in the top-most generation who do not
- have offspring in the next generation.
- Because sex could be determined only for individuals who have offspring
- (father or mother), ancestors who do not have offspring and individuals
- in the last generation are all assumed to be males.
- The loaded pedigree does not have subpopulation information either.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "loadPedigree"
-
-\end_inset
-
- demonstrates how to save a complete pedigree and load it using function
- 
-\family typewriter
-loadPedigree
-\family default
-.
- The number of males in each generation is not correctly recovered because
- of the incomplete information saved to the pedigree file.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/loadPedigree.log"
-lstparams "caption={Save and create a complete pedigree},label={loadPedigree}"
-
-\end_inset
-
-
+ Please refer to section 
+\emph on
+save and load pedigrees
+\emph default
+ in details.
 \end_layout
 
 \begin_layout Subsection
@@ -8909,6 +8883,89 @@ reference "locateFamilies"
 LatexCommand lstinputlisting
 filename "log/locateFamilies.log"
 lstparams "caption={Identify all ancestors, offspring or all related individuals},label={locateFamilies}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Save and load pedigrees
+\end_layout
+
+\begin_layout Standard
+A complete pedigree, including ID, sex and affection status of each individual,
+ IDs of their parents, and optionally values of some information fields
+ and genotypes at some loci could be saved to a file, and be loaded using
+ function 
+\family typewriter
+loadPedigree
+\family default
+.
+ The loaded pedigree could be analyzed using pedigree functions, or be used
+ to direct the evolution of another evolutionary process using a pedigree
+ mating scheme.
+\end_layout
+
+\begin_layout Standard
+A pedigree could be saved in two ways.
+ In the first method, a pedigree could be created using the methods described
+ above and be saved using function 
+\family typewriter
+Pedigree.save()
+\family default
+.
+ However, if the population is large, recording all ancestral generations
+ may not be feasible.
+ If this is the case, you can use a 
+\family typewriter
+PedigreeTagger
+\family default
+ operator to save individual information during the evolution.
+ If you do not care about details of the top-most ancestral generation,
+ a PedigreeTagger used in a mating scheme should be enough to record pedigree
+ information of all offspring.
+ Individual in the top-most generation who have offspring in the next generation
+ will be constructed in 
+\family typewriter
+loadPedigree
+\family default
+.
+ If you would like to include detailed information about all individuals
+ in the top-most ancestral generation, you can use a 
+\family typewriter
+PedigreeTagger
+\family default
+ in the 
+\family typewriter
+initOps
+\family default
+ parameter of the 
+\family typewriter
+Simulator.evolve()
+\family default
+ or 
+\family typewriter
+Population.evolve()
+\family default
+ function.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "saveLoadPedigree"
+
+\end_inset
+
+ demonstrates how to use these functions to analyze the structure of a complete
+ pedigree.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/saveLoadPedigree.log"
+lstparams "caption={Save and load a complete pedigree},label={saveLoadPedigree}"
 
 \end_inset
 
@@ -15476,9 +15533,39 @@ PedigreeTagger
 \family default
  does not produce any output.
  However, if a valid output string (or function) is specified, it will output
- the ID of offspring and all available parents.
- Such information is enough to reconstruct the complete pedigree of an evolution
-ary process.
+ the ID of offspring and their parents, sex and affection status of offspring,
+ and optionally values at specified information fields (parameter 
+\family typewriter
+outputFields
+\family default
+) and genotype at specified loci (parameter 
+\family typewriter
+outputLoci
+\family default
+).
+ Because this operator only outputs offspring, the saved file does not have
+ detailed information of individuals in the top-most ancestral generation.
+ If you would like to record complete pedigree information, you can apply
+ 
+\family typewriter
+PedigreeTagger
+\family default
+ in the 
+\family typewriter
+initOps
+\family default
+ operator of function 
+\family typewriter
+Simulator.evolve
+\family default
+ or 
+\family typewriter
+Population.evolve
+\family default
+ to output information of the initial population.
+ Although this operator is primarily used to output pedigree information,
+ values at specified information fields and genotypes at specified loci
+ could also be outputed.
 \end_layout
 
 \begin_layout Standard

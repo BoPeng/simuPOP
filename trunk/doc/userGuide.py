@@ -1674,54 +1674,6 @@ for pop in simu.populations():
 
 #end_file
 
-#begin_file log/loadPedigree.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.getRNG().set(seed=12345)
-#end_ignore
-pop = sim.Population([500, 500], infoFields=['ind_id', 'father_id', 'mother_id'])
-# a random expansion demographic model
-import random
-def demoModel(pop):
-    return [x+random.randint(100, 200) for x in pop.subPopSizes()]
-
-pop.evolve(
-    initOps=[
-        sim.InitSex(),
-        sim.IdTagger(),
-    ],
-    matingScheme=sim.RandomMating(
-        numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 4),
-        ops=[
-            sim.MendelianGenoTransmitter(),
-            sim.IdTagger(),
-            sim.PedigreeTagger(output='>>pedigree.ped')
-        ],
-        subPopSize=demoModel,
-    ),
-    postOps=[
-        sim.Stat(popSize=True, numOfMales=True),
-        sim.PyEval(r"'Popsize: %s, number of males: %d\n' % (subPopSize, numOfMales)")
-    ],
-    gen = 5
-)
-#
-ped = sim.loadPedigree('pedigree.ped')
-for gen in range(ped.ancestralGens(), -1, -1):
-    ped.useAncestralGen(gen)
-    sim.stat(ped, numOfMales=True)
-    print 'PopSize:%s, number of males: %d' % (ped.subPopSizes(), ped.dvars().numOfMales)
-
-#begin_ignore
-import os
-os.remove('pedigree.ped')
-#end_file
-
-
 #begin_file log/locateRelative.py
 #begin_ignore
 import simuOpt
@@ -1836,6 +1788,48 @@ len([x for x in fam if x > 1])
 allAnc = pop.identifyAncestors()
 len(allAnc)
 #end_file
+
+
+#begin_file log/saveLoadPedigree.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population(4, loci=1, infoFields=['ind_id', 'father_id', 'mother_id'],
+    ancGen=-1)
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.IdTagger(),
+        sim.InitGenotype(freq=[0.5, 0.5]),
+        sim.PedigreeTagger(output='>>pedigree.ped', outputLoci=0)
+    ],
+    matingScheme=sim.RandomMating(
+        ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.IdTagger(),
+            sim.PedigreeTagger(output='>>pedigree.ped', outputLoci=0)
+        ],
+    ),
+    gen = 2
+)
+#
+print open('pedigree.ped').read()
+pop.asPedigree()
+pop.save('pedigree1.ped', loci=0)
+print open('pedigree1.ped').read()
+# 
+ped = sim.loadPedigree('pedigree1.ped')
+sim.dump(ped, ancGens=range(3))
+#begin_ignore
+import os
+os.remove('pedigree.ped')
+#end_file
+
 
 
 #begin_file log/InitSex.py
@@ -3434,19 +3428,28 @@ pop = sim.Population(100, infoFields=['ind_id', 'father_id', 'mother_id'])
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.IdTagger()
+        sim.IdTagger(),
+        sim.PedigreeTagger(output='>>pedigree.txt'),
     ],
     matingScheme=sim.RandomMating(ops=[
         sim.IdTagger(),
-        sim.PedigreeTagger(output=">>pedigree.txt"),
+        sim.PedigreeTagger(output='>>pedigree.txt'),
         sim.MendelianGenoTransmitter()]
     ),
     gen = 100
 )
 ped = open('pedigree.txt')
-print ''.join(ped.readlines()[100:105])
-#begin_ignore
+lines = ped.readlines()
 ped.close()
+# first few lines, saved by the first PedigreeTagger
+print ''.join(lines[:3])
+# last several lines, saved by the second PedigreeTagger
+print ''.join(lines[-3:])
+# load this file
+ped = sim.loadPedigree('pedigree.txt')
+# should have 100 ancestral generations (plus one present generation)
+ped.ancestralGens()
+#begin_ignore
 import os
 os.remove('pedigree.txt')
 #end_ignore
