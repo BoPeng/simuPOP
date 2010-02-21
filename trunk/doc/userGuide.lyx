@@ -25119,25 +25119,6 @@ lstparams "caption={Use a pedigree mating scheme to replay an evolutionary proce
 \end_layout
 
 \begin_layout Standard
-If you would like to reset sex or copy more information from the pedigree
- individual, you could define a Python during-mating operator using the
- 
-\family typewriter
-Pedigree
-\family default
- object as 
-\emph on
-param
-\emph default
-.
- In this function, you can look up the pedigree individual using 
-\family typewriter
-param.indByID(off.ind_id)
-\family default
- and copy desired information to offspring.
-\end_layout
-
-\begin_layout Standard
 As long as unique IDs are used for individuals in different generations,
  the same technique could be used for overlapping generations as well.
  Even if some individuals are copied from generation to generation, separate
