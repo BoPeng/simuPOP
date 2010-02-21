@@ -360,7 +360,6 @@ public:
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 private:
-
 	void outputIndividual(ostream & out, const Individual * ind,
 		const vectoru & IDs) const;
 

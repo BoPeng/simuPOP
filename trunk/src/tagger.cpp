@@ -272,8 +272,8 @@ string PedigreeTagger::describe(bool format) const
 
 
 void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
-	const vectoru & IDs) const
-{	
+                                      const vectoru & IDs) const
+{
 	out << ind->info(m_idField);
 	for (size_t i = 0; i < IDs.size(); ++i)
 		out << ' ' << IDs[i];
@@ -338,6 +338,7 @@ bool PedigreeTagger::apply(Population & pop) const
 	pop.useAncestralGen(curGen);
 	return true;
 }
+
 
 bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        Individual * dad, Individual * mom) const
