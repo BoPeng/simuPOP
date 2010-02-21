@@ -23,7 +23,9 @@ New feature:
 		specific or all virtual subpopulation of specific or all subpopulations.
   - Add functions pedigree.identifyAncestors and pedigree.identifyOffspring and pedigree.save.
   - Add a mating scheme PedigreeMating.
-  - Add function loadPedigree to load pedigrees saved by operator PedigreeTagger.
+	- Allow operator PedigreeTagger to be applied to a population.
+  - Add function loadPedigree to load pedigrees saved by operator PedigreeTagger
+			and function Pedigree.save().
   - Operator IfElse now accepts a user-defined function.
 
 New features (minor):

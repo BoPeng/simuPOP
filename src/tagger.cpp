@@ -271,6 +271,74 @@ string PedigreeTagger::describe(bool format) const
 }
 
 
+void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
+	const vectoru & IDs) const
+{	
+	out << ind->info(m_idField);
+	for (size_t i = 0; i < IDs.size(); ++i)
+		out << ' ' << IDs[i];
+	out << (ind->sex() == MALE ? " M" : " F")
+	    << (ind->affected() ? " A" : " U");
+	if (m_outputFields.allAvail())
+		for (size_t i = 0; i < ind->infoSize(); ++i)
+			out << ' ' << ind->info(i);
+	else if (!m_outputFields.elems().empty()) {
+		const vectorstr & fields = m_outputFields.elems();
+		for (size_t i = 0; i < fields.size(); ++i)
+			out << ' ' << ind->info(fields[i]);
+	}
+	if (m_outputLoci.allAvail()) {
+		UINT pldy = ind->ploidy();
+		for (size_t i = 0; i < ind->totNumLoci(); ++i)
+			for (size_t p = 0; p < pldy; ++p)
+				out << ' ' << ind->allele(i, p);
+	} else if (!m_outputLoci.elems().empty()) {
+		UINT pldy = ind->ploidy();
+		const vectoru & loci = m_outputLoci.elems();
+		for (size_t i = 0; i < loci.size(); ++i)
+			for (size_t p = 0; p < pldy; ++p)
+				out << ' ' << ind->allele(loci[i], p);
+	}
+	out << '\n';
+}
+
+
+bool PedigreeTagger::apply(Population & pop) const
+{
+	if (noOutput())
+		return true;
+
+	//an ID map
+	std::map<ULONG, int> idMap;
+
+	ostream & out = getOstream(pop.dict());
+	size_t is = infoSize();
+	vectoru IDs(is);
+	vectoru idx(is);
+	for (size_t i = 0; i < infoSize(); ++i)
+		idx[i] = pop.infoIdx(infoField(i));
+
+	UINT idIdx = pop.infoIdx(m_idField);
+	int curGen = pop.curAncestralGen();
+	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
+		pop.useAncestralGen(depth);
+		ConstRawIndIterator it = pop.rawIndBegin();
+		ConstRawIndIterator it_end = pop.rawIndEnd();
+		for (; it != it_end; ++it) {
+			ULONG myID = toID(it->info(idIdx));
+			idMap[myID] = 1;
+			for (size_t i = 0; i < is; ++i) {
+				IDs[i] = toID(it->info(idx[i]));
+				if (idMap.find(IDs[i]) == idMap.end())
+					IDs[i] = 0;
+			}
+			outputIndividual(out, &*it, IDs);
+		}
+	}
+	pop.useAncestralGen(curGen);
+	return true;
+}
+
 bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        Individual * dad, Individual * mom) const
 {
@@ -280,51 +348,25 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 	UINT idIdx = pop.infoIdx(m_idField);
 	// record to one or two information fields
 	size_t is = infoSize();
+	vectoru IDs(is);
 	if (is == 1) {
-		UINT idx = pop.infoIdx(infoField(0));
 		if (dad != NULL)
-			offspring->setInfo(dad->info(idIdx), idx);
+			IDs[0] = toID(dad->info(idIdx));
 		else if (mom != NULL)
-			offspring->setInfo(mom->info(idIdx), idx);
+			IDs[0] = toID(mom->info(idIdx));
+		offspring->setInfo(IDs[0], pop.infoIdx(infoField(0)));
 	} else if (is == 2) {
-		UINT idx = pop.infoIdx(infoField(0));
-		UINT idx1 = pop.infoIdx(infoField(1));
-		offspring->setInfo(dad == NULL ? -1 : dad->info(idIdx), idx);
-		offspring->setInfo(mom == NULL ? -1 : mom->info(idIdx), idx1);
+		IDs[0] = dad == NULL ? 0 : toID(dad->info(idIdx));
+		IDs[1] = mom == NULL ? 0 : toID(mom->info(idIdx));
+		offspring->setInfo(IDs[0], pop.infoIdx(infoField(0)));
+		offspring->setInfo(IDs[1], pop.infoIdx(infoField(1)));
 	}
 
 	if (noOutput())
 		return true;
 
 	ostream & out = getOstream(pop.dict());
-	out << offspring->info(m_idField);
-	if (dad != NULL)
-		out << ' ' << dad->info(m_idField);
-	if (mom != NULL)
-		out << ' ' << mom->info(m_idField);
-	out << (offspring->sex() == MALE ? " M" : " F")
-	    << (offspring->affected() ? " A" : " U");
-	if (m_outputFields.allAvail())
-		for (size_t i = 0; i < pop.infoSize(); ++i)
-			out << ' ' << offspring->info(i);
-	else if (!m_outputFields.elems().empty()) {
-		const vectorstr & fields = m_outputFields.elems();
-		for (size_t i = 0; i < fields.size(); ++i)
-			out << ' ' << offspring->info(fields[i]);
-	}
-	if (m_outputLoci.allAvail()) {
-		UINT pldy = pop.ploidy();
-		for (size_t i = 0; i < pop.totNumLoci(); ++i)
-			for (size_t p = 0; p < pldy; ++p)
-				out << ' ' << offspring->allele(i, p);
-	} else if (!m_outputLoci.elems().empty()) {
-		UINT pldy = pop.ploidy();
-		const vectoru & loci = m_outputLoci.elems();
-		for (size_t i = 0; i < loci.size(); ++i)
-			for (size_t p = 0; p < pldy; ++p)
-				out << ' ' << offspring->allele(loci[i], p);
-	}
-	out << '\n';
+	outputIndividual(out, &*offspring, IDs);
 	return true;
 }
 
