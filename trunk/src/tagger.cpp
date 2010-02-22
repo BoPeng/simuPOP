@@ -274,7 +274,7 @@ string PedigreeTagger::describe(bool format) const
 void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
                                       const vectoru & IDs) const
 {
-	out << ind->info(m_idField);
+	out << toID(ind->info(m_idField));
 	for (size_t i = 0; i < IDs.size(); ++i)
 		out << ' ' << IDs[i];
 	out << (ind->sex() == MALE ? " M" : " F")
