@@ -586,6 +586,12 @@ pop.evolve(
     ],
     gen = 20
 )
+# information
+pop.ancestralGens()
+pop.popSize(ancGen=1)
+pop.setVirtualSplitter(sim.SexSplitter())
+# number of males in the current and parental generation
+pop.subPopSize((0,0)), pop.subPopSize((0,0), ancGen=1)
 # start from current generation
 for i in range(pop.ancestralGens(), -1, -1):
   pop.useAncestralGen(i)

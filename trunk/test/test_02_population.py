@@ -88,6 +88,33 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName([1, 4]), "B - x = 14")
         self.assertRaises(exceptions.IndexError, pop.subPopName, [0, 5])
 
+    def testPopSize(self):
+        'Testing Population.popSize, Population.subPopSizes and Population.subPopSize'
+        pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
+        pop.mergeSubPops([1, 2])
+        pop.removeIndividuals([1, 59, 130])
+        initSex(pop)
+        pop.setVirtualSplitter(SexSplitter())
+        self.assertEqual(pop.popSize(), 177)
+        self.assertEqual(pop.popSize(1), 180)
+        self.assertEqual(pop.subPopSizes(), (78, 50, 49))
+        self.assertEqual(pop.subPopSize(1), 50)
+        self.assertEqual(pop.subPopSizes(1), (80, 20, 30, 50))
+        self.assertEqual(pop.subPopSize(1, 1), 20)
+        pop.useAncestralGen(2)
+        self.assertEqual(pop.popSize(), 180)
+        self.assertEqual(pop.subPopSizes(), (80, 20, 30, 50))
+        self.assertEqual(pop.popSize(2), 180)
+        self.assertEqual(pop.subPopSizes(2), (80, 20, 30, 50))
+        self.assertEqual(pop.popSize(3), 180)
+        self.assertEqual(pop.subPopSizes(3), (80, 20, 30, 50))
+        self.assertEqual(pop.subPopSize(1, 3), 20)
+        # virtual
+        stat(pop, numOfMales=True, subPops=[1])
+        self.assertEqual(pop.subPopSize((1,0)), pop.dvars().numOfMales)
+        pop.useAncestralGen(0)
+        self.assertEqual(pop.subPopSize((1,0), ancGen=2), pop.dvars().numOfMales)
+
     def testSubPopName(self):
         'Testing Population::setSubPopName(name, subPop), subPopByName(subPop)'
         pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)

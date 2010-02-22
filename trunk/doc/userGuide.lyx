@@ -4632,6 +4632,82 @@ setAncestralPop(0)
 \end_layout
 
 \begin_layout Standard
+If a population has several ancestral generations, they are referred by
+ their indexes 0 (the latest generation), 1 (parental generation), ...
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+ (top-most ancestral generation) where 
+\begin_inset Formula $k$
+\end_inset
+
+ equals to 
+\family typewriter
+ancestralGens()
+\family default
+.
+ In many cases, you can retrieve the properties of ancestral generations
+ directly, using functions such as
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+popSize(ancGen=-1), subPopSizes(ancGen=-1), subPopSize(subPop, ancGen=-1)
+\family default
+: population and subpopulation sizes of ancestral generation 
+\family typewriter
+ancGen
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ancestor(index, ancGen)
+\family default
+: Get a reference to the 
+\family typewriter
+index
+\family default
+ individual of ancestral generation 
+\family typewriter
+ancGen
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+However, most population member functions work at the current generation
+ so you will need to switch to an ancestral generation using function 
+\family typewriter
+useAncestralGen()
+\family default
+ if you would like to manipulate an ancestral generation.
+ For example, you can remove the second subpopulation of the parental generation
+ using functions:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.useAncestralGen(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pop.removeSubPops(1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 A typical use of ancestral generations is demonstrated in example 
 \begin_inset CommandInset ref
 LatexCommand ref
