@@ -30,9 +30,6 @@ using std::ofstream;
 
 #include <set>
 
-#include "boost/tokenizer.hpp"
-using boost::tokenizer;
-
 #include "boost/lexical_cast.hpp"
 using boost::lexical_cast;
 
@@ -1323,18 +1320,33 @@ struct IndInfo
 {
 	Sex sex;
 	vectoru parents;
+	vectoru offspring;
 	bool affectionStatus;
 	vectorf fields;
 	vectora genotype;
-	IndInfo() : sex(MALE), parents(), affectionStatus(false), fields(), genotype() {}
+	IndInfo() : sex(MALE), parents(), offspring(), affectionStatus(false), fields(), genotype() {}
+	IndInfo(ULONG off) : sex(MALE), parents(), offspring(1, off), affectionStatus(false), fields(), genotype() {}
 };
 
+
+#include <time.h>
+clock_t m_clock;
+#define InitClock(); \
+    m_clock = clock();
+
+#define ElapsedTime(name); \
+    if (true) \
+	{ \
+		cerr << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
+		m_clock = clock(); \
+	}
 
 Pedigree loadPedigree(const string & file, const string & idField, const string & fatherField,
                       const string & motherField, float ploidy, const uintList & lociList, const uintList & chromTypes,
                       const floatList & lociPos, const stringList & chromNames, const stringMatrix & alleleNames,
                       const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
 {
+	InitClock();
 	UINT pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<UINT>(ploidy);
 	//
 	const vectorstr & infoFields = fieldList.elems();
@@ -1361,16 +1373,21 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			continue;
 		//
 		IndInfo * info = NULL;
+		ULONG myID = 0;
 		int part = 0;
+		char * p = strtok(const_cast<char *>(line.c_str()), " ");
 		// parse the line to fill a structure
-		tokenizer<> tok(line);
-		tokenizer<>::iterator beg = tok.begin();
-		tokenizer<>::iterator end = tok.end();
-		for (; beg != end; ++beg) {
-			string field = *beg;
+		// boost::tokenizer is proven to be too slow..... (5.5s vs. 1.5s)
+		//tokenizer<> tok(line);
+		//tokenizer<>::iterator beg = tok.begin();
+		//tokenizer<>::iterator end = tok.end();
+		//for (; beg != end; ++beg) {
+		while (p) {
+			string field(p);
+			p = strtok(NULL, " ");
 			// collect self ID
 			if (part == 0) {
-				ULONG myID = lexical_cast<ULONG>(field);
+				myID = lexical_cast<ULONG>(field);
 				if (individuals.find(myID) != individuals.end())
 					throw ValueError("Duplicate individual ID " + toStr(myID));
 				info = &((individuals.insert(IdMap::value_type(myID, IndInfo())).first)->second);
@@ -1393,7 +1410,9 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 						IdMap::iterator it = individuals.find(id);
 						// this is a parent but we do not know if he or she has parent
 						if (it == individuals.end())
-							individuals[id] = IndInfo();
+							individuals[id] = IndInfo(myID);
+						else
+							it->second.offspring.push_back(myID);
 					}
 					if (info->parents.size() > 2)
 						throw ValueError("At most two parental IDs are allowed before sex information");
@@ -1439,6 +1458,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			max_parents = info->parents.size();
 	}
 	input.close();
+	ElapsedTime("Readfile");
 	DBG_DO(DBG_POPULATION, cerr << "Information about " << individuals.size() << " individuals are loaded." << endl);
 	// create the top most ancestral generation
 	// find parents who do not have parents...
@@ -1484,22 +1504,21 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
 			for (size_t j = 0; j < pldy; ++j, ++k)
 				ind->setAllele(info->second.genotype[k], i, j);
-		individuals.erase(info);
 	}
 	DBG_DO(DBG_POPULATION, cerr << parents.size() << " individuals are located for the top-most ancestral generation" << endl);
 	//
 	while (true) {
-		if (parents.empty() || individuals.empty())
+		if (parents.empty())
 			break;
 		//
 		IdSet offspring;
-		it = individuals.begin();
-		it_end = individuals.end();
-		for (; it != it_end; ++it) {
-			const vectoru & pp = it->second.parents;
-			for (size_t i = 0; i < pp.size(); ++i)
-				if (parents.find(pp[i]) != parents.end())
-					offspring.insert(it->first);
+		pit = parents.begin();
+		IdSet::iterator pit_end = parents.end();
+		for (; pit != pit_end; ++pit) {
+			const IdMap::const_iterator info = individuals.find(*pit);
+			const vectoru & off = info->second.offspring;
+			for (size_t i = 0; i < off.size(); ++i)
+				offspring.insert(off[i]);
 		}
 		DBG_DO(DBG_POPULATION, cerr << offspring.size() << " individuals are located from "
 			                        << individuals.size() << " individuals for an ancestral generation" << endl);
@@ -1515,7 +1534,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		pit = offspring.begin();
 		for (; ind != ind_end; ++ind, ++pit) {
 			ind->setInfo(*pit, 0);
-			const IdMap::iterator info = individuals.find(*pit);
+			const IdMap::const_iterator info = individuals.find(*pit);
 			for (size_t i = 0; i < info->second.parents.size(); ++i)
 				ind->setInfo(info->second.parents[i], 1 + i);
 			ind->setSex(info->second.sex);
@@ -1530,6 +1549,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		parents.swap(offspring);
 		pop.push(off_pop);
 	}
+	ElapsedTime("Generation");
 	DBG_DO(DBG_POPULATION, cerr << "A pedigree with " << pop.ancestralGens()
 		                        << " ancestral generations are created." << endl);
 
