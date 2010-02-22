@@ -5829,10 +5829,8 @@ pop.evolve(
 )
 # 
 print pop.indInfo('ind_id')[:5]
-# The last generation has all male individuals due to incomplete 
-# information of the pedigree object
 print [pop.individual(x).sex() for x in range(5)]
-# The pedigree object does not have population structure either.
+# The pedigree object does not have population structure
 print pop.subPopSizes()
 #begin_ignore
 import os

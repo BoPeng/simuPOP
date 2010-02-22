@@ -380,5 +380,55 @@ private:
 };
 
 
+/** Load a pedigree from a file saved by operator \c PedigreeTagger or function
+ *  \c Pedigree.save. This file contains the ID of each offspring and their
+ *  parent(s) and optionally sex ('M' or 'F'), affection status ('A' or 'U'),
+ *  values of information fields and genotype at some loci. IDs of each
+ *  individual and their parents are loaded to information fields \e idField,
+ *  \e fatherField and \e motherField. Only numeric IDs are allowed, and
+ *  individual IDs must be unique across all generations.
+ *
+ *  Because this file does not contain generation information, generations to
+ *  which offspring belong are determined by the parent-offspring relationships.
+ *  Individuals without parents are assumed to be in the top-most ancestral
+ *  generation. This is the case for individuals in the top-most ancestral
+ *  generation if the file is saved by function ``Pedigree.save()``, and for
+ *  individuals who only appear as another individual's parent, if the file is
+ *  saved by operator ``PedigreeTagger``. The order at which offsprng is
+ *  specified is not important because this function essentially creates a
+ *  top-most ancestral generation using IDs without parents, and creates the
+ *  next generation using offspring of these parents, and so on until all
+ *  generations are recreated. That is to say, if you have a mixture of
+ *  pedigrees with different generations, they will be lined up from the top
+ *  most ancestral generation.
+ *
+ *  If individual sex is not specified, sex of of parents are determined by
+ *  their parental roles (father or mother) but the sex of individuals in
+ *  the last generation can not be determined so they will all be males. If
+ *  additional information fields are given, their names have to be specified
+ *  using parameter \e infoFields. The rest of the columns are assued to be
+ *  alleles, arranged \e ploidy consecutive columns for each locus. If
+ *  paraemter \e loci is not specified, the number of loci is calculated by
+ *  number of columns divided by \e ploidy (default to 2). All loci are assumed
+ *  to be on one chromosome unless parameter \e loci is used to specified number
+ *  of loci on each chromosome. Additional parameters such as \e ploidy,
+ *  \e chromTypes, \e lociPos, \e chromNames, \e alleleNames, \e lociNames
+ *  could be used to specified the genotype structured of the loaded pedigree.
+ *  Please refer to class \c Population for details about these parameters.
+ */
+Pedigree loadPedigree(const string & file,
+	const string & idField = "ind_id",
+	const string & fatherField = "father_id",
+	const string & motherField = "mother_id",
+	float ploidy = 2,
+	const uintList & loci = vectoru(),
+	const uintList & chromTypes = vectoru(),
+	const floatList & lociPos = vectorf(),
+	const stringList & chromNames = vectorstr(),
+	const stringMatrix & alleleNames = stringMatrix(),
+	const stringList & lociNames = vectorstr(),
+	const stringList & subPopNames = vectorstr(),
+	const stringList & infoFields = vectorstr());
+
 }
 #endif
