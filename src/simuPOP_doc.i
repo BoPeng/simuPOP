@@ -4911,13 +4911,14 @@ Details:
 
 Usage:
 
-    x.subPopSize(subPop=[])
+    x.subPopSize(subPop=[], ancGen=-1)
 
 Details:
 
     Return the size of a subpopulation (subPopSize(sp)) or a virtual
-    subpopulation (subPopSize([sp, vsp])). If no subpop is given, it
-    is the same as popSize().
+    subpopulation (subPopSize([sp, vsp])) in the current generation
+    (default) or a specified ancestral generation ancGen. If no subpop
+    is given, it is the same as popSize(ancGen).
 
 "; 
 
@@ -4983,11 +4984,12 @@ Details:
 
 Usage:
 
-    x.subPopSizes()
+    x.subPopSizes(ancGen=-1)
 
 Details:
 
-    Return the sizes of all subpopulations in a list. Virtual
+    Return the sizes of all subpopulations at the current generation
+    (default) or specified ancestral generation ancGen. Virtual
     subpopulations are not considered.
 
 "; 
@@ -4996,11 +4998,13 @@ Details:
 
 Usage:
 
-    x.popSize()
+    x.popSize(ancGen=-1)
 
 Details:
 
-    Return the total number of individuals in all subpopulations.
+    Return the total number of individuals in all subpopulations of
+    the current generation (default) or the an ancestral generation
+    ancGen.
 
 "; 
 
