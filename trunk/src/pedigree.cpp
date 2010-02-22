@@ -25,15 +25,16 @@
 
 #include "pedigree.h"
 #include <fstream>
-// using std::ifstream;
+using std::ifstream;
 using std::ofstream;
-//
-// #include <sstream>
-// using std::istringstream;
-// using std::ws;
-//
-// #include <numeric>
-// using std::accumulate;
+
+#include <set>
+
+#include "boost/tokenizer.hpp"
+using boost::tokenizer;
+
+#include "boost/lexical_cast.hpp"
+using boost::lexical_cast;
 
 namespace simuPOP {
 
@@ -94,6 +95,8 @@ Pedigree::Pedigree(const Pedigree & rhs) :
 	m_idField(rhs.m_idField), m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
 	m_idIdx(rhs.m_idIdx), m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
 {
+	// ID map needs to be rebuilt because individuals are copied.
+	buildIDMap();
 }
 
 
@@ -1313,6 +1316,227 @@ void Pedigree::setSubPopByIndInfo(const string & field)
 {
 	Population::setSubPopByIndInfo(field);
 	buildIDMap();
+}
+
+
+struct IndInfo
+{
+	Sex sex;
+	vectoru parents;
+	bool affectionStatus;
+	vectorf fields;
+	vectora genotype;
+	IndInfo() : sex(MALE), parents(), affectionStatus(false), fields(), genotype() {}
+};
+
+
+Pedigree loadPedigree(const string & file, const string & idField, const string & fatherField,
+                      const string & motherField, float ploidy, const uintList & lociList, const uintList & chromTypes,
+                      const floatList & lociPos, const stringList & chromNames, const stringMatrix & alleleNames,
+                      const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
+{
+	UINT pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<UINT>(ploidy);
+	//
+	const vectorstr & infoFields = fieldList.elems();
+
+	for (size_t i = 0; i < infoFields.size(); ++i) {
+		DBG_FAILIF(infoFields[i] == idField || infoFields[i] == fatherField || infoFields[i] == motherField,
+			ValueError, "Parameter infoFields can only specify additional fields other than idField, fatherField and motherField.");
+	}
+	vectoru loci = lociList.elems();
+	UINT genoCols = accumulate(loci.begin(), loci.end(), 0U) * pldy;
+
+	ifstream input(file.c_str());
+	if (!input)
+		throw RuntimeError("Cannot open specified pedigree file " + file);
+	//
+	UINT max_parents = 0;
+	string line;
+	// individual and their parents
+	typedef std::map<ULONG, IndInfo> IdMap;
+	IdMap individuals;
+	while (!input.eof()) {
+		getline(input, line);
+		if (line.empty())
+			continue;
+		//
+		IndInfo * info = NULL;
+		int part = 0;
+		// parse the line to fill a structure
+		tokenizer<> tok(line);
+		tokenizer<>::iterator beg = tok.begin();
+		tokenizer<>::iterator end = tok.end();
+		for (; beg != end; ++beg) {
+			string field = *beg;
+			// collect self ID
+			if (part == 0) {
+				ULONG myID = lexical_cast<ULONG>(field);
+				if (individuals.find(myID) != individuals.end())
+					throw ValueError("Duplicate individual ID " + toStr(myID));
+				info = &((individuals.insert(IdMap::value_type(myID, IndInfo())).first)->second);
+				++part;
+				continue;
+				// parental ID and sex
+			} else if (part == 1) {
+				if (field[0] == 'M') {
+					info->sex = MALE;
+					++part;
+					continue;
+				} else if (field[0] == 'F') {
+					info->sex = FEMALE;
+					++part;
+					continue;
+				} else {
+					ULONG id = lexical_cast<ULONG>(field);
+					if (id) {
+						info->parents.push_back(id);
+						IdMap::iterator it = individuals.find(id);
+						// this is a parent but we do not know if he or she has parent
+						if (it == individuals.end())
+							individuals[id] = IndInfo();
+					}
+					if (info->parents.size() > 2)
+						throw ValueError("At most two parental IDs are allowed before sex information");
+				}
+				// parental affection status, can be ignored
+			} else if (part == 2) {
+				if (field[0] == 'A')
+					info->affectionStatus = true;
+				else if (field[0] == 'U')
+					info->affectionStatus = false;
+				else
+					++part;
+			}
+
+			// information fields, can be ignored
+			if (part == 3) {
+				if (info->fields.size() == infoFields.size())
+					++part;
+				else
+					info->fields.push_back(lexical_cast<double>(field));
+			}
+
+			// genotype
+			if (part == 4)
+				info->genotype.push_back(lexical_cast<int>(field));
+		}
+		// if there is no valid input...
+		if (part == 0)
+			continue;
+		if (!info->genotype.empty()) {
+			if (loci.empty()) {
+				loci.push_back(info->genotype.size() / pldy);
+				genoCols = info->genotype.size();
+				if (loci.back() * pldy != genoCols)
+					throw ValueError("Incorrect number of genotype colmns for a diploid population.");
+			} else {
+				if (genoCols != info->genotype.size())
+					throw ValueError("Inconsistent number of columns of genotypes.");
+			}
+		}
+		//
+		if (max_parents < info->parents.size())
+			max_parents = info->parents.size();
+	}
+	input.close();
+	DBG_DO(DBG_POPULATION, cerr << "Information about " << individuals.size() << " individuals are loaded." << endl);
+	// create the top most ancestral generation
+	// find parents who do not have parents...
+	vectorstr fields(1, idField);
+	if (!fatherField.empty() && fields.size() < max_parents + 1)
+		fields.push_back(fatherField);
+	if (!motherField.empty() && fields.size() < max_parents + 1)
+		fields.push_back(motherField);
+	// this is the end of parental IDs and start of additional fields
+	UINT fieldIndex = fields.size();
+	// additional information fields
+	fields.insert(fields.end(), infoFields.begin(), infoFields.end());
+	DBG_DO(DBG_POPULATION, cerr << "Using information fields " << fields << endl);
+	//
+	if (individuals.empty()) {
+		return Population(0, ploidy, loci, chromTypes, lociPos,
+			-1, chromNames, alleleNames, lociNames, subPopNames, fields);
+	}
+	//
+	typedef std::set<ULONG> IdSet;
+	IdSet parents;
+	IdMap::iterator it = individuals.begin();
+	IdMap::iterator it_end = individuals.end();
+	for (; it != it_end; ++it)
+		if (it->second.parents.empty())
+			parents.insert(it->first);
+	if (parents.empty())
+		throw ValueError("No parents in the top-most ancestral generation");
+	//
+	Population pop(vectoru(1, parents.size()), ploidy, loci, chromTypes, lociPos,
+	               -1, chromNames, alleleNames, lociNames, subPopNames, fields);
+	// set individual info
+	RawIndIterator ind = pop.rawIndBegin();
+	RawIndIterator ind_end = pop.rawIndEnd();
+	IdSet::iterator pit = parents.begin();
+	for (; ind != ind_end; ++ind, ++pit) {
+		ind->setInfo(*pit, 0);
+		const IdMap::iterator info = individuals.find(*pit);
+		ind->setSex(info->second.sex);
+		ind->setAffected(info->second.affectionStatus);
+		for (size_t i = 0; i < infoFields.size() && i < info->second.fields.size(); ++i)
+			ind->setInfo(info->second.fields[i], i + fieldIndex);
+		for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
+			for (size_t j = 0; j < pldy; ++j, ++k)
+				ind->setAllele(info->second.genotype[k], i, j);
+		individuals.erase(info);
+	}
+	DBG_DO(DBG_POPULATION, cerr << parents.size() << " individuals are located for the top-most ancestral generation" << endl);
+	//
+	while (true) {
+		if (parents.empty() || individuals.empty())
+			break;
+		//
+		IdSet offspring;
+		it = individuals.begin();
+		it_end = individuals.end();
+		for (; it != it_end; ++it) {
+			const vectoru & pp = it->second.parents;
+			for (size_t i = 0; i < pp.size(); ++i)
+				if (parents.find(pp[i]) != parents.end())
+					offspring.insert(it->first);
+		}
+		DBG_DO(DBG_POPULATION, cerr << offspring.size() << " individuals are located from "
+			                        << individuals.size() << " individuals for an ancestral generation" << endl);
+
+		if (offspring.empty())
+			break;
+
+		Population off_pop(vectoru(1, offspring.size()), ploidy, loci, chromTypes, lociPos,
+		                   0, chromNames, alleleNames, lociNames, subPopNames, fields);
+		// set individual info
+		ind = off_pop.rawIndBegin();
+		ind_end = off_pop.rawIndEnd();
+		pit = offspring.begin();
+		for (; ind != ind_end; ++ind, ++pit) {
+			ind->setInfo(*pit, 0);
+			const IdMap::iterator info = individuals.find(*pit);
+			for (size_t i = 0; i < info->second.parents.size(); ++i)
+				ind->setInfo(info->second.parents[i], 1 + i);
+			ind->setSex(info->second.sex);
+			ind->setAffected(info->second.affectionStatus);
+			for (size_t i = 0; i < infoFields.size() && i < info->second.fields.size(); ++i)
+				ind->setInfo(info->second.fields[i], i + fieldIndex);
+			for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
+				for (size_t j = 0; j < pldy; ++j, ++k)
+					ind->setAllele(info->second.genotype[k], i, j);
+		}
+		//
+		parents.swap(offspring);
+		pop.push(off_pop);
+	}
+	DBG_DO(DBG_POPULATION, cerr << "A pedigree with " << pop.ancestralGens()
+		                        << " ancestral generations are created." << endl);
+
+	// uintList means ALL_AVAIL
+	return Pedigree(pop, uintList(), pop.infoFields(), uintList(),
+		idField, max_parents > 0 ? fatherField : string(),
+		max_parents > 1 ? motherField : string(), true);
 }
 
 
