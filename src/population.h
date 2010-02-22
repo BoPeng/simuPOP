@@ -380,20 +380,43 @@ public:
 
 
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
-	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>). If no \e subpop
-	 *  is given, it is the same as <tt>popSize()</tt>.
+	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>) in the current
+     *  generation (default) or a specified ancestral generation \e ancGen. If
+     *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG subPopSize(vspID subPop = vspID()) const
+	ULONG subPopSize(vspID subPop = vspID(), int ancGen = -1) const
 	{
 		if (!subPop.valid())
-			return m_popSize;
-		CHECKRANGESUBPOP(subPop.subPop());
-		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-		if (subPop.isVirtual())
-			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
-		else
-			return m_subPopSize[subPop.subPop()];
+			return popSize(ancGen);
+
+		DBG_FAILIF(ancGen > 0 && static_cast<UINT>(ancGen) > ancestralGens(),
+			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ " 
+				+ toStr(ancestralGens()));
+
+		if (ancGen < 0 || ancGen == m_curAncestralGen) {
+			CHECKRANGESUBPOP(subPop.subPop());
+			CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+			if (subPop.isVirtual())
+				return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+			else
+				return m_subPopSize[subPop.subPop()];
+		} else if (subPop.isVirtual()) {
+			int curGen = m_curAncestralGen;
+			const_cast<Population*>(this)->useAncestralGen(ancGen);
+			CHECKRANGESUBPOP(subPop.subPop());
+			CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+			ULONG size = m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+			const_cast<Population*>(this)->useAncestralGen(curGen);
+			return size;
+		} else {
+			const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
+			DBG_FAILIF(static_cast<UINT>(subPop.subPop()) >= sizes.size(), IndexError,
+				"Subpopulation index " + toStr(subPop.subPop()) + " out of range of 0 ~ "
+					+ toStr(sizes.size() - 1) + " at ancestral generation " + toStr(ancGen));
+			return sizes[subPop.subPop()];			
+		}
+
 	}
 
 
@@ -426,13 +449,19 @@ public:
 	 */
 	void setSubPopName(const string & name, SubPopID subPop);
 
-	/** Return the sizes of all subpopulations in a list. Virtual
+	/** Return the sizes of all subpopulations at the current generation
+     *  (default) or specified ancestral generation \e ancGen. Virtual
 	 *  subpopulations are not considered.
 	 *  <group>2-subpopsize</group>
 	 */
-	vectoru subPopSizes() const
+	vectoru subPopSizes(int ancGen = -1) const
 	{
-		return m_subPopSize;
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
+			return m_subPopSize;
+		DBG_FAILIF(static_cast<UINT>(ancGen) > ancestralGens(),
+			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ " 
+				+ toStr(ancestralGens()));
+		return m_ancestralPops[ancGen - 1].m_subPopSize;
 	}
 
 
@@ -442,12 +471,19 @@ public:
 	 */
 	//@{
 
-	/** Return the total number of individuals in all subpopulations.
+	/** Return the total number of individuals in all subpopulations of the
+	 *  current generation (default) or the an ancestral generation \e ancGen.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG popSize() const
+	ULONG popSize(int ancGen = -1) const
 	{
-		return m_popSize;
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
+			return m_popSize;
+		DBG_FAILIF(static_cast<UINT>(ancGen) > ancestralGens(),
+			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ " 
+				+ toStr(ancestralGens()));
+		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
+		return accumulate(sizes.begin(), sizes.end(), 0L);
 	}
 
 

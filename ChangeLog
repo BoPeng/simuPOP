@@ -25,8 +25,10 @@ New feature:
   - Add a mating scheme PedigreeMating.
 	- Allow operator PedigreeTagger to be applied to a population.
   - Add function loadPedigree to load pedigrees saved by operator PedigreeTagger
-			and function Pedigree.save().
+		and function Pedigree.save().
   - Operator IfElse now accepts a user-defined function.
+  - Add parameter 'ancGen' to functions Population.popSize, Population.subPopSizes and
+		Population.subPopSize.
 
 New features (minor):
   - Document base mating scheme MatingScheme() and allow it to be used explicitly.
