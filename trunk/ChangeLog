@@ -15,6 +15,7 @@ Bugs:
   - Fix a bug that crashes simuPOP when the recombination rate between
 	    two loci are really small (e.g. 1e-17).
   - Fix a bug and expand the use of parameter 'header' in function utils.saveCSV.
+  - Fix a bug that prevents proper cloning of Pedigree objects.
 
 New feature:
   - Add parameter 'version' to function simuOpt.setOptions.
@@ -29,6 +30,9 @@ New feature:
   - Operator IfElse now accepts a user-defined function.
   - Add parameter 'ancGen' to functions Population.popSize, Population.subPopSizes and
 		Population.subPopSize.
+
+Regression (minor):
+  - Additional columns are added to files saved by operator PedigreeTagger.
 
 New features (minor):
   - Document base mating scheme MatingScheme() and allow it to be used explicitly.
