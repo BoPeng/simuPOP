@@ -131,10 +131,10 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 	for (size_t i = 0; i < fields.size(); ++i)
 		indexes.push_back(infoIdx(fields[i]));
 
-    // out << .... is very slow compared to the sprintf implementation.
-    // 
-    // three numbers (maximum 20 charameters) + M F, the buffer should be long enough
-    char buffer[96];
+	// out << .... is very slow compared to the sprintf implementation.
+	//
+	// three numbers (maximum 20 charameters) + M F, the buffer should be long enough
+	char buffer[96];
 
 	UINT ply = ploidy();
 	vectoru loci = lociList.elems();
@@ -142,7 +142,7 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 		for (size_t i = 0; i < totNumLoci(); ++i)
 			loci.push_back(i);
 
-    UINT nParents = numParents();
+	UINT nParents = numParents();
 	UINT curGen = curAncestralGen();
 	for (int gen = ancestralGens(); gen >= 0; --gen) {
 		const_cast<Pedigree *>(this)->useAncestralGen(gen);
@@ -150,8 +150,8 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 		ConstRawIndIterator it_end = rawIndEnd();
 		for (; it != it_end; ++it) {
 			ULONG myID = toID(it->info(m_idIdx));
-            ULONG fatherID = 0;
-            ULONG motherID = 0;
+			ULONG fatherID = 0;
+			ULONG motherID = 0;
 			if (m_fatherIdx != -1) {
 				fatherID = toID(it->info(m_fatherIdx));
 				if (fatherID && m_idMap.find(fatherID) == m_idMap.end())
@@ -162,16 +162,16 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 				if (motherID && m_idMap.find(motherID) == m_idMap.end())
 					motherID = 0;
 			}
-            char sexChar = it->sex() == MALE ? 'M' : 'F';
-            char affChar = it->affected() ? 'A' : 'U';
-            if (nParents == 0)
-                sprintf(buffer, "%lu %c %c", myID, sexChar, affChar);
-            else if (nParents == 1)
-                sprintf(buffer, "%lu %lu %c %c", myID, fatherID ? fatherID : motherID,
-                    sexChar, affChar);
-            else
-                sprintf(buffer, "%lu %lu %lu %c %c", myID, fatherID, motherID,
-                    sexChar, affChar);
+			char sexChar = it->sex() == MALE ? 'M' : 'F';
+			char affChar = it->affected() ? 'A' : 'U';
+			if (nParents == 0)
+				sprintf(buffer, "%lu %c %c", myID, sexChar, affChar);
+			else if (nParents == 1)
+				sprintf(buffer, "%lu %lu %c %c", myID, fatherID ? fatherID : motherID,
+					sexChar, affChar);
+			else
+				sprintf(buffer, "%lu %lu %lu %c %c", myID, fatherID, motherID,
+					sexChar, affChar);
 			file << buffer;
 			for (size_t i = 0; i < indexes.size(); ++i)
 				file << " " << it->info(indexes[i]);

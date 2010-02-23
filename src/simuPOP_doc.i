@@ -4462,7 +4462,8 @@ Details:
     corresponing individual in the pedigree object. It then locates
     the parents of each offspring using their IDs in the pedigree
     object. A list of during mating operators are then used to
-    transmit parental genotype to the offspring.
+    transmit parental genotype to the offspring. The population being
+    evolved must have an information field 'ind_id'.
 
 "; 
 
@@ -9139,6 +9140,16 @@ Details:
 "; 
 
 %ignore simuPOP::debug(DBG_CODE code);
+
+%ignore simuPOP::initClock();
+
+%feature("docstring") simuPOP::elapsedTime "
+
+Usage:
+
+    elapsedTime(name)
+
+"; 
 
 %ignore simuPOP::simuPOP_kbhit();
 

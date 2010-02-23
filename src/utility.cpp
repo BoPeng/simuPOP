@@ -124,18 +124,20 @@ clock_t g_clock;
 
 void initClock()
 {
-    if (debug(DBG_PROFILE))
-        g_clock = clock();
+	if (debug(DBG_PROFILE))
+		g_clock = clock();
 }
+
 
 void elapsedTime(const string & name)
 {
-    if (debug(DBG_PROFILE))
-	{
+	if (debug(DBG_PROFILE)) {
 		cerr << name << ": " << static_cast<double>(clock() - g_clock) / CLOCKS_PER_SEC << "\n";
 		g_clock = clock();
 	}
 }
+
+
 #endif
 
 
