@@ -272,11 +272,11 @@ string PedigreeTagger::describe(bool format) const
 
 
 void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
-                                      const vectoru & IDs) const
+                                      const vectorf & IDs) const
 {
 	out << toID(ind->info(m_idField));
 	for (size_t i = 0; i < IDs.size(); ++i)
-		out << ' ' << IDs[i];
+		out << ' ' << toID(IDs[i]);
 	out << (ind->sex() == MALE ? " M" : " F")
 	    << (ind->affected() ? " A" : " U");
 	if (m_outputFields.allAvail())
@@ -313,7 +313,7 @@ bool PedigreeTagger::apply(Population & pop) const
 
 	ostream & out = getOstream(pop.dict());
 	size_t is = infoSize();
-	vectoru IDs(is);
+	vectorf IDs(is);
 	vectoru idx(is);
 	for (size_t i = 0; i < infoSize(); ++i)
 		idx[i] = pop.infoIdx(infoField(i));
@@ -328,8 +328,8 @@ bool PedigreeTagger::apply(Population & pop) const
 			ULONG myID = toID(it->info(idIdx));
 			idMap[myID] = 1;
 			for (size_t i = 0; i < is; ++i) {
-				IDs[i] = toID(it->info(idx[i]));
-				if (idMap.find(IDs[i]) == idMap.end())
+				IDs[i] = it->info(idx[i]);
+				if (idMap.find(toID(IDs[i])) == idMap.end())
 					IDs[i] = 0;
 			}
 			outputIndividual(out, &*it, IDs);
@@ -349,16 +349,16 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 	UINT idIdx = pop.infoIdx(m_idField);
 	// record to one or two information fields
 	size_t is = infoSize();
-	vectoru IDs(is);
+	vectorf IDs(is);
 	if (is == 1) {
 		if (dad != NULL)
-			IDs[0] = toID(dad->info(idIdx));
+			IDs[0] = dad->info(idIdx);
 		else if (mom != NULL)
-			IDs[0] = toID(mom->info(idIdx));
+			IDs[0] = mom->info(idIdx);
 		offspring->setInfo(IDs[0], pop.infoIdx(infoField(0)));
 	} else if (is == 2) {
-		IDs[0] = dad == NULL ? 0 : toID(dad->info(idIdx));
-		IDs[1] = mom == NULL ? 0 : toID(mom->info(idIdx));
+		IDs[0] = dad == NULL ? 0 : dad->info(idIdx);
+		IDs[1] = mom == NULL ? 0 : mom->info(idIdx);
 		offspring->setInfo(IDs[0], pop.infoIdx(infoField(0)));
 		offspring->setInfo(IDs[1], pop.infoIdx(infoField(1)));
 	}
