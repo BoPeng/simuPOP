@@ -274,11 +274,21 @@ string PedigreeTagger::describe(bool format) const
 void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
                                       const vectorf & IDs) const
 {
-	out << toID(ind->info(m_idField));
-	for (size_t i = 0; i < IDs.size(); ++i)
-		out << ' ' << toID(IDs[i]);
-	out << (ind->sex() == MALE ? " M" : " F")
-	    << (ind->affected() ? " A" : " U");
+    // out << .... is very slow compared to the sprintf implementation.
+    // 
+    // three numbers (maximum 20 charameters) + M F, the buffer should be long enough
+    char buffer[96];
+    char sexChar = ind->sex() == MALE ? 'M' : 'F';
+    char affChar = ind->affected() ? 'A' : 'U';
+    if (IDs.empty())
+        sprintf(buffer, "%d %c %c", toID(ind->info(m_idField)), sexChar, affChar);
+    else if (IDs.size() == 1)
+        sprintf(buffer, "%d %d %c %c", toID(ind->info(m_idField)), toID(IDs[0]), sexChar, affChar);
+    else
+        sprintf(buffer, "%d %d %d %c %c", toID(ind->info(m_idField)), toID(IDs[0]), toID(IDs[1]), sexChar, affChar);
+    out << buffer;
+    // it is difficult to create buffers for the following, but we do not really care
+    // because writing information fields and genotype is rare.
 	if (m_outputFields.allAvail())
 		for (size_t i = 0; i < ind->infoSize(); ++i)
 			out << ' ' << ind->info(i);
