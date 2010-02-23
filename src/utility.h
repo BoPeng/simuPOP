@@ -99,7 +99,12 @@ void turnOffDebug(const string & code = "DBG_ALL");
 #ifndef OPTIMIZED
 /// test if one code is turned on, CPPONLY
 bool debug(DBG_CODE code);
-
+/// CPPONLY
+void initClock();
+void elapsedTime(const string & name);
+#else
+#  define initClock();
+#  define elapsedTime(name);
 #endif
 
 #ifdef Py_REF_DEBUG
