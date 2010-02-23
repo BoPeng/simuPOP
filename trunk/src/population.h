@@ -1190,7 +1190,10 @@ public:
 	 */
 	void clearInfo()
 	{
-		std::fill(m_info.begin(), m_info.end(), 0.0);
+        // fill_n is faster than fill
+		std::fill_n(m_info.begin(), m_info.size(), 0.0);
+        // I am glad that memset is not faster than fill_n.
+        //memset(&*m_info.begin(), 0, sizeof(double) * m_info.size());
 	}
 
 

@@ -150,7 +150,7 @@ public:
 	 *  HIDDEN
 	 *  <group>2-info</group>
 	 */
-	UINT numParents();
+	UINT numParents() const;
 
 	/** This function locates relatives (of type \e relType) of each individual
 	 *  and store their IDs in information fields \e relFields. The length of
