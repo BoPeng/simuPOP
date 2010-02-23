@@ -30,9 +30,6 @@ using std::ofstream;
 
 #include <set>
 
-// lexical_cast is REALLY slow!
-//#include "boost/lexical_cast.hpp"
-
 namespace simuPOP {
 
 Pedigree::Pedigree(const Population & pop, const uintList & loci,
@@ -1329,24 +1326,12 @@ struct IndInfo
 };
 
 
-#include <time.h>
-clock_t m_clock;
-#define InitClock(); \
-    m_clock = clock();
-
-#define ElapsedTime(name); \
-    if (true) \
-	{ \
-		cerr << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
-		m_clock = clock(); \
-	}
-
 Pedigree loadPedigree(const string & file, const string & idField, const string & fatherField,
                       const string & motherField, float ploidy, const uintList & lociList, const uintList & chromTypes,
                       const floatList & lociPos, const stringList & chromNames, const stringMatrix & alleleNames,
                       const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
 {
-	InitClock();
+	initClock();
 	UINT pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<UINT>(ploidy);
 	//
 	const vectorstr & infoFields = fieldList.elems();
@@ -1432,7 +1417,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 
 			// genotype
 			if (part == 4)
-				info->genotype.push_back(toAllele(atoi(q)));
+				info->genotype.push_back(ToAllele(atoi(q)));
 		}
 		// if there is no valid input...
 		if (part == 0)
@@ -1453,7 +1438,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			max_parents = info->parents.size();
 	}
 	input.close();
-	ElapsedTime("Readfile");
+	elapsedTime("Readfile");
 	DBG_DO(DBG_POPULATION, cerr << "Information about " << individuals.size() << " individuals are loaded." << endl);
 	// create the top most ancestral generation
 	// find parents who do not have parents...
@@ -1491,14 +1476,14 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	IdSet::iterator pit = parents.begin();
 	for (; ind != ind_end; ++ind, ++pit) {
 		ind->setInfo(*pit, 0);
-		const IdMap::iterator info = individuals.find(*pit);
-		ind->setSex(info->second->sex);
-		ind->setAffected(info->second->affectionStatus);
-		for (size_t i = 0; i < infoFields.size() && i < info->second->fields.size(); ++i)
-			ind->setInfo(info->second->fields[i], i + fieldIndex);
+		const IndInfo * info = individuals.find(*pit)->second;
+		ind->setSex(info->sex);
+		ind->setAffected(info->affectionStatus);
+		for (size_t i = 0; i < infoFields.size() && i < info->fields.size(); ++i)
+			ind->setInfo(info->fields[i], i + fieldIndex);
 		for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
 			for (size_t j = 0; j < pldy; ++j, ++k)
-				ind->setAllele(info->second->genotype[k], i, j);
+				ind->setAllele(info->genotype[k], i, j);
 	}
 	DBG_DO(DBG_POPULATION, cerr << parents.size() << " individuals are located for the top-most ancestral generation" << endl);
 	//
@@ -1529,22 +1514,22 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		pit = offspring.begin();
 		for (; ind != ind_end; ++ind, ++pit) {
 			ind->setInfo(*pit, 0);
-			const IdMap::const_iterator info = individuals.find(*pit);
-			for (size_t i = 0; i < info->second->parents.size(); ++i)
-				ind->setInfo(info->second->parents[i], 1 + i);
-			ind->setSex(info->second->sex);
-			ind->setAffected(info->second->affectionStatus);
-			for (size_t i = 0; i < infoFields.size() && i < info->second->fields.size(); ++i)
-				ind->setInfo(info->second->fields[i], i + fieldIndex);
+			const IndInfo * info = individuals.find(*pit)->second;
+			for (size_t i = 0; i < info->parents.size(); ++i)
+				ind->setInfo(info->parents[i], 1 + i);
+			ind->setSex(info->sex);
+			ind->setAffected(info->affectionStatus);
+			for (size_t i = 0; i < infoFields.size() && i < info->fields.size(); ++i)
+				ind->setInfo(info->fields[i], i + fieldIndex);
 			for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
 				for (size_t j = 0; j < pldy; ++j, ++k)
-					ind->setAllele(info->second->genotype[k], i, j);
+					ind->setAllele(info->genotype[k], i, j);
 		}
 		//
 		parents.swap(offspring);
 		pop.push(off_pop);
 	}
-	ElapsedTime("Generation");
+	elapsedTime("Generation");
 	DBG_DO(DBG_POPULATION, cerr << "A pedigree with " << pop.ancestralGens()
 		                        << " ancestral generations are created." << endl);
 

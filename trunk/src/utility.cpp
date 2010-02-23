@@ -118,6 +118,27 @@ namespace simuPOP {
 // debug codes in a bitset.
 std::bitset<DBG_CODE_LENGTH> g_dbgCode;
 
+#ifndef OPTIMIZED
+#  include <time.h>
+clock_t g_clock;
+
+void initClock()
+{
+    if (debug(DBG_PROFILE))
+        g_clock = clock();
+}
+
+void elapsedTime(const string & name)
+{
+    if (debug(DBG_PROFILE))
+	{
+		cerr << name << ": " << static_cast<double>(clock() - g_clock) / CLOCKS_PER_SEC << "\n";
+		g_clock = clock();
+	}
+}
+#endif
+
+
 const char * g_debugCodes[] = {
 	"DBG_ALL",                  // all debug information
 	"DBG_GENERAL",              // general information, small warnings etc

@@ -213,14 +213,14 @@ vectoru Simulator::evolve(
 		return evolvedGens;
 
 
-	InitClock();
+	initClock();
 
 	// appy pre-op, most likely initializer. Do not check if they are active
 	// or if they are successful
 	if (!initOps.empty())
 		apply(initOps);
 
-	ElapsedTime("PreopDone");
+	elapsedTime("PreopDone");
 
 	// make sure rep and gen exists in pop
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
@@ -291,13 +291,13 @@ vectoru Simulator::evolve(
 						numStopped = activeReps.size();
 						break;
 					}
-					ElapsedTime("PreMatingOp: " + preOps[it]->describe());
+					elapsedTime("PreMatingOp: " + preOps[it]->describe());
 				}
 			}
 
 			if (!activeReps[curRep])
 				continue;
-			ElapsedTime("matingBegin");
+			elapsedTime("matingBegin");
 			// start mating:
 			try {
 				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
@@ -321,7 +321,7 @@ vectoru Simulator::evolve(
 				continue;
 			}
 
-			ElapsedTime("matingDone");
+			elapsedTime("matingDone");
 
 			// apply post-mating ops to next gen()
 			if (!postOps.empty()) {
@@ -351,7 +351,7 @@ vectoru Simulator::evolve(
 						// does not run the rest of the post-mating operators.
 						break;
 					}
-					ElapsedTime("PostMatingOp: " + postOps[it]->describe());
+					elapsedTime("PostMatingOp: " + postOps[it]->describe());
 				}
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
@@ -401,7 +401,7 @@ bool Simulator::apply(const opList & ops)
 
 			ops[it]->apply(curPop);
 
-			ElapsedTime("PrePost-preMatingop" + toStr(it));
+			elapsedTime("PrePost-preMatingop" + toStr(it));
 		}
 	}
 	return true;

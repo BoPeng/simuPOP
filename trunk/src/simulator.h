@@ -43,23 +43,6 @@ using std::vector;
 using std::fill;
 using std::swap;
 
-#ifndef OPTIMIZED
-#  include <time.h>
-
-#  define InitClock(); \
-    if (debug(DBG_PROFILE)) m_clock = clock();
-
-#  define ElapsedTime(name); \
-    if (debug(DBG_PROFILE)) \
-	{ \
-		cerr << name << ": " << static_cast<double>(clock() - m_clock) / CLOCKS_PER_SEC << "\n"; \
-		m_clock = clock(); \
-	}
-#else
-#  define InitClock();
-#  define ElapsedTime(name);
-#endif
-
 /** \brief all classes in simuPOP is defined in this namespace
  */
 namespace simuPOP {
@@ -270,10 +253,6 @@ private:
 
 	/// the scratch pop
 	Population * m_scratchPop;
-
-#ifndef OPTIMIZED
-	clock_t m_clock;
-#endif
 
 };
 
