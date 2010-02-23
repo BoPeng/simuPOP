@@ -1365,7 +1365,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	UINT max_parents = 0;
 	string line;
 	// individual and their parents
-	typedef std::map<ULONG, IndInfo> IdMap;
+	typedef std::map<ULONG, IndInfo *> IdMap;
 	IdMap individuals;
 	while (!input.eof()) {
 		getline(input, line);
@@ -1385,7 +1385,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 				myID = atoi(q);
 				if (individuals.find(myID) != individuals.end())
 					throw ValueError("Duplicate individual ID " + toStr(myID));
-				info = &((individuals.insert(IdMap::value_type(myID, IndInfo())).first)->second);
+				info = (individuals.insert(IdMap::value_type(myID, new IndInfo())).first)->second;
 				++part;
 				continue;
 				// parental ID and sex
@@ -1405,9 +1405,9 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 						IdMap::iterator it = individuals.find(id);
 						// this is a parent but we do not know if he or she has parent
 						if (it == individuals.end())
-							individuals[id] = IndInfo(myID);
+							individuals[id] = new IndInfo(myID);
 						else
-							it->second.offspring.push_back(myID);
+							it->second->offspring.push_back(myID);
 					}
 					if (info->parents.size() > 2)
 						throw ValueError("At most two parental IDs are allowed before sex information");
@@ -1432,7 +1432,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 
 			// genotype
 			if (part == 4)
-				info->genotype.push_back(atoi(q));
+				info->genotype.push_back(toAllele(atoi(q)));
 		}
 		// if there is no valid input...
 		if (part == 0)
@@ -1478,7 +1478,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	IdMap::iterator it = individuals.begin();
 	IdMap::iterator it_end = individuals.end();
 	for (; it != it_end; ++it)
-		if (it->second.parents.empty())
+		if (it->second->parents.empty())
 			parents.insert(it->first);
 	if (parents.empty())
 		throw ValueError("No parents in the top-most ancestral generation");
@@ -1492,13 +1492,13 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	for (; ind != ind_end; ++ind, ++pit) {
 		ind->setInfo(*pit, 0);
 		const IdMap::iterator info = individuals.find(*pit);
-		ind->setSex(info->second.sex);
-		ind->setAffected(info->second.affectionStatus);
-		for (size_t i = 0; i < infoFields.size() && i < info->second.fields.size(); ++i)
-			ind->setInfo(info->second.fields[i], i + fieldIndex);
+		ind->setSex(info->second->sex);
+		ind->setAffected(info->second->affectionStatus);
+		for (size_t i = 0; i < infoFields.size() && i < info->second->fields.size(); ++i)
+			ind->setInfo(info->second->fields[i], i + fieldIndex);
 		for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
 			for (size_t j = 0; j < pldy; ++j, ++k)
-				ind->setAllele(info->second.genotype[k], i, j);
+				ind->setAllele(info->second->genotype[k], i, j);
 	}
 	DBG_DO(DBG_POPULATION, cerr << parents.size() << " individuals are located for the top-most ancestral generation" << endl);
 	//
@@ -1511,7 +1511,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		IdSet::iterator pit_end = parents.end();
 		for (; pit != pit_end; ++pit) {
 			const IdMap::const_iterator info = individuals.find(*pit);
-			const vectoru & off = info->second.offspring;
+			const vectoru & off = info->second->offspring;
 			for (size_t i = 0; i < off.size(); ++i)
 				offspring.insert(off[i]);
 		}
@@ -1530,15 +1530,15 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		for (; ind != ind_end; ++ind, ++pit) {
 			ind->setInfo(*pit, 0);
 			const IdMap::const_iterator info = individuals.find(*pit);
-			for (size_t i = 0; i < info->second.parents.size(); ++i)
-				ind->setInfo(info->second.parents[i], 1 + i);
-			ind->setSex(info->second.sex);
-			ind->setAffected(info->second.affectionStatus);
-			for (size_t i = 0; i < infoFields.size() && i < info->second.fields.size(); ++i)
-				ind->setInfo(info->second.fields[i], i + fieldIndex);
+			for (size_t i = 0; i < info->second->parents.size(); ++i)
+				ind->setInfo(info->second->parents[i], 1 + i);
+			ind->setSex(info->second->sex);
+			ind->setAffected(info->second->affectionStatus);
+			for (size_t i = 0; i < infoFields.size() && i < info->second->fields.size(); ++i)
+				ind->setInfo(info->second->fields[i], i + fieldIndex);
 			for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
 				for (size_t j = 0; j < pldy; ++j, ++k)
-					ind->setAllele(info->second.genotype[k], i, j);
+					ind->setAllele(info->second->genotype[k], i, j);
 		}
 		//
 		parents.swap(offspring);
@@ -1548,6 +1548,10 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	DBG_DO(DBG_POPULATION, cerr << "A pedigree with " << pop.ancestralGens()
 		                        << " ancestral generations are created." << endl);
 
+	it = individuals.begin();
+	it_end = individuals.end();
+	for (; it != it_end; ++it)
+		delete it->second;
 	// uintList means ALL_AVAIL
 	return Pedigree(pop, uintList(), pop.infoFields(), uintList(),
 		idField, max_parents > 0 ? fatherField : string(),
