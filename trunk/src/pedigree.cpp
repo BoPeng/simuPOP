@@ -1352,8 +1352,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	// individual and their parents
 	typedef std::map<ULONG, IndInfo *> IdMap;
 	IdMap individuals;
-	while (!input.eof()) {
-		getline(input, line);
+	while (getline(input, line)) {
 		if (line.empty())
 			continue;
 		//
