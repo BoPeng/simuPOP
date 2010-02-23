@@ -983,7 +983,8 @@ private:
  *  the corresponing individual in the pedigree object. It then locates the
  *  parents of each offspring using their IDs in the pedigree object. A list of
  *  during mating operators are then used to transmit parental genotype to
- *  the offspring.
+ *  the offspring. The population being evolved must have an information field
+ *  \c 'ind_id'.
  */
 class PedigreeMating : public MatingScheme
 {

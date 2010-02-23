@@ -131,41 +131,54 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 	for (size_t i = 0; i < fields.size(); ++i)
 		indexes.push_back(infoIdx(fields[i]));
 
+    // out << .... is very slow compared to the sprintf implementation.
+    // 
+    // three numbers (maximum 20 charameters) + M F, the buffer should be long enough
+    char buffer[96];
+
 	UINT ply = ploidy();
 	vectoru loci = lociList.elems();
 	if (lociList.allAvail())
 		for (size_t i = 0; i < totNumLoci(); ++i)
 			loci.push_back(i);
 
+    UINT nParents = numParents();
 	UINT curGen = curAncestralGen();
 	for (int gen = ancestralGens(); gen >= 0; --gen) {
 		const_cast<Pedigree *>(this)->useAncestralGen(gen);
 		ConstRawIndIterator it = rawIndBegin();
 		ConstRawIndIterator it_end = rawIndEnd();
 		for (; it != it_end; ++it) {
-			file << toID(it->info(m_idIdx));
+			ULONG myID = toID(it->info(m_idIdx));
+            ULONG fatherID = 0;
+            ULONG motherID = 0;
 			if (m_fatherIdx != -1) {
-				ULONG fatherID = toID(it->info(m_fatherIdx));
-				if (m_idMap.find(fatherID) != m_idMap.end())
-					file << " " << fatherID;
-				else
-					file << " 0";
+				fatherID = toID(it->info(m_fatherIdx));
+				if (fatherID && m_idMap.find(fatherID) == m_idMap.end())
+					fatherID = 0;
 			}
 			if (m_motherIdx != -1) {
-				ULONG motherID = toID(it->info(m_motherIdx));
-				if (m_idMap.find(motherID) != m_idMap.end())
-					file << " " << motherID;
-				else
-					file << " 0";
+				motherID = toID(it->info(m_motherIdx));
+				if (motherID && m_idMap.find(motherID) == m_idMap.end())
+					motherID = 0;
 			}
-			file	<< (it->sex() == MALE ? " M" : " F")
-			        << (it->affected() ? " A" : " U");
+            char sexChar = it->sex() == MALE ? 'M' : 'F';
+            char affChar = it->affected() ? 'A' : 'U';
+            if (nParents == 0)
+                sprintf(buffer, "%d %c %c", myID, sexChar, affChar);
+            else if (nParents == 1)
+                sprintf(buffer, "%d %d %c %c", myID, fatherID ? fatherID : motherID,
+                    sexChar, affChar);
+            else
+                sprintf(buffer, "%d %d %d %c %c", myID, fatherID, motherID,
+                    sexChar, affChar);
+			file << buffer;
 			for (size_t i = 0; i < indexes.size(); ++i)
 				file << " " << it->info(indexes[i]);
 			for (size_t i = 0; i < loci.size(); ++i)
 				for (size_t p = 0; p < ply; ++p)
 					file << " " << it->allele(loci[i], p);
-			file << "\n";
+			file << '\n';
 		}
 	}
 	const_cast<Pedigree *>(this)->useAncestralGen(curGen);
@@ -173,7 +186,7 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 }
 
 
-UINT Pedigree::numParents()
+UINT Pedigree::numParents() const
 {
 	return static_cast<UINT>(m_fatherIdx != -1) + static_cast<UINT>(m_motherIdx != -1);
 }
