@@ -30,8 +30,8 @@ using std::ofstream;
 
 #include <set>
 
-#include "boost/lexical_cast.hpp"
-using boost::lexical_cast;
+// lexical_cast is REALLY slow!
+//#include "boost/lexical_cast.hpp"
 
 namespace simuPOP {
 
@@ -1376,18 +1376,13 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		ULONG myID = 0;
 		int part = 0;
 		char * p = strtok(const_cast<char *>(line.c_str()), " ");
-		// parse the line to fill a structure
 		// boost::tokenizer is proven to be too slow..... (5.5s vs. 1.5s)
-		//tokenizer<> tok(line);
-		//tokenizer<>::iterator beg = tok.begin();
-		//tokenizer<>::iterator end = tok.end();
-		//for (; beg != end; ++beg) {
 		while (p) {
-			string field(p);
+			char * q = p;
 			p = strtok(NULL, " ");
 			// collect self ID
 			if (part == 0) {
-				myID = lexical_cast<ULONG>(field);
+				myID = atoi(q);
 				if (individuals.find(myID) != individuals.end())
 					throw ValueError("Duplicate individual ID " + toStr(myID));
 				info = &((individuals.insert(IdMap::value_type(myID, IndInfo())).first)->second);
@@ -1395,16 +1390,16 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 				continue;
 				// parental ID and sex
 			} else if (part == 1) {
-				if (field[0] == 'M') {
+				if (*q == 'M') {
 					info->sex = MALE;
 					++part;
 					continue;
-				} else if (field[0] == 'F') {
+				} else if (*q == 'F') {
 					info->sex = FEMALE;
 					++part;
 					continue;
 				} else {
-					ULONG id = lexical_cast<ULONG>(field);
+					ULONG id = atoi(q);
 					if (id) {
 						info->parents.push_back(id);
 						IdMap::iterator it = individuals.find(id);
@@ -1419,9 +1414,9 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 				}
 				// parental affection status, can be ignored
 			} else if (part == 2) {
-				if (field[0] == 'A')
+				if (*q == 'A')
 					info->affectionStatus = true;
-				else if (field[0] == 'U')
+				else if (*q == 'U')
 					info->affectionStatus = false;
 				else
 					++part;
@@ -1432,12 +1427,12 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 				if (info->fields.size() == infoFields.size())
 					++part;
 				else
-					info->fields.push_back(lexical_cast<double>(field));
+					info->fields.push_back(atof(q));
 			}
 
 			// genotype
 			if (part == 4)
-				info->genotype.push_back(lexical_cast<int>(field));
+				info->genotype.push_back(atoi(q));
 		}
 		// if there is no valid input...
 		if (part == 0)
