@@ -281,11 +281,11 @@ void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
     char sexChar = ind->sex() == MALE ? 'M' : 'F';
     char affChar = ind->affected() ? 'A' : 'U';
     if (IDs.empty())
-        sprintf(buffer, "%d %c %c", toID(ind->info(m_idField)), sexChar, affChar);
+        sprintf(buffer, "%lu %c %c", toID(ind->info(m_idField)), sexChar, affChar);
     else if (IDs.size() == 1)
-        sprintf(buffer, "%d %d %c %c", toID(ind->info(m_idField)), toID(IDs[0]), sexChar, affChar);
+        sprintf(buffer, "%lu %lu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), sexChar, affChar);
     else
-        sprintf(buffer, "%d %d %d %c %c", toID(ind->info(m_idField)), toID(IDs[0]), toID(IDs[1]), sexChar, affChar);
+        sprintf(buffer, "%lu %lu %lu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), toID(IDs[1]), sexChar, affChar);
     out << buffer;
     // it is difficult to create buffers for the following, but we do not really care
     // because writing information fields and genotype is rare.
