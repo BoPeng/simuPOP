@@ -165,12 +165,12 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
             char sexChar = it->sex() == MALE ? 'M' : 'F';
             char affChar = it->affected() ? 'A' : 'U';
             if (nParents == 0)
-                sprintf(buffer, "%d %c %c", myID, sexChar, affChar);
+                sprintf(buffer, "%lu %c %c", myID, sexChar, affChar);
             else if (nParents == 1)
-                sprintf(buffer, "%d %d %c %c", myID, fatherID ? fatherID : motherID,
+                sprintf(buffer, "%lu %lu %c %c", myID, fatherID ? fatherID : motherID,
                     sexChar, affChar);
             else
-                sprintf(buffer, "%d %d %d %c %c", myID, fatherID, motherID,
+                sprintf(buffer, "%lu %lu %lu %c %c", myID, fatherID, motherID,
                     sexChar, affChar);
 			file << buffer;
 			for (size_t i = 0; i < indexes.size(); ++i)
