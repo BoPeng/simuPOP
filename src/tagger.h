@@ -361,7 +361,7 @@ public:
 
 private:
 	void outputIndividual(ostream & out, const Individual * ind,
-		const vectoru & IDs) const;
+		const vectorf & IDs) const;
 
 private:
 	const string m_idField;
