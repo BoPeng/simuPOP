@@ -145,6 +145,7 @@ include gsl/specfunc/erfc.c
 include gsl/specfunc/psi.c
 include gsl/specfunc/elementary.c
 include gsl/specfunc/gamma_inc.c
+include gsl/error.h
 include gsl/error.c
 include gsl/sys/pow_int.c
 include gsl/sys/fdiv.c
