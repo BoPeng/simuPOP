@@ -1,0 +1,13 @@
+RoadMap of simuPOP
+
+* Efficiency improvement and possible use of openMP.
+  Better ways to profile simuPOP?
+
+* add models from population genetics book (for the book).
+
+* A real GUI other than the tk-based simple parameter dialog
+
+* Allow parameter loci of operators to take locus name because loci index might change
+	as a result of some operator.
+
+
