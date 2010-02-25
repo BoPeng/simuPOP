@@ -8977,55 +8977,73 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler "
+%feature("docstring") simuPOP::WeightedSampler "
+
+Details:
+
+    A random number generator that returns 0, 1, ..., k-1 with
+    probabilites that are proportional to their weights. For example,
+    a weighted sampler with weights 4, 3, 2 and 1 will return numbers
+    0, 1, 2 and 3 with probabilities 0.4, 0.3, 0.2 and 0.1,
+    respectively. If an additional parameter N is specified, the
+    weighted sampler will return exact proportions of numbers if N
+    numbers are returned. The version without additional parameter is
+    similar to the sample(prob, replace=FALSE) function of the R
+    statistical package.
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::Weightedsampler "
+%feature("docstring") simuPOP::WeightedSampler::WeightedSampler "
 
 Usage:
 
-    Weightedsampler(rng)
+    WeightedSampler(weights=[], N=0)
+
+Details:
+
+    Creates a weighted sampler that returns 0, 1, ... k-1 when a list
+    of k weights are specified (weights). weights do not have to add
+    up to 1. If a non-zero N is specified, exact proportions of
+    numbers will be returned in N returned numbers.
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::~Weightedsampler "
-
-Usage:
-
-    x.~Weightedsampler()
-
-"; 
-
-%feature("docstring") simuPOP::Weightedsampler::set "
+%feature("docstring") simuPOP::WeightedSampler::~WeightedSampler "
 
 Description:
 
-    set parameters
+    destructor
 
 Usage:
 
-    x.set(weight)
+    x.~WeightedSampler()
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::set "
+%ignore simuPOP::WeightedSampler::set(const vectorf &weights, ULONG N=0);
 
-Description:
-
-    set parameters for the second case.
+%feature("docstring") simuPOP::WeightedSampler::draw "
 
 Usage:
 
-    x.set(weight, N)
+    x.draw()
+
+Details:
+
+    Returns a random number between 0 and k-1 with probabilities that
+    are proportional to specified weights.
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::get "
+%feature("docstring") simuPOP::WeightedSampler::drawSamples "
 
 Usage:
 
-    x.get()
+    x.drawSamples(num=1)
+
+Details:
+
+    Returns a list of num random numbers
 
 "; 
 
@@ -9216,16 +9234,6 @@ Details:
 
 "; 
 
-%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
-
-%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
-
-%ignore simuPOP::hweTest(const vectoru &cnt);
-
-%ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
-
-%ignore simuPOP::formatDescription(const string &text);
-
 %feature("docstring") simuPOP::getRNG "
 
 Description:
@@ -9237,6 +9245,16 @@ Usage:
     getRNG()
 
 "; 
+
+%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
+
+%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
+
+%ignore simuPOP::hweTest(const vectoru &cnt);
+
+%ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
+
+%ignore simuPOP::formatDescription(const string &text);
 
 %feature("docstring") simuPOP::moduleInfo "
 

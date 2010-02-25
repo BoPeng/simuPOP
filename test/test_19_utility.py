@@ -200,17 +200,18 @@ class TestUtility(unittest.TestCase):
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
-        sampler = Weightedsampler(getRNG(), [1, 2, 3, 4])
+        sampler = WeightedSampler([1, 2, 3, 4])
         num = []
         for i in range(100000):
-            num.append(sampler.get())
+            num.append(sampler.draw())
+        for i in range(4):
+            self.assertAlmostEqual(num.count(i) / 100000., 0.1 * (i+1), 2)
+        num = sampler.drawSamples(100000)
         for i in range(4):
             self.assertAlmostEqual(num.count(i) / 100000., 0.1 * (i+1), 2)
         # the proportion version
-        sampler = Weightedsampler(getRNG(), [0.1, 0.2, 0.3, 0.4], 100000)
-        num = []
-        for i in range(100000):
-            num.append(sampler.get())
+        sampler = WeightedSampler([0.1, 0.2, 0.3, 0.4], 100000)
+        num = sampler.drawSamples(100000)
         for i in range(4):
             # the count must be exact
             self.assertEqual(num.count(i), 10000 * (i+1))

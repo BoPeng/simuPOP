@@ -154,12 +154,12 @@ bool Migrator::apply(Population & pop) const
 					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
 			}
 		} else if (m_mode == BY_PROBABILITY) {
-			Weightedsampler ws(getRNG(), migrationRate[from]);
+			WeightedSampler ws(migrationRate[from]);
 
 			// for each individual, migrate according to migration probability
 			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
 				//toIndex = getRNG().randIntByFreq( rateSize, &migrationRate[from][0] ) ;
-				toIndex = ws.get();
+				toIndex = ws.draw();
 
 				DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
 					"Return index out of range.");

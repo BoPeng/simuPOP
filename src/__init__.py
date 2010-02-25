@@ -256,7 +256,7 @@ __all__ = [
     # For testing only
     'applyDuringMatingOperator',
     'Bernullitrials',
-    'Weightedsampler',
+    'WeightedSampler',
     # 
     # modules are not loaded by default because importing plotter will fail if
     # rpy is not installed, and loading R is slow and perhaps unnecessary if

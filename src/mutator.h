@@ -243,7 +243,7 @@ public:
 
 
 private:
-	mutable vector<Weightedsampler> m_sampler;
+	mutable vector<WeightedSampler> m_sampler;
 };
 
 /** This mutator implements a \e k-allele mutation model that assumes \e k
@@ -461,7 +461,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
-		m_mutators(mutators), m_sampler(getRNG())
+		m_mutators(mutators), m_sampler()
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
 			"Please specify a probability for each passed mutator.");
@@ -493,7 +493,7 @@ public:
 private:
 	const opList m_mutators;
 
-	mutable Weightedsampler m_sampler;
+	mutable WeightedSampler m_sampler;
 };
 
 

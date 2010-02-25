@@ -5,6 +5,9 @@ Known Bugs:
 
 version 1.0.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+New features (minor):
+  - Expose class WeightedSampler to the user interface.
+
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)
 
 Bugs:
@@ -19,7 +22,7 @@ Bugs:
   - Fix a bug and expand the use of parameter 'header' in function utils.saveCSV.
   - Fix a bug that prevents proper cloning of Pedigree objects.
 
-New feature:
+New features:
   - Add parameter 'version' to function simuOpt.setOptions.
   - Add pdf and cdf functions for binomial and beta distributions to module simuPOP.gsl.
   - Accept ALL_AVAIL in sp or vsp in a virtual subpopulation list to go through

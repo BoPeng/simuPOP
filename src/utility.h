@@ -1630,6 +1630,9 @@ private:
 	UINT m_bitIndex;
 };
 
+/// return the currently used random number generator
+RNG & getRNG();
+
 /// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 
@@ -1645,49 +1648,51 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count);
 /// CPPONLY
 string formatDescription(const string & text);
 
-// weighted sampling using Walker's alias algorithm
-class Weightedsampler
+/** A random number generator that returns \c 0, \c 1, ..., \c k-1 with
+ *  probabilites that are proportional to their weights. For example, a
+ *  weighted sampler with weights \c 4, \c 3, \c 2 and \c 1 will return numbers
+ *  \c 0, \c 1, \c 2 and \c 3 with probabilities \c 0.4, \c 0.3, \c 0.2 and
+ *  \c 0.1, respectively. If an additional parameter \c N is specified, the
+ *  weighted sampler will return exact proportions of numbers if \c N numbers
+ *  are returned. The version without additional parameter is similar to
+ *  the <tt>sample(prob, replace=FALSE)</tt> function of the R statistical
+ *  package.
+ */
+class WeightedSampler
 {
 public:
-	Weightedsampler(RNG & rng)
-		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+	/** Creates a weighted sampler that returns \c 0, \c 1, ... \c k-1 when a
+	 *  list of \c k weights are specified (\e weights). \e weights do not have
+	 *  to add up to 1. If a non-zero \e N is specified, exact proportions of
+	 *  numbers will be returned in \e N returned numbers.
+	 */
+	WeightedSampler(const vectorf & weights = vectorf(), ULONG N = 0)
+		: m_RNG(&getRNG()), m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
+		set(weights, N);
 	}
 
 
-	// set up AliasMethod table
-	Weightedsampler(RNG & rng, const vectorf & weight)
-		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
-		m_sequence(0), m_index(0)
-	{
-		set(weight);
-	}
-
-
-	// Return 0, 1, ... randomly according to a proportion table.
-	Weightedsampler(RNG & rng, const vectorf & weight, ULONG N)
-		: m_RNG(&rng), m_algorithm(0), m_q(0), m_a(0), m_param(0),
-		m_sequence(0), m_index(0)
-	{
-		set(weight, N);
-	}
-
-
-	~Weightedsampler()
+	/// destructor
+	~WeightedSampler()
 	{
 	}
 
 
-	/// set parameters
-	void set(const vectorf & weight);
+	/** CPPONLY
+	 *  Set parameters for the weighted sampler.
+	 */
+	void set(const vectorf & weights, ULONG N = 0);
 
-	/// set parameters for the second case.
-	void set(const vectorf & weight, ULONG N);
+	/** Returns a random number between \c 0 and \c k-1 with probabilities that
+	 *  are proportional to specified weights.
+	 */
+	ULONG draw();
 
-	// sample without replacement from 0,...,n-1,
-	// with weight freq
-	ULONG get();
+	/** Returns a list of \e num random numbers
+	 */
+	vectoru drawSamples(ULONG num = 1);
 
 private:
 	/// pointer to a RNG
@@ -1856,9 +1861,6 @@ private:
 	/// current trial. Used when user want to access the table row by row
 	size_t m_cur;
 };
-
-/// return the currently used random number generator
-RNG & getRNG();
 
 
 // ////////////////////////////////////////////////////////////
