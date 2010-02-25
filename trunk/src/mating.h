@@ -442,7 +442,7 @@ public:
 	RandomParentChooser(bool replacement = true,
 		const string & selectionField = "fitness") :
 		ParentChooser(selectionField), m_replacement(replacement),
-		m_index(0), m_chosen(0), m_sampler(getRNG()), m_size(0), m_shift(0)
+		m_index(0), m_chosen(0), m_sampler(), m_size(0), m_shift(0)
 	{
 	}
 
@@ -475,7 +475,7 @@ protected:
 	vector<RawIndIterator> m_index;
 	vector<RawIndIterator> m_chosen;
 	/// accumulative fitness
-	Weightedsampler m_sampler;
+	WeightedSampler m_sampler;
 	/// individuals to choose
 	size_t m_size;
 	/// index to the subpopulation
@@ -506,7 +506,7 @@ public:
 	RandomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
 		ParentChooser(selectionField), m_replacement(replacement),
 		m_maleIndex(0), m_femaleIndex(0), m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(getRNG()), m_femalesampler(getRNG())
+		m_malesampler(), m_femalesampler()
 	{
 	}
 
@@ -549,8 +549,8 @@ private:
 	vectorf m_femaleFitness;
 
 	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
+	WeightedSampler m_malesampler;
+	WeightedSampler m_femalesampler;
 };
 
 
@@ -578,7 +578,7 @@ public:
 		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
 		m_maleFitness(0), m_femaleFitness(0),
-		m_malesampler(getRNG()), m_femalesampler(getRNG())
+		m_malesampler(), m_femalesampler()
 	{
 		DBG_FAILIF(polyNum < 1, ValueError,
 			"Number of sex partners has to be at least one");
@@ -627,8 +627,8 @@ private:
 	vectorf m_femaleFitness;
 
 	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
+	WeightedSampler m_malesampler;
+	WeightedSampler m_femalesampler;
 };
 
 

@@ -577,12 +577,12 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 	if (m_index.empty()) {
 		if (m_selection)
 			// basePtr points to the beginning of the population, not subpopulation
-			ind = &*(basePtr + m_shift + m_sampler.get());
+			ind = &*(basePtr + m_shift + m_sampler.draw());
 		else
 			ind = &*(basePtr + m_shift + getRNG().randInt(m_size));
 	} else {
 		if (m_selection)
-			ind = &*(m_index[m_sampler.get()]);
+			ind = &*(m_index[m_sampler.draw()]);
 		else
 			ind = &*(m_index[getRNG().randInt(m_size)]);
 	}
@@ -684,8 +684,8 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 
 	if (m_selection) {
 		// using weighted sampler.
-		dad = &*(m_maleIndex[m_malesampler.get()]);
-		mom = &*(m_femaleIndex[m_femalesampler.get()]);
+		dad = &*(m_maleIndex[m_malesampler.draw()]);
+		mom = &*(m_femaleIndex[m_femalesampler.draw()]);
 	} else {
 		dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
 		mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
@@ -772,7 +772,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 			throw RuntimeError("PolyParentsChooser fails because there is no male individual in a subpopulation.");
 
 		if (m_selection)
-			dad = &*(m_maleIndex[m_malesampler.get()]);
+			dad = &*(m_maleIndex[m_malesampler.draw()]);
 		else
 			dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
 
@@ -787,7 +787,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 			throw RuntimeError("PolyParentsChooser fails because there is no female individual in a subpopulation.");
 
 		if (m_selection)
-			mom = &*(m_femaleIndex[m_femalesampler.get()]);
+			mom = &*(m_femaleIndex[m_femalesampler.draw()]);
 		else
 			mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
 

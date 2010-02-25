@@ -2785,135 +2785,131 @@ string formatDescription(const string & text)
 }
 
 
-void Weightedsampler::set(const vectorf & weight)
+void WeightedSampler::set(const vectorf & weight, ULONG N)
 {
-	m_N = weight.size();
-	// no weight (wrong case)
-	if (m_N == 0) {
-		// invalid
-		m_algorithm = 0;
-		return;
-	}
-	// only one weight?
-	if (m_N == 1) {
-		// return 0 all time
-		m_algorithm = 1;
-		m_param = 0;
-		return;
-	}
-	// fixed value
-	bool allEqual = true;
-	for (size_t i = 1; i < weight.size(); ++i) {
-		if (weight[i] != weight[i - 1]) {
-			allEqual = false;
-			break;
+	// this is the case with unknown number of outputs
+	if (N == 0) {
+		m_N = weight.size();
+		// no weight (wrong case)
+		if (m_N == 0) {
+			// invalid
+			m_algorithm = 0;
+			return;
 		}
-	}
-
-	if (allEqual) {
-		m_algorithm = 2;
-		m_param = m_N;
-		return;
-	}
-	// only one value
-	bool fixed = true;
-	int prevIndex = -1;
-	for (size_t i = 0; i < weight.size(); ++i) {
-		if (weight[i] != 0) {
-			if (prevIndex == -1) {
-				m_param = i;
-				prevIndex = i;
-			} else { // two non-zero index, not fixed.
-				fixed = false;
+		// only one weight?
+		if (m_N == 1) {
+			// return 0 all time
+			m_algorithm = 1;
+			m_param = 0;
+			return;
+		}
+		// fixed value
+		bool allEqual = true;
+		for (size_t i = 1; i < weight.size(); ++i) {
+			if (weight[i] != weight[i - 1]) {
+				allEqual = false;
 				break;
 			}
 		}
-	}
-	if (fixed) {
-		m_algorithm = 1;
-		return;
-	}
-	// the mos difficult case
-	m_algorithm = 3;
-	// sum of weight
-	double w = accumulate(weight.begin(), weight.end(), 0.0);
 
-	DBG_FAILIF(fcmp_le(w, 0), ValueError, "Sum of weight is <= 0.");
-
-	w = m_N / w;
-
-	// initialize p with N*p0,...N*p_k-1
-	m_q.resize(m_N);
-	for (size_t i = 0; i < m_N; ++i)
-		m_q[i] = weight[i] * w;
-	// initialize Y with values
-	m_a.resize(m_N);
-	for (size_t i = 0; i < m_N; ++i)
-		m_a[i] = i;
-	// use two sets H and L
-	// for efficiency purpose, use a single vector.
-	ULONG * HL = new ULONG[m_N];
-	ULONG * L = HL;
-	ULONG * H = HL + m_N - 1;                                         // point to the end.
-
-	for (size_t i = 0; i < m_N; ++i) {
-		if (m_q[i] > 1)
-			*H-- = i;
-		else
-			*L++ = i;
-	}
-
-	//
-	ULONG j, k;
-	while (L != HL && H != HL + m_N - 1) {
-		j = *(L - 1);
-		k = *(H + 1);
-		m_a[j] = k;
-		m_q[k] += m_q[j] - 1;
-
-		L--;                                                                            // remove j from L
-		if (m_q[k] < 1.) {
-			*L++ = k;                                                                   // add k to L
-			++H;                                                                        // remove k from H
+		if (allEqual) {
+			m_algorithm = 2;
+			m_param = m_N;
+			return;
 		}
+		// only one value
+		bool fixed = true;
+		int prevIndex = -1;
+		for (size_t i = 0; i < weight.size(); ++i) {
+			if (weight[i] != 0) {
+				if (prevIndex == -1) {
+					m_param = i;
+					prevIndex = i;
+				} else { // two non-zero index, not fixed.
+					fixed = false;
+					break;
+				}
+			}
+		}
+		if (fixed) {
+			m_algorithm = 1;
+			return;
+		}
+		// the mos difficult case
+		m_algorithm = 3;
+		// sum of weight
+		double w = accumulate(weight.begin(), weight.end(), 0.0);
+
+		DBG_FAILIF(fcmp_le(w, 0), ValueError, "Sum of weight is <= 0.");
+
+		w = m_N / w;
+
+		// initialize p with N*p0,...N*p_k-1
+		m_q.resize(m_N);
+		for (size_t i = 0; i < m_N; ++i)
+			m_q[i] = weight[i] * w;
+		// initialize Y with values
+		m_a.resize(m_N);
+		for (size_t i = 0; i < m_N; ++i)
+			m_a[i] = i;
+		// use two sets H and L
+		// for efficiency purpose, use a single vector.
+		ULONG * HL = new ULONG[m_N];
+		ULONG * L = HL;
+		ULONG * H = HL + m_N - 1;                                     // point to the end.
+
+		for (size_t i = 0; i < m_N; ++i) {
+			if (m_q[i] > 1)
+				*H-- = i;
+			else
+				*L++ = i;
+		}
+
+		//
+		ULONG j, k;
+		while (L != HL && H != HL + m_N - 1) {
+			j = *(L - 1);
+			k = *(H + 1);
+			m_a[j] = k;
+			m_q[k] += m_q[j] - 1;
+
+			L--;                                                                        // remove j from L
+			if (m_q[k] < 1.) {
+				*L++ = k;                                                               // add k to L
+				++H;                                                                    // remove k from H
+			}
+		}
+		delete[] HL;
+	} else {
+		m_algorithm = 4;
+
+		for (size_t i = 0; i < weight.size(); ++i) {
+			DBG_FAILIF(weight[i] < 0 || weight[i] > 1, ValueError,
+				"Proportions should be between 0 and 1");
+		}
+		// sum of weight
+		double w = accumulate(weight.begin(), weight.end(), 0.0);
+		(void)w;  // fix compiler warning.
+
+		DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
+
+		vectoru count(N);
+		propToCount(weight, N, count);
+
+		m_sequence.resize(N);
+		// turn weight into percentage
+		for (size_t i = 0, j = 0; i < weight.size(); ++i)
+			for (size_t k = 0; k < count[i]; ++k, ++j)
+				m_sequence[j] = i;
+
+		// random shuffle
+		m_RNG->randomShuffle(m_sequence.begin(), m_sequence.end());
+		m_index = 0;
 	}
-	delete[] HL;
 }
 
 
-void Weightedsampler::set(const vectorf & weight, ULONG N)
-{
-	m_algorithm = 4;
-
-	if (N == 0)
-		return;
-
-	for (size_t i = 0; i < weight.size(); ++i) {
-		DBG_FAILIF(weight[i] < 0 || weight[i] > 1, ValueError,
-			"Proportions should be between 0 and 1");
-	}
-	// sum of weight
-	double w = accumulate(weight.begin(), weight.end(), 0.0);
-	(void)w;  // fix compiler warning.
-
-	DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
-
-	vectoru count(N);
-	propToCount(weight, N, count);
-
-	m_sequence.resize(N);
-	// turn weight into percentage
-	for (size_t i = 0, j = 0; i < weight.size(); ++i)
-		for (size_t k = 0; k < count[i]; ++k, ++j)
-			m_sequence[j] = i;
-
-	// random shuffle
-	m_RNG->randomShuffle(m_sequence.begin(), m_sequence.end());
-	m_index = 0;
-}
-
-
-ULONG Weightedsampler::get()
+ULONG WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
@@ -2939,14 +2935,24 @@ ULONG Weightedsampler::get()
 	}
 	case 4:
 		// return according to proportion.
-		DBG_FAILIF(m_index >= m_sequence.size(), SystemError,
-			"Proportion sampler pool exhausted");
+		if (m_index == m_sequence.size())
+			m_index = 0;
 		return m_sequence[m_index++];
 	default:
 		throw RuntimeError("Invalid weighted sampler (empty weight?)");
 	}
 	// should never be reached
 	return 0;
+}
+
+
+vectoru WeightedSampler::drawSamples(ULONG num)
+{
+	vectoru res(num);
+
+	for (size_t i = 0; i < num; ++i)
+		res[i] = draw();
+	return res;
 }
 
 

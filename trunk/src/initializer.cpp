@@ -52,7 +52,7 @@ bool InitSex::apply(Population & pop) const
 	subPopList::const_iterator sp_end = subPops.end();
 
 	for (; sp != sp_end; ++sp) {
-		Weightedsampler ws(getRNG());
+		WeightedSampler ws;
 		if (m_maleProp >= 0) {
 			vectorf prop(2, m_maleProp);
 			prop[1] = 1 - prop[0];
@@ -70,7 +70,7 @@ bool InitSex::apply(Population & pop) const
 				ind->setSex(m_sex[idx % sexSz] == 1 ? MALE : FEMALE);
 		else
 			for (; ind.valid(); ++ind)
-				ind->setSex(ws.get() == 0 ? MALE : FEMALE);
+				ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
@@ -199,22 +199,22 @@ bool InitGenotype::apply(Population & pop) const
 					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
 						it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, *p);
 		} else if (!m_prop.empty()) {
-			Weightedsampler ws(getRNG());
+			WeightedSampler ws;
 			UINT sz = pop.subPopSize(*sp);
 			for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc) {
 				ws.set(m_prop, sz * ploidy.size());
 				IndIterator it = pop.indIterator(sp->subPop());
 				for (; it.valid(); ++it)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-						it->setAllele(ToAllele(ws.get()), *loc, *p);
+						it->setAllele(ToAllele(ws.draw()), *loc, *p);
 			}
 		} else {
-			Weightedsampler ws(getRNG(), m_freq);
+			WeightedSampler ws(m_freq);
 			IndIterator it = pop.indIterator(sp->subPop());
 			for (; it.valid(); ++it)
 				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-						it->setAllele(ToAllele(ws.get()), *loc, *p);
+						it->setAllele(ToAllele(ws.draw()), *loc, *p);
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}

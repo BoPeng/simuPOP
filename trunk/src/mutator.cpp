@@ -222,7 +222,7 @@ MatrixMutator::MatrixMutator(const matrix & rate,
 		}
 		rateMatrix[i][i] = 1 - sum / mu;
 		DBG_DO(DBG_MUTATOR, cerr << "Setting weight for allele " << i << " to " << rateMatrix[i] << endl);
-		m_sampler.push_back(Weightedsampler(getRNG(), rateMatrix[i]));
+		m_sampler.push_back(WeightedSampler(rateMatrix[i]));
 	}
 }
 
@@ -232,7 +232,7 @@ void MatrixMutator::mutate(AlleleRef allele, UINT) const
 	DBG_FAILIF(static_cast<size_t>(allele) >= m_sampler.size(), IndexError,
 		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
 		+ " (determined by the size of the mutation rate matrix).");
-	allele = ToAllele(m_sampler[allele].get());
+	allele = ToAllele(m_sampler[allele].draw());
 }
 
 
@@ -355,7 +355,7 @@ void PyMutator::mutate(AlleleRef allele, UINT) const
 
 void MixedMutator::mutate(AlleleRef allele, UINT locus) const
 {
-	UINT idx = m_sampler.get();
+	UINT idx = m_sampler.draw();
 	const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
 
