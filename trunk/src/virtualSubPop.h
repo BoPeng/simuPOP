@@ -634,7 +634,7 @@ public:
 	 *  default set of names are given to each VSP unless a new set of names is
 	 *  given by parameter \e names.
 	 */
-	InfoSplitter(string field, const vectorinfo & values = vectorinfo(),
+	InfoSplitter(string field, const vectorf & values = vectorf(),
 		const vectorf & cutoff = vectorf(), const matrix & ranges = matrix(),
 		const stringList & names = vectorstr());
 
@@ -677,7 +677,7 @@ public:
 private:
 	string m_info;
 	//
-	vectorinfo m_values;
+	vectorf m_values;
 	//
 	vectorf m_cutoff;
 	//

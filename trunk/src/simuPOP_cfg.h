@@ -272,7 +272,6 @@ const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 // info is usually used for subpopulation index.
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
-typedef double InfoType;
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
 typedef signed int SubPopID;
@@ -290,7 +289,6 @@ typedef std::vector<ULONG>                 vectoru;
 typedef std::vector<std::string>           vectorstr;
 typedef std::vector<std::vector<long int > >    intMatrix;
 typedef std::vector<std::vector<std::string > >    matrixstr;
-typedef std::vector<InfoType>              vectorinfo;
 typedef std::vector<std::vector<double > > matrix;
 
 #include <map>

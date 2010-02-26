@@ -1285,18 +1285,18 @@ public:
 	 *  <tt>(sp, vsp)</tt>).
 	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(const uintString & field, vspID subPop = vspID())
+	vectorf indInfo(const uintString & field, vspID subPop = vspID())
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This operation is not allowed when there is an activated virtual subpopulation");
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 		if (subPop.valid()) {
 			activateVirtualSubPop(subPop);
-			vectorinfo ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
+			vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
 			deactivateVirtualSubPop(subPop.subPop());
 			return ret;
 		} else
-			return vectorinfo(infoBegin(idx), infoEnd(idx));
+			return vectorf(infoBegin(idx), infoEnd(idx));
 	}
 
 
@@ -1721,7 +1721,7 @@ private:
 
 	/// information
 	/// only in head node
-	vectorinfo m_info;
+	vectorf m_info;
 
 	/// individuals.
 	/// only in head node?
@@ -1739,7 +1739,7 @@ private:
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
 		vectora m_genotype;
-		vectorinfo m_info;
+		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;
 

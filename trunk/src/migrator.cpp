@@ -58,7 +58,7 @@ bool Migrator::apply(Population & pop) const
 	DBG_FAILIF(m_mode != BY_IND_INFO && fromSubPops.size() != m_rate.size(),
 		ValueError, "Number of 'from' subpopulations should match number of rows of migration rate matrix.");
 
-	vectorinfo oldInfo;
+	vectorf oldInfo;
 
 	if (m_mode == BY_IND_INFO && !fromSubPops.empty()) {
 		oldInfo.resize(pop.popSize());
@@ -202,7 +202,7 @@ bool Migrator::apply(Population & pop) const
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
 				// The previous migration_to value, if set by a previous vsp, will be overridden.
-				ind->setInfo(static_cast<InfoType>(toIndices[i]), info);
+				ind->setInfo(static_cast<double>(toIndices[i]), info);
 		}
 		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
