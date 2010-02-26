@@ -28,7 +28,7 @@
 
 namespace simuPOP {
 
-Migrator::Migrator(const matrix & rate, int mode, const uintList & toSubPops,
+Migrator::Migrator(const matrixf & rate, int mode, const uintList & toSubPops,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
@@ -87,7 +87,7 @@ bool Migrator::apply(Population & pop) const
 	// real migration matrix might change from population to population because
 	// of different number of subpopulations, and toSubPops can be ALL_AVAIL, and
 	// then does not have to match subPops.
-	matrix migrationRate = m_rate;
+	matrixf migrationRate = m_rate;
 	if (m_mode != BY_IND_INFO) {
 		UINT szFrom = migrationRate.size();
 		UINT szTo = migrationRate[0].size();
