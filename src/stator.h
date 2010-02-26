@@ -512,7 +512,7 @@ private:
 #define  HaplotypeFreq_sp_String   "haploFreq_sp"
 
 public:
-	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
+	statHaploFreq(const matrixi & haploFreq, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -530,7 +530,7 @@ private:
 
 private:
 	/// haplotype at which loci
-	intMatrix m_loci;
+	matrixi m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -610,7 +610,7 @@ public:
 	// calculated only once. However, this appear to be a rare case that does
 	// not worth special optimization. The newer version calculates allele and
 	// haplotype frequencies locally and in a more readable way.
-	statLD(const intMatrix & LD, const subPopList & subPops,
+	statLD(const matrixi & LD, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -634,7 +634,7 @@ private:
 
 private:
 	/// LD
-	intMatrix m_LD;
+	matrixi m_LD;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -1156,7 +1156,7 @@ public:
 		//
 		const uintList & genoFreq = vectoru(),
 		//
-		const intMatrix & haploFreq = intMatrix(),
+		const matrixi & haploFreq = matrixi(),
 		//
 		const stringList & sumOfInfo = vectorstr(),
 		const stringList & meanOfInfo = vectorstr(),
@@ -1164,7 +1164,7 @@ public:
 		const stringList & maxOfInfo = vectorstr(),
 		const stringList & minOfInfo = vectorstr(),
 		//
-		const intMatrix & LD = intMatrix(),
+		const matrixi & LD = matrixi(),
 		//
 		const uintList & association = vectoru(),
 		//

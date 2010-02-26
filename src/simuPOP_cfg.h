@@ -287,9 +287,9 @@ typedef std::vector<double>                vectorf;
 typedef std::vector<Allele>                vectora;
 typedef std::vector<ULONG>                 vectoru;
 typedef std::vector<std::string>           vectorstr;
-typedef std::vector<std::vector<long int > >    intMatrix;
+typedef std::vector<std::vector<long int > >    matrixi;
 typedef std::vector<std::vector<std::string > >    matrixstr;
-typedef std::vector<std::vector<double > > matrix;
+typedef std::vector<std::vector<double > > matrixf;
 
 #include <map>
 using std::map;

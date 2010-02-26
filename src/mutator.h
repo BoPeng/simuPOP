@@ -524,7 +524,7 @@ public:
 	 *  \c BaseOperator for descriptions of other parameters.
 	 */
 	ContextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
-		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
+		const opList & mutators = opList(), const matrixi & contexts = matrixi(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -567,7 +567,7 @@ public:
 private:
 	opList m_mutators;
 
-	intMatrix m_contexts;
+	matrixi m_contexts;
 };
 
 

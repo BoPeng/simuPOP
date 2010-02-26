@@ -386,7 +386,7 @@ public:
 	 *  by splitters, but can also be specified using parameter \e names.
 	 */
 	CombinedSplitter(const vectorsplitter & splitters = vectorsplitter(),
-		const intMatrix & vspMap = intMatrix(), const stringList & names = vectorstr());
+		const matrixi & vspMap = matrixi(), const stringList & names = vectorstr());
 
 	/// CPPONLY
 	CombinedSplitter(const CombinedSplitter & rhs);
@@ -750,7 +750,7 @@ public:
 	 *  default set of names are given to each VSP unless a new set of names is
 	 *  given by parameter \e names.
 	 */
-	RangeSplitter(const intMatrix & ranges, const stringList & names = vectorstr());
+	RangeSplitter(const matrixi & ranges, const stringList & names = vectorstr());
 
 	/// HIDDEN
 	BaseVspSplitter * clone() const
@@ -785,7 +785,7 @@ public:
 	string name(SubPopID vsp);
 
 private:
-	intMatrix m_ranges;
+	matrixi m_ranges;
 };
 
 
@@ -828,7 +828,7 @@ public:
 	 *  is given by parameter \e names.
 	 */
 	GenotypeSplitter(const uintList & loci,
-		const intMatrix & alleles, bool phase = false,
+		const matrixi & alleles, bool phase = false,
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
@@ -868,7 +868,7 @@ private:
 
 private:
 	vectoru m_loci;
-	intMatrix m_alleles;
+	matrixi m_alleles;
 	bool m_phase;
 };
 

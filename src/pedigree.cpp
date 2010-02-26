@@ -754,7 +754,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 				ind->setInfo(-1, resultIdx[i]);
 	}
 	// convert pathFields to pathIdx
-	intMatrix pathIdx(pathFields.size());
+	matrixi pathIdx(pathFields.size());
 	for (size_t i = 0; i < pathFields.size(); ++i) {
 		pathIdx[i] = vectori(pathFields[i].size());
 		for (size_t j = 0; j < pathFields[i].size(); ++j)

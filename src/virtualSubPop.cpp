@@ -150,7 +150,7 @@ ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop)
 
 
 CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
-	const intMatrix & vspMap, const stringList & names)
+	const matrixi & vspMap, const stringList & names)
 	: BaseVspSplitter(names), m_splitters(0), m_vspMap(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i)
@@ -840,7 +840,7 @@ string ProportionSplitter::name(SubPopID subPop)
 }
 
 
-RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
+RangeSplitter::RangeSplitter(const matrixi & ranges, const stringList & names)
 	: BaseVspSplitter(names), m_ranges(ranges)
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
@@ -916,7 +916,7 @@ string RangeSplitter::name(SubPopID subPop)
 
 
 GenotypeSplitter::GenotypeSplitter(const uintList & loci,
-	const intMatrix & alleles, bool phase, const stringList & names)
+	const matrixi & alleles, bool phase, const stringList & names)
 	: BaseVspSplitter(names), m_loci(loci.elems()), m_alleles(alleles),
 	m_phase(phase)
 {
