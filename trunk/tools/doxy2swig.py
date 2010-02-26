@@ -473,6 +473,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('matrix','[]')
                 defVal = defVal.replace('vspID','[]')
                 defVal = defVal.replace('intMatrix','[]')
+                defVal = defVal.replace('floatMatrix','[]')
                 defVal = defVal.replace('true','True')
                 defVal = defVal.replace('false','False')
                 defVal = defVal.replace('NULL','None')

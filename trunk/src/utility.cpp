@@ -463,7 +463,79 @@ void stringList::obtainFrom(const stringList & items, const char * allowedItems[
 }
 
 
-// additional types
+intMatrix::intMatrix(PyObject * obj) : m_elems()
+{
+	if (obj == NULL)
+		return;
+	DBG_ASSERT(PySequence_Check(obj), ValueError,
+		"A list or a nested list of integers is expected");
+
+	UINT numItems = PySequence_Size(obj);
+	for (size_t i = 0; i < numItems; ++i) {
+		PyObject * item = PySequence_GetItem(obj, i);
+		if (PyNumber_Check(item)) {
+			DBG_FAILIF(m_elems.size() > 1, ValueError,
+				"A mixture of int and list is not allowed.")
+			if (m_elems.empty())
+				m_elems.push_back(vectori());
+			long value = PyInt_AsLong(item);
+			m_elems[0].push_back(value);
+		} else if (PySequence_Check(item)) {
+			m_elems.push_back(vectori());
+			int n = PySequence_Size(item);
+			for (int j = 0; j < n; ++j) {
+				PyObject * val = PySequence_GetItem(item, j);
+				DBG_ASSERT(PyNumber_Check(val), ValueError,
+					"A list or nested list of numbers is expected");
+				long value = PyInt_AsLong(val);
+				m_elems.back().push_back(value);
+				Py_DECREF(val);
+			}
+		} else {
+			DBG_FAILIF(true, ValueError, "Can not create a int matrix from input.");
+		}
+		Py_DECREF(item);
+	}
+}
+
+
+
+floatMatrix::floatMatrix(PyObject * obj) : m_elems()
+{
+	if (obj == NULL)
+		return;
+	DBG_ASSERT(PySequence_Check(obj), ValueError,
+		"A list or a nested list of integers is expected");
+
+	UINT numItems = PySequence_Size(obj);
+	for (size_t i = 0; i < numItems; ++i) {
+		PyObject * item = PySequence_GetItem(obj, i);
+		if (PyNumber_Check(item)) {
+			DBG_FAILIF(m_elems.size() > 1, ValueError,
+				"A mixture of int and list is not allowed.")
+			if (m_elems.empty())
+				m_elems.push_back(vectorf());
+			double value = PyFloat_AsDouble(item);
+			m_elems[0].push_back(value);
+		} else if (PySequence_Check(item)) {
+			m_elems.push_back(vectorf());
+			int n = PySequence_Size(item);
+			for (int j = 0; j < n; ++j) {
+				PyObject * val = PySequence_GetItem(item, j);
+				DBG_ASSERT(PyNumber_Check(val), ValueError,
+					"A list or nested list of numbers is expected");
+				double value = PyFloat_AsDouble(val);
+				m_elems.back().push_back(value);
+				Py_DECREF(val);
+			}
+		} else {
+			DBG_FAILIF(true, ValueError, "Can not create a int matrix from input.");
+		}
+		Py_DECREF(item);
+	}
+}
+
+
 stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 {
 	if (obj == NULL)

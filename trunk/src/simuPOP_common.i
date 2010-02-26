@@ -171,10 +171,8 @@ namespace std
     %template()         map<string, double>;
     %template()         map<int, int>;
     %template()         map<vector<long int>, double>;
-    %template()         pair<ULONG, ULONG>;
+    %template()         pair<ULONG, ULONG>; 
     %template()         vector<pair<ULONG, ULONG> >;
-    %template()         vector< vector<long int> >;
-    %template()         vector< vector<double> >;
 }
 
 
@@ -449,25 +447,6 @@ def _new_Migrator(self, rate=[], *args, **kwargs):
 _new_Migrator.__doc__ = Migrator.__init__.__doc__
 del Migrator.__init__
 Migrator.__init__ = _new_Migrator
-
-
-def _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs):
-    # parameter haploFreq
-    if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
-        hf = [haploFreq]
-    else:
-        hf = haploFreq
-    # parameter LD
-    if len(LD) > 0 and type(LD[0]) in [types.IntType, types.LongType]:
-        ld = [LD]
-    else:
-        ld = LD
-    cppModule.Stat_swiginit(self,
-        cppModule.new_Stat(haploFreq=hf, LD=ld, *args, **kwargs))
-
-_new_Stat.__doc__ = Stat.__init__.__doc__
-del Stat.__init__
-Stat.__init__ = _new_Stat
 
 def _new_GenotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     if len(alleles) == 0:

@@ -319,7 +319,7 @@ Stat::Stat(
 	//
 	const uintList & genoFreq,
 	//
-	const matrixi & haploFreq,
+	const intMatrix & haploFreq,
 	//
 	const stringList & sumOfInfo,
 	const stringList & meanOfInfo,
@@ -327,7 +327,7 @@ Stat::Stat(
 	const stringList & maxOfInfo,
 	const stringList & minOfInfo,
 	//
-	const matrixi & LD,
+	const intMatrix & LD,
 	//
 	const uintList & association,
 	//
@@ -1029,9 +1029,9 @@ bool statGenoFreq::apply(Population & pop) const
 }
 
 
-statHaploFreq::statHaploFreq(const matrixi & haploFreq, const subPopList & subPops,
+statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
 	const stringList & vars, const string & suffix)
-	: m_loci(haploFreq), m_subPops(subPops), m_vars(), m_suffix(suffix)
+	: m_loci(haploFreq.elems()), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
 		HaplotypeNum_String,	HaplotypeFreq_String,
@@ -1453,9 +1453,9 @@ bool statInfo::apply(Population & pop) const
 }
 
 
-statLD::statLD(const matrixi & LD,  const subPopList & subPops,
+statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 	const stringList & vars, const string & suffix)
-	: m_LD(LD), m_subPops(subPops), m_vars(), m_suffix(suffix)
+	: m_LD(LD.elems()), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
 		LD_String,		 LD_prime_String,		R2_String,
