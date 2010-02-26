@@ -716,7 +716,7 @@ void Population::setSubPopByIndInfo(const string & field)
 
 		// allocate new genotype and inds
 		vectora newGenotype(genoSize() * newPopSize);
-		vectorinfo newInfo(newPopSize * infoSize());
+		vectorf newInfo(newPopSize * infoSize());
 		vector<Individual> newInds(newPopSize);
 
 		// assign genotype location and set structure information for individuals
@@ -1093,7 +1093,7 @@ UINT Population::mergeSubPops(const uintList & subPops, const string & name)
 	UINT infoStep = infoSize();
 	vector<Individual> new_inds;
 	vectora new_genotype;
-	vectorinfo new_info;
+	vectorf new_info;
 	new_inds.reserve(popSize());
 	new_genotype.reserve(step * popSize());
 	new_info.reserve(infoStep * popSize());
@@ -1396,7 +1396,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	// prepare new Population
 	vector<Individual> newInds(newPopSize);
 	vectora newGenotype(genoSize() * newPopSize);
-	vectorinfo newInfo(newPopSize * infoSize());
+	vectorf newInfo(newPopSize * infoSize());
 	// iterators ready
 	GenoIterator ptr = newGenotype.begin();
 	InfoIterator infoPtr = newInfo.begin();
@@ -1460,7 +1460,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 
 	vector<Individual> new_inds;
 	vectora new_genotype;
-	vectorinfo new_info;
+	vectorf new_info;
 
 	if (rearrange) {
 		ULONG sz = 0;
@@ -1619,7 +1619,7 @@ Population & Population::extractMarkedIndividuals() const
 
 	vector<Individual> new_inds(sz);
 	vectora new_genotype(sz * step);
-	vectorinfo new_info(sz * infoStep);
+	vectorf new_info(sz * infoStep);
 
 	RawIndIterator newInd = new_inds.begin();
 	GenoIterator newPtr = new_genotype.begin();
@@ -1885,7 +1885,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 
 		vector<Individual> new_inds;
 		vectora new_genotype;
-		vectorinfo new_info;
+		vectorf new_info;
 
 		new_inds.reserve(size);
 		new_genotype.reserve(size * step);
@@ -1957,7 +1957,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 			pop.setSubPopStru(spSizes, m_subPopNames);
 		// set pointer
 		vectora::iterator ptr = new_genotype.begin();
-		vectorinfo::iterator infoPtr = new_info.begin();
+		vectorf::iterator infoPtr = new_info.begin();
 		for (size_t i = 0; i < size; ++i, ptr += step, infoPtr += infoStep) {
 			new_inds[i].setGenoStruIdx(pop.genoStruIdx());
 			new_inds[i].setGenoPtr(ptr);
@@ -2238,7 +2238,7 @@ void Population::addInfoFields(const stringList & fieldList, double init)
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 			useAncestralGen(anc);
-			vectorinfo newInfo(is * popSize(), 0.);
+			vectorf newInfo(is * popSize(), 0.);
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
 			for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
@@ -2265,7 +2265,7 @@ void Population::setInfoFields(const stringList & fieldList, double init)
 	UINT is = infoSize();
 	for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 		useAncestralGen(anc);
-		vectorinfo newInfo(is * popSize(), init);
+		vectorf newInfo(is * popSize(), init);
 		InfoIterator ptr = newInfo.begin();
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ptr += is) {
 			ind->setInfoPtr(ptr);
@@ -2303,7 +2303,7 @@ void Population::removeInfoFields(const stringList & fieldList)
 	size_t sz = infoSize();
 	for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 		useAncestralGen(anc);
-		vectorinfo newInfo(sz * popSize(), 0.);
+		vectorf newInfo(sz * popSize(), 0.);
 		// copy the old stuff in
 		InfoIterator ptr = newInfo.begin();
 
@@ -2366,12 +2366,12 @@ void Population::setIndInfo(const floatList & valueList, const uintString & fiel
 		activateVirtualSubPop(subPop);
 		IndInfoIterator ptr = infoBegin(idx, subPop);
 		for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
-			*ptr = static_cast<InfoType>(values[i % valueSize]);
+			*ptr = static_cast<double>(values[i % valueSize]);
 		deactivateVirtualSubPop(subPop.subPop());
 	} else {
 		IndInfoIterator ptr = infoBegin(idx);
 		for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
-			*ptr = static_cast<InfoType>(values[i % valueSize]);
+			*ptr = static_cast<double>(values[i % valueSize]);
 	}
 }
 
@@ -2591,8 +2591,8 @@ void Population::sortIndividuals(bool infoOnly) const
 			setIndOrdered(true);
 			return;
 		}
-		vectorinfo tmpInfo(m_popSize * is);
-		vectorinfo::iterator infoPtr = tmpInfo.begin();
+		vectorf tmpInfo(m_popSize * is);
+		vectorf::iterator infoPtr = tmpInfo.begin();
 
 		IndIterator ind = const_cast<Population *>(this)->indIterator();
 		for (; ind.valid(); ++ind) {
@@ -2607,9 +2607,9 @@ void Population::sortIndividuals(bool infoOnly) const
 		size_t sz = genoSize();
 		UINT is = infoSize();
 		vectora tmpGenotype(m_popSize * genoSize());
-		vectorinfo tmpInfo(m_popSize * infoSize());
+		vectorf tmpInfo(m_popSize * infoSize());
 		vectora::iterator it = tmpGenotype.begin();
-		vectorinfo::iterator infoPtr = tmpInfo.begin();
+		vectorf::iterator infoPtr = tmpInfo.begin();
 
 		IndIterator ind = const_cast<Population *>(this)->indIterator();
 		for (; ind.valid(); ++ind) {

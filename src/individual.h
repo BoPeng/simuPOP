@@ -314,7 +314,7 @@ public:
 	 *  function form allows the use of indexes of information fieldes.
 	 * <group>5-info</group>
 	 */
-	InfoType info(const uintString & field) const
+	double info(const uintString & field) const
 	{
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 
@@ -338,7 +338,7 @@ public:
 
 	/** read info as attribute
 	 */
-	InfoType __getattr__(const string & field) const
+	double __getattr__(const string & field) const
 	{
 		return m_infoPtr[infoIdx(field)];
 	}
@@ -346,7 +346,7 @@ public:
 
 	/** write info as attribute
 	 */
-	void __setattr__(const string & field, InfoType value) const
+	void __setattr__(const string & field, double value) const
 	{
 		m_infoPtr[infoIdx(field)] = value;
 	}
@@ -358,7 +358,7 @@ public:
 	 *  of indexes of information fieldes.
 	 *  <group>5-info</group>
 	 */
-	void setInfo(InfoType value, const uintString & field)
+	void setInfo(double value, const uintString & field)
 	{
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 
@@ -812,7 +812,7 @@ public:
 
 
 	// this is the most important part!
-	InfoType & operator *() const
+	double & operator *() const
 	{
 		if (m_useGappedIterator)
 			return *m_ptr;
@@ -864,7 +864,7 @@ private:
 	// Individual iterator
 	IndividualIterator<T> m_it;
 	//
-	InfoType * m_ptr;
+	double * m_ptr;
 	//
 	UINT m_step;
 };

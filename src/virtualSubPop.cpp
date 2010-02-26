@@ -521,7 +521,7 @@ string AffectionSplitter::name(SubPopID vsp)
 }
 
 
-InfoSplitter::InfoSplitter(string info, const vectorinfo & values,
+InfoSplitter::InfoSplitter(string info, const vectorf & values,
 	const vectorf & cutoff, const matrix & ranges, const stringList & names)
 	: BaseVspSplitter(names),
 	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges)

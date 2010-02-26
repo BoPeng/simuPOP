@@ -302,7 +302,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 			IndInfoIterator ptr = infoBegin(spouseIdx[i]);
 			IndInfoIterator ptrEnd = infoEnd(spouseIdx[i]);
 			for ( ; ptr != ptrEnd; ++ptr)
-				*ptr = static_cast<InfoType>(-1);
+				*ptr = static_cast<double>(-1);
 		}
 	}
 	// find all the couples
@@ -396,7 +396,7 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 			// clear these fields for the last generation
 			for (IndInfoIterator ptr = infoBegin(offspringIdx[i]);
 			     ptr != infoEnd(offspringIdx[i]); ++ptr)
-				*ptr = static_cast<InfoType>(-1);
+				*ptr = static_cast<double>(-1);
 		}
 	}
 
@@ -645,7 +645,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 			IndInfoIterator ptr = infoBegin(offspringIdx[i]);
 			IndInfoIterator ptrEnd = infoEnd(offspringIdx[i]);
 			for (; ptr != ptrEnd; ++ptr)
-				*ptr = static_cast<InfoType>(-1);
+				*ptr = static_cast<double>(-1);
 		}
 	}
 

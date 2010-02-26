@@ -361,7 +361,7 @@ void Individual::display(ostream & out, int width, const vectoru & loci)
 	}
 	if (infoSize() != 0) {
 		out << "| ";
-		for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
+		for (vectorf::const_iterator info = infoBegin(); info != infoEnd(); ++info)
 			out << " " << *info;
 	}
 }
