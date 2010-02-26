@@ -1690,9 +1690,9 @@ public:
 	 */
 	ULONG draw();
 
-	/** Returns a list of \e num random numbers
+	/** Returns a list of \e n random numbers
 	 */
-	vectoru drawSamples(ULONG num = 1);
+	vectoru drawSamples(ULONG n = 1);
 
 private:
 	/// pointer to a RNG

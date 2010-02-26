@@ -9039,11 +9039,11 @@ Details:
 
 Usage:
 
-    x.drawSamples(num=1)
+    x.drawSamples(n=1)
 
 Details:
 
-    Returns a list of num random numbers
+    Returns a list of n random numbers
 
 "; 
 
