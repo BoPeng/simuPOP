@@ -28,16 +28,16 @@
 
 namespace simuPOP {
 
-Migrator::Migrator(const matrixf & rate, int mode, const uintList & toSubPops,
+Migrator::Migrator(const floatMatrix & rate, int mode, const uintList & toSubPops,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
-	m_rate(rate), m_mode(mode), m_to(toSubPops)
+	m_rate(rate.elems()), m_mode(mode), m_to(toSubPops)
 {
-	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),
+	DBG_FAILIF(!subPops.empty() && subPops.size() != m_rate.size(),
 		ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-	DBG_FAILIF(!m_to.elems().empty() && m_to.elems().size() != rate[0].size(),
+	DBG_FAILIF(!m_to.elems().empty() && m_to.elems().size() != m_rate[0].size(),
 		ValueError, "Length of param toSubPop must match columns of rate matrix.");
 }
 

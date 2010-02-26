@@ -127,7 +127,7 @@ public:
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	Migrator(const matrixf & rate = matrixf(), int mode = BY_PROBABILITY,
+	Migrator(const floatMatrix & rate = floatMatrix(), int mode = BY_PROBABILITY,
 		const uintList & toSubPops = uintList(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),

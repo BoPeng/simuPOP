@@ -555,6 +555,55 @@ protected:
 };
 
 
+class intMatrix
+{
+public:
+	intMatrix(PyObject * obj = NULL);
+
+	/// CPPONLY
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	/// CPPONLY
+	const matrixi & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	matrixi m_elems;
+};
+
+
+class floatMatrix
+{
+public:
+	floatMatrix(PyObject * obj = NULL);
+
+	/// CPPONLY
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	/// CPPONLY
+	const matrixf & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	matrixf m_elems;
+};
+
+
+
 class stringMatrix
 {
 public:
