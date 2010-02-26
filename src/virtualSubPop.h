@@ -635,7 +635,7 @@ public:
 	 *  given by parameter \e names.
 	 */
 	InfoSplitter(string field, const vectorf & values = vectorf(),
-		const vectorf & cutoff = vectorf(), const matrix & ranges = matrix(),
+		const vectorf & cutoff = vectorf(), const matrixf & ranges = matrixf(),
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
@@ -681,7 +681,7 @@ private:
 	//
 	vectorf m_cutoff;
 	//
-	matrix m_ranges;
+	matrixf m_ranges;
 };
 
 

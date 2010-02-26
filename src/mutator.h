@@ -212,7 +212,7 @@ public:
 	 *  classes \c mutator and \c BaseOperator for detailed explanation of
 	 *  other parameters.
 	 */
-	MatrixMutator(const matrix & rate, const uintList & loci = uintList(),
+	MatrixMutator(const matrixf & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),

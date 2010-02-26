@@ -127,7 +127,7 @@ public:
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	Migrator(const matrix & rate = matrix(), int mode = BY_PROBABILITY,
+	Migrator(const matrixf & rate = matrixf(), int mode = BY_PROBABILITY,
 		const uintList & toSubPops = uintList(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
@@ -154,7 +154,7 @@ public:
 
 protected:
 	/// migration rate. its meaning is controled by m_mode
-	const matrix m_rate;
+	const matrixf m_rate;
 
 	/// asProbability (1), asProportion (2), or asCounts.
 	const int m_mode;
