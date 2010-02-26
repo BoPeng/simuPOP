@@ -237,7 +237,6 @@ class pyFunc
 public:
 	pyFunc(PyObject * func);
 
-
 	/// return number of arguments this function accepts.
 	/// This function does not count tuple parameters.
 	int numArgs() const
@@ -450,12 +449,16 @@ private:
 class floatList
 {
 public:
-	floatList(const vectorf & values = vectorf()) : m_elems(values)
+	floatList(PyObject * obj = NULL);
+
+	/// CPPONLY
+	floatList(double val) : m_elems(1, val)
 	{
 	}
 
 
-	floatList(double value) : m_elems(1, value)
+	/// CPPONLY
+	floatList(const vectorf & val) : m_elems(val)
 	{
 	}
 
@@ -601,7 +604,6 @@ public:
 protected:
 	matrixf m_elems;
 };
-
 
 
 class stringMatrix
@@ -751,18 +753,16 @@ private:
 class floatListFunc : public floatList
 {
 public:
-	floatListFunc(const vectorf & values = vectorf()) :
-		floatList(values), m_func(NULL)
+	floatListFunc(PyObject * func);
+
+	/// CPPONLY
+	floatListFunc(double val) : floatList(val), m_func(NULL)
 	{
 	}
 
 
-	floatListFunc(double value) : floatList(value), m_func(NULL)
-	{
-	}
-
-
-	floatListFunc(PyObject * func) : floatList(), m_func(func)
+	/// CPPONLY
+	floatListFunc(const vectorf & val) : floatList(val), m_func(NULL)
 	{
 	}
 

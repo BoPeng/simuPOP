@@ -820,11 +820,11 @@ string GenoStruTrait::ploidyName() const
 }
 
 
-std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
+pairu GenoStruTrait::chromLocusPair(UINT locus) const
 {
 	CHECKRANGEABSLOCUS(locus);
 
-	pair<UINT, UINT> loc;
+	pairu loc;
 
 	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i) {
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus) {

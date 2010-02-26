@@ -621,7 +621,7 @@ public:
 private:
 	typedef map<UINT, UINT> ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
-	typedef map<std::pair<UINT, UINT>, UINT> HAPLOCNT;
+	typedef map<pairu, UINT> HAPLOCNT;
 	typedef vector<HAPLOCNT> HAPLOCNTLIST;
 
 	// calculate single allele LD values
@@ -778,7 +778,7 @@ private:
 #define  HWE_sp_String  "HWE_sp"
 
 private:
-	typedef map<std::pair<UINT, UINT>, ULONG>  GENOCNT;
+	typedef map<pairu, ULONG>  GENOCNT;
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:

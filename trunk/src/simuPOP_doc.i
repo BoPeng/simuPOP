@@ -1269,9 +1269,11 @@ Usage:
 
 Usage:
 
-    floatList(values=[])
+    floatList(obj=None)
 
 "; 
+
+%ignore simuPOP::floatList::floatList(double val);
 
 %ignore simuPOP::floatList::elems() const;
 
@@ -1283,15 +1285,33 @@ Usage:
 
 Usage:
 
-    floatListFunc(values=[])
+    floatListFunc(func)
 
 "; 
+
+%ignore simuPOP::floatListFunc::floatListFunc(double val);
 
 %ignore simuPOP::floatListFunc::empty() const;
 
 %ignore simuPOP::floatListFunc::size() const;
 
 %ignore simuPOP::floatListFunc::func() const;
+
+%feature("docstring") simuPOP::floatMatrix "
+
+"; 
+
+%feature("docstring") simuPOP::floatMatrix::floatMatrix "
+
+Usage:
+
+    floatMatrix(obj=None)
+
+"; 
+
+%ignore simuPOP::floatMatrix::empty() const;
+
+%ignore simuPOP::floatMatrix::elems() const;
 
 %ignore simuPOP::GenoStructure;
 
@@ -3056,6 +3076,22 @@ Usage:
 %ignore simuPOP::intList::allAvail();
 
 %ignore simuPOP::intList::match(UINT rep, const vector< bool > *activeRep=NULL) const;
+
+%feature("docstring") simuPOP::intMatrix "
+
+"; 
+
+%feature("docstring") simuPOP::intMatrix::intMatrix "
+
+Usage:
+
+    intMatrix(obj=None)
+
+"; 
+
+%ignore simuPOP::intMatrix::empty() const;
+
+%ignore simuPOP::intMatrix::elems() const;
 
 %feature("docstring") simuPOP::KAlleleMutator "
 
@@ -9375,14 +9411,6 @@ Usage:
 Usage:
 
     _new_Migrator(self, rate=[], *args, **kwargs)
-
-"; 
-
-%feature("docstring") _new_Stat "
-
-Usage:
-
-    _new_Stat(self, haploFreq=[], LD=[], *args, **kwargs)
 
 "; 
 

@@ -386,7 +386,7 @@ public:
 	 *  by splitters, but can also be specified using parameter \e names.
 	 */
 	CombinedSplitter(const vectorsplitter & splitters = vectorsplitter(),
-		const matrixi & vspMap = matrixi(), const stringList & names = vectorstr());
+		const intMatrix & vspMap = intMatrix(), const stringList & names = vectorstr());
 
 	/// CPPONLY
 	CombinedSplitter(const CombinedSplitter & rhs);
@@ -430,7 +430,7 @@ private:
 	vector<BaseVspSplitter *> m_splitters;
 
 	/// the splitter correspond to a vsp
-	typedef std::pair<UINT, UINT> vspPair;
+	typedef pairu vspPair;
 	typedef vector<vspPair> vspList;
 	vector<vspList> m_vspMap;
 };
@@ -635,7 +635,7 @@ public:
 	 *  given by parameter \e names.
 	 */
 	InfoSplitter(string field, const vectorf & values = vectorf(),
-		const vectorf & cutoff = vectorf(), const matrixf & ranges = matrixf(),
+		const vectorf & cutoff = vectorf(), const floatMatrix & ranges = floatMatrix(),
 		const stringList & names = vectorstr());
 
 	/// HIDDEN
@@ -750,7 +750,7 @@ public:
 	 *  default set of names are given to each VSP unless a new set of names is
 	 *  given by parameter \e names.
 	 */
-	RangeSplitter(const matrixi & ranges, const stringList & names = vectorstr());
+	RangeSplitter(const intMatrix & ranges, const stringList & names = vectorstr());
 
 	/// HIDDEN
 	BaseVspSplitter * clone() const
@@ -828,7 +828,7 @@ public:
 	 *  is given by parameter \e names.
 	 */
 	GenotypeSplitter(const uintList & loci,
-		const matrixi & alleles, bool phase = false,
+		const intMatrix & alleles, bool phase = false,
 		const stringList & names = vectorstr());
 
 	/// HIDDEN

@@ -306,7 +306,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 		}
 	}
 	// find all the couples
-	typedef std::pair<ULONG, ULONG> couple;
+	typedef pairu couple;
 	vector<couple> couples;
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
 		useAncestralGen(ancGens[genIdx]);
@@ -555,7 +555,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 	}
 
 	// find all full families
-	typedef std::pair<ULONG, ULONG> couple;
+	typedef pairu couple;
 	map<couple, vectoru> families;
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
 		useAncestralGen(ancGens[genIdx]);
@@ -650,7 +650,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	}
 
 	// find all full families
-	typedef std::pair<ULONG, ULONG> couple;
+	typedef pairu couple;
 	map<couple, vectoru> families;
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
 		useAncestralGen(ancGens[genIdx]);

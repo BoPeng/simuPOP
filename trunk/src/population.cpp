@@ -525,7 +525,7 @@ PyObject * Population::genotype(vspID vsp)
 }
 
 
-void Population::setGenotype(const vectora & geno, vspID subPop)
+void Population::setGenotype(const vectoru & geno, vspID subPop)
 {
 	sortIndividuals();
 	if (!subPop.valid()) {
@@ -553,7 +553,7 @@ void Population::setGenotype(const vectora & geno, vspID subPop)
 		ULONG i = 0;
 		for (; it.valid(); ++it)
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
-				*git = geno[i % sz];
+				*git = ToAllele(geno[i % sz]);
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }

@@ -408,6 +408,28 @@ unsigned pow3(unsigned n)
 namespace simuPOP {
 
 // additional types
+floatList::floatList(PyObject * obj) : m_elems()
+{
+	if (obj == NULL)
+		return;
+
+	if (PyNumber_Check(obj))
+		m_elems.push_back(PyFloat_AsDouble(obj));
+	else if (PySequence_Check(obj)) {
+		int n = PySequence_Size(obj);
+		for (int j = 0; j < n; ++j) {
+			PyObject * val = PySequence_GetItem(obj, j);
+			DBG_ASSERT(PyNumber_Check(val), ValueError,
+				"A list of numbers is expected");
+			m_elems.push_back(PyFloat_AsDouble(val));
+			Py_DECREF(val);
+		}
+	} else {
+		DBG_FAILIF(true, ValueError, "Can not create a float list from input.");
+	}
+}
+
+
 stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
 	if (obj == NULL || obj == Py_None)
@@ -467,68 +489,85 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 {
 	if (obj == NULL)
 		return;
-	DBG_ASSERT(PySequence_Check(obj), ValueError,
-		"A list or a nested list of integers is expected");
+	// Exception will be converted to TypeError...
+	if (!PySequence_Check(obj)) {
+		cerr << "ERROR: A list or a nested list of integers is expected";
+		DBG_ASSERT(false, ValueError,
+			"A list or a nested list of intgers is expected");
+	}
 
 	UINT numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyNumber_Check(item)) {
-			DBG_FAILIF(m_elems.size() > 1, ValueError,
-				"A mixture of int and list is not allowed.")
+			if (m_elems.size() > 1) {
+				cerr << "ERROR: A mixture of int and list is not allowed." << endl;
+				DBG_ASSERT(false, ValueError,
+					"A mixture of int and list is not allowed.")
+			}
 			if (m_elems.empty())
 				m_elems.push_back(vectori());
-			long value = PyInt_AsLong(item);
-			m_elems[0].push_back(value);
+			m_elems[0].push_back(PyInt_AsLong(item));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectori());
 			int n = PySequence_Size(item);
 			for (int j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
-				DBG_ASSERT(PyNumber_Check(val), ValueError,
-					"A list or nested list of numbers is expected");
-				long value = PyInt_AsLong(val);
-				m_elems.back().push_back(value);
+				if (!PyNumber_Check(val)) {
+					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
+					DBG_ASSERT(false, ValueError,
+						"ERROR: A list or nested list of numbers is expected");
+				}
+				m_elems.back().push_back(PyInt_AsLong(val));
 				Py_DECREF(val);
 			}
 		} else {
-			DBG_FAILIF(true, ValueError, "Can not create a int matrix from input.");
+			cerr << "ERROR: Can not create a int matrix from input." << endl;
+			DBG_ASSERT(false, ValueError,
+				"Can not create a int matrix from input.");
 		}
 		Py_DECREF(item);
 	}
 }
 
 
-
 floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 {
 	if (obj == NULL)
 		return;
-	DBG_ASSERT(PySequence_Check(obj), ValueError,
-		"A list or a nested list of integers is expected");
+	if (!PySequence_Check(obj)) {
+		cerr << "A list or a nested list of numbers is expected." << endl;
+		DBG_ASSERT(false, ValueError,
+			"A list or a nested list of numbers is expected");
+	}
 
 	UINT numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyNumber_Check(item)) {
-			DBG_FAILIF(m_elems.size() > 1, ValueError,
-				"A mixture of int and list is not allowed.")
+			if (m_elems.size() > 1) {
+				cerr << "ERROR: A mixture of number and list is not allowed." << endl;
+				DBG_ASSERT(false, ValueError,
+					"A mixture of number and list is not allowed.")
+			}
 			if (m_elems.empty())
 				m_elems.push_back(vectorf());
-			double value = PyFloat_AsDouble(item);
-			m_elems[0].push_back(value);
+			m_elems[0].push_back(PyFloat_AsDouble(item));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorf());
 			int n = PySequence_Size(item);
 			for (int j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
-				DBG_ASSERT(PyNumber_Check(val), ValueError,
-					"A list or nested list of numbers is expected");
-				double value = PyFloat_AsDouble(val);
-				m_elems.back().push_back(value);
+				if (!PyNumber_Check(val)) {
+					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
+					DBG_ASSERT(false, ValueError,
+						"A list or nested list of numbers is expected");
+				}
+				m_elems.back().push_back(PyFloat_AsDouble(val));
 				Py_DECREF(val);
 			}
 		} else {
+			cerr << "ERROR: Can not create a int matrix from input." << endl;
 			DBG_FAILIF(true, ValueError, "Can not create a int matrix from input.");
 		}
 		Py_DECREF(item);
@@ -693,6 +732,13 @@ intList::intList(PyObject * obj) : m_elems(), m_allAvail(false)
 	} else {
 		DBG_FAILIF(true, ValueError, "Invalid input for a list of rep.");
 	}
+}
+
+
+floatListFunc::floatListFunc(PyObject * obj) :
+	floatList(PyCallable_Check(obj) ? NULL : obj),
+	m_func(PyCallable_Check(obj) ? obj : NULL)
+{
 }
 
 
@@ -907,7 +953,7 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 	int curIdx = 0;
 	PyObject * curChild = NULL;
 
-next:
+	next :
 	// get par[1] (dict), curChild can be null, or borrow ref
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
@@ -1066,7 +1112,7 @@ PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 	int curIdx = 0;
 	PyObject * curChild;
 
-next:
+	next :
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
 	else
