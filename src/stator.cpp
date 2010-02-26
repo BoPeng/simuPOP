@@ -1931,7 +1931,7 @@ void statAssociation::genoChiSqTest(const GENOCNT & caseCnt,
                                     double & chisq_p) const
 {
 	// figure out alleles
-	map<std::pair<UINT, UINT>, int> genotypes;
+	map<pairu, int> genotypes;
 	GENOCNT::const_iterator cnt = caseCnt.begin();
 	GENOCNT::const_iterator cntEnd = caseCnt.end();
 	for (; cnt != cntEnd; ++cnt)

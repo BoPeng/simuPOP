@@ -159,20 +159,12 @@ def _swig_repr(self):
 
 namespace std
 {
-    %template()         pair<UINT, UINT>;
-    %template()         pair<UINT, ULONG>;
-    %template()         vector<Allele>;
-    %template()         vector<long int>;
-    %template()         vector<ULONG>;
-    %template()         vector<InfoType>;
-    %template()         vector<double>;
-    %template()         vector<string>;
-    %template()         pair<string, double>;
-    %template()         map<string, double>;
-    %template()         map<int, int>;
-    %template()         map<vector<long int>, double>;
-    %template()         pair<ULONG, ULONG>; 
-    %template()         vector<pair<ULONG, ULONG> >;
+    %template()         pair<ULONG, ULONG>; /* e.g. chromLocusPair */
+    %template()         vector<string>;     /* e.g. infoFields */
+    %template()         vector<ULONG>;      /* e.g. subPopSizes */
+    %template()         vector<double>;     /* e.g. lociPos */
+    %template()         vector<long>;       /* e.g. vspID(vectori) */
+    %template()         map<vector<long>, double>; /* e.g. MapSelector */
 }
 
 
@@ -254,6 +246,8 @@ namespace std
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;
 %implicitconv stringList;
+%implicitconv intMatrix;
+%implicitconv floatMatrix;
 %implicitconv stringMatrix;
 %implicitconv stringFunc;
 %implicitconv lociList;

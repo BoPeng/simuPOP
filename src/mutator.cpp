@@ -177,7 +177,7 @@ bool BaseMutator::apply(Population & pop) const
 }
 
 
-MatrixMutator::MatrixMutator(const matrixf & rate,
+MatrixMutator::MatrixMutator(const floatMatrix & rate,
 	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
 	const stringFunc & output,
 	int begin, int end, int step, const intList & at,
@@ -186,7 +186,7 @@ MatrixMutator::MatrixMutator(const matrixf & rate,
 	: BaseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
 	              at, reps, subPops, infoFields)
 {
-	matrixf rateMatrix = rate;
+	matrixf rateMatrix = rate.elems();
 	// step 0, determine mu
 	double mu = 0;
 

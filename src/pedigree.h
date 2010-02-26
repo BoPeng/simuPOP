@@ -293,7 +293,7 @@ public:
 	 *  population so the ID map needs to be rebuilt.
 	 */
 	void removeIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		const floatList & IDs = floatList(), const string & idField = "ind_id",
 		PyObject * filter = NULL);
 
 	/** HIDDEN This function has the potential to change individuals in a
@@ -423,7 +423,7 @@ Pedigree loadPedigree(const string & file,
 	float ploidy = 2,
 	const uintList & loci = vectoru(),
 	const uintList & chromTypes = vectoru(),
-	const floatList & lociPos = vectorf(),
+	const floatList & lociPos = floatList(),
 	const stringList & chromNames = vectorstr(),
 	const stringMatrix & alleleNames = stringMatrix(),
 	const stringList & lociNames = vectorstr(),

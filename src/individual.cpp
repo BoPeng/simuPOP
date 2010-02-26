@@ -98,7 +98,8 @@ bool Individual::validIndex(UINT idx) const
 
 bool Individual::validIndex(UINT idx, UINT p) const
 {
-	std::pair<UINT, UINT> chIdx = chromLocusPair(idx);
+	pairu chIdx = chromLocusPair(idx);
+
 	return validIndex(chIdx.second, p, chIdx.first);
 }
 
@@ -278,7 +279,7 @@ void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 }
 
 
-void Individual::setGenotype(const vectora & geno, const uintList & ply, const uintList & ch)
+void Individual::setGenotype(const vectoru & geno, const uintList & ply, const uintList & ch)
 {
 	UINT sz = geno.size();
 	size_t idx = 0;
@@ -313,7 +314,7 @@ void Individual::setGenotype(const vectora & geno, const uintList & ply, const u
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 
 			for (UINT i = 0; i < numLoci(chrom); i++, ++idx)
-				*(ptr + i) = geno[idx % sz];
+				*(ptr + i) = ToAllele(geno[idx % sz]);
 		}
 	}
 }

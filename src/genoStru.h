@@ -605,7 +605,7 @@ public:
 	 * index \e locus. c.f. \c absLocusIndex.
 	 *  <group>3-locus</group>
 	 */
-	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
+	pairu chromLocusPair(UINT locus) const;
 
 
 	/**

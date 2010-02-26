@@ -504,11 +504,11 @@ public:
 	 *  its absolute index \c idx.
 	 *  <group>2-subpop</group>
 	 */
-	std::pair<UINT, ULONG> subPopIndPair(ULONG idx)
+	pairu subPopIndPair(ULONG idx)
 	{
 		CHECKRANGEIND(idx);
 
-		pair<UINT, ULONG> loc;
+		pairu loc;
 
 		for (UINT i = 1; i <= m_subPopSize.size(); ++i) {
 			if (m_subPopIndex[i] > idx) {
@@ -918,7 +918,7 @@ public:
 	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-	void setGenotype(const vectora & geno, vspID subPop = vspID());
+	void setGenotype(const vectoru & geno, vspID subPop = vspID());
 
 	//@}
 

@@ -150,12 +150,13 @@ ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop)
 
 
 CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
-	const matrixi & vspMap, const stringList & names)
+	const intMatrix & vspMatrix, const stringList & names)
 	: BaseVspSplitter(names), m_splitters(0), m_vspMap(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i)
 		m_splitters.push_back(splitters[i]->clone());
 	// default vsp map
+	const matrixi & vspMap = vspMatrix.elems();
 	if (vspMap.empty()) {
 		size_t idx = 0;
 		for (size_t i = 0; i < splitters.size(); ++i)
@@ -522,9 +523,9 @@ string AffectionSplitter::name(SubPopID vsp)
 
 
 InfoSplitter::InfoSplitter(string info, const vectorf & values,
-	const vectorf & cutoff, const matrixf & ranges, const stringList & names)
+	const vectorf & cutoff, const floatMatrix & ranges, const stringList & names)
 	: BaseVspSplitter(names),
-	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges)
+	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges.elems())
 {
 	DBG_FAILIF(m_values.empty() && m_cutoff.empty() && m_ranges.empty(),
 		ValueError, "Please specify either a list of values, a set of cutoff values or ranges");
@@ -840,8 +841,8 @@ string ProportionSplitter::name(SubPopID subPop)
 }
 
 
-RangeSplitter::RangeSplitter(const matrixi & ranges, const stringList & names)
-	: BaseVspSplitter(names), m_ranges(ranges)
+RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
+	: BaseVspSplitter(names), m_ranges(ranges.elems())
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
 		DBG_FAILIF(m_ranges[i].size() != 2
@@ -916,8 +917,8 @@ string RangeSplitter::name(SubPopID subPop)
 
 
 GenotypeSplitter::GenotypeSplitter(const uintList & loci,
-	const matrixi & alleles, bool phase, const stringList & names)
-	: BaseVspSplitter(names), m_loci(loci.elems()), m_alleles(alleles),
+	const intMatrix & alleles, bool phase, const stringList & names)
+	: BaseVspSplitter(names), m_loci(loci.elems()), m_alleles(alleles.elems()),
 	m_phase(phase)
 {
 }

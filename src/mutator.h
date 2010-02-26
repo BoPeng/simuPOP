@@ -212,7 +212,7 @@ public:
 	 *  classes \c mutator and \c BaseOperator for detailed explanation of
 	 *  other parameters.
 	 */
-	MatrixMutator(const matrixf & rate, const uintList & loci = uintList(),
+	MatrixMutator(const floatMatrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -342,7 +342,7 @@ public:
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
 	StepwiseMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
-		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
+		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1.0),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -524,13 +524,13 @@ public:
 	 *  \c BaseOperator for descriptions of other parameters.
 	 */
 	ContextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
-		const opList & mutators = opList(), const matrixi & contexts = matrixi(),
+		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
-		m_mutators(mutators), m_contexts(contexts)
+		m_mutators(mutators), m_contexts(contexts.elems())
 	{
 		if (m_contexts.size() != 0) {
 			DBG_FAILIF(m_contexts[0].size() / 2 * 2 != m_contexts[0].size(), ValueError,
