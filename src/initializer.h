@@ -184,11 +184,11 @@ public:
 	 *  haplotype will be reused. If a list (or a single) haplotypes are
 	 *  specified without \e freq or \e prop, they are used with equal
 	 *  probability.
-	 *  
+	 *
 	 *  In the last case, if a sequence of genotype is specified, it will be
 	 *  uesd repeatedly to initialize all alleles sequentially. This works
 	 *  similar to function \c Population.setGenotype() except that you can
-	 *  limit the initialization to certain \e loci and \e ploidy. 
+	 *  limit the initialization to certain \e loci and \e ploidy.
 	 */
 	InitGenotype(const vectorf & freq = vectorf(),
 		const uintList & genotype = vectoru(), const vectorf & prop = vectorf(),

@@ -147,9 +147,9 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	for (size_t i = 0; i < m_prop.size(); ++i)
 		DBG_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
 			"Allele proportion should be between 0 and 1");
-	DBG_FAILIF (!m_haplotypes.empty() && !m_freq.empty() && m_haplotypes.size() != m_freq.size(),
+	DBG_FAILIF(!m_haplotypes.empty() && !m_freq.empty() && m_haplotypes.size() != m_freq.size(),
 		ValueError, "Haplotype frequency, if specified, should be specified for each haplotype.")
-	DBG_FAILIF (!m_haplotypes.empty() && !m_prop.empty() && m_haplotypes.size() != m_prop.size(),
+	DBG_FAILIF(!m_haplotypes.empty() && !m_prop.empty() && m_haplotypes.size() != m_prop.size(),
 		ValueError, "Haplotype proportion, if specified, should be specified for each haplotype.")
 	DBG_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
 		"Allele frequencies should add up to one.");

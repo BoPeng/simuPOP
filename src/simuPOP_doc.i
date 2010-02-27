@@ -2902,7 +2902,9 @@ Usage:
 Details:
 
     This operator assigns alleles at all or part of loci with given
-    allele frequencies, proportions or values.
+    allele frequencies, proportions or values. This operator
+    initializes all chromosomes, including unused genotype locations
+    and customized chromosomes.
 
 "; 
 
@@ -2910,29 +2912,33 @@ Details:
 
 Usage:
 
-    InitGenotype(freq=[], genotype=[], prop=[], loci=ALL_AVAIL,
-      ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[])
+    InitGenotype(freq=[], genotype=[], prop=[], haplotypes=[],
+      loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
     This function creates an initializer that initializes individual
-    genotypes either randomly with specified allele frequencies
-    (parameter freq) or proportions (parameter prop), or with fixed
-    genotypes (genotype). Elements in freq specifies the allele
-    frequencies of allele 0, 1, ... respectively. These frequencies
-    should add up to 1. Elements in prop specified the proportions of
-    alleles. Parameter prop is similar to freq except that prop
-    guarantees exact proportions of alleles at each locus, although
-    alleles with small proportions might not be allocated at all.
-    Parameter genotype specifies a list of genotype that will be
-    assigned repeatedly to all individuals (similar to
-    Population.setGenotype() except that this operator supports
-    parameters loci and ploidy). If loci, ploidy and/or subPop are
-    specified, only specified loci, ploidy, and individuals in these
-    (virtual) subpopulations will be initialized. This operator
-    initializes all chromosomes, including unused genotype locations
-    and customized chromosomes.
+    genotypes with random alleles or haplotypes with specified
+    frequencies (parameter freq) or proportions (parameter prop). If
+    parameter haplotypes is not specified, freq specifies the allele
+    frequencies of alleles 0, 1, ... respectively. Alternatively, you
+    can use parameter prop to specified the exact proportions of
+    alleles 0, 1, ..., although alleles with small proportions might
+    not be assigned at all. Values of parameter prob or prop should
+    add up to 1. If parameter haplotypes is specified, it should
+    contain a list of haplotypes and parameter prob or prop specifies
+    frequencies or proportions of each haplotype. If loci, ploidy
+    and/or subPop are specified, only specified loci, ploidy, and
+    individuals in these (virtual) subpopulations will be initialized.
+    If the length of a haplotype is not enough to fill all loci, the
+    haplotype will be reused. If a list (or a single) haplotypes are
+    specified without freq or prop, they are used with equal
+    probability.  In the last case, if a sequence of genotype is
+    specified, it will be uesd repeatedly to initialize all alleles
+    sequentially. This works similar to function
+    Population.setGenotype() except that you can limit the
+    initialization to certain loci and ploidy.
 
 "; 
 
