@@ -160,30 +160,39 @@ protected:
 
 
 /** This operator assigns alleles at all or part of loci with given allele
- *  frequencies, proportions or values.
+ *  frequencies, proportions or values. This operator initializes all
+ *  chromosomes, including unused genotype locations and customized
+ *  chromosomes.
  */
 class InitGenotype : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
-	 *  genotypes either randomly with specified allele frequencies
-	 *  (parameter \e freq) or proportions (parameter \e prop), or with fixed
-	 *  genotypes (\e genotype). Elements in \e freq specifies the allele
-	 *  frequencies of allele \c 0, \c 1, ... respectively. These frequencies
-	 *  should add up to \c 1. Elements in \e prop specified the proportions of
-	 *  alleles. Parameter \e prop is similar to \e freq except that \e prop
-	 *  guarantees exact proportions of alleles at each locus, although alleles
-	 *  with small proportions might not be allocated at all. Parameter
-	 *  \e genotype specifies a list of genotype that will be assigned
-	 *  repeatedly to all individuals (similar to \c Population.setGenotype()
-	 *  except that this operator supports parameters \e loci and \e ploidy).
-	 *  If \e loci, \e ploidy and/or \e subPop are specified, only specified
-	 *  loci, ploidy, and individuals in these (virtual) subpopulations will
-	 *  be initialized. This operator initializes all chromosomes, including
-	 *  unused genotype locations and customized chromosomes.
+	 *  genotypes with random alleles or haplotypes with specified frequencies
+	 *  (parameter \e freq) or proportions (parameter \e prop). If parameter
+	 *  \e haplotypes is not specified, \e freq specifies the allele
+	 *  frequencies of alleles \c 0, \c 1, ... respectively. Alternatively,
+	 *  you can use parameter \e prop to specified the exact proportions of
+	 *  alleles \c 0, \c 1, ..., although alleles with small proportions
+	 *  might not be assigned at all. Values of parameter \e prob or \e prop
+	 *  should add up to 1. If parameter \e haplotypes is specified, it should
+	 *  contain a list of haplotypes and parameter \e prob or \e prop specifies
+	 *  frequencies or proportions of each haplotype. If \e loci, \e ploidy
+	 *  and/or \e subPop are specified, only specified loci, ploidy, and
+	 *  individuals in these (virtual) subpopulations will be initialized.
+	 *  If the length of a haplotype is not enough to fill all loci, the
+	 *  haplotype will be reused. If a list (or a single) haplotypes are
+	 *  specified without \e freq or \e prop, they are used with equal
+	 *  probability.
+	 *  
+	 *  In the last case, if a sequence of genotype is specified, it will be
+	 *  uesd repeatedly to initialize all alleles sequentially. This works
+	 *  similar to function \c Population.setGenotype() except that you can
+	 *  limit the initialization to certain \e loci and \e ploidy. 
 	 */
 	InitGenotype(const vectorf & freq = vectorf(),
 		const uintList & genotype = vectoru(), const vectorf & prop = vectorf(),
+		const intMatrix & haplotypes = intMatrix(),
 		const uintList & loci = uintList(),
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
@@ -215,6 +224,7 @@ private:
 	const vectorf m_freq;
 	const vectoru m_genotype;
 	const vectorf m_prop;
+	const matrixi m_haplotypes;
 	//
 	const uintList m_loci;
 

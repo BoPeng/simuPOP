@@ -51,7 +51,7 @@ class TestInitialization(unittest.TestCase):
                             geno.append( arr[ gs*i + p*tl +loc] )
         return geno
 
-    def assertGenotype(self, pop, genotype,loci=[], subPop=[], atPloidy=[]):
+    def assertGenotype(self, pop, genotype, loci=[], subPop=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
         geno = self.getGenotype(pop, loci, subPop, atPloidy)
         if moduleInfo()['alleleType'] == 'binary':
@@ -92,9 +92,9 @@ class TestInitialization(unittest.TestCase):
             for i in range(len(freqLow)):
                 freq = geno.count(i)*1.0 / len(geno)
                 self.assertTrue(freq >= freqLow[i] , 
-            "Expression freq (test value %f) be greater than or equal to freqLow[i] . This test may occasionally fail due to the randomness of outcome." % (freq))
+            "Expression freq (test value %f) should be greater than or equal to %f . This test may occasionally fail due to the randomness of outcome." % (freq, freqLow[i]))
                 self.assertTrue(freq <= freqHigh[i], 
-            "Expression freq (test value %f) be less than or equal to freqHigh[i]. This test may occasionally fail due to the randomness of outcome." % (freq))
+            "Expression freq (test value %f) should be less than or equal to %f. This test may occasionally fail due to the randomness of outcome." % (freq, freqHigh[i]))
 
     
     def testInitSex(self):
@@ -239,6 +239,20 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, [0,1,5]*2*(pop.subPopSize([0,0])+
             pop.subPopSize([2,1])), loci=[2,4,5], subPop=[[0,0], [2,1]])
         self.assertGenotype(pop, 0, loci=[0,1,3,6,7])
+
+    def testInitByHaplotypes(self):
+        'Testing initialization by haplotypes (operator InitGenotype)'
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2], infoFields=['x'])
+        initGenotype(pop, haplotypes=[[0, 0], [1, 1]])
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=range(8))
+        initGenotype(pop, haplotypes=[[0, 0, 1, 0], [1, 1, 0, 0]])
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=[0, 1, 2, 4, 5])
+        self.assertGenotypeFreq(pop, [1, 0], [1, 0], loci=[3])
+        initGenotype(pop, haplotypes=[[0, 0, 1, 1], [1, 1, 0, 0]], prop=[.2, .8])
+        self.assertGenotypeFreq(pop, [.2, .8], [.2, .8], loci=[0, 1])
+        self.assertGenotypeFreq(pop, [.8, .2], [.8, .2], loci=[2, 3])
+        self.assertGenotypeFreq(pop, [.2, .8], [.2, .8], loci=[4, 5])
+        
 
 if __name__ == '__main__':
     unittest.main()

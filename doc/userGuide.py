@@ -1874,6 +1874,15 @@ print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
 sim.initGenotype(pop, prop=[0.4, 0.6])
 sim.stat(pop, alleleFreq=range(12))
 print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+# by haplotype frequency
+sim.initGenotype(pop, freq=[.4, .6], haplotypes=[[1, 1, 0, 1], [0, 0, 1]])
+sim.dump(pop, max=6, structure=False)
+sim.stat(pop, alleleFreq=range(12))
+print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+# by haplotype proportion
+sim.initGenotype(pop, prop=[0.4, 0.6], haplotypes=[[1, 1, 0], [0, 0, 1, 1]])
+sim.stat(pop, alleleFreq=range(12))
+print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
 # by genotype
 pop = sim.Population(size=[2, 3], loci=[5, 7])
 sim.initGenotype(pop, genotype=[1]*5 + [2]*7 + [3]*5 +[4]*7)
