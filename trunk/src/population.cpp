@@ -532,7 +532,7 @@ void Population::setGenotype(const vectoru & geno, vspID subPop)
 		GenoIterator ptr = m_genotype.begin();
 		ULONG sz = geno.size();
 		for (ULONG i = 0; i < popSize() * genoSize(); ++i)
-			*(ptr++) = geno[i % sz];
+			*(ptr++) = ToAllele(geno[i % sz]);
 		return;
 	}
 
@@ -546,7 +546,7 @@ void Population::setGenotype(const vectoru & geno, vspID subPop)
 	if (!subPop.isVirtual()) {
 		GenoIterator ptr = genoBegin(sp, true);
 		for (ULONG i = 0; i < subPopSize(sp) * genoSize(); ++i)
-			*(ptr++) = geno[i % sz];
+			*(ptr++) = ToAllele(geno[i % sz]);
 	} else {
 		activateVirtualSubPop(subPop);
 		IndIterator it = indIterator(sp);
