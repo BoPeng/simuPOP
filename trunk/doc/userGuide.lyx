@@ -9219,7 +9219,8 @@ InitGenotype
 \family typewriter
 initGenotype
 \family default
-) initializes individual genotype in three ways:
+) initializes individual genotype by allele frequency, allele proportion,
+ haplotype frequency, haplotype proportions or a list of genotypes:
 \end_layout
 
 \begin_layout Itemize
@@ -9243,12 +9244,55 @@ InitGenotype(prop=(0, 0.2, 0.4, 0.2))
 \end_layout
 
 \begin_layout Itemize
+By frequency of haplotypes.
+ For example, 
+\family typewriter
+InitGenotype(haplotypes=[[0, 0], [1,1], [0,1],[1,1]])
+\family default
+ will assign four haplotypes with equal probabilities.
+ 
+\family typewriter
+InitGenotype(haplotypes=[[0, 0], [1,1], [0,1],[1,1]], freq=[0.2, 0.2, 0.3,
+ 0.3])
+\family default
+ will assign these haplotypes with different frequencies.
+ If there are more than two loci, the haplotypes will be repeated.
+\end_layout
+
+\begin_layout Itemize
+By frequency of haplotypes.
+ For example, 
+\family typewriter
+InitGenotype(haplotypes=[[0, 0], [1,1], [0,1],[1,1]], prop=[0.2, 0.2, 0.3,
+ 0.3])
+\family default
+ will assign four haplotypes with exact proportions.
+ 
+\end_layout
+
+\begin_layout Itemize
 By a list of genotype.
  For example, 
 \family typewriter
 InitGenotype(genotype=[1, 2, 2, 1])
 \family default
- will assign genotype 1, 2, 2, 1 repeatedly to a population.
+ will assign genotype 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+, 
+\family typewriter
+2
+\family default
+, 
+\family typewriter
+1
+\family default
+ repeatedly to a population.
  If individuals in this population has two homologous copies of a chromosome
  with two loci, this operator will assign haplotype 
 \family typewriter

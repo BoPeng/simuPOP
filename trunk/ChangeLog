@@ -5,11 +5,14 @@ Known Bugs:
 
 version 1.0.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+New features:
+  - Add parameter haplotypes to operator InitGenotype to allow initialization by
+		haplotype frequencies.
+
 New features (minor):
   - Expose class WeightedSampler to the user interface.
 
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)
-
 Bugs:
   - Fix a typo that breaks the dryrun parameter of population.evolve().
   - Fix a bug in population.recodeAlleles when a single locus is specified.
