@@ -123,7 +123,13 @@ htmlview: html
 clean:
 	-rm -rf build/*
 	-rm -rf tools/sphinx
-	-rm `svn stat | grep '?' | cut -d' ' -f7`
+	# -rm `svn stat | grep '?' | cut -d' ' -f7`
+
+clean_extra_files:
+	-rm -rf build/html/_images
+	-rm -f `find . -name 'doc_*' | grep newfiles | grep -v 'svn'`
+	-rm -rf `find . -name 'examples' | grep jinja | grep -v 'svn'`
+	-rm -rf `find . -name 'docs' | grep jinja | grep -v 'hg'`
 
 src_doc:
 	cd ..; \
@@ -132,21 +138,25 @@ src_doc:
 	doxygen Doxy_web
 	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
 
-dist_svn: html
+dist_svn: clean_extra_files html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
 	cp build/example_*.py build/html/build
 	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn/build
-	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn
+	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn \
+		--exclude 'jinja2/docs' --exclude 'jinja2/examples' --exclude 'newfiles/doc_*' --exclude '.svn' --exclude '.hg'
 
-dist_release: html
+
+
+dist_release: clean_extra_files html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
 	cp build/example_*.py build/html/build
-	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_release/build
-	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_release
+	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_release/
+	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_release \
+		--exclude 'jinja2/docs' --exclude 'jinja2/examples' --exclude 'newfiles/doc_*' --exclude '.svn' --exclude '.hg'
 
 pdf: userGuide.lyx refManual.lyx
 	$(LYX) --export pdf2 userGuide.lyx

@@ -1423,6 +1423,8 @@ if __name__ == '__main__':
         latex_testfile = os.path.join(src_path, 'doc', 'simuPOP_ref_test.tex')
     else:
         latex_testfile = sys.argv[4]
+    if not os.path.isdir(os.path.join(src_path, 'doc', 'build')):
+        os.mkdir(os.path.join(src_path, 'doc', 'build'))
     refFile = os.path.join(src_path, 'doc', 'build', 'reflist.py')
     # read the XML file (actually a index.xml file that contains all others)
     p = Doxy2SWIG(xml_file)
