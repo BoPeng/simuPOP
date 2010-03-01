@@ -262,16 +262,26 @@ def convert_file(infile, outfile, doraise=True, splitchap=True,
         r.write_document(p.parse())
         if splitchap:
             outf = codecs.open(outfile, 'w', 'utf-8')
-            outf.write('.. toctree::\n\n')
-            for i, chapter in enumerate(r.chapters[1:]):
+            outf.write('.. toctree::\n   \n') #    :numbered:\n   \n')
+            for ch,chapter in enumerate(r.chapters[1:]):
                 dir = path.dirname(outfile)
                 if dir == '':
                     dir = '.'
-                filename = '%s/%d_%s' % (dir, i+1, path.basename(outfile))
-                outf.write('   %s\n' % filename.lstrip('%s/' % dir))
-                coutf = codecs.open(filename, 'w', 'utf-8')
-                coutf.write(chapter.getvalue())
-                coutf.close()
+                chtoc = '%s/%s' % (dir, path.basename(outfile))
+                chtoc = chtoc.replace('.rst', '_ch%d.rst' % (ch+1))
+                outf.write('   %s\n' % chtoc[len('%s/' % dir):])
+                choutf = codecs.open(chtoc, 'w', 'utf-8')
+                choutf.write(chapter[0].getvalue())
+                if len(chapter) > 1:
+                    choutf.write('\n.. toctree::\n\n')
+                    for sec,section in enumerate(chapter[1:]):
+                        filename = '%s/%s' % (dir, path.basename(outfile))
+                        filename = filename.replace('.rst', '_ch%d_sec%d.rst' % (ch + 1, sec + 1))
+                        sec_outf = codecs.open(filename, 'w', 'utf-8')
+                        sec_outf.write(section.getvalue())
+                        sec_outf.close()
+                        choutf.write('   %s\n' % filename[len('%s/' % dir):])
+                choutf.close()
             outf.close()
         else:
             outf.close()

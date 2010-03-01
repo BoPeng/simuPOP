@@ -382,7 +382,35 @@ Index: restwriter.py
 ===================================================================
 --- restwriter.py	(revision 76658)
 +++ restwriter.py	(working copy)
-@@ -481,6 +481,8 @@
+@@ -188,9 +188,16 @@
+         """ Called if self.splitchap is True. Create a new file pointer
+             and set self.fp to it. """
+         new_fp = StringIO.StringIO()
+-        self.chapters.append(new_fp)
++        self.chapters.append([new_fp])
+         self.fp = new_fp
+ 
++    def new_section(self):
++        """ Create a new file pointer
++            and set self.fp to it. """
++        new_fp = StringIO.StringIO()
++        self.chapters[-1].append(new_fp)
++        self.fp = new_fp
++
+     def write(self, text='', nl=True, first=False):
+         """ Write a string to the output file. """
+         if first:
+@@ -464,6 +471,9 @@
+         if self.splitchap and node.cmdname.startswith('chapter'):
+             self.write_footnotes()
+             self.new_chapter()
++        if node.cmdname.startswith('section'):
++            self.write_footnotes()
++            self.new_section()
+ 
+         heading = self.get_node_text(node.args[0]).strip()
+         if self.sectionlabel:
+@@ -481,6 +491,8 @@
          if envname == 'notice':
              type = text(node.args[0]) or 'note'
              self.write_directive(type, '', node.content)
@@ -391,7 +419,7 @@ Index: restwriter.py
          elif envname in ('seealso', 'seealso*'):
              self.write_directive('seealso', '', node.content, spabove=True)
          elif envname == 'abstract':
-@@ -569,7 +571,7 @@
+@@ -569,7 +581,7 @@
      def visit_CommandNode(self, node):
          cmdname = node.cmdname
          if cmdname == 'label':
@@ -400,7 +428,7 @@ Index: restwriter.py
              if self.no_flushing:
                  # in section
                  self.sectionlabel = labelname
-@@ -577,7 +579,50 @@
+@@ -577,7 +589,50 @@
                  self.flush_par()
                  self.write('.. _%s:\n' % labelname)
              return
@@ -452,7 +480,7 @@ Index: restwriter.py
          elif cmdname in ('declaremodule', 'modulesynopsis',
                         'moduleauthor', 'sectionauthor', 'platform'):
              self.flush_par(nocb=True, nocomments=True)
-@@ -706,7 +751,7 @@
+@@ -706,7 +761,7 @@
                  lines = self.get_node_text(self.get_textonly_node(
                      node.content, warn=0)).split('\n') + ['']
              # discard leading blank links
@@ -461,7 +489,7 @@ Index: restwriter.py
                  del lines[0]
              for line in lines:
                  self.write(line)
-@@ -889,14 +934,54 @@
+@@ -889,14 +944,54 @@
              return
          content = node.args[0]
          if cmdname in ('code', 'bfcode', 'samp', 'texttt', 'regexp'):
@@ -520,7 +548,7 @@ Index: restwriter.py
          elif cmdname in ('b', 'textrm', 'email'):
              self.visit_node(content)
          elif cmdname == 'token':
-@@ -904,8 +989,9 @@
+@@ -904,8 +999,9 @@
              self.visit_wrapped('`', self.get_textonly_node(content, 'var',
                                                             warn=1), '`')
          elif cmdname == 'ref':
