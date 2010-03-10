@@ -407,6 +407,9 @@ public:
 		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
 	}
 
+#  define PARAM_ASSERT DBG_ASSERT
+#  define PARAM_FAILIF DBG_FAILIF
+
 #  define DBG_WARNING(cond, message) \
     if (cond) \
 	{ \
@@ -422,6 +425,21 @@ public:
 
 #  define DBG_ASSERT(cond, exception, message)
 #  define DBG_FAILIF(cond, exception, message)
+
+#  define PARAM_ASSERT(cond, exception, message) \
+    if (!(cond)) \
+	{ \
+		int line = __LINE__; \
+		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+	}
+
+#  define PARAM_FAILIF(cond, exception, message) \
+    if (cond) \
+	{ \
+		int line = __LINE__; \
+		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+	}
+
 #  define DBG_WARNING(cond, message)
 #  define DBG_DO(dbgCode, expr)
 #  define DBG_DO_(expr)

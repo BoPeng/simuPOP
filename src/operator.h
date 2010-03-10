@@ -146,7 +146,7 @@ public:
 		m_flags(0), m_reps(reps), m_subPops(subPops),
 		m_ostream(output.value(), output.func()), m_infoFields(infoFields)
 	{
-		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
+		PARAM_FAILIF(step <= 0, ValueError, "step need to be at least one");
 
 		setFlags();
 	}
