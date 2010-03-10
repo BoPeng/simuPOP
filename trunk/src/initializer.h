@@ -69,7 +69,7 @@ public:
 		if (!m_sex.empty()) {
 			vectori::const_iterator it = m_sex.begin();
 			for (; it != m_sex.end(); ++it) {
-				DBG_ASSERT(*it == int(MALE) || *it == int(FEMALE),
+				PARAM_ASSERT(*it == int(MALE) || *it == int(FEMALE),
 					ValueError, "Parameter sex must be an array of MALE or FEMALE. ");
 			}
 		}
@@ -130,7 +130,7 @@ public:
 		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_values(values)
 	{
-		DBG_FAILIF(m_values.empty() && !m_values.func().isValid(), ValueError, "Please specify a list of values or a Python function.");
+		PARAM_FAILIF(m_values.empty() && !m_values.func().isValid(), ValueError, "Please specify a list of values or a Python function.");
 	}
 
 

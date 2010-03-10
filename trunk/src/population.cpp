@@ -65,12 +65,12 @@ Population::Population(const uintList & size,
 {
 	DBG_DO(DBG_POPULATION, cerr << "Constructor of population is called\n");
 
-	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
+	PARAM_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
 		"Number of subpopulations exceed maximum allowed subpopulation numbers");
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, HAPLODIPLOID),
+	PARAM_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, HAPLODIPLOID),
 		ValueError, "Only integer ploidy number or HAPLODIPLOID can be specified");
 
 	setGenoStructure(fcmp_eq(ploidy, HAPLODIPLOID) ? 2 : static_cast<UINT>(ploidy),

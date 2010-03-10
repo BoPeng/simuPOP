@@ -142,20 +142,20 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	m_haplotypes(haplotypes.elems()), m_loci(loci), m_ploidy(ploidy)
 {
 	for (size_t i = 0; i < m_freq.size(); ++i)
-		DBG_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
+		PARAM_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
 			"Allele frequency should be between 0 and 1");
 	for (size_t i = 0; i < m_prop.size(); ++i)
-		DBG_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
+		PARAM_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
 			"Allele proportion should be between 0 and 1");
-	DBG_FAILIF(!m_haplotypes.empty() && !m_freq.empty() && m_haplotypes.size() != m_freq.size(),
+	PARAM_FAILIF(!m_haplotypes.empty() && !m_freq.empty() && m_haplotypes.size() != m_freq.size(),
 		ValueError, "Haplotype frequency, if specified, should be specified for each haplotype.")
-	DBG_FAILIF(!m_haplotypes.empty() && !m_prop.empty() && m_haplotypes.size() != m_prop.size(),
+	PARAM_FAILIF(!m_haplotypes.empty() && !m_prop.empty() && m_haplotypes.size() != m_prop.size(),
 		ValueError, "Haplotype proportion, if specified, should be specified for each haplotype.")
-	DBG_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
+	PARAM_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
 		"Allele frequencies should add up to one.");
-	DBG_FAILIF(!m_prop.empty() && fcmp_ne(accumulate(m_prop.begin(), m_prop.end(), 0.), 1.0), ValueError,
+	PARAM_FAILIF(!m_prop.empty() && fcmp_ne(accumulate(m_prop.begin(), m_prop.end(), 0.), 1.0), ValueError,
 		"Allele proportions should add up to one.");
-	DBG_ASSERT(!m_haplotypes.empty() || (!m_freq.empty() + !m_genotype.empty() + !m_prop.empty() == 1), ValueError,
+	PARAM_ASSERT(!m_haplotypes.empty() || (!m_freq.empty() + !m_genotype.empty() + !m_prop.empty() == 1), ValueError,
 		"Please specify one and only one of parameters freq, prop (or haplotypes) and genotype.");
 }
 

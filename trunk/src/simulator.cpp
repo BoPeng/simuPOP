@@ -45,7 +45,7 @@ Population & pyPopIterator::next()
 
 Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 {
-	DBG_ASSERT(rep >= 1, ValueError,
+	PARAM_ASSERT(rep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating Simulator " << endl);
@@ -56,7 +56,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		for (size_t i = 0; i < size; ++i) {
 			PyObject * item = PySequence_GetItem(pops, i);
 			void * pop = pyPopPointer(item);
-			DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
+			PARAM_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 			if (steal) {
 				Population * tmp = new Population();
 				tmp->swap(*reinterpret_cast<Population *>(pop));
@@ -74,7 +74,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		}
 	} else {
 		void * pop = pyPopPointer(pops);
-		DBG_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
+		PARAM_ASSERT(pop, ValueError, "Parameter pops should be a single population or a list populations.");
 		if (steal) {
 			Population * tmp = new Population();
 			tmp->swap(*reinterpret_cast<Population *>(pop));
@@ -174,7 +174,7 @@ void Simulator::add(const Population & pop, bool steal)
 		m_pops.push_back(tmp);
 	} else
 		m_pops.push_back(new Population(pop));
-	DBG_FAILIF(m_pops.back() == NULL,
+	PARAM_FAILIF(m_pops.back() == NULL,
 		RuntimeError, "Fail to add new Population.");
 }
 
@@ -246,7 +246,7 @@ vectoru Simulator::evolve(
 			int end = -1;
 			if (gens > 0)
 				end = curGen + gens - 1;
-			DBG_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
+			PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
 				"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
