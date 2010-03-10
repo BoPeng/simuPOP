@@ -125,8 +125,10 @@ protected:
 
 /** This during mating operator copies parental genotype directly to offspring.
  *  This operator works for all mating schemes when one or two parents are
- *  involved. If both parents are passed, maternal genotype are copied. This
- *  genotype transmitter does not copy genotype on customized chromosomes.
+ *  involved. If both parents are passed, maternal genotype are copied. In
+ *  addition to genotypes on all non-customized or specified chromosomes, sex
+ *  and information fields are by default also coped copied from parent to
+ *  offspring.
  */
 class CloneGenoTransmitter : public GenoTransmitter
 {
@@ -138,12 +140,16 @@ public:
 	 *  has been determined by an offspring generator. All or specified
 	 *  information fields (parameter \e infoFields, default to \c ALL_AVAIL)
 	 *  will also be copied from parent to offspring. Parameters \e subPops
-	 *  is ignored.
+	 *  is ignored. This operator by default copies genotypes on all
+	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
+	 *  a parameter \e chroms is used to specify which chromosomes to copy.
 	 */
-	CloneGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(), 
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
-		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
+		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_chroms(chroms)
 	{
 	}
 
@@ -165,6 +171,9 @@ public:
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
 
+private:
+	// this is user input.
+	const uintList m_chroms;
 };
 
 
@@ -349,7 +358,8 @@ public:
 	 *  length and the same number of loci. This operator transmits these
 	 *  chromosomes randomly from the female parent to offspring of both sexes.
 	 */
-	MitochondrialGenoTransmitter(const stringFunc & output = "", const vectoru & chroms = vectoru(),
+	MitochondrialGenoTransmitter(const stringFunc & output = "",
+		const uintList & chroms = uintList(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
@@ -384,7 +394,7 @@ public:
 
 private:
 	// this is user input.
-	const vectoru m_chroms;
+	const uintList m_chroms;
 
 	// this is the temporary holder for different populaitons
 	mutable vectoru m_mitoChroms;

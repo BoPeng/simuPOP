@@ -135,7 +135,22 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator of
 	Individual * parent = mom != NULL ? mom : dad;
 
 	// troublesome ...
-	if (m_hasCustomizedChroms) {
+	if (!m_chroms.allAvail()) {
+		const vectoru chroms = m_chroms.elems();
+		for (UINT p = 0; p != m_ploidy; ++p) {
+			for (UINT i = 0; i < chroms.size(); ++i) {
+				UINT ch = chroms[i];
+				GenoIterator par = parent->genoBegin(p, ch);
+				GenoIterator off = offspring->genoBegin(p, ch);
+#ifdef BINARYALLELE
+				copyGenotype(par, off, offspring->numLoci(ch));
+#else
+				GenoIterator par_end = parent->genoEnd(p, ch);
+				copy(par, par_end, off);
+#endif
+			}
+		}
+	} else if (m_hasCustomizedChroms) {
 		for (UINT p = 0; p != m_ploidy; ++p) {
 			for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
 				if (m_lociToCopy[ch] == 0)
@@ -324,19 +339,12 @@ bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIter
 void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 {
 	GenoTransmitter::initialize(ind);
-	if (m_chroms.empty()) {
+	if (m_chroms.allAvail()) {
 		for (UINT ch = 0; ch < ind.numChrom(); ++ch)
 			if (ind.chromType(ch) == CUSTOMIZED)
 				m_mitoChroms.push_back(ch);
-	} else {
-#ifndef OPTIMIZED
-		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
-			DBG_ASSERT(ind.chromType(ch) == CUSTOMIZED, ValueError,
-				"Chromosome " + toStr(ch) + " is not of CUSTOMIZED type.");
-		}
-#endif
-		m_mitoChroms = m_chroms;
-	}
+	} else
+		m_mitoChroms = m_chroms.elems();
 	DBG_DO(DBG_TRANSMITTER, cerr << "Mitochondrial chromosomes " << m_mitoChroms << endl);
 	if (m_mitoChroms.empty())
 		return;

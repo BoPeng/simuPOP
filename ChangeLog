@@ -8,9 +8,12 @@ version 1.0.2 - Not released, available at https://simupop.svn.sourceforge.net/s
 New features:
   - Add parameter haplotypes to operator InitGenotype to allow initialization by
 		haplotype frequencies.
+  - Add parameter chroms to operator CloneGenoTransmitter to control which
+		chromosomes to copy.
 
 New features (minor):
   - Expose class WeightedSampler to the user interface.
+
 
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)
 Bugs:
