@@ -144,7 +144,7 @@ public:
 	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
 	 *  a parameter \e chroms is used to specify which chromosomes to copy.
 	 */
-	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(), 
+	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :

@@ -853,8 +853,9 @@ Details:
     This during mating operator copies parental genotype directly to
     offspring. This operator works for all mating schemes when one or
     two parents are involved. If both parents are passed, maternal
-    genotype are copied. This genotype transmitter does not copy
-    genotype on customized chromosomes.
+    genotype are copied. In addition to genotypes on all non-
+    customized or specified chromosomes, sex and information fields
+    are by default also coped copied from parent to offspring.
 
 "; 
 
@@ -862,8 +863,9 @@ Details:
 
 Usage:
 
-    CloneGenoTransmitter(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+    CloneGenoTransmitter(output=\"\", chroms=ALL_AVAIL, begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=ALL_AVAIL)
 
 Details:
 
@@ -874,7 +876,10 @@ Details:
     sex has been determined by an offspring generator. All or
     specified information fields (parameter infoFields, default to
     ALL_AVAIL) will also be copied from parent to offspring.
-    Parameters subPops is ignored.
+    Parameters subPops is ignored. This operator by default copies
+    genotypes on all autosome and sex chromosomes (excluding
+    customized chromosomes), unless a parameter chroms is used to
+    specify which chromosomes to copy.
 
 "; 
 
@@ -3688,9 +3693,9 @@ Details:
 
 Usage:
 
-    MitochondrialGenoTransmitter(output=\"\", chroms=[], begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
+    MitochondrialGenoTransmitter(output=\"\", chroms=ALL_AVAIL,
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
