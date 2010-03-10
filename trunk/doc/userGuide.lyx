@@ -10868,7 +10868,7 @@ GenoTransmitter
 \family typewriter
 CloneGenoTransmitter
 \family default
-: Copy all genotype from a parent to an offspring.
+: Copy all genotype on non-customized chromosomes from a parent to an offspring.
  It also copies parental sex to the offspring because sex can be genotype
  determined.
  This genotype transmitter is used by mating scheme 
@@ -10881,6 +10881,8 @@ CloneMating
 any ploidy
 \series default
  type.
+ If you would like to copy part of the chromosomes, or customized chromosomes,
+ a parameter chroms could be used to specify chromosomes to copy.
 \end_layout
 
 \begin_layout Itemize
