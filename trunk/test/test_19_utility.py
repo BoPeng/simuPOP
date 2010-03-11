@@ -656,6 +656,18 @@ class TestUtility(unittest.TestCase):
         gsl_cdf_gamma_Q(0.5, 0.1, 0.2)
         gsl_cdf_gamma_Pinv(0.5, 0.1, 0.2)
         gsl_cdf_gamma_Qinv(0.5, 0.1, 0.2)
+        #
+        gsl_cdf_beta_P(0.5, 0.1, 0.2)
+        gsl_cdf_beta_Q(0.5, 0.1, 0.2)
+        gsl_cdf_beta_Pinv(0.5, 0.1, 0.2)
+        gsl_cdf_beta_Qinv(0.5, 0.1, 0.2)
+        #
+        gsl_cdf_binomial_P(5, 0.1, 100)
+        gsl_cdf_binomial_Q(5, 0.1, 100)
+        gsl_ran_binomial_pdf(5, 0.1, 100)
+        #
+        gsl_cdf_poisson_P(2, 3.4)
+        gsl_cdf_poisson_Q(2, 3.4)
 
 if __name__ == '__main__':
     unittest.main()

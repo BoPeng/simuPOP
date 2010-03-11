@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2294,6 +2294,18 @@ gsl_cdf_binomial_Q(k, p, n)
 
 \family typewriter
 gsl_ran_binomial_pdf(k, p, n)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_poisson_P(k, mu)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+gsl_cdf_poisson_Q(k, mu)
 \end_layout
 
 \begin_layout Standard
