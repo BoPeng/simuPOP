@@ -76,12 +76,19 @@ ULONG OffspringGenerator::numOffspring(int gen)
 		return static_cast<UINT>(m_numOffspring[0]);
 
 	if (m_numOffspring.func().isValid()) {
-		int attempts = 0;
-		while (++ attempts < 50) {
-			int numOff = m_numOffspring.func() (PyObj_As_Int, "(i)", gen);
-			if (numOff > 0)
-				return numOff;
-		}
+        const pyFunc & func = m_numOffspring.func();
+        DBG_FAILIF(func.numArgs() > 1 || (func.numArgs() == 1 && func.arg(0) != "gen"),
+            ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
+   		int attempts = 0;
+        int numOff = 0;
+    	while (++ attempts < 50) {
+            if (func.numArgs() == 0) 
+	    	    numOff = func(PyObj_As_Int, "()");
+            else
+	    	    numOff = func(PyObj_As_Int, "(i)", gen);
+		    if (numOff > 0)
+			    return numOff;
+   		}
 		cerr << "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times." << endl;
 		return 1;
 	}

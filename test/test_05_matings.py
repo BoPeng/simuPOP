@@ -76,7 +76,7 @@ class TestMatingSchemes(unittest.TestCase):
             self.getFamSize(numOffspring=nos, gen=3),
             [1]*1000)
         # randomnumber
-        def nos(gen):
+        def nos():
             return random.randint(1, 3)
         cnt = self.getFamSize(numOffspring=nos, N=1000)
         self.assertEqual(sum(cnt), 1000)
@@ -100,17 +100,13 @@ class TestMatingSchemes(unittest.TestCase):
         p = 3
         cnt = self.getFamSize( numOffspring=(POISSON_DISTRIBUTION, p), N=100000)
         mean = sum(cnt)*1.0/len(cnt)
-        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
-        self.assertEqual(abs(mean - (p+1)) < 0.1, True)
-        self.assertEqual(abs(var - p) < 0.2, True)
+        self.assertEqual(abs(mean - p/(1-math.exp(-p))) < 0.1, True)
         # BINOMIAL_DISTRIBUTION
         p = 0.3
         n = 10
         cnt = self.getFamSize( numOffspring=(BINOMIAL_DISTRIBUTION, p, n), N=10000)
         mean = sum(cnt)*1.0/len(cnt)
-        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
-        self.assertEqual(abs(mean - ((n-1)*p+1)) < 0.1, True)
-        self.assertEqual(abs(var - (n-1)*p*(1-p)) < 0.2, True)
+        self.assertEqual(abs(mean - ((n)*p/(1-(1-p)**n))) < 0.1, True)
         # UNIFORM_DISTRIBUTION
         a = 3
         b = 6
