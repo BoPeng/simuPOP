@@ -212,6 +212,7 @@ include gsl/cdf/chisqinv.c
 include gsl/cdf/gamma.c
 include gsl/cdf/gammainv.c
 include gsl/cdf/rat_eval.h
+include gsl/cdf/poisson.c
 
 
 # tests
