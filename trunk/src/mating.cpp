@@ -52,11 +52,11 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 			(m_numOffspring.size() < 2 || fcmp_lt(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
 			ValueError, "P for a geometric distribution should be within [0,1]");
 		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
-			(m_numOffspring.size() < 2 || fcmp_lt(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
-			ValueError, "P for a Bionomial distribution should be within [0,1].");
+			(m_numOffspring.size() < 2 || fcmp_le(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
+			ValueError, "P for a Bionomial distribution should be within (0,1].");
 		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
-			ValueError, "Max number of offspring should be greater than 1.");
+			ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
 	}
 	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
 	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
@@ -76,24 +76,35 @@ ULONG OffspringGenerator::numOffspring(int gen)
 		return static_cast<UINT>(m_numOffspring[0]);
 
 	if (m_numOffspring.func().isValid()) {
-		int numOff = m_numOffspring.func() (PyObj_As_Int, "(i)", gen);
-		DBG_FAILIF(numOff < 1, ValueError, "Need at least one offspring.");
-		return numOff;
+		int attempts = 0;
+		while (++ attempts < 50) {
+			int numOff = m_numOffspring.func() (PyObj_As_Int, "(i)", gen);
+			if (numOff > 0)
+				return numOff;
+		}
+		cerr << "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times." << endl;
+		return 1;
 	}
 	switch (static_cast<int>(m_numOffspring[0])) {
 	case GEOMETRIC_DISTRIBUTION:
 		return getRNG().randGeometric(m_numOffspring[1]);
 	case POISSON_DISTRIBUTION:
-		return getRNG().randPoisson(m_numOffspring[1]) + 1;
+		return getRNG().randTruncatedPoisson(m_numOffspring[1]);
 	case BINOMIAL_DISTRIBUTION:
-		return getRNG().randBinomial(static_cast<UINT>(m_numOffspring[2]) - 1, m_numOffspring[1]) + 1;
-	case UNIFORM_DISTRIBUTION:
+		return getRNG().randTruncatedBinomial(static_cast<UINT>(m_numOffspring[2]),
+			m_numOffspring[1]);
+	case UNIFORM_DISTRIBUTION: {
 		// max: 5
 		// num: 2
 		// randint(4)  ==> 0, 1, 2, 3
 		// + 2 ==> 2, 3, 4, 5
-		return getRNG().randInt(static_cast<UINT>(m_numOffspring[2]) - static_cast<UINT>(m_numOffspring[1]) + 1)
-		       + static_cast<UINT>(m_numOffspring[1]);
+		UINT low = static_cast<UINT>(m_numOffspring[1]);
+		// returning 0 is meaningless so we shift low from 0 to 1. This is actually a
+		// truncated uniform distribution with U(X) = P(X) / (1-P(0)) = 1/n / (1-1/n) = 1/(n-1)
+		if (low == 0)
+			low = 1;
+		return getRNG().randInt(static_cast<UINT>(m_numOffspring[2]) - low + 1) + low;
+	} 
 	default:
 		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
 			             "NumOffspring, NumOffspringEachFamily and GEometricDistribution");

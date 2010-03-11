@@ -201,6 +201,7 @@ LIB_FILES = [
     'gsl/sys/log1p.c',
     'gsl/sys/invhyp.c',
     'gsl/complex/math.c',
+    'gsl/specfunc/beta.c',
     'gsl/specfunc/psi.c',
     'gsl/specfunc/trig.c',
     'gsl/specfunc/exp.c',
@@ -253,6 +254,7 @@ LIB_FILES = [
     'gsl/rng/ranlxs.c',
     'gsl/rng/tt.c',
     'gsl/rng/knuthran2002.c',
+    'gsl/randist/binomial.c',
     'gsl/randist/binomial_tpe.c',
     'gsl/randist/beta.c',
     'gsl/randist/exponential.c',
@@ -264,8 +266,14 @@ LIB_FILES = [
     'gsl/randist/gauss.c',
     'gsl/randist/gausszig.c',
     'gsl/randist/gamma.c',
+    'gsl/cdf/binomial.c',
+    'gsl/cdf/beta.c',
+    'gsl/cdf/betainv.c',
+    'gsl/cdf/gauss.c',
+    'gsl/cdf/gaussinv.c',
     'gsl/cdf/chisq.c',
     'gsl/cdf/gamma.c',
+    'gsl/cdf/poisson.c',
     'gsl/error.c' 
 ] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
   + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
@@ -310,6 +318,7 @@ GSL_FILES = [
     'gsl/cdf/gammainv.c',
     'gsl/cdf/chisq.c',
     'gsl/cdf/chisqinv.c',
+    'gsl/cdf/poisson.c',
 ]
 
 # build zlib from source for windows system to avoid distributing zlib1.dll

@@ -7024,8 +7024,11 @@ numOffspring
 \begin_layout Itemize
 If a Python function is given, this function will be called each time when
  a mating event happens.
- Generation number will be passed to this function, which allows different
- numbers of offspring at different generations.
+ Generation number can be passed to this function as parameter 
+\family typewriter
+gen
+\family default
+ to allow different numbers of offspring at different generations.
 \end_layout
 
 \begin_layout Itemize
@@ -7047,13 +7050,13 @@ BINOMIAL_DISTRIBUTION
 UNIFORM_DISTRIBUTION
 \family default
 , with one or two additional parameters.
- The number of offspring will then follow a specific statistical distribution.
- Note that all these distributions are adjusted so that the minimal number
- of offspring is 1.
+ 
 \end_layout
 
 \begin_layout Standard
-More specifically, 
+The number of offspring in the last case will then follow a specific statistical
+ distribution.
+ More specifically, 
 \end_layout
 
 \begin_layout Itemize
@@ -7084,24 +7087,39 @@ numOffspring=(GEOMETRIC_DISTRIBUTION, p)
 \family typewriter
 numOffspring=(POISSON_DISTRIBUTION, p)
 \family default
-: The number of offspring for each mating event follows a shifted Poisson
- distribution with mean 
-\begin_inset Formula $p+1$
+: The number of offspring for each mating event follows a Poisson distribution
+ with mean 
+\begin_inset Formula $p$
 \end_inset
 
- (you need to specify, for example, 2, if you want a mean family size of
- 3) and variance 
+ and variance 
 \begin_inset Formula $p$
 \end_inset
 
 .
  The distribution is
 \begin_inset Formula \[
-\mbox{Pr}\left(k\right)=p^{k-1}\frac{e^{-p}}{\left(k-1\right)!}\;\textrm{ for}k\geq1\]
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for}k\geq0\]
 
 \end_inset
 
+Note that, however, because families with zero offspring are ignored, the
+ distribution of the observed number of offspring (excluding zero) follows
+ a zero-truncated Poission distribution with probability
+\begin_inset Formula \[
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for}k\geq1\]
 
+\end_inset
+
+The mean number of offspring is therefore 
+\begin_inset Formula $\frac{1}{1-e^{-p}}p$
+\end_inset
+
+, which is 2.31 for 
+\begin_inset Formula $p=2$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -7109,23 +7127,29 @@ numOffspring=(POISSON_DISTRIBUTION, p)
 \family typewriter
 numOffspring=(BINOMIAL_DISTRIBUTION, p, n): 
 \family default
-The number of offspring for each mating event follows a shifted Binomial
- distribution with mean 
-\begin_inset Formula $(n-1)p+1$
+The number of offspring for each mating event follows a Binomial distribution
+ with mean 
+\begin_inset Formula $np$
 \end_inset
 
  and variance 
-\begin_inset Formula $\left(n-1\right)p\left(1-p\right)$
+\begin_inset Formula $np\left(1-p\right)$
 \end_inset
 
 .
  
 \begin_inset Formula \[
-\mbox{Pr}\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}+1\;\textrm{ for }n\geq k\geq1\]
+\mbox{Pr}\left(k\right)=\frac{n!}{k!\left(n-k\right)!}p^{k}\left(1-p\right)^{n-k}\;\textrm{ for }n\geq k\geq0\]
 
 \end_inset
 
+Because families with zero offspring are ignored, the distribution of the
+ observed number of offspring (excluding zero) follows a zero-truncated
+ Bionimial distribution, with mean number of offspring being 
+\begin_inset Formula $\frac{np}{\left(1-p\right)^{n}}$
+\end_inset
 
+.
 \end_layout
 
 \begin_layout Itemize
@@ -7149,7 +7173,15 @@ numOffspring=(UNIFORM_DISTRIBUTION, a, b):
 
 \end_inset
 
+The lower bound of this distribution can be 
+\family typewriter
+0
+\family default
+ but is identical to the case with 
+\begin_inset Formula $a=1$
+\end_inset
 
+.
 \end_layout
 
 \begin_layout Standard

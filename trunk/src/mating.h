@@ -75,16 +75,23 @@ public:
 	 *  family. It can be a number, a function, or a mode parameter followed by
 	 *  some optional arguments. If a number is given, given number of
 	 *  offspring will be generated at each mating event. If a Python function
-	 *  is given, it will be called each time when a mating event happens.
-	 *  Current generation number will be passed to this function, and its
-	 *  return value will be considered the number of offspring. In the last
-	 *  case, a tuple (or a list) in one of the following forms:
-	 *  <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>, <tt>(POISSON_DISTRIBUTION, p)</tt>,
-	 *  <tt>(BINOMIAL_DISTRIBUTION, p, N)</tt>, or
-	 *  <tt>(UNIFORM_DISTRIBUTION, a, b)</tt> can be given. The number of
+	 *  is given, it will be called each time when a mating event happens.  
+	 *  Current generation number will be passed to this function if parameter
+	 *  "gen" is used in this function. The return value of this function will
+	 *  be considered the number of offspring. In the last case, a tuple (or a
+	 *  list) in one of the following forms:
+	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>
+	 *  \li <tt>(POISSON_DISTRIBUTION, p)</tt>, p > 0
+	 *  \li <tt>(BINOMIAL_DISTRIBUTION, p, N)</tt>, 0 < p <=1, N > 0
+	 *  \li <tt>(UNIFORM_DISTRIBUTION, a, b)</tt>, 0 <= a <= b.
+	 *  can be given. The number of
 	 *  offspring will be determined randomly following these statistical
-	 *  distributions. Please refer to the simuPOP user's guide for a detailed
-	 *  description of these distributions and their parameters.
+	 *  distributions. Families of zero offspring will be silently ignored so
+	 *  a user-provided function should try not to return 0 (use a truncated
+	 *  distribution if needed). Because Poisson and binomial distributions
+	 *  can return 0, the distribution of the observed number of offspring per
+	 *  mating event (excluding zero) follows zero-truncated versions of these
+	 *  distributions.
 	 *
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
 	 *  default value is usually \e RANDOM_SEX which assign \c MALE or \c FEMALE
