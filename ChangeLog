@@ -15,7 +15,7 @@ New features (minor):
   - Expose class WeightedSampler to the user interface.
   - Perform a limited number of parameter checkings in optimized modules, provided that
 		they do not hinder system performance.
-
+  - Add gsl_cdf_poisson_P and gsl_cdf_poisson_Q to module simuPOP.gsl.
 
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)
 Bugs:

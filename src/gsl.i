@@ -182,3 +182,6 @@ extern double gsl_cdf_beta_P(double x, double a, double b);
 extern double gsl_cdf_beta_Q(double x, double a, double b); 
 extern double gsl_cdf_beta_Pinv(double P, double a, double b); 
 extern double gsl_cdf_beta_Qinv(double Q, double a, double b); 
+
+extern double gsl_cdf_poisson_P (const unsigned int k, const double mu);
+extern double gsl_cdf_poisson_Q (const unsigned int k, const double mu);

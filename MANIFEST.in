@@ -125,6 +125,7 @@ include gsl/complex/math.c
 include gsl/randist/poisson.c
 include gsl/randist/chisq.c
 include gsl/randist/exponential.c
+include gsl/randist/binomial.c
 include gsl/randist/binomial_tpe.c
 include gsl/randist/geometric.c
 include gsl/randist/nbinomial.c
