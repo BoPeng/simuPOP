@@ -1230,7 +1230,7 @@ checkNumOffspring(numOffspring=func)
 # Case 3: A geometric distribution
 checkNumOffspring(numOffspring=(sim.GEOMETRIC_DISTRIBUTION, 0.3))
 # Case 4: A Possition distribution
-checkNumOffspring(numOffspring=(sim.POISSON_DISTRIBUTION, 3))
+checkNumOffspring(numOffspring=(sim.POISSON_DISTRIBUTION, 1.6))
 # Case 5: A Binomial distribution
 checkNumOffspring(numOffspring=(sim.BINOMIAL_DISTRIBUTION, 0.1, 10))
 # Case 6: A uniform distribution

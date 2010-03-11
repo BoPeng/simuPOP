@@ -1634,6 +1634,15 @@ public:
 		return gsl_ran_poisson(m_RNG, mu);
 	}
 
+	/** Generate a positive random number following a zero-truncated Poisson
+	 *  distribution with parameter \e mu.
+	 */
+	UINT randTruncatedPoisson(double mu);
+
+	/** Generate a positive random number following a zero-truncated binomial
+	 *  distribution with parameters \e n and \e p.
+	 */
+	UINT randTruncatedBinomial(UINT n, double p);
 
 	/** Generate a random number following a multinomial distribution with
 	 *  parameters \e N and \e p (a list of probabilities).
@@ -1665,6 +1674,9 @@ public:
 		std::random_shuffle(begin, end, rng);
 	}
 
+private:
+	UINT search_poisson(UINT y, double *z, double p, double lambda);
+	UINT search_binomial(UINT y, double *z, double p, UINT n, double pr);
 
 private:
 	/// global random number generator

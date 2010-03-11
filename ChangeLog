@@ -5,11 +5,21 @@ Known Bugs:
 
 version 1.0.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+BUGS:
+  - The shifted distribution implemented for POISSON_DISTRIBUTION and
+        BINOMIAL_DISTRIBUTION for the specification of random number of
+        offspring is replaced with truncated distributions.
+
 New features:
   - Add parameter haplotypes to operator InitGenotype to allow initialization by
 		haplotype frequencies.
   - Add parameter chroms to operator CloneGenoTransmitter to control which
 		chromosomes to copy.
+
+Regression:
+  - Random number of offspring using Poisson and Binomial distribution
+        with get different distributions due to reinterpretation of
+        these parameters.
 
 New features (minor):
   - Expose class WeightedSampler to the user interface.
