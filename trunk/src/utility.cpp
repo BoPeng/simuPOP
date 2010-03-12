@@ -2724,11 +2724,13 @@ UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 			--y;
 			*z = newz;
 		}
-	}else {      /* search to the right */
+	} else {      /* search to the right */
 		DBG_DO(DBG_UTILITY, cerr << "search to the right from " << y << endl);
 		while (true) {
-			y = std::min(y + 1, n);
-			if (y == n || (*z = gsl_cdf_binomial_P(y, pr, n)) >= p)
+			++y;
+			if (y >= n)
+				return n;
+			if ((*z = gsl_cdf_binomial_P(y, pr, n)) >= p)
 				return y;
 		}
 	}
