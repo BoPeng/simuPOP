@@ -34,6 +34,8 @@
 
 #include <bitset>
 
+#include "gsl/gsl_machine.h"
+
 #include <sstream>
 using std::stringstream;
 using std::ostringstream;
@@ -2641,25 +2643,24 @@ bool RNG::randBit()
 }
 
 
-
-UINT RNG::search_poisson(UINT y, double *z, double p, double lambda)
+UINT RNG::search_poisson(UINT y, double * z, double p, double lambda)
 {
-    if(*z >= p) { /* search to the left */
+	if (*z >= p) { /* search to the left */
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
 		while (true) {
 			DBG_FAILIF(y == 0, RuntimeError, "Zero should not be reached for a truncated Poisson distribution.");
-			if((*z = gsl_cdf_poisson_P(y - 1, lambda)) < p)
+			if ((*z = gsl_cdf_poisson_P(y - 1, lambda)) < p)
 				return y;
 			--y;
 		}
-    } else {		/* search to the right */
+	} else {        /* search to the right */
 		DBG_DO(DBG_UTILITY, cerr << "search to the right from " << y << endl);
 		while (true) {
 			++y;
-		    if((*z = gsl_cdf_poisson_P(y, lambda)) >= p)
+			if ((*z = gsl_cdf_poisson_P(y, lambda)) >= p)
 				return y;
 		}
-    }
+	}
 }
 
 
@@ -2682,56 +2683,55 @@ UINT RNG::randTruncatedPoisson(double lambda)
 	// we have to use a special method that maps back from cdf.
 	double p0 = gsl_ran_poisson_pdf(0, lambda);
 	double p = gsl_rng_uniform(m_RNG) * (1 - p0) + p0;
-    if (p + 1.01 * DBL_EPSILON >= 1.)	
+	if (p + 1.01 * GSL_DBL_EPSILON >= 1.)
 		return MaxRandomNumber;
 
 
-    double mu = lambda;
-    double sigma = sqrt(lambda);
-    /* gamma = sigma; PR#8058 should be kurtosis which is mu^-0.5 */
-    double gamma = 1.0/sigma;
+	double mu = lambda;
+	double sigma = sqrt(lambda);
+	/* gamma = sigma; PR#8058 should be kurtosis which is mu^-0.5 */
+	double gamma = 1.0 / sigma;
 
-    /* y := approx.value (Cornish-Fisher expansion) :  */
-    double z = gsl_cdf_ugaussian_Pinv(p);
-    UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5));
+	/* y := approx.value (Cornish-Fisher expansion) :  */
+	double z = gsl_cdf_ugaussian_Pinv(p);
+	UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z * z - 1) / 6) + 0.5));
 
 	if (y == 0)
 		y = 1;
 
-    z = gsl_cdf_poisson_P(y, lambda);
+	z = gsl_cdf_poisson_P(y, lambda);
 
-	DBG_DO(DBG_UTILITY, cerr << "Using inverse cdf with p0=" << p0 << " random quantile " << p
-		<< " and initial guess " << y << " with cdf " << z << endl);
+	DBG_DO(DBG_UTILITY, cerr	<< "Using inverse cdf with p0=" << p0 << " random quantile " << p
+		                        << " and initial guess " << y << " with cdf " << z << endl);
 
-    /* fuzz to ensure left continuity; 1 - 1e-7 may lose too much : */
-    p *= 1 - 64 * DBL_EPSILON;
+	/* fuzz to ensure left continuity; 1 - 1e-7 may lose too much : */
+	p *= 1 - 64 * GSL_DBL_EPSILON;
 
-    /* If the mean is not too large a simple search is OK */
-    return search_poisson(y, &z, p, lambda);
+	/* If the mean is not too large a simple search is OK */
+	return search_poisson(y, &z, p, lambda);
 }
 
 
-UINT RNG::search_binomial(UINT y, double *z, double p, UINT n, double pr)
+UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 {
-    if(*z >= p) {
+	if (*z >= p) {
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
 		while (true) {
 			DBG_FAILIF(y == 0, RuntimeError, "Zero should not be reached for a truncated binomial distribution");
 			double newz;
-			if((newz = gsl_cdf_binomial_P(y - 1, pr, n)) < p)
+			if ((newz = gsl_cdf_binomial_P(y - 1, pr, n)) < p)
 				return y;
 			--y;
 			*z = newz;
 		}
-    }
-    else {		/* search to the right */
+	}else {      /* search to the right */
 		DBG_DO(DBG_UTILITY, cerr << "search to the right from " << y << endl);
 		while (true) {
-			y = min(y + 1, n);
-			if(y == n || (*z = gsl_cdf_binomial_P(y, pr, n)) >= p)
+			y = std::min(y + 1, n);
+			if (y == n || (*z = gsl_cdf_binomial_P(y, pr, n)) >= p)
 				return y;
 		}
-    }
+	}
 }
 
 
@@ -2741,12 +2741,12 @@ UINT RNG::randTruncatedBinomial(UINT n, double pr)
 	if (n == 1)
 		return 1;
 
-    DBG_FAILIF (pr == 0. || n == 0, ValueError, "n=0 or p=0 is not allowed for truncated binomial distribution.");
+	DBG_FAILIF(pr == 0. || n == 0, ValueError, "n=0 or p=0 is not allowed for truncated binomial distribution.");
 
 	if (n * pr >= 2.) {
 		// try our luck and see if we get any non-zero results ...
 		int attempts = 0;
-		while (++ attempts < 2) {
+		while (++attempts < 2) {
 			UINT numOff = randBinomial(n, pr);
 			if (numOff > 0)
 				return numOff;
@@ -2755,38 +2755,38 @@ UINT RNG::randTruncatedBinomial(UINT n, double pr)
 
 	// the following is adapted from R's qbinom function
 
-    double q = 1 - pr;
-    if (q == 0.)
-		return n; /* covers the full range of the distribution */
-    
+	double q = 1 - pr;
+	if (q == 0.)
+		return n;  /* covers the full range of the distribution */
+
 	double p0 = gsl_ran_binomial_pdf(0, pr, n);
 	double p = gsl_rng_uniform(m_RNG) * (1 - p0) + p0;
-    if (p + 1.01 * DBL_EPSILON >= 1.)
+	if (p + 1.01 * GSL_DBL_EPSILON >= 1.)
 		return n;
 
 	double mu = n * pr;
-    double sigma = sqrt(n * pr * q);
-    double gamma = (q - pr) / sigma;
+	double sigma = sqrt(n * pr * q);
+	double gamma = (q - pr) / sigma;
 
-    /* y := approx.value (Cornish-Fisher expansion) :  */
-    double z = gsl_cdf_ugaussian_Pinv(p);
-    UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5));
+	/* y := approx.value (Cornish-Fisher expansion) :  */
+	double z = gsl_cdf_ugaussian_Pinv(p);
+	UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z * z - 1) / 6) + 0.5));
 
 	if (y == 0)
 		y = 1;
 
-    if(y > n) /* way off */
+	if (y > n) /* way off */
 		y = n;
 
-    z = gsl_cdf_binomial_P(y, pr, n);
+	z = gsl_cdf_binomial_P(y, pr, n);
 
-	DBG_DO(DBG_UTILITY, cerr << "Using inverse cdf with p0=" << p0 << " random quantile "
-		<< p << " and initial guess " << y << " with cdf " << z << endl);
+	DBG_DO(DBG_UTILITY, cerr	<< "Using inverse cdf with p0=" << p0 << " random quantile "
+		                        << p << " and initial guess " << y << " with cdf " << z << endl);
 
-    /* fuzz to ensure left continuity: */
-    p *= 1 - 64 * DBL_EPSILON;
+	/* fuzz to ensure left continuity: */
+	p *= 1 - 64 * GSL_DBL_EPSILON;
 
-    return search_binomial(y, &z, p, n, pr);
+	return search_binomial(y, &z, p, n, pr);
 }
 
 
@@ -2794,6 +2794,7 @@ double pvalChiSq(double chisq, unsigned int df)
 {
 	return 1 - gsl_cdf_chisq_P(chisq, df);
 }
+
 
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
