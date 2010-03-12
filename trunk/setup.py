@@ -309,11 +309,12 @@ GSL_FILES = [
     'gsl/cdf/gaussinv.c',
     'gsl/cdf/exponential.c',
     'gsl/cdf/exponentialinv.c',
-    # pdf functions for gamma, binomial and beta distributions are copied to gsl.i
+    # pdf functions for gamma, binomial, poisson and beta distributions are copied to gsl.i
     # to avoid subsequent inclusion of RNG related functions.
     #'gsl/randist/gamma.c',
     #'gsl/randist/binomial.c',
     #'gsl/randist/beta.c',
+    #'gsl/randist/poisson.c',
     'gsl/cdf/gamma.c',
     'gsl/cdf/gammainv.c',
     'gsl/cdf/chisq.c',

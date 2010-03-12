@@ -2308,6 +2308,12 @@ gsl_cdf_poisson_P(k, mu)
 gsl_cdf_poisson_Q(k, mu)
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+gsl_ran_poisson_pdf(k, mu)
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex

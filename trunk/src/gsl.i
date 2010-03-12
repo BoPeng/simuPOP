@@ -141,6 +141,16 @@ gsl_ran_beta_pdf (const double x, const double a, const double b)
     }
 }
 
+
+double
+gsl_ran_poisson_pdf (const unsigned int k, const double mu)
+{
+  double p;
+  double lf = gsl_sf_lnfact (k); 
+
+  p = exp (log (mu) * k - lf - mu);
+  return p;
+}
 %}
 
 %init
@@ -183,5 +193,6 @@ extern double gsl_cdf_beta_Q(double x, double a, double b);
 extern double gsl_cdf_beta_Pinv(double P, double a, double b); 
 extern double gsl_cdf_beta_Qinv(double Q, double a, double b); 
 
-extern double gsl_cdf_poisson_P (const unsigned int k, const double mu);
-extern double gsl_cdf_poisson_Q (const unsigned int k, const double mu);
+extern double gsl_cdf_poisson_P(const unsigned int k, const double mu);
+extern double gsl_cdf_poisson_Q(const unsigned int k, const double mu);
+extern double gsl_ran_poisson_pdf(const unsigned int k, const double mu);
