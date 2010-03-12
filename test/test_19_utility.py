@@ -668,6 +668,7 @@ class TestUtility(unittest.TestCase):
         #
         gsl_cdf_poisson_P(2, 3.4)
         gsl_cdf_poisson_Q(2, 3.4)
+        gsl_ran_poisson_pdf(2, 3.4)
 
 if __name__ == '__main__':
     unittest.main()
