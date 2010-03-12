@@ -3938,17 +3938,21 @@ Details:
     arguments. If a number is given, given number of offspring will be
     generated at each mating event. If a Python function is given, it
     will be called each time when a mating event happens. Current
-    generation number will be passed to this function, and its return
-    value will be considered the number of offspring. In the last
-    case, a tuple (or a list) in one of the following forms:
-    (GEOMETRIC_DISTRIBUTION, p), (POISSON_DISTRIBUTION, p),
-    (BINOMIAL_DISTRIBUTION, p, N), or (UNIFORM_DISTRIBUTION, a, b) can
-    be given. The number of offspring will be determined randomly
-    following these statistical distributions. Please refer to the
-    simuPOP user's guide for a detailed description of these
-    distributions and their parameters.  Parameter sexMode is used to
-    control the sex of each offspring. Its default value is usually
-    RANDOM_SEX which assign MALE or FEMALE to each individual
+    generation number will be passed to this function if parameter
+    \"gen\" is used in this function. The return value of this function
+    will be considered the number of offspring. In the last case, a
+    tuple (or a list) in one of the following forms can be given:
+    *   (GEOMETRIC_DISTRIBUTION, p)
+    *   (POISSON_DISTRIBUTION, p), p > 0
+    *   (BINOMIAL_DISTRIBUTION, p, N), 0 < p <=1, N > 0
+    *   (UNIFORM_DISTRIBUTION, a, b), 0 <= a <= b. In this case, he
+    number of offspring will be determined randomly following the
+    specified statistical distributions. Because families with zero
+    offspring are silently ignored, the distribution of the observed
+    number of offspring per mating event (excluding zero) follows
+    zero-truncated versions of these distributions.  Parameter sexMode
+    is used to control the sex of each offspring. Its default value is
+    usually RANDOM_SEX which assign MALE or FEMALE to each individual
     randomly, with equal probabilities. If NO_SEX is given, offspring
     sex will not be changed. sexMode can also be one of
     (PROB_OF_MALES, p), (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n).
@@ -7093,6 +7097,32 @@ Details:
 
     Generate a random number following a Poisson distribution with
     parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randTruncatedPoisson "
+
+Usage:
+
+    x.randTruncatedPoisson(mu)
+
+Details:
+
+    Generate a positive random number following a zero-truncated
+    Poisson distribution with parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randTruncatedBinomial "
+
+Usage:
+
+    x.randTruncatedBinomial(n, p)
+
+Details:
+
+    Generate a positive random number following a zero-truncated
+    binomial distribution with parameters n and p.
 
 "; 
 
