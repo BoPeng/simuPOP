@@ -481,7 +481,7 @@ if __name__ == '__main__':
             sys.exit(1)
         # generate header file 
         print "Generating external runtime header file..."
-        os.system('swig %s swigpyrun.h' % SWIG_RUNTIME_FLAGS)
+        os.system('%s %s swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
         for lib in MODULES:
             print "Generating wrapper file " + WRAP_INFO[lib][0]
