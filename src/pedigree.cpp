@@ -201,7 +201,7 @@ Individual & Pedigree::indByID(double fid) const
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
 		"individual ID has to be integer (or a double round to full iteger).");
 
-	std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
+	IdMap::iterator it = m_idMap.find(id);
 	// if still cannot be found, raise an IndexError.
 	if (it == m_idMap.end())
 		throw IndexError("No individual with ID " + toStr(id) + " could be found.");

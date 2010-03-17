@@ -24,6 +24,7 @@
  */
 
 #include "mating.h"
+#include <tr1/unordered_map>
 
 namespace simuPOP {
 
@@ -1211,10 +1212,9 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
 	scratch.setVirtualSplitter(pop.virtualSplitter());
 	scratch.clearInfo();
-	const_cast<Pedigree &>(m_ped).useAncestralGen(oldGen);
 
 	// build an index for parents
-	std::map<ULONG, Individual *> idMap;
+	std::tr1::unordered_map<ULONG, Individual *> idMap;
 	UINT idIdx = pop.infoIdx(m_idField);
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
@@ -1224,7 +1224,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	it = scratch.rawIndBegin();
 	it_end = scratch.rawIndEnd();
 	for (size_t i = 0; it != it_end; ++it, ++i) {
-		const Individual & pedInd = m_ped.ancestor(i, m_gen);
+		const Individual & pedInd = m_ped.individual(i);
 
 		ULONG my_id = toID(pedInd.info(m_ped.idIdx()));
 		ULONG father_id = m_ped.fatherOf(my_id);
@@ -1233,13 +1233,13 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		Individual * mom = NULL;
 
 		if (father_id) {
-			std::map<ULONG, Individual *>::iterator dad_it = idMap.find(father_id);
+			std::tr1::unordered_map<ULONG, Individual *>::iterator dad_it = idMap.find(father_id);
 			DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
 				"Could not locate individual with ID " + toStr(father_id));
 			dad = &*(dad_it->second);
 		}
 		if (mother_id) {
-			std::map<ULONG, Individual *>::iterator mom_it = idMap.find(mother_id);
+			std::tr1::unordered_map<ULONG, Individual *>::iterator mom_it = idMap.find(mother_id);
 			DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
 				"Could not locate individual with ID " + toStr(mother_id));
 			mom = &*(mom_it->second);
@@ -1268,6 +1268,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		// changes ID, pedigree mating could proceed normally.
 		it->setInfo(my_id, m_idField);
 	}
+	const_cast<Pedigree &>(m_ped).useAncestralGen(oldGen);
 	submitScratch(pop, scratch);
 	--m_gen;
 	return true;
