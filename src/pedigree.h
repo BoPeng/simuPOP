@@ -32,9 +32,9 @@
 #include "population.h"
 
 #ifdef _MSC_VER
-#include <unordered_map>
+#  include <unordered_map>
 #else
-#include <tr1/unordered_map>
+#  include <tr1/unordered_map>
 #endif
 
 
@@ -382,7 +382,7 @@ private:
 	int m_fatherIdx;
 	int m_motherIdx;
 
-    typedef std::tr1::unordered_map<ULONG, Individual *> IdMap;
+	typedef std::tr1::unordered_map<ULONG, Individual *> IdMap;
 
 	mutable IdMap m_idMap;
 };
