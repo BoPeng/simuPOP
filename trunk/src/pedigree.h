@@ -30,6 +30,7 @@
    \brief head file of class Pedigree
  */
 #include "population.h"
+#include <tr1/unordered_map>
 
 
 namespace simuPOP {
@@ -91,7 +92,7 @@ public:
 	{
 		if (id == 0 || m_fatherIdx == -1)
 			return 0;
-		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
+		IdMap::iterator it = m_idMap.find(id);
 		if (it == m_idMap.end())
 			return 0;
 		return toID(it->second->info(m_fatherIdx));
@@ -104,7 +105,7 @@ public:
 	{
 		if (id == 0 || m_motherIdx == -1)
 			return 0;
-		std::map<ULONG, Individual *>::iterator it = m_idMap.find(id);
+		IdMap::iterator it = m_idMap.find(id);
 		if (it == m_idMap.end())
 			return 0;
 		return toID(it->second->info(m_motherIdx));
@@ -376,7 +377,9 @@ private:
 	int m_fatherIdx;
 	int m_motherIdx;
 
-	mutable std::map<ULONG, Individual *> m_idMap;
+    typedef std::tr1::unordered_map<ULONG, Individual *> IdMap;
+
+	mutable IdMap m_idMap;
 };
 
 
