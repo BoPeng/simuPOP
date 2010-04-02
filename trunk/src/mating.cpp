@@ -24,10 +24,18 @@
  */
 
 #include "mating.h"
+
 #ifdef _MSC_VER
-#  include <unordered_map>
+#  if _MSC_VER < 1400
+#    include <map>
+typedef std::map<ULONG, simuPOP::Individual *> IdMap;
+#  else
+#    include <unordered_map>
+typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
+#  endif
 #else
 #  include <tr1/unordered_map>
+typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
 #endif
 
 namespace simuPOP {
@@ -1218,7 +1226,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	scratch.clearInfo();
 
 	// build an index for parents
-	std::tr1::unordered_map<ULONG, Individual *> idMap;
+	IdMap idMap;
 	UINT idIdx = pop.infoIdx(m_idField);
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
@@ -1237,13 +1245,13 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		Individual * mom = NULL;
 
 		if (father_id) {
-			std::tr1::unordered_map<ULONG, Individual *>::iterator dad_it = idMap.find(father_id);
+			IdMap::iterator dad_it = idMap.find(father_id);
 			DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
 				"Could not locate individual with ID " + toStr(father_id));
 			dad = &*(dad_it->second);
 		}
 		if (mother_id) {
-			std::tr1::unordered_map<ULONG, Individual *>::iterator mom_it = idMap.find(mother_id);
+			IdMap::iterator mom_it = idMap.find(mother_id);
 			DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
 				"Could not locate individual with ID " + toStr(mother_id));
 			mom = &*(mom_it->second);
