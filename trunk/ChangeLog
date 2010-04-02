@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
-version 1.0.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.2 - Rev 3503 (Apr. 1, 2010)
 
 BUGS:
   - The shifted distribution implemented for POISSON_DISTRIBUTION and
@@ -26,6 +28,7 @@ New features (minor):
   - Perform a limited number of parameter checkings in optimized modules, provided that
 		they do not hinder system performance.
   - Add gsl_cdf_poisson_P, gsl_cdf_poisson_Q and gsl_ran_poisson_pdf to module simuPOP.gsl.
+
 
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)
 Bugs:
