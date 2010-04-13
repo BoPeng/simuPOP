@@ -102,7 +102,7 @@ void Pedigree::buildIDMap()
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
 			ULONG id = toID(it->info(m_idIdx));
-			DBG_WARNING(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
+			DBG_WARNIF(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Different individuals share the same ID " + toStr(id) +
 				" so only the latest Individual will be used. If this is an "
 				"age-structured population, you may want to remove parental generations.");

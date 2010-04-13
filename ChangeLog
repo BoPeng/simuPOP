@@ -5,6 +5,7 @@ Known Bugs:
 
 version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+
 version 1.0.2 - Rev 3503 (Apr. 1, 2010)
 
 BUGS:
@@ -28,6 +29,8 @@ New features (minor):
   - Perform a limited number of parameter checkings in optimized modules, provided that
 		they do not hinder system performance.
   - Add gsl_cdf_poisson_P, gsl_cdf_poisson_Q and gsl_ran_poisson_pdf to module simuPOP.gsl.
+  - Add a debug code DBG_WARNING that output warnings for certain use of simuPOP.
+  - Output warning messages for the use of Individual.genotype() and Population.genotype.
 
 
 version 1.0.1 - Rev 3473 (Feb. 24, 2010)

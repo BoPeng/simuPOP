@@ -240,7 +240,7 @@ enum InheritanceType {
 };
 
 
-#define DBG_CODE_LENGTH 20
+#define DBG_CODE_LENGTH 21
 
 /// CPPONLY
 enum DBG_CODE {
@@ -263,7 +263,8 @@ enum DBG_CODE {
 	DBG_BATCHTESTING = 16,
 	DBG_INTEROPERABILITY = 17,
 	DBG_COMPATIBILITY = 18,
-	DBG_DEVEL = 19
+	DBG_DEVEL = 19,
+	DBG_WARNING = 20,
 };
 
 typedef unsigned char TraitIndexType;
@@ -410,10 +411,10 @@ public:
 #  define PARAM_ASSERT DBG_ASSERT
 #  define PARAM_FAILIF DBG_FAILIF
 
-#  define DBG_WARNING(cond, message) \
-    if (cond) \
+#  define DBG_WARNIF(cond, message) \
+    if (debug(DBG_WARNING) && cond && !repeatedWarning(message)) \
 	{ \
-		cerr << "Warning (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+		cerr << "WARNING (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
 	}
 
 #  define DBG_DO(dbgCode, expr) \
@@ -440,7 +441,7 @@ public:
 		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
 	}
 
-#  define DBG_WARNING(cond, message)
+#  define DBG_WARNIF(cond, message)
 #  define DBG_DO(dbgCode, expr)
 #  define DBG_DO_(expr)
 #endif

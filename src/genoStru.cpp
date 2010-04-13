@@ -253,7 +253,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 			m_chromY = i;
 		}
 	}
-	DBG_WARNING(m_chromX * m_chromY < 0,
+	DBG_WARNIF(m_chromX * m_chromY < 0,
 		"Chromosome X and Y should be both present for sexual transmission to work.");
 	//
 	m_customized.clear();

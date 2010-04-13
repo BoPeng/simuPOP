@@ -260,7 +260,7 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const uintList & loci,
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
-	DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
+	DBG_WARNIF(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
 	DBG_ASSERT(fcmp_ge(m_incProb, 0.) && fcmp_le(m_incProb, 1.),
 		ValueError, "Inc probability should be between [0,1], given " + toStr(m_incProb));

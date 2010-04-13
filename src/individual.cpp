@@ -167,6 +167,11 @@ string Individual::alleleChar(UINT idx, int p, int chrom) const
 
 PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
+	DBG_WARNIF(true, "The returned object of this function is a special carray object that reflects\n"
+		             "the underlying genotype of an individual. It will become invalid once the\n"
+		             "population changes. Please use list(ind.genotype()) if you would like to keep\n"
+		             "a copy of genotypes");
+
 	size_t beginP = 0;
 	size_t endP = 0;
 	size_t beginCh = 0;
