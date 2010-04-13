@@ -6,7 +6,7 @@ Known Bugs:
 version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
 
-version 1.0.2 - Rev 3503 (Apr. 1, 2010)
+version 1.0.2 - Rev 3511 (Apr. 13, 2010)
 
 BUGS:
   - The shifted distribution implemented for POISSON_DISTRIBUTION and
