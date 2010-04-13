@@ -147,9 +147,9 @@ Simulator * Simulator::clone() const
 
 Population & Simulator::population(UINT rep) const
 {
-	DBG_WARNIF(true, "The returned object of this function is a temporary reference to a population\n"
-		             "inside a Simulator. It will become invalid once the simulator changes.\n"
-		             "Please use Simulator.extract or Simulator.population(rep).clone() if\n"
+	DBG_WARNIF(true, "The returned object of function Simulator.population is a temporary reference "
+		             "to a population inside a Simulator. It will become invalid once the simulator "
+		             "changes. Please use Simulator.extract or Simulator.population(rep).clone() if"
 		             "would like to get an independent population.");
 
 	DBG_FAILIF(rep >= m_pops.size(), IndexError,

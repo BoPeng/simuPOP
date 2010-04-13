@@ -414,7 +414,7 @@ public:
 #  define DBG_WARNIF(cond, message) \
     if (debug(DBG_WARNING) && cond && !repeatedWarning(message)) \
 	{ \
-		cerr << "WARNING (line " << __LINE__ << " in " << __FILE__ << "): " << message << endl; \
+		cerr << "WARNING: " << message << endl; \
 	}
 
 #  define DBG_DO(dbgCode, expr) \
