@@ -97,8 +97,11 @@ void turnOnDebug(const string & code = string());
 void turnOffDebug(const string & code = "DBG_ALL");
 
 #ifndef OPTIMIZED
-/// test if one code is turned on, CPPONLY
+/// CPPONLY test if one code is turned on, CPPONLY
 bool debug(DBG_CODE code);
+
+/// CPPONLY return true if the message is repeated (so that it will not be printed)
+bool repeatedWarning(const string & message);
 
 /// CPPONLY
 void initClock();

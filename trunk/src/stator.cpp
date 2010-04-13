@@ -132,7 +132,7 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
 				PyObj_As_Double(var, info);
 				ind->setInfo(info, idx);
 			} catch (...) {
-				DBG_WARNING(true, "Failed to update information field " + name +
+				DBG_WARNIF(true, "Failed to update information field " + name +
 					" from a dictionary of information fields.");
 			}
 		}

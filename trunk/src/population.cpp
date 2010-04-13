@@ -506,6 +506,11 @@ IndAlleleIterator Population::alleleIterator(UINT locus, UINT subPop)
 
 PyObject * Population::genotype(vspID vsp)
 {
+	DBG_WARNIF(true, "The returned object of this function is a special carray object that reflects\n"
+		             "the underlying genotype of a population. It will become invalid once the\n"
+		             "population changes. Please use list(pop.genotype()) if you would like to keep\n"
+		             "a copy of genotypes");
+
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,

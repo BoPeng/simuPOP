@@ -261,7 +261,7 @@ public:
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
-		DBG_WARNING(m_wildtype.empty(), "No wild type allele is defined.");
+		DBG_WARNIF(m_wildtype.empty(), "No wild type allele is defined.");
 	};
 
 	virtual ~MaSelector()

@@ -9236,6 +9236,8 @@ Details:
 
 %ignore simuPOP::debug(DBG_CODE code);
 
+%ignore simuPOP::repeatedWarning(const string &message);
+
 %ignore simuPOP::initClock();
 
 %feature("docstring") simuPOP::elapsedTime "

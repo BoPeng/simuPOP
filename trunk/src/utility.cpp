@@ -164,6 +164,7 @@ const char * g_debugCodes[] = {
 	"DBG_INTEROPERABILITY",     // debug information used when interoperate with other applications
 	"DBG_COMPATIBILITY",        // debug information (obsolete notice etc) about compatibility
 	"DBG_DEVEL",                // debug information purely for development.
+	"DBG_WARNING",              // warning information given for some particular usage of simuPOP.
 	""
 };
 
@@ -250,6 +251,18 @@ void turnOffDebug(const string & codeString)
 bool debug(DBG_CODE code)
 {
 	return g_dbgCode[code];
+}
+
+
+string g_warningMsg;
+
+bool repeatedWarning(const string & message)
+{
+	if (message != g_warningMsg) {
+		g_warningMsg = message;
+		return false;
+	}
+	return true;
 }
 
 
@@ -2505,7 +2518,7 @@ unsigned long RNG::generateRandomSeed()
 	   This should not fail	*/
 	hAdvAPI32 = GetModuleHandle("advapi32.dll");
 	if (hAdvAPI32 == NULL) {
-		DBG_WARNING(true, "advapi32.dll can not be loaded");
+		DBG_WARNIF(true, "advapi32.dll can not be loaded");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
@@ -2514,14 +2527,14 @@ unsigned long RNG::generateRandomSeed()
 	pCryptAcquireContext = (CRYPTACQUIRECONTEXTA)GetProcAddress(
 		hAdvAPI32, "CryptAcquireContextA");
 	if (pCryptAcquireContext == NULL) {
-		DBG_WARNING(true, "Failed to get process address of CryptAcquireContextA");
+		DBG_WARNIF(true, "Failed to get process address of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
 	CRYPTGENRANDOM pCryptGenRandom = (CRYPTGENRANDOM)GetProcAddress(
 		hAdvAPI32, "CryptGenRandom");
 	if (pCryptGenRandom == NULL) {
-		DBG_WARNING(true, "Failed to get process address of CryptGenRandom");
+		DBG_WARNIF(true, "Failed to get process address of CryptGenRandom");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
@@ -2529,13 +2542,13 @@ unsigned long RNG::generateRandomSeed()
 	HCRYPTPROV hCryptProv = 0;
 	if (!pCryptAcquireContext(&hCryptProv, NULL, NULL,
 			PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
-		DBG_WARNING(true, "Can not acquire context of CryptAcquireContextA");
+		DBG_WARNIF(true, "Can not acquire context of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
 	/* Get random data */
 	if (!pCryptGenRandom(hCryptProv, sizeof(seed), (unsigned char *)&seed)) {
-		DBG_WARNING(true, "Failed to get random number");
+		DBG_WARNIF(true, "Failed to get random number");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
@@ -3015,7 +3028,7 @@ string formatDescription(const string & text)
 			++indent;
 			continue;
 		} else if (start == "</ul") {
-			DBG_WARNING(indent < 0, "Wrong description text caused by incorrect indent");
+			DBG_WARNIF(indent < 0, "Wrong description text caused by incorrect indent");
 			if (indent != 0)
 				--indent;
 			continue;

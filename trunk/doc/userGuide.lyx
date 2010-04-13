@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.0.2 (\mbox{Rev: 3503})}
+\setreleaseinfo{Release 1.0.2 (\mbox{Rev: 3507})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -23500,7 +23500,7 @@ lstparams "caption={Use saved random seed to replay an evolutionary process},lab
 \end_layout
 
 \begin_layout Section
-Debug-related operators and functions *
+Debug-related functions and operators*
 \end_layout
 
 \begin_layout Subsection
@@ -23627,6 +23627,42 @@ status open
 \end_layout
 
 \begin_layout Standard
+Another useful debug code is 
+\family typewriter
+DBG_WARNING
+\family default
+.
+ When this code is set, it will output warning messages for some common
+ misuse of simuPOP.
+ For example, it will warn you that population object returned by function
+ 
+\family typewriter
+Simulator.population()
+\family default
+ is a temporary object that will become invalid once a simulator is changed.
+ If you are new to simuPOP, it is recommended that you use 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import simuOpt
+\end_layout
+
+\begin_layout Plain Layout
+
+simuOpt.
+\lang english
+setOptions(optimized=False, debug='DBG_WARNING')
+\end_layout
+
+\end_inset
+
+ when you develop your script.
+\end_layout
+
+\begin_layout Standard
 Besides functions 
 \family typewriter
 turnOnDebug(code) 
@@ -23635,7 +23671,7 @@ and
 \family typewriter
 turnOffDebug(code)
 \family default
-, you dould set environmental variable 
+, you can set environmental variable 
 \family typewriter
 SIMUDEBUG=code
 \family default
@@ -23653,6 +23689,7 @@ A list of valid debug code could be found in function
 moduleInfo()['debug']
 \family default
 .
+ 
 \end_layout
 
 \begin_layout Note

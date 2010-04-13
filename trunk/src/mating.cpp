@@ -301,7 +301,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 				throw RuntimeError("No disease allele exists at generation "
 					+ toStr(pop.gen()) + ", but expected allele frequency at locus " + toStr(locus) + " is greater than 0.");
 
-			DBG_WARNING(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
+			DBG_WARNIF(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
 				+ toStr(pop.gen()) + ", but expected allele frequency is zero.");
 
 			// calculate exp number of affected offspring in the next generation.
@@ -883,7 +883,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
     }
     //
     m_degenerate = m_index.empty();
-    DBG_WARNING(m_degenerate, "Parents are chosen randomly because there is no valid index.");
+    DBG_WARNIF(m_degenerate, "Parents are chosen randomly because there is no valid index.");
     if (m_degenerate) {
         for (it = pop.indIterator(sp); it.valid(); ++it) {
             m_index.push_back(it.rawIter());
@@ -1365,7 +1365,7 @@ HeteroMating::HeteroMating(const HeteroMating & rhs) :
 
 	for (; it != it_end; ++it) {
 		m_matingSchemes.push_back(dynamic_cast<HomoMating *>((*it)->clone()));
-		DBG_WARNING(dynamic_cast<HomoMating *>(*it)->subPopSizeSpecified(),
+		DBG_WARNIF(dynamic_cast<HomoMating *>(*it)->subPopSizeSpecified(),
 			"Parameter subPopSize of a HomoMating is ignored when this mating"
 			" scheme is used in a heterogeneous mating scheme.");
 	}

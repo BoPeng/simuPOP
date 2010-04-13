@@ -516,7 +516,7 @@ void Recombinator::initialize(const Individual & ind) const
 				m_recBeforeLoci.push_back(loc + 1);
 				double r = useLociDist ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : m_rates[0];
 
-				DBG_WARNING(fcmp_gt(r, 0.5),
+				DBG_WARNIF(fcmp_gt(r, 0.5),
 					"Recombination m_rates after marker " + toStr(loc) + " is out of range ("
 					+ toStr(r) + " ) so it is set to 0.5. This may happen \n"
 					             "when you use recombination m_intensity instead of m_rates, and your loci \n"
