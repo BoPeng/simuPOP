@@ -3002,7 +3002,7 @@ pop = sim.Population(size=[2000], loci=[100])
 pop.evolve(
     initOps=sim.InitSex(),
     preOps=[
-        # recombine in a 10Mb region at rate 1e-8
+        # mutate in a 10Mb region at rate 1e-8
         sim.PyOperator(func=infSitesMutate, param=(1, 10000000, 1e-8)),
     ],
     matingScheme=sim.RandomMating(),
