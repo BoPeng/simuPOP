@@ -7671,7 +7671,7 @@ HeteroMating
 ) accepts a list of mating schemes that are applied to different subpopulation
  or virtual subpopulations.
  If multiple mating schemes are applied to the same subpopulation, each
- of them only population part of the offspring subpopulation.
+ of them only populate part of the offspring subpopulation.
  This is illustrated in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
