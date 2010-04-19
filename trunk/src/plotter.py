@@ -284,7 +284,7 @@ class DerivedArgs:
         '''
         Get argument values for legend drawing purposes. For example, 
 
-            getMultiArgs('lines', pop, ['lty', 'pch'], 'rep', [0,1,2])
+            getLegendArgs('lines', pop, ['lty', 'pch'], 'rep', [0,1,2])
         
         will get parameter for ``lty`` and ``pch`` for all ``rep``. If there
         are more keys (e.g. ``['rep', 'dim']``), values should be a list of
