@@ -512,17 +512,23 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 	}
 
 	UINT numItems = PySequence_Size(obj);
+	bool oneDim = true;
+	for (size_t i = 0; i < numItems; ++i) {
+		PyObject * item = PySequence_GetItem(obj, i);
+		oneDim = !PySequence_Check(item);
+		Py_DECREF(item);
+		if (!oneDim)
+			break;
+	}
+	if (oneDim)
+		m_elems.push_back(vectori());
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyNumber_Check(item)) {
-			if (m_elems.size() > 1) {
-				cerr << "ERROR: A mixture of int and list is not allowed." << endl;
-				DBG_ASSERT(false, ValueError,
-					"A mixture of int and list is not allowed.")
-			}
-			if (m_elems.empty())
-				m_elems.push_back(vectori());
-			m_elems[0].push_back(PyInt_AsLong(item));
+			if (oneDim)
+				m_elems[0].push_back(PyInt_AsLong(item));
+			else
+				m_elems.push_back(vectori(1, PyInt_AsLong(item)));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectori());
 			int n = PySequence_Size(item);
