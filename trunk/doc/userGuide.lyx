@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4204,7 +4204,7 @@ status open
 \begin_layout Plain Layout
 
 CombinedSplitter(splitters=[InfoSplitter(field='a', cutoff=[0, 100])], vspMap=[[
-0,2], [1]])
+0,2], 1])
 \end_layout
 
 \end_inset
@@ -23652,9 +23652,7 @@ import simuOpt
 
 \begin_layout Plain Layout
 
-simuOpt.
-\lang english
-setOptions(optimized=False, debug='DBG_WARNING')
+simuOpt.setOptions(optimized=False, debug='DBG_WARNING')
 \end_layout
 
 \end_inset
