@@ -191,10 +191,10 @@ i_setitem(arrayobject * ap, int i, PyObject * v)
 /* Description of types */
 static struct arraydescr descriptors[] =
 {
-	{ 'a', 0,              a_getitem,              a_setitem },
-	{ 'f', sizeof(float),  f_getitem,              f_setitem },
-	{ 'd', sizeof(double), d_getitem,              d_setitem },
-	{ 'i', sizeof(int),    i_getitem,              i_setitem },
+	{ 'a', 0,			   a_getitem,			   a_setitem			  },
+	{ 'f', sizeof(float),  f_getitem,			   f_setitem			  },
+	{ 'd', sizeof(double), d_getitem,			   d_setitem			  },
+	{ 'i', sizeof(int),	   i_getitem,			   i_setitem			  },
 	{                                                                                             /* Sentinel */
 		'\0', 0, 0, 0
 	}
@@ -631,10 +631,18 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 {
 	int i;
 	PyObject * v;
+	Py_ssize_t start = 0, stop = Py_SIZE(self);
 
-	if (!PyArg_ParseTuple(args, "O:index", &v))
+	if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
+			_PyEval_SliceIndex, &start, _PyEval_SliceIndex, &stop))
 		return NULL;
-	for (i = 0; i < self->ob_size; i++) {
+	if (start < 0) {
+		start += Py_SIZE(self);
+		if (start < 0)
+			start = 0;
+	}
+
+	for (i = start; i < stop && i < self->ob_size; i++) {
 		PyObject * selfi = getarrayitem((PyObject *)self, i);
 		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
 		Py_DECREF(selfi);
@@ -649,9 +657,9 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 
 
 static char index_doc [] =
-    "index(x)\n\
+    "index(x, [start, [stop]])\n\
 \n\
-Return index of first occurence of x in the array."                                          ;
+Return index of first occurence of x in the array.";
 
 /// CPPONLY
 static PyObject * array_tolist(arrayobject * self, PyObject * args)
@@ -1024,7 +1032,7 @@ PyDoc_STRVAR(defdict_doc,
 	"defdict() --> dict with default value 0\n\
 \n\
 A defdict compares equal to a dict with the same items.\n\
-"                                                                                                               );
+");
 
 /* See comment in xxsubtype.c */
 #define DEFERRED_ADDRESS(ADDR) 0
