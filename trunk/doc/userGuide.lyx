@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -3670,14 +3670,14 @@ genotype([p, [ch]])
  genotype will be changed if elements of this object are changed.
  Only 
 \family typewriter
-count
+count(x)
 \family default
  and
 \family typewriter
- index
+ index(x, [start, [stop]])
 \family default
- list functions can be used, but all comparison, assignment and slice operations
- are allowed.
+ member functions can be used, but all comparison, assignment and slice
+ operations are allowed.
  If you would like to copy the content of this 
 \family typewriter
 carray
