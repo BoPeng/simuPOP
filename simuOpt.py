@@ -126,7 +126,7 @@ if os.getenv('SIMUDEBUG') is not None:
 if os.getenv('SIMUGUI') is not None:
     _gui = os.getenv('SIMUGUI')
 elif '--gui' in sys.argv:
-    if sys.argv[-1] == '-gui':
+    if sys.argv[-1] == '--gui':
         raise exceptions.ValueError('An value is expected for command line option --gui')
     _gui = sys.argv[sys.argv.index('--gui') + 1]
 elif True in [x.startswith('--gui=') for x in sys.argv]:
