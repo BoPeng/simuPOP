@@ -59,12 +59,15 @@
 #  define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #  if GCC_VERSION > 30400
 #    define WORDBIT std::_S_word_bit
+#  else
+// previous version uses _M_word_bit
+#    define WORDBIT std::_M_word_bit
+#  endif
+#  if GCC_VERSION > 40000
 //   unordered_map in 'tr1/'
 #    define TR1_SUPPORT 2
 #  else
 #    define TR1_SUPPORT 0
-// previous version uses _M_word_bit
-#    define WORDBIT std::_M_word_bit
 #  endif
 #  define WORDTYPE std::_Bit_type
 #  define BITPTR(ref) ref._M_p
