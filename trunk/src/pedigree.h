@@ -31,12 +31,10 @@
  */
 #include "population.h"
 
-#ifdef _MSC_VER
-#  if _MSC_VER < 1400
-#    include <map>
-#  else
-#    include <unordered_map>
-#  endif
+#if TR1_SUPPORT == 0
+#  include <map>
+#elif TR1_SUPPORT == 1
+#  include <unordered_map>
 #else
 #  include <tr1/unordered_map>
 #endif

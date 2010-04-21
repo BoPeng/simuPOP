@@ -1363,12 +1363,8 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	UINT max_parents = 0;
 	string line;
 	// individual and their parents
-#ifdef _MSC_VER
-#  if _MSC_VER < 1400
+#if TR1_SUPPORT == 0
 	typedef std::map<ULONG, IndInfo *> IdMap;
-#  else
-	typedef std::tr1::unordered_map<ULONG, IndInfo *> IdMap;
-#  endif
 #else
 	typedef std::tr1::unordered_map<ULONG, IndInfo *> IdMap;
 #endif
