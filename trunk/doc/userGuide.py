@@ -1192,17 +1192,20 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().set(seed=12345)
 #end_ignore
-def checkNumOffspring(numOffspring):
+def checkNumOffspring(numOffspring, ops=[]):
     '''Check the number of offspring for each family using
        information field father_idx
     '''
-    pop = sim.Population(size=[30], infoFields=['father_idx', 'mother_idx'])
+    pop = sim.Population(size=[30], loci=1, infoFields=['father_idx', 'mother_idx'])
     pop.evolve(
-        initOps=sim.InitSex(),
+        initOps=[
+            sim.InitSex(),
+            sim.InitGenotype(freq=[0.5, 0.5]),
+        ],
         matingScheme=sim.RandomMating(ops=[
             sim.MendelianGenoTransmitter(),
             sim.ParentsTagger(),
-            ],
+            ] + ops,
             numOffspring=numOffspring),
         gen=1)
     # get the parents of each offspring
@@ -1235,7 +1238,11 @@ checkNumOffspring(numOffspring=(sim.POISSON_DISTRIBUTION, 1.6))
 checkNumOffspring(numOffspring=(sim.BINOMIAL_DISTRIBUTION, 0.1, 10))
 # Case 6: A uniform distribution
 checkNumOffspring(numOffspring=(sim.UNIFORM_DISTRIBUTION, 2, 6))
+# Case 7: With selection on offspring
+checkNumOffspring(numOffspring=8,
+    ops=[sim.MapSelector(loci=0, fitness={(0,0):1, (0,1):0.8, (1,1):0.5})])
 #end_file
+
 
 #begin_file log/sexMode.py
 #begin_ignore
