@@ -8,6 +8,7 @@ New features (minor):
   - Allow mixed number and sequence specification of matrix. For example, [1, 2, (1,2)] will be intepretted as [(1,), (2,), (1,2)].
   - Add optional parameter start and stop to carray.index().
   - Support gcc < 4.0 even if those compilers do not support tr1.
+  - Output warning for mismatch of genotype or haplotype length in operator InitGenotype.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
