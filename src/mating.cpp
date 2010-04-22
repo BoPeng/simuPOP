@@ -184,8 +184,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 	UINT numOff = numOffspring(pop.gen());
 	UINT attempt = 0;
 	while (attempt < numOff && it != itEnd) {
-        // not all families have the same size because some offspring
-        // may be discarded (count).
+		// not all families have the same size because some offspring
+		// may be discarded (count).
 		++attempt;
 
 		// set sex, during mating operator will try to

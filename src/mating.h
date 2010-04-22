@@ -91,13 +91,13 @@ public:
 	 *  observed number of offspring per mating event (excluding zero)
 	 *  follows zero-truncated versions of these distributions.
 	 *
-     *  Parameter \e numOffspring specifies the number of offspring per mating
-     *  event but the actual surviving offspring can be less than specified.
-     *  More spefically, if any during-mating operator returns \c False, an
-     *  offspring will be discarded so the actually number of offspring of a
-     *  mating event will be reduced. This is essentially how during-mating
-     *  selector works.
-     *
+	 *  Parameter \e numOffspring specifies the number of offspring per mating
+	 *  event but the actual surviving offspring can be less than specified.
+	 *  More spefically, if any during-mating operator returns \c False, an
+	 *  offspring will be discarded so the actually number of offspring of a
+	 *  mating event will be reduced. This is essentially how during-mating
+	 *  selector works.
+	 *
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
 	 *  default value is usually \e RANDOM_SEX which assign \c MALE or \c FEMALE
 	 *  to each individual randomly, with equal probabilities. If \c NO_SEX is

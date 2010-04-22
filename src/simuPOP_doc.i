@@ -3950,17 +3950,23 @@ Details:
     specified statistical distributions. Because families with zero
     offspring are silently ignored, the distribution of the observed
     number of offspring per mating event (excluding zero) follows
-    zero-truncated versions of these distributions.  Parameter sexMode
-    is used to control the sex of each offspring. Its default value is
-    usually RANDOM_SEX which assign MALE or FEMALE to each individual
-    randomly, with equal probabilities. If NO_SEX is given, offspring
-    sex will not be changed. sexMode can also be one of
-    (PROB_OF_MALES, p), (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n).
-    The first case specifies the probability of male for each
-    offspring. The next two cases specifies the number of male or
-    female individuals in each family, respectively. If n is greater
-    than or equal to the number of offspring in this family, all
-    offspring in this family will be MALE or FEMALE.
+    zero-truncated versions of these distributions.  Parameter
+    numOffspring specifies the number of offspring per mating event
+    but the actual surviving offspring can be less than specified.
+    More spefically, if any during-mating operator returns False, an
+    offspring will be discarded so the actually number of offspring of
+    a mating event will be reduced. This is essentially how during-
+    mating selector works.  Parameter sexMode is used to control the
+    sex of each offspring. Its default value is usually RANDOM_SEX
+    which assign MALE or FEMALE to each individual randomly, with
+    equal probabilities. If NO_SEX is given, offspring sex will not be
+    changed. sexMode can also be one of (PROB_OF_MALES, p),
+    (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n). The first case
+    specifies the probability of male for each offspring. The next two
+    cases specifies the number of male or female individuals in each
+    family, respectively. If n is greater than or equal to the number
+    of offspring in this family, all offspring in this family will be
+    MALE or FEMALE.
 
 "; 
 
@@ -9291,6 +9297,8 @@ Usage:
 %ignore simuPOP::pyIndPointer(PyObject *p);
 
 %ignore simuPOP::pyPopPointer(PyObject *p);
+
+%ignore simuPOP::shorten(const string &val, size_t length=40);
 
 %ignore simuPOP::ostreamManager();
 
