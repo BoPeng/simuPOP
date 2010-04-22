@@ -1045,7 +1045,7 @@ void * pyIndPointer(PyObject * p);
 void * pyPopPointer(PyObject * p);
 
 /// CPPONLY
-string shorten(const string & val, size_t length=40);
+string shorten(const string & val, size_t length = 40);
 
 // ////////////////////////////////////////////////////////////
 // Expression evaluation

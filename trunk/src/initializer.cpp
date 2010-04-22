@@ -186,7 +186,7 @@ bool InitGenotype::apply(Population & pop) const
 
 	for (size_t i = 0; i < m_haplotypes.size(); ++i) {
 		DBG_WARNIF(m_haplotypes[i].size() != loci.size(),
-			"Haplotype [" + shorten(toStr(m_haplotypes[i])) + "] specified in operator InitGenotype has " 
+			"Haplotype [" + shorten(toStr(m_haplotypes[i])) + "] specified in operator InitGenotype has "
 			+ toStr(m_haplotypes[i].size()) + " alleles but " + toStr(loci.size())
 			+ " alleles are needed. This haplotype will be truncated or repeated.");
 	}
@@ -204,7 +204,7 @@ bool InitGenotype::apply(Population & pop) const
 	DBG_WARNIF(sz != 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
 		"Genotype [" + shorten(toStr(m_genotype)) + "} specified in operator InitGenotype has "
 		+ toStr(m_genotype.size()) + " alleles, which does not match number of loci of individuals. "
-		"This sequence will be truncated or repeated and may lead to erroneous results.");
+		                             "This sequence will be truncated or repeated and may lead to erroneous results.");
 	for (size_t idx = 0; sp != sp_end; ++sp) {
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);

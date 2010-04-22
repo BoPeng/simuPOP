@@ -1835,6 +1835,7 @@ string shorten(const string & val, size_t length)
 	return (val.size() > length) ? val.substr(0, length) + "..." : val;
 }
 
+
 // Expression evaluation
 // because of ref count, need to define copier
 
