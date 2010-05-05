@@ -3130,9 +3130,11 @@ Details:
     applies to all loci unless parameter loci is specified. A single
     mutation rate will be used for all loci if a single value of
     parameter rates is given. Otherwise, a list of mutation rates can
-    be specified for each locus in parameter loci. Please refer to
-    classes mutator and BaseOperator for descriptions of other
-    parameters.
+    be specified for each locus in parameter loci. If the mutated
+    allele is larger than or equal to k, it will not be mutated. A
+    warning message will be displayed if debugging code DBG_WARNING is
+    turned on. Please refer to classes mutator and BaseOperator for
+    descriptions of other parameters.
 
 "; 
 
@@ -3451,8 +3453,11 @@ Details:
     ignored because they are automatically determined by other
     probabilities. Only one mutation rate matrix can be specified
     which will be used for all loci in the applied population, or loci
-    specified by parameter loci. Please refer to classes mutator and
-    BaseOperator for detailed explanation of other parameters.
+    specified by parameter loci. If alleles other than 0, 1, ..., n-1
+    exist in the population, they will not be mutated although a
+    warning message will be given if debugging code DBG_WARNING is
+    turned on. Please refer to classes mutator and BaseOperator for
+    detailed explanation of other parameters.
 
 "; 
 

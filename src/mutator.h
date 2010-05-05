@@ -208,9 +208,11 @@ public:
 	 *  Diagnal items <tt>(i, i)</tt> are ignored because they are
 	 *  automatically determined by other probabilities. Only one mutation rate
 	 *  matrix can be specified which will be used for all loci in the applied
-	 *  population, or loci specified by parameter \e loci. Please refer to
-	 *  classes \c mutator and \c BaseOperator for detailed explanation of
-	 *  other parameters.
+	 *  population, or loci specified by parameter \e loci. If alleles other
+	 *  than \c 0, \c 1, ..., \c n-1 exist in the population, they will not be
+	 *  mutated although a warning message will be given if debugging code
+	 *  \c DBG_WARNING is turned on. Please refer to classes \c mutator and
+	 *  \c BaseOperator for detailed explanation of other parameters.
 	 */
 	MatrixMutator(const floatMatrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
@@ -259,8 +261,11 @@ public:
 	 *  applies to all loci unless parameter \e loci is specified. A single
 	 *  mutation rate will be used for all loci if a single value of parameter
 	 *  \e rates is given. Otherwise, a list of mutation rates can be specified
-	 *  for each locus in parameter \e loci. Please refer to classes \c mutator
-	 *  and \c BaseOperator for descriptions of other parameters.
+	 *  for each locus in parameter \e loci. If the mutated allele is larger
+	 *  than or equal to \c k, it will not be mutated. A warning message will
+	 *  be displayed if debugging code \c DBG_WARNING is turned on. Please
+	 *  refer to classes \c mutator and \c BaseOperator for descriptions of
+	 *  other parameters.
 	 */
 	KAlleleMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
