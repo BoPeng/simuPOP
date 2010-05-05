@@ -230,7 +230,7 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 void MatrixMutator::mutate(AlleleRef allele, UINT) const
 {
 	if (static_cast<size_t>(allele) >= m_sampler.size()) {
-		DBG_WARNING(true, "Allele " + toStr(static_cast<size_t>(allele))
+		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
 			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
 			+ toStr(m_sampler.size() - 1));
 		return;
@@ -243,7 +243,7 @@ void MatrixMutator::mutate(AlleleRef allele, UINT) const
 void KAlleleMutator::mutate(AlleleRef allele, UINT) const
 {
 	if (static_cast<size_t>(allele) >= m_k) {
-		DBG_WARNING(true, "Allele " + toStr(static_cast<size_t>(allele))
+		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
 			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
 			+ toStr(m_k - 1));
 		return;
