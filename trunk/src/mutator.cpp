@@ -229,9 +229,12 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 
 void MatrixMutator::mutate(AlleleRef allele, UINT) const
 {
-	DBG_FAILIF(static_cast<size_t>(allele) >= m_sampler.size(), IndexError,
-		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
-		+ " (determined by the size of the mutation rate matrix).");
+	if (static_cast<size_t>(allele) >= m_sampler.size()) {
+		DBG_WARNING(true, "Allele " + toStr(static_cast<size_t>(allele))
+			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
+			+ toStr(m_sampler.size() - 1));
+		return;
+	}
 	allele = ToAllele(m_sampler[allele].draw());
 }
 
@@ -239,6 +242,12 @@ void MatrixMutator::mutate(AlleleRef allele, UINT) const
 // mutate to a state other than current state with equal probability
 void KAlleleMutator::mutate(AlleleRef allele, UINT) const
 {
+	if (static_cast<size_t>(allele) >= m_k) {
+		DBG_WARNING(true, "Allele " + toStr(static_cast<size_t>(allele))
+			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
+			+ toStr(m_k - 1));
+		return;
+	}
 #ifdef BINARYALLELE
 	allele = !allele;
 #else

@@ -4,11 +4,15 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
 version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
 New features (minor):
   - Allow mixed number and sequence specification of matrix. For example, [1, 2, (1,2)] will be intepretted as [(1,), (2,), (1,2)].
   - Add optional parameter start and stop to carray.index().
   - Support gcc < 4.0 even if those compilers do not support tr1.
   - Output warning for mismatch of genotype or haplotype length in operator InitGenotype.
+  - Silently ignore alleles n or higher in a MatrixMutator and KAlleleMutator if their mutation rates
+	are undefined (e.g. mutation matrix only has n rows). An error was triggered in the 
+	previous version.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)

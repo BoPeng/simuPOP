@@ -11720,6 +11720,19 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 
 \end_layout
 
+\begin_layout Note
+Alleles other than 0, 1, ..., 
+\begin_inset Formula $n-1$
+\end_inset
+
+ will not be mutated because their mutation rates are undefined.
+ A warning message will be displayed for this case when debugging code 
+\family typewriter
+DBG_WARNING
+\family default
+ is turnned on.
+\end_layout
+
 \begin_layout Subsection
 k-allele mutation model (
 \family typewriter
@@ -11738,7 +11751,7 @@ A
 \end_inset
 
  alleles 
-\begin_inset Formula $\left(0,...,k-1\right)$
+\begin_inset Formula $\left(0,1,...,k-1\right)$
 \end_inset
 
  at a locus and mutate between them using rate matrix 
@@ -11811,6 +11824,20 @@ lstparams "caption={A k-allele mutation model},label={KAlleleMutator}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Note
+If alleles 
+\begin_inset Formula $k$
+\end_inset
+
+ and higher exist in the population, they will not be mutated because their
+ mutation rates are undefined.
+ A warning message will be displayed for this case when debugging code 
+\family typewriter
+DBG_WARNING
+\family default
+ is turnned on.
 \end_layout
 
 \begin_layout Subsection
