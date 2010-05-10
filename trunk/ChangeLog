@@ -13,6 +13,8 @@ New features (minor):
   - Silently ignore alleles n or higher in a MatrixMutator and KAlleleMutator if their mutation rates
 	are undefined (e.g. mutation matrix only has n rows). An error was triggered in the 
 	previous version.
+  - Add parameter size to simuOpt.valueIsList and simuOpt.valueListOf to allow validation
+        of sequences according to sequence length.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)

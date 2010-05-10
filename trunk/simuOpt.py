@@ -356,14 +356,31 @@ def valueNotEqual(a):
 def valueIsNum():
     'Return a function that returns true if passed option is a number (int, long or float)'
     def func(val):
-        return type(val) in [types.IntType, types.LongType, types.FloatType]
+        return isinstance(val, (int, long, float))
     return func
 
 
-def valueIsList():
-    'Return a function that returns true if passed option is a list (or tuple)'
+def valueIsList(size=None):
+    '''Return a function that returns true if passed option is a sequence.
+    If a ``size`` is given, the sequence must have the specified size (e.g.
+    ``size=3``), or within the range of sizes (e.g. ``size=[1, 5]``). A ``None``
+    can be used as unspecified lower or upper bound.'''
     def func(val):
-        return type(val) in [types.ListType, types.TupleType]
+        if not hasattr(val, '__iter__'):
+            return False
+        if size is not None:
+            if isinstance(size, (int, long)):
+                return len(val) == size
+            elif hasattr(size, '___iter__') and len(size) == 2:
+                if size[0] is not None and size[1] is not None:
+                    return len(val) >= size[0] and len(val) <= size[1]
+                elif size[0] is None:
+                    return len(val) <= size[1]
+                else:
+                    return len(val) >= size[0]
+            else:
+                raise exceptions.ValueError('Invalid size specification for simuOpt.valueIsList')
+        return True
     return func
 
 
@@ -385,13 +402,15 @@ def valueValidFile():
     return func
 
 
-def valueListOf(t):
+def valueListOf(t, size=None):
     '''Return a function that returns true if passed option val is a list of
     type ``t`` if ``t`` is a type, if ``v`` is one of ``t`` if ``t`` is a list,
-    or if ``v`` passes test ``t`` if ``t`` is a validator (a function).
-    '''
+    or if ``v`` passes test ``t`` if ``t`` is a validator (a function). If a
+    ``size`` is given, the sequence must have the specified size (e.g.
+    ``size=3``), or within the range of sizes (e.g. ``size=[1, 5]``). A ``None``
+    can be used as unspecified lower or upper bound.'''
     def func(val):
-        if not type(val) in [types.ListType, types.TupleType]:
+        if not hasattr(val, '__iter__'):
             return False
         if type(t) in [types.ListType, types.TupleType]:
             for i in val:
@@ -405,6 +424,18 @@ def valueListOf(t):
             for i in val:
                 if type(i) != t:
                     return False
+        if size is not None:
+            if isinstance(size, (int, long)):
+                return len(val) == size
+            elif hasattr(size, '___iter__') and len(size) == 2:
+                if size[0] is not None and size[1] is not None:
+                    return len(val) >= size[0] and len(val) <= size[1]
+                elif size[0] is None:
+                    return len(val) <= size[1]
+                else:
+                    return len(val) >= size[0]
+            else:
+                raise exceptions.ValueError('Invalid size specification for simuOpt.valueIsList')
         return True
     return func
 
