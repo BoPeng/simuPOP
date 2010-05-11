@@ -533,7 +533,7 @@ options:
                 name += '-%s, ' % opt['arg']
         #
         if opt['longarg'].endswith('='):
-            name += '--%s ARG' % opt['longarg'].rstrip('=')
+            name += '--%s ARG' % opt['name']
         else:
             name += '--%s' % opt['longarg']
         #
@@ -572,7 +572,7 @@ def _getParamValue(p, val):
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
         if p.has_key('validate') and not p['validate'](val):
                 raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
-                    (str(val), p['longarg'].rstrip('=')))
+                    (str(val), p['name']))
         return val
     # handle another 'auto-boolean' case
     elif not (p['longarg'].endswith('=')):
@@ -581,7 +581,7 @@ def _getParamValue(p, val):
         elif val in ['0', 'false', 'False']:
             return False
         else:
-            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['longarg'].rstrip('='))
+            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['name'])
     # other wise, need conversion
     if type(val) in [types.StringType, types.UnicodeType]:
         try:
@@ -608,7 +608,7 @@ def _getParamValue(p, val):
         return str(val)
     else:
         raise exceptions.ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
-            p['longarg'].rstrip('='))
+            p['name'])
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
@@ -768,7 +768,7 @@ class _tkParamDialog(_paramDialog):
                     if lab is not None:
                         lab.configure(fg='black')
                 # set this one to red
-                print 'Error handling paramter %s: %s' % (self.options[g]['longarg'].rstrip('='), e)
+                print 'Error handling paramter %s: %s' % (self.options[g]['name'], e)
                 self.labelWidgets[g].configure(fg='red')
                 self.entryWidgets[g].focus_force()
                 return
@@ -1053,7 +1053,7 @@ class _wxParamDialog(_paramDialog):
             if opt.has_key('description'):
                 tooltip = _prettyDesc(opt['description'])
             else:
-                tooltip = 'arg: ' + opt['longarg'].rstrip('=')
+                tooltip = 'arg: ' + opt['name']
             if opt.has_key('chooseOneOf'):    # single choice
                 self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseOneOf']])
@@ -1322,11 +1322,12 @@ class Params:
             return
         if 'longarg' not in opt.keys():
             raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
+        opt['name'] = opt['longarg'].rstrip('=')
         # allow alphabet, number and underscore (_).
-        if not opt['longarg'].strip('=').replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
-            raise exceptions.ValueError('Invalid option name %s' % opt['longarg'].strip('='))
+        if not opt['name'].replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
+            raise exceptions.ValueError('Invalid option name %s' % opt['name'])
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
-            raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['longarg'].rstrip('='))
+            raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['name'])
         if opt.has_key('arg') and \
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
@@ -1334,17 +1335,17 @@ class Params:
             raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
         if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]) > 1:
             raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'].rstrip(':'))
-        if opt['longarg'].rstrip('=') in reserved_options:
-            raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['longarg'].rstrip('='))
+        if opt['name'] in reserved_options:
+            raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['name'])
         if (not opt['longarg'].endswith('=')) and (opt.has_key('chooseOneOf') or \
             opt.has_key('chooseFrom')):
             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
-        if opt['longarg'].rstrip('=') in methods:
+        if opt['name'] in methods:
             raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the Params class." % \
-                (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
-        if opt['longarg'].rstrip('=') in self.__dict__.keys():
+                (opt['name'], (opt['name'])))
+        if opt['name'] in self.__dict__.keys():
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
-                (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
+                (opt['name'], (opt['name'])))
         if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
             raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s. Missing '=' after longarg?" % opt['longarg'])
         #
@@ -1356,7 +1357,7 @@ class Params:
             else:
                 opt['allowedTypes'] = [type(opt['default'])]
         #
-        name = opt['longarg'].rstrip('=')
+        name = opt['name']
         if self.dict.has_key(name):
             raise exceptions.ValueError('Option %s already exists.' % name)
         self.dict[name] = opt
@@ -1380,7 +1381,7 @@ class Params:
         for opt in self.options:
             if opt.has_key('separator'):
                 continue
-            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+            if len(params) > 0 and opt['name'] not in params:
                 continue
             # no label, and is not specified in params
             if not opt.has_key('label') and len(params) == 0:
@@ -1401,7 +1402,7 @@ class Params:
                 for d in desc:
                     print >> cfg, "#\t", d.strip()
             # write out option value, try to make it python readable
-            print >> cfg, "%s = %s" % (opt['longarg'].rstrip('='), _prettyString(opt['value'], quoted=True))
+            print >> cfg, "%s = %s" % (opt['name'], _prettyString(opt['value'], quoted=True))
         print >> cfg, "\n\n#The same options can be given by command line options (subject to minor changes)"
         cmd = "#    --gui=False "
         # shorter version
@@ -1442,9 +1443,9 @@ class Params:
             for opt in self.options:
                 if opt.has_key('separator'):
                     continue
-                if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+                if len(params) > 0 and opt['name'] not in params:
                     continue
-                name = opt['longarg'].rstrip('=')
+                name = opt['name']
                 scan = re.compile(name + r'\s*=\s*(.*)')
                 if scan.match(line):
                     value = scan.match(line).groups()[0]
@@ -1469,7 +1470,7 @@ class Params:
         for opt in self.options:
             if opt.has_key('separator'):
                 continue
-            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+            if len(params) > 0 and opt['name'] not in params:
                 continue
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
                 value = None
@@ -1512,7 +1513,7 @@ class Params:
                     opt['processed'] = True
                 continue
             # this is a more complicated case
-            name = opt['longarg'].rstrip('=')
+            name = opt['name']
             hasArg = [x.startswith('--%s=' % name) or x == '--' + name for x in cmdArgs]
             if True in hasArg:
                 idx = hasArg.index(True)
@@ -1526,7 +1527,7 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx+1])
                         print e
                         continue
@@ -1538,7 +1539,7 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx][(len(name)+3):])
                         print e
                         continue
@@ -1558,7 +1559,7 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx+1])
                         print e
                         continue
@@ -1576,7 +1577,7 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx])
                         print e
                         continue
@@ -1614,13 +1615,13 @@ class Params:
                 ('DBG_BATCHTESTING' in simuOptions['Debug']) or \
                 (opt.has_key('useDefault') and opt['useDefault'])):
                 continue
-            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+            if len(params) > 0 and opt['name'] not in params:
                 continue
             # prompt
             if opt.has_key('label'):
                 prompt = '%s (%s): ' % (opt['label'], str(opt['value']))
             else:
-                prompt = '%s (%s): ' % (opt['longarg'].rstrip('='), str(opt['value']))
+                prompt = '%s (%s): ' % (opt['name'], str(opt['value']))
             while True:
                 value = raw_input('\n' + prompt)
                 if value == '':
@@ -1755,7 +1756,7 @@ class Params:
         for opt in self.options:
             if opt.has_key('separator'):
                 continue
-            name = opt['longarg'].rstrip('=')
+            name = opt['name']
             res[name] = opt['value']
         return res
 
