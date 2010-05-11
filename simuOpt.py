@@ -604,12 +604,11 @@ def _getParamValue(p, val):
         return [val]
     elif type(val) == type(True) and types.IntType in p['allowedTypes']: # compatibility problem
         return val
-    elif type[val] == types.UnicodeType and types.StringType in p['allowedTypes']:
+    elif type(val) == types.UnicodeType and types.StringType in p['allowedTypes']:
         return str(val)
     else:
-        raise exceptions.ValueError('Type of input parameter ' + str(val) + " is incorrect. (param " \
-            + p.setdefault('longarg','none') +")")
-
+        raise exceptions.ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
+            p['longarg'].rstrip('='))
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
@@ -769,7 +768,7 @@ class _tkParamDialog(_paramDialog):
                     if lab is not None:
                         lab.configure(fg='black')
                 # set this one to red
-                print e
+                print 'Error handling paramter %s: %s' % (self.options[g]['longarg'].rstrip('='), e)
                 self.labelWidgets[g].configure(fg='red')
                 self.entryWidgets[g].focus_force()
                 return
@@ -1305,9 +1304,10 @@ class Params:
         reserved_options = ['optimized', 'gui', 'config', 'help']
         #
         opt = {}
+        # allow the input of single value for allowed types.
         for key in kwargs:
             if key in allowed_keys:
-                if key == 'allowedTypes' and type(kwargs[key]) not in [types.TupleType, types.ListType]:
+                if key == 'allowedTypes' and not hasattr(kwargs[key], '__iter__'):
                     opt[key] = [kwargs[key]]
                 else:
                     opt[key] = kwargs[key]
@@ -1326,7 +1326,7 @@ class Params:
         if not opt['longarg'].strip('=').replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
             raise exceptions.ValueError('Invalid option name %s' % opt['longarg'].strip('='))
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
-            raise exceptions.ValueError('A default value must be provided for all options')
+            raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['longarg'].rstrip('='))
         if opt.has_key('arg') and \
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
