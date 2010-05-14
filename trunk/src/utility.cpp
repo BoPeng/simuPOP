@@ -3395,13 +3395,16 @@ void Bernullitrials::doTrial()
             // it may make sense to limit the use of this method to low p,
             UINT i = 0;
             while (true) {
-                // i moves at least one.
+                // i moves at least one. (# trails until the first success)
+                // 6,3 means (0 0 0 0 0 1) (0 0 1)
                 ULONG step = m_RNG->randGeometric(prob);
                 if (step == 0)
 					// gsl_ran_geometric sometimes return 0 when prob is really small.
 					break;
+                // i moves to 6 and 9
                 i += step;
                 if (i <= m_N)
+					// set the 5th and 8th element to 1.
 					setBit(ptr, i - 1);
                 else
 					break;
