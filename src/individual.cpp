@@ -230,36 +230,57 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
-PyObject * Individual::genoAtLoci(const vectoru & loci)
+PyObject * Individual::genoAtLoci(const uintList & lociList)
 {
-	vectoru chromTypes;
-
-	for (size_t j = 0; j < loci.size(); ++j)
-		chromTypes.push_back(chromType(chromLocusPair(loci[j]).first));
-
 	size_t ply = ploidy();
+
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
-	alleles.reserve(ply * loci.size());
 
-	for (size_t idx = 0; idx < loci.size(); ++idx) {
-		for (size_t p = 0; p < ply; ++p) {
-			if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
+	if (lociList.allAvail()) {
+
+		alleles.reserve(ply * totNumLoci());
+
+		for (size_t ch = 0; ch < numChrom(); ++ch) {
+			UINT chType = chromType(ch);
+			if (chType == CHROMOSOME_Y && sex() == FEMALE)
 				continue;
-			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
-				continue;
-			alleles.push_back(allele(loci[idx], p));
+			for (size_t idx = 0; idx < numLoci(ch); ++idx) {
+				for (size_t p = 0; p < ply; ++p) {
+					if (((chType == CHROMOSOME_X && p == 1) ||
+					     (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						continue;
+					alleles.push_back(allele(idx, p, ch));
+				}
+			}
+		}
+	} else {
+		const vectoru & loci = lociList.elems();
+
+		vectoru chromTypes;
+
+		for (size_t j = 0; j < loci.size(); ++j)
+			chromTypes.push_back(chromType(chromLocusPair(loci[j]).first));
+
+		alleles.reserve(ply * loci.size());
+
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			for (size_t p = 0; p < ply; ++p) {
+				if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
+					continue;
+				if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+				     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					continue;
+				alleles.push_back(allele(loci[idx], p));
+			}
 		}
 	}
-
 	PyObject * genoObj = PyTuple_New(alleles.size());
 	// set value
 	for (size_t j = 0; j < alleles.size(); ++j)
 		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
-
 	return genoObj;
 }
 

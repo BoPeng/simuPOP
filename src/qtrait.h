@@ -145,12 +145,10 @@ public:
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseQuanTrait(ancGens, begin, end, step, at, reps, subPops, infoFields),
-		m_func(func), m_loci(loci.elems())
+		m_func(func), m_loci(loci)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
 
-		DBG_FAILIF(m_loci.empty(), ValueError,
-			"Please specify susceptibility loci");
 	};
 
 	/// HIDDEN Deep copy of a Python quantitative trait operator
@@ -177,7 +175,7 @@ private:
 	const pyFunc m_func;
 
 	/// susceptibility loci
-	const vectoru m_loci;
+	const uintList m_loci;
 };
 
 }

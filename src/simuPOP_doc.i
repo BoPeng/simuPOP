@@ -2403,7 +2403,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Individual::genoAtLoci(const vectoru &loci);
+%ignore simuPOP::Individual::genoAtLoci(const uintList &loci);
 
 %feature("docstring") simuPOP::Individual::setGenotype "
 
