@@ -1357,7 +1357,9 @@ class Params:
                 opt['default'] = (opt['default'],)
             else:
                 raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
-        #
+        # is default value valid?
+        if opt.has_key('validate') and not opt['validate'](opt['default']):
+            raise exceptions.ValueError('Default value "%s" does not pass validation.' % str(opt['default']))
         opt['value'] = opt['default']
         opt['processed'] = False
         if not opt.has_key('allowedTypes'):
@@ -1366,10 +1368,9 @@ class Params:
             else:
                 opt['allowedTypes'] = [type(opt['default'])]
         #
-        name = opt['name']
-        if self.dict.has_key(name):
-            raise exceptions.ValueError('Option %s already exists.' % name)
-        self.dict[name] = opt
+        if self.dict.has_key(opt['name']):
+            raise exceptions.ValueError('Option %s already exists.' % opt['name'])
+        self.dict[opt['name']] = opt
 
 
     def saveConfig(self, file, params=[]):
