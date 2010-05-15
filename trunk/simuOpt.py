@@ -1349,6 +1349,15 @@ class Params:
         if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
             raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s. Missing '=' after longarg?" % opt['longarg'])
         #
+        # is default value allowed?
+        if opt.has_key('allowedTypes') and type(opt['default']) not in opt['allowedTypes']:
+            if types.ListType in opt['allowedTypes']:
+                opt['default'] = [opt['default']]
+            elif types.TupleType in opt['allowedTypes']:
+                opt['default'] = (opt['default'],)
+            else:
+                raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
+        #
         opt['value'] = opt['default']
         opt['processed'] = False
         if not opt.has_key('allowedTypes'):
