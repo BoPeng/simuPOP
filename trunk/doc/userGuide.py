@@ -4103,6 +4103,7 @@ prog = ProgressBar('Setting individual genotype...\n', pop.popSize(), gui=False)
 for idx in range(pop.popSize()):
     # do something to each individaul
     pop.individual(idx).index = idx
+    # idx + 1 can be ignored in this case.
     prog.update(idx + 1)
 
 #end_file

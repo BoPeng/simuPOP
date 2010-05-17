@@ -970,8 +970,9 @@ public:
 	 *  individuals with the same value at an information field. An
 	 *  \c IndexError will be raised if an index is out of bound, but no
 	 *  error will be given if an invalid ID is specified. In the last
-	 *  case, a user-defined function with parameter \c ind should be
-	 *  provided. All individuals, including ancestors if there are multiple
+	 *  case, a user-defined function should be provided. This function
+	 *  should accept parameter \c "ind" or one or more of the information
+	 *  fields. All individuals, including ancestors if there are multiple
 	 *  ancestral generations, will be passed to this function. Individuals
 	 *  that returns \c True will be removed. This function does not affect
 	 *  subpopulation structure in the sense that a subpopulation will be
@@ -1091,10 +1092,11 @@ public:
 	 *  extracted and form a one-generational population. If a list of IDs are
 	 *  specified, this function will look through all ancestral generations
 	 *  and extract individuals with given ID. Individuals with shared IDs are
-	 *  allowed. In the last case, a Python function with one parameter \c ind
-	 *  should be provided. All individuals, including ancestors if there are
-	 *  multiple ancestral generations, will be passed to this function.
-	 *  Individuals that returns \c True will be extracted. Extracted
+	 *  allowed. In the last case, a user-defined Python function should be
+	 *  provided. This function should accept parameter \c "ind" or one or more
+	 *  of the information fields. All individuals, including ancestors if
+	 *  there are multiple ancestral generations, will be passed to this
+	 *  function. Individuals that returns \c True will be extracted. Extracted
 	 *  individuals will be in their original ancestral generations and
 	 *  subpopulations, even if some subpopulations or generations are empty.
 	 *  An \c IndexError will be raised if an index is out of bound but no
