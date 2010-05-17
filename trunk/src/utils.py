@@ -428,15 +428,20 @@ class _baseProgressBar:
         '''
         self.message = message
         self.totalCount = totalCount
+        self.count = 0
         self.percent = 0
         self.completed = False
 
-    def update(self, count):
+    def update(self, count=None):
         '''
-        Update the progreebar.
+        Update the progress bar with ``count`` progress. If ``count`` is ``None``,
+        it updates by 1 count (not percent).
         '''
-        count = min(count, self.totalCount)
-        self.progress = int(round(100*count/self.totalCount))
+        if count is None:
+            self.count += 1
+        else:
+            self.count = min(count, self.totalCount)
+        self.progress = int(round(100*self.count/self.totalCount))
         if self.progress <= self.percent:
             return False
         else:
@@ -479,9 +484,7 @@ class _textProgressBar(_baseProgressBar):
         sys.stdout.flush()
 
     def update(self, count):
-        '''
-        Update the text progreebar.
-        '''
+        ''' Update the progress bar.'''
         if not _baseProgressBar.update(self, count):
             return
         for p in range(self.percent + 1, self.progress + 1):
@@ -546,9 +549,7 @@ class _tkProgressBar(_baseProgressBar):
         self.frame.pack(padx=0, pady=0)
 
     def update(self, count):
-        '''
-        Update the progress bar with count. 
-        '''
+        '''Update the progress bar.'''
         if not _baseProgressBar.update(self, count):
             return
         #
@@ -610,12 +611,10 @@ class _wxProgressBar(_baseProgressBar):
         self.dialog.Update(0)
 
     def update(self, count):
-        '''
-        Update the progreebar.
-        '''
+        '''Update the progreebar.'''
         if not _baseProgressBar.update(self, count):
             return
-        self.dialog.Update(count, self.message + "\n%d%% completed." % self.progress)
+        self.dialog.Update(self.count, self.message + "\n%d%% completed." % self.progress)
         self.percent = self.progress
         if self.percent == 100:
             self.done()
@@ -643,7 +642,8 @@ class ProgressBar:
 
         progress = ProgressBar("Start simulation", 500)
         for i in range(500):
-            progress.update(i+1)
+            # i+1 can be ignored if the progress bar is updated by 1 step
+            progress.update(i+1)   
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
@@ -677,9 +677,11 @@ class ProgressBar:
         else:
             self.progressBar = _textProgressBar(message, totalCount, progressChar, block, done)
 
-    def update(self, count):
+    def update(self, count=None):
         '''
-        Update the progreebar.
+        Update the progreebar with ``count`` steps done. The dialog or textbar
+        may not be updated if it is updated by full percent(s). If ``count`` is
+        ``None``, the progressbar increases by one step (not percent).
         '''
         self.progressBar.update(count)
 

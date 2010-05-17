@@ -19,6 +19,8 @@ New features (minor):
   - Add parameter size to simuOpt.valueIsList and simuOpt.valueListOf to allow validation
         of sequences according to sequence length.
   - Make parameter loci in PySelector, PyQuanTrait and PyPenetrance accept value ALL_AVAIL.
+  - Allow parameter count in function utils.ProgressBar.update(count) to be None, meaning update by
+	an increment of 1.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
