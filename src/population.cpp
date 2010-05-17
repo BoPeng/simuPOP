@@ -1005,18 +1005,33 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	}
 	if (filter != NULL) {
 		pyFunc func(filter);
-		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
-			"Passed filter function should accept one parameter with name ind");
-		PyObject * args = PyTuple_New(1);
-
+		PyObject * args = PyTuple_New(func.numArgs());
 		//
+		vectori pars(func.numArgs());
+		for (int i = 0; i < func.numArgs(); ++i) {
+			const string & arg = func.arg(i);
+			if (arg == "ind")
+				pars[i] = -1;
+			else {
+				DBG_FAILIF(!hasInfoField(arg), ValueError,
+					"Only parameters 'ind', and names of information fields are "
+					"acceptable in the filter function");
+				pars[i] = infoIdx(arg);
+			}
+		}
+
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			useAncestralGen(depth);
 			markIndividuals(vspID(), false);
 			RawIndIterator it = rawIndBegin();
 			RawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				PyTuple_SET_ITEM(args, 0, pyIndObj(static_cast<void *>(&*it)));
+				for (int i = 0; i < func.numArgs(); ++i) {
+					if (pars[i] < 0)
+						PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
+					else
+						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(it->info(pars[i])));
+				}
 				if (func(PyObj_As_Bool, args))
 					it->setMarked(true);
 			}
@@ -1721,19 +1736,33 @@ Population & Population::extractIndividuals(const uintList & indexList,
 	}
 	if (filter != NULL) {
 		pyFunc func(filter);
-		DBG_FAILIF(func.numArgs() != 1 || func.arg(0) != "ind", ValueError,
-			"Passed filter function should accept one parameter with name ind");
-		PyObject * args = PyTuple_New(1);
+		PyObject * args = PyTuple_New(func.numArgs());
+		vectori pars(func.numArgs());
+		for (int i = 0; i < func.numArgs(); ++i) {
+			const string & arg = func.arg(i);
+			if (arg == "ind")
+				pars[i] = -1;
+			else {
+				DBG_FAILIF(!hasInfoField(arg), ValueError,
+					"Only parameters 'ind', and names of information fields are "
+					"acceptable in the filter function");
+				pars[i] = infoIdx(arg);
+			}
+		}
 
-		//
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			const_cast<Population *>(this)->useAncestralGen(depth);
 			markIndividuals(vspID(), false);
 			ConstRawIndIterator it = rawIndBegin();
 			ConstRawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				PyTuple_SET_ITEM(args, 0, pyIndObj(static_cast<void *>(
-						                                               const_cast<Individual *>(&*it))));
+				for (int i = 0; i < func.numArgs(); ++i) {
+					if (pars[i] < 0)
+						PyTuple_SET_ITEM(args, i, pyIndObj(
+								static_cast<void *>(const_cast<Individual *>(&*it))));
+					else
+						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(it->info(pars[i])));
+				}
 				if (func(PyObj_As_Bool, args))
 					it->setMarked(true);
 			}

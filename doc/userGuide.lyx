@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4808,6 +4808,20 @@ extractIndividuals
  could be used to remove or extract individuals from the present generation
  by indexes or from all ancestral generations by IDs or a Python filter
  function.
+ This function should accept parameter 
+\family typewriter
+ind
+\family default
+ or one or more information fields.
+ simuPOP will pass individual for parameter 
+\family typewriter
+ind
+\family default
+, and values at specified information fields (
+\family typewriter
+age
+\family default
+ in this example) of each individual to this function.
  The present population structure will be kept, even if some subpopulations
  are left empty.
  For example, you could remove the first thirty individuals of a population
@@ -4842,7 +4856,7 @@ status open
 
 \begin_layout Plain Layout
 
-pop.removeIndividuals(filter=lambda ind: ind.age >=20 and ind.age <=30)
+pop.removeIndividuals(filter=lambda age: age >=20 and age <=30)
 \end_layout
 
 \end_inset
@@ -19806,6 +19820,13 @@ reference "ProgressBar"
 \end_inset
 
  demonstrates how to use a text-based progress bar.
+ If the progress bar is updated at each step (such as in this example),
+ function 
+\family typewriter
+update()
+\family default
+ can be called without parameter because it updates the progress bar at
+ an increment of 1 in this case.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting

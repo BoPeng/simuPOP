@@ -14,13 +14,15 @@ New features (minor):
   - Support gcc < 4.0 even if those compilers do not support tr1.
   - Output warning for mismatch of genotype or haplotype length in operator InitGenotype.
   - Silently ignore alleles n or higher in a MatrixMutator and KAlleleMutator if their mutation rates
-	are undefined (e.g. mutation matrix only has n rows). An error was triggered in the 
-	previous version.
+		are undefined (e.g. mutation matrix only has n rows). An error was triggered in the 
+		previous version.
   - Add parameter size to simuOpt.valueIsList and simuOpt.valueListOf to allow validation
-        of sequences according to sequence length.
+		of sequences according to sequence length.
   - Make parameter loci in PySelector, PyQuanTrait and PyPenetrance accept value ALL_AVAIL.
   - Allow parameter count in function utils.ProgressBar.update(count) to be None, meaning update by
-	an increment of 1.
+		an increment of 1.
+  - Allow parameter filter in Population.removeIndividuals and Population.extractIndividuals to
+		accept information fields as parameters.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
