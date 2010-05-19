@@ -1029,7 +1029,7 @@ public:
 	 *  be used if \e lociNames is not specified.
 	 *  <group>7-manipulate</group>
 	 */
-	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
+	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
 		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
 		UINT chromType = AUTOSOME);
 
@@ -1046,7 +1046,7 @@ public:
 	 *  <group>7-manipulate</group>
 	 */
 	vectoru addLoci(const uintList & chrom, const floatList & pos,
-		const vectorstr & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
+		const stringList & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
 	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  individuals at the end of some subpopulations will be removed if the

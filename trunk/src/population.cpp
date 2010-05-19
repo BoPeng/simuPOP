@@ -609,12 +609,12 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
-			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize) 
-				+ ", totNumLoci*ploidy=" + toStr(step) + ", requested memory=" 
+			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize)
+				+ ", totNumLoci*ploidy=" + toStr(step) + ", requested memory="
 #ifdef BINARYALLELE
-				+ toStr((m_popSize*step/8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual))/1024)
+				+ toStr((m_popSize * step / 8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #else
-				+ toStr((m_popSize*step*sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual))/1024)
+				+ toStr((m_popSize * step * sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #endif
 				+ "k bytes)");
 		}
@@ -1305,10 +1305,13 @@ void Population::addLociFrom(const Population & pop)
 }
 
 
-void Population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
+void Population::addChrom(const floatList & lociPosList, const stringList & lociNameList,
                           const string & chromName, const stringMatrix & alleleNames,
                           UINT chromType)
 {
+	const vectorf & lociPos = lociPosList.elems();
+	const vectorstr & lociNames = lociNameList.elems();
+
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
 		"Please specifiy locus name for all inserted loci.");
 
@@ -1353,11 +1356,12 @@ void Population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 
 
 vectoru Population::addLoci(const uintList & chromList, const floatList & posList,
-                            const vectorstr & lociNames, const stringMatrix & alleleNamesMatrix)
+                            const stringList & lociNameList, const stringMatrix & alleleNamesMatrix)
 {
 	const vectoru & chrom = chromList.elems();
 	const vectorf & pos = posList.elems();
 	const matrixstr & alleleNames = alleleNamesMatrix.elems();
+	const vectorstr & lociNames = lociNameList.elems();
 
 	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
 		"Chromosome and position lists should have the same length");
