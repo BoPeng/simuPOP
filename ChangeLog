@@ -23,6 +23,8 @@ New features (minor):
 		an increment of 1.
   - Allow parameter filter in Population.removeIndividuals and Population.extractIndividuals to
 		accept information fields as parameters.
+  - Allow parameters in Population.addChrom, Population.addLoci to accept single input for vector
+		parameters.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
