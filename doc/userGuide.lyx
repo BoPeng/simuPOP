@@ -8169,6 +8169,19 @@ Simulator([pop, pop1, pop2])
 \end_inset
 
 .
+ 
+\family typewriter
+pop
+\family default
+, 
+\family typewriter
+pop1
+\family default
+ and 
+\family typewriter
+pop2
+\family default
+ do not have to have the same genotypic structure.
  In order to avoid duplication of potentially large populations, a population
  is by default 
 \emph on
@@ -8184,10 +8197,7 @@ stealPops
 False
 \family default
  so that the populations will be copied to the simulator.
-\end_layout
-
-\begin_layout Standard
-populations in a simulator can be added or removed using functions 
+ Populations in a simulator can be added or removed using functions 
 \family typewriter
 Simulator.add()
 \family default
@@ -8195,12 +8205,6 @@ Simulator.add()
 \family typewriter
 Simulator.extract(idx)
 \family default
-.
- The
-\series bold
- newly added populations do not have to have the same genotypic structure
- as existing populations
-\series default
 .
 \end_layout
 
@@ -8609,49 +8613,6 @@ Simulator.evolve()
 LatexCommand lstinputlisting
 filename "log/describe.log"
 lstparams "caption={describe an evolutionary process},label={describe}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Change genotypic structure during evolution **
-\end_layout
-
-\begin_layout Standard
-Most operators do not change the genotypic structure of populations during
- evolution.
- However, it is possible to change the structure of a population, such as
- adding or removing information fields, loci or chromosomes during evolution.
- The only restriction is that all individual in a population needs to have
- the same genotypic structure.
- That is to say, if you are inserting a new locus to an individual, all
- individuals in this population should have it.
- This is why there is no Individual-level structure-modification functions.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "changeStru"
-
-\end_inset
-
- gives an example of a dynamic mutator.
- This mutator is not a conventional mutator in that it does not mutate any
- existing loci.
- It assumes a chromosome region that originally has no polymorphic markers.
- When a mutation happens, a monomorphic marker that is not simulated becomes
- polymorphic and is inserted to the chromosome.
- If the region is long enough, this example effectively simulates an infinite
- allele mode.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/changeStru.log"
-lstparams "caption={A Python mutator that adds new loci to populations.},label={changeStru}"
 
 \end_inset
 
@@ -13497,6 +13458,54 @@ That is to say, we would mutate at a mutation rate
 \end_inset
 
  with probability 0.5.
+\end_layout
+
+\begin_layout Subsection
+Mutations that introduce new loci **
+\end_layout
+
+\begin_layout Standard
+Mutations operators only mutate alleles at existing loci.
+ If you have a mutation model that can mutate alleles at many possible loci
+ across a region, you will have to either create a population with all such
+ loci on that region, or adding a locus when a mutation happens on that
+ locus.
+ Because it is not practical to create populations with a huge number of
+ loci, the second option can be used, at a cost of lower performance.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "changeStru"
+
+\end_inset
+
+ gives an example of a dynamic mutator.
+ This mutator assumes a chromosome region that originally has no polymorphic
+ markers.
+ When a mutation happens, a monomorphic marker that is not simulated becomes
+ polymorphic and is inserted to the chromosome.
+ If the region is long enough, this example effectively simulates an infinite
+ allele mode.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/changeStru.log"
+lstparams "caption={A Python mutator that adds new loci to populations.},label={changeStru}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because adding loci to an exising population is an expensive operation,
+ this method is suitable for evolutionary processes with small populations
+ and low mutation rate.
+ If the region is wide, it becomes necessary to simulate mutations in a
+ new way, as demonstrated in the following section.
 \end_layout
 
 \begin_layout Subsection
