@@ -609,7 +609,14 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
-			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize) + ")");
+			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize) 
+				+ ", totNumLoci*ploidy=" + toStr(step) + ", requested memory=" 
+#ifdef BINARYALLELE
+				+ toStr((m_popSize*step/8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual))/1024)
+#else
+				+ toStr((m_popSize*step*sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual))/1024)
+#endif
+				+ "k bytes)");
 		}
 		// reset individual pointers
 		GenoIterator ptr = m_genotype.begin();
