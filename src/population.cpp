@@ -995,7 +995,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		// first, build a map
 		std::map<ULONG, bool > idMap;
 		for (size_t i = 0; i < IDs.size(); ++i)
-			idMap[IDs[i]] = true;
+			idMap[toID(IDs[i])] = true;
 
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			useAncestralGen(depth);
@@ -1731,7 +1731,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		// first, build a map
 		std::map<ULONG, bool > idMap;
 		for (size_t i = 0; i < IDs.size(); ++i)
-			idMap[IDs[i]] = true;
+			idMap[toID(IDs[i])] = true;
 
 		for (int depth = ancestralGens(); depth >= 0; --depth) {
 			const_cast<Population *>(this)->useAncestralGen(depth);
