@@ -409,7 +409,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['libraries'] = ['stdc++', 'z']
     res['libraries'].extend(boost_lib_names)
-    res['include_dirs'] = ['.', boost_inc_path]
+    res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
     if os.name == 'nt':
         # I have a portable stdint.h for msvc, to avoid distributing
