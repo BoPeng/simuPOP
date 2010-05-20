@@ -25,6 +25,7 @@ New features (minor):
 		accept information fields as parameters.
   - Allow parameters in Population.addChrom, Population.addLoci to accept single input for vector
 		parameters.
+  - Support Python 2.6.5 (fix setup.py).
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
