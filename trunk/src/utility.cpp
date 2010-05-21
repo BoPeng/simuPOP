@@ -703,6 +703,30 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 }
 
 
+void pyGenerator::set(PyObject * gen)
+{
+	Py_XDECREF(m_iterator);
+	Py_XDECREF(m_generator);
+
+	if (!gen) {
+		m_iterator = NULL;
+		m_generator = NULL;
+		return;
+	}
+
+	m_generator = gen;
+
+	// test if m_generator is a generator
+	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
+		"Passed function is not a python generator");
+
+	m_iterator = PyObject_GetIter(m_generator);
+
+	// test if m_iterator is iteratable.
+	DBG_FAILIF(m_iterator == NULL, ValueError, "Can not iterate through a generator");
+}
+
+
 uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 {
 	if (obj == NULL)

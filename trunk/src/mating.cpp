@@ -39,8 +39,8 @@ typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
 namespace simuPOP {
 
 OffspringGenerator::OffspringGenerator(const opList & ops,
-	const floatListFunc & numOffspring, const floatList & sexMode) :
-	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
+	const floatListFunc & numOffspring, const floatListFunc & sexMode) :
+	m_numOffspring(numOffspring), m_sexMode(sexMode),
 	m_transmitters(ops), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
@@ -69,14 +69,16 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
 			ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
 	}
-	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
-	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
+	DBG_FAILIF(m_sexMode.size() == 0 && !m_sexMode.func().isValid(), ValueError,
+		"Please specify one of the sex modes or a Python function.");
+	DBG_FAILIF(m_sexMode.size() >= 1 && (
+			(static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
 		        static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
-		        static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2,
+		        static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2),
 		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NUM_OF_MALES and NUM_OF_FEMALES");
 
-	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
-		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
+	DBG_FAILIF(m_sexMode.size() >=1 && (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
+		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1))),
 		ValueError, "Probability of male has to be between 0 and 1");
 }
 
@@ -135,18 +137,30 @@ ULONG OffspringGenerator::numOffspring(int gen)
 
 Sex OffspringGenerator::getSex(int count)
 {
-	int mode = static_cast<int>(m_sexMode[0]);
+	if (m_sexMode.func().isValid()) {
+		const pyFunc & func = m_sexMode.func();
+		DBG_FAILIF(func.numArgs() > 1 || (func.numArgs() == 1 && func.arg(0) != "gen"),
+			ValueError, "Function passed to parameter sexMode should have no parameter or a parameter named gen");
+		if (func.numArgs() == 0)
+			return static_cast<Sex>(func(PyObj_As_Int, "()"));
+		else
+			return static_cast<Sex>(func(PyObj_As_Int, "(i)", 0));
+		// this should not be reached.
+		return MALE;		
+	}
+	const vectorf & sexMode = m_sexMode.elems();
+	int mode = static_cast<int>(sexMode[0]);
 
 	if (mode == NO_SEX)
 		return MALE;
 	else if (mode == RANDOM_SEX)
 		return getRNG().randBit() ? MALE : FEMALE;
 	else if (mode == PROB_OF_MALES)
-		return getRNG().randUniform() < m_sexMode[1] ? MALE : FEMALE;
+		return getRNG().randUniform() < sexMode[1] ? MALE : FEMALE;
 	else if (mode == NUM_OF_MALES)
-		return count < static_cast<int>(m_sexMode[1]) ? MALE : FEMALE;
+		return count < static_cast<int>(sexMode[1]) ? MALE : FEMALE;
 	else if (mode == NUM_OF_FEMALES)
-		return count < static_cast<int>(m_sexMode[1]) ? FEMALE : MALE;
+		return count < static_cast<int>(sexMode[1]) ? FEMALE : MALE;
 	DBG_ASSERT(false, SystemError, "This line should not be reached.");
 	return MALE;
 }
@@ -222,7 +236,7 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 ControlledOffspringGenerator::ControlledOffspringGenerator(
 	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
 	const opList & ops, const floatListFunc & numOffspring,
-	const floatList & sexMode)
+	const floatListFunc & sexMode)
 	: OffspringGenerator(ops, numOffspring, sexMode),
 	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
@@ -950,7 +964,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 
 PyParentsChooser::PyParentsChooser(PyObject * pc)
 	: ParentChooser(), m_func(pc), m_popObj(NULL),
-	m_generator(NULL), m_parIterator(NULL)
+	m_generator(NULL)
 {
 }
 
@@ -985,19 +999,8 @@ void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 				"Only parameters 'pop' and 'subPop' are acceptable in a generator function.");
 		}
 	}
-	m_generator = m_func(args);
+	m_generator.set(m_func(args));
 	Py_DECREF(args);
-
-	// test if m_generator is a generator
-	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
-		"Passed function is not a python generator");
-
-	m_parIterator = PyObject_GetIter(m_generator);
-
-	// test if m_parIterator is iteratable.
-	DBG_FAILIF(m_parIterator == NULL, ValueError,
-		"Can not iterate through parent generator");
-
 	m_initialized = true;
 }
 
@@ -1007,7 +1010,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	PyObject * item = PyIter_Next(m_parIterator);
+	PyObject * item = m_generator.next();
 
 #ifndef OPTIMIZED
 	if (item == NULL && debug(DBG_GENERAL)) {
@@ -1067,14 +1070,10 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 
 void PyParentsChooser::finalize(Population & pop, SubPopID sp)
 {
-	DBG_FAILIF(m_popObj == NULL || m_parIterator == NULL || m_generator == NULL,
-		SystemError, "Python generator is not properly initialized.");
+	DBG_FAILIF(m_popObj == NULL, SystemError, "Python generator is not properly initialized.");
 	Py_DECREF(m_popObj);
-	Py_DECREF(m_parIterator);
-	Py_DECREF(m_generator);
+	m_generator.set(NULL);
 	m_popObj = NULL;
-	m_parIterator = NULL;
-	m_generator = NULL;
 	m_initialized = false;
 }
 
