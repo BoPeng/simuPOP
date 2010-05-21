@@ -723,7 +723,22 @@ void pyGenerator::set(PyObject * gen)
 	m_iterator = PyObject_GetIter(m_generator);
 
 	// test if m_iterator is iteratable.
-	DBG_FAILIF(m_iterator == NULL, ValueError, "Can not iterate through a generator");
+	DBG_ASSERT(m_iterator, RuntimeError, "Can not create an iterate from a generator");
+}
+
+
+PyObject * pyGenerator::next()
+{
+	PyObject * obj = PyIter_Next(m_iterator);
+
+#ifndef OPTIMIZED
+	if (PyErr_Occurred()) {
+		PyErr_Print();
+		PyErr_Clear();
+	}
+#endif
+	DBG_ASSERT(obj, RuntimeError, "No item left from an iterator.");
+	return obj;
 }
 
 

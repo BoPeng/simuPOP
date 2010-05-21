@@ -75,6 +75,21 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(
             self.getFamSize(numOffspring=nos, gen=3),
             [1]*1000)
+        # a generator
+        def nos_gen():
+            while True:
+                yield random.randint(5, 10)
+                #yield getRNG().randInt(1, 3)+1
+        cnt = self.getFamSize(numOffspring=nos_gen, N=1000)
+        self.assertEqual(sum(cnt), 1000)
+        num = [ cnt.count(i) for i in range(1, 4) ]
+        #
+        mean = sum(num)/3.
+        for i in range(3):
+            self.assertTrue(num[i] < mean + 50, 
+            "Expression num[i] (test value %f) be less than mean + 50. This test may occasionally fail due to the randomness of outcome." % (num[i]))
+            self.assertTrue(num[i] > mean - 50, 
+            "Expression num[i] (test value %f) be greater than to mean - 50. This test may occasionally fail due to the randomness of outcome." % (num[i]))
         # randomnumber
         def nos():
             return random.randint(1, 3)
@@ -114,6 +129,7 @@ class TestMatingSchemes(unittest.TestCase):
         mean = sum(cnt)*1.0/len(cnt)
         var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
         self.assertEqual(abs(mean - (a + b)/2.) < 0.1, True)
+
 
     def checkSexMode(self, ms):
         simu = Simulator( Population(size=[40]))
@@ -156,6 +172,20 @@ class TestMatingSchemes(unittest.TestCase):
             gen = 10
         )
         self.assertEqual(simu.dvars(0).gen, 10)
+        # Using a generator function
+        def sexFunc():
+            i = 0
+            while True:
+                i += 1
+                if i % 2 == 0:
+                    yield MALE
+                else:
+                    yield FEMALE
+        self.assertEqual(
+            self.checkSexMode(RandomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 6),
+                sexMode=sexFunc)),
+            'FMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFM')
+        
 
     def testMonoMating(self):
         'Testing monogemous mating scheme'

@@ -115,9 +115,7 @@ public:
 	 *  in the offspring generation), you can provide a Python generator
 	 *  function that yields \c MALE or \c FEMALE. This generator will be
 	 *  created at each subpopulation and will be used to produce sex for
-	 *  all offspring in this subpopulation. Current generation number will
-	 *  be passed to this generator function if a parameter "gen" is used by
-	 *  this function.
+	 *  all offspring in this subpopulation. No parameter is accepted.
 	 */
 	OffspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatListFunc & sexMode = RANDOM_SEX);
@@ -142,12 +140,13 @@ public:
 
 	/// CPPONLY
 	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd);
+		RawIndIterator & offBegin, RawIndIterator & offEnd);
 
 	/// CPPONLY
 	virtual void finalize(const Population & pop)
 	{
+		m_numOffGenerator.set(NULL);
+		m_sexGenerator.set(NULL);
 		m_initialized = false;
 	}
 
@@ -179,8 +178,12 @@ protected:
 	/// number of offspring
 	floatListFunc m_numOffspring;
 
+	pyGenerator m_numOffGenerator;
+
 	/// paramter to determine offspring sex
 	floatListFunc m_sexMode;
+
+	pyGenerator m_sexGenerator;
 
 	/// default transmitter
 	opList m_transmitters;
@@ -762,7 +765,7 @@ public:
 	/// CPPONLY
 	PyParentsChooser(const PyParentsChooser & rhs)
 		: ParentChooser(rhs), m_func(rhs.m_func),
-		m_popObj(NULL), m_generator(NULL) 
+		m_popObj(NULL), m_generator(NULL)
 	{
 		m_initialized = false;
 	}
