@@ -40,7 +40,7 @@ namespace simuPOP {
 
 OffspringGenerator::OffspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatListFunc & sexMode) :
-	m_numOffspring(numOffspring), m_sexMode(sexMode),
+	m_numOffspring(numOffspring), m_numOffGenerator(NULL), m_sexMode(sexMode), m_sexGenerator(NULL),
 	m_transmitters(ops), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
@@ -72,13 +72,13 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 	DBG_FAILIF(m_sexMode.size() == 0 && !m_sexMode.func().isValid(), ValueError,
 		"Please specify one of the sex modes or a Python function.");
 	DBG_FAILIF(m_sexMode.size() >= 1 && (
-			(static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
-		        static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
-		        static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2),
+		                                 (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
+		                                  static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
+		                                  static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2),
 		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NUM_OF_MALES and NUM_OF_FEMALES");
 
-	DBG_FAILIF(m_sexMode.size() >=1 && (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
-		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1))),
+	DBG_FAILIF(m_sexMode.size() >= 1 && (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
+		                                 (fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1))),
 		ValueError, "Probability of male has to be between 0 and 1");
 }
 
@@ -88,21 +88,45 @@ ULONG OffspringGenerator::numOffspring(int gen)
 	if (m_numOffspring.size() == 1)
 		return static_cast<UINT>(m_numOffspring[0]);
 
-	if (m_numOffspring.func().isValid()) {
+	if (m_numOffGenerator.isValid()) {
+		int attempts = 0;
+		long int numOff = 0;
+		while (++attempts < 50) {
+			PyObject * obj = m_numOffGenerator.next();
+			PyObj_As_Int(obj, numOff);
+			Py_DECREF(obj);
+			DBG_DO(DBG_DEVEL, cerr << "Number of offspring produced from a generator: " << numOff << endl);
+			if (numOff > 0)
+				return numOff;
+		}
+		DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
+		return 1;
+	} else if (m_numOffspring.func().isValid()) {
 		const pyFunc & func = m_numOffspring.func();
 		DBG_FAILIF(func.numArgs() > 1 || (func.numArgs() == 1 && func.arg(0) != "gen"),
 			ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
 		int attempts = 0;
-		int numOff = 0;
+		long int numOff = 0;
 		while (++attempts < 50) {
-			if (func.numArgs() == 0)
-				numOff = func(PyObj_As_Int, "()");
-			else
-				numOff = func(PyObj_As_Int, "(i)", gen);
-			if (numOff > 0)
-				return numOff;
+			PyObject * obj = NULL;
+			try {
+				if (func.numArgs() == 0)
+					obj = func("()");
+				else
+					obj = func("(i)", gen);
+				PyObj_As_Int(obj, numOff);
+				if (numOff > 0)
+					return numOff;
+			} catch (ValueError &) {
+				if (PyGen_Check(obj)) {
+					m_numOffGenerator.set(obj);
+					return numOffspring(gen);
+				} else {
+					throw ValueError("Function should return a number or a generator.");
+				}
+			}
 		}
-		cerr << "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times." << endl;
+		DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
 		return 1;
 	}
 	switch (static_cast<int>(m_numOffspring[0])) {
@@ -137,16 +161,29 @@ ULONG OffspringGenerator::numOffspring(int gen)
 
 Sex OffspringGenerator::getSex(int count)
 {
-	if (m_sexMode.func().isValid()) {
+	if (m_sexGenerator.isValid()) {
+		long int val;
+		PyObject * obj = m_sexGenerator.next();
+		PyObj_As_Int(obj, val);
+		Py_DECREF(obj);
+		return static_cast<Sex>(val);
+	} else if (m_sexMode.func().isValid()) {
 		const pyFunc & func = m_sexMode.func();
-		DBG_FAILIF(func.numArgs() > 1 || (func.numArgs() == 1 && func.arg(0) != "gen"),
-			ValueError, "Function passed to parameter sexMode should have no parameter or a parameter named gen");
-		if (func.numArgs() == 0)
-			return static_cast<Sex>(func(PyObj_As_Int, "()"));
-		else
-			return static_cast<Sex>(func(PyObj_As_Int, "(i)", 0));
+		PyObject * obj = NULL;
+		try {
+			obj = func("()");
+			long int val;
+			PyObj_As_Int(obj, val);
+			return static_cast<Sex>(val);
+		} catch (ValueError &) {
+			if (PyGen_Check(obj)) {
+				m_sexGenerator.set(obj);
+				return getSex(count);
+			} else
+				throw ValueError("Passed function should be a function that return MALE/FEMALE or a generator.");
+		}
 		// this should not be reached.
-		return MALE;		
+		return MALE;
 	}
 	const vectorf & sexMode = m_sexMode.elems();
 	int mode = static_cast<int>(sexMode[0]);

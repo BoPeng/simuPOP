@@ -366,6 +366,13 @@ public:
 		set(gen);
 	}
 
+
+	bool isValid()
+	{
+		return m_generator /* != NULL */;
+	}
+
+
 	void set(PyObject * gen);
 
 	~pyGenerator()
@@ -373,10 +380,8 @@ public:
 		set(NULL);
 	}
 
-	PyObject * next() 
-	{
-		return PyIter_Next(m_iterator);
-	}
+
+	PyObject * next();
 
 private:
 	PyObject * m_generator;
