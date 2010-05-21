@@ -72,13 +72,14 @@ public:
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each
-	 *  family. It can be a number, a function, or a mode parameter followed by
-	 *  some optional arguments. If a number is given, given number of
-	 *  offspring will be generated at each mating event. If a Python function
-	 *  is given, it will be called each time when a mating event happens.
-	 *  Current generation number will be passed to this function if parameter
-	 *  "gen" is used in this function. The return value of this function will
-	 *  be considered the number of offspring. In the last case, a tuple (or a
+	 *  family. It can be a number, a Python function or generator, or a mode
+	 *  parameter followed by some optional arguments. If a number is given,
+	 *  given number of offspring will be generated at each mating event. If a
+	 *  Python function or generator function is given, it will be called each
+	 *  time when a mating event happens. Current generation number will be
+	 *  passed to this function if parameter "gen" is used in this function.
+	 *  The return value of this function or generator will be considered the
+	 *  number of offspring. In the last case, a tuple (or a
 	 *  list) in one of the following forms can be given:
 	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>
 	 *  \li <tt>(POISSON_DISTRIBUTION, p)</tt>, p > 0
@@ -107,10 +108,19 @@ public:
 	 *  of male for each offspring. The next two cases specifies the number of
 	 *  male or female individuals in each family, respectively. If \c n is
 	 *  greater than or equal to the number of offspring in this family, all
-	 *  offspring in this family will be \c MALE or \c FEMALE.
+	 *  offspring in this family will be \c MALE or \c FEMALE. All these
+	 *  options control the sex of offspring within each family. If you need
+	 *  more advanced control, or if you would like to control the sex of
+	 *  offspring across family (e.g. exactly number of males and females
+	 *  in the offspring generation), you can provide a Python generator
+	 *  function that yields \c MALE or \c FEMALE. This generator will be
+	 *  created at each subpopulation and will be used to produce sex for
+	 *  all offspring in this subpopulation. Current generation number will
+	 *  be passed to this generator function if a parameter "gen" is used by
+	 *  this function.
 	 */
 	OffspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
-		const floatList & sexMode = RANDOM_SEX);
+		const floatListFunc & sexMode = RANDOM_SEX);
 
 	virtual ~OffspringGenerator()
 	{
@@ -170,7 +180,7 @@ protected:
 	floatListFunc m_numOffspring;
 
 	/// paramter to determine offspring sex
-	vectorf m_sexMode;
+	floatListFunc m_sexMode;
 
 	/// default transmitter
 	opList m_transmitters;
@@ -220,7 +230,7 @@ public:
 	 */
 	ControlledOffspringGenerator(const uintList & loci, const uintList & alleles,
 		PyObject * freqFunc, const opList & ops = vectorop(),
-		const floatListFunc & numOffspring = 1, const floatList & sexMode = RANDOM_SEX);
+		const floatListFunc & numOffspring = 1, const floatListFunc & sexMode = RANDOM_SEX);
 
 
 	/// CPPONLY
@@ -752,7 +762,7 @@ public:
 	/// CPPONLY
 	PyParentsChooser(const PyParentsChooser & rhs)
 		: ParentChooser(rhs), m_func(rhs.m_func),
-		m_popObj(NULL), m_generator(NULL), m_parIterator(NULL)
+		m_popObj(NULL), m_generator(NULL) 
 	{
 		m_initialized = false;
 	}
@@ -781,8 +791,7 @@ public:
 	/// destructor
 	~PyParentsChooser()
 	{
-		DBG_FAILIF(m_popObj != NULL || m_parIterator != NULL || m_generator != NULL,
-			SystemError, "Python generator is not properly destroyed.");
+		DBG_FAILIF(m_popObj != NULL, SystemError, "Python parents chooser is not properly destroyed.");
 	}
 
 
@@ -797,8 +806,7 @@ private:
 
 	pyFunc m_func;
 	PyObject * m_popObj;
-	PyObject * m_generator;
-	PyObject * m_parIterator;
+	pyGenerator m_generator;
 };
 
 

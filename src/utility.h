@@ -357,6 +357,32 @@ private:
 	int m_flags;
 };
 
+/// CPPONLY
+class pyGenerator
+{
+public:
+	pyGenerator(PyObject * gen = NULL) : m_generator(NULL), m_iterator(NULL)
+	{
+		set(gen);
+	}
+
+	void set(PyObject * gen);
+
+	~pyGenerator()
+	{
+		set(NULL);
+	}
+
+	PyObject * next() 
+	{
+		return PyIter_Next(m_iterator);
+	}
+
+private:
+	PyObject * m_generator;
+	PyObject * m_iterator;
+};
+
 
 /** A class to specify replicate list. The reason why I cannot simple
  *  use vectori() is that users have got used to use a single number
