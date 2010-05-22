@@ -1041,7 +1041,7 @@ ParentChooser::IndividualPair CombinedParentsChooser::chooseParents(RawIndIterat
 	ParentChooser::IndividualPair p1 = m_fatherChooser->chooseParents(it);
 	ParentChooser::IndividualPair p2 = m_motherChooser->chooseParents(it);
 	Individual * dad = p1.first != NULL ? p1.first : p1.second;
-	Individual * mom = p2.second !== NULL ? p2.second : p2.first;
+	Individual * mom = p2.second != NULL ? p2.second : p2.first;
 
 	return ParentChooser::IndividualPair(dad, mom);
 }
