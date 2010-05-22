@@ -48,7 +48,6 @@ SeqSexModel::SeqSexModel(const vectorf & sex) : m_sex()
 }
 
 
-
 GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 {
 	DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
@@ -57,6 +56,7 @@ GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 	for (; it != it_end; ++it)
 		m_sex.push_back(static_cast<Sex>(*it));
 }
+
 
 Sex FuncSexModel::getSex(UINT count)
 {
