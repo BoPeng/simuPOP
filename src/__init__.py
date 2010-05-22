@@ -52,6 +52,8 @@ __all__ = [
     'PROB_OF_MALES',
     'NUM_OF_MALES',
     'NUM_OF_FEMALES',
+    'SEQUENCE_OF_SEX',
+    'GLOBAL_SEQUENCE_OF_SEX',
     #
     'NO_CONVERSION',
     'NUM_MARKERS',

@@ -737,7 +737,7 @@ PyObject * pyGenerator::next()
 		PyErr_Clear();
 	}
 #endif
-	DBG_ASSERT(obj, RuntimeError, "No item left from an iterator.");
+	DBG_ASSERT(obj, RuntimeError, "Iterator returns NULL item.");
 	return obj;
 }
 
