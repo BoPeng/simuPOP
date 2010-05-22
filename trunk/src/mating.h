@@ -1148,7 +1148,69 @@ private:
    }; */
 
 
-/** This parent chooser accept a Python generator function that repeatedly
+/** This parent chooser accepts two parent choosers. It takes one parent from
+ *  each parent chooser and return them as father and mother. Because two
+ *  parent choosers do not have to choose parents from the same virtual
+ *  subpopulation, this parent chooser allows you to choose parents from
+ *  different subpopulations.
+ */
+class CombinedParentsChooser : public ParentChooser
+{
+public:
+	/** Create a Python parent chooser using two parent choosers 
+	 *  \e fatherChooser and \e motherChooser. It takes one parent from each
+	 *  parent chooser and return them as father and mother. Although
+	 *  these two parent choosers are supposed to return a father and a mother
+	 *  respectively, the sex of returned parents are not checked so it is
+	 *  possible to return parents with the same sex using this parents
+	 *  chooser.
+	 */
+	CombinedParentsChooser(const ParentChooser & fatherChooser,
+		const ParentChooser & motherChooser);
+
+	/// CPPONLY
+	CombinedParentsChooser(const CombinedParentsChooser & rhs)
+		: m_fatherChooser(rhs.m_fatherChooser->clone()),
+		m_motherChooser(rhs.m_motherChooser->clone())
+	{
+		m_initialized = false;
+	}
+
+	~CombinedParentsChooser()
+	{
+		delete m_fatherChooser;
+		delete m_motherChooser;
+	}
+
+	/// HIDDEN Deep copy of a python parent chooser.
+	ParentChooser * clone() const
+	{
+		return new CombinedParentsChooser(*this);
+	}
+
+
+	/// HIDDEN describe a hybrid parent chooser
+	virtual string describe(bool format = true) const
+	{
+		return "<simuPOP.CombinedParentsChooser> chooses parents using two parent choosers";
+	}
+
+
+	/// CPPONLY
+	void initialize(Population & pop, SubPopID sp);
+
+	/// CPPONLY
+	void finalize(Population & pop, SubPopID sp);
+
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
+	IndividualPair chooseParents(RawIndIterator basePtr);
+
+private:
+	ParentChooser * m_fatherChooser;
+	ParentChooser * m_motherChooser;
+};
+
+/** This parent chooser accepts a Python generator function that repeatedly
  *  yields one or two parents, which can be references to individual objects
  *  or indexes relative to each subpopulation. The parent chooser calls the
  *  generator function with parental population and a subpopulation index

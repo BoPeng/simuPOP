@@ -118,6 +118,7 @@ __all__ = [
     'ControlledOffspringGenerator',
     'RandomParentChooser',
     'PyParentsChooser',
+    'CombinedParentsChooser',
     'SequentialParentChooser',
     'RandomParentsChooser',
     'SequentialParentsChooser',

@@ -563,6 +563,12 @@ PolyParentsChooserRef
 
 
 \backslash
+CombinedParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
 PyParentsChooserRef
 \end_layout
 
