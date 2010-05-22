@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7051,6 +7051,8 @@ If a Python function is given, this function will be called each time when
 gen
 \family default
  to allow different numbers of offspring at different generations.
+ A python generator function can also be passed to provide an iterator interface
+ to yield number of offspring for all mating events.
 \end_layout
 
 \begin_layout Itemize
@@ -7361,6 +7363,72 @@ n
 Female
 \family default
 .
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+sexMode=(SEQUENCE_OF_SEX, s1, s2, ...)
+\family default
+: Use sequence 
+\family typewriter
+s1
+\family default
+, 
+\family typewriter
+s2
+\family default
+, ...
+ for offspring in each mating event.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+sexMode=(GLOBAL_SEQUENCE_OF_SEX, s1, s2, ...)
+\family default
+: Use sequence 
+\family typewriter
+s1
+\family default
+, 
+\family typewriter
+s2
+\family default
+, ...
+ for all offspring in a subpopulation.
+ Because other mode of sex determination works within each mating event,
+ this is the only way to ensure proportion of sex in a subpopulation.
+ For example, 
+\family typewriter
+(GLOBAL_SEQUENCE_OF_SEX, MALE, FEMALE)
+\family default
+ will gives 
+\family typewriter
+MALE
+\family default
+ and 
+\family typewriter
+FEMALE
+\family default
+ iteratively to all offspring, making sure there are equal number of males
+ and females (if there are even number of offspring).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+sexMode=func
+\family default
+ or 
+\family typewriter
+sexMode=generator_func
+\family default
+: In this last case, a Python function or a Python generator function can
+ be specified to provide sex to each offspring.
+ The function is called whenever an offspring is created.
+ The generator function is called for each subpopulation, and provides an
+ iterator that provides sex for all offspring in a subpopulation.
 \end_layout
 
 \begin_layout Standard

@@ -1273,6 +1273,25 @@ checkSexMode(sim.RandomMating(
     numOffspring=(sim.UNIFORM_DISTRIBUTION, 4, 6),
     sexMode=(sim.NUM_OF_FEMALES, 2))
 )
+# Case 6: sim.SEQUENCE_OF_SEX
+checkSexMode(sim.RandomMating(
+    numOffspring=4, sexMode=(sim.SEQUENCE_OF_SEX, sim.MALE, sim.FEMALE))
+)
+# Case 7: sim.GLOBAL_SEQUENCE_OF_SEX
+checkSexMode(sim.RandomMating(
+    numOffspring=3, sexMode=(sim.GLOBAL_SEQUENCE_OF_SEX, sim.MALE, sim.FEMALE))
+)
+# Case 8: A generator function
+def sexFunc():
+    i = 0
+    while True:
+        i += 1
+        if i % 2 == 0:
+            yield sim.MALE
+        else:
+            yield sim.FEMALE
+
+checkSexMode(sim.RandomMating(numOffspring=3, sexMode=sexFunc))
 #end_file
 
 #begin_file log/monogamous.py

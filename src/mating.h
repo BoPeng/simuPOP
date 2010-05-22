@@ -469,18 +469,19 @@ public:
 	 *  family. It can be a number, a Python function or generator, or a mode
 	 *  parameter followed by some optional arguments. If a number is given,
 	 *  given number of offspring will be generated at each mating event. If a
-	 *  Python function or generator function is given, it will be called each
-	 *  time when a mating event happens. Current generation number will be
-	 *  passed to this function if parameter "gen" is used in this function.
-	 *  The return value of this function or generator will be considered the
-	 *  number of offspring. In the last case, a tuple (or a
-	 *  list) in one of the following forms can be given:
+	 *  Python function is given, it will be called each time when a mating
+	 *  event happens. When a generator function is specified, it will be
+	 *  called for each subpopulation to provide number of offspring for all
+	 *  mating events during the populating of this subpopulation. Current
+	 *  generation number will be passed to this function or generator function
+	 *  if parameter "gen" is used in this function. In the last case, a tuple
+	 *  (or a list) in one of the following forms can be given:
 	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, p)</tt>
 	 *  \li <tt>(POISSON_DISTRIBUTION, p)</tt>, p > 0
 	 *  \li <tt>(BINOMIAL_DISTRIBUTION, p, N)</tt>, 0 < p <=1, N > 0
 	 *  \li <tt>(UNIFORM_DISTRIBUTION, a, b)</tt>, 0 <= a <= b.
 	 *
-	 *  In this case, he number of offspring will be determined randomly
+	 *  In this case, the number of offspring will be determined randomly
 	 *  following the specified statistical distributions. Because families
 	 *  with zero offspring are silently ignored, the distribution of the
 	 *  observed number of offspring per mating event (excluding zero)
@@ -497,19 +498,27 @@ public:
 	 *  default value is usually \e RANDOM_SEX which assign \c MALE or \c FEMALE
 	 *  to each individual randomly, with equal probabilities. If \c NO_SEX is
 	 *  given, offspring sex will not be changed. \e sexMode can also be one of
-	 *  <tt>(PROB_OF_MALES, p)</tt>, <tt>(NUM_OF_MALES, n)</tt>, and
-	 *  <tt>(NUM_OF_FEMALES, n)</tt>. The first case specifies the probability
-	 *  of male for each offspring. The next two cases specifies the number of
-	 *  male or female individuals in each family, respectively. If \c n is
-	 *  greater than or equal to the number of offspring in this family, all
-	 *  offspring in this family will be \c MALE or \c FEMALE. All these
-	 *  options control the sex of offspring within each family. If you need
-	 *  more advanced control, or if you would like to control the sex of
-	 *  offspring across family (e.g. exactly number of males and females
-	 *  in the offspring generation), you can provide a Python generator
-	 *  function that yields \c MALE or \c FEMALE. This generator will be
-	 *  created at each subpopulation and will be used to produce sex for
-	 *  all offspring in this subpopulation. No parameter is accepted.
+	 *  \li <tt>(PROB_OF_MALES, p)</tt> where \c p is the probability of male
+	 *       for each offspring,
+	 *  \li <tt>(NUM_OF_MALES, n)</tt> where \c n is the number of males in a
+	 *       mating event. If \c n is greater than or equal to the number of
+	 *       offspring in this family, all offspring in this family will be
+	 *       \c MALE.
+	 *  \li <tt>(NUM_OF_FEMALES, n)</tt> where \c n is the number of females in
+	 *       a mating event,
+	 *  \li <tt>(SEQUENCE_OF_SEX, s1, s2 ...)</tt> where \c s1, \c s2 etc are
+	 *       MALE or FEMALE. The sequence will be used for each mating event.
+	 *       It will be reused if the number of offspring in a mating event
+	 *       is greater than the length of sequence.
+	 *  \li <tt>(GLOBAL_SEQUENCE_OF_SEX, s1, s2, ...)</tt> where \c s1, \c s2
+	 *       etc are MALE or FEMALE. The sequence will be used across mating
+	 *       events. It will be reused if the number of offspring in a
+	 *       subpopulation is greater than the length of sequence.
+	 *
+	 *  Finally, parameter \e sexMode accepts a function or a generator function.
+	 *  A function will be called whenever an offspring is produced. A generator
+	 *  will be created at each subpopulation and will be used to produce sex
+	 *  for all offspring in this subpopulation. No parameter is accepted.
 	 */
 	OffspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatListFunc & sexMode = RANDOM_SEX);
