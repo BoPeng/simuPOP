@@ -1157,7 +1157,7 @@ private:
 class CombinedParentsChooser : public ParentChooser
 {
 public:
-	/** Create a Python parent chooser using two parent choosers 
+	/** Create a Python parent chooser using two parent choosers
 	 *  \e fatherChooser and \e motherChooser. It takes one parent from each
 	 *  parent chooser and return them as father and mother. Although
 	 *  these two parent choosers are supposed to return a father and a mother
@@ -1176,11 +1176,13 @@ public:
 		m_initialized = false;
 	}
 
+
 	~CombinedParentsChooser()
 	{
 		delete m_fatherChooser;
 		delete m_motherChooser;
 	}
+
 
 	/// HIDDEN Deep copy of a python parent chooser.
 	ParentChooser * clone() const
