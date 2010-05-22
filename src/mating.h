@@ -1159,11 +1159,13 @@ class CombinedParentsChooser : public ParentChooser
 public:
 	/** Create a Python parent chooser using two parent choosers
 	 *  \e fatherChooser and \e motherChooser. It takes one parent from each
-	 *  parent chooser and return them as father and mother. Although
-	 *  these two parent choosers are supposed to return a father and a mother
-	 *  respectively, the sex of returned parents are not checked so it is
-	 *  possible to return parents with the same sex using this parents
-	 *  chooser.
+	 *  parent chooser and return them as father and mother. If two valid
+	 *  parents are returned, the first valid parent (father) will be used
+	 *  for \e fatherChooser, the second valid parent (mother) will be used
+	 *  for \e motherChooser. Although these two parent choosers are supposed
+	 *  to return a father and a mother respectively, the sex of returned
+	 *  parents are not checked so it is possible to return parents with the
+	 *  same sex using this parents chooser.
 	 */
 	CombinedParentsChooser(const ParentChooser & fatherChooser,
 		const ParentChooser & motherChooser);
