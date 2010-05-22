@@ -846,6 +846,32 @@ Usage:
 
 %ignore simuPOP::Bernullitrials::probabilities();
 
+%ignore simuPOP::BinomialNumOffModel;
+
+%feature("docstring") simuPOP::BinomialNumOffModel::BinomialNumOffModel "
+
+Usage:
+
+    BinomialNumOffModel(N, mu)
+
+"; 
+
+%feature("docstring") simuPOP::BinomialNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::BinomialNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
+
 %feature("docstring") simuPOP::CloneGenoTransmitter "
 
 Details:
@@ -1013,6 +1039,32 @@ Details:
     one of the combined splitters unless a new set of names is
     specified. If a vspMap was used, names from different VSPs will be
     joined by \"or\".
+
+"; 
+
+%ignore simuPOP::ConstNumOffModel;
+
+%feature("docstring") simuPOP::ConstNumOffModel::ConstNumOffModel "
+
+Usage:
+
+    ConstNumOffModel(numOff)
+
+"; 
+
+%feature("docstring") simuPOP::ConstNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::ConstNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
 
 "; 
 
@@ -1317,6 +1369,40 @@ Usage:
 %ignore simuPOP::floatMatrix::empty() const;
 
 %ignore simuPOP::floatMatrix::elems() const;
+
+%ignore simuPOP::FuncNumOffModel;
+
+%feature("docstring") simuPOP::FuncNumOffModel::FuncNumOffModel "
+
+Usage:
+
+    FuncNumOffModel(func)
+
+"; 
+
+%feature("docstring") simuPOP::FuncNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::FuncNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
+
+%feature("docstring") simuPOP::FuncNumOffModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
 
 %ignore simuPOP::FuncSexModel;
 
@@ -1986,6 +2072,32 @@ Details:
     Return name of VSP vsp, which is \"Genotype loc1,loc2:genotype\" as
     defined by parameters loci and alleles. A user provided name will
     be returned if specified.
+
+"; 
+
+%ignore simuPOP::GeometricNumOffModel;
+
+%feature("docstring") simuPOP::GeometricNumOffModel::GeometricNumOffModel "
+
+Usage:
+
+    GeometricNumOffModel(p)
+
+"; 
+
+%feature("docstring") simuPOP::GeometricNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::GeometricNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
 
 "; 
 
@@ -4026,6 +4138,48 @@ Usage:
 
 "; 
 
+%ignore simuPOP::NumOffModel;
+
+%feature("docstring") simuPOP::NumOffModel::NumOffModel "
+
+Usage:
+
+    NumOffModel()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::~NumOffModel "
+
+Usage:
+
+    x.~NumOffModel()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
 %ignore simuPOP::NumOfMalesSexModel;
 
 %feature("docstring") simuPOP::NumOfMalesSexModel::NumOfMalesSexModel "
@@ -4844,6 +4998,32 @@ Usage:
 %feature("docstring") simuPOP::PointMutator::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PointMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PoissonNumOffModel;
+
+%feature("docstring") simuPOP::PoissonNumOffModel::PoissonNumOffModel "
+
+Usage:
+
+    PoissonNumOffModel(mu)
+
+"; 
+
+%feature("docstring") simuPOP::PoissonNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::PoissonNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
 
 %feature("docstring") simuPOP::PolyParentsChooser "
 
@@ -9311,6 +9491,32 @@ Usage:
 %ignore simuPOP::uintString::name() const;
 
 %ignore simuPOP::uintString::value() const;
+
+%ignore simuPOP::UniformNumOffModel;
+
+%feature("docstring") simuPOP::UniformNumOffModel::UniformNumOffModel "
+
+Usage:
+
+    UniformNumOffModel(low, high)
+
+"; 
+
+%feature("docstring") simuPOP::UniformNumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::UniformNumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
 
 %feature("docstring") simuPOP::ValueError "
 
