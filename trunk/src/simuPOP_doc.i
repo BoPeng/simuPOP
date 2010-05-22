@@ -959,6 +959,56 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::CombinedParentsChooser "
+
+Details:
+
+    This parent chooser accepts two parent choosers. It takes one
+    parent from each parent chooser and return them as father and
+    mother. Because two parent choosers do not have to choose parents
+    from the same virtual subpopulation, this parent chooser allows
+    you to choose parents from different subpopulations.
+
+"; 
+
+%feature("docstring") simuPOP::CombinedParentsChooser::CombinedParentsChooser "
+
+Usage:
+
+    CombinedParentsChooser(fatherChooser, motherChooser)
+
+Details:
+
+    Create a Python parent chooser using two parent choosers
+    fatherChooser and motherChooser. It takes one parent from each
+    parent chooser and return them as father and mother. Although
+    these two parent choosers are supposed to return a father and a
+    mother respectively, the sex of returned parents are not checked
+    so it is possible to return parents with the same sex using this
+    parents chooser.
+
+"; 
+
+%ignore simuPOP::CombinedParentsChooser::CombinedParentsChooser(const CombinedParentsChooser &rhs);
+
+%feature("docstring") simuPOP::CombinedParentsChooser::~CombinedParentsChooser "
+
+Usage:
+
+    x.~CombinedParentsChooser()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedParentsChooser::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::CombinedParentsChooser::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::CombinedParentsChooser::initialize(Population &pop, SubPopID sp);
+
+%ignore simuPOP::CombinedParentsChooser::finalize(Population &pop, SubPopID sp);
+
+%ignore simuPOP::CombinedParentsChooser::chooseParents(RawIndIterator basePtr);
+
 %feature("docstring") simuPOP::CombinedSplitter "
 
 Details:
@@ -4242,16 +4292,18 @@ Details:
     number, a Python function or generator, or a mode parameter
     followed by some optional arguments. If a number is given, given
     number of offspring will be generated at each mating event. If a
-    Python function or generator function is given, it will be called
-    each time when a mating event happens. Current generation number
-    will be passed to this function if parameter \"gen\" is used in this
-    function. The return value of this function or generator will be
-    considered the number of offspring. In the last case, a tuple (or
-    a list) in one of the following forms can be given:
+    Python function is given, it will be called each time when a
+    mating event happens. When a generator function is specified, it
+    will be called for each subpopulation to provide number of
+    offspring for all mating events during the populating of this
+    subpopulation. Current generation number will be passed to this
+    function or generator function if parameter \"gen\" is used in this
+    function. In the last case, a tuple (or a list) in one of the
+    following forms can be given:
     *   (GEOMETRIC_DISTRIBUTION, p)
     *   (POISSON_DISTRIBUTION, p), p > 0
     *   (BINOMIAL_DISTRIBUTION, p, N), 0 < p <=1, N > 0
-    *   (UNIFORM_DISTRIBUTION, a, b), 0 <= a <= b. In this case, he
+    *   (UNIFORM_DISTRIBUTION, a, b), 0 <= a <= b. In this case, the
     number of offspring will be determined randomly following the
     specified statistical distributions. Because families with zero
     offspring are silently ignored, the distribution of the observed
@@ -4266,20 +4318,26 @@ Details:
     sex of each offspring. Its default value is usually RANDOM_SEX
     which assign MALE or FEMALE to each individual randomly, with
     equal probabilities. If NO_SEX is given, offspring sex will not be
-    changed. sexMode can also be one of (PROB_OF_MALES, p),
-    (NUM_OF_MALES, n), and (NUM_OF_FEMALES, n). The first case
-    specifies the probability of male for each offspring. The next two
-    cases specifies the number of male or female individuals in each
-    family, respectively. If n is greater than or equal to the number
-    of offspring in this family, all offspring in this family will be
-    MALE or FEMALE. All these options control the sex of offspring
-    within each family. If you need more advanced control, or if you
-    would like to control the sex of offspring across family (e.g.
-    exactly number of males and females in the offspring generation),
-    you can provide a Python generator function that yields MALE or
-    FEMALE. This generator will be created at each subpopulation and
-    will be used to produce sex for all offspring in this
-    subpopulation. No parameter is accepted.
+    changed. sexMode can also be one of
+    *   (PROB_OF_MALES, p) where p is the probability of male for each
+    offspring,
+    *   (NUM_OF_MALES, n) where n is the number of males in a mating
+    event. If n is greater than or equal to the number of offspring in
+    this family, all offspring in this family will be MALE.
+    *   (NUM_OF_FEMALES, n) where n is the number of females in a
+    mating event,
+    *   (SEQUENCE_OF_SEX, s1, s2 ...) where s1, s2 etc are MALE or
+    FEMALE. The sequence will be used for each mating event. It will
+    be reused if the number of offspring in a mating event is greater
+    than the length of sequence.
+    *   (GLOBAL_SEQUENCE_OF_SEX, s1, s2, ...) where s1, s2 etc are
+    MALE or FEMALE. The sequence will be used across mating events. It
+    will be reused if the number of offspring in a subpopulation is
+    greater than the length of sequence. Finally, parameter sexMode
+    accepts a function or a generator function. A function will be
+    called whenever an offspring is produced. A generator will be
+    created at each subpopulation and will be used to produce sex for
+    all offspring in this subpopulation. No parameter is accepted.
 
 "; 
 
@@ -6710,7 +6768,7 @@ Usage:
 
 Details:
 
-    This parent chooser accept a Python generator function that
+    This parent chooser accepts a Python generator function that
     repeatedly yields one or two parents, which can be references to
     individual objects or indexes relative to each subpopulation. The
     parent chooser calls the generator function with parental
