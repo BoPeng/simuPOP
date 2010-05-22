@@ -47,6 +47,228 @@ using std::stack;
 
 namespace simuPOP {
 
+/// CPPONLY
+class SexModel
+{
+public:
+	SexModel() {}
+	virtual Sex getSex(UINT count) = 0;
+	virtual void reset() {}
+	virtual SexModel * clone() = 0;
+};
+
+/// CPPONLY
+class NoSexModel : public SexModel
+{
+public:
+	NoSexModel() {}
+
+	SexModel * clone()
+	{
+		return new NoSexModel(*this);
+	}
+
+	Sex getSex(UINT)
+	{
+		return MALE;
+	}
+};
+
+/// CPPONLY
+class RandomSexModel : public SexModel
+{
+public:
+	RandomSexModel() {}
+
+	SexModel * clone()
+	{
+		return new RandomSexModel(*this);
+	}
+
+	Sex getSex(UINT)
+	{
+		return getRNG().randBit() ? MALE : FEMALE;
+	}
+};
+
+
+/// CPPONLY
+class ProbOfMalesSexModel : public SexModel
+{
+public:
+
+	ProbOfMalesSexModel(double probOfMales) : m_probOfMales(probOfMales)
+	{
+	}
+
+	SexModel * clone()
+	{
+		return new ProbOfMalesSexModel(*this);
+	}
+
+	Sex getSex(UINT)
+	{
+		return getRNG().randUniform() < m_probOfMales ? MALE : FEMALE;
+	}
+
+private:
+	double m_probOfMales;
+};
+
+/// CPPONLY
+class NumOfMalesSexModel : public SexModel
+{
+public:
+	NumOfMalesSexModel(UINT numOfMales) : m_numOfMales(numOfMales)
+	{
+	}
+	
+	SexModel * clone()
+	{
+		return new NumOfMalesSexModel(*this);
+	}
+
+	Sex getSex(UINT count)
+	{
+		return count < m_numOfMales ? MALE : FEMALE;
+	}
+
+private:
+	UINT m_numOfMales;
+};
+
+/// CPPONLY
+class NumOfFemalesSexModel : public SexModel
+{
+public:
+	NumOfFemalesSexModel(UINT numOfFemales) : m_numOfFemales(numOfFemales)
+	{
+	}
+
+	SexModel * clone()
+	{
+		return new NumOfFemalesSexModel(*this);
+	}
+
+	Sex getSex(UINT count)
+	{
+		return count < m_numOfFemales ? FEMALE : MALE;
+	}
+
+private:
+	UINT m_numOfFemales;
+};
+
+
+/// CPPONLY
+class SeqSexModel : public SexModel
+{
+public:
+	SeqSexModel(const vectorf & sex) : m_sex()
+	{
+		DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
+		vectorf::const_iterator it = sex.begin() + 1;
+		vectorf::const_iterator it_end = sex.end();
+		for (; it != it_end; ++it)
+			m_sex.push_back(static_cast<Sex>(*it));
+	}
+
+
+	SexModel * clone()
+	{
+		return new SeqSexModel(*this);
+	}
+
+	Sex getSex(UINT count)
+	{
+		return m_sex[count % m_sex.size()];
+	}
+
+private:
+	vector<Sex> m_sex;
+};
+
+
+/// CPPONLY
+class GlobalSeqSexModel : public SexModel
+{
+public:
+	GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
+	{
+		DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
+		vectorf::const_iterator it = sex.begin() + 1;
+		vectorf::const_iterator it_end = sex.end();
+		for (; it != it_end; ++it)
+			m_sex.push_back(static_cast<Sex>(*it));
+	}
+
+	SexModel * clone()
+	{
+		return new GlobalSeqSexModel(*this);
+	}
+
+	Sex getSex(UINT)
+	{
+		return m_sex[m_index++ % m_sex.size()];
+	}
+
+private:
+	vector<Sex> m_sex;
+	int m_index;
+};
+
+
+/// CPPONLY
+class FuncSexModel : public SexModel
+{
+public:
+	FuncSexModel(const pyFunc & func) : m_func(func), m_generator(NULL)
+	{
+	}
+
+	SexModel * clone()
+	{
+		return new FuncSexModel(*this);
+	}
+
+	Sex getSex(UINT count)
+	{
+		if (m_generator.isValid()) {
+			long int val;
+			PyObject * obj = m_generator.next();
+			PyObj_As_Int(obj, val);
+			Py_DECREF(obj);
+			return static_cast<Sex>(val);
+		} else {
+			PyObject * obj = NULL;
+			try {
+				obj = m_func("()");
+				long int val;
+				PyObj_As_Int(obj, val);
+				return static_cast<Sex>(val);
+			} catch (ValueError &) {
+				if (PyGen_Check(obj)) {
+					m_generator.set(obj);
+					return getSex(count);
+				} else
+					throw ValueError("Passed function should be a function that return MALE/FEMALE or a generator.");
+			}
+			// this should not be reached.
+			return MALE;
+		}
+		return MALE;
+	}
+
+	void reset()
+	{
+		m_generator.set(NULL);
+	}
+
+private:
+	pyFunc m_func;
+	pyGenerator m_generator;
+};
+
 /** An <em>offspring generator</em> generates offspring from parents chosen by
  *  a parent chooser. It is responsible for creating a certain number of
  *  offspring, determinning their sex, and transmitting genotypes from parents
@@ -120,8 +342,18 @@ public:
 	OffspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatListFunc & sexMode = RANDOM_SEX);
 
+	/// CPPONLY
+	OffspringGenerator(const OffspringGenerator & rhs) 
+		: m_numOffspring(rhs.m_numOffspring),
+		m_numOffGenerator(rhs.m_numOffGenerator),
+		m_transmitters(rhs.m_transmitters)
+	{
+		m_sexModel = rhs.m_sexModel->clone();
+	}
+
 	virtual ~OffspringGenerator()
 	{
+		delete m_sexModel;
 	}
 
 
@@ -146,7 +378,7 @@ public:
 	virtual void finalize(const Population & pop)
 	{
 		m_numOffGenerator.set(NULL);
-		m_sexGenerator.set(NULL);
+		m_sexModel->reset();
 		m_initialized = false;
 	}
 
@@ -172,7 +404,7 @@ public:
 	 *  return sex according to m_sexParam, m_sexMode and
 	 *  \e count, which is the index of offspring
 	 */
-	Sex getSex(int count);
+	Sex getSex(UINT count);
 
 protected:
 	/// number of offspring
@@ -180,10 +412,7 @@ protected:
 
 	pyGenerator m_numOffGenerator;
 
-	/// paramter to determine offspring sex
-	floatListFunc m_sexMode;
-
-	pyGenerator m_sexGenerator;
+	SexModel * m_sexModel;
 
 	/// default transmitter
 	opList m_transmitters;
