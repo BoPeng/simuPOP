@@ -182,15 +182,7 @@ private:
 class SeqSexModel : public SexModel
 {
 public:
-	SeqSexModel(const vectorf & sex) : m_sex()
-	{
-		DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
-		vectorf::const_iterator it = sex.begin() + 1;
-		vectorf::const_iterator it_end = sex.end();
-		for (; it != it_end; ++it)
-			m_sex.push_back(static_cast<Sex>(*it));
-	}
-
+	SeqSexModel(const vectorf & sex);
 
 	SexModel * clone()
 	{
@@ -213,15 +205,7 @@ private:
 class GlobalSeqSexModel : public SexModel
 {
 public:
-	GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
-	{
-		DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
-		vectorf::const_iterator it = sex.begin() + 1;
-		vectorf::const_iterator it_end = sex.end();
-		for (; it != it_end; ++it)
-			m_sex.push_back(static_cast<Sex>(*it));
-	}
-
+	GlobalSeqSexModel(const vectorf & sex);
 
 	SexModel * clone()
 	{
@@ -262,33 +246,7 @@ public:
 	}
 
 
-	Sex getSex(UINT count)
-	{
-		if (m_generator.isValid()) {
-			long int val;
-			PyObject * obj = m_generator.next();
-			PyObj_As_Int(obj, val);
-			Py_DECREF(obj);
-			return static_cast<Sex>(val);
-		} else {
-			PyObject * obj = NULL;
-			try {
-				obj = m_func("()");
-				long int val;
-				PyObj_As_Int(obj, val);
-				return static_cast<Sex>(val);
-			} catch (ValueError &) {
-				if (PyGen_Check(obj)) {
-					m_generator.set(obj);
-					return getSex(count);
-				} else
-					throw ValueError("Passed function should be a function that return MALE/FEMALE or a generator.");
-			}
-			// this should not be reached.
-			return MALE;
-		}
-		return MALE;
-	}
+	Sex getSex(UINT count);
 
 
 	void reset()
@@ -470,57 +428,12 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
-	{
-		if (m_generator.isValid()) {
-			int attempts = 0;
-			long int numOff = 0;
-			while (++attempts < 50) {
-				PyObject * obj = m_generator.next();
-				PyObj_As_Int(obj, numOff);
-				Py_DECREF(obj);
-				DBG_DO(DBG_DEVEL, cerr << "Number of offspring produced from a generator: " << numOff << endl);
-				if (numOff > 0)
-					return numOff;
-			}
-			DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
-			return 1;
-		} else {
-			DBG_FAILIF(m_func.numArgs() > 1 || (m_func.numArgs() == 1 && m_func.arg(0) != "gen"),
-				ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
-			int attempts = 0;
-			long int numOff = 0;
-			while (++attempts < 50) {
-				PyObject * obj = NULL;
-				try {
-					if (m_func.numArgs() == 0)
-						obj = m_func("()");
-					else
-						obj = m_func("(i)", gen);
-					PyObj_As_Int(obj, numOff);
-					if (numOff > 0)
-						return numOff;
-				} catch (ValueError &) {
-					if (PyGen_Check(obj)) {
-						m_generator.set(obj);
-						return getNumOff(gen);
-					} else {
-						throw ValueError("Function should return a number or a generator.");
-					}
-				}
-			}
-			DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
-			return 1;
-		}
-		return 1;
-	}
-
+	ULONG getNumOff(int gen);
 
 	void reset()
 	{
 		m_generator.set(NULL);
 	}
-
 
 private:
 	pyFunc m_func;

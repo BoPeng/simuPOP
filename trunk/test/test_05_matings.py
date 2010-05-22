@@ -79,7 +79,6 @@ class TestMatingSchemes(unittest.TestCase):
         def nos_gen():
             while True:
                 yield random.randint(5, 10)
-                #yield getRNG().randInt(1, 3)+1
         cnt = self.getFamSize(numOffspring=nos_gen, N=1000)
         self.assertEqual(sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1, 4) ]
@@ -132,15 +131,15 @@ class TestMatingSchemes(unittest.TestCase):
 
 
     def checkSexMode(self, ms):
-        simu = Simulator( Population(size=[40]))
-        simu.evolve(initOps = InitSex(), matingScheme=ms, gen=1)
+        pop = Population(size=[40])
+        pop.evolve(initOps = InitSex(), matingScheme=ms, gen=1)
         # return individual sex as a string
         def sexChar(sex):
             if sex == MALE:
                 return 'M'
             else:
                 return 'F'
-        return ''.join([sexChar(ind.sex()) for ind in simu.population(0).individuals()])
+        return ''.join([sexChar(ind.sex()) for ind in pop.individuals()])
 
     def testSexMode(self):
         'Testing parameter sexMode of mating schemes'
@@ -158,6 +157,16 @@ class TestMatingSchemes(unittest.TestCase):
             self.checkSexMode(RandomMating(numOffspring=4,
             sexMode=(NUM_OF_FEMALES, 2))),
             'FFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMM')
+        # SEQUENCE_OF_SEX
+        self.assertEqual(
+            self.checkSexMode(RandomMating(numOffspring=4,
+            sexMode=(SEQUENCE_OF_SEX, MALE, FEMALE, FEMALE))),
+            'MFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFMMFFM')
+        # SEQUENCE_OF_SEX
+        self.assertEqual(
+            self.checkSexMode(RandomMating(numOffspring=4,
+            sexMode=(GLOBAL_SEQUENCE_OF_SEX, MALE, FEMALE, FEMALE))),
+            'MFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFM')
         # PROB_OF_MALES
         pop = Population(10000)
         simu = Simulator(pop)
@@ -172,10 +181,18 @@ class TestMatingSchemes(unittest.TestCase):
             gen = 10
         )
         self.assertEqual(simu.dvars(0).gen, 10)
+        # Using a function.
+        def sexFunc():
+            return random.randint(1, 2)
+        self.assertNotEqual(
+            self.checkSexMode(RandomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 6),
+                sexMode=sexFunc)),
+            'FMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFM')
         # Using a generator function
         def sexFunc():
             i = 0
             while True:
+                random.random()
                 i += 1
                 if i % 2 == 0:
                     yield MALE

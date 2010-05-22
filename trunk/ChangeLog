@@ -26,6 +26,8 @@ New features (minor):
   - Allow parameters in Population.addChrom, Population.addLoci to accept single input for vector
 		parameters.
   - Support Python 2.6.5 (fix setup.py).
+  - Add SEQUNCE_OF_SEX and GLOBAL_SEQUENCE_OF_SEX to option sexMode of class OffspringGenerator.
+  - Parameter sexMode and numOffspring in OffspringGenerator now accepts a generator function.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
