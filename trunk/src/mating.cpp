@@ -38,9 +38,10 @@ typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
 
 namespace simuPOP {
 
+
 OffspringGenerator::OffspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatListFunc & sexMode) :
-	m_numOffspring(numOffspring), m_numOffGenerator(NULL), m_sexMode(sexMode), m_sexGenerator(NULL),
+	m_numOffspring(numOffspring), m_numOffGenerator(NULL), m_sexModel(NULL),
 	m_transmitters(ops), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
@@ -51,7 +52,7 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 			"Number of offspring has to be positive.");
 	} else if (m_numOffspring.size() > 1) {
 		int mode = static_cast<int>(m_numOffspring[0]);
-		(void)mode;  // fix compiler warning.
+		(void)mode;     // fix compiler warning.
 
 		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION
 			&& (m_numOffspring.size() < 3 || static_cast<UINT>(m_numOffspring[2]) <= 1.),
@@ -69,17 +70,41 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
 			ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
 	}
-	DBG_FAILIF(m_sexMode.size() == 0 && !m_sexMode.func().isValid(), ValueError,
-		"Please specify one of the sex modes or a Python function.");
-	DBG_FAILIF(m_sexMode.size() >= 1 && (
-		                                 (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES ||
-		                                  static_cast<int>(m_sexMode[0]) == NUM_OF_MALES ||
-		                                  static_cast<int>(m_sexMode[0]) == NUM_OF_FEMALES) && m_sexMode.size() < 2),
-		ValueError, "A parameter is required for sex mode PROB_OF_MALES, NUM_OF_MALES and NUM_OF_FEMALES");
 
-	DBG_FAILIF(m_sexMode.size() >= 1 && (static_cast<int>(m_sexMode[0]) == PROB_OF_MALES &&
-		                                 (fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1))),
-		ValueError, "Probability of male has to be between 0 and 1");
+	if (sexMode.size() == 0) {
+		DBG_FAILIF(!sexMode.func().isValid(), ValueError,
+			"Please specify one of the sex modes or a Python function.");
+		m_sexModel = new FuncSexModel(sexMode.func());
+	} else {
+		int mode = static_cast<int>(sexMode[0]);
+
+		if (mode == NO_SEX) {
+			DBG_FAILIF(sexMode.size() != 1, ValueError, "No parameter is allowed for NO_SEX mode");
+			m_sexModel = new NoSexModel();
+		} else if (mode == RANDOM_SEX) {
+			DBG_FAILIF(sexMode.size() != 1, ValueError, "No parameter is allowed for RANDOM_SEX mode");
+			m_sexModel = new RandomSexModel();
+		} else if (mode == PROB_OF_MALES) {
+			DBG_FAILIF(sexMode.size() != 2, ValueError, "A parameter is required for mode PROB_OF_MALES.");
+			DBG_FAILIF(fcmp_lt(sexMode[1], 0) || fcmp_gt(sexMode[1], 1),
+				ValueError, "Probability of male has to be between 0 and 1");
+			m_sexModel = new ProbOfMalesSexModel(sexMode[1]);
+		} else if (mode == NUM_OF_MALES) {
+			DBG_FAILIF(sexMode.size() != 2, ValueError, "A parameter is required for mode NUM_OF_MALES.");
+			m_sexModel = new NumOfMalesSexModel(static_cast<UINT>(sexMode[1]));
+		} else if (mode == NUM_OF_FEMALES) {
+			DBG_FAILIF(sexMode.size() != 2, ValueError, "A parameter is required for mode NUM_OF_FEMALES.");
+			m_sexModel = new NumOfFemalesSexModel(static_cast<UINT>(sexMode[1]));
+		} else if (mode == SEQUENCE_OF_SEX) {
+			DBG_FAILIF(sexMode.size() <= 2, ValueError, "A sequence of sex is required for mode SEQUENCE_OF_SEX.");
+			m_sexModel = new SeqSexModel(sexMode.elems());
+		} else if (mode == GLOBAL_SEQUENCE_OF_SEX) {
+			DBG_FAILIF(sexMode.size() <= 2, ValueError, "A sequence of sex is required for mode GLOBAL_SEQUENCE_OF_SEX.");
+			m_sexModel = new GlobalSeqSexModel(sexMode.elems());
+		} else {
+			DBG_FAILIF(true, ValueError, "Unrecognized sexMode.");
+		}
+	}
 }
 
 
@@ -159,47 +184,9 @@ ULONG OffspringGenerator::numOffspring(int gen)
 }
 
 
-Sex OffspringGenerator::getSex(int count)
+Sex OffspringGenerator::getSex(UINT count)
 {
-	if (m_sexGenerator.isValid()) {
-		long int val;
-		PyObject * obj = m_sexGenerator.next();
-		PyObj_As_Int(obj, val);
-		Py_DECREF(obj);
-		return static_cast<Sex>(val);
-	} else if (m_sexMode.func().isValid()) {
-		const pyFunc & func = m_sexMode.func();
-		PyObject * obj = NULL;
-		try {
-			obj = func("()");
-			long int val;
-			PyObj_As_Int(obj, val);
-			return static_cast<Sex>(val);
-		} catch (ValueError &) {
-			if (PyGen_Check(obj)) {
-				m_sexGenerator.set(obj);
-				return getSex(count);
-			} else
-				throw ValueError("Passed function should be a function that return MALE/FEMALE or a generator.");
-		}
-		// this should not be reached.
-		return MALE;
-	}
-	const vectorf & sexMode = m_sexMode.elems();
-	int mode = static_cast<int>(sexMode[0]);
-
-	if (mode == NO_SEX)
-		return MALE;
-	else if (mode == RANDOM_SEX)
-		return getRNG().randBit() ? MALE : FEMALE;
-	else if (mode == PROB_OF_MALES)
-		return getRNG().randUniform() < sexMode[1] ? MALE : FEMALE;
-	else if (mode == NUM_OF_MALES)
-		return count < static_cast<int>(sexMode[1]) ? MALE : FEMALE;
-	else if (mode == NUM_OF_FEMALES)
-		return count < static_cast<int>(sexMode[1]) ? FEMALE : MALE;
-	DBG_ASSERT(false, SystemError, "This line should not be reached.");
-	return MALE;
+	return m_sexModel->getSex(count);
 }
 
 
@@ -255,8 +242,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 					break;
 				}
 			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -631,7 +618,7 @@ void RandomParentChooser::initialize(Population & pop, SubPopID sp)
 				pop.infoEnd(fit_id, sp)));
 	} else {
 		m_size = m_index.size();
-		if (m_size == 0)     // if m_index is not used (no VSP)
+		if (m_size == 0)         // if m_index is not used (no VSP)
 			m_size = pop.subPopSize(sp);
 	}
 
@@ -1307,8 +1294,8 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 				if ((*iop)->isActive(pop.rep(), pop.gen()))
 					(*iop)->applyDuringMating(pop, it, dad, mom);
 			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -1461,8 +1448,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(sps[i]);
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
-			                    << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
+			                   << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1508,8 +1495,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "VSP sizes in subpop " << sp << " is "
-			                    << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
+			                   << vspSize << endl);
 
 		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
 			SystemError, "Failed to determine subpopulation size");
@@ -1555,3 +1542,5 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 
 
 }
+
+

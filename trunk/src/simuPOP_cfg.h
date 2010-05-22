@@ -188,7 +188,9 @@ enum SexMode {
 	RANDOM_SEX = 31,
 	PROB_OF_MALES = 32,
 	NUM_OF_MALES = 33,
-	NUM_OF_FEMALES = 34
+	NUM_OF_FEMALES = 34,
+	SEQUENCE_OF_SEX = 35,
+	GLOBAL_SEQUENCE_OF_SEX = 36,
 };
 
 // For gene conversion
