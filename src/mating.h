@@ -435,6 +435,7 @@ public:
 		m_generator.set(NULL);
 	}
 
+
 private:
 	pyFunc m_func;
 	pyGenerator m_generator;
