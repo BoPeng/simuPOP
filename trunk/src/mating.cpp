@@ -41,36 +41,43 @@ namespace simuPOP {
 
 OffspringGenerator::OffspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatListFunc & sexMode) :
-	m_numOffspring(numOffspring), m_numOffGenerator(NULL), m_sexModel(NULL),
-	m_transmitters(ops), m_initialized(false)
+	m_numOffModel(NULL), m_sexModel(NULL), m_transmitters(ops), m_initialized(false)
 {
-	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
-		"Please specify either number of offspring or a function.");
 
-	if (numOffspring.size() == 1) {
+	if (numOffspring.size() == 0) {
+		DBG_FAILIF(!numOffspring.func().isValid(), ValueError,
+			"Please specify either number of offspring or a function.");
+		m_numOffModel = new FuncNumOffModel(numOffspring.func());
+	} else if (numOffspring.size() == 1) {
 		DBG_FAILIF(static_cast<int>(numOffspring[0]) <= 0, ValueError,
 			"Number of offspring has to be positive.");
-	} else if (m_numOffspring.size() > 1) {
-		int mode = static_cast<int>(m_numOffspring[0]);
-		(void)mode;     // fix compiler warning.
+		m_numOffModel = new ConstNumOffModel(static_cast<UINT>(numOffspring[0]));
+	} else if (numOffspring.size() > 1) {
+		int mode = static_cast<int>(numOffspring[0]);
 
-		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION
-			&& (m_numOffspring.size() < 3 || static_cast<UINT>(m_numOffspring[2]) <= 1.),
-			ValueError, "If mode is BINOMIAL_DISTRIBUTION, the second parameter should be greater than 1");
-		DBG_FAILIF(mode == UNIFORM_DISTRIBUTION &&
-			(m_numOffspring.size() < 3 || m_numOffspring[2] < static_cast<UINT>(m_numOffspring[1])),
-			ValueError, "If mode is UNIFORM_DISTRIBUTION, m_numOffspringParam should be greater than m_numOffspring");
-		DBG_FAILIF(mode == GEOMETRIC_DISTRIBUTION &&
-			(m_numOffspring.size() < 2 || fcmp_lt(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
-			ValueError, "P for a geometric distribution should be within [0,1]");
-		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
-			(m_numOffspring.size() < 2 || fcmp_le(m_numOffspring[1], 0) || fcmp_gt(m_numOffspring[1], 1.)),
-			ValueError, "P for a Bionomial distribution should be within (0,1].");
-		DBG_FAILIF(mode == BINOMIAL_DISTRIBUTION &&
-			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
-			ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
+		if (mode == GEOMETRIC_DISTRIBUTION) {
+			DBG_FAILIF(numOffspring.size() < 2 || fcmp_lt(numOffspring[1], 0) || fcmp_gt(numOffspring[1], 1.),
+				ValueError, "P for a geometric distribution should be within [0,1]");
+			m_numOffModel = new GeometricNumOffModel(numOffspring[1]);
+		} else if (mode == POISSON_DISTRIBUTION) {
+			m_numOffModel = new PoissonNumOffModel(numOffspring[1]);
+		} else if (mode == BINOMIAL_DISTRIBUTION) {
+			DBG_FAILIF(numOffspring.size() < 3 || static_cast<UINT>(numOffspring[2]) <= 1.,
+				ValueError, "If mode is BINOMIAL_DISTRIBUTION, the second parameter should be greater than 1");
+			DBG_FAILIF(numOffspring.size() < 2 || fcmp_le(numOffspring[1], 0) || fcmp_gt(numOffspring[1], 1.),
+				ValueError, "P for a Bionomial distribution should be within (0,1].");
+			DBG_FAILIF(numOffspring.size() < 3 || numOffspring[2] < 1,
+				ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
+			m_numOffModel = new BinomialNumOffModel(numOffspring[2], numOffspring[1]);
+		} else if (mode == UNIFORM_DISTRIBUTION) {
+			DBG_FAILIF(numOffspring.size() < 3 || numOffspring[2] < static_cast<UINT>(numOffspring[1]),
+				ValueError, "If mode is UNIFORM_DISTRIBUTION, numOffspringParam should be greater than numOffspring");
+			m_numOffModel = new UniformNumOffModel(numOffspring[1], numOffspring[2]);
+		} else {
+			throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
+				             "NumOffspring, NumOffspringEachFamily and GEometricDistribution");
+		}
 	}
-
 	if (sexMode.size() == 0) {
 		DBG_FAILIF(!sexMode.func().isValid(), ValueError,
 			"Please specify one of the sex modes or a Python function.");
@@ -110,77 +117,8 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 
 ULONG OffspringGenerator::numOffspring(int gen)
 {
-	if (m_numOffspring.size() == 1)
-		return static_cast<UINT>(m_numOffspring[0]);
+	return m_numOffModel->getNumOff(gen);
 
-	if (m_numOffGenerator.isValid()) {
-		int attempts = 0;
-		long int numOff = 0;
-		while (++attempts < 50) {
-			PyObject * obj = m_numOffGenerator.next();
-			PyObj_As_Int(obj, numOff);
-			Py_DECREF(obj);
-			DBG_DO(DBG_DEVEL, cerr << "Number of offspring produced from a generator: " << numOff << endl);
-			if (numOff > 0)
-				return numOff;
-		}
-		DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
-		return 1;
-	} else if (m_numOffspring.func().isValid()) {
-		const pyFunc & func = m_numOffspring.func();
-		DBG_FAILIF(func.numArgs() > 1 || (func.numArgs() == 1 && func.arg(0) != "gen"),
-			ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
-		int attempts = 0;
-		long int numOff = 0;
-		while (++attempts < 50) {
-			PyObject * obj = NULL;
-			try {
-				if (func.numArgs() == 0)
-					obj = func("()");
-				else
-					obj = func("(i)", gen);
-				PyObj_As_Int(obj, numOff);
-				if (numOff > 0)
-					return numOff;
-			} catch (ValueError &) {
-				if (PyGen_Check(obj)) {
-					m_numOffGenerator.set(obj);
-					return numOffspring(gen);
-				} else {
-					throw ValueError("Function should return a number or a generator.");
-				}
-			}
-		}
-		DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
-		return 1;
-	}
-	switch (static_cast<int>(m_numOffspring[0])) {
-	case GEOMETRIC_DISTRIBUTION:
-		return getRNG().randGeometric(m_numOffspring[1]);
-	case POISSON_DISTRIBUTION:
-		return getRNG().randTruncatedPoisson(m_numOffspring[1]);
-	case BINOMIAL_DISTRIBUTION:
-		return getRNG().randTruncatedBinomial(static_cast<UINT>(m_numOffspring[2]),
-			m_numOffspring[1]);
-	case UNIFORM_DISTRIBUTION: {
-		// max: 5
-		// num: 2
-		// randint(4)  ==> 0, 1, 2, 3
-		// + 2 ==> 2, 3, 4, 5
-		UINT low = static_cast<UINT>(m_numOffspring[1]);
-		// returning 0 is meaningless so we shift low from 0 to 1. This is actually a
-		// truncated uniform distribution with U(X) = P(X) / (1-P(0)) = 1/n / (1-1/n) = 1/(n-1)
-		if (low == 0)
-			low = 1;
-		return getRNG().randInt(static_cast<UINT>(m_numOffspring[2]) - low + 1) + low;
-	}
-	default:
-		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
-			             "NumOffspring, NumOffspringEachFamily and GEometricDistribution");
-	}
-	//
-	DBG_ASSERT(false, SystemError, "This line should never be reached.");
-	return 0;
 }
 
 
@@ -242,8 +180,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 					break;
 				}
 			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -1294,8 +1232,8 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 				if ((*iop)->isActive(pop.rep(), pop.gen()))
 					(*iop)->applyDuringMating(pop, it, dad, mom);
 			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
+				cerr << "One of the transmitters " << (*iop)->describe()
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
 				throw e;
 			}
 		}
@@ -1448,8 +1386,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.subPopSize(sps[i]);
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
-			                    << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cerr << "Positive mating scheme weights: " << w_pos << '\n'
+			                   << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1495,8 +1433,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "VSP sizes in subpop " << sp << " is "
-			                    << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cerr << "VSP sizes in subpop " << sp << " is "
+			                   << vspSize << endl);
 
 		DBG_ASSERT(vspSize.size() == m.size() && m.size() == sps.size(),
 			SystemError, "Failed to determine subpopulation size");

@@ -302,6 +302,232 @@ private:
 	pyGenerator m_generator;
 };
 
+/// CPPONLY
+class NumOffModel
+{
+public:
+	NumOffModel() {}
+	virtual ~NumOffModel() {}
+	virtual ULONG getNumOff(int gen) = 0;
+
+	virtual void reset() {}
+	virtual NumOffModel * clone() = 0;
+
+};
+
+/// CPPONLY
+class ConstNumOffModel : public NumOffModel
+{
+public:
+	ConstNumOffModel(UINT numOff) : m_numOff(numOff)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new ConstNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		return m_numOff;
+	}
+
+
+private:
+	UINT m_numOff;
+};
+
+
+/// CPPONLY
+class GeometricNumOffModel : public NumOffModel
+{
+public:
+	GeometricNumOffModel(double p) : m_p(p)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new GeometricNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		return getRNG().randGeometric(m_p);
+	}
+
+
+private:
+	double m_p;
+};
+
+
+/// CPPONLY
+class PoissonNumOffModel : public NumOffModel
+{
+public:
+	PoissonNumOffModel(double mu) : m_mu(mu)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new PoissonNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		return getRNG().randTruncatedPoisson(m_mu);
+	}
+
+
+private:
+	double m_mu;
+};
+
+
+/// CPPONLY
+class BinomialNumOffModel : public NumOffModel
+{
+public:
+	BinomialNumOffModel(ULONG N, double mu) : m_N(N), m_mu(mu)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new BinomialNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		return getRNG().randTruncatedBinomial(m_N, m_mu);
+	}
+
+
+private:
+	ULONG m_N;
+	double m_mu;
+};
+
+
+/// CPPONLY
+class UniformNumOffModel : public NumOffModel
+{
+public:
+	UniformNumOffModel(UINT low, UINT high) : m_low(low), m_high(high)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new UniformNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		// max: 5
+		// num: 2
+		// randint(4)  ==> 0, 1, 2, 3
+		// + 2 ==> 2, 3, 4, 5
+		// returning 0 is meaningless so we shift low from 0 to 1. This is actually a
+		// truncated uniform distribution with U(X) = P(X) / (1-P(0)) = 1/n / (1-1/n) = 1/(n-1)
+		if (m_low == 0)
+			m_low = 1;
+		return getRNG().randInt(m_high - m_low + 1) + m_low;
+	}
+
+
+private:
+	UINT m_low;
+	UINT m_high;
+};
+
+
+/// CPPONLY
+class FuncNumOffModel : public NumOffModel
+{
+public:
+	FuncNumOffModel(const pyFunc & func) : m_func(func), m_generator(NULL)
+	{
+	}
+
+
+	NumOffModel * clone()
+	{
+		return new FuncNumOffModel(*this);
+	}
+
+
+	ULONG getNumOff(int gen)
+	{
+		if (m_generator.isValid()) {
+			int attempts = 0;
+			long int numOff = 0;
+			while (++attempts < 50) {
+				PyObject * obj = m_generator.next();
+				PyObj_As_Int(obj, numOff);
+				Py_DECREF(obj);
+				DBG_DO(DBG_DEVEL, cerr << "Number of offspring produced from a generator: " << numOff << endl);
+				if (numOff > 0)
+					return numOff;
+			}
+			DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
+			return 1;
+		} else {
+			DBG_FAILIF(m_func.numArgs() > 1 || (m_func.numArgs() == 1 && m_func.arg(0) != "gen"),
+				ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
+			int attempts = 0;
+			long int numOff = 0;
+			while (++attempts < 50) {
+				PyObject * obj = NULL;
+				try {
+					if (m_func.numArgs() == 0)
+						obj = m_func("()");
+					else
+						obj = m_func("(i)", gen);
+					PyObj_As_Int(obj, numOff);
+					if (numOff > 0)
+						return numOff;
+				} catch (ValueError &) {
+					if (PyGen_Check(obj)) {
+						m_generator.set(obj);
+						return getNumOff(gen);
+					} else {
+						throw ValueError("Function should return a number or a generator.");
+					}
+				}
+			}
+			DBG_WARNIF(true, "One offspring is returned because user provided function returns 0 (#offspring) for more than 50 times.");
+			return 1;
+		}
+		return 1;
+	}
+
+
+	void reset()
+	{
+		m_generator.set(NULL);
+	}
+
+
+private:
+	pyFunc m_func;
+	pyGenerator m_generator;
+};
+
+
 /** An <em>offspring generator</em> generates offspring from parents chosen by
  *  a parent chooser. It is responsible for creating a certain number of
  *  offspring, determinning their sex, and transmitting genotypes from parents
@@ -377,16 +603,16 @@ public:
 
 	/// CPPONLY
 	OffspringGenerator(const OffspringGenerator & rhs)
-		: m_numOffspring(rhs.m_numOffspring),
-		m_numOffGenerator(rhs.m_numOffGenerator),
-		m_transmitters(rhs.m_transmitters)
+		: m_transmitters(rhs.m_transmitters)
 	{
+		m_numOffModel = rhs.m_numOffModel->clone();
 		m_sexModel = rhs.m_sexModel->clone();
 	}
 
 
 	virtual ~OffspringGenerator()
 	{
+		delete m_numOffModel;
 		delete m_sexModel;
 	}
 
@@ -411,7 +637,7 @@ public:
 	/// CPPONLY
 	virtual void finalize(const Population & pop)
 	{
-		m_numOffGenerator.set(NULL);
+		m_numOffModel->reset();
 		m_sexModel->reset();
 		m_initialized = false;
 	}
@@ -442,9 +668,7 @@ public:
 
 protected:
 	/// number of offspring
-	floatListFunc m_numOffspring;
-
-	pyGenerator m_numOffGenerator;
+	NumOffModel * m_numOffModel;
 
 	SexModel * m_sexModel;
 
@@ -534,9 +758,9 @@ private:
 	//
 	// expected alleles
 	vectoru m_expAlleles;
-	vectoru m_flip;         // in a subpop
-	vectoru m_totAllele;    // in a subpop
-	vectoru m_curAllele;    // in a subpop
+	vectoru m_flip;                 // in a subpop
+	vectoru m_totAllele;            // in a subpop
+	vectoru m_curAllele;            // in a subpop
 	//
 	int m_AAattempt;
 	int m_aaAttempt;
