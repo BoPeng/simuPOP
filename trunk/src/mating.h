@@ -52,9 +52,12 @@ class SexModel
 {
 public:
 	SexModel() {}
+	virtual ~SexModel() {}
 	virtual Sex getSex(UINT count) = 0;
+
 	virtual void reset() {}
 	virtual SexModel * clone() = 0;
+
 };
 
 /// CPPONLY
@@ -68,10 +71,13 @@ public:
 		return new NoSexModel(*this);
 	}
 
+
 	Sex getSex(UINT)
 	{
 		return MALE;
 	}
+
+
 };
 
 /// CPPONLY
@@ -85,10 +91,13 @@ public:
 		return new RandomSexModel(*this);
 	}
 
+
 	Sex getSex(UINT)
 	{
 		return getRNG().randBit() ? MALE : FEMALE;
 	}
+
+
 };
 
 
@@ -96,20 +105,22 @@ public:
 class ProbOfMalesSexModel : public SexModel
 {
 public:
-
 	ProbOfMalesSexModel(double probOfMales) : m_probOfMales(probOfMales)
 	{
 	}
+
 
 	SexModel * clone()
 	{
 		return new ProbOfMalesSexModel(*this);
 	}
 
+
 	Sex getSex(UINT)
 	{
 		return getRNG().randUniform() < m_probOfMales ? MALE : FEMALE;
 	}
+
 
 private:
 	double m_probOfMales;
@@ -123,16 +134,19 @@ public:
 	NumOfMalesSexModel(UINT numOfMales) : m_numOfMales(numOfMales)
 	{
 	}
-	
+
+
 	SexModel * clone()
 	{
 		return new NumOfMalesSexModel(*this);
 	}
 
+
 	Sex getSex(UINT count)
 	{
 		return count < m_numOfMales ? MALE : FEMALE;
 	}
+
 
 private:
 	UINT m_numOfMales;
@@ -146,15 +160,18 @@ public:
 	{
 	}
 
+
 	SexModel * clone()
 	{
 		return new NumOfFemalesSexModel(*this);
 	}
 
+
 	Sex getSex(UINT count)
 	{
 		return count < m_numOfFemales ? FEMALE : MALE;
 	}
+
 
 private:
 	UINT m_numOfFemales;
@@ -180,10 +197,12 @@ public:
 		return new SeqSexModel(*this);
 	}
 
+
 	Sex getSex(UINT count)
 	{
 		return m_sex[count % m_sex.size()];
 	}
+
 
 private:
 	vector<Sex> m_sex;
@@ -203,20 +222,24 @@ public:
 			m_sex.push_back(static_cast<Sex>(*it));
 	}
 
+
 	SexModel * clone()
 	{
 		return new GlobalSeqSexModel(*this);
 	}
+
 
 	Sex getSex(UINT)
 	{
 		return m_sex[m_index++ % m_sex.size()];
 	}
 
+
 	void reset()
 	{
 		m_index = 0;
 	}
+
 
 private:
 	vector<Sex> m_sex;
@@ -232,10 +255,12 @@ public:
 	{
 	}
 
+
 	SexModel * clone()
 	{
 		return new FuncSexModel(*this);
 	}
+
 
 	Sex getSex(UINT count)
 	{
@@ -265,10 +290,12 @@ public:
 		return MALE;
 	}
 
+
 	void reset()
 	{
 		m_generator.set(NULL);
 	}
+
 
 private:
 	pyFunc m_func;
@@ -349,13 +376,14 @@ public:
 		const floatListFunc & sexMode = RANDOM_SEX);
 
 	/// CPPONLY
-	OffspringGenerator(const OffspringGenerator & rhs) 
+	OffspringGenerator(const OffspringGenerator & rhs)
 		: m_numOffspring(rhs.m_numOffspring),
 		m_numOffGenerator(rhs.m_numOffGenerator),
 		m_transmitters(rhs.m_transmitters)
 	{
 		m_sexModel = rhs.m_sexModel->clone();
 	}
+
 
 	virtual ~OffspringGenerator()
 	{
