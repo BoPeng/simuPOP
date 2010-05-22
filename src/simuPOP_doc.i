@@ -1318,6 +1318,40 @@ Usage:
 
 %ignore simuPOP::floatMatrix::elems() const;
 
+%ignore simuPOP::FuncSexModel;
+
+%feature("docstring") simuPOP::FuncSexModel::FuncSexModel "
+
+Usage:
+
+    FuncSexModel(func)
+
+"; 
+
+%feature("docstring") simuPOP::FuncSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::FuncSexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
+%feature("docstring") simuPOP::FuncSexModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
+
 %ignore simuPOP::GenoStructure;
 
 %ignore simuPOP::GenoStructure::GenoStructure();
@@ -1952,6 +1986,40 @@ Details:
     Return name of VSP vsp, which is \"Genotype loc1,loc2:genotype\" as
     defined by parameters loci and alleles. A user provided name will
     be returned if specified.
+
+"; 
+
+%ignore simuPOP::GlobalSeqSexModel;
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::GlobalSeqSexModel "
+
+Usage:
+
+    GlobalSeqSexModel(sex)
+
+"; 
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::getSex "
+
+Usage:
+
+    x.getSex(UINT)
+
+"; 
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::reset "
+
+Usage:
+
+    x.reset()
 
 "; 
 
@@ -3906,6 +3974,84 @@ Usage:
 
 %feature("docstring") simuPOP::NoneOp::describe "Obsolete or undocumented function."
 
+%ignore simuPOP::NoSexModel;
+
+%feature("docstring") simuPOP::NoSexModel::NoSexModel "
+
+Usage:
+
+    NoSexModel()
+
+"; 
+
+%feature("docstring") simuPOP::NoSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::NoSexModel::getSex "
+
+Usage:
+
+    x.getSex(UINT)
+
+"; 
+
+%ignore simuPOP::NumOfFemalesSexModel;
+
+%feature("docstring") simuPOP::NumOfFemalesSexModel::NumOfFemalesSexModel "
+
+Usage:
+
+    NumOfFemalesSexModel(numOfFemales)
+
+"; 
+
+%feature("docstring") simuPOP::NumOfFemalesSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::NumOfFemalesSexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
+%ignore simuPOP::NumOfMalesSexModel;
+
+%feature("docstring") simuPOP::NumOfMalesSexModel::NumOfMalesSexModel "
+
+Usage:
+
+    NumOfMalesSexModel(numOfMales)
+
+"; 
+
+%feature("docstring") simuPOP::NumOfMalesSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::NumOfMalesSexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
 %feature("docstring") simuPOP::OffspringGenerator "
 
 Details:
@@ -3939,14 +4085,15 @@ Details:
     and generation indexes are unsupported.  Parameter numOffspring is
     used to control the number of offspring per mating event, or in
     another word the number of offspring in each family. It can be a
-    number, a function, or a mode parameter followed by some optional
-    arguments. If a number is given, given number of offspring will be
-    generated at each mating event. If a Python function is given, it
-    will be called each time when a mating event happens. Current
-    generation number will be passed to this function if parameter
-    \"gen\" is used in this function. The return value of this function
-    will be considered the number of offspring. In the last case, a
-    tuple (or a list) in one of the following forms can be given:
+    number, a Python function or generator, or a mode parameter
+    followed by some optional arguments. If a number is given, given
+    number of offspring will be generated at each mating event. If a
+    Python function or generator function is given, it will be called
+    each time when a mating event happens. Current generation number
+    will be passed to this function if parameter \"gen\" is used in this
+    function. The return value of this function or generator will be
+    considered the number of offspring. In the last case, a tuple (or
+    a list) in one of the following forms can be given:
     *   (GEOMETRIC_DISTRIBUTION, p)
     *   (POISSON_DISTRIBUTION, p), p > 0
     *   (BINOMIAL_DISTRIBUTION, p, N), 0 < p <=1, N > 0
@@ -3971,9 +4118,18 @@ Details:
     cases specifies the number of male or female individuals in each
     family, respectively. If n is greater than or equal to the number
     of offspring in this family, all offspring in this family will be
-    MALE or FEMALE.
+    MALE or FEMALE. All these options control the sex of offspring
+    within each family. If you need more advanced control, or if you
+    would like to control the sex of offspring across family (e.g.
+    exactly number of males and females in the offspring generation),
+    you can provide a Python generator function that yields MALE or
+    FEMALE. This generator will be created at each subpopulation and
+    will be used to produce sex for all offspring in this
+    subpopulation. No parameter is accepted.
 
 "; 
+
+%ignore simuPOP::OffspringGenerator::OffspringGenerator(const OffspringGenerator &rhs);
 
 %feature("docstring") simuPOP::OffspringGenerator::~OffspringGenerator "
 
@@ -3997,7 +4153,7 @@ Usage:
 
 %ignore simuPOP::OffspringGenerator::numOffspring(int gen);
 
-%ignore simuPOP::OffspringGenerator::getSex(int count);
+%ignore simuPOP::OffspringGenerator::getSex(UINT count);
 
 %feature("docstring") simuPOP::opList "
 
@@ -5797,6 +5953,32 @@ Details:
 
 %ignore simuPOP::Population::setGen(ULONG gen);
 
+%ignore simuPOP::ProbOfMalesSexModel;
+
+%feature("docstring") simuPOP::ProbOfMalesSexModel::ProbOfMalesSexModel "
+
+Usage:
+
+    ProbOfMalesSexModel(probOfMales)
+
+"; 
+
+%feature("docstring") simuPOP::ProbOfMalesSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::ProbOfMalesSexModel::getSex "
+
+Usage:
+
+    x.getSex(UINT)
+
+"; 
+
 %feature("docstring") simuPOP::ProductSplitter "
 
 Details:
@@ -6081,6 +6263,48 @@ Usage:
 Usage:
 
     x.func()
+
+"; 
+
+%ignore simuPOP::pyGenerator;
+
+%feature("docstring") simuPOP::pyGenerator::pyGenerator "
+
+Usage:
+
+    pyGenerator(gen=None)
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::isValid "
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::set "
+
+Usage:
+
+    x.set(gen)
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::~pyGenerator "
+
+Usage:
+
+    x.~pyGenerator()
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::next "
+
+Usage:
+
+    x.next()
 
 "; 
 
@@ -6647,6 +6871,32 @@ Details:
 %ignore simuPOP::RandomParentsChooser::initialize(Population &pop, SubPopID sp);
 
 %ignore simuPOP::RandomParentsChooser::chooseParents(RawIndIterator basePtr);
+
+%ignore simuPOP::RandomSexModel;
+
+%feature("docstring") simuPOP::RandomSexModel::RandomSexModel "
+
+Usage:
+
+    RandomSexModel()
+
+"; 
+
+%feature("docstring") simuPOP::RandomSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::RandomSexModel::getSex "
+
+Usage:
+
+    x.getSex(UINT)
+
+"; 
 
 %feature("docstring") simuPOP::RangeSplitter "
 
@@ -7260,6 +7510,32 @@ Details:
 
 %ignore simuPOP::SelfingGenoTransmitter::applyDuringMating(Population &pop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
+%ignore simuPOP::SeqSexModel;
+
+%feature("docstring") simuPOP::SeqSexModel::SeqSexModel "
+
+Usage:
+
+    SeqSexModel(sex)
+
+"; 
+
+%feature("docstring") simuPOP::SeqSexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::SeqSexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
 %feature("docstring") simuPOP::SequentialParentChooser "
 
 Details:
@@ -7324,6 +7600,48 @@ Details:
 %ignore simuPOP::SequentialParentsChooser::initialize(Population &pop, SubPopID sp);
 
 %ignore simuPOP::SequentialParentsChooser::chooseParents(RawIndIterator basePtr);
+
+%ignore simuPOP::SexModel;
+
+%feature("docstring") simuPOP::SexModel::SexModel "
+
+Usage:
+
+    SexModel()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::~SexModel "
+
+Usage:
+
+    x.~SexModel()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
 
 %feature("docstring") simuPOP::SexSplitter "
 
