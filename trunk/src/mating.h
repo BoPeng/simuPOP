@@ -115,6 +115,7 @@ private:
 	double m_probOfMales;
 };
 
+
 /// CPPONLY
 class NumOfMalesSexModel : public SexModel
 {
@@ -210,6 +211,11 @@ public:
 	Sex getSex(UINT)
 	{
 		return m_sex[m_index++ % m_sex.size()];
+	}
+
+	void reset()
+	{
+		m_index = 0;
 	}
 
 private:
