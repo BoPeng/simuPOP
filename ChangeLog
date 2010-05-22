@@ -8,6 +8,10 @@ version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/s
 BUGS:
   - Fix error handling in the conversion of commandline input with incorrect allowedTypes.
 
+New features:
+  - Add a CombinedParentsChooser that uses two parent choosers to choose parents from potentially
+		different virtual subpopulations.
+
 New features (minor):
   - Allow mixed number and sequence specification of matrix. For example, [1, 2, (1,2)] will be intepretted as [(1,), (2,), (1,2)].
   - Add optional parameter start and stop to carray.index().

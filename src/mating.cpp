@@ -1021,13 +1021,41 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
    }
  */
 
+CombinedParentsChooser::CombinedParentsChooser(const ParentChooser & fatherChooser,
+		const ParentChooser & motherChooser) 
+		: m_fatherChooser(fatherChooser.clone()),
+		m_motherChooser(motherChooser.clone())
+{
+}
+
+void CombinedParentsChooser::initialize(Population & pop, SubPopID sp)
+{
+	m_fatherChooser->initialize(pop, sp);
+	m_motherChooser->initialize(pop, sp);
+}
+
+
+ParentChooser::IndividualPair CombinedParentsChooser::chooseParents(RawIndIterator it)
+{
+	ParentChooser::IndividualPair p1 = m_fatherChooser->chooseParents(it);	
+	ParentChooser::IndividualPair p2 = m_motherChooser->chooseParents(it);
+	Individual * dad = p1.first == NULL ? p1.second : p1.first;
+	Individual * mom = p2.first == NULL ? p2.second : p2.first;
+	return ParentChooser::IndividualPair(dad, mom);
+}
+
+void CombinedParentsChooser::finalize(Population & pop, SubPopID sp)
+{
+	m_fatherChooser->finalize(pop, sp);
+	m_motherChooser->finalize(pop, sp);
+}
+
 
 PyParentsChooser::PyParentsChooser(PyObject * pc)
 	: ParentChooser(), m_func(pc), m_popObj(NULL),
 	m_generator(NULL)
 {
 }
-
 
 void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 {
