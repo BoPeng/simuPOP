@@ -24161,7 +24161,11 @@ A
 \emph on
 homogeneous mating scheme
 \emph default
- populates an offspring generation as follows:
+ (
+\family typewriter
+HomoMating
+\family default
+) populates an offspring generation as follows:
 \end_layout
 
 \begin_layout Enumerate
@@ -24188,10 +24192,7 @@ One or more offspring are produced from the chosen parent(s) and are placed
 offspring generator
 \series default
 .
-\end_layout
-
-\begin_layout Enumerate
-A offspring generator uses one or more during-mating operators to transmit
+ An offspring generator uses one or more during-mating operators to transmit
  parental genotype to offspring.
  These operators are call 
 \series bold
@@ -24206,8 +24207,25 @@ After the offspring generation is populated, it will replace the parental
 \end_layout
 
 \begin_layout Standard
-A simuPOP mating scheme uses a particular set of parent chooser, offspring
- generator, and genotype transmitters.
+To define a homogeneous mating scheme, you will need to provide a 
+\family typewriter
+chooser
+\family default
+ (a 
+\emph on
+parent chooser
+\emph default
+ that is responsible for choosing one or two parents from the parental generatio
+n) and a 
+\family typewriter
+generator
+\family default
+ (an 
+\emph on
+offspring generator
+\emph default
+ that is responsible for generating a number of offspring from the chosen
+ parents).
  For example, a 
 \family typewriter
 selfingMating
@@ -24226,73 +24244,11 @@ OffspringGenerator
 selfingOffspringGenerator
 \family default
  to transmit genotype.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "RandomMating"
-
-\end_inset
-
- demonstrates how the most commonly used mating scheme, the diploid sexual
- 
-\family typewriter
-RandomMating
-\family default
- mating scheme is defined in 
-\family typewriter
-simuPOP.py
-\family default
-.
- The following sections basically explain how you can construct your own
- mating scheme from scratch, using stocked or customized parent chooser,
- offspring generator and genotype transmitters.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/RandomMating.py"
-lstparams "caption={Define a random mating scheme},firstline=2,label={RandomMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-
+ The constructor of 
 \family typewriter
 HomoMating
 \family default
- mating scheme *
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-HomoMating
-\family default
- is used to define all pre-defined homogeneous mating schemes.
- It takes five parameters: 
-\family typewriter
-chooser
-\family default
- (a 
-\emph on
-parent chooser
-\emph default
- that is responsible for choosing one or two parents from the parental generatio
-n), 
-\family typewriter
-generator
-\family default
- (an 
-\emph on
-offspring generator
-\emph default
- that is responsible for generating a number of offspring from the chosen
- parents), 
+ also accepts parameters 
 \family typewriter
 subPopSize
 \family default
@@ -24331,20 +24287,56 @@ d by the heterogeneous mating scheme.
 \end_layout
 
 \begin_layout Standard
-Parameters 
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "RandomMating"
+
+\end_inset
+
+ demonstrates how the most commonly used mating scheme, the diploid sexual
+ 
 \family typewriter
-subPopSize
+RandomMating
 \family default
-, 
+ mating scheme is defined in 
 \family typewriter
-subPops
+simuPOP.py
 \family default
- and 
+.
+ This mating scheme uses a 
 \family typewriter
-weight
+RandomParentsChooser
 \family default
- are more or less standard but different parent choosers and offspring generator
-s can be combined to define a large number of homogeneous mating schemes.
+ with replacement, and a standard 
+\family typewriter
+OffspringGenerator
+\family default
+ using a default 
+\family typewriter
+MendelianGenoTransmitter
+\family default
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/RandomMating.py"
+lstparams "caption={Define a random mating scheme},firstline=2,label={RandomMating}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Different parent choosers and offspring generators can be combined to define
+ a large number of homogeneous mating schemes.
+ Some of the parent choosers return one parent so they work with offspring
+ generators that need one parent (e.g.
+ selfing or clone offspring generator); some of the parent choosers return
+ two parents so they work with offspring generators that need two parents
+ (e.g.
+ Mendelian offspring generator).
  For example, the standard 
 \family typewriter
 SelfMating
@@ -24377,14 +24369,12 @@ lstparams "caption={Define a sequential selfing mating scheme},label={sequential
 
 \end_layout
 
+\begin_layout Subsection
+Parent choosers *
+\end_layout
+
 \begin_layout Standard
-The simuPOP reference manual lists all pre-defined parent choosers and offspring
- generators.
- They may or may not work together depending on the number of parents a
- parent chooser produces, and the number of parents an offspring generator
- can handle.
- You can also define your own parent choosers and offspring generators,
- as shown below.
+d
 \end_layout
 
 \begin_layout Subsection
