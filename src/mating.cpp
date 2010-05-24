@@ -569,67 +569,42 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individua
 
 void SequentialParentChooser::initialize(Population & pop, SubPopID sp)
 {
-	m_begin = pop.indIterator(sp);
-	m_ind = m_begin;
+	//
+	m_curInd = 0;
+	m_index.clear();
+	if (m_choice == ANY_SEX) {
+		m_begin = pop.indIterator(sp);
+		m_ind = m_begin;
+	} else {
+		IndIterator it = pop.indIterator(sp);
+		Sex s = m_choice == MALE_ONLY ? MALE : FEMALE;
+		for (; it.valid(); ++it) {
+			if (it->sex() == s)
+				m_index.push_back(it.rawIter());
+		}
+		DBG_FAILIF(m_index.empty(), RuntimeError,
+			string("No ") + (s == MALE ? "male" : "female") + " individual exists in a population.");
+	}
 	m_initialized = true;
 }
 
 
 ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndIterator)
 {
-	if (!m_ind.valid())
-		m_ind = m_begin;
-	return ParentChooser::IndividualPair(&*m_ind++, NULL);
-}
-
-
-void SequentialParentsChooser::initialize(Population & pop, SubPopID subPop)
-{
-	m_numMale = 0;
-	m_numFemale = 0;
-	m_curMale = 0;
-	m_curFemale = 0;
-	m_maleIndex.clear();
-	m_femaleIndex.clear();
-
-	IndIterator it = pop.indIterator(subPop);
-	for (; it.valid(); ++it) {
-		if (it->sex() == MALE) {
-			m_numMale++;
-			m_maleIndex.push_back(it.rawIter());
-		} else {
-			m_numFemale++;
-			m_femaleIndex.push_back(it.rawIter());
-		}
-	}
-	m_initialized = true;
-}
-
-
-ParentChooser::IndividualPair SequentialParentsChooser::chooseParents(RawIndIterator)
-{
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
+	if (m_choice == ANY_SEX) {
+		if (!m_ind.valid()) {
+			m_ind = m_begin;
+			DBG_ASSERT(m_ind.valid(), RuntimeError, "No valid individual if found.")
+		}
+		return ParentChooser::IndividualPair(&*m_ind++, NULL);
+	}else {
+		if (m_curInd == m_index.size())
+			m_curInd = 0;
 
-	Individual * dad = NULL;
-	Individual * mom = NULL;
-
-	if (m_curMale == m_numMale)
-		m_curMale = 0;
-	if (m_curFemale == m_numFemale)
-		m_curFemale = 0;
-
-	// using weighted sampler.
-	if (m_numMale != 0)
-		dad = &*(m_maleIndex[m_curMale++]);
-	else
-		dad = &*(m_femaleIndex[m_curFemale++]);
-
-	if (m_numFemale != 0)
-		mom = &*(m_femaleIndex[m_curFemale++]);
-	else
-		mom = &*(m_maleIndex[m_curMale++]);
-	return std::make_pair(dad, mom);
+		return std::make_pair(&*m_index[m_curInd++], static_cast<Individual *>(NULL));
+	}
 }
 
 
@@ -637,22 +612,41 @@ void RandomParentChooser::initialize(Population & pop, SubPopID sp)
 {
 	m_index.clear();
 
+	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
+	UINT fit_id = m_selection ? pop.infoIdx(m_selectionField) : 0;
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
-	if (pop.hasActivatedVirtualSubPop(sp) && !m_replacement) {
+	vectorf fitness;
+	if (pop.hasActivatedVirtualSubPop(sp) || m_choice != ANY_SEX) {
 		IndIterator it = pop.indIterator(sp);
-		for (; it.valid(); ++it)
-			m_index.push_back(it.rawIter());
+		if (m_choice == ANY_SEX) {
+			for (; it.valid(); ++it) {
+				m_index.push_back(it.rawIter());
+				if (m_selection)
+					fitness.push_back(it->info(fit_id));
+			}
+			DBG_FAILIF(m_index.empty(), RuntimeError, "Can not select parent from an empty subpopulation.");
+		} else {
+			Sex s = m_choice == MALE_ONLY ? MALE : FEMALE;
+			for (; it.valid(); ++it) {
+				if (it->sex() == s) {
+					m_index.push_back(it.rawIter());
+					if (m_selection)
+						fitness.push_back(it->info(fit_id));
+				}
+			}
+			DBG_FAILIF(m_index.empty(), RuntimeError,
+				string("No ") + (s == MALE ? "male" : "female") + " individual exists in a population.");
+		}
+	} else {
+		if (m_selection)
+			fitness = vectorf(pop.infoBegin(fit_id, sp), pop.infoEnd(fit_id, sp));
 	}
 
-	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
-	if (m_selection) {
-		UINT fit_id = pop.infoIdx(m_selectionField);
-		// regardless of sex, get fitness for everyone.
-		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp),
-				pop.infoEnd(fit_id, sp)));
-	} else {
+	if (m_selection)
+		m_sampler.set(fitness);
+	else {
 		m_size = m_index.size();
 		if (m_size == 0)         // if m_index is not used (no VSP)
 			m_size = pop.subPopSize(sp);

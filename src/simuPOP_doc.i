@@ -7049,7 +7049,8 @@ Details:
 
 Usage:
 
-    RandomParentChooser(replacement=True, selectionField=\"fitness\")
+    RandomParentChooser(replacement=True, selectionField=\"fitness\",
+      sexChoice=ANY_SEX)
 
 Details:
 
@@ -7058,6 +7059,9 @@ Details:
     is enabled and information field selectionField exists in the
     passed population, the probability that a parent is chosen is
     proportional to his/her fitness value stored in selectionField.
+    This parent chooser by default chooses parent from all individuals
+    (ANY_SEX), but it can be made to select only male (MALE_ONLY) or
+    female (FEMALE_ONLY) individuals by setting parameter sexChoice.
 
 "; 
 
@@ -7781,7 +7785,7 @@ Usage:
 Details:
 
     This parent chooser chooses a parent from a parental (virtual)
-    subpopulation sequentially. Sex and selection is not considered.
+    subpopulation sequentially. Natural selection is not considered.
     If the last parent is reached, this parent chooser will restart
     from the beginning of the (virtual) subpopulation.
 
@@ -7791,12 +7795,16 @@ Details:
 
 Usage:
 
-    SequentialParentChooser()
+    SequentialParentChooser(sexChoice=ANY_SEX)
 
 Details:
 
     Create a parent chooser that chooses a parent from a parental
-    (virtual) subpopulation sequentially.
+    (virtual) subpopulation sequentially. Parameter choice can be
+    ANY_SEX (default), MALE_ONLY and FEMALE_ONLY. In the latter two
+    cases, only male or female individuals are selected. A
+    RuntimeError will be raised if there is no male or female
+    individual from the population.
 
 "; 
 
@@ -7807,39 +7815,6 @@ Details:
 %ignore simuPOP::SequentialParentChooser::initialize(Population &pop, SubPopID sp);
 
 %ignore simuPOP::SequentialParentChooser::chooseParents(RawIndIterator basePtr);
-
-%feature("docstring") simuPOP::SequentialParentsChooser "
-
-Details:
-
-    This parent chooser chooses two parents (a father and a mother)
-    sequentially from their respective sex groups. Selection is not
-    considered. If all fathers (or mothers) are exhausted, this parent
-    chooser will choose fathers (or mothers) from the beginning of the
-    (virtual) subpopulation again.
-
-"; 
-
-%feature("docstring") simuPOP::SequentialParentsChooser::SequentialParentsChooser "
-
-Usage:
-
-    SequentialParentsChooser()
-
-Details:
-
-    Create a parent chooser that chooses two parents sequentially from
-    a parental (virtual) subpopulation.
-
-"; 
-
-%feature("docstring") simuPOP::SequentialParentsChooser::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::SequentialParentsChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::SequentialParentsChooser::initialize(Population &pop, SubPopID sp);
-
-%ignore simuPOP::SequentialParentsChooser::chooseParents(RawIndIterator basePtr);
 
 %ignore simuPOP::SexModel;
 

@@ -300,6 +300,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testSequentialParentsChooser(self):
         'Testing sequential parent chooser'
         pop = Population(size=[100, 200], infoFields=['parent_idx'])
+        initSex(pop)
         initGenotype(pop, freq=[.3, .7])
         pop.evolve(
             matingScheme = HomoMating(
@@ -310,7 +311,7 @@ class TestMatingSchemes(unittest.TestCase):
                     ])),
             gen=1)
 
-    def testRandomParentsChooser(self):
+    def testRandomParentChooser(self):
         'Testing sequential parent chooser'
         def traj(gen):
             return [0.5 + gen*0.01]
