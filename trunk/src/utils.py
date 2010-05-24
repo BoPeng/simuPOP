@@ -895,6 +895,7 @@ class Trajectory:
                         **args.getArgs('lines', None, sp=sp, loc=loc))
         #
         plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
+        plotter.r.dev_off()
         
 
 class TrajectorySimulator:
