@@ -758,7 +758,7 @@ protected:
 
 
 /** This parent chooser chooses a parent from a parental (virtual) subpopulation
- *  sequentially. Sex and selection is not considered. If the last parent is
+ *  sequentially. Natural selection is not considered. If the last parent is
  *  reached, this parent chooser will restart from the beginning of the
  *  (virtual) subpopulation.
  */
@@ -766,10 +766,16 @@ class SequentialParentChooser : public ParentChooser
 {
 public:
 	/** Create a parent chooser that chooses a parent from a parental (virtual)
-	 *  subpopulation sequentially.
+	 *  subpopulation sequentially. Parameter \e choice can be \c ANY_SEX
+	 *  (default), \c MALE_ONLY and \c FEMALE_ONLY. In the latter two cases,
+	 *  only male or female individuals are selected. A \c RuntimeError will be
+	 *  raised if there is no male or female individual from the population.
 	 */
-	SequentialParentChooser() : ParentChooser()
+	SequentialParentChooser(SexChoice sexChoice = ANY_SEX)
+		: ParentChooser(), m_choice(sexChoice)
 	{
+		DBG_FAILIF(m_choice != ANY_SEX && m_choice != MALE_ONLY && m_choice != FEMALE_ONLY,
+			ValueError, "choice of sex can only be ANY_SEX, MALE_ONLY or FEMALE_ONLY.");
 	}
 
 
@@ -794,64 +800,15 @@ public:
 	IndividualPair chooseParents(RawIndIterator basePtr);
 
 private:
-	bool m_selection;
+	///
+	SexChoice m_choice;
 	/// starting individual
 	IndIterator m_begin;
 	/// current individual
 	IndIterator m_ind;
-};
-
-
-/** This parent chooser chooses two parents (a father and a mother)
- *  sequentially from their respective sex groups. Selection is not considered.
- *  If all fathers (or mothers) are exhausted, this parent chooser will choose
- *  fathers (or mothers) from the beginning of the (virtual) subpopulation
- *  again.
- */
-class SequentialParentsChooser : public ParentChooser
-{
-public:
-	/** Create a parent chooser that chooses two parents sequentially from a
-	 *  parental (virtual) subpopulation.
-	 */
-	SequentialParentsChooser() :
-		ParentChooser(), m_maleIndex(0), m_femaleIndex(0),
-		m_numMale(0), m_numFemale(0),
-		m_curMale(0), m_curFemale(0)
-	{
-	}
-
-
-	/// HIDDEN Deep copy of a sequential parents chooser.
-	ParentChooser * clone() const
-	{
-		return new SequentialParentsChooser(*this);
-	}
-
-
-	/// HIDDEN describe a sequential parents chooser.
-	virtual string describe(bool format = true) const
-	{
-		return "<simuPOP.SequentialParentsChooser> chooses two parents sequentially";
-	}
-
-
-	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
-
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
-
-private:
-	/// internal index to female/males.
-	vector<RawIndIterator> m_maleIndex;
-	vector<RawIndIterator> m_femaleIndex;
-
-	ULONG m_numMale;
-	ULONG m_numFemale;
-
-	ULONG m_curMale;
-	ULONG m_curFemale;
+	/// for sexual selection of parents
+	vector<RawIndIterator> m_index;
+	ULONG m_curInd;
 };
 
 
@@ -872,11 +829,14 @@ public:
 	 *  replacement (parameter \e replacement, default to \c True). If selection
 	 *  is enabled and information field \e selectionField exists in the passed
 	 *  population, the probability that a parent is chosen is proportional to
-	 *  his/her fitness value stored in \e selectionField.
+	 *  his/her fitness value stored in \e selectionField. This parent chooser
+	 *  by default chooses parent from all individuals (\c ANY_SEX), but it
+	 *  can be made to select only male (\c MALE_ONLY) or female
+	 *  (\c FEMALE_ONLY) individuals by setting parameter \e sexChoice.
 	 */
 	RandomParentChooser(bool replacement = true,
-		const string & selectionField = "fitness") :
-		ParentChooser(selectionField), m_replacement(replacement),
+		const string & selectionField = "fitness", SexChoice sexChoice = ANY_SEX) :
+		ParentChooser(selectionField), m_replacement(replacement), m_choice(sexChoice),
 		m_index(0), m_chosen(0), m_sampler(), m_size(0), m_shift(0)
 	{
 	}
@@ -906,6 +866,8 @@ protected:
 	bool m_replacement;
 
 	bool m_selection;
+	///
+	SexChoice m_choice;
 	///
 	vector<RawIndIterator> m_index;
 	vector<RawIndIterator> m_chosen;

@@ -484,6 +484,20 @@ class WithArgs:
 
 # mating schemes
 
+class SequentialParentsChooser(CombinedParentsChooser):
+    '''This parent chooser chooses two parents (a father and a mother)
+    sequentially from their respective sex groups. Selection is not considered.
+    If all fathers (or mothers) are exhausted, this parent chooser will choose
+    fathers (or mothers) from the beginning of the (virtual) subpopulation
+    again.'''
+    def __init__(self):
+        '''Create a parent chooser that chooses two parents sequentially from a
+        parental (virtual) subpopulation.'''
+        CombinedParentsChooser.__init__(self,
+            SequentialParentChooser(MALE_ONLY),
+            SequentialParentChooser(FEMALE_ONLY))
+
+
 class CloneMating(HomoMating):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
     a clone offspring generator.'''

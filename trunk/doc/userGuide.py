@@ -4075,7 +4075,7 @@ from simuPOP.utils import Trajectory, simulateBackwardTrajectory
 from math import exp
 def Nt(gen):
     'An exponential sim.Population growth demographic model.'
-    return int((10**4) * exp(.00115 * gen))
+    return int((5000) * exp(.00115 * gen))
 
 def fitness(gen, sp):
     'Constant positive selection pressure.'
