@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -24367,14 +24367,6 @@ lstparams "caption={Define a sequential selfing mating scheme},label={sequential
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Parent choosers *
-\end_layout
-
-\begin_layout Standard
-d
 \end_layout
 
 \begin_layout Subsection
