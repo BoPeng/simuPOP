@@ -166,11 +166,12 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 				ValueError, "P for a Bionomial distribution should be within (0,1].");
 			DBG_FAILIF(numOffspring.size() < 3 || numOffspring[2] < 1,
 				ValueError, "Max number of offspring in a binomial distribution should be greater than or equal to 1.");
-			m_numOffModel = new BinomialNumOffModel(numOffspring[2], numOffspring[1]);
+			m_numOffModel = new BinomialNumOffModel(static_cast<UINT>(numOffspring[2]), numOffspring[1]);
 		} else if (mode == UNIFORM_DISTRIBUTION) {
 			DBG_FAILIF(numOffspring.size() < 3 || numOffspring[2] < static_cast<UINT>(numOffspring[1]),
 				ValueError, "If mode is UNIFORM_DISTRIBUTION, numOffspringParam should be greater than numOffspring");
-			m_numOffModel = new UniformNumOffModel(numOffspring[1], numOffspring[2]);
+			m_numOffModel = new UniformNumOffModel(static_cast<UINT>(numOffspring[1]),
+				static_cast<UINT>( numOffspring[2]));
 		} else {
 			throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
 				             "NumOffspring, NumOffspringEachFamily and GEometricDistribution");
