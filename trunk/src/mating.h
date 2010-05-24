@@ -526,7 +526,7 @@ public:
 
 	/// CPPONLY
 	OffspringGenerator(const OffspringGenerator & rhs)
-		: m_transmitters(rhs.m_transmitters)
+		: m_transmitters(rhs.m_transmitters), m_initialized(rhs.m_initialized)
 	{
 		m_numOffModel = rhs.m_numOffModel->clone();
 		m_sexModel = rhs.m_sexModel->clone();
