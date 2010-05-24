@@ -631,18 +631,18 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 {
 	int i;
 	PyObject * v;
-	Py_ssize_t start = 0, stop = Py_SIZE(self);
+	Py_ssize_t start = 0, stop = self->ob_size;
 
 	if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
 			_PyEval_SliceIndex, &start, _PyEval_SliceIndex, &stop))
 		return NULL;
 	if (start < 0) {
-		start += Py_SIZE(self);
+		start += self->ob_size;
 		if (start < 0)
 			start = 0;
 	}
 
-	for (i = start; i < stop && i < self->ob_size; i++) {
+	for (i = start; i < stop; i++) {
 		PyObject * selfi = getarrayitem((PyObject *)self, i);
 		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
 		Py_DECREF(selfi);
