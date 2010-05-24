@@ -13,6 +13,7 @@ BUGS (minor):
 New features:
   - Add a CombinedParentsChooser that uses two parent choosers to choose parents from potentially
 		different virtual subpopulations.
+  - Add paremeter sexChoice to parent choosers SequentialParentChooser and RandomParentChooser.
 
 New features (minor):
   - Allow mixed number and sequence specification of matrix. For example, [1, 2, (1,2)] will be intepretted as [(1,), (2,), (1,2)].
@@ -34,7 +35,6 @@ New features (minor):
   - Support Python 2.6.5 (fix setup.py).
   - Add SEQUNCE_OF_SEX and GLOBAL_SEQUENCE_OF_SEX to option sexMode of class OffspringGenerator.
   - Parameter sexMode and numOffspring in OffspringGenerator now accepts a generator function.
-  - Add paremeter sexChoice to parent choosers SequentialParentChooser and RandomParentChooser.
 
 
 version 1.0.2 - Rev 3511 (Apr. 13, 2010)
