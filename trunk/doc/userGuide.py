@@ -4574,7 +4574,7 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.getRNG().set(seed=12347)
+sim.getRNG().set(seed=12311)
 #end_ignore
 from simuPOP.sampling import indexToID, plotPedigree
 pop = sim.Population(size=15, loci=5, infoFields=['father_idx', 'mother_idx'], ancGen=2)
