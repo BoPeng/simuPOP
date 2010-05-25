@@ -175,7 +175,7 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 			DBG_FAILIF(numOffspring.size() < 3 || numOffspring[2] < static_cast<UINT>(numOffspring[1]),
 				ValueError, "If mode is UNIFORM_DISTRIBUTION, numOffspringParam should be greater than numOffspring");
 			m_numOffModel = new UniformNumOffModel(static_cast<UINT>(numOffspring[1]),
-				static_cast<UINT>( numOffspring[2]));
+				static_cast<UINT>(numOffspring[2]));
 		} else {
 			throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
 				             "NumOffspring, NumOffspringEachFamily and GEometricDistribution");
