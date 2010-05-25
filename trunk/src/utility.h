@@ -369,7 +369,7 @@ public:
 
 	bool isValid()
 	{
-		return m_generator /* != NULL */;
+		return m_generator != NULL;
 	}
 
 

@@ -43,8 +43,10 @@ SeqSexModel::SeqSexModel(const vectorf & sex) : m_sex()
 	DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
 	vectorf::const_iterator it = sex.begin() + 1;
 	vectorf::const_iterator it_end = sex.end();
-	for (; it != it_end; ++it)
-		m_sex.push_back(static_cast<Sex>(*it));
+	for (; it != it_end; ++it) {
+		int s = static_cast<int>(*it);
+		m_sex.push_back(static_cast<Sex>(s));
+	}
 }
 
 
@@ -53,8 +55,10 @@ GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 	DBG_FAILIF(sex.empty(), ValueError, "A sequence of sex is needed.");
 	vectorf::const_iterator it = sex.begin() + 1;
 	vectorf::const_iterator it_end = sex.end();
-	for (; it != it_end; ++it)
-		m_sex.push_back(static_cast<Sex>(*it));
+	for (; it != it_end; ++it) {
+		int s = static_cast<int>(*it);
+		m_sex.push_back(static_cast<Sex>(s));
+	}
 }
 
 
