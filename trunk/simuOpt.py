@@ -623,7 +623,6 @@ class _paramDialog:
         else:
             self.nCol = nCol
 
-
     def getNumOfRows(self, multiLineChooseOneOf=False):
         '''Count the number of rows that is needed for all parameters'''
         row = 0
@@ -876,9 +875,8 @@ class _tkParamDialog(_paramDialog):
                     [valueValidFile().__doc__, valueValidDir().__doc__]:
                     self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
                 rowIndex += 1
-                 # put default value into the entryWidget
-                if value is not None:
-                    self.entryWidgets[g].insert(0, _prettyString(value))
+                # put default value into the entryWidget
+                self.entryWidgets[g].insert(0, _prettyString(value))
             self.entryWidgets[g].bind("<Return>", self.onOK)
             self.entryWidgets[g].bind("<Escape>", self.onCancel)
         # help button: left
@@ -1086,9 +1084,7 @@ class _wxParamDialog(_paramDialog):
                 rowIndex += 1
             else: # an edit box
                 # put default value into the entryWidget
-                txt = ''
-                if value is not None:
-                    txt = _prettyString(value)
+                txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
                 if opt.has_key('validate') and opt['validate'].__doc__ in \

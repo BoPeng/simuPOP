@@ -9,6 +9,7 @@ BUGS (minor):
   - Fix error handling in the conversion of commandline input with incorrect allowedTypes.
   - Raise an error when SequentialParentsChooser is applied to a population only male or
 		female individuals.
+  - Display 'None' instead of '' for default value None in parameter dialogs of module simuOpt.
 
 New features:
   - Add a CombinedParentsChooser that uses two parent choosers to choose parents from potentially
