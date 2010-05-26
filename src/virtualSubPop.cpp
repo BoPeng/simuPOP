@@ -1,13 +1,13 @@
 /**
  *  $File: virtualSubPop.cpp $
- *  $LastChangedDate: 2009-01-14 21:43:45 -0600 (Wed, 14 Jan 2009) $
+ *  $LastChangedDate: 2010-01-14 21:43:45 -0600 (Wed, 14 Jan 2010) $
  *  $Rev: 2335 $
  *
  *  This file is part of simuPOP, a forward-time population genetics
  *  simulation environment. Please visit http://simupop.sourceforge.net
  *  for details.
  *
- *  Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
