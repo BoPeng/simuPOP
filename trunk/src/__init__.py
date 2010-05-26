@@ -9,7 +9,7 @@
 # simulation environment. Please visit http://simupop.sourceforge.net
 # for details.
 #
-# Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -313,7 +313,7 @@ if simuOptions['Revision'] is not None:
 
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print "simuPOP : Copyright (c) 2004-2009 Bo Peng"
+    print "simuPOP : Copyright (c) 2004-2010 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
     if info['version'].endswith('svn'):
         # this is the subversion version of simuPOP
