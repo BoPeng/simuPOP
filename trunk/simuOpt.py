@@ -514,9 +514,26 @@ def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'
         message = msg + '\n'
     else:
         message = ''
-    # determine title or each opt
-    names = {}
+    #
+    message += '''%s
+
+options:
+  -h, --help
+        Show this help message and exit.
+
+  --config=ARG (default: None)
+        Load parameters from file ARG.
+
+  --optimized
+        Run the script using an optimized simuPOP module.
+
+  --gui=[None|True|False|Tkinter|wxPython] (default: None)
+        Which graphical toolkit to use.
+
+''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
     for opt in options:
+        if opt.has_key('separator'):
+            continue
         if opt.has_key('separator'):
             continue
         name = ''
@@ -530,40 +547,20 @@ def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'
             name += '--%s=ARG' % opt['name']
         else:
             name += '--%s' % opt['longarg']
-        names[opt['name']] = name
-    # max length
-    maxLength = max(12, max([len(x) for x in names.values()])) + 2
-    message += '''%s
-
-options:
-  -h, --help  %sshow this help message and exit
-  --config ARG%sload parameters from ARG
-  --optimized %srun the script using an optimized simuPOP module
-  --gui ARG   %swhich graphical toolkit to use
-''' % (usage.replace('%prog', os.path.basename(sys.argv[0])),
-    ' '*(maxLength-12), ' '*(maxLength-12), ' '*(maxLength-12), ' '*(maxLength-12))
-    for opt in options:
-        if opt.has_key('separator'):
-            continue
-        name = names[opt['name']]
         #
-        if opt.has_key('label'):
-            label = opt['label'] + ' '
-        else:
-            label = ''
-        if len(name) >= maxLength:
-            name += '\n' + ' '*maxLength
-        else:
-            name = ('%%-%ds ' % (maxLength-1)) % name
-        if opt['default'] == '':
-            defaultVal = "''"
+        if isinstance(opt['default'], str):
+            defaultVal = "'%s'" % opt['default']
         elif opt['default'] is None:
             defaultVal = 'None'
         else:
             defaultVal = _prettyString(opt['default'])
-        message += '  %s%s[default: %s ]\n' % (name, label, defaultVal)
+        #
+        message += '  %s  (default: %s)\n' % (name, defaultVal)
         if opt.has_key('description'):
-            message += _prettyDesc(opt['description'], indent=' '*(maxLength + 2)) + '\n'
+            message += _prettyDesc(opt['description'], indent=' '*8) + '\n'
+        elif opt.has_key('label'):
+            message += _prettyDesc(opt['label'], indent=' '*8) + '\n'
+        message += '\n'
     return message
 
 def _getParamValue(p, val):
