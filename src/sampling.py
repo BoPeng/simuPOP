@@ -193,6 +193,15 @@ def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
                 aff.append(2)
             else:
                 aff.append(1)
+    # set momid or dadid to zero if they do not appear in id.
+    # datatype set is available only after 2.6.... so use a dictionary
+    uniqueID = {}
+    for ind in id:
+        uniqueID[ind] = True
+    for idx in range(len(id)):
+        if not uniqueID.has_key(momid[idx]) or not uniqueID.has_key(dadid[idx]):
+            momid[idx] = 0
+            dadid[idx] = 0
     # create an object of ped structure recognizable by R library
     ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
         id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
