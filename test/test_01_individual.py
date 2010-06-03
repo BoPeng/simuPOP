@@ -135,7 +135,11 @@ class TestIndividual(unittest.TestCase):
         #
         self.assertRaises(exceptions.IndexError, ind.genotype, 2)
         self.assertRaises(exceptions.IndexError, ind.genotype, 0, 2)
-        # FIXME: test the list version of parameter ploidy and chroms
+        # accept single form
+        pop.setGenotype(1)
+        self.assertEqual(pop.individual(0).allele(0), 1)
+        pop.individual(0).setGenotype(0)
+        self.assertEqual(pop.individual(0).allele(0), 0)
 
     def testSetGenotype(self):
         'Testing individual::setGenotype(geno), setgenotype(geno, p), '

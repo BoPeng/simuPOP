@@ -218,7 +218,7 @@ public:
 	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(const vectoru & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>

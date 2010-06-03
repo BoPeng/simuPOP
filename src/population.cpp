@@ -530,8 +530,9 @@ PyObject * Population::genotype(vspID vsp)
 }
 
 
-void Population::setGenotype(const vectoru & geno, vspID subPop)
+void Population::setGenotype(const uintList & genoList, vspID subPop)
 {
+	const vectoru & geno = genoList.elems();
 	sortIndividuals();
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
