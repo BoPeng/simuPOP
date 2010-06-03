@@ -305,8 +305,10 @@ void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 }
 
 
-void Individual::setGenotype(const vectoru & geno, const uintList & ply, const uintList & ch)
+void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {
+	const vectoru & geno = genoList.elems();
+
 	UINT sz = geno.size();
 	size_t idx = 0;
 
