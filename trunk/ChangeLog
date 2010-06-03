@@ -10,6 +10,7 @@ BUGS (minor):
   - Raise an error when SequentialParentsChooser is applied to a population only male or
 		female individuals.
   - Display 'None' instead of '' for default value None in parameter dialogs of module simuOpt.
+  - Clear parent IDs if a parent is not sampled in function sampling.plotPedigree.
 
 New features:
   - Add a CombinedParentsChooser that uses two parent choosers to choose parents from potentially
