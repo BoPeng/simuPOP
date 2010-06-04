@@ -2043,16 +2043,16 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 }
 
 
-void Population::removeLoci(const lociList & lociList, const lociList & keepList)
+void Population::removeLoci(const lociList & removeList, const lociList & keepList)
 {
-	if (lociList.unspecified() && keepList.unspecified())
+	if (removeList.unspecified() && keepList.unspecified())
 		return;
 
-	DBG_FAILIF(lociList.unspecified() + keepList.unspecified() != 1, ValueError,
+	DBG_FAILIF(removeList.unspecified() + keepList.unspecified() != 1, ValueError,
 		"Please specify only one of parameters loci and keep");
 
-	vectoru loci = lociList.elems(this);
-	if (lociList.allAvail())
+	vectoru loci = removeList.elems(this);
+	if (removeList.allAvail())
 		for (size_t i = 0; i < totNumLoci(); ++i)
 			loci.push_back(i);
 	vectoru kept = keepList.elems(this);
