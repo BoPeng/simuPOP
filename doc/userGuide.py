@@ -1731,7 +1731,7 @@ pop.evolve(
     ),
     gen = 5
 )
-ped = sim.Pedigree(pop)
+ped = sim.pedigree.pop)
 offFields = ['off%d' % x for x in range(4)]
 grandOffFields = ['grandOff%d' % x for x in range(5)]
 ped.addInfoFields(['spouse'] + offFields + grandOffFields)
@@ -4592,9 +4592,9 @@ indexToID(pop, reset=True)
 # three information fields were added
 print pop.infoFields()
 # save this population for future use
-pop.save('log/Pedigree.pop')
+pop.save('log/pedigree.pop')
 # draw pedigree
-plotPedigree(pop, filename='log/Pedigree.png')
+plotpedigree.pop, filename='log/pedigree.png')
 #end_file
 
 
@@ -4608,7 +4608,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawAffectedSibpairSample, plotPedigree
-pop = sim.loadPopulation('log/Pedigree.pop')
+pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawAffectedSibpairSample(pop, families=2)
 plotPedigree(sample, filename='log/affectedSibpair.png')
 #end_file
@@ -4624,7 +4624,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawNuclearFamilySample, plotPedigree
-pop = sim.loadPopulation('log/Pedigree.pop')
+pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawNuclearFamilySample(pop, families=2, numOffspring=(2,4),
     affectedParents=(1,2), affectedOffspring=(1, 3))
 # try to separate two families?
@@ -4652,7 +4652,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawThreeGenFamilySample, plotPedigree
-pop = sim.loadPopulation('log/Pedigree.pop')
+pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawThreeGenFamilySample(pop, families=2, numOffspring=(1, 3),
     pedSize=(8, 15), numOfAffected=(2, 5))
 plotPedigree(sample, filename='log/threeGenFamily.png')
@@ -4669,7 +4669,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12347)
 #end_ignore
 from simuPOP.sampling import drawCombinedSample, AffectedSibpairSampler, NuclearFamilySampler, plotPedigree
-pop = sim.loadPopulation('log/Pedigree.pop')
+pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawCombinedSample(pop, samplers = [
     AffectedSibpairSampler(families=1),
     NuclearFamilySampler(families=1, numOffspring=(2,4), affectedParents=(1,2), affectedOffspring=(1,3))
