@@ -129,7 +129,7 @@ class Teststat(unittest.TestCase):
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
-        pop = Population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop = Population(size=[500,100,1000], ploidy=2, loci = 1, lociNames='a')
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
@@ -165,6 +165,14 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars((0,0)).alleleFreq[0][0], 1)
         self.assertEqual(pop.dvars((1,3)).alleleFreq[0][0], 1)
         self.assertEqual(pop.dvars((1,4)).alleleFreq[0][0], 0.5)
+        # does it accept ALL_AVAIL?
+        pop.vars().clear()
+        stat(pop, alleleFreq=ALL_AVAIL)
+        self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
+        pop.vars().clear()
+        stat(pop, alleleFreq='a')
+        self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
+
 
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'
