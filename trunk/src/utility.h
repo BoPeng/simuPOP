@@ -480,6 +480,72 @@ private:
 };
 
 
+// At the CPP level, lociList() is ALL_AVAIL, lociList(vectoru()) is regular empty,
+// lociList(NULL) is UNSPECIFIED
+// At the Python level True is ALL_AVAIL, a list if regular, False is UNSPECIFIED
+class GenoStruTrait;
+
+class lociList
+{
+public:
+	typedef vectoru::iterator iterator;
+	typedef vectoru::const_iterator const_iterator;
+
+private:
+	enum listStatus {
+		REGULAR = 0,
+		ALL_AVAIL = 1,
+		UNSPECIFIED = 2,
+		DYNAMIC = 3,
+	};
+
+public:
+	lociList(PyObject * obj = Py_True);
+
+	/// CPPONLY
+	lociList(const vectoru & values) : m_elems(values), m_names(), m_status(REGULAR)
+	{
+	}
+
+
+	bool empty() const
+	{
+		return m_status != ALL_AVAIL && m_elems.empty();
+	}
+
+
+	/// CPPONLY
+	size_t size() const
+	{
+		return m_status == ALL_AVAIL ? 0 : m_elems.size();
+	}
+
+
+	/// CPPONLY
+	bool allAvail() const
+	{
+		return m_status == ALL_AVAIL;
+	}
+
+
+	bool unspecified() const
+	{
+		return m_status == UNSPECIFIED;
+	}
+
+
+	/// CPPONLY
+	const vectoru & elems(const GenoStruTrait * trait) const;
+
+protected:
+	mutable vectoru m_elems;
+	vectorstr m_names;
+
+private:
+	listStatus m_status;
+};
+
+
 class floatList
 {
 public:

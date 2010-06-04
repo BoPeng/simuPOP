@@ -312,12 +312,12 @@ Stat::Stat(
 	//
 	bool numOfAffected,
 	//
-	const uintList & alleleFreq,
+	const lociList & alleleFreq,
 	//
-	const uintList & heteroFreq,
-	const uintList & homoFreq,
+	const lociList & heteroFreq,
+	const lociList & homoFreq,
 	//
-	const uintList & genoFreq,
+	const lociList & genoFreq,
 	//
 	const intMatrix & haploFreq,
 	//
@@ -329,13 +329,13 @@ Stat::Stat(
 	//
 	const intMatrix & LD,
 	//
-	const uintList & association,
+	const lociList & association,
 	//
-	const uintList & neutrality,
+	const lociList & neutrality,
 	//
-	const uintList & structure,
+	const lociList & structure,
 	//
-	const uintList & HWE,
+	const lociList & HWE,
 	//
 	const stringList & vars,
 	const string & suffix,
@@ -348,16 +348,16 @@ Stat::Stat(
 	m_popSize(popSize, subPops, vars, suffix),
 	m_numOfMales(numOfMales, subPops, vars, suffix),
 	m_numOfAffected(numOfAffected, subPops, vars, suffix),
-	m_alleleFreq(alleleFreq.elems(), subPops, vars, suffix),
-	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars, suffix),
-	m_genoFreq(genoFreq.elems(), subPops, vars, suffix),
+	m_alleleFreq(alleleFreq, subPops, vars, suffix),
+	m_heteroFreq(heteroFreq, homoFreq, subPops, vars, suffix),
+	m_genoFreq(genoFreq, subPops, vars, suffix),
 	m_haploFreq(haploFreq, subPops, vars, suffix),
 	m_info(sumOfInfo.elems(), meanOfInfo.elems(), varOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars, suffix),
 	m_LD(LD, subPops, vars, suffix),
-	m_association(association.elems(), subPops, vars, suffix),
-	m_neutrality(neutrality.elems(), subPops, vars, suffix),
-	m_structure(structure.elems(), subPops, vars, suffix),
-	m_HWE(HWE.elems(), subPops, vars, suffix)
+	m_association(association, subPops, vars, suffix),
+	m_neutrality(neutrality, subPops, vars, suffix),
+	m_structure(structure, subPops, vars, suffix),
+	m_HWE(HWE, subPops, vars, suffix)
 {
 }
 
@@ -616,7 +616,7 @@ bool statNumOfAffected::apply(Population & pop) const
 }
 
 
-statAlleleFreq::statAlleleFreq(const vectoru & loci, const subPopList & subPops,
+statAlleleFreq::statAlleleFreq(const lociList & loci, const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
@@ -634,8 +634,10 @@ string statAlleleFreq::describe(bool format) const
 {
 	ostringstream desc;
 
-	if (!m_loci.empty())
-		desc << "calculate allele frequency at " << (m_loci.size() == 1 ? "locus " : "loci ") << m_loci;
+	if (m_loci.allAvail())
+		desc << "calculate allele frequency at all loci";
+	else if (m_loci.size() > 0)
+		desc << "calculate allele frequency at " << (m_loci.size() == 1 ? "locus " : "loci ") << m_loci.elems(NULL);
 	return desc.str();
 }
 
@@ -645,11 +647,13 @@ bool statAlleleFreq::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
-	DBG_DO(DBG_STATOR, cerr << "Calculated allele frequency for loci " << m_loci << endl);
+	const vectoru & loci = m_loci.elems(&pop);
+
+	DBG_DO(DBG_STATOR, cerr << "Calculated allele frequency for loci " << loci << endl);
 
 	// count for all specified subpopulations
-	ALLELECNTLIST alleleCnt(m_loci.size());
-	vectoru allAllelesCnt(m_loci.size(), 0);
+	ALLELECNTLIST alleleCnt(loci.size());
+	vectoru allAllelesCnt(loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
@@ -662,8 +666,8 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 
 #ifdef LONGALLELE
 			intDict alleles;
@@ -731,20 +735,20 @@ bool statAlleleFreq::apply(Population & pop) const
 
 	if (m_vars.contains(AlleleNum_String)) {
 		pop.getVars().removeVar(AlleleNum_String + m_suffix);
-		for (size_t idx = 0; idx < m_loci.size(); ++idx)
-			pop.getVars().setIntDefDictVar(AlleleNum_String + m_suffix + "{" + toStr(m_loci[idx]) + "}",
+		for (size_t idx = 0; idx < loci.size(); ++idx)
+			pop.getVars().setIntDefDictVar(AlleleNum_String + m_suffix + "{" + toStr(loci[idx]) + "}",
 				alleleCnt[idx]);
 	}
 	if (m_vars.contains(AlleleFreq_String)) {
 		pop.getVars().removeVar(AlleleFreq_String + m_suffix);
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			if (allAllelesCnt[idx] != 0) {
 				intDict::iterator cnt = alleleCnt[idx].begin();
 				intDict::iterator cntEnd = alleleCnt[idx].end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAllelesCnt[idx]);
 			}
-			pop.getVars().setIntDefDictVar(AlleleFreq_String + m_suffix + "{" + toStr(m_loci[idx]) + "}",
+			pop.getVars().setIntDefDictVar(AlleleFreq_String + m_suffix + "{" + toStr(loci[idx]) + "}",
 				alleleCnt[idx]);
 		}
 	}
@@ -752,14 +756,21 @@ bool statAlleleFreq::apply(Population & pop) const
 }
 
 
-statHeteroFreq::statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
+statHeteroFreq::statHeteroFreq(const lociList & heteroFreq, const lociList & homoFreq,
 	const subPopList & subPops, const stringList & vars, const string & suffix)
-	: m_loci(heteroFreq), m_subPops(subPops), m_vars(), m_suffix(suffix)
+	: m_loci(), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
-	// add homofreq to m_loci
-	for (size_t i = 0; i < homoFreq.size(); ++i)
-		if (find(m_loci.begin(), m_loci.end(), homoFreq[i]) == m_loci.end())
-			m_loci.push_back(homoFreq[i]);
+	if (heteroFreq.allAvail() || homoFreq.allAvail())
+		m_loci = lociList();
+	else {
+		// add homofreq to m_loci
+		vectoru hetero = heteroFreq.elems(NULL);
+		vectoru homo = homoFreq.elems(NULL);
+		for (size_t i = 0; i < homo.size(); ++i)
+			if (find(hetero.begin(), hetero.end(), homo[i]) == hetero.end())
+				hetero.push_back(homo[i]);
+		m_loci = lociList(hetero);
+	}
 	//
 	const char * allowedVars[] = {
 		HeteroNum_String,	 HeteroFreq_String,
@@ -796,10 +807,12 @@ bool statHeteroFreq::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
+	const vectoru & loci = m_loci.elems(&pop);
+
 	DBG_FAILIF(pop.ploidy() != 2, ValueError,
 		"Heterozygote frequency can only be calculated for diploid populations.");
 
-	DBG_DO(DBG_STATOR, cerr << "Calculated heterozygote frequency for loci " << m_loci << endl);
+	DBG_DO(DBG_STATOR, cerr << "Calculated heterozygote frequency for loci " << loci << endl);
 
 	// count for all specified subpopulations
 	intDict allHeteroCnt;
@@ -815,8 +828,8 @@ bool statHeteroFreq::apply(Population & pop) const
 		intDict heteroCnt;
 		intDict homoCnt;
 
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 
 #ifndef OPTIMIZED
 			int chromType = pop.chromType(pop.chromLocusPair(loc).first);
@@ -848,8 +861,8 @@ bool statHeteroFreq::apply(Population & pop) const
 			pop.getVars().setIntDictVar(subPopVar_String(*it, HomoNum_String) + m_suffix, homoCnt);
 		if (m_vars.contains(HeteroFreq_sp_String)) {
 			intDict freq;
-			for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-				UINT loc = m_loci[idx];
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				UINT loc = loci[idx];
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : heteroCnt[loc] / all;
 			}
@@ -857,8 +870,8 @@ bool statHeteroFreq::apply(Population & pop) const
 		}
 		if (m_vars.contains(HomoFreq_sp_String)) {
 			intDict freq;
-			for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-				UINT loc = m_loci[idx];
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				UINT loc = loci[idx];
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : homoCnt[loc] / all;
 			}
@@ -872,8 +885,8 @@ bool statHeteroFreq::apply(Population & pop) const
 		pop.getVars().setIntDictVar(HomoNum_String + m_suffix, allHomoCnt);
 	if (m_vars.contains(HeteroFreq_String)) {
 		intDict freq;
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 			double all = allHeteroCnt[loc] + allHomoCnt[loc];
 			freq[loc] = all == 0. ? 0 : allHeteroCnt[loc] / all;
 		}
@@ -881,8 +894,8 @@ bool statHeteroFreq::apply(Population & pop) const
 	}
 	if (m_vars.contains(HomoFreq_String)) {
 		intDict freq;
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 			double all = allHeteroCnt[loc] + allHomoCnt[loc];
 			freq[loc] = all == 0. ? 0 : allHomoCnt[loc] / all;
 		}
@@ -893,7 +906,7 @@ bool statHeteroFreq::apply(Population & pop) const
 }
 
 
-statGenoFreq::statGenoFreq(const vectoru & genoFreq, const subPopList & subPops,
+statGenoFreq::statGenoFreq(const lociList & genoFreq, const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_loci(genoFreq), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
@@ -922,15 +935,17 @@ bool statGenoFreq::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
-	vectoru chromTypes;
-	for (size_t i = 0; i < m_loci.size(); ++i)
-		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
+	const vectoru & loci = m_loci.elems(&pop);
 
-	DBG_DO(DBG_STATOR, cerr << "Calculated genotype frequency for loci " << m_loci << endl);
+	vectoru chromTypes;
+	for (size_t i = 0; i < loci.size(); ++i)
+		chromTypes.push_back(pop.chromType(pop.chromLocusPair(loci[i]).first));
+
+	DBG_DO(DBG_STATOR, cerr << "Calculated genotype frequency for loci " << loci << endl);
 
 	// count for all specified subpopulations
-	vector<tupleDict> genotypeCnt(m_loci.size());
-	vectoru allGenotypeCnt(m_loci.size(), 0);
+	vector<tupleDict> genotypeCnt(loci.size());
+	vectoru allGenotypeCnt(loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
@@ -944,8 +959,8 @@ bool statGenoFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 
 			tupleDict genotypes;
 			size_t allGenotypes = 0;
@@ -1005,15 +1020,15 @@ bool statGenoFreq::apply(Population & pop) const
 
 	if (m_vars.contains(GenotypeNum_String)) {
 		pop.getVars().removeVar(GenotypeNum_String + m_suffix);
-		for (size_t idx = 0; idx < m_loci.size(); ++idx)
-			pop.getVars().setTupleDefDictVar(GenotypeNum_String + m_suffix + "{" + toStr(m_loci[idx]) + "}",
+		for (size_t idx = 0; idx < loci.size(); ++idx)
+			pop.getVars().setTupleDefDictVar(GenotypeNum_String + m_suffix + "{" + toStr(loci[idx]) + "}",
 				genotypeCnt[idx]);
 	}
 	// note that genotyeCnt[idx] is changed in place.
 	if (m_vars.contains(GenotypeFreq_String)) {
 		pop.getVars().removeVar(GenotypeFreq_String + m_suffix);
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 			if (allGenotypeCnt[idx] != 0) {
 				tupleDict::iterator dct = genotypeCnt[idx].begin();
 				tupleDict::iterator dctEnd = genotypeCnt[idx].end();
@@ -1860,7 +1875,7 @@ bool statLD::apply(Population & pop) const
 }
 
 
-statAssociation::statAssociation(const vectoru & loci,
+statAssociation::statAssociation(const lociList & loci,
 	const subPopList & subPops, const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
@@ -2031,9 +2046,11 @@ bool statAssociation::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
+	const vectoru & loci = m_loci.elems(&pop);
+
 	vectoru chromTypes;
-	for (size_t i = 0; i < m_loci.size(); ++i)
-		chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_loci[i]).first));
+	for (size_t i = 0; i < loci.size(); ++i)
+		chromTypes.push_back(pop.chromType(pop.chromLocusPair(loci[i]).first));
 
 	UINT ply = pop.ploidy();
 	bool hasAlleleTest = false;
@@ -2047,7 +2064,7 @@ bool statAssociation::apply(Population & pop) const
 		}
 	}
 	// count for all specified subpopulations
-	UINT nLoci = m_loci.size();
+	UINT nLoci = loci.size();
 	ALLELECNTLIST allCaseAlleleCnt(nLoci);
 	ALLELECNTLIST allCtrlAlleleCnt(nLoci);
 	GENOCNTLIST allCaseGenoCnt(nLoci);
@@ -2079,9 +2096,9 @@ bool statAssociation::apply(Population & pop) const
 						                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
 						if (ind->affected())
-							caseAlleleCnt[idx][*(geno + m_loci[idx])]++;
+							caseAlleleCnt[idx][*(geno + loci[idx])]++;
 						else
-							ctrlAlleleCnt[idx][*(geno + m_loci[idx])]++;
+							ctrlAlleleCnt[idx][*(geno + loci[idx])]++;
 					}
 				}
 			}
@@ -2092,8 +2109,8 @@ bool statAssociation::apply(Population & pop) const
 				for (size_t idx = 0; idx < nLoci; ++idx) {
 					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y)
 						continue;
-					Allele a1 = *(geno1 + m_loci[idx]);
-					Allele a2 = *(geno2 + m_loci[idx]);
+					Allele a1 = *(geno1 + loci[idx]);
+					Allele a2 = *(geno2 + loci[idx]);
 					if (a1 > a2)
 						std::swap(a1, a2);
 					if (ind->affected())
@@ -2109,8 +2126,8 @@ bool statAssociation::apply(Population & pop) const
 		if (m_vars.contains(Allele_ChiSq_sp_String) || m_vars.contains(Allele_ChiSq_p_sp_String)) {
 			intDict chisq;
 			intDict chisq_p;
-			for (size_t i = 0; i < m_loci.size(); ++i)
-				alleleChiSqTest(caseAlleleCnt[i], ctrlAlleleCnt[i], chisq[m_loci[i]], chisq_p[m_loci[i]]);
+			for (size_t i = 0; i < loci.size(); ++i)
+				alleleChiSqTest(caseAlleleCnt[i], ctrlAlleleCnt[i], chisq[loci[i]], chisq_p[loci[i]]);
 			if (m_vars.contains(Allele_ChiSq_sp_String))
 				pop.getVars().setIntDictVar(subPopVar_String(*it, Allele_ChiSq_String) + m_suffix, chisq);
 			if (m_vars.contains(Allele_ChiSq_p_sp_String))
@@ -2119,8 +2136,8 @@ bool statAssociation::apply(Population & pop) const
 		if (m_vars.contains(Geno_ChiSq_sp_String) || m_vars.contains(Geno_ChiSq_p_sp_String)) {
 			intDict chisq;
 			intDict chisq_p;
-			for (size_t i = 0; i < m_loci.size(); ++i)
-				genoChiSqTest(caseGenoCnt[i], ctrlGenoCnt[i], chisq[m_loci[i]], chisq_p[m_loci[i]]);
+			for (size_t i = 0; i < loci.size(); ++i)
+				genoChiSqTest(caseGenoCnt[i], ctrlGenoCnt[i], chisq[loci[i]], chisq_p[loci[i]]);
 			if (m_vars.contains(Geno_ChiSq_sp_String))
 				pop.getVars().setIntDictVar(subPopVar_String(*it, Geno_ChiSq_String) + m_suffix, chisq);
 			if (m_vars.contains(Geno_ChiSq_p_sp_String))
@@ -2128,8 +2145,8 @@ bool statAssociation::apply(Population & pop) const
 		}
 		if (m_vars.contains(Armitage_p_sp_String)) {
 			intDict pvalues;
-			for (size_t i = 0; i < m_loci.size(); ++i)
-				pvalues[m_loci[i]] = armitageTest(caseGenoCnt[i], ctrlGenoCnt[i]);
+			for (size_t i = 0; i < loci.size(); ++i)
+				pvalues[loci[i]] = armitageTest(caseGenoCnt[i], ctrlGenoCnt[i]);
 			pop.getVars().setIntDictVar(subPopVar_String(*it, Armitage_p_String) + m_suffix, pvalues);
 		}
 		// total allele count
@@ -2162,9 +2179,9 @@ bool statAssociation::apply(Population & pop) const
 	if (m_vars.contains(Allele_ChiSq_String) || m_vars.contains(Allele_ChiSq_p_String)) {
 		intDict chisq;
 		intDict chisq_p;
-		for (size_t i = 0; i < m_loci.size(); ++i)
+		for (size_t i = 0; i < loci.size(); ++i)
 			alleleChiSqTest(allCaseAlleleCnt[i], allCtrlAlleleCnt[i],
-				chisq[m_loci[i]], chisq_p[m_loci[i]]);
+				chisq[loci[i]], chisq_p[loci[i]]);
 		// output variable.
 		if (m_vars.contains(Allele_ChiSq_String))
 			pop.getVars().setIntDictVar(Allele_ChiSq_String + m_suffix, chisq);
@@ -2174,9 +2191,9 @@ bool statAssociation::apply(Population & pop) const
 	if (m_vars.contains(Geno_ChiSq_String) || m_vars.contains(Geno_ChiSq_p_String)) {
 		intDict chisq;
 		intDict chisq_p;
-		for (size_t i = 0; i < m_loci.size(); ++i)
+		for (size_t i = 0; i < loci.size(); ++i)
 			genoChiSqTest(allCaseGenoCnt[i], allCtrlGenoCnt[i],
-				chisq[m_loci[i]], chisq_p[m_loci[i]]);
+				chisq[loci[i]], chisq_p[loci[i]]);
 		if (m_vars.contains(Geno_ChiSq_String))
 			pop.getVars().setIntDictVar(Geno_ChiSq_String + m_suffix, chisq);
 		if (m_vars.contains(Geno_ChiSq_p_String))
@@ -2184,15 +2201,15 @@ bool statAssociation::apply(Population & pop) const
 	}
 	if (m_vars.contains(Armitage_p_String)) {
 		intDict pvalues;
-		for (size_t i = 0; i < m_loci.size(); ++i)
-			pvalues[m_loci[i]] = armitageTest(allCaseGenoCnt[i], allCtrlGenoCnt[i]);
+		for (size_t i = 0; i < loci.size(); ++i)
+			pvalues[loci[i]] = armitageTest(allCaseGenoCnt[i], allCtrlGenoCnt[i]);
 		pop.getVars().setIntDictVar(Armitage_p_String + m_suffix, pvalues);
 	}
 	return true;
 }
 
 
-statNeutrality::statNeutrality(const vectoru & loci, const subPopList & subPops,
+statNeutrality::statNeutrality(const lociList & loci, const subPopList & subPops,
 	const stringList & vars, const string & suffix) :
 	m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
@@ -2202,12 +2219,6 @@ statNeutrality::statNeutrality(const vectoru & loci, const subPopList & subPops,
 	const char * defaultVars[] = { Neutra_Pi_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
-
-	sort(m_loci.begin(), m_loci.end());
-	for (UINT i = 1; i < m_loci.size(); ++i) {
-		DBG_FAILIF(m_loci[i - 1] == m_loci[i], ValueError,
-			"Duplicated loci occurred in the loci list.");
-	}
 }
 
 
@@ -2249,11 +2260,13 @@ bool statNeutrality::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
-	UINT nLoci = m_loci.size();
-	int chromType = pop.chromType(pop.chromLocusPair(m_loci[0]).first);
+	const vectoru & loci = m_loci.elems(&pop);
+
+	UINT nLoci = loci.size();
+	int chromType = pop.chromType(pop.chromLocusPair(loci[0]).first);
 #ifndef OPTIMIZED
 	for (size_t i = 1; i < nLoci; ++i) {
-		DBG_ASSERT(chromType == pop.chromType(pop.chromLocusPair(m_loci[i]).first),
+		DBG_ASSERT(chromType == pop.chromType(pop.chromLocusPair(loci[i]).first),
 			ValueError, "All loci must be from chromosomes of the same type.");
 	}
 #endif
@@ -2281,7 +2294,7 @@ bool statNeutrality::apply(Population & pop) const
 				     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 					continue;
 				for (size_t idx = 0; idx < nLoci; ++idx)
-					haplotype[idx] = ToAllele(ind->allele(m_loci[idx], p));
+					haplotype[idx] = ToAllele(ind->allele(loci[idx], p));
 				allHaplotypes.push_back(haplotype);
 			}
 		}
@@ -2298,7 +2311,7 @@ bool statNeutrality::apply(Population & pop) const
 }
 
 
-statStructure::statStructure(const vectoru & Fst, const subPopList & subPops, const stringList & vars, const string & suffix)
+statStructure::statStructure(const lociList & Fst, const subPopList & subPops, const stringList & vars, const string & suffix)
 	: m_loci(Fst), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
@@ -2322,7 +2335,7 @@ string statStructure::describe(bool format) const
 }
 
 
-void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
+void statStructure::calcGst_Nei73(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq,
                                   const ALLELELIST & alleles, double & Gst, intDict & gst) const
 {
 	double H_t_all = 0.;
@@ -2332,8 +2345,8 @@ void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq
 	double n = accumulate(n_i.begin(), n_i.end(), 0);
 
 	// for each locus
-	for (size_t st = 0; st < m_loci.size(); ++st) {
-		UINT loc = m_loci[st];
+	for (size_t st = 0; st < loci.size(); ++st) {
+		UINT loc = loci[st];
 		// D_st = Sum_i,j D_ij / s^2
 		double D_st = 0;
 		// i, j for subpopulation
@@ -2377,7 +2390,7 @@ void statStructure::calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq
 }
 
 
-void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
+void statStructure::calcFst_WC84(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
                                  const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
                                  intDict & fst, intDict & fis, intDict & fit) const
 {
@@ -2390,8 +2403,9 @@ void statStructure::calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 	double n = accumulate(n_i.begin(), n_i.end(), 0);
 
 	// calculate Fst for each locus
-	for (size_t st = 0; st < m_loci.size(); ++st) {
-		int loc = m_loci[st];
+	for (size_t st = 0; st < loci.size(); ++st) {
+		// m_loci should been expanded ...
+		int loc = loci[st];
 
 		// n_bar
 		double r = n_i.size();
@@ -2462,12 +2476,14 @@ bool statStructure::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
+	const vectoru & loci = m_loci.elems(&pop);
+
 	DBG_ASSERT(pop.ploidy() == 2, ValueError,
 		"Fst statistics is available only for diploid populations.");
 
 #ifndef OPTIMIZED
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-		int chromType = pop.chromType(pop.chromLocusPair(m_loci[idx]).first);
+	for (size_t idx = 0; idx < loci.size(); ++idx) {
+		int chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
 		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
 			"Fst can not be esimated from markers on sex chromosomes");
 	}
@@ -2479,7 +2495,7 @@ bool statStructure::apply(Population & pop) const
 	subPopList::const_iterator itEnd = subPops.end();
 	// count for all specified subpopulations
 	vectoru n_i(0);
-	ALLELELIST allAlleles(m_loci.size());
+	ALLELELIST allAlleles(loci.size());
 	LOCIFREQLIST alleleFreq(subPops.size());
 	LOCIFREQLIST heteroFreq(subPops.size());
 	for (size_t spIdx = 0; it != itEnd; ++it, ++spIdx) {
@@ -2491,8 +2507,8 @@ bool statStructure::apply(Population & pop) const
 		pop.activateVirtualSubPop(*it);
 
 		UINT spSize = 0;
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			UINT loc = m_loci[idx];
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			UINT loc = loci[idx];
 			FREQ & af = alleleFreq[spIdx][loc];
 			FREQ & hf = heteroFreq[spIdx][loc];
 			ALLELES & alleles = allAlleles[idx];
@@ -2533,7 +2549,7 @@ bool statStructure::apply(Population & pop) const
 	// Nei's Gst
 	double Gst = 0;
 	intDict gst;
-	calcGst_Nei73(n_i, alleleFreq, allAlleles, Gst, gst);
+	calcGst_Nei73(loci, n_i, alleleFreq, allAlleles, Gst, gst);
 	if (m_vars.contains(Gst_String))
 		pop.getVars().setDoubleVar(Gst_String + m_suffix, Gst);
 	if (m_vars.contains(gst_String))
@@ -2546,7 +2562,7 @@ bool statStructure::apply(Population & pop) const
 	intDict fst;
 	intDict fis;
 	intDict fit;
-	calcFst_WC84(n_i, alleleFreq, heteroFreq, allAlleles, Fst, Fis, Fit, fst, fis, fit);
+	calcFst_WC84(loci, n_i, alleleFreq, heteroFreq, allAlleles, Fst, Fis, Fit, fst, fis, fit);
 	// post results
 	if (m_vars.contains(Fst_String))
 		pop.getVars().setDoubleVar(Fst_String + m_suffix, Fst);
@@ -2564,7 +2580,7 @@ bool statStructure::apply(Population & pop) const
 }
 
 
-statHWE::statHWE(const vectoru & loci,  const subPopList & subPops,
+statHWE::statHWE(const lociList & loci,  const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
@@ -2613,18 +2629,20 @@ bool statHWE::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
+	const vectoru & loci = m_loci.elems(&pop);
+
 	DBG_FAILIF(pop.ploidy() != 2, ValueError,
 		"HWE test is only available for diploid populations.");
 
 #ifndef OPTIMIZED
-	for (size_t i = 0; i < m_loci.size(); ++i) {
-		int chromType = pop.chromType(pop.chromLocusPair(m_loci[i]).first);
+	for (size_t i = 0; i < loci.size(); ++i) {
+		int chromType = pop.chromType(pop.chromLocusPair(loci[i]).first);
 		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
 			"Can not run HWE test on loci on sex chromosomes.");
 	}
 #endif
 	// count for all specified subpopulations
-	UINT nLoci = m_loci.size();
+	UINT nLoci = loci.size();
 	GENOCNTLIST allGenoCnt(nLoci);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
@@ -2640,8 +2658,8 @@ bool statHWE::apply(Population & pop) const
 			GenoIterator geno1 = ind->genoBegin(0);
 			GenoIterator geno2 = ind->genoBegin(1);
 			for (size_t idx = 0; idx < nLoci; ++idx) {
-				Allele a1 = *(geno1 + m_loci[idx]);
-				Allele a2 = *(geno2 + m_loci[idx]);
+				Allele a1 = *(geno1 + loci[idx]);
+				Allele a2 = *(geno2 + loci[idx]);
 				if (a1 > a2)
 					std::swap(a1, a2);
 				genoCnt[idx][GENOCNT::key_type(a1, a2)]++;
@@ -2652,8 +2670,8 @@ bool statHWE::apply(Population & pop) const
 		// output variable.
 		if (m_vars.contains(HWE_sp_String)) {
 			intDict hwe;
-			for (size_t i = 0; i < m_loci.size(); ++i) {
-				hwe[m_loci[i]] = hweTest(mapToCount(genoCnt[i]));
+			for (size_t i = 0; i < loci.size(); ++i) {
+				hwe[loci[i]] = hweTest(mapToCount(genoCnt[i]));
 			}
 			pop.getVars().setIntDictVar(subPopVar_String(*it, HWE_String) + m_suffix, hwe);
 		}
@@ -2667,8 +2685,8 @@ bool statHWE::apply(Population & pop) const
 	//
 	if (m_vars.contains(HWE_String)) {
 		intDict hwe;
-		for (size_t i = 0; i < m_loci.size(); ++i)
-			hwe[m_loci[i]] = hweTest(mapToCount(allGenoCnt[i]));
+		for (size_t i = 0; i < loci.size(); ++i)
+			hwe[loci[i]] = hweTest(mapToCount(allGenoCnt[i]));
 		pop.getVars().setIntDictVar(HWE_String + m_suffix, hwe);
 	}
 	return true;

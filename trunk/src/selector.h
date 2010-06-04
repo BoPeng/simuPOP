@@ -172,7 +172,8 @@ class MapSelector : public BaseSelector
 public:
 	/** Create a selector that assigns individual fitness values using a
 	 *  dictionary \e fitness with genotype at \e loci as keys, and fitness
-	 *  as values. For each individual (parents if this operator is applied
+	 *  as values. Parameter \e loci can be a list of indexes, loci names or
+	 *  \c ALL_AVAIL. For each individual (parents if this operator is applied
 	 *  before mating, and offspring if this operator is applied during
 	 *  mating), genotypes at \e loci are collected one by one (e.g.
 	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and
@@ -184,12 +185,12 @@ public:
 	 *  these cases, only valid genotypes should be used to generator the
 	 *  dictionary keys.
 	 */
-	MapSelector(const uintList & loci, const tupleDict & fitness,
+	MapSelector(const lociList & loci, const tupleDict & fitness,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_dict(fitness)
+		m_loci(loci), m_dict(fitness)
 	{
 	};
 
@@ -219,7 +220,7 @@ public:
 
 private:
 	///
-	const vectoru m_loci;
+	const lociList m_loci;
 
 	/// fitness for each genotype
 	const tupleDict m_dict;
@@ -239,7 +240,8 @@ public:
 	/** Creates a multi-allele selector that groups multiple alleles into a
 	 *  wildtype group (with alleles \e wildtype, default to <tt>[0]</tt>), and
 	 *  a non-wildtype group. A list of fitness values is specified through
-	 *  parameter \e fitness, for genotypes at one or more \e loci. If we
+	 *  parameter \e fitness, for genotypes at one or more \e loci. Parameter
+	 *  \e loci can be a list of indexes, loci names or \c ALL_AVAIL. If we
 	 *  denote wildtype alleles using capital letters \c A, \c B ... and
 	 *  non-wildtype alleles using small letters \c a, \c b ..., the fitness
 	 *  values should be for
@@ -254,12 +256,12 @@ public:
 	 *  This operator does not support haplodiploid populations and sex
 	 *  chromosomes.
 	 */
-	MaSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
+	MaSelector(const lociList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
+		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
 		DBG_WARNIF(m_wildtype.empty(), "No wild type allele is defined.");
 	};
@@ -289,7 +291,7 @@ public:
 
 private:
 	/// one locus
-	const vectoru m_loci;
+	const lociList m_loci;
 
 	/// fitness for each genotype
 	const vectorf m_fitness;
@@ -366,7 +368,8 @@ private:
 /** This selector assigns fitness values by calling a user provided function.
  *  It accepts a list of loci (parameter \e loci) and a Python function \c func
  *  which should be defined with one or more of parameters \c geno, \c gen,
- *  \c ind, or names of information fields. When this operator is applied to a
+ *  \c ind, or names of information fields. Parameter \e loci can be a list of
+ *  loci indexes, names or \c ALL_AVAIL. When this operator is applied to a
  *  population, it passes genotypes at specified loci, generation number, a
  *  reference to an individual, and values at specified information fields to
  *  respective parameters of this function. The returned penetrance values will
@@ -380,7 +383,7 @@ public:
 	 *  a generation number to a user-defined function \e func. The return
 	 *  value will be treated as individual fitness.
 	 */
-	PySelector(PyObject * func, uintList loci = vectoru(),
+	PySelector(PyObject * func, lociList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
@@ -415,7 +418,7 @@ private:
 	const pyFunc m_func;
 
 	/// susceptibility loci
-	const uintList m_loci;
+	const lociList m_loci;
 
 };
 

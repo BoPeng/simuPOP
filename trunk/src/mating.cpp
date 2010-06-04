@@ -299,11 +299,11 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 
 
 ControlledOffspringGenerator::ControlledOffspringGenerator(
-	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
+	const lociList & loci, const uintList & alleles, PyObject * freqFunc,
 	const opList & ops, const floatListFunc & numOffspring,
 	const floatListFunc & sexMode)
 	: OffspringGenerator(ops, numOffspring, sexMode),
-	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
+	m_loci(loci), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 
 {
@@ -339,7 +339,8 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 {
 	// determine expected number of alleles of each allele
 	// at each subpopulation.
-	UINT nLoci = m_loci.size();
+	const vectoru & loci = m_loci.elems(&pop);
+	UINT nLoci = loci.size();
 	UINT numSP = pop.numSubPop();
 
 	DBG_ASSERT(expFreq.size() == nLoci || expFreq.size() == nLoci * numSP, SystemError,
@@ -357,7 +358,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 		// I need to find the current allele frequencies
 		// and use them as proportions for the next generation.
 		for (size_t i = 0; i < nLoci; ++i) {
-			UINT locus = m_loci[i];
+			UINT locus = loci[i];
 			Allele allele = ToAllele(m_alleles[i]);
 
 			// determine the number alleles at each subpopulation.
@@ -399,7 +400,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 		for (size_t i = 0; i < nLoci; ++i) {
 			for (size_t sp = 0; sp < numSP; ++sp) {
 #ifndef OPTIMIZED
-				UINT locus = m_loci[i];
+				UINT locus = loci[i];
 				Allele allele = ToAllele(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
@@ -489,7 +490,8 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individua
                                                      RawIndIterator & offBegin,
                                                      RawIndIterator & offEnd)
 {
-	UINT nLoci = m_loci.size();
+	const vectoru & loci = m_loci.elems(&pop);
+	UINT nLoci = loci.size();
 	//
 	// generate m_numOffspring offspring per mating
 	// record family size (this may be wrong for the last family)
@@ -508,7 +510,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individua
 	UINT totNumLoci = pop.totNumLoci();
 	// we know that scratch population has ordered linear genotype
 	for (size_t i = 0; i < nLoci; ++i) {
-		GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
+		GenoIterator ptr = itBegin->genoBegin() + loci[i];
 		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
 			if (m_flip[i] ? (*ptr != ToAllele(m_alleles[i]))
 				: (*ptr == ToAllele(m_alleles[i]))) {

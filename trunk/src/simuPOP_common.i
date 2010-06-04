@@ -243,6 +243,7 @@ namespace std
 %implicitconv intList;
 %implicitconv uintString;
 %implicitconv uintList;
+%implicitconv lociList;
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;
 %implicitconv stringList;

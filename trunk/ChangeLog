@@ -18,6 +18,8 @@ New features:
   - Add a CombinedParentsChooser that uses two parent choosers to choose parents from potentially
 		different virtual subpopulations.
   - Add paremeter sexChoice to parent choosers SequentialParentChooser and RandomParentChooser.
+  - Allow parameter loci to accept loci names in addition to loci indexes so that they can
+		handle remove correct loci when loci indexes are variable.
 
 New features (minor):
   - Allow mixed number and sequence specification of matrix. For example, [1, 2, (1,2)] will be intepretted as [(1,), (2,), (1,2)].

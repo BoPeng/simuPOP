@@ -440,7 +440,8 @@ public:
 	 *  (or a parent in case of self-fertilization) to offspring.
 	 *
 	 *  Recombination happens by default between all adjacent markers but can
-	 *  be limited to a given set of \e loci. Each locus in this list specifies
+	 *  be limited to a given set of \e loci, which can be a list of loci
+	 *  indexes, names or \c ALL_AVAIL. Each locus in this list specifies
 	 *  a recombination point between the locus and the locus immediately
 	 *  \b before it. Loci that are the first locus on each chromosome are
 	 *  ignored.
@@ -519,7 +520,7 @@ public:
 	 *      chromosomes.
 	 */
 	Recombinator(const floatList & rates = vectorf(), double intensity = -1,
-		const uintList & loci = uintList(), const floatList & convMode = NO_CONVERSION,
+		const lociList & loci = lociList(), const floatList & convMode = NO_CONVERSION,
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -575,7 +576,7 @@ private:
 	const vectorf m_rates;
 
 	/// initial parameter
-	const uintList m_loci;
+	const lociList m_loci;
 
 	/// position to recombine, changed to fit a special pop
 	mutable vectoru m_recBeforeLoci;

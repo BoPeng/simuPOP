@@ -1124,15 +1124,15 @@ public:
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-	Population & extract(const uintList & extractedLoci, const stringList & infoFieldList,
+	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
 		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
 
-	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
-	 *  current population. Alternatively, a parameter \e keep can be used to
-	 *  specify loci that will not be removed.
+	/** Remove \e loci (absolute indexes or names) and genotypes at these loci
+	 *  from the current population. Alternatively, a parameter \e keep can be
+	 *  used to specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const uintList & loci = uintList(NULL), const uintList & keep = uintList(NULL));
+	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
 
 	/** Recode alleles at \e loci (default to all loci in a population) to
 	 *  other values according to parameter \e alleles. This parameter can

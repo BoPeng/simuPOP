@@ -132,7 +132,7 @@ bool InitInfo::apply(Population & pop) const
 InitGenotype::InitGenotype(const vectorf & freq,
 	const uintList & genotype, const vectorf & prop,
 	const intMatrix & haplotypes,
-	const uintList & loci,
+	const lociList & loci,
 	const uintList & ploidy,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
@@ -178,11 +178,7 @@ bool InitGenotype::apply(Population & pop) const
 {
 	const subPopList subPops = applicableSubPops(pop);
 
-	vectoru loci = m_loci.elems();
-
-	if (m_loci.allAvail())
-		for (size_t i = 0 ; i < pop.totNumLoci(); ++i)
-			loci.push_back(i);
+	const vectoru & loci = m_loci.elems(&pop);
 
 	for (size_t i = 0; i < m_haplotypes.size(); ++i) {
 		DBG_WARNIF(m_haplotypes[i].size() != loci.size(),
@@ -212,14 +208,14 @@ bool InitGenotype::apply(Population & pop) const
 			IndIterator it = pop.indIterator(sp->subPop());
 			for (; it.valid(); ++it)
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
 						it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, *p);
 		} else if (!m_prop.empty()) {
 			WeightedSampler ws;
 			UINT sz = pop.subPopSize(*sp);
 			if (m_haplotypes.empty()) {
 				// initialize by allele. Gurantee proportion at each locus.
-				for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc) {
+				for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
 					ws.set(m_prop, sz * ploidy.size());
 					IndIterator it = pop.indIterator(sp->subPop());
 					for (; it.valid(); ++it)
@@ -234,7 +230,7 @@ bool InitGenotype::apply(Population & pop) const
 						const vectori & haplotype = m_haplotypes[ws.draw()];
 						size_t hapSz = haplotype.size();
 						size_t j = 0;
-						for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
 							it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, *p);
 					}
 			}
@@ -245,13 +241,13 @@ bool InitGenotype::apply(Population & pop) const
 			for (; it.valid(); ++it)
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 					if (m_haplotypes.empty()) {
-						for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc)
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
 							it->setAllele(ToAllele(ws.draw()), *loc, *p);
 					} else {
 						const vectori & haplotype = m_haplotypes[ws.draw()];
 						size_t hapSz = haplotype.size();
 						size_t j = 0;
-						for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
 							it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, *p);
 					}
 				}

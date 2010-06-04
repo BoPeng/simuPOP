@@ -35,7 +35,9 @@ double BaseMutator::mutRate(UINT loc) const
 			IndexError, "Locus index out of range when retrieving mutation rate.");
 		return m_rates.size() == 1 ? m_rates[0] : m_rates[loc];
 	}
-	const vectoru & loci = m_loci.elems();
+	// without a population reference, we assume that m_loci has already been filled
+	// with correct loci.
+	const vectoru & loci = m_loci.elems(NULL);
 	vectoru::const_iterator it = find(loci.begin(), loci.end(), loc);
 
 	DBG_ASSERT(it != loci.end(), RuntimeError,
@@ -106,7 +108,7 @@ bool BaseMutator::apply(Population & pop) const
 	// all use the same rate
 	vectorf rates = m_rates;
 	if (rates.size() == 1) {
-		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.elems().size());
+		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.size());
 		fill(rates.begin() + 1, rates.end(), rates[0]);
 	}
 	// multiple (virtual) subpopulations
@@ -128,10 +130,10 @@ bool BaseMutator::apply(Population & pop) const
 		bt.setParameter(rates, pop.ploidy() * popSize);
 
 		bt.doTrial();
-		const vectoru & loci = m_loci.elems();
+		const vectoru & loci = m_loci.elems(&pop);
 		size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
 		for (size_t i = 0; i < iEnd; ++i) {
-			UINT locus = m_loci.allAvail() ? i : loci[i];
+			UINT locus = loci[i];
 			DBG_DO(DBG_MUTATOR, cerr << "Mutate at locus " << locus << endl);
 			size_t pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
@@ -178,7 +180,7 @@ bool BaseMutator::apply(Population & pop) const
 
 
 MatrixMutator::MatrixMutator(const floatMatrix & rate,
-	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
+	const lociList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
 	const stringFunc & output,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
@@ -260,7 +262,7 @@ void KAlleleMutator::mutate(AlleleRef allele, UINT) const
 }
 
 
-StepwiseMutator::StepwiseMutator(const floatList & rates, const uintList & loci,
+StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
@@ -432,7 +434,7 @@ bool PointMutator::apply(Population & pop) const
 							<< pop.gen() << endl);
 					}
 				} else {
-					const vectoru & loci = m_loci.elems();
+					const vectoru & loci = m_loci.elems(&pop);
 					for (size_t i = 0; i < loci.size(); ++i) {
 						ind->setAllele(m_allele, loci[i], m_ploidy[p]);
 						DBG_DO(DBG_MUTATOR,

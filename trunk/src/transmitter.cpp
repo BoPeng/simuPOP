@@ -394,7 +394,7 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIte
 
 
 Recombinator::Recombinator(const floatList & rates, double intensity,
-	const uintList & loci, const floatList & convMode,
+	const lociList & loci, const floatList & convMode,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	:
@@ -476,7 +476,7 @@ void Recombinator::initialize(const Individual & ind) const
 	// prepare m_bt
 	vectorf vecP;
 	//
-	const vectoru & loci = m_loci.elems();
+	const vectoru & loci = m_loci.elems(&ind);
 
 	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
 		"You should specify m_intensity, or m_rates "

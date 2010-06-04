@@ -135,12 +135,14 @@ public:
 	/** Create a Python hybrid quantitative trait operator that passes genotype
 	 *  at specified \e loci, optional values at specified information fields
 	 *  (if requested), and an optional generation number to a user-defined
-	 *  function \e func. The return value will be assigned to specified trait
-	 *  fields (\e infoField). If only one trait field is specified, a number
-	 *  or a sequence of one element is acceptable. Otherwise, a sequence of
-	 *  values will be accepted and be assigned to each trait field.
+	 *  function \e func. Parameter \e loci can be a list of loci indexes,
+	 *  names, or \c ALL_AVAIL. The return value will be assigned to specified
+	 *  trait fields (\e infoField). If only one trait field is specified, a
+	 *  number or a sequence of one element is acceptable. Otherwise, a
+	 *  sequence of values will be accepted and be assigned to each trait
+	 *  field.
 	 */
-	PyQuanTrait(PyObject * func, const uintList & loci = vectoru(),
+	PyQuanTrait(PyObject * func, const lociList & loci = vectoru(),
 		const uintList ancGens = uintList(false), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
@@ -175,7 +177,7 @@ private:
 	const pyFunc m_func;
 
 	/// susceptibility loci
-	const uintList m_loci;
+	const lociList m_loci;
 };
 
 }

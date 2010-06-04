@@ -106,24 +106,26 @@ double MapPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	vectoru chromTypes;
 
-	for (size_t i = 0; i < m_loci.size(); ++i)
-		chromTypes.push_back(ind->chromType(ind->chromLocusPair(m_loci[i]).first));
+	const vectoru & loci = m_loci.elems(ind);
+
+	for (size_t i = 0; i < loci.size(); ++i)
+		chromTypes.push_back(ind->chromType(ind->chromLocusPair(loci[i]).first));
 
 	size_t ply = ind->ploidy();
 	if (ind->isHaplodiploid() && ind->sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
-	alleles.reserve(ply * m_loci.size());
+	alleles.reserve(ply * loci.size());
 
-	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		for (size_t p = 0; p < ply; ++p) {
 			if (chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
 				continue;
 			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 				continue;
-			alleles.push_back(ind->allele(m_loci[idx], p));
+			alleles.push_back(ind->allele(loci[idx], p));
 		}
 	}
 
@@ -141,7 +143,7 @@ double MapPenetrance::penet(Individual * ind, ULONG gen) const
 			const tupleDict::key_type & key = it->first;
 			UINT begin_idx = 0;
 			UINT end_idx = 0;
-			for (size_t i = 0; i < m_loci.size(); ++i) {
+			for (size_t i = 0; i < loci.size(); ++i) {
 				if (chromTypes[i] == CHROMOSOME_Y) {
 					if (ind->sex() == FEMALE)
 						continue;
@@ -203,12 +205,13 @@ double MaPenetrance::penet(Individual * ind, ULONG gen) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
+	const vectoru & loci = m_loci.elems(ind);
 
-	DBG_FAILIF((ind->ploidy() == 2 && m_penetrance.size() != static_cast<UINT>(pow(3., static_cast<double>(m_loci.size())))) ||
-		(ind->ploidy() == 1 && m_penetrance.size() != static_cast<UINT>(pow(2., static_cast<double>(m_loci.size())))),
+	DBG_FAILIF((ind->ploidy() == 2 && m_penetrance.size() != static_cast<UINT>(pow(3., static_cast<double>(loci.size())))) ||
+		(ind->ploidy() == 1 && m_penetrance.size() != static_cast<UINT>(pow(2., static_cast<double>(loci.size())))),
 		ValueError, "Please specify penetrance for each combination of genotype.");
 
-	for (vectoru::const_iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
 		if (ind->ploidy() == 1) {
 			Allele a = ToAllele(ind->allele(*loc));
 			if (singleST)

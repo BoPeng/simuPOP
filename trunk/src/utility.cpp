@@ -46,6 +46,9 @@ using std::fstream;
 using std::ifstream;
 using std::ofstream;
 
+// for data type lociList
+#include <genoStru.h>
+
 // for PySys_WriteStdout and python expressions
 #include "swigpyrun.h"
 
@@ -765,6 +768,61 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 	} else {
 		DBG_FAILIF(true, ValueError, "Invalid input for a list of integers.");
 	}
+}
+
+
+lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
+{
+	if (obj == NULL)
+		// accept NULL
+		m_status = UNSPECIFIED;
+	else if (PyBool_Check(obj))
+		// accept True/False
+		m_status = obj == Py_True ? ALL_AVAIL : UNSPECIFIED;
+	else if (PyString_Check(obj)) {
+		m_status = DYNAMIC;
+		m_elems.resize(1);
+		m_names.push_back(PyString_AsString(obj));
+	} else if (PyNumber_Check(obj)) {
+		m_status = REGULAR;
+		// accept a number
+		m_elems.push_back(static_cast<UINT>(PyInt_AsLong(obj)));
+	} else if (PySequence_Check(obj)) {
+		m_elems.resize(PySequence_Size(obj));
+		// assign values
+		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			if (PyNumber_Check(item)) {
+				DBG_FAILIF(i != 0 && m_status != REGULAR, ValueError, "Cannot mix index and loci names.");
+				m_status = REGULAR;
+				m_elems[i] = static_cast<UINT>(PyInt_AsLong(item));
+			} else if (PyString_Check(item)) {
+				DBG_FAILIF(i != 0 && m_status != DYNAMIC, ValueError, "Cannot mix index and loci names.");
+				m_status = DYNAMIC;
+				m_names.push_back(PyString_AsString(item));
+			} else {
+				DBG_ASSERT(false, ValueError, "Invalid input for a list of loci (index or name should be used).");
+			}
+			Py_DECREF(item);
+		}
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid input for a list of integers.");
+	}
+}
+
+
+const vectoru & lociList::elems(const GenoStruTrait * trait) const
+{
+	if (trait) {
+		if (m_status == DYNAMIC)
+			m_elems = trait->lociByNames(m_names);
+		else if (m_status == ALL_AVAIL) {
+			m_elems.resize(trait->totNumLoci());
+			for (size_t i = 0; i < m_elems.size(); ++i)
+				m_elems[i] = i;
+		}
+	}
+	return m_elems;
 }
 
 
