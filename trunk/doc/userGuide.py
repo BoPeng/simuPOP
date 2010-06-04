@@ -1731,7 +1731,7 @@ pop.evolve(
     ),
     gen = 5
 )
-ped = sim.pedigree.pop)
+ped = sim.Pedigree(pop)
 offFields = ['off%d' % x for x in range(4)]
 grandOffFields = ['grandOff%d' % x for x in range(5)]
 ped.addInfoFields(['spouse'] + offFields + grandOffFields)
@@ -4594,7 +4594,7 @@ print pop.infoFields()
 # save this population for future use
 pop.save('log/pedigree.pop')
 # draw pedigree
-plotpedigree.pop, filename='log/pedigree.png')
+plotPedigree(pop, filename='log/pedigree.png')
 #end_file
 
 
