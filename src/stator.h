@@ -421,7 +421,7 @@ private:
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
-	statAlleleFreq(const vectoru & loci, const subPopList & subPops,
+	statAlleleFreq(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -436,7 +436,7 @@ public:
 
 private:
 	/// which alleles?
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 
@@ -458,7 +458,7 @@ private:
 #define HomoFreq_sp_String      "homoFreq_sp"
 
 public:
-	statHeteroFreq(const vectoru & heteroFreq, const vectoru & homoFreq,
+	statHeteroFreq(const lociList & heteroFreq, const lociList & homoFreq,
 		const subPopList & subPops, const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -467,7 +467,7 @@ public:
 
 private:
 	/// heteroFreq
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -485,7 +485,7 @@ private:
 #define  GenotypeFreq_sp_String  "genoFreq_sp"
 
 public:
-	statGenoFreq(const vectoru & genoFreq,  const subPopList & subPops,
+	statGenoFreq(const lociList & genoFreq,  const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -494,7 +494,7 @@ public:
 
 private:
 	/// which genotypes
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -664,7 +664,7 @@ private:
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statAssociation(const vectoru & loci, const subPopList & subPops,
+	statAssociation(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 
@@ -687,7 +687,7 @@ private:
 
 private:
 	/// Association
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -702,7 +702,7 @@ private:
 #define Neutra_Pi_sp_String   "Pi_sp"
 
 public:
-	statNeutrality(const vectoru & loci, const subPopList & subPops,
+	statNeutrality(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -716,7 +716,7 @@ private:
 
 private:
 	/// Neutrality
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -739,7 +739,7 @@ private:
 #define  gst_String     "g_st"
 
 public:
-	statStructure(const vectoru & Fst, const subPopList & subPops,
+	statStructure(const lociList & Fst, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 	string describe(bool format = true) const;
@@ -753,16 +753,16 @@ private:
 	typedef map<Allele, bool> ALLELES;
 	typedef vector<ALLELES> ALLELELIST;
 
-	void calcGst_Nei73(const vectoru & n_i, LOCIFREQLIST & alleleFreq,
+	void calcGst_Nei73(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq,
 		const ALLELELIST & alleles, double & Gst, intDict & gst) const;
 
-	void calcFst_WC84(const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
+	void calcFst_WC84(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
 		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
 		intDict & fst, intDict & fis, intDict & fit) const;
 
 private:
 	/// Fst
-	vectoru m_loci;
+	lociList m_loci;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -782,7 +782,7 @@ private:
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
-	statHWE(const vectoru & loci, const subPopList & subPops,
+	statHWE(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
 
 
@@ -794,7 +794,7 @@ private:
 	vectoru mapToCount(const GENOCNT & cnt) const;
 
 private:
-	vectoru m_loci;
+	lociList m_loci;
 	subPopList m_subPops;
 	stringList m_vars;
 	string m_suffix;
@@ -906,11 +906,12 @@ public:
 	 *  \li \c propOfUnaffected_sp: Proportion of unaffected individuals in
 	 *       each (virtual) subpopulation.
 	 *
-	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (by indexes),
-	 *  at which allele frequencies will be calculated. This statistic outputs
-	 *  the following variables, all of which are dictionary (with loci indexes
-	 *  as keys) of default dictionaries (with alleles as keys). For example,
-	 *  <tt>alleleFreq[loc][a]</tt> returns 0 if allele \c a does not exist.
+	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
+	 *  names, or \c ALL_AVAIL), at which allele frequencies will be calculated.
+	 *  This statistic outputs the following variables, all of which are
+	 *  dictionary (with loci indexes as keys) of default dictionaries (with
+	 *  alleles as keys). For example, <tt>alleleFreq[loc][a]</tt> returns 0
+	 *  if allele \c a does not exist.
 	 *  \li \c alleleFreq (default): <tt>alleleFreq[loc][a]</tt> is the
 	 *       frequency of allele \c a at locus \loc for all or specified
 	 *       (virtual) subpopulations.
@@ -921,10 +922,10 @@ public:
 	 *  \li \c alleleNum_sp: Allele count in each (virtual) subpopulation.
 	 *
 	 *  <b>heteroFreq</b> and <b>homoFreq</b>: These parameters accept a list
-	 *  of loci (by indexes), at which the number and frequency of homozygotes
-	 *  and/or heterozygotes will be calculated. These statistics are only
-	 *  available for diploid populations. The following variables will be
-	 *  outputted:
+	 *  of loci (by indexes or names), at which the number and frequency of
+	 *  homozygotes and/or heterozygotes will be calculated. These statistics
+	 *  are only available for diploid populations. The following variables
+	 *  will be outputted:
 	 *  \li \c heteroFreq (default for parameter \e heteroFreq): A dictionary
 	 *       of proportion of heterozygotes in all or specified (virtual)
 	 *       subpopulations, with loci indexes as dictionary keys.
@@ -944,8 +945,8 @@ public:
 	 *  \li \c homoNum_sp: A dictionary of number of homozygotes in each
 	 *       (virtual) subpopulation.
 	 *
-	 *  <b>genoFreq</b>: This parameter accept a list of loci (by index) at
-	 *  which number and frequency of all genotypes are outputed as a
+	 *  <b>genoFreq</b>: This parameter accept a list of loci (by indexes or
+	 *  names) at which number and frequency of all genotypes are outputed as a
 	 *  dictionary (indexed by loci indexes) of default dictionaries (indexed
 	 *  by tuples of possible indexes). This statistic is available for all
 	 *  population types with genotype defined as ordered alleles at a locus.
@@ -1058,10 +1059,11 @@ public:
 	 *       (virtual) subpopulation.
 	 *  \li \c CramerV_sp Cramer V statistics for each (virtual) subpopulation.
 	 *
-	 *  <b>association</b>: Parameter \c association accepts a list of loci.
-	 *  At each locus, one or more statistical tests will be performed to test
-	 *  association between this locus and individual affection status.
-	 *  Currently, simuPOP provides the following tests:
+	 *  <b>association</b>: Parameter \c association accepts a list of loci,
+	 *  which can be a list of indexes, names, or \c ALL_AVAIL. At each locus,
+	 *  one or more statistical tests will be performed to test association
+	 *  between this locus and individual affection status. Currently,
+	 *  simuPOP provides the following tests:
 	 *  \li An allele-based Chi-square test using alleles counts. This test
 	 *       can be applied to loci with more than two alleles, and to haploid
 	 *       populations.
@@ -1102,9 +1104,10 @@ public:
 	 *       Armitage tests, using cases and controls from each subpopulation.
 	 *
 	 *  <b>neutrality</b>: This parameter performs neutrality tests (detection
-	 *  of natural selection) on specified loci. It currently only outputs
-	 *  \e Pi, which is the average number of pairwise difference between loci.
-	 *  This statistic outputs the following variables:
+	 *  of natural selection) on specified loci, which can be a list of loci
+	 *  indexes, names or \c ALL_AVAIL. It currently only outputs \e Pi, which
+	 *  is the average number of pairwise difference between loci. This
+	 *  statistic outputs the following variables:
 	 *  \li \c Pi Mean pairwise difference between all sequences from all or
 	 *       specified (virtual) subpopulations.
 	 *  \li \c Pi_sp Mean paiewise difference between all sequences in each
@@ -1112,6 +1115,7 @@ public:
 	 *
 	 *  <b>structure</b>: Parameter \c structure accepts a list of loci at
 	 *  which statistics that measure population structure are calculated.
+	 *  \e structure accepts a list of loci indexes, names or \c ALL_AVAIL.
 	 *  This parameter currently supports the following statistics:
 	 *  \li Weir and Cockerham's Fst (1984). This is the most widely used
 	 *       estimator of Wright's fixation index and can be used to measure
@@ -1137,7 +1141,8 @@ public:
 	 *  <b>HWE</b>: Parameter \c HWE accepts a list of loci at which exact
 	 *  two-side tests for Hardy-Weinberg equilibrium will be performed. This
 	 *  statistic is only available for diallelic loci in diploid populations.
-	 *  It outputs the following variables:
+	 *  \e HWE can be a list of loci indexes, names or \c ALL_AVAIL. This
+	 *  statistic outputs the following variables:
 	 *  \li \c HWE (default) A dictionary of p-values of HWE tests using
 	 *       genotypes in all or specified (virtual) subpopulations.
 	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
@@ -1149,12 +1154,12 @@ public:
 		//
 		bool numOfAffected = false,
 		//
-		const uintList & alleleFreq = vectoru(),
+		const lociList & alleleFreq = vectoru(),
 		//
-		const uintList & heteroFreq = vectoru(),
-		const uintList & homoFreq = vectoru(),
+		const lociList & heteroFreq = vectoru(),
+		const lociList & homoFreq = vectoru(),
 		//
-		const uintList & genoFreq = vectoru(),
+		const lociList & genoFreq = vectoru(),
 		//
 		const intMatrix & haploFreq = intMatrix(),
 		//
@@ -1166,13 +1171,13 @@ public:
 		//
 		const intMatrix & LD = intMatrix(),
 		//
-		const uintList & association = vectoru(),
+		const lociList & association = vectoru(),
 		//
-		const uintList & neutrality = vectoru(),
+		const lociList & neutrality = vectoru(),
 		//
-		const uintList & structure = vectoru(),
+		const lociList & structure = vectoru(),
 		//
-		const uintList & HWE = vectoru(),
+		const lociList & HWE = vectoru(),
 		//
 		const stringList & vars = stringList(),
 		const string & suffix = string(),

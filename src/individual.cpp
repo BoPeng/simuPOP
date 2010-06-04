@@ -230,7 +230,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
-PyObject * Individual::genoAtLoci(const uintList & lociList)
+PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	size_t ply = ploidy();
 
@@ -257,7 +257,7 @@ PyObject * Individual::genoAtLoci(const uintList & lociList)
 			}
 		}
 	} else {
-		const vectoru & loci = lociList.elems();
+		const vectoru & loci = lociList.elems(this);
 
 		vectoru chromTypes;
 

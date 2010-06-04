@@ -1797,7 +1797,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 }
 
 
-Population & Population::extract(const uintList & extractedLoci, const stringList & infoFieldList,
+Population & Population::extract(const lociList & extractedLoci, const stringList & infoFieldList,
                                  const subPopList & _subPops, const uintList & ancGens) const
 {
 	Population & pop = *new Population();
@@ -1807,7 +1807,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 
 	bool removeInd = !_subPops.allAvail();
 	bool removeLoci = !extractedLoci.allAvail();
-	const vectoru & loci = extractedLoci.elems();
+	const vectoru & loci = extractedLoci.elems(this);
 	bool removeInfo = !infoFieldList.allAvail();
 	const vectorstr & infoFields = infoFieldList.elems();
 
@@ -2043,7 +2043,7 @@ Population & Population::extract(const uintList & extractedLoci, const stringLis
 }
 
 
-void Population::removeLoci(const uintList & lociList, const uintList & keepList)
+void Population::removeLoci(const lociList & lociList, const lociList & keepList)
 {
 	if (lociList.unspecified() && keepList.unspecified())
 		return;
@@ -2051,11 +2051,11 @@ void Population::removeLoci(const uintList & lociList, const uintList & keepList
 	DBG_FAILIF(lociList.unspecified() + keepList.unspecified() != 1, ValueError,
 		"Please specify only one of parameters loci and keep");
 
-	vectoru loci = lociList.elems();
+	vectoru loci = lociList.elems(this);
 	if (lociList.allAvail())
 		for (size_t i = 0; i < totNumLoci(); ++i)
 			loci.push_back(i);
-	vectoru kept = keepList.elems();
+	vectoru kept = keepList.elems(this);
 	if (keepList.allAvail())
 		for (size_t i = 0; i < totNumLoci(); ++i)
 			kept.push_back(i);

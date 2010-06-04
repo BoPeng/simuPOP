@@ -86,6 +86,7 @@ Details:
     mutations to certain generations (parameters begin, end, step and
     at), replicate populations (parameter rep), (virtual)
     subpopulations (parameter subPops) and loci (parameter loci).
+    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
     Please refer to class BaseOperator for a detailed explanation of
     these parameters.  Parameter rate or its equivalence specifies the
     probability that a a mutation event happens. The exact form and
@@ -139,7 +140,7 @@ Usage:
 
 %feature("docstring") simuPOP::BaseMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const uintList &loci);
+%ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const lociList &loci);
 
 %ignore simuPOP::BaseMutator::mutRate(UINT loc) const;
 
@@ -1198,24 +1199,25 @@ Details:
     allele frequency at specified loci in the offspring generation
     reaches specified allele frequency. At the beginning of each
     generation, expected allele frequency of alleles at loci is
-    returned from a user-defined trajectory function freqFunc. If
-    there is no subpopulation, this function should return a list of
-    frequencies for each locus. If there are multiple subpopulations,
-    freqFunc can return a list of allele frequencies for all
-    subpopulations or combined frequencies that ignore population
-    structure. In the former case, allele frequencies should be
-    arranged by loc0_sp0, loc1_sp0, ... loc0_sp1, loc1_sp1, ..., and
-    so on. In the latter case, overall expected number of alleles are
-    scattered to each subpopulation in proportion to existing number
-    of alleles in each subpopulation, using a multinomial
-    distribution.  After the expected alleles are calculated, this
-    offspring generator accept and reject families according to their
-    genotype at loci until allele frequecies reach their expected
-    values. The rest of the offspring generation is then filled with
-    families without only wild type alleles at these loci.  This
-    offspring generator is derived from class OffspringGenerator.
-    Please refer to class OffspringGenerator for a detailed
-    description of parameters ops, numOffspring and sexMode.
+    returned from a user-defined trajectory function freqFunc.
+    Parameter loci can be a list of loci indexes, names, or ALL_AVAIL.
+    If there is no subpopulation, this function should return a list
+    of frequencies for each locus. If there are multiple
+    subpopulations, freqFunc can return a list of allele frequencies
+    for all subpopulations or combined frequencies that ignore
+    population structure. In the former case, allele frequencies
+    should be arranged by loc0_sp0, loc1_sp0, ... loc0_sp1, loc1_sp1,
+    ..., and so on. In the latter case, overall expected number of
+    alleles are scattered to each subpopulation in proportion to
+    existing number of alleles in each subpopulation, using a
+    multinomial distribution.  After the expected alleles are
+    calculated, this offspring generator accept and reject families
+    according to their genotype at loci until allele frequecies reach
+    their expected values. The rest of the offspring generation is
+    then filled with families without only wild type alleles at these
+    loci.  This offspring generator is derived from class
+    OffspringGenerator. Please refer to class OffspringGenerator for a
+    detailed description of parameters ops, numOffspring and sexMode.
 
 "; 
 
@@ -2635,7 +2637,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Individual::genoAtLoci(const uintList &loci);
+%ignore simuPOP::Individual::genoAtLoci(const lociList &loci);
 
 %feature("docstring") simuPOP::Individual::setGenotype "
 
@@ -3168,6 +3170,7 @@ Details:
     frequencies or proportions of each haplotype. If loci, ploidy
     and/or subPop are specified, only specified loci, ploidy, and
     individuals in these (virtual) subpopulations will be initialized.
+    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
     If the length of a haplotype is not enough to fill all loci, the
     haplotype will be reused. If a list (or a single) haplotypes are
     specified without freq or prop, they are used with equal
@@ -3384,6 +3387,42 @@ Usage:
 
 %feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::lociList "
+
+"; 
+
+%feature("docstring") simuPOP::lociList::lociList "
+
+Usage:
+
+    lociList(obj=Py_True)
+
+"; 
+
+%ignore simuPOP::lociList::lociList(const vectoru &values);
+
+%feature("docstring") simuPOP::lociList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%ignore simuPOP::lociList::size() const;
+
+%ignore simuPOP::lociList::allAvail() const;
+
+%feature("docstring") simuPOP::lociList::unspecified "
+
+Usage:
+
+    x.unspecified()
+
+"; 
+
+%ignore simuPOP::lociList::elems(const GenoStruTrait *trait) const;
+
 %feature("docstring") simuPOP::MaPenetrance "
 
 Details:
@@ -3412,7 +3451,8 @@ Details:
     alleles into a wildtype group (with alleles wildtype, default to
     [0]), and a non-wildtype group. A list of penetrance values is
     specified through parameter penetrance, for genotypes at one or
-    more loci. If we denote wildtype alleles using capital letters A,
+    more loci. Parameter loci can be a list of loci indexes, names or
+    ALL_AVAIL. If we denote wildtype alleles using capital letters A,
     B ... and non-wildtype alleles using small letters a, b ..., the
     penetrance values should be for
     *   genotypes A and a for the haploid single-locus case,
@@ -3463,8 +3503,9 @@ Details:
     dictionary penetrance with genotype at loci as keys, and
     penetrance as values. For each individual, genotypes at loci are
     collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1...
-    for a diploid individual) and are looked up in the dictionary. If
-    a genotype cannot be found, it will be looked up again without
+    for a diploid individual) and are looked up in the dictionary.
+    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
+    If a genotype cannot be found, it will be looked up again without
     phase information (e.g. (1,0) will match key (0,1)). If the
     genotype still can not be found, a ValueError will be raised. This
     operator supports sex chromosomes and haplodiploid populations. In
@@ -3508,16 +3549,17 @@ Details:
 
     Create a selector that assigns individual fitness values using a
     dictionary fitness with genotype at loci as keys, and fitness as
-    values. For each individual (parents if this operator is applied
-    before mating, and offspring if this operator is applied during
-    mating), genotypes at loci are collected one by one (e.g. p0_loc0,
-    p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and are
-    looked up in the dictionary. If a genotype cannot be found, it
-    will be looked up again without phase information (e.g. (1,0) will
-    match key (0,1)). If the genotype still can not be found, a
-    ValueError will be raised. This operator supports sex chromosomes
-    and haplodiploid populations. In these cases, only valid genotypes
-    should be used to generator the dictionary keys.
+    values. Parameter loci can be a list of indexes, loci names or
+    ALL_AVAIL. For each individual (parents if this operator is
+    applied before mating, and offspring if this operator is applied
+    during mating), genotypes at loci are collected one by one (e.g.
+    p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual)
+    and are looked up in the dictionary. If a genotype cannot be
+    found, it will be looked up again without phase information (e.g.
+    (1,0) will match key (0,1)). If the genotype still can not be
+    found, a ValueError will be raised. This operator supports sex
+    chromosomes and haplodiploid populations. In these cases, only
+    valid genotypes should be used to generator the dictionary keys.
 
 "; 
 
@@ -3561,10 +3603,11 @@ Details:
     Creates a multi-allele selector that groups multiple alleles into
     a wildtype group (with alleles wildtype, default to [0]), and a
     non-wildtype group. A list of fitness values is specified through
-    parameter fitness, for genotypes at one or more loci. If we denote
-    wildtype alleles using capital letters A, B ... and non-wildtype
-    alleles using small letters a, b ..., the fitness values should be
-    for
+    parameter fitness, for genotypes at one or more loci. Parameter
+    loci can be a list of indexes, loci names or ALL_AVAIL. If we
+    denote wildtype alleles using capital letters A, B ... and non-
+    wildtype alleles using small letters a, b ..., the fitness values
+    should be for
     *   genotypes A and a for the haploid single-locus case,
     *   genotypes AB, Ab, aB and bb for haploid two=locus cases,
     *   genotypes AA, Aa and aa for diploid single-locus cases,
@@ -4610,25 +4653,26 @@ Usage:
 Details:
 
     Create a pedigree object from a population, using a subset of loci
-    (parameter loci, default to no locus), information fields
-    (parameter infoFields, default to no information field besides
-    idField, fatherField and motherField), and ancestral generations
-    (parameter ancGens, default to all ancestral generations). By
-    default, information field father_id (parameter fatherField) and
-    mother_id (parameter motherField) are used to locate parents
-    identified by ind_id (parameter idField), which should store an
-    unique ID for all individuals. Multiple individuls with the same
-    ID are allowed and will be considered as the same individual, but
-    a warning will be given if they actually differ in genotype or
-    information fields. Operators IdTagger and PedigreeTagger are
-    usually used to assign such IDs, although function
-    sampling.indexToID could be used to assign unique IDs and
-    construct parental IDs from index based relationship recorded by
-    operator ParentsTagger. A pedigree object could be constructed
-    with one or no parent but certain functions such as relative
-    tracking will not be available for such pedigrees. In case that
-    your are no longer using your population object, you could steal
-    the content from the population by setting stealPop to True.
+    (parameter loci, can be a list of loci indexes, names, or
+    ALL_AVAIL, default to no locus), information fields (parameter
+    infoFields, default to no information field besides idField,
+    fatherField and motherField), and ancestral generations (parameter
+    ancGens, default to all ancestral generations). By default,
+    information field father_id (parameter fatherField) and mother_id
+    (parameter motherField) are used to locate parents identified by
+    ind_id (parameter idField), which should store an unique ID for
+    all individuals. Multiple individuls with the same ID are allowed
+    and will be considered as the same individual, but a warning will
+    be given if they actually differ in genotype or information
+    fields. Operators IdTagger and PedigreeTagger are usually used to
+    assign such IDs, although function sampling.indexToID could be
+    used to assign unique IDs and construct parental IDs from index
+    based relationship recorded by operator ParentsTagger. A pedigree
+    object could be constructed with one or no parent but certain
+    functions such as relative tracking will not be available for such
+    pedigrees. In case that your are no longer using your population
+    object, you could steal the content from the population by setting
+    stealPop to True.
 
 "; 
 
@@ -4665,16 +4709,17 @@ Details:
     individual, IDs of his or her parents, sex ('M' or 'F'), affection
     status ('A' or 'U'), values of specified information fields
     infoFields and genotypes at specified loci (parameter loci, which
-    can be a list of loci or ALL_AVAIL). Allele numbers, instead of
-    their names are outputed. Two columns are used for each locus if
-    the population is diploid. This file can be loaded using function
-    loadPedigree although additional information such as names of
-    information fields need to be specified. This format differs from
-    a .ped file used in some genetic analysis software in that there
-    is no family ID and IDs of all individuals have to be unique. Note
-    that parental IDs will be set to zero if the parent is not in the
-    pedigree object. Therefore, the parents of individuals in the top-
-    most ancestral generation will always be zero.
+    can be a list of loci indexes, names, or ALL_AVAIL). Allele
+    numbers, instead of their names are outputed. Two columns are used
+    for each locus if the population is diploid. This file can be
+    loaded using function loadPedigree although additional information
+    such as names of information fields need to be specified. This
+    format differs from a .ped file used in some genetic analysis
+    software in that there is no family ID and IDs of all individuals
+    have to be unique. Note that parental IDs will be set to zero if
+    the parent is not in the pedigree object. Therefore, the parents
+    of individuals in the top-most ancestral generation will always be
+    zero.
 
 "; 
 
@@ -5929,7 +5974,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::extract(const uintList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), const uintList &ancGens=uintList()) const;
+%ignore simuPOP::Population::extract(const lociList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), const uintList &ancGens=uintList()) const;
 
 %feature("docstring") simuPOP::Population::removeLoci "
 
@@ -5939,9 +5984,9 @@ Usage:
 
 Details:
 
-    Remove loci (absolute indexes) and genotypes at these loci from
-    the current population. Alternatively, a parameter keep can be
-    used to specify loci that will not be removed.
+    Remove loci (absolute indexes or names) and genotypes at these
+    loci from the current population. Alternatively, a parameter keep
+    can be used to specify loci that will not be removed.
 
 "; 
 
@@ -6855,7 +6900,9 @@ Details:
     Create a Python hybrid penetrance operator that passes genotype at
     specified loci, values at specified information fields (if
     requested), and a generation number to a user-defined function
-    func. The return value will be treated as Individual penetrance.
+    func. Parameter loci can be a list of loci indexes, names, or
+    ALL_AVAIL. The return value will be treated as Individual
+    penetrance.
 
 "; 
 
@@ -6934,9 +6981,10 @@ Details:
     Create a Python hybrid quantitative trait operator that passes
     genotype at specified loci, optional values at specified
     information fields (if requested), and an optional generation
-    number to a user-defined function func. The return value will be
-    assigned to specified trait fields (infoField). If only one trait
-    field is specified, a number or a sequence of one element is
+    number to a user-defined function func. Parameter loci can be a
+    list of loci indexes, names, or ALL_AVAIL. The return value will
+    be assigned to specified trait fields (infoField). If only one
+    trait field is specified, a number or a sequence of one element is
     acceptable. Otherwise, a sequence of values will be accepted and
     be assigned to each trait field.
 
@@ -6955,12 +7003,13 @@ Details:
     This selector assigns fitness values by calling a user provided
     function. It accepts a list of loci (parameter loci) and a Python
     function func which should be defined with one or more of
-    parameters geno, gen, ind, or names of information fields. When
-    this operator is applied to a population, it passes genotypes at
-    specified loci, generation number, a reference to an individual,
-    and values at specified information fields to respective
-    parameters of this function. The returned penetrance values will
-    be used to determine the fitness of each individual.
+    parameters geno, gen, ind, or names of information fields.
+    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
+    When this operator is applied to a population, it passes genotypes
+    at specified loci, generation number, a reference to an
+    individual, and values at specified information fields to
+    respective parameters of this function. The returned penetrance
+    values will be used to determine the fitness of each individual.
 
 "; 
 
@@ -7252,22 +7301,23 @@ Details:
     recombination and gene conversion) that passes genotypes from
     parents (or a parent in case of self-fertilization) to offspring.
     Recombination happens by default between all adjacent markers but
-    can be limited to a given set of loci. Each locus in this list
-    specifies a recombination point between the locus and the locus
-    immediately before it. Loci that are the first locus on each
-    chromosome are ignored.  If a single recombination rate (parameter
-    rates) is specified, it will used for all loci (all loci or loci
-    specified by parameter loci), regardless of physical distances
-    between adjacent loci.  If a list of recombination rates are
-    specified in rates, a parameter loci with the same length should
-    also be specified. Different recombination rates can then be used
-    after these loci (between specified loci and their immediate
-    neighbor to the right).  A recombination intensity (intensity) can
-    be used to specify recombination rates that are proportional to
-    physical distances between adjacent markers. If the physical
-    distance between two markers is d, the recombination rate between
-    them will be intensity * d. No unit is assume for loci position
-    and recombination intensity.  Gene conversion is controlled using
+    can be limited to a given set of loci, which can be a list of loci
+    indexes, names or ALL_AVAIL. Each locus in this list specifies a
+    recombination point between the locus and the locus immediately
+    before it. Loci that are the first locus on each chromosome are
+    ignored.  If a single recombination rate (parameter rates) is
+    specified, it will used for all loci (all loci or loci specified
+    by parameter loci), regardless of physical distances between
+    adjacent loci.  If a list of recombination rates are specified in
+    rates, a parameter loci with the same length should also be
+    specified. Different recombination rates can then be used after
+    these loci (between specified loci and their immediate neighbor to
+    the right).  A recombination intensity (intensity) can be used to
+    specify recombination rates that are proportional to physical
+    distances between adjacent markers. If the physical distance
+    between two markers is d, the recombination rate between them will
+    be intensity * d. No unit is assume for loci position and
+    recombination intensity.  Gene conversion is controlled using
     parameter convMode, which can be
     *   NoConversion: no gene conversion (default).
     *   (NUM_MARKERS, prob, n): With probability prob, convert a fixed
@@ -8444,11 +8494,12 @@ Details:
     (virtual) subpopulation.
     *   propOfUnaffected_sp: Proportion of unaffected individuals in
     each (virtual) subpopulation.alleleFreq: This parameter accepts a
-    list of loci (by indexes), at which allele frequencies will be
-    calculated. This statistic outputs the following variables, all of
-    which are dictionary (with loci indexes as keys) of default
-    dictionaries (with alleles as keys). For example,
-    alleleFreq[loc][a] returns 0 if allele a does not exist.
+    list of loci (loci indexes, names, or ALL_AVAIL), at which allele
+    frequencies will be calculated. This statistic outputs the
+    following variables, all of which are dictionary (with loci
+    indexes as keys) of default dictionaries (with alleles as keys).
+    For example, alleleFreq[loc][a] returns 0 if allele a does not
+    exist.
     *   alleleFreq (default): alleleFreq[loc][a] is the frequency of
     allele a at locus for all or specified (virtual) subpopulations.
     *   alleleNum (default): alleleNum[loc][a] is the number of allele
@@ -8457,9 +8508,9 @@ Details:
     subpopulation.
     *   alleleNum_sp: Allele count in each (virtual)
     subpopulation.heteroFreq and homoFreq: These parameters accept a
-    list of loci (by indexes), at which the number and frequency of
-    homozygotes and/or heterozygotes will be calculated. These
-    statistics are only available for diploid populations. The
+    list of loci (by indexes or names), at which the number and
+    frequency of homozygotes and/or heterozygotes will be calculated.
+    These statistics are only available for diploid populations. The
     following variables will be outputted:
     *   heteroFreq (default for parameter heteroFreq): A dictionary of
     proportion of heterozygotes in all or specified (virtual)
@@ -8479,10 +8530,10 @@ Details:
     (virtual) subpopulation.
     *   homoNum_sp: A dictionary of number of homozygotes in each
     (virtual) subpopulation.genoFreq: This parameter accept a list of
-    loci (by index) at which number and frequency of all genotypes are
-    outputed as a dictionary (indexed by loci indexes) of default
-    dictionaries (indexed by tuples of possible indexes). This
-    statistic is available for all population types with genotype
+    loci (by indexes or names) at which number and frequency of all
+    genotypes are outputed as a dictionary (indexed by loci indexes)
+    of default dictionaries (indexed by tuples of possible indexes).
+    This statistic is available for all population types with genotype
     defined as ordered alleles at a locus. The length of genotype
     equals the number of homologous copies of chromosomes (ploidy) of
     a population. Genotypes for males or females on sex chromosomes or
@@ -8588,9 +8639,10 @@ Details:
     (virtual) subpopulation.
     *   CramerV_sp Cramer V statistics for each (virtual)
     subpopulation.association: Parameter association accepts a list of
-    loci. At each locus, one or more statistical tests will be
-    performed to test association between this locus and individual
-    affection status. Currently, simuPOP provides the following tests:
+    loci, which can be a list of indexes, names, or ALL_AVAIL. At each
+    locus, one or more statistical tests will be performed to test
+    association between this locus and individual affection status.
+    Currently, simuPOP provides the following tests:
     *   An allele-based Chi-square test using alleles counts. This
     test can be applied to loci with more than two alleles, and to
     haploid populations.
@@ -8629,16 +8681,17 @@ Details:
     *   Armitage_p_sp A dictionary of p-values of the Cochran-
     Armitage tests, using cases and controls from each
     subpopulation.neutrality: This parameter performs neutrality tests
-    (detection of natural selection) on specified loci. It currently
-    only outputs Pi, which is the average number of pairwise
-    difference between loci. This statistic outputs the following
-    variables:
+    (detection of natural selection) on specified loci, which can be a
+    list of loci indexes, names or ALL_AVAIL. It currently only
+    outputs Pi, which is the average number of pairwise difference
+    between loci. This statistic outputs the following variables:
     *   Pi Mean pairwise difference between all sequences from all or
     specified (virtual) subpopulations.
     *   Pi_sp Mean paiewise difference between all sequences in each
     (virtual) subpopulation.structure: Parameter structure accepts a
     list of loci at which statistics that measure population structure
-    are calculated. This parameter currently supports the following
+    are calculated. structure accepts a list of loci indexes, names or
+    ALL_AVAIL. This parameter currently supports the following
     statistics:
     *   Weir and Cockerham's Fst (1984). This is the most widely used
     estimator of Wright's fixation index and can be used to measure
@@ -8662,7 +8715,8 @@ Details:
     locus.HWE: Parameter HWE accepts a list of loci at which exact
     two-side tests for Hardy-Weinberg equilibrium will be performed.
     This statistic is only available for diallelic loci in diploid
-    populations. It outputs the following variables:
+    populations. HWE can be a list of loci indexes, names or
+    ALL_AVAIL. This statistic outputs the following variables:
     *   HWE (default) A dictionary of p-values of HWE tests using
     genotypes in all or specified (virtual) subpopulations.
     *   HWE_sp A dictionary of p-values of HWS tests using genotypes

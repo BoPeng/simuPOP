@@ -52,6 +52,7 @@ public:
 	 *  restrict mutations to certain generations (parameters \e begin, \e end,
 	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
 	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).
+	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
 	 *  Please refer to class \c BaseOperator for a detailed explanation of
 	 *  these parameters.
 	 *
@@ -95,7 +96,7 @@ public:
 	 *  defined. How exactly a mutator makes use of these information is
 	 *  mutator dependent.
 	 */
-	BaseMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	BaseMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -107,10 +108,10 @@ public:
 	{
 		// NOTE: empty rates is allowed because a mutator might be
 		// used in a mixed mutator.
-		if (m_rates.size() > 1 && m_loci.elems().empty())
+		if (m_rates.size() > 1 && m_loci.size() == 0)
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
-		if (m_rates.size() > 1 && !m_loci.elems().empty() && m_rates.size() != m_loci.elems().size())
+		if (m_rates.size() > 1 && !m_loci.empty() && m_rates.size() != m_loci.size())
 			throw ValueError("If both rates and loci are specified, they should have the same length.");
 	}
 
@@ -129,9 +130,9 @@ public:
 
 
 	/// CPPONLY set an array of mutation rates
-	void setRate(const vectorf & rates, const uintList & loci)
+	void setRate(const vectorf & rates, const lociList & loci)
 	{
-		if (rates.size() != 1 && rates.size() != loci.elems().size())
+		if (rates.size() != 1 && rates.size() != loci.size())
 			throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
 
 		m_rates = rates;
@@ -181,7 +182,7 @@ protected:
 	vectorf m_rates;
 
 	/// applicable loci.
-	uintList m_loci;
+	lociList m_loci;
 
 	const uintListFunc m_mapIn;
 
@@ -214,7 +215,7 @@ public:
 	 *  \c DBG_WARNING is turned on. Please refer to classes \c mutator and
 	 *  \c BaseOperator for detailed explanation of other parameters.
 	 */
-	MatrixMutator(const floatMatrix & rate, const uintList & loci = uintList(),
+	MatrixMutator(const floatMatrix & rate, const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -267,7 +268,7 @@ public:
 	 *  refer to classes \c mutator and \c BaseOperator for descriptions of
 	 *  other parameters.
 	 */
-	KAlleleMutator(UINT k, const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	KAlleleMutator(UINT k, const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -346,7 +347,7 @@ public:
 	 *  implement them using a \c PyMutator. If performance becomes a concern,
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
-	StepwiseMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	StepwiseMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1.0),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -407,7 +408,7 @@ public:
 	 *  classes \c mutator and \c BaseOperator for descriptions of other
 	 *  parameters.
 	 */
-	PyMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	PyMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -459,7 +460,7 @@ public:
 	 *  Please refer to classes \c mutator and \c BaseOperator for descriptions
 	 *  of other parameters.
 	 */
-	MixedMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	MixedMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
@@ -528,7 +529,7 @@ public:
 	 *  parameter \e loci is specified. Please refer to classes \c mutator and
 	 *  \c BaseOperator for descriptions of other parameters.
 	 */
-	ContextMutator(const floatList & rates = vectorf(), const uintList & loci = uintList(),
+	ContextMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
@@ -594,7 +595,7 @@ public:
 	 *  also accepted). Please refer to class \c BaseOperator for detailed
 	 *  descriptions of other parameters.
 	 */
-	PointMutator(const uintList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
+	PointMutator(const lociList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
@@ -630,7 +631,7 @@ public:
 
 private:
 	/// applicable loci.
-	uintList m_loci;
+	lociList m_loci;
 	Allele m_allele;
 	vectoru m_ploidy;
 	vectoru m_inds;

@@ -32,7 +32,7 @@ using std::ofstream;
 
 namespace simuPOP {
 
-Pedigree::Pedigree(const Population & pop, const uintList & loci,
+Pedigree::Pedigree(const Population & pop, const lociList & loci,
 	const stringList & infoFields, const uintList & ancGens, const string & idField,
 	const string & fatherField, const string & motherField, bool stealPop)
 	: m_idField(idField), m_fatherField(fatherField), m_motherField(motherField),
@@ -59,7 +59,7 @@ Pedigree::Pedigree(const Population & pop, const uintList & loci,
 			removeInfoFields(removedFields);
 		// Remove loci
 		if (!loci.allAvail())
-			removeLoci(vectoru(false), loci.elems());
+			removeLoci(vectoru(false), loci);
 		// remove individuals???
 		if (!ancGens.allAvail())
 			keepAncestralGens(ancGens);
@@ -119,7 +119,7 @@ Pedigree * Pedigree::clone() const
 
 
 void Pedigree::save(const string & filename, const stringList & fieldList,
-                    const uintList & lociList) const
+                    const lociList & lociList) const
 {
 	ofstream file(filename.c_str());
 
@@ -137,10 +137,7 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 	char buffer[96];
 
 	UINT ply = ploidy();
-	vectoru loci = lociList.elems();
-	if (lociList.allAvail())
-		for (size_t i = 0; i < totNumLoci(); ++i)
-			loci.push_back(i);
+	const vectoru & loci = lociList.elems(this);
 
 	UINT nParents = numParents();
 	UINT curGen = curAncestralGen();
@@ -1340,7 +1337,7 @@ struct IndInfo
 
 
 Pedigree loadPedigree(const string & file, const string & idField, const string & fatherField,
-                      const string & motherField, float ploidy, const uintList & lociList, const uintList & chromTypes,
+                      const string & motherField, float ploidy, const uintList & _lociList, const uintList & chromTypes,
                       const floatList & lociPos, const stringList & chromNames, const stringMatrix & alleleNames,
                       const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
 {
@@ -1353,7 +1350,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		DBG_FAILIF(infoFields[i] == idField || infoFields[i] == fatherField || infoFields[i] == motherField,
 			ValueError, "Parameter infoFields can only specify additional fields other than idField, fatherField and motherField.");
 	}
-	vectoru loci = lociList.elems();
+	vectoru loci = _lociList.elems();
 	UINT genoCols = accumulate(loci.begin(), loci.end(), 0U) * pldy;
 
 	ifstream input(file.c_str());
@@ -1554,7 +1551,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	for (; it != it_end; ++it)
 		delete it->second;
 	// uintList means ALL_AVAIL
-	return Pedigree(pop, uintList(), pop.infoFields(), uintList(),
+	return Pedigree(pop, lociList(), pop.infoFields(), uintList(),
 		idField, max_parents > 0 ? fatherField : string(),
 		max_parents > 1 ? motherField : string(), true);
 }

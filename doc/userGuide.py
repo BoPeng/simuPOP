@@ -626,7 +626,9 @@ pop.addChromFrom(pop1)
 # 1 1 1, 0 0 0, 2 0 2 2 0
 pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], lociNames=['rs7', 'rs8'])
 # 1 1 1, 0 0 0, 2 0 2 0
-pop.removeLoci([8])
+pop.removeLoci(8)
+# loci names can also be used.
+pop.removeLoci(['rs1', 'rs7'])
 sim.dump(pop)
 #end_file
 
@@ -2641,16 +2643,17 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().set(seed=12345)
 #end_ignore
-pop = sim.Population(size=[2000], loci=[1, 1], infoFields='fitness')
+pop = sim.Population(size=[2000], loci=[1, 1], lociNames=['A', 'B'],
+    infoFields='fitness')
 pop.evolve(
     initOps=sim.InitSex(),
     preOps=[
         sim.SNPMutator(u=0.001),
-        sim.MaSelector(loci=0, fitness=[1, 0.99, 0.98]),
+        sim.MaSelector(loci='A', fitness=[1, 0.99, 0.98]),
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=[0, 1], step=100),
+        sim.Stat(alleleFreq=['A', 'B'], step=100),
         sim.PyEval(r"'%.3f\t%.3f\n' % (alleleFreq[0][1], alleleFreq[1][1])",
             step=100),
     ],
@@ -3162,9 +3165,10 @@ import simuPOP as sim
 #begin_ignore
 sim.getRNG().set(seed=12345)
 #end_ignore
-pop = sim.Population(100, loci=[1, 1, 1], chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
+pop = sim.Population(100, loci=[1, 1, 1], lociNames=['A', 'X', 'Y'],
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
 sim.initGenotype(pop, freq=[0.01, 0.05, 0.94])
-sim.stat(pop, genoFreq=[0, 1])
+sim.stat(pop, genoFreq=['A', 'X']) # both loci indexes and names can be used.
 print 'Available genotypes on autosome:', pop.dvars().genoFreq[0].keys()
 for i in range(3):
     for j in range(3):

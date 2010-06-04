@@ -180,6 +180,7 @@ public:
 	 *  frequencies or proportions of each haplotype. If \e loci, \e ploidy
 	 *  and/or \e subPop are specified, only specified loci, ploidy, and
 	 *  individuals in these (virtual) subpopulations will be initialized.
+	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
 	 *  If the length of a haplotype is not enough to fill all loci, the
 	 *  haplotype will be reused. If a list (or a single) haplotypes are
 	 *  specified without \e freq or \e prop, they are used with equal
@@ -193,7 +194,7 @@ public:
 	InitGenotype(const vectorf & freq = vectorf(),
 		const uintList & genotype = vectoru(), const vectorf & prop = vectorf(),
 		const intMatrix & haplotypes = intMatrix(),
-		const uintList & loci = uintList(),
+		const lociList & loci = lociList(),
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -226,7 +227,7 @@ private:
 	const vectorf m_prop;
 	const matrixi m_haplotypes;
 	//
-	const uintList m_loci;
+	const lociList m_loci;
 
 	//
 	const uintList m_ploidy;

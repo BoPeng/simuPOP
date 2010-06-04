@@ -620,7 +620,8 @@ public:
 	 *  frequency at specified loci in the offspring generation reaches
 	 *  specified allele frequency. At the beginning of each generation,
 	 *  expected allele frequency of \e alleles at \e loci is returned from a
-	 *  user-defined trajectory function \e freqFunc. If there is no
+	 *  user-defined trajectory function \e freqFunc. Parameter \e loci can
+	 *  be a list of loci indexes, names, or ALL_AVAIL. If there is no
 	 *  subpopulation, this function should return a list of frequencies for
 	 *  each locus. If there are multiple subpopulations, \e freqFunc can
 	 *  return a list of allele frequencies for all subpopulations or
@@ -641,7 +642,7 @@ public:
 	 *  Please refer to class \e OffspringGenerator for a detailed description
 	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
-	ControlledOffspringGenerator(const uintList & loci, const uintList & alleles,
+	ControlledOffspringGenerator(const lociList & loci, const uintList & alleles,
 		PyObject * freqFunc, const opList & ops = vectorop(),
 		const floatListFunc & numOffspring = 1, const floatListFunc & sexMode = RANDOM_SEX);
 
@@ -671,7 +672,7 @@ private:
 	void getExpectedAlleles(const Population & pop, vectorf & expFreq);
 
 	/// locus at which mating is controlled.
-	vectoru m_loci;
+	lociList m_loci;
 	//
 	/// allele to be controlled at each locus
 	vectoru m_alleles;

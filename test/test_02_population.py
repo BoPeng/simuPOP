@@ -836,6 +836,24 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.allele(loc), ind1.allele(loc))
                 for loc in range(2, 5):
                     self.assertEqual(ind.allele(loc), ind1.allele(loc+1))
+        # test the possibility of using loci names to remove loci
+        pop = self.getPop(size=[1, 2], loci=[2, 3, 2], lociNames=['a%d' % x for x in range(7)], ancGen=5)
+        pop1 = pop.clone()
+        # FIXME: test remove multiple loci from multiple chromosomes,
+        # which may not be in order
+        pop.removeLoci('a2')
+        pop.removeLoci(['a4', 'a5'])
+        self.assertEqual(pop.numLoci(), (2,1,1))
+        for gen in range(pop.ancestralGens(), -1, -1):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            for idx in range(pop.popSize()):
+                ind = pop.individual(idx)
+                ind1 = pop1.individual(idx)
+                for loc in range(2):
+                    self.assertEqual(ind.allele(loc), ind1.allele(loc))
+                self.assertEqual(ind.allele(2), ind1.allele(3))
+                self.assertEqual(ind.allele(3), ind1.allele(6))
 
     def testRecodeAlleles(self):
         'Testing Population::recodeAlleles(alleles, loci)'

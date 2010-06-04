@@ -148,7 +148,8 @@ public:
 	 *  dictionary \e penetrance with genotype at \e loci as keys, and \e
 	 *  penetrance as values. For each individual, genotypes at \e loci are
 	 *  collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1... for
-	 *  a diploid individual) and are looked up in the dictionary. If a
+	 *  a diploid individual) and are looked up in the dictionary. Parameter
+	 *  \e loci can be a list of loci indexes, names or \c ALL_AVAIL. If a
 	 *  genotype cannot be found, it will be looked up again without phase
 	 *  information (e.g. <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the
 	 *  genotype still can not be found, a \c ValueError will be raised. This
@@ -156,12 +157,12 @@ public:
 	 *  these cases, only valid genotypes should be used to generator the
 	 *  dictionary keys.
 	 */
-	MapPenetrance(const uintList & loci, const tupleDict & penetrance,
+	MapPenetrance(const lociList & loci, const tupleDict & penetrance,
 		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_dict(penetrance)
+		m_loci(loci), m_dict(penetrance)
 	{
 	};
 
@@ -190,7 +191,7 @@ public:
 
 private:
 	/// one locus
-	const vectoru m_loci;
+	const lociList m_loci;
 
 	/// penetrance for each genotype
 	const tupleDict m_dict;
@@ -211,6 +212,7 @@ public:
 	 *  into a wildtype group (with alleles \e wildtype, default to <tt>[0]</tt>),
 	 *  and a non-wildtype group. A list of penetrance values is specified
 	 *  through parameter \e penetrance, for genotypes at one or more \e loci.
+	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
 	 *  If we denote wildtype alleles using capital letters \c A, \c B ... and
 	 *  non-wildtype alleles using small letters \c a, \c b ..., the penetrance
 	 *  values should be for
@@ -225,12 +227,12 @@ public:
 	 *  This operator does not support haplodiploid populations and sex
 	 *  chromosomes.
 	 */
-	MaPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
+	MaPenetrance(const lociList & loci, const vectorf & penetrance, const uintList & wildtype = vectoru(1, 0),
 		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci.elems()), m_penetrance(penetrance), m_wildtype(wildtype.elems())
+		m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype.elems())
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
 																static_cast<double>(m_loci.size()))),
@@ -259,7 +261,7 @@ public:
 
 private:
 	/// one locus
-	const vectoru m_loci;
+	const lociList m_loci;
 
 	/// penetrance for each genotype
 	const vectorf m_penetrance;
@@ -352,10 +354,11 @@ public:
 	/** Create a Python hybrid penetrance operator that passes genotype at
 	 *  specified \e loci, values at specified information fields (if
 	 *  requested), and a generation number to a user-defined function \e func.
+	 *  Parameter \e loci can be a list of loci indexes, names, or \c ALL_AVAIL.
 	 *  The return value will be treated as Individual penetrance.
 	 */
 	PyPenetrance(PyObject * func,
-		const uintList & loci = vectoru(),
+		const lociList & loci = vectoru(),
 		const uintList & ancGens = uintList(NULL),
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(),
@@ -392,7 +395,7 @@ private:
 	const pyFunc m_func;
 
 	/// susceptibility loci
-	const uintList m_loci;
+	const lociList m_loci;
 };
 
 }
