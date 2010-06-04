@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
-version 1.0.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.3 - Rev 3573 (Jun. 3, 2010)
 
 BUGS (minor):
   - Fix error handling in the conversion of commandline input with incorrect allowedTypes.
