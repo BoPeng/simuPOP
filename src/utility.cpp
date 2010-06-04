@@ -47,7 +47,7 @@ using std::ifstream;
 using std::ofstream;
 
 // for data type lociList
-#include <genoStru.h>
+#include "genoStru.h"
 
 // for PySys_WriteStdout and python expressions
 #include "swigpyrun.h"
