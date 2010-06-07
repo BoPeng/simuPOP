@@ -1591,7 +1591,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const uintList &loci, const matrixstr &alleleNames);
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
 
 %ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
 
@@ -2068,7 +2068,7 @@ Usage:
 Details:
 
     Create a splitter that defines VSPs by individual genotype at loci
-    (a locus index or a list of loci indexes). Each list in a list
+    (can be indexes or names of one or more loci). Each list in a list
     allele defines a VSP, which is a list of allowed alleles at these
     loci. If only one VSP is defined, the outer list of the nested
     list can be ignored. If phase if true, the order of alleles in
@@ -3411,13 +3411,25 @@ Usage:
 
 %ignore simuPOP::lociList::size() const;
 
+%ignore simuPOP::lociList::name(size_t i) const;
+
 %ignore simuPOP::lociList::allAvail() const;
 
-%feature("docstring") simuPOP::lociList::unspecified "
+%ignore simuPOP::lociList::unspecified() const;
+
+%feature("docstring") simuPOP::lociList::dynamic "
 
 Usage:
 
-    x.unspecified()
+    x.dynamic()
+
+"; 
+
+%feature("docstring") simuPOP::lociList::locate "
+
+Usage:
+
+    x.locate(trait)
 
 "; 
 
@@ -5998,20 +6010,20 @@ Usage:
 
 Details:
 
-    Recode alleles at loci (default to all loci in a population) to
-    other values according to parameter alleles. This parameter can a
-    list of new allele numbers for alleles 0, 1, 2, ... (allele x will
-    be recoded to newAlleles[x]) or a Python function, which should
-    accept one or both parameters allele (existing allele) and locus
-    (index of locus). The return value will become the new allele.
-    Because calling a function for each allele tends to be slow, use
-    of this parameter should be limited to special cases for small
-    populations (e.g. return random alleles to simulate genotyping
-    error of a sample). A new list of allele names could be specified
-    for these loci. Different sets of names could be specified for
-    each locus if a nested list of names are given. This function
-    recode alleles for all subpopulations in all ancestral
-    generations.
+    Recode alleles at loci (can be a list of loci indexes or names, or
+    all loci in a population (ALL_AVAIL)) to other values according to
+    parameter alleles. This parameter can a list of new allele numbers
+    for alleles 0, 1, 2, ... (allele x will be recoded to
+    newAlleles[x]) or a Python function, which should accept one or
+    both parameters allele (existing allele) and locus (index of
+    locus). The return value will become the new allele. Because
+    calling a function for each allele tends to be slow, use of this
+    parameter should be limited to special cases for small populations
+    (e.g. return random alleles to simulate genotyping error of a
+    sample). A new list of allele names could be specified for these
+    loci. Different sets of names could be specified for each locus if
+    a nested list of names are given. This function recode alleles for
+    all subpopulations in all ancestral generations.
 
 "; 
 
