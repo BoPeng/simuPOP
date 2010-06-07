@@ -364,7 +364,7 @@ public:
 	/** CPPONLY
 	 *  Create a geno structure using new allele names.
 	 */
-	const GenoStructure gsSetAlleleNames(const uintList & loci, const matrixstr & alleleNames);
+	const GenoStructure gsSetAlleleNames(const lociList & loci, const matrixstr & alleleNames);
 
 	/** CPPONLY
 	 *  add some loci to genotype structure, newIndex
