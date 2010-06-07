@@ -745,15 +745,7 @@ public:
 	 *  if any of the loci cannot be found.
 	 *  <group>3-locus</group>
 	 */
-	vectoru lociByNames(const vectorstr & names) const
-	{
-		vectoru indexes;
-
-		for (vectorstr::const_iterator name = names.begin(); name != names.end(); ++name)
-			indexes.push_back(locusByName(*name));
-		return indexes;
-	}
-
+	vectoru lociByNames(const vectorstr & names) const;
 
 	/** HIDDEN
 	    Return \c True if \c name is one of the information fields of this population.

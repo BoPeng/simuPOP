@@ -853,6 +853,27 @@ string GenoStruTrait::alleleName(const UINT allele, const UINT locus) const
 }
 
 
+vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
+{
+	vectoru indexes(names.size());
+
+	const map<string, UINT> & nameMap = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
+
+	vectorstr::const_iterator name = names.begin();
+	vectorstr::const_iterator nameEnd = names.end();
+	for (size_t i = 0; name != nameEnd; ++name, ++i) {
+		map<string, UINT>::const_iterator it = nameMap.find(*name);
+
+		if (it == nameMap.end())
+			throw ValueError("Failed to find locus with name " + *name);
+
+		indexes[i] = it->second;
+	}
+
+	return indexes;
+}
+
+
 vectorstr GenoStruTrait::alleleNames(const UINT locus) const
 {
 	const matrixstr & names = s_genoStruRepository[m_genoStruIdx].m_alleleNames;
