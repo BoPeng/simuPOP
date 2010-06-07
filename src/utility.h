@@ -522,17 +522,34 @@ public:
 
 
 	/// CPPONLY
+	string name(size_t i) const
+	{
+		DBG_FAILIF(i >= m_names.size(), ValueError, "Index out of range.");
+		return m_names[i];
+	}
+
+
+	/// CPPONLY
 	bool allAvail() const
 	{
 		return m_status == ALL_AVAIL;
 	}
 
 
+	/// CPPONLY
 	bool unspecified() const
 	{
 		return m_status == UNSPECIFIED;
 	}
 
+
+	bool dynamic() const
+	{
+		return m_status == DYNAMIC;
+	}
+
+
+	void locate(const GenoStruTrait * trait) const;
 
 	/// CPPONLY
 	const vectoru & elems(const GenoStruTrait * trait) const;

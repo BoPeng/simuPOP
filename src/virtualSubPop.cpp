@@ -916,9 +916,9 @@ string RangeSplitter::name(SubPopID subPop)
 }
 
 
-GenotypeSplitter::GenotypeSplitter(const uintList & loci,
+GenotypeSplitter::GenotypeSplitter(const lociList & loci,
 	const intMatrix & alleles, bool phase, const stringList & names)
-	: BaseVspSplitter(names), m_loci(loci.elems()), m_alleles(alleles.elems()),
+	: BaseVspSplitter(names), m_loci(loci), m_alleles(alleles.elems()),
 	m_phase(phase)
 {
 }
@@ -955,6 +955,8 @@ bool GenotypeSplitter::contains(const Population & pop, ULONG ind, vspID vsp) co
 		"Virtual subpopulation index out of genotype");
 
 	const vectori & alleles = m_alleles[virtualSubPop];
+	// this can be very slow if contains is used extensively.
+	m_loci.locate(&pop);
 
 	return match(&pop.individual(ind, vsp.subPop()), alleles);
 }
@@ -965,6 +967,7 @@ void GenotypeSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
 
+	m_loci.locate(&pop);
 	const vectori & alleles = m_alleles[virtualSubPop];
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
@@ -991,10 +994,21 @@ string GenotypeSplitter::name(SubPopID subPop)
 		return m_names[subPop];
 
 	string label = "Genotype ";
-	for (size_t i = 0; i < m_loci.size(); ++i) {
-		if (i != 0)
-			label += ", ";
-		label += toStr(m_loci[i]);
+	if (m_loci.allAvail())
+		label += "all loci";
+	else if (m_loci.dynamic()) {
+		for (size_t i = 0; i < m_loci.size(); ++i) {
+			if (i != 0)
+				label += ", ";
+			label += m_loci.name(i);
+		}
+	} else {
+		const vectoru & loci = m_loci.elems(NULL);
+		for (size_t i = 0; i < m_loci.size(); ++i) {
+			if (i != 0)
+				label += ", ";
+			label += toStr(loci[i]);
+		}
 	}
 	label += ":";
 	for (size_t i = 0; i < m_alleles[subPop].size(); ++i)
@@ -1006,7 +1020,7 @@ string GenotypeSplitter::name(SubPopID subPop)
 bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
-	int numLoci = m_loci.size();
+	int numLoci = m_loci.allAvail() ? m_loci.elems(NULL).size() : m_loci.size();
 
 	unsigned choices = alleles.size() / ploidy / numLoci;
 
@@ -1026,12 +1040,13 @@ bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) con
 bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
+	const vectoru & loci = m_loci.elems(NULL);
 
 	if (m_phase || ploidy == 1) {
 		// if phase=True, has to match exactly.
 		UINT idx = 0;
-		uintList::const_iterator loc = m_loci.begin();
-		uintList::const_iterator loc_end = m_loci.end();
+		uintList::const_iterator loc = loci.begin();
+		uintList::const_iterator loc_end = loci.end();
 		for (; loc != loc_end; ++loc)
 			for (int p = 0; p < ploidy; ++p)
 				if (static_cast<int>(it->allele(*loc, p)) != alleles[idx++])
@@ -1039,9 +1054,9 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 		return true;
 	} else if (ploidy == 2) {
 		UINT idx = 0;
-		uintList::const_iterator loc = m_loci.begin();
-		uintList::const_iterator loc_end = m_loci.end();
-		UINT numLoci = m_loci.size();
+		uintList::const_iterator loc = loci.begin();
+		uintList::const_iterator loc_end = loci.end();
+		UINT numLoci = loci.size();
 		for (; loc != loc_end; ++loc, ++idx) {
 			int a1 = it->allele(*loc, 0);
 			int a2 = it->allele(*loc, 1);
@@ -1053,9 +1068,9 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 		return true;
 	} else {
 		UINT idx = 0;
-		uintList::const_iterator loc = m_loci.begin();
-		uintList::const_iterator loc_end = m_loci.end();
-		UINT numLoci = m_loci.size();
+		uintList::const_iterator loc = loci.begin();
+		uintList::const_iterator loc_end = loci.end();
+		UINT numLoci = loci.size();
 		vectori v1(ploidy);
 		vectori v2(ploidy);
 		for (; loc != loc_end; ++loc, ++idx) {

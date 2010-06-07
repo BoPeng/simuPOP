@@ -811,6 +811,18 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
 }
 
 
+void lociList::locate(const GenoStruTrait * trait) const
+{
+	if (m_status == DYNAMIC)
+		m_elems = trait->lociByNames(m_names);
+	else if (m_status == ALL_AVAIL) {
+		m_elems.resize(trait->totNumLoci());
+		for (size_t i = 0; i < m_elems.size(); ++i)
+			m_elems[i] = i;
+	}
+}
+
+
 const vectoru & lociList::elems(const GenoStruTrait * trait) const
 {
 	if (trait) {

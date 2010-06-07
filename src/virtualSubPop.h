@@ -796,7 +796,7 @@ class GenotypeSplitter : public BaseVspSplitter
 {
 public:
 	/** Create a splitter that defines VSPs by individual genotype at \e loci
-	 *  (a locus index or a list of loci indexes). Each list in a list
+	 *  (can be indexes or names of one or more loci). Each list in a list
 	 *  \e allele defines a VSP, which is a list of allowed alleles at these
 	 *  \e loci. If only one VSP is defined, the outer list of the nested list
 	 *  can be ignored. If phase if true, the order of alleles in each list is
@@ -827,7 +827,7 @@ public:
 	 *  A default set of names are given to each VSP unless a new set of names
 	 *  is given by parameter \e names.
 	 */
-	GenotypeSplitter(const uintList & loci,
+	GenotypeSplitter(const lociList & loci,
 		const intMatrix & alleles, bool phase = false,
 		const stringList & names = vectorstr());
 
@@ -867,7 +867,7 @@ private:
 	bool matchSingle(const Individual * ind, const vectori & alleles) const;
 
 private:
-	vectoru m_loci;
+	lociList m_loci;
 	matrixi m_alleles;
 	bool m_phase;
 };
