@@ -1134,22 +1134,23 @@ public:
 	 */
 	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
 
-	/** Recode alleles at \e loci (default to all loci in a population) to
-	 *  other values according to parameter \e alleles. This parameter can
-	 *  a list of new allele numbers for alleles \c 0, \c 1, \c 2, ... (allele
-	 *  \c x will be recoded to <tt>newAlleles[x]</tt>) or a Python function,
-	 *  which should accept one or both parameters \c allele (existing allele)
-	 *  and \c locus (index of locus). The return value will become the new
-	 *  allele. Because calling a function for each allele tends to be slow,
-	 *  use of this parameter should be limited to special cases for small
-	 *  populations (e.g. return random alleles to simulate genotyping error
-	 *  of a sample). A new list of allele names could be specified for these
-	 *  \e loci. Different sets of names could be specified for each locus if
-	 *  a nested list of names are given. This function recode alleles for all
-	 *  subpopulations in all ancestral generations.
+	/** Recode alleles at \e loci (can be a list of loci indexes or names, or
+	 *  all loci in a population (\c ALL_AVAIL)) to other values according to
+	 *  parameter \e alleles. This parameter can a list of new allele numbers
+	 *  for alleles \c 0, \c 1, \c 2, ... (allele \c x will be recoded to
+	 *  <tt>newAlleles[x]</tt>) or a Python function, which should accept one
+	 *  or both parameters \c allele (existing allele) and \c locus (index of
+	 *  locus). The return value will become the new allele. Because calling a
+	 *  function for each allele tends to be slow, use of this parameter should
+	 *  be limited to special cases for small populations (e.g. return random
+	 *  alleles to simulate genotyping error of a sample). A new list of allele
+	 *  names could be specified for these \e loci. Different sets of names
+	 *  could be specified for each locus if a nested list of names are given.
+	 *  This function recode alleles for all subpopulations in all ancestral
+	 *  generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void recodeAlleles(const uintListFunc & alleles, const uintList & loci = uintList(),
+	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
 		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations

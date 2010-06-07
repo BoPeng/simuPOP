@@ -2093,7 +2093,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 }
 
 
-void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList & loci_,
+void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
 	DBG_FAILIF(newAlleles.empty() && !newAlleles.func().isValid(), ValueError,
@@ -2101,7 +2101,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const uintList &
 
 	const matrixstr & alleleNames = alleleNamesMatrix.elems();
 
-	const vectoru & loci = loci_.elems();
+	const vectoru & loci = loci_.elems(this);
 	if (!loci_.allAvail() && loci.empty())
 		return;
 
