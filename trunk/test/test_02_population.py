@@ -857,7 +857,7 @@ class TestPopulation(unittest.TestCase):
 
     def testRecodeAlleles(self):
         'Testing Population::recodeAlleles(alleles, loci)'
-        pop = self.getPop(size=[10, 20], loci=[4, 5], ancGen=0)
+        pop = self.getPop(size=[10, 20], loci=[4, 5], ancGen=0, lociNames=['a%d' % x for x in range(9)])
         initSex(pop)
         initGenotype(pop, freq=[.2, .8])
         old = list(pop.genotype())
@@ -876,7 +876,7 @@ class TestPopulation(unittest.TestCase):
         pop.recodeAlleles(func, loci=1)
         self.assertEqual(pop.genotype(), [0, 1, 0, 0, 0, 0, 0, 0, 0] * (pop.popSize()*pop.ploidy()))
         # recode specified loci.
-        pop = self.getPop(size=[10, 20], loci=[4, 5], ancGen=0)
+        pop = self.getPop(size=[10, 20], loci=[4, 5], ancGen=0, lociNames=['a%d' % x for x in range(9)])
         initSex(pop)
         initGenotype(pop, freq=[0, .2, .8])
         pop.recodeAlleles([0]*5, loci=(2, 4))
@@ -887,6 +887,12 @@ class TestPopulation(unittest.TestCase):
                         self.assertEqual(ind.allele(loc, p), 0)
                     else:
                         self.assertNotEqual(ind.allele(loc, p), 0)
+        # using loci names
+        pop.recodeAlleles([1]*10, loci=['a2', 'a4'])
+        for ind in pop.individuals():
+            for loc in ['a2', 'a4']:
+                for p in range(2):
+                    self.assertEqual(ind.allele(pop.locusByName(loc), p), 1)
         # FIXME: recode ancestral generations.
 
     def testResize(self):
