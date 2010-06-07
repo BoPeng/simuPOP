@@ -1292,6 +1292,18 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 0)==1 or ind.allele(1, 0)==0, True)
         for ind in pop.individuals([0, 1]):
             self.assertEqual(ind.allele(1, 0), 2)
+        # use of names
+        pop = Population(1000, ploidy = 1, loci=[2, 3], lociNames=['a%d' % x for x in range(5)])
+        initSex(pop)
+        initGenotype(pop, freq=[0.3, 0.7])
+        pop.setVirtualSplitter(GenotypeSplitter(loci='a1', alleles=[[0, 1], [2]], phase=True))
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype a1: 0 1")
+        self.assertEqual(pop.subPopName([0, 1]), "Genotype a1: 2")
+        for ind in pop.individuals([0, 0]):
+            self.assertEqual(ind.allele(1, 0)==1 or ind.allele(1, 0)==0, True)
+        for ind in pop.individuals([0, 1]):
+            self.assertEqual(ind.allele(1, 0), 2)
+
 
     def testCombinedSplitter(self):
         'Testing CombinedSplitter:: CombinedSplitter(splitters=[])'
