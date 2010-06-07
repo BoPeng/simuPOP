@@ -232,18 +232,17 @@ include test/test_05_matings.py
 include test/test_06_initialization.py
 include test/test_07_tagging.py
 include test/test_08_stat.py
+include test/test_09_selection.py
+include test/test_10_qtrait.py
 include test/test_11_terminator.py
 include test/test_12_migration.py
 include test/test_13_mutation.py
 include test/test_14_transmitter.py
-include test/test_15_selection.py
+include test/test_15_penetrance.py
 include test/test_16_sampling.py
-include test/test_17_qtrait.py
-include test/test_18_penetrance.py
-include test/test_19_utility.py
-include test/test_20_plotter.py
-include test/test_21_performance.py
-include test/test_22_scripts.py
+include test/test_17_utils.py
+include test/test_18_plotter.py
+include test/test_19_performance.py
 
 # documentations
 include doc/userGuide.pdf
