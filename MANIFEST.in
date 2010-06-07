@@ -231,9 +231,7 @@ include test/test_04_simulator.py
 include test/test_05_matings.py
 include test/test_06_initialization.py
 include test/test_07_tagging.py
-include test/test_08_opStat.py
-include test/test_09_pyOperator.py
-include test/test_10_opIfElse.py
+include test/test_08_stat.py
 include test/test_11_terminator.py
 include test/test_12_migration.py
 include test/test_13_mutation.py
