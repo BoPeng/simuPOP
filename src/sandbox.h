@@ -53,20 +53,20 @@ public:
 	 *  random fitness effects. \e selDist can be
 	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants.
 	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where theta and k are scale and
-	 *      shape parameters of a gamma distribution
-	 *  \li or a Python function, which will be called when fitness value for
-	 *      a new mutant is needed.
+	 *      shape parameters of a gamma distribution, or
+	 *  \li a Python function, which will be called when fitness value of a new
+	 *      mutant is needed.
 	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
 	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
-	 *     details.
+	 *     details).
 	 */
 	InfSitesSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_selDist(selDist), m_mode(mode)
-	{	
+		m_selDist(selDist), m_mode(mode), m_selFactory()
+	{
 		if (m_selDist.size() == 0) {
 			DBG_FAILIF(!m_selDist.func().isValid(), ValueError,
 				"Please specify either a distribution with parameter or a function.");
@@ -76,6 +76,7 @@ public:
 			DBG_FAILIF(m_selDist.size() != 3, ValueError, "Two parameters are needed for gamma distribution.");
 		}
 	}
+
 
 	virtual ~InfSitesSelector()
 	{
@@ -100,43 +101,36 @@ public:
 		return "<simuPOP.InfSitesSelector>" ;
 	}
 
-	/** Return a dictionary of selection coefficient for each mutant. This is only
-     *  valid for GAMMA_DISTRIBUTION and function case. A dictionary with key 0
-	 *  will be returned for the CONSTANT case.
+
+	/** Return a dictionary of selection coefficient for each mutant.
 	 */
-	intDict selCoef() const
-	{
-#if TR1_SUPPORT == 0
-		return m_selFactory;
-#else
-		intDict res;
-		SelMap::const_iterator it = m_selFactory.begin();
-		SelMap::const_iterator it_end = m_selFactory.end();
-		for (; it != it_end; ++it)
-			res[it->first] = it->second;
-		return res;
-#endif
-	}
+	intDict selCoef() const;
 
 private:
-	
 	double getFitnessValue(int mutant) const;
+
 	double randomSelMulFitness(GenoIterator it, GenoIterator it_end) const;
+
 	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
+
 	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
 private:
 	///
 	floatListFunc m_selDist;
+
+	///
 	int m_mode;
+
 #if TR1_SUPPORT == 0
-	typedef indDict SelMap;
+	typedef std::map<unsigned int, double> SelMap;
 #else
 	// this is faster than std::map
-	typedef std::tr1::unordered_map<int, double> SelMap;
+	typedef std::tr1::unordered_map<unsigned int, double> SelMap;
 #endif
 	mutable SelMap m_selFactory;
 };
 
 }
 #endif
+
