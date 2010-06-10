@@ -241,7 +241,7 @@ Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), '$build_dir
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)
 
-for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py']:
+for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
     env.Install(dest_dir, 'src/%s' % pyfile)
     Alias('install', dest_dir)
 
