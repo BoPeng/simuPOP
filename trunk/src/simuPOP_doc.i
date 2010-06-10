@@ -570,8 +570,8 @@ Details:
 
 Usage:
 
-    BaseSelector(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+    BaseSelector(output=\"\", begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -3106,6 +3106,8 @@ Details:
     This operator accepts a list of ranges which is the 'real range'
     of each chromosome. Mutation happens with muation rate rate and
     mutants will be recorded to the population (instead of alleles).
+    If an output is given, mutants will be outputted in the format of
+    gen mutant ind
 
 "; 
 
@@ -3153,8 +3155,8 @@ Details:
 
 Usage:
 
-    InfSitesSelector(selDist, mode=EXPONENTIAL, begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+    InfSitesSelector(selDist, mode=EXPONENTIAL, output=\"\", begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=ALL_AVAIL)
 
 Details:
@@ -3168,7 +3170,9 @@ Details:
     *   a Python function, which will be called when fitness value of
     a new mutant is needed. Individual fitness (1+s_i) will be
     combined in ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See
-    MlSelector for details).
+    MlSelector for details). If an output is given, mutants and their
+    fitness values will be written to the output, in the form of
+    'mutant fitness'.
 
 "; 
 
@@ -3186,17 +3190,7 @@ Usage:
 
 %feature("docstring") simuPOP::InfSitesSelector::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InfSitesSelector::selCoef "
-
-Usage:
-
-    x.selCoef()
-
-Details:
-
-    Return a dictionary of selection coefficient for each mutant.
-
-"; 
+%ignore simuPOP::InfSitesSelector::apply(Population &pop) const;
 
 %feature("docstring") simuPOP::InheritTagger "
 

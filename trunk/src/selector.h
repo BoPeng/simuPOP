@@ -107,10 +107,10 @@ public:
 	/** Create a base selector object. This operator should not be created
 	 *  directly.
 	 */
-	BaseSelector(int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	BaseSelector(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness"))
-		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -189,7 +189,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci), m_dict(fitness)
 	{
 	};
@@ -260,7 +260,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
 		DBG_WARNIF(m_wildtype.empty(), "No wild type allele is defined.");
@@ -327,7 +327,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 		m_selectors(ops), m_mode(mode)
 	{
 		DBG_FAILIF(ops.empty(), ValueError, "Please specify at least one selector.");
@@ -388,7 +388,7 @@ public:
 		int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
