@@ -35,7 +35,7 @@ version is no longer available.
 """
 
 __all__ = [
-    #'InfSitesMutator',
+    'InfSitesMutator',
     'InfSitesSelector',
 ]
 

@@ -131,6 +131,58 @@ private:
 	mutable SelMap m_selFactory;
 };
 
+
+/** This is an infite site mutation model in mutational space. The alleles
+ *  in the population is assumed to be locations of mutants. A mutation
+ *  rate is given that mutate alleles in 'regions'. If number of mutants
+ *  for an individual exceed the number of loci, 10 loci will be added
+ *  to everyone in the population.
+ */
+class InfSitesMutator : public BaseOperator
+{
+	/** This operator supports parameter subPops.
+	 */
+	InfSitesMutator(double rate, const floatMatrix & ranges,
+		const stringFunc & output = ">",
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr()) :
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		m_rate(rate), m_ranges(ranges)
+	{
+	}
+
+
+	/// destructor.
+	~InfSitesMutator()
+	{
+	}
+
+
+	virtual bool apply(Population & pop) const;
+
+	/// HIDDEN Deep copy of a \c InfSitesMutator
+	virtual BaseOperator * clone() const
+	{
+		return new InfSitesMutator(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		return "<simuPOP.InfSitesMutator>";
+	}
+
+
+private:
+	double m_rate;
+
+	floatMatrix m_ranges;
+
+};
+
+
 }
 #endif
 
