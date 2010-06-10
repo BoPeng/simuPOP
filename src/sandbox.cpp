@@ -141,13 +141,13 @@ bool InfSitesMutator::apply(Population & pop) const
 	for (; sp != spEnd; ++sp) {
 		DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
 		for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
-			Individual & ind = pop.individual(indIndex);
 			ULONG loc = 0;
 			while (true) {
 				// using a geometric distribution to determine mutants
 				loc += getRNG().randGeometric(m_rate);
 				if (loc > indWidth)
 					break;
+				Individual & ind = pop.individual(indIndex);
 				int p = (loc - 1) / ploidyWidth;
 				// chromosome and position on chromosome?
 				ULONG mutLoc = (loc - 1) - p * ploidyWidth;
@@ -182,11 +182,12 @@ bool InfSitesMutator::apply(Population & pop) const
 				}
 				// find the first non-zero location
 				for (size_t j = 0; j < nLoci; ++j) {
-					if (*(geno + j) != 0) {
+					
+					if (*(geno + j) == 0) {
 						// record mutation here
 						*(geno + j) = mutLoc;
 						break;
-					} else if (*(geno + j) == mutLoc) {
+					} else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
 						// back mutation
 						//  from A b c d 0
 						//  to   d b c d 0
