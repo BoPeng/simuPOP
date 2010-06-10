@@ -167,7 +167,6 @@ namespace std
     %template()         vector<double>;     /* e.g. lociPos */
     %template()         vector<long>;       /* e.g. vspID(vectori) */
     %template()         map<vector<long>, double>; /* e.g. MapSelector */
-    %template()         map<int, double>; /* e.g. InfSitesSelector.selCoef */
 }
 
 

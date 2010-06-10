@@ -312,6 +312,7 @@ typedef std::vector<std::vector<double > > matrixf;
 #include <map>
 using std::map;
 typedef std::map<string, double>           strDict;
+// indDict is currently not defined in simuPOP_common.i
 typedef std::map<int, double>              intDict;
 typedef std::map<vectori, double>          tupleDict;
 

@@ -41,6 +41,24 @@ double InfSitesSelector::indFitness(Individual * ind, ULONG gen) const
 }
 
 
+bool InfSitesSelector::apply(Population & pop) const
+{
+	m_newMutants.clear();
+	if (!BaseSelector::apply(pop))
+		return false;
+	// output NEW mutant...
+	if (!m_newMutants.empty() && !noOutput()) {
+		ostream & out = getOstream(pop.dict());
+		vectoru::const_iterator it = m_newMutants.begin();
+		vectoru::const_iterator it_end = m_newMutants.end();
+		for (; it != it_end; ++it)
+			out << *it << '\t' << m_selFactory[*it] << '\n';
+		closeOstream();
+	}
+	return true;
+}
+
+
 double InfSitesSelector::getFitnessValue(int mutant) const
 {
 	int sz = m_selDist.size();
@@ -56,6 +74,7 @@ double InfSitesSelector::getFitnessValue(int mutant) const
 		// a gamma distribution
 		s = -getRNG().randGamma(m_selDist[1], m_selDist[2]);
 	m_selFactory[mutant] = s;
+	m_newMutants.push_back(mutant);
 	return s;
 }
 
@@ -111,18 +130,6 @@ double InfSitesSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 }
 
 
-intDict InfSitesSelector::selCoef() const
-{
-	intDict res;
-	SelMap::const_iterator it = m_selFactory.begin();
-	SelMap::const_iterator it_end = m_selFactory.end();
-
-	for (; it != it_end; ++it)
-		res[it->first] = it->second;
-	return res;
-}
-
-
 bool InfSitesMutator::apply(Population & pop) const
 {
 	const matrixi & ranges = m_ranges.elems();
@@ -134,6 +141,10 @@ bool InfSitesMutator::apply(Population & pop) const
 
 	ULONG ploidyWidth = width.back();
 	ULONG indWidth = pop.ploidy() * ploidyWidth;
+
+	ostream * out = NULL;
+	if (!noOutput())
+		out = &getOstream(pop.dict());
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -162,8 +173,8 @@ bool InfSitesMutator::apply(Population & pop) const
 				if (ch > 0)
 					mutLoc -= width[ch - 1];
 
-				DBG_DO(DBG_MUTATOR, cerr	<< "Gen: " << pop.gen() << " Ind: " << indIndex << " Mutation "
-					                        << loc << " p " << p << " ch " << ch << " loc " << mutLoc << endl);
+				if (out)
+					(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << '\n';
 
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
@@ -182,7 +193,7 @@ bool InfSitesMutator::apply(Population & pop) const
 				}
 				// find the first non-zero location
 				for (size_t j = 0; j < nLoci; ++j) {
-					
+
 					if (*(geno + j) == 0) {
 						// record mutation here
 						*(geno + j) = mutLoc;
@@ -205,6 +216,8 @@ bool InfSitesMutator::apply(Population & pop) const
 			}   // while
 		}       // each individual
 	}           // each subpopulation
+	if (out)
+		closeOstream();
 	return true;
 }
 

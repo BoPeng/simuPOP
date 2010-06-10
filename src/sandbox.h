@@ -60,12 +60,15 @@ public:
 	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
 	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
 	 *     details).
+	 *  If an output is given, mutants and their fitness values will be written
+	 *  to the output, in the form of 'mutant fitness'.
 	 */
 	InfSitesSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
 		m_selDist(selDist), m_mode(mode), m_selFactory()
 	{
 		if (m_selDist.size() == 0) {
@@ -103,9 +106,8 @@ public:
 	}
 
 
-	/** Return a dictionary of selection coefficient for each mutant.
-	 */
-	intDict selCoef() const;
+	/// CPPONLY
+	bool apply(Population & pop) const;
 
 private:
 	double getFitnessValue(int mutant) const;
@@ -130,6 +132,7 @@ private:
 	typedef std::tr1::unordered_map<unsigned int, double> SelMap;
 #endif
 	mutable SelMap m_selFactory;
+	mutable vectoru m_newMutants;
 };
 
 
@@ -144,7 +147,9 @@ class InfSitesMutator : public BaseOperator
 public:
 	/** This operator accepts a list of ranges which is the 'real range' of
 	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
-	 *  will be recorded to the population (instead of alleles).
+	 *  will be recorded to the population (instead of alleles). If an
+	 *  \e output is given, mutants will be outputted in the format of
+	 *  gen mutant ind
 	 */
 	InfSitesMutator(double rate, const intMatrix & ranges,
 		const stringFunc & output = ">",
@@ -154,6 +159,20 @@ public:
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rate(rate), m_ranges(ranges)
 	{
+		const matrixi & rngs = m_ranges.elems();
+
+		for (size_t i = 0; i < rngs.size(); ++i) {
+			DBG_FAILIF(rngs[i].size() != 2, ValueError, "Ranges should have two elements");
+			for (size_t j = i + 1; j < rngs.size(); ++j) {
+				DBG_FAILIF(rngs[j].size() != 2, ValueError, "Ranges should have two elements");
+				if (i == j)
+					continue;
+				if (rngs[i][0] >= rngs[j][0] && rngs[i][0] <= rngs[j][1])
+					throw ValueError("Overlapping ranges are currently not supported because of potential conflict of mutant locations on different chromosomes.");
+				if (rngs[i][1] >= rngs[j][0] && rngs[i][1] <= rngs[j][1])
+					throw ValueError("Overlapping ranges are currently not supported because of potential conflict of mutant locations on different chromosomes.");
+			}
+		}
 #ifdef BINARYALLELE
 		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
 #endif
