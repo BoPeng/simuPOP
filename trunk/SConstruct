@@ -219,6 +219,7 @@ gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS
 def gsl_src(file):
     return file.replace('gsl', '$build_dir').replace('.c', '.c')
 
+env.Depends(['$build_dir/gsl_wrap.c'], ['src/simuPOP_cfg.h', 'src/gsl.i'])
 for file in GSL_FILES:
     env.Command(gsl_src(file), file, [Copy('$TARGET', '$SOURCE')])
 
