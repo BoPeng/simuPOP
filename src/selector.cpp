@@ -212,6 +212,7 @@ double MlSelector::indFitness(Individual * ind, ULONG gen) const
 		     s != sEnd; ++s)
 			fit += 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
 		return exp(-fit);
+	}
 	// this is the case for none.
 	return 1.0;
 }
