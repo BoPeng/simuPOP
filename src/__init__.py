@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# $File: simuPOP.py $
+# $File: __init__.py $
 # $LastChangedDate$
 # $Rev$
 #
