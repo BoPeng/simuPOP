@@ -2116,209 +2116,48 @@ simuPOP.gsl
 \end_layout
 
 \begin_layout Standard
-This module exposes the following GSL (GUN Scientific Library) functions
- used by simuPOP to the user interface.
- Although more functions may be added from time to time, this module is
- not intended to become a complete wrapper for GSL.
- Please refer to the GSL reference manual (http://www.gnu.org/software/gsl/manual/
-html_node/) for details about these functions.
- Note that random number generation functions are wrapped into the 
-\family typewriter
-simuPOP.RNG
-\family default
- class.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPgslRef
 \end_layout
 
-\begin_layout Itemize
+\end_inset
 
-\family typewriter
-gsl_cdf_gaussian_P(x, sigma) 
+
 \end_layout
 
-\begin_layout Itemize
-
+\begin_layout Section
+Module 
 \family typewriter
-gsl_cdf_gaussian_Q(x, sigma) 
+simuPOP.sandbox
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
+\begin_inset ERT
+status open
 
-\family typewriter
-gsl_cdf_gaussian_Pinv(P, sigma) 
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsandboxRef
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Plain Layout
 
-\family typewriter
-gsl_cdf_gaussian_Qinv(Q, sigma) 
+
+\backslash
+InfSitesSelectorRef
 \end_layout
 
-\begin_layout Itemize
+\end_inset
 
-\family typewriter
-gsl_cdf_ugaussian_P(x) 
-\end_layout
 
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_ugaussian_Q(x) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_ugaussian_Pinv(P) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_ugaussian_Qinv(Q) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_exponential_P(x, mu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_exponential_Q(x, mu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_exponential_Pinv(P, mu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_exponential_Qinv(Q, mu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_chisq_P(x, nu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_chisq_Q(x, nu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_chisq_Pinv(P, nu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_chisq_Qinv(Q, nu) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_gamma_P(x, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_gamma_Q(x, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_gamma_Pinv(P, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_gamma_Qinv(Q, a, b)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_ran_gamma_pdf(x, a, b)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_beta_P(x, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_beta_Q(x, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_beta_Pinv(P, a, b) 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_beta_Qinv(Q, a, b)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_ran_beta_pdf(x, a, b)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_binomial_P(k, p, n)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_binomial_Q(k, p, n)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_ran_binomial_pdf(k, p, n)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_poisson_P(k, mu)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_cdf_poisson_Q(k, mu)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-gsl_ran_poisson_pdf(k, mu)
 \end_layout
 
 \begin_layout Standard

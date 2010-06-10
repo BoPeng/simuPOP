@@ -3082,6 +3082,65 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InfSitesSelector "
+
+Details:
+
+    This selector assumes that alleles are mutant locations in the
+    mutational space and assign fitness values to them according to a
+    random distribution. The overall individual fitness is determined
+    by either an additive, an multiplicative or an exponential model.
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesSelector::InfSitesSelector "
+
+Usage:
+
+    InfSitesSelector(selDist, mode=EXPONENTIAL, begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=ALL_AVAIL)
+
+Details:
+
+    Create a selector that assigns individual fitness values according
+    to random fitness effects. selDist can be
+    *   (CONSTANT, s) where s will be used for all mutants.
+    *   (GAMMA_DISTRIBUTION, theta, k where theta and k are scale and
+    shape parameters of a gamma distribution, or
+    *   a Python function, which will be called when fitness value of
+    a new mutant is needed. Individual fitness (1+s_i) will be
+    combined in ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See
+    MlSelector for details).
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesSelector::~InfSitesSelector "
+
+Usage:
+
+    x.~InfSitesSelector()
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesSelector::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::InfSitesSelector::indFitness(Individual *ind, ULONG gen) const;
+
+%feature("docstring") simuPOP::InfSitesSelector::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InfSitesSelector::selCoef "
+
+Usage:
+
+    x.selCoef()
+
+Details:
+
+    Return a dictionary of selection coefficient for each mutant.
+
+"; 
+
 %feature("docstring") simuPOP::InheritTagger "
 
 Details:
@@ -4130,9 +4189,10 @@ Details:
     combined to a single fitness value using
     *   Prod(f_i), namely the product of individual fitness if mode =
     MULTIPLICATIVE,
-    *   1-sum(1 - f_i) if mode = ADDITIVE, and
-    *   1-Prod(1 - f_i) if mode = HETEROGENEITY zero will be returned
-    if the combined fitness value is less than zero.
+    *   1-sum(1 - f_i) if mode = ADDITIVE,
+    *   1-Prod(1 - f_i) if mode = HETEROGENEITY, and
+    *   exp(- sum(1 - f_i)) if mode = EXPONENTIAL, zero will be
+    returned if the combined fitness value is less than zero.
 
 "; 
 
