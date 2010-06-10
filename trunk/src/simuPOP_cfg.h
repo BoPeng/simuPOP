@@ -230,7 +230,8 @@ enum AffectionStatus {
 enum MultiLociMode {
 	MULTIPLICATIVE = 81,
 	ADDITIVE = 82,
-	HETEROGENEITY = 83
+	HETEROGENEITY = 83,
+	EXPONENTIAL = 84,
 };
 
 enum MigrMode {

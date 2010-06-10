@@ -317,8 +317,9 @@ public:
 	 *  single fitness value using
 	 *  \li <em>Prod(f_i)</em>, namely the product of individual fitness if
 	 *       \e mode = \c MULTIPLICATIVE,
-	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c ADDITIVE, and
-	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c HETEROGENEITY
+	 *  \li <em>1-sum(1 - f_i)</em> if \e mode = \c ADDITIVE,
+	 *  \li <em>1-Prod(1 - f_i)</em> if \e mode = \c HETEROGENEITY, and
+	 *  \li <em>exp(- sum(1 - f_i))</em> if \e mode = \c EXPONENTIAL,
 	 *
 	 *  zero will be returned if the combined fitness value is less than zero.
 	 */

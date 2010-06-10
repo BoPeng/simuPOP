@@ -5,6 +5,9 @@ Known Bugs:
 
 version 1.0.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+New features (minor):
+  - Add mode EXPONENTIAL to MlSelector.
+
 version 1.0.3 - Rev 3592 (Jun. 8, 2010)
 
 BUGS (minor):
