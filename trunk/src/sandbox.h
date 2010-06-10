@@ -152,7 +152,7 @@ public:
 	 *  gen mutant ind
 	 */
 	InfSitesMutator(double rate, const intMatrix & ranges,
-		const stringFunc & output = ">",
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :

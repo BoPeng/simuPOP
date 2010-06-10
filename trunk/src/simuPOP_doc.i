@@ -3098,7 +3098,7 @@ Details:
 
 Usage:
 
-    InfSitesMutator(rate, ranges, output=\">\", begin=0, end=-1,
+    InfSitesMutator(rate, ranges, output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
