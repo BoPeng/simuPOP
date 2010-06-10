@@ -166,6 +166,7 @@ HEADER_FILES = [
     'src/tagger.h',
     'src/pedigree.h',
     'src/virtualSubPop.h',
+    'src/sandbox.h',
 ]
 
 SOURCE_FILES = [
@@ -188,6 +189,7 @@ SOURCE_FILES = [
     'src/tagger.cpp',
     'src/pedigree.cpp',
     'src/virtualSubPop.cpp',
+    'src/sandbox.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
@@ -563,6 +565,7 @@ if __name__ == '__main__':
             'simuPOP.utils', 
             'simuPOP.plotter', 
             'simuPOP.sampling', 
+            'simuPOP.sandbox',
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,

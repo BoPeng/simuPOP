@@ -53,6 +53,8 @@
 #include "qtrait.h"
 #include "penetrance.h"
 
+#include "sandbox.h"
+
 %}
 
 ////////////////////////// DEFINE CARRAY //////////////////////////
@@ -301,6 +303,7 @@ namespace std
 %include "qtrait.h"
 %include "penetrance.h"
 %include "pedigree.h"
+%include "sandbox.h"
 
 ////////////////////////// SIMUPOP PYTHON UTILITY FUNCTIONS //////////////////////////
 

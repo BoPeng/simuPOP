@@ -37,6 +37,7 @@ include src/transmitter.h
 include src/tagger.h
 include src/pedigree.h
 include src/virtualSubPop.h
+include src/sandbox.h
 
 # source files
 include src/customizedTypes.c
@@ -59,6 +60,7 @@ include src/transmitter.cpp
 include src/tagger.cpp
 include src/pedigree.cpp
 include src/virtualSubPop.cpp
+include src/sandbox.cpp
 
 # source generated files
 include swigpyrun.h 
@@ -93,6 +95,7 @@ include src/__init__.py
 include src/utils.py
 include src/plotter.py
 include src/sampling.py
+include src/sandbox.py
 
 # gsl files
 include gsl/gsl_machine.h
