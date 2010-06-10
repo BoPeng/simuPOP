@@ -31,75 +31,95 @@ namespace simuPOP {
 
 double InfSitesSelector::indFitness(Individual * ind, ULONG gen) const
 {
-    if (m_mode == MULTIPLICATIVE)
-        return randomSelMulFitness(ind->genoBegin(), ind->genoEnd());
-    else if (m_mode == ADDITIVE)
-        return randomSelAddFitness(ind->genoBegin(), ind->genoEnd());
-    else if (m_mode == EXPONENTIAL)
-        return randomSelExpFitness(ind->genoBegin(), ind->genoEnd());
+	if (m_mode == MULTIPLICATIVE)
+		return randomSelMulFitness(ind->genoBegin(), ind->genoEnd());
+	else if (m_mode == ADDITIVE)
+		return randomSelAddFitness(ind->genoBegin(), ind->genoEnd());
+	else if (m_mode == EXPONENTIAL)
+		return randomSelExpFitness(ind->genoBegin(), ind->genoEnd());
 	return 0;
 }
 
+
 double InfSitesSelector::getFitnessValue(int mutant) const
 {
-    int sz = m_selDist.size();
-    double s;
-    if (sz == 0)
-        // call a function
-        s = m_selDist.func()(PyObj_As_Double, "()");
-    else if (sz == 2)
-        // constant
-        s = m_selDist[1];
-    else
-        // a gamma distribution
-        s = - getRNG().randGamma(m_selDist[1], m_selDist[2]);
-    m_selFactory[mutant] = s;
-    return s;    
+	int sz = m_selDist.size();
+	double s;
+
+	if (sz == 0)
+		// call a function
+		s = m_selDist.func() (PyObj_As_Double, "()");
+	else if (sz == 2)
+		// constant
+		s = m_selDist[1];
+	else
+		// a gamma distribution
+		s = -getRNG().randGamma(m_selDist[1], m_selDist[2]);
+	m_selFactory[mutant] = s;
+	return s;
 }
 
-double InfSitesSelector::randomSelMulFitness(GenoIterator it, GenoIterator it_end) const 
+
+double InfSitesSelector::randomSelMulFitness(GenoIterator it, GenoIterator it_end) const
 {
-    double s = 1;
-    for (; it != it_end; ++it) {
-        if (*it == 0)
-            continue;
-        SelMap::iterator sit = m_selFactory.find(*it);
-        if (sit == m_selFactory.end())
-            s *= 1 + getFitnessValue(*it);
-        else 
-            s *= 1 + sit->second;
-    }
-    return s;
+	double s = 1;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(*it);
+		if (sit == m_selFactory.end())
+			s *= 1 + getFitnessValue(static_cast<unsigned int>(*it));
+		else
+			s *= 1 + sit->second;
+	}
+	return s;
 }
+
 
 double InfSitesSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
-    double s = 0;
-    for (; it != it_end; ++it) {
-        if (*it == 0)
-            continue;
-        SelMap::iterator sit = m_selFactory.find(*it);
-        if (sit == m_selFactory.end())
-            s += getFitnessValue(*it);
-        else 
-            s += sit->second;
-    }
-    return 1 + s > 0 ? 1 + s : 0;
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue(*it);
+		else
+			s += sit->second;
+	}
+	return 1 + s > 0 ? 1 + s : 0;
 }
+
 
 double InfSitesSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
 {
-    double s = 0;
-    for (; it != it_end; ++it) {
-        if (*it == 0)
-            continue;
-        SelMap::iterator sit = m_selFactory.find(*it);
-        if (sit == m_selFactory.end())
-            s += getFitnessValue(*it);
-        else 
-            s += sit->second;
-    }
-    return exp(s);
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue(*it);
+		else
+			s += sit->second;
+	}
+	return exp(s);
+}
+
+
+intDict InfSitesSelector::selCoef() const
+{
+	intDict res;
+	SelMap::const_iterator it = m_selFactory.begin();
+	SelMap::const_iterator it_end = m_selFactory.end();
+
+	for (; it != it_end; ++it)
+		res[it->first] = it->second;
+	return res;
 }
 
 
