@@ -145,7 +145,7 @@ public:
 	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
 	 *  will be recorded to the population (instead of alleles).
 	 */
-	InfSitesMutator(double rate, const floatMatrix & ranges,
+	InfSitesMutator(double rate, const intMatrix & ranges,
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -154,7 +154,7 @@ public:
 		m_rate(rate), m_ranges(ranges)
 	{
 #ifdef BINARYALLELE
-		DBG_FAILIF(true, "This operator does not work in binary allele type.");
+		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
 #endif
 	}
 
@@ -184,7 +184,7 @@ public:
 private:
 	double m_rate;
 
-	floatMatrix m_ranges;
+	intMatrix m_ranges;
 
 };
 

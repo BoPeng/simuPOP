@@ -125,7 +125,7 @@ intDict InfSitesSelector::selCoef() const
 
 bool InfSitesMutator::apply(Population & pop) const
 {
-	const matrixf & ranges = m_ranges.elems();
+	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
 
 	width[0] = ranges[0][1] - ranges[0][0];
