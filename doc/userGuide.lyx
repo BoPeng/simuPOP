@@ -22330,6 +22330,59 @@ simuPOP.gsl
  module is by no means a comprehensive wrapper of GSL.
  Please refer to the simuPOP reference manual for a list of functions included
  in this module, and the GSL manual for more details.
+ Because random number generation functions such as 
+\family typewriter
+gsl_ran_gamma
+\family default
+ are already provided in the 
+\family typewriter
+simuPOP.RNG
+\family default
+ class (e.g.
+ 
+\family typewriter
+getRNG().randGamma
+\family default
+), they are not provided in this module.
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.sandbox
+\end_layout
+
+\begin_layout Standard
+The simuPOP sandbox can be understood as the binary version of the simuPOP
+ cookbook.
+ It contains 
+\series bold
+experimental or specialized
+\series default
+ classes and functions that might or might not be formally adopted by simuPOP.
+ For example, a mating scheme in which parents locate their spouses randomly
+ but with probabilities that are related to geographic distances will be
+ slow to implement at the Python level.
+ It might be provided here because it relies on many assumptions such as
+ the existence of certain information fields, and is unlikely to be adopted
+ by simuPOP.
+\end_layout
+
+\begin_layout Standard
+Because of the experiemental nature of this module, 
+\series bold
+compatibility is not guaranteed for classes and functions provided in this
+ module
+\series default
+.
+ If you use an operator from this module, your script might be locked to
+ a particular version of simuPOP that provides this operator.
+ On the other hand, if you have implemented some C/C++ level classes or
+ functions for your own simulation, it can be a good idea to add them to
+ this module so that they can be distributed with simuPOP (at least in certain
+ versions of simuPOP).
+ Please refer to the simuPOP reference manual for a list of classes and
+ functions provided in the current version of simuPOP.
 \end_layout
 
 \begin_layout Chapter
