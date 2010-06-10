@@ -3094,6 +3094,50 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InfSitesMutator::InfSitesMutator "
+
+Usage:
+
+    InfSitesMutator(rate, ranges, output=\">\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    This operator accepts a list of ranges which is the 'real range'
+    of each chromosome. Mutation happens with muation rate rate and
+    mutants will be recorded to the population (instead of alleles).
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesMutator::~InfSitesMutator "
+
+Description:
+
+    destructor.
+
+Usage:
+
+    x.~InfSitesMutator()
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesMutator::apply "
+
+Usage:
+
+    x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InfSitesMutator::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InfSitesSelector "
 
 Details:
@@ -3118,8 +3162,9 @@ Details:
     Create a selector that assigns individual fitness values according
     to random fitness effects. selDist can be
     *   (CONSTANT, s) where s will be used for all mutants.
-    *   (GAMMA_DISTRIBUTION, theta, k where theta and k are scale and
-    shape parameters of a gamma distribution, or
+    *   (GAMMA_DISTRIBUTION, theta, k where -s (note the - sign)
+    follows a gamma distribution with scale parameter theta and shape
+    parameter k.
     *   a Python function, which will be called when fitness value of
     a new mutant is needed. Individual fitness (1+s_i) will be
     combined in ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See

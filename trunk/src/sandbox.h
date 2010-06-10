@@ -52,8 +52,9 @@ public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
 	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants.
-	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where theta and k are scale and
-	 *      shape parameters of a gamma distribution, or
+	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where -s (note the - sign)
+	 *      follows a gamma distribution with scale parameter theta and shape
+	 *      parameter k.
 	 *  \li a Python function, which will be called when fitness value of a new
 	 *      mutant is needed.
 	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
