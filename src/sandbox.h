@@ -31,6 +31,13 @@
  */
 #include "selector.h"
 
+#if TR1_SUPPORT == 0
+#  include <map>
+#elif TR1_SUPPORT == 1
+#  include <unordered_map>
+#else
+#  include <tr1/unordered_map>
+#endif
 
 namespace simuPOP {
 
@@ -99,7 +106,16 @@ public:
 	 */
 	intDict selCoef() const
 	{
+#if TR1_SUPPORT == 0
 		return m_selFactory;
+#else
+		intDict res;
+		SelMap::const_iterator it = m_selFactory.begin();
+		SelMap::const_iterator it_end = m_selFactory.end();
+		for (; it != it_end; ++it)
+			res[it->first] = it->second;
+		return res;
+#endif
 	}
 
 private:
@@ -113,7 +129,13 @@ private:
 	///
 	floatListFunc m_selDist;
 	int m_mode;
-	mutable intDict m_selFactory;
+#if TR1_SUPPORT == 0
+	typedef indDict SelMap;
+#else
+	// this is faster than std::map
+	typedef std::tr1::unordered_map<int, double> SelMap;
+#endif
+	mutable SelMap m_selFactory;
 };
 
 }
