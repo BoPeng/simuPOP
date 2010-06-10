@@ -52,7 +52,7 @@ double InfSitesSelector::getFitnessValue(int mutant) const
         s = m_selDist[1];
     else
         // a gamma distribution
-        s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
+        s = - getRNG().randGamma(m_selDist[1], m_selDist[2]);
     m_selFactory[mutant] = s;
     return s;    
 }
@@ -63,7 +63,7 @@ double InfSitesSelector::randomSelMulFitness(GenoIterator it, GenoIterator it_en
     for (; it != it_end; ++it) {
         if (*it == 0)
             continue;
-        intDict::iterator sit = m_selFactory.find(*it);
+        SelMap::iterator sit = m_selFactory.find(*it);
         if (sit == m_selFactory.end())
             s *= 1 + getFitnessValue(*it);
         else 
@@ -78,7 +78,7 @@ double InfSitesSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_en
     for (; it != it_end; ++it) {
         if (*it == 0)
             continue;
-        intDict::iterator sit = m_selFactory.find(*it);
+        SelMap::iterator sit = m_selFactory.find(*it);
         if (sit == m_selFactory.end())
             s += getFitnessValue(*it);
         else 
@@ -93,7 +93,7 @@ double InfSitesSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
     for (; it != it_end; ++it) {
         if (*it == 0)
             continue;
-        intDict::iterator sit = m_selFactory.find(*it);
+        SelMap::iterator sit = m_selFactory.find(*it);
         if (sit == m_selFactory.end())
             s += getFitnessValue(*it);
         else 
