@@ -752,6 +752,7 @@ class Doxy2SWIG:
         try:
             # resolve is defined in pydoc
             object, name = resolve(module, True)
+            print 'Scanning module %s' % module
             #exec('import ' + module)
         except Exception, e:
             print "Module %s failed to load. It is description is not documented." % module
@@ -762,7 +763,7 @@ class Doxy2SWIG:
         #object = eval(module)
         synop, desc = splitdoc(getdoc(object))
         self.content.append({'type': 'docofmodule_' + module, 
-            'Name': module})
+            'Name': module, 'ignore': False, 'hidden': False, 'module': module})
         self.content[-1]['Description'] = desc
         self.content[-1]['Doc'] = desc
         for key, value in inspect.getmembers(object, inspect.isclass):
@@ -951,8 +952,9 @@ class Doxy2SWIG:
                     (title, label, entry['ExampleFile'].replace('\\', '/'))
             print >> out, '\\end{funcdesc}\n}\n'
         # then python modules
-        modules = sets.Set(
-            [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
+        modules = set(
+            [x['module'] for x in self.content if (x['type'].startswith('module') or x['type'].startswith('docofmodule')) \
+                and not x['ignore'] and not x['hidden']])
         for module in modules:
             # module functions
             #mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
@@ -1177,7 +1179,8 @@ class Doxy2SWIG:
             out.close()
         # then python modules
         modules = set(
-            [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
+            [x['module'] for x in self.content if (x['type'].startswith('module') or x['type'].startswith('docofmodule')) \
+                and not x['ignore'] and not x['hidden']])
         for module in modules:
             # module functions
             # MODULE DOC
@@ -1191,8 +1194,6 @@ class Doxy2SWIG:
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
             print >> out, doc
             out.close()
-            #
-            #
             #
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module_func' \
@@ -1445,6 +1446,8 @@ if __name__ == '__main__':
     p.scan_module('simuPOP.utils')
     p.scan_module('simuPOP.plotter')
     p.scan_module('simuPOP.sampling')
+    p.scan_module('simuPOP.sandbox')
+    p.scan_module('simuPOP.gsl')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []
