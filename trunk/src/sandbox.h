@@ -44,21 +44,31 @@ class InfSitesSelector : public BaseSelector
 public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
-	 *  \li \c 'constant': \e selDist should be a constant s
-	 *  \li \c 'gamma': \e selDist should be a scale parameter and a shape parameter
-	 *  \li \c 'mixed': \e selCoef should be list of distribution, percentage,
-	 *      and parameter.
-	 *
+	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants.
+	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where theta and k are scale and
+	 *      shape parameters of a gamma distribution
+	 *  \li or a Python function, which will be called when fitness value for
+	 *      a new mutant is needed.
+	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
+	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
+	 *     details.
 	 */
-	InfSitesSelector(const string & selDist, const vectorf & selCoef,
-		int mode = EXPONENTIAL,
+	InfSitesSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
 		m_selDist(selDist), m_mode(mode)
-	{
-	};
+	{	
+		if (m_selDist.size() == 0) {
+			DBG_FAILIF(!m_selDist.func().isValid(), ValueError,
+				"Please specify either a distribution with parameter or a function.");
+		} else if (static_cast<int>(m_selDist[0]) == CONSTANT) {
+			DBG_FAILIF(m_selDist.size() != 2, ValueError, "One parameters are needed for gamma distribution.");
+		} else if (static_cast<int>(m_selDist[0]) == GAMMA_DISTRIBUTION) {
+			DBG_FAILIF(m_selDist.size() != 3, ValueError, "Two parameters are needed for gamma distribution.");
+		}
+	}
 
 	virtual ~InfSitesSelector()
 	{
@@ -83,11 +93,27 @@ public:
 		return "<simuPOP.InfSitesSelector>" ;
 	}
 
+	/** Return a dictionary of selection coefficient for each mutant. This is only
+     *  valid for GAMMA_DISTRIBUTION and function case. A dictionary with key 0
+	 *  will be returned for the CONSTANT case.
+	 */
+	intDict selCoef() const
+	{
+		return m_selFactory;
+	}
+
+private:
+	
+	double getFitnessValue(int mutant) const;
+	double randomSelMulFitness(GenoIterator it, GenoIterator it_end) const;
+	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
+	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
 private:
 	///
-	vectorf selDist;
-
+	floatListFunc m_selDist;
+	int m_mode;
+	mutable intDict m_selFactory;
 };
 
 }
