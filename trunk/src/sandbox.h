@@ -34,34 +34,29 @@
 
 namespace simuPOP {
 
-/** This selector assigns individual fitness values using a user-specified
- *  dictionary. This operator can be applied to populations with arbitrary
- *  number of homologous chromosomes.
+/** This selector assumes that alleles are mutant locations in the mutational
+ *  space and assign fitness values to them according to a random distribution.
+ *  The overall individual fitness is determined by either an additive, an
+ *  multiplicative or an exponential model.
  */
 class InfSitesSelector : public BaseSelector
 {
 public:
-	/** Create a selector that assigns individual fitness values using a
-	 *  dictionary \e fitness with genotype at \e loci as keys, and fitness
-	 *  as values. Parameter \e loci can be a list of indexes, loci names or
-	 *  \c ALL_AVAIL. For each individual (parents if this operator is applied
-	 *  before mating, and offspring if this operator is applied during
-	 *  mating), genotypes at \e loci are collected one by one (e.g.
-	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and
-	 *  are looked up in the dictionary. If a genotype cannot be found, it
-	 *  will be looked up again without phase information (e.g.
-	 *  <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the genotype
-	 *  still can not be found, a \c ValueError will be raised. This
-	 *  operator supports sex chromosomes and haplodiploid populations. In
-	 *  these cases, only valid genotypes should be used to generator the
-	 *  dictionary keys.
+	/** Create a selector that assigns individual fitness values according to
+	 *  random fitness effects. \e selDist can be
+	 *  \li \c 'constant': \e selDist should be a constant s
+	 *  \li \c 'gamma': \e selDist should be a scale parameter and a shape parameter
+	 *  \li \c 'mixed': \e selCoef should be list of distribution, percentage,
+	 *      and parameter.
+	 *
 	 */
-	InfSitesSelector(const lociList & loci, const tupleDict & fitness,
+	InfSitesSelector(const string & selDist, const vectorf & selCoef,
+		int mode = EXPONENTIAL,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci), m_dict(fitness)
+		m_selDist(selDist), m_mode(mode)
 	{
 	};
 
@@ -91,10 +86,8 @@ public:
 
 private:
 	///
-	const lociList m_loci;
+	vectorf selDist;
 
-	/// fitness for each genotype
-	const tupleDict m_dict;
 };
 
 }
