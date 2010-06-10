@@ -134,7 +134,6 @@ bool InfSitesMutator::apply(Population & pop) const
 
 	ULONG ploidyWidth = width.back();
 	ULONG indWidth = pop.ploidy() * ploidyWidth;
-	ULONG gen = pop.gen();
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -163,7 +162,7 @@ bool InfSitesMutator::apply(Population & pop) const
 				if (ch > 0)
 					mutLoc -= width[ch - 1];
 
-				DBG_DO(DBG_MUTATOR, cerr	<< "Gen: " << gen << " Ind: " << indIndex << " Mutation "
+				DBG_DO(DBG_MUTATOR, cerr	<< "Gen: " << pop.gen() << " Ind: " << indIndex << " Mutation "
 					                        << loc << " p " << p << " ch " << ch << " loc " << mutLoc << endl);
 
 				GenoIterator geno = ind.genoBegin(p, ch);
@@ -198,7 +197,7 @@ bool InfSitesMutator::apply(Population & pop) const
 								*(geno + k - 1) = 0;
 								break;
 							}
-						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << gen << " on individual " << indIndex << endl);
+						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
 						break;
 					}
 				}

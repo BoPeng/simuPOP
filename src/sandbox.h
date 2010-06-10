@@ -140,7 +140,10 @@ private:
  */
 class InfSitesMutator : public BaseOperator
 {
-	/** This operator supports parameter subPops.
+public:
+	/** This operator accepts a list of ranges which is the 'real range' of
+	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
+	 *  will be recorded to the population (instead of alleles).
 	 */
 	InfSitesMutator(double rate, const floatMatrix & ranges,
 		const stringFunc & output = ">",
@@ -150,6 +153,9 @@ class InfSitesMutator : public BaseOperator
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rate(rate), m_ranges(ranges)
 	{
+#ifdef BINARYALLELE
+		DBG_FAILIF(true, "This operator does not work in binary allele type.");
+#endif
 	}
 
 
