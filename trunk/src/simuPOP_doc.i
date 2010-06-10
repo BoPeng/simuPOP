@@ -3082,6 +3082,18 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InfSitesMutator "
+
+Details:
+
+    This is an infite site mutation model in mutational space. The
+    alleles in the population is assumed to be locations of mutants. A
+    mutation rate is given that mutate alleles in 'regions'. If number
+    of mutants for an individual exceed the number of loci, 10 loci
+    will be added to everyone in the population.
+
+"; 
+
 %feature("docstring") simuPOP::InfSitesSelector "
 
 Details:
