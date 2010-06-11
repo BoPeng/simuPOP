@@ -196,7 +196,9 @@ bool InfSitesMutator::apply(Population & pop) const
 
 					if (*(geno + j) == 0) {
 						// record mutation here
-						*(geno + j) = mutLoc;
+						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
+							"Location can not be saved because it exceed max allowed allele.");
+						*(geno + j) = ToAllele(mutLoc);
 						break;
 					} else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
 						// back mutation
