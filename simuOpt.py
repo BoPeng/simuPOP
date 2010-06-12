@@ -603,7 +603,7 @@ def _getParamValue(p, val):
     # evaluated type is OK now.
     if type(val) in p['allowedTypes']:
         if p.has_key('validate') and not p['validate'](val):
-                raise exceptions.ValueError("Value "+str(val)+' does not pass validation')
+                raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif types.ListType in p['allowedTypes'] or types.TupleType in p['allowedTypes']:
         if p.has_key('validate') and not p['validate']([val]):
@@ -1362,7 +1362,7 @@ class Params:
                 raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
         # is default value valid?
         if opt.has_key('validate') and not opt['validate'](opt['default']):
-            raise exceptions.ValueError('Default value "%s" does not pass validation.' % str(opt['default']))
+            raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
         opt['value'] = opt['default']
         opt['processed'] = False
         if not opt.has_key('allowedTypes'):
