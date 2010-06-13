@@ -66,7 +66,7 @@ double InfSitesSelector::getFitnessValue(int mutant) const
 
 	if (sz == 0) {
 		// call a function
-        pyFunc & func = m_selDist.func();
+        const pyFunc & func = m_selDist.func();
         if (func.numArgs() == 0)
     		s = func(PyObj_As_Double, "()");
         else {
