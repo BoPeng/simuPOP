@@ -64,10 +64,17 @@ double InfSitesSelector::getFitnessValue(int mutant) const
 	int sz = m_selDist.size();
 	double s;
 
-	if (sz == 0)
+	if (sz == 0) {
 		// call a function
-		s = m_selDist.func() (PyObj_As_Double, "()");
-	else if (sz == 2)
+        pyFunc & func = m_selDist.func();
+        if (func.numArgs() == 0)
+    		s = func(PyObj_As_Double, "()");
+        else {
+            DBG_FAILIF(func.arg(0) != "loc", ValueError,
+                "Only parameter loc is accepted for this user-defined function.");
+            s = func(PyObj_As_Double, "(i)", mutant);
+        }
+    } else if (sz == 2)
 		// constant
 		s = m_selDist[1];
 	else

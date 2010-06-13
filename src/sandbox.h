@@ -55,8 +55,10 @@ public:
 	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where -s (note the - sign)
 	 *      follows a gamma distribution with scale parameter theta and shape
 	 *      parameter k.
-	 *  \li a Python function, which will be called when fitness value of a new
-	 *      mutant is needed.
+	 *  \li a Python function, which will be called when selection coefficient
+     *      of a new mutant is needed. Mutant location will be passed to this
+     *      function if it accepts a parameter \c loc. This allows the
+     *      definition of site-specific selection coefficients.
 	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
 	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
 	 *     details).
