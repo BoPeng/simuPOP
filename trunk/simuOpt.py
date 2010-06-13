@@ -1360,9 +1360,14 @@ class Params:
                 opt['default'] = (opt['default'],)
             else:
                 raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
-        # is default value valid?
-        if opt.has_key('validate') and not opt['validate'](opt['default']):
-            raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
+        # 
+        # simuPOP 1.0.3 disallow invalid default value in parameter specification
+        # dictionary. This seemed to be a logic change but it turned out that invalid
+        # default value cannot always be avoided (e.g. a valid filename that cannot have
+        # a valid default value). This version allows invalid default value again.
+        #
+        #if opt.has_key('validate') and not opt['validate'](opt['default']):
+        #    raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
         opt['value'] = opt['default']
         opt['processed'] = False
         if not opt.has_key('allowedTypes'):

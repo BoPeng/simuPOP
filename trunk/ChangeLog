@@ -11,6 +11,12 @@ New features:
   - Add operators InfSitesSelector and InfSitesMutator to support mutation and selection
 		in mutational space.
 
+Bugs:
+  - Regression: version 1.0.3 disallow invalid default value in parameter specification
+        dictionary. This seemed to be a logic change but it turned out that invalid
+        default value cannot always be avoided (e.g. a valid filename that cannot have
+        a valid default value). This version allows invalid default value again.
+
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.
 
