@@ -40,13 +40,13 @@ your script. simuPOP recognize the following commandline arguments
 ``--optimized``
     Load the optimized version of a simuPOP module.
 
-``--gui=True|False|wxPython|Tkinter``
+``--gui=True|batch|False|wxPython|Tkinter``
     Whether or not use a graphical toolkit and which one to use.
-    ``--gui=False`` is usually used to run a script in batch mode (do not start
-    a parameter input dialog and use interactive user input if a parameter can
-    not be determined from command line or a configuraiton file, and it does not
-    use its default value (``useDefault`` not set). Please refer to parameter
-    ``gui`` for ``simuOpt.setOptions`` for details.
+    ``--gui=batch`` is usually used to run a script in batch mode (do not start
+    a parameter input dialog and use all default values unless a parameter is
+    specified from command line or a configuraiton file. If ``--gui=False``, an
+    interactive shell will be used to solicit input from users. Please refer to
+    parameter ``gui`` for ``simuOpt.setOptions`` for details.
 
 class ``params.Params`` provides a powerful way to handle commandline
 arguments. Briefly speaking, a ``Params`` object can be created from a list
@@ -138,10 +138,8 @@ if _gui in ['True', 'true', '1']:
     simuOptions['GUI'] = True
 elif _gui in ['False', 'false', '0']:
     simuOptions['GUI'] = False
-elif _gui == 'wxPython':
-    simuOptions['GUI'] = 'wxPython'
-elif _gui == 'Tkinter':
-    simuOptions['GUI'] = 'Tkinter'
+elif _gui in ['wxPython', 'Tkiner', 'batch']:
+    simuOptions['GUI'] = _gui
 elif _gui is not None:
     print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
 
@@ -165,18 +163,20 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         version will be used otherwise.
     
     gui
-        Whether or not use graphical user interfaces, and which graphical
-        toolkit to use. If this parameter is ``None`` (default), this function
-        will check environmental variable ``SIMUGUI`` for a value, and assume
-        ``True`` if such an option is unavailable. If ``gui=True``, allows
-        simuPOP to use ``wxPython``-based dialogs if ``wxPython`` is available,
-        and use ``Tkinter``-based dialogs if ``Tkinter`` is available. If        
-        ``gui='Tkinter'``, use ``Tkinter`` based dialogs even if ``wxPython``
-        is available. If ``gui='wxPython'``, use ``wxPython`` based dialogs.
-        If ``gui=False``, do not use any graphical toolkit. This will force
-        the script to run in batch mode. This option is usually left to
-        ``None`` so that the same script can be ran in both GUI and batch
-        mode using commandline option ``--gui``.
+        Whether or not use graphical user interfaces, which graphical toolkit
+        to use and how to process parameters in non-GUI mode. If this parameter
+        is ``None`` (default), this function will check environmental variable
+        ``SIMUGUI`` or commandline option ``--gui`` for a value, and assume
+        ``True`` if such an option is unavailable. If ``gui=True``, simuPOP
+        will use ``wxPython``-based dialogs if ``wxPython`` is available, and
+        use ``Tkinter``-based dialogs if ``Tkinter`` is available.
+        ``gui='Tkinter'`` or ``'wxPython'`` can be used to specify the
+        graphical toolkit to used. If ``gui='False'``, a simuPOP script will
+        try to get arguments from commandline or a configuration file, and will
+        prompt users to input the rest of the parameters. If ``gui='batch'``,
+        default values of unspecified parameters will be used. This option is
+        usually left to ``None`` so that the same script can be ran in both
+        GUI and batch mode using commandline option ``--gui``.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -211,7 +211,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     elif alleleType is not None:
         raise exceptions.TypeError('Parameter alleleType can be either short, long, or binary.')
     # Graphical toolkit
-    if gui in [True, False, 'wxPython', 'Tkinter']:
+    if gui in [True, False, 'wxPython', 'Tkinter', 'batch']:
         simuOptions['GUI'] = gui
     elif gui is not None:
         raise exceptions.TypeError('Parameter gui can be True/False, wxPython or Tkinter.')
@@ -1314,6 +1314,8 @@ class Params:
                     opt[key] = [kwargs[key]]
                 else:
                     opt[key] = kwargs[key]
+                if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                    print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
             else:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
         #
@@ -1761,6 +1763,16 @@ class Params:
         #
         if self.gui == False:
             return self.termGetParam()
+        elif self.gui == 'batch':
+            # valid values because some default values can be false
+            for opt in self.options:
+                if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
+                    raise exceptions.ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
+                        (str(opt['value']), opt['name']))
+                if opt.has_key('validate') and not opt['validate'](opt['value']):
+                    raise exceptions.ValueError("Value '%s' is not allowed for parameter '%s'." % \
+                        (str(opt['value']), opt['name']))
+            return True
         # GUI
         try:
             return self.guiGetParam(nCol, gui=self.gui)

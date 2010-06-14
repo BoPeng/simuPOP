@@ -73,7 +73,7 @@ def viewVars(var, gui=None):
     if gui is None:
         gui = simuOptions['GUI']
     #
-    if gui == False or gui == 'Tkinter':
+    if gui in [False, 'batch', 'Tkinter']:
         import pprint
         try:
             # a dvars() object
