@@ -50,11 +50,11 @@ __all__ = [
 import exceptions
 import sys
 
-from simuOpt import guiMode
+from simuOpt import simuOptions
 
 from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL
 
-def viewVars(var, ui=None, gui=None):
+def viewVars(var, gui=None):
     '''
     list a variable in tree format, either in text format or in a
         wxPython window.
@@ -63,15 +63,15 @@ def viewVars(var, ui=None, gui=None):
         A dictionary variable to be viewed. Dictionary wrapper objects returned
         by ``Population.dvars()`` and ``Simulator.dvars()`` are also acceptable.
 
-    ui
-        If ui is ``'graphical'`` or ``'wxPython'`` and wxPython is available, a wxPython
-        windows will be used. Otherwise, a text output will be used. The default mode is
-        determined by the global ui mode (see also ``simuOpt.setOptions``).
-
     gui
-        Obsolete parameter. Please use ui instead.
+        If gui is ``False`` or ``'Tkinter'``, a text presentation (use the
+        pprint module) of the variable will be printed to the screen. If gui is
+        ``'wxPython'`` and wxPython is available, a wxPython windows will be
+        used. The default mode is determined by the global gui mode (see also
+        ``simuOpt.setOptions``).
     '''
-    gui = guiMode(ui, gui)
+    if gui is None:
+        gui = simuOptions['GUI']
     #
     if gui == False or gui == 'Tkinter':
         import pprint
@@ -647,7 +647,7 @@ class ProgressBar:
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
-    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', ui=None, gui=None):
+    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=None):
         '''Create a progress bar with ``message``, which will be the title of
         a progress dialog or a message for textbased progress bar. Parameter
         ``totalCount`` specifies total expected steps. If a text-based progress
@@ -655,7 +655,10 @@ class ProgressBar:
         which progresses will be displayed using parameters ``progressChar``
         and ``block``. A ending message will also be displayed in text mode.
         '''
-        self.gui = guiMode(ui, gui)
+        if gui is None:
+            self.gui = simuOptions['GUI']
+        else:
+            self.gui = gui
         if self.gui in ['wxPython', True]:
             try:
                 import wx
