@@ -10,6 +10,7 @@ New features:
 		functions.
   - Add operators InfSitesSelector and InfSitesMutator to support mutation and selection
 		in mutational space.
+  - Add option 'batch' to --gui, which will use default values for unspecified parameters.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
