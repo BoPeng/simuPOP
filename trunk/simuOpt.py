@@ -1176,12 +1176,6 @@ class Params:
         ``Enter`` directly during interactive parameter input. **A default
         value is required for all options**.
 
-    useDefault
-        Use default value without asking, if the value can not be determined
-        from GUI, command line option or config file. This is usually used for
-        options that rarely need to be changed. Setting ``useDefault`` to such
-        options simplifies user input.
-
     description
         A long description of this parameter. This description will be put into
         the usage information, and as parameter tooltip in the parameter input
@@ -1193,7 +1187,7 @@ class Params:
     allowedTypes
         A list of acceptable types of this option. class ``Params`` will try
         to convert user input to these types. For example, if ``allowedTypes``
-        is ``types.ListType`` or  ``types.TupleType`` and the user's input is a
+        is ``types.ListType`` or ``types.TupleType`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
         will not be accepted if such conversion fails. If this item is not
         specified, the type of the default value will be used. If only one type
@@ -1218,6 +1212,10 @@ class Params:
         This item specifies a separator (group header) in the parameter input
         dialog. All other fields are ignored.
    
+    useDefault
+        This parameter is deprecated because of the introduction of the
+        'batch' mode.
+
     Not all keys need to be specified in each option description. Missing
     values are handled using some internal rules. For example, items without
     a ``label`` will not be displayed on the parameter dialog. This will
@@ -1289,10 +1287,10 @@ class Params:
         entries should be specified as keyword arguments such as
         ``longarg='option='``. More specifically, you can specify parameters
         ``arg``, ``longarg`` (required), ``label``, ``allowedTypes``,
-        ``useDefault``, ``default`` (required), ``description``, ``validate``,
-        ``chooseOneOf``, ``chooseFrom`` and ``separator``. This option will
-        have a name specified by ``longarg`` (without optional trailing ``=``)
-        and an initial default value specified by ``default``.
+        ``default`` (required), ``description``, ``validate``, ``chooseOneOf``,
+        ``chooseFrom`` and ``separator``. This option will have a name
+        specified by ``longarg`` (without optional trailing ``=``) and an
+        initial default value specified by ``default``.
 
         An optional parameter *pos* can be given to specify an index before
         which this option will be inserted.
@@ -1616,7 +1614,7 @@ class Params:
         met:
 
         1. Parameter without a label
-        2. Parameter with ``useDefault`` set to ``True``
+        2. Parameter with ``useDefault`` set to ``True`` (deprecated)
         3. Parameter that have been determined from command line options or a
            configuration file
         4. Parameter that have been determined by a previous call of this
