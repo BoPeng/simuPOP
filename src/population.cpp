@@ -2122,6 +2122,21 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 		}
 	}
 
+// 
+// unordered map does not appear to work here, perhaps std::pair<Allele, ULONG>
+// is not hashable.
+//
+//#if TR1_SUPPORT == 0
+typedef std::map<Allele, Allele> AlleleMap;
+typedef std::map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
+//#else
+//typedef std::tr1::unordered_map<Allele, Allele> AlleleMap;
+//typedef std::tr1::unordered_map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
+//#endif
+
+	AlleleMap alleleMap;
+	AlleleLocusMap alleleLocusMap;
+
 	UINT oldGen = curAncestralGen();
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
@@ -2132,8 +2147,11 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 			const vectoru & map = newAlleles.elems();
 			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
-					DBG_FAILIF(static_cast<UINT>(*ptr) >= map.size(),
-						ValueError, "Allele " + toStr(static_cast<UINT>(*ptr)) + " can not be recoded");
+                    if (static_cast<UINT>(*ptr) >= map.size()) {
+					    DBG_WARNIF(true,
+						    "Allele " + toStr(static_cast<UINT>(*ptr)) + " can not be recoded");
+                        continue;
+                    }
 					*ptr = ToAllele(map[*ptr]);
 				}
 			} else {
@@ -2174,7 +2192,25 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + i))));
 						if (locusIndex != -1)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(i));
-						*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
+						if (locusIndex != -1) {
+							std::pair<Allele, ULONG> key(*(ptr + i), i);
+							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
+							if (it != alleleLocusMap.end())
+								*(ptr + i) = it->second;
+							else {
+								*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
+								alleleLocusMap[key] = *(ptr + i);
+							}
+						} else {
+							AlleleMap::iterator it = alleleMap.find(*(ptr + i));
+							if (it != alleleMap.end())
+								*(ptr + i) = it->second;
+							else {
+								Allele oldAllele = *(ptr + i);
+								*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
+								alleleMap[oldAllele] = *(ptr + i);
+							}
+						}
 					}
 				} else {
 					for (size_t i = 0; i < iEnd; ++i) {
@@ -2183,8 +2219,25 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + loci[i]))));
 						if (locusIndex != -1)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(loci[i]));
-
-						*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
+						if (locusIndex != -1) {
+							std::pair<Allele, ULONG> key(*(ptr + loci[i]), loci[i]);
+							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
+							if (it != alleleLocusMap.end())
+								*(ptr + loci[i]) = it->second;
+							else {
+								*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
+								alleleLocusMap[key] = *(ptr + loci[i]);
+							}
+						} else {
+							AlleleMap::iterator it = alleleMap.find(*(ptr + loci[i]));
+							if (it != alleleMap.end())
+								*(ptr + loci[i]) = it->second;
+							else {
+								Allele oldAllele = *(ptr + loci[i]);
+								*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
+								alleleMap[oldAllele] = *(ptr + loci[i]);
+							}
+						}
 					}
 				}
 			}
