@@ -10,6 +10,8 @@ New features:
 		functions.
   - Add operators InfSitesSelector and InfSitesMutator to support mutation and selection
 		in mutational space.
+  - Population.recodeAllele does not raise an error if newAllele is not defined for
+		an allele. A warning will be given if DBG_WARNING is defined.
   - Add option 'batch' to --gui, which will use default values for unspecified parameters.
 
 Bugs:
@@ -17,6 +19,11 @@ Bugs:
         dictionary. This seemed to be a logic change but it turned out that invalid
         default value cannot always be avoided (e.g. a valid filename that cannot have
         a valid default value). This version allows invalid default value again.
+
+Regression (minor):
+  - User provided function in function Population.recodeAlleles will be called once
+        for each existing allele so it is now not possible to emit random alleles for
+        the same allele.
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.

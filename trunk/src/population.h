@@ -1138,16 +1138,17 @@ public:
 	 *  all loci in a population (\c ALL_AVAIL)) to other values according to
 	 *  parameter \e alleles. This parameter can a list of new allele numbers
 	 *  for alleles \c 0, \c 1, \c 2, ... (allele \c x will be recoded to
-	 *  <tt>newAlleles[x]</tt>) or a Python function, which should accept one
-	 *  or both parameters \c allele (existing allele) and \c locus (index of
-	 *  locus). The return value will become the new allele. Because calling a
-	 *  function for each allele tends to be slow, use of this parameter should
-	 *  be limited to special cases for small populations (e.g. return random
-	 *  alleles to simulate genotyping error of a sample). A new list of allele
-	 *  names could be specified for these \e loci. Different sets of names
-	 *  could be specified for each locus if a nested list of names are given.
-	 *  This function recode alleles for all subpopulations in all ancestral
-	 *  generations.
+	 *  <tt>newAlleles[x]</tt>, \c x outside of the range of \e newAlleles will
+	 *  not be recoded, although a warning will be given if \c DBG_WARNING is
+	 *  defined) or a Python function, which should accept one or both
+	 *  parameters \c allele (existing allele) and \c locus (index of locus).
+	 *  The return value will become the new allele. This function is intended
+	 *  to recode some alleles without listing all alleles in a list. It will
+	 *  be called once for each existing allele so it is not possible to recode
+	 *  an allele to different alleles. A new list of allele names could be
+	 *  specified for these \e loci. Different sets of names could be specified
+	 *  for each locus if a nested list of names are given. This function recode
+	 *  alleles for all subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
 	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
