@@ -40,7 +40,7 @@ bool BaseSelector::apply(Population & pop) const
 			pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind)
-			ind->setInfo(indFitness(&*ind, pop.gen()), fit_id);
+			ind->setInfo(indFitness(pop, &*ind), fit_id);
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 	}
@@ -49,7 +49,7 @@ bool BaseSelector::apply(Population & pop) const
 }
 
 
-double MapSelector::indFitness(Individual * ind, ULONG gen) const
+double MapSelector::indFitness(Population & pop, Individual * ind) const
 {
 	vectoru chromTypes;
 	const vectoru & loci = m_loci.elems(ind);
@@ -141,7 +141,7 @@ double MapSelector::indFitness(Individual * ind, ULONG gen) const
 
 
 // currently assuming diploid
-double MaSelector::indFitness(Individual * ind, ULONG gen) const
+double MaSelector::indFitness(Population & pop, Individual * ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -186,31 +186,31 @@ double MaSelector::indFitness(Individual * ind, ULONG gen) const
 }
 
 
-double MlSelector::indFitness(Individual * ind, ULONG gen) const
+double MlSelector::indFitness(Population & pop, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
+			fit *= dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
 		return fit;
 	} else if (m_mode == ADDITIVE) {
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit -= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
+			fit -= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
 		return fit < 0 ? 0. : fit;
 	} else if (m_mode == HETEROGENEITY) {
 		double fit = 1;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit *= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
+			fit *= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
 		return fit < 1 ? 1 - fit : 0;
 	} else if (m_mode == EXPONENTIAL) {
 		double fit = 0;
 		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
-			fit += 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(ind, gen);
+			fit += 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
 		return exp(-fit);
 	}
 	// this is the case for none.
@@ -218,7 +218,7 @@ double MlSelector::indFitness(Individual * ind, ULONG gen) const
 }
 
 
-double PySelector::indFitness(Individual * ind, ULONG gen) const
+double PySelector::indFitness(Population & pop, Individual * ind) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -231,10 +231,12 @@ double PySelector::indFitness(Individual * ind, ULONG gen) const
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop.gen()));
+		else if (arg == "pop")
+			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
 		else {
 			DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
-				"Only parameters 'ind', 'geno', 'gen', and names of information fields are "
+				"Only parameters 'ind', 'geno', 'gen', 'pop' and names of information fields are "
 				"acceptable in function " + m_func.name());
 			PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(ind->info(arg)));
 		}

@@ -13,6 +13,8 @@ New features:
   - Population.recodeAllele does not raise an error if newAllele is not defined for
 		an allele. A warning will be given if DBG_WARNING is defined.
   - Add option 'batch' to --gui, which will use default values for unspecified parameters.
+  - Allow user-specified function for operator PySelector and PyPenetrance to accept
+		parameter pop.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
@@ -24,6 +26,8 @@ Regression (minor):
   - User provided function in function Population.recodeAlleles will be called once
         for each existing allele so it is now not possible to emit random alleles for
         the same allele.
+  - The second parameter of function applyToIndividual, if specified, should now be a
+		population reference.
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.

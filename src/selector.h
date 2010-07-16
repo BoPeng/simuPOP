@@ -129,7 +129,7 @@ public:
 
 
 	/// CPPONLY
-	virtual double indFitness(Individual *, ULONG gen) const
+	virtual double indFitness(Population & pop, Individual *) const
 	{
 		///
 		throw ValueError("This selector is not supposed to be called directly");
@@ -144,7 +144,7 @@ public:
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
-		double fitness = indFitness(&*offspring, pop.gen());
+		double fitness = indFitness(pop, &*offspring);
 
 		DBG_FAILIF(fcmp_lt(fitness, 0) || fcmp_gt(fitness, 1), ValueError,
 			"Fitness (probability for an offspring to survive) must be between 0 and 1 if a selector is used as a during-mating operator.");
@@ -209,7 +209,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -280,7 +280,7 @@ public:
 
 	/// CPPONLY
 	/// calculate/return the fitness value, currently assuming diploid
-	virtual double indFitness(Individual * ind, ULONG gen) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -348,7 +348,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -369,12 +369,13 @@ private:
 /** This selector assigns fitness values by calling a user provided function.
  *  It accepts a list of loci (parameter \e loci) and a Python function \c func
  *  which should be defined with one or more of parameters \c geno, \c gen,
- *  \c ind, or names of information fields. Parameter \e loci can be a list of
- *  loci indexes, names or \c ALL_AVAIL. When this operator is applied to a
- *  population, it passes genotypes at specified loci, generation number, a
- *  reference to an individual, and values at specified information fields to
- *  respective parameters of this function. The returned penetrance values will
- *  be used to determine the fitness of each individual.
+ *  \c ind, \c pop or names of information fields. Parameter \e loci can be a
+ *  list of loci indexes, names or \c ALL_AVAIL. When this operator is applied
+ *  to a population, it passes genotypes at specified loci, generation number,
+ *  a reference to an individual, a reference to the current population
+ *  (usually used to retrieve population variable), and values at specified
+ *  information fields to respective parameters of this function. The returned
+ *  value will be used to determine the fitness of each individual.
  */
 class PySelector : public BaseSelector
 {
@@ -405,7 +406,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
