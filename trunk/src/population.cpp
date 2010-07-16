@@ -2122,17 +2122,17 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 		}
 	}
 
-// 
-// unordered map does not appear to work here, perhaps std::pair<Allele, ULONG>
-// is not hashable.
-//
-//#if TR1_SUPPORT == 0
-typedef std::map<Allele, Allele> AlleleMap;
-typedef std::map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
-//#else
-//typedef std::tr1::unordered_map<Allele, Allele> AlleleMap;
-//typedef std::tr1::unordered_map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
-//#endif
+	//
+	// unordered map does not appear to work here, perhaps std::pair<Allele, ULONG>
+	// is not hashable.
+	//
+	//#if TR1_SUPPORT == 0
+	typedef std::map<Allele, Allele> AlleleMap;
+	typedef std::map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
+	//#else
+	//typedef std::tr1::unordered_map<Allele, Allele> AlleleMap;
+	//typedef std::tr1::unordered_map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
+	//#endif
 
 	AlleleMap alleleMap;
 	AlleleLocusMap alleleLocusMap;
@@ -2147,11 +2147,11 @@ typedef std::map<std::pair<Allele, ULONG>, Allele> AlleleLocusMap;
 			const vectoru & map = newAlleles.elems();
 			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
-                    if (static_cast<UINT>(*ptr) >= map.size()) {
-					    DBG_WARNIF(true,
-						    "Allele " + toStr(static_cast<UINT>(*ptr)) + " can not be recoded");
-                        continue;
-                    }
+					if (static_cast<UINT>(*ptr) >= map.size()) {
+						DBG_WARNIF(true,
+							"Allele " + toStr(static_cast<UINT>(*ptr)) + " can not be recoded");
+						continue;
+					}
 					*ptr = ToAllele(map[*ptr]);
 				}
 			} else {

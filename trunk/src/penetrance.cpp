@@ -57,7 +57,7 @@ bool BasePenetrance::apply(Population & pop) const
 
 			IndIterator ind = pop.indIterator(sp->subPop());
 			for (; ind.valid(); ++ind) {
-				double p = penet(&*ind, pop.gen());
+				double p = penet(&pop, &*ind);
 
 				if (savePene)
 					ind->setInfo(p, infoIdx);
@@ -77,9 +77,9 @@ bool BasePenetrance::apply(Population & pop) const
 }
 
 
-bool BasePenetrance::applyToIndividual(Individual * ind, ULONG gen)
+bool BasePenetrance::applyToIndividual(Individual * ind, Population * pop)
 {
-	double p = penet(ind, gen);
+	double p = penet(pop, ind);
 
 	if (infoSize() > 0)
 		ind->setInfo(p, infoField(0));
@@ -92,7 +92,7 @@ bool BasePenetrance::applyToIndividual(Individual * ind, ULONG gen)
 bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        Individual * dad, Individual * mom) const
 {
-	double p = penet(&*offspring, pop.gen());
+	double p = penet(&pop, &*offspring);
 
 	if (infoSize() > 0)
 		offspring->setInfo(p, infoField(0));
@@ -102,7 +102,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offsprin
 
 
 // this function is the same as MapSelector.
-double MapPenetrance::penet(Individual * ind, ULONG gen) const
+double MapPenetrance::penet(Population * pop, Individual * ind) const
 {
 	vectoru chromTypes;
 
@@ -201,7 +201,7 @@ string MaPenetrance::describe(bool format) const
 
 
 // this function is the same as MaSelector.
-double MaPenetrance::penet(Individual * ind, ULONG gen) const
+double MaPenetrance::penet(Population * pop, Individual * ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
@@ -246,28 +246,28 @@ double MaPenetrance::penet(Individual * ind, ULONG gen) const
 }
 
 
-double MlPenetrance::penet(Individual * ind, ULONG gen) const
+double MlPenetrance::penet(Population * pop, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		// x1 x2 x3 ...
 		double pen = 1;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
+			pen *= dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
 		return pen;
 	} else if (m_mode == ADDITIVE) {
 		// x1 + x2 + x3
 		double pen = 0;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen += dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
+			pen += dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
 		return pen > 1 ? 1 : pen;
 	} else if (m_mode == HETEROGENEITY) {
 		// 1-(1-x1)(1-x2)
 		double pen = 1;
 		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= 1 - dynamic_cast<const BasePenetrance *>(*s)->penet(ind, gen);
+			pen *= 1 - dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
 		return pen > 1 ? 0 : 1 - pen;
 	}
 
@@ -276,7 +276,7 @@ double MlPenetrance::penet(Individual * ind, ULONG gen) const
 
 
 // the same as PySelector
-double PyPenetrance::penet(Individual * ind, ULONG gen) const
+double PyPenetrance::penet(Population * pop, Individual * ind) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -288,11 +288,15 @@ double PyPenetrance::penet(Individual * ind, ULONG gen) const
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
-		else if (arg == "gen")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
-		else {
+		else if (arg == "gen") {
+			DBG_FAILIF(pop == NULL, ValueError, "No valid population reference is passed.");
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop->gen()));
+		} else if (arg == "pop") {
+			DBG_FAILIF(pop == NULL, ValueError, "No valid population reference is passed.");
+			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(pop)));
+		} else {
 			DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
-				"Only parameters 'ind', 'geno', 'gen', and names of information fields are "
+				"Only parameters 'ind', 'geno', 'gen', 'pop' and names of information fields are "
 				"acceptable in function " + m_func.name());
 			PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(ind->info(arg)));
 		}

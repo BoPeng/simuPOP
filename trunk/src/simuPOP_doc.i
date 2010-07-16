@@ -390,7 +390,7 @@ Usage:
 
 %feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BasePenetrance::penet(Individual *, ULONG gen) const;
+%ignore simuPOP::BasePenetrance::penet(Population *pop, Individual *) const;
 
 %feature("docstring") simuPOP::BasePenetrance::apply "
 
@@ -409,14 +409,14 @@ Usage:
 
 Usage:
 
-    x.applyToIndividual(ind, gen=0)
+    x.applyToIndividual(ind, pop=None)
 
 Details:
 
     Apply the penetrance operator to a single individual ind and set
-    his or her affection status. A generation number gen is needed if
-    the penetrance model is generation-dependent. This function
-    returns the affection status.
+    his or her affection status. A population reference can be passed
+    if the penetrance model depends on population properties such as
+    generation number. This function returns the affection status.
 
 "; 
 
@@ -594,7 +594,7 @@ Usage:
 
 %feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseSelector::indFitness(Individual *, ULONG gen) const;
+%ignore simuPOP::BaseSelector::indFitness(Population &pop, Individual *) const;
 
 %feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
 
@@ -3600,7 +3600,7 @@ Usage:
 
 %feature("docstring") simuPOP::MaPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MaPenetrance::penet(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MaPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
 
@@ -3648,7 +3648,7 @@ Usage:
 
 %feature("docstring") simuPOP::MapPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MapPenetrance::penet(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MapPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
@@ -3697,7 +3697,7 @@ Usage:
 
 %feature("docstring") simuPOP::MapSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MapSelector::indFitness(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MapSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
 
@@ -3753,7 +3753,7 @@ Usage:
 
 %feature("docstring") simuPOP::MaSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MaSelector::indFitness(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MaSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
@@ -4209,7 +4209,7 @@ Usage:
 
 %feature("docstring") simuPOP::MlPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MlPenetrance::penet(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MlPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
@@ -4259,7 +4259,7 @@ Usage:
 
 %feature("docstring") simuPOP::MlSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MlSelector::indFitness(Individual *ind, ULONG gen) const;
+%ignore simuPOP::MlSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
 
@@ -6127,16 +6127,18 @@ Details:
     all loci in a population (ALL_AVAIL)) to other values according to
     parameter alleles. This parameter can a list of new allele numbers
     for alleles 0, 1, 2, ... (allele x will be recoded to
-    newAlleles[x]) or a Python function, which should accept one or
-    both parameters allele (existing allele) and locus (index of
-    locus). The return value will become the new allele. Because
-    calling a function for each allele tends to be slow, use of this
-    parameter should be limited to special cases for small populations
-    (e.g. return random alleles to simulate genotyping error of a
-    sample). A new list of allele names could be specified for these
-    loci. Different sets of names could be specified for each locus if
-    a nested list of names are given. This function recode alleles for
-    all subpopulations in all ancestral generations.
+    newAlleles[x], x outside of the range of newAlleles will not be
+    recoded, although a warning will be given if DBG_WARNING is
+    defined) or a Python function, which should accept one or both
+    parameters allele (existing allele) and locus (index of locus).
+    The return value will become the new allele. This function is
+    intended to recode some alleles without listing all alleles in a
+    list. It will be called once for each existing allele so it is not
+    possible to recode an allele to different alleles. A new list of
+    allele names could be specified for these loci. Different sets of
+    names could be specified for each locus if a nested list of names
+    are given. This function recode alleles for all subpopulations in
+    all ancestral generations.
 
 "; 
 
@@ -7002,13 +7004,14 @@ Details:
     This penetrance operator assigns penetrance values by calling a
     user provided function. It accepts a list of loci (parameter
     loci), and a Python function func which should be defined with one
-    or more of parameters geno, gen, ind, or names of information
+    or more of parameters geno, gen, ind, pop, or names of information
     fields. When this operator is applied to a population, it passes
     genotypes at specified loci, generation number, a reference to an
-    individual, and values at specified information fields to
-    respective parameters of this function. The returned penetrance
-    values will be used to determine the affection status of each
-    individual.
+    individual, a reference to the current population (usually used to
+    retrieve population variables) and values at specified information
+    fields to respective parameters of this function. The returned
+    penetrance values will be used to determine the affection status
+    of each individual.
 
 "; 
 
@@ -7033,7 +7036,7 @@ Details:
 
 %feature("docstring") simuPOP::PyPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyPenetrance::penet(Individual *ind, ULONG gen) const;
+%ignore simuPOP::PyPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
 
@@ -7128,13 +7131,14 @@ Details:
     This selector assigns fitness values by calling a user provided
     function. It accepts a list of loci (parameter loci) and a Python
     function func which should be defined with one or more of
-    parameters geno, gen, ind, or names of information fields.
+    parameters geno, gen, ind, pop or names of information fields.
     Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
     When this operator is applied to a population, it passes genotypes
     at specified loci, generation number, a reference to an
-    individual, and values at specified information fields to
-    respective parameters of this function. The returned penetrance
-    values will be used to determine the fitness of each individual.
+    individual, a reference to the current population (usually used to
+    retrieve population variable), and values at specified information
+    fields to respective parameters of this function. The returned
+    value will be used to determine the fitness of each individual.
 
 "; 
 
@@ -7156,7 +7160,7 @@ Details:
 
 %feature("docstring") simuPOP::PySelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PySelector::indFitness(Individual *ind, ULONG gen) const;
+%ignore simuPOP::PySelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
 

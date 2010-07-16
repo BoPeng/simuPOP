@@ -104,7 +104,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
 	 */
-	virtual double penet(Individual *, ULONG gen) const
+	virtual double penet(Population * pop, Individual *) const
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
 		return 1.;
@@ -115,11 +115,11 @@ public:
 	virtual bool apply(Population & pop) const;
 
 	/** Apply the penetrance operator to a single individual \e ind and set his
-	 *  or her affection status. A generation number \e gen is needed if the
-	 *  penetrance model is generation-dependent. This function returns the
-	 *  affection status.
+	 *  or her affection status. A population reference can be passed if the
+	 *  penetrance model depends on population properties such as generation
+	 *  number. This function returns the affection status.
 	 */
-	virtual bool applyToIndividual(Individual * ind, ULONG gen = 0);
+	virtual bool applyToIndividual(Individual * ind, Population * pop = NULL);
 
 	/// set penetrance to all individuals
 	/// CPPONLY
@@ -180,7 +180,7 @@ public:
 
 	/// currently assuming diploid
 	/// CPPONLY
-	virtual double penet(Individual * ind, ULONG gen) const;
+	virtual double penet(Population * pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -254,7 +254,7 @@ public:
 	/** CPPONLY
 	 * currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen) const;
+	virtual double penet(Population * pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const;
@@ -321,7 +321,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen) const;
+	virtual double penet(Population * pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -341,12 +341,13 @@ private:
 /** This penetrance operator assigns penetrance values by calling a user
  *  provided function. It accepts a list of loci (parameter \c loci),
  *  and a Python function \c func which should be defined with one or more of
- *  parameters \c geno, \c gen, \c ind, or names of information fields. When
- *  this operator is applied to a population, it passes genotypes at specified
- *  loci, generation number, a reference to an individual, and values at
- *  specified information fields to respective parameters of this function.
- *  The returned penetrance values will be used to determine the affection
- *  status of each individual.
+ *  parameters \c geno, \c gen, \c ind, \c pop, or names of information fields.
+ *  When this operator is applied to a population, it passes genotypes at
+ *  specified loci, generation number, a reference to an individual, a
+ *  reference to the current population (usually used to retrieve population
+ *  variables) and values at specified information fields to respective
+ *  parameters of this function. The returned penetrance values will be used to
+ *  determine the affection status of each individual.
  */
 class PyPenetrance : public BasePenetrance
 {
@@ -381,7 +382,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Individual * ind, ULONG gen) const;
+	virtual double penet(Population * pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
