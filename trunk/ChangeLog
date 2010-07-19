@@ -21,6 +21,8 @@ Bugs:
         dictionary. This seemed to be a logic change but it turned out that invalid
         default value cannot always be avoided (e.g. a valid filename that cannot have
         a valid default value). This version allows invalid default value again.
+  - Fix a bug that prevents types.TupleType and types.ListType of being used alone in
+		allowedTypes of simuOpt.
 
 Regression (minor):
   - User provided function in function Population.recodeAlleles will be called once

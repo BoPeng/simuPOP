@@ -1308,9 +1308,13 @@ class Params:
         # allow the input of single value for allowed types.
         for key in kwargs:
             if key in allowed_keys:
-                if key == 'allowedTypes' and not hasattr(kwargs[key], '__iter__'):
+                # I used not hasattr(kwargs[key], '__iter__') to test single element but
+                # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
+                # solves this problem.
+                if key == 'allowedTypes' and isinstance(kwargs[key], types.ObjectType):
                     opt[key] = [kwargs[key]]
                 else:
+                    # must be a list.
                     opt[key] = kwargs[key]
                 if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                     print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
