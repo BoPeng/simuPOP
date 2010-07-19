@@ -88,7 +88,7 @@ bool PyEval::apply(Population & pop) const
 }
 
 
-string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
+string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 {
 	vectorstr infos = ind->infoFields();
 
@@ -122,8 +122,9 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
 	m_expr.setLocalDict(dict);
 	// evaluate
 	string res = m_expr.valueAsString();
-	// update
-	if (update) {
+	// If some statements have been evaluated, the value of field might have been changed
+	// update the value of individual.
+	if (!m_expr.stmts().empty()) {
 		for (UINT idx = 0; idx < infos.size(); ++idx) {
 			double info = 0;
 			string name = infos[idx];
@@ -160,8 +161,6 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict, bool update) const
 
 bool InfoEval::apply(Population & pop) const
 {
-	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
-
 	subPopList subPops = applicableSubPops(pop);
 
 	subPopList::const_iterator sp = subPops.begin();
@@ -171,7 +170,7 @@ bool InfoEval::apply(Population & pop) const
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
-			string res = evalInfo(&*ind, dict, false) ;
+			string res = evalInfo(&*ind, pop.dict()) ;
 			if (!this->noOutput()) {
 				ostream & out = this->getOstream(pop.dict());
 				out << res;
@@ -180,9 +179,6 @@ bool InfoEval::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-	if (!m_usePopVars) {
-		Py_DECREF(dict);
-	}
 	return true;
 }
 
@@ -190,17 +186,12 @@ bool InfoEval::apply(Population & pop) const
 bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
-	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
-
-	string res = evalInfo(&*offspring, dict, false);
+	string res = evalInfo(&*offspring, pop.dict());
 
 	if (!this->noOutput()) {
 		ostream & out = this->getOstream(pop.dict());
 		out << res;
 		this->closeOstream();
-	}
-	if (!m_usePopVars) {
-		Py_DECREF(dict);
 	}
 	return true;
 }
@@ -214,17 +205,13 @@ string InfoExec::describe(bool format) const
 
 bool InfoExec::apply(Population & pop) const
 {
-	PyObject * dict = NULL;
-
-	if (m_simpleStmt.operation() == simpleStmt::NoOperation)
-		dict = m_usePopVars ? pop.dict() : PyDict_New();
-
 	subPopList subPops = applicableSubPops(pop);
 
 	simpleStmt::OperationType oType = m_simpleStmt.operation();
 	string oVar = m_simpleStmt.var();
 	double oValue = m_simpleStmt.value();
 	UINT oVarIdx = 0;
+
 	if (oType != simpleStmt::NoOperation)
 		oVarIdx = pop.infoIdx(oVar);
 
@@ -236,7 +223,7 @@ bool InfoExec::apply(Population & pop) const
 		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case simpleStmt::NoOperation:
-				evalInfo(&*ind, dict, true);
+				evalInfo(&*ind, pop.dict());
 				break;
 			case simpleStmt::Assignment:
 				ind->setInfo(oValue, oVarIdx);
@@ -265,9 +252,6 @@ bool InfoExec::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
-	if (dict && !m_usePopVars) {
-		Py_DECREF(dict);
-	}
 	return true;
 }
 
@@ -275,12 +259,7 @@ bool InfoExec::apply(Population & pop) const
 bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
-	PyObject * dict = m_usePopVars ? pop.dict() : PyDict_New();
-
-	evalInfo(&*offspring, dict, true);
-	if (!m_usePopVars) {
-		Py_DECREF(dict);
-	}
+	evalInfo(&*offspring, pop.dict());
 	return true;
 }
 

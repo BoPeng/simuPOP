@@ -2842,15 +2842,9 @@ Details:
     level, in a population's local namespace, operator InfoEval works
     at the individual level, working with individual information
     fields. When this operator is applied to a population, information
-    fields of eligible individuals are put into either a temporary
-    dictionary or in the local namespace of the population. A Python
-    expression is then evaluated for each individual. The result is
-    written to an output.
-
-Note:
-
-    Unlike operator ``InfoExec``, individual information fields are
-    not updated after this operator is applied to a population.
+    fields of eligible individuals are put into the local namespace of
+    the population. A Python expression is then evaluated for each
+    individual. The result is written to an output.
 
 "; 
 
@@ -2865,29 +2859,20 @@ Usage:
 Details:
 
     Create an operator that evaluate a Python expression expr using
-    individual information fields as variables. For each eligible
-    individual (individuals in (virtual) subpopulations specified by
-    parameter subPops, default to all individuals), its information
-    fields are copied either to a temporary namespace (default) or the
-    population's local namespace (if usePopVars is True). If exposeInd
-    is not empty, the individual itself will be exposed in this
-    namespace as a variable with name specified by exposeInd. In the
-    usePopVars=True case, any population variable whose name matches
-    an information field or exposeInd will be silently overridden.  A
-    Python expression (expr) is evaluated for each individual. The
-    results are converted to strings and are written to an output
-    specified by parameter output. Optionally, a statement (or several
-    statements separated by newline) can be executed before expr is
-    evaluated.  This operator is by default applied post-mating. If it
+    individual information fields and population variables as
+    variables. If exposeInd is not empty, the individual itself will
+    be exposed in the population's local namespace as a variable with
+    name specified by exposeInd.  A Python expression (expr) is
+    evaluated for each individual. The results are converted to
+    strings and are written to an output specified by parameter
+    output. Optionally, a statement (or several statements separated
+    by newline) can be executed before expr is evaluated. The
+    evaluation of this statement may change the value of information
+    fields.  This operator is by default applied post-mating. If it
     stage is set to DuringMating, it will be applied to all offspring,
-    regardless of subPops settings.
-
-Note:
-
-    Although expr is evaluated in individual or population level local
-    namespaces, it can also access a global namespace which is the
-    module namespace of your script. However, using module level
-    variables and functions in this operator is discouraged.
+    regardless of subPops settings.  Parameter usePopVars is obsolete
+    because population variables are always usable in such
+    expressions.
 
 "; 
 
@@ -2913,14 +2898,9 @@ Details:
 
     Operator InfoExec is similar to InfoEval in that it works at the
     individual level, using individual information fields as
-    variables. The difference is that instead of evaluating an
-    expression and outputing its result, this operator execute one or
-    more statements and update individual information fields from the
-    namespace after the specified statements are execuated. This
-    implies that you have to set new values to information fields
-    through variables (e.g. \"a = 5\"), not through functions (e.g.
-    \"ind.setInfo(5, 'a')\" with individuals exposed as \"ind\" will not
-    work).
+    variables. This is usually used to change the value of information
+    fields. For example, \"b=a*2\" will set the value of information
+    field b to a*a for all individuals.
 
 "; 
 
@@ -2935,33 +2915,22 @@ Usage:
 Details:
 
     Create an operator that executes Python statements stmts using
-    individual information fields as variables. For each eligible
-    individual (individuals in (virtual) subpopulations specified by
-    parameter subPops, default to all individuals), its information
-    fields are copied either to a temporary namespace (default) or the
-    population's local namespace (if usePopVars is True). If exposeInd
-    is not empty, the individual itself will be exposed in this
-    namespace as a variable with name specified by exposeInd. In the
-    usePopVars=True case, any population variable whose name matches
-    an information field or exposeInd will be silently overridden.
-    One or more python statements (stmts) are executed for each
-    individual. Information fields of these individuals are then
-    updated from the corresponding variables. For example, a=1 will
-    set information field a of all individuals to 1, a=b will set
-    information field a of all individuals to information field b or a
-    population variable b if b is not an information field but a
-    population variable (needs usePopVars=True), and a=ind.sex() will
-    set information field a of all individuals to its sex (needs
-    exposeInd='ind'.  This operator is by default applied post-mating.
-    If it stage is set to DuringMating, it will be applied to all
-    offspring, regardless of subPops settings.
-
-Note:
-
-    Although stmts are executed in individual or population level
-    local namespaces, they also have access to a global namespace
-    which is the module namespace of your script. However, using
-    module level variables and functions in stmts is discouraged.
+    individual information fields and population variables as
+    variables. If exposeInd is not empty, the individual itself will
+    be exposed in the population's local namespace as a variable with
+    name specified by exposeInd.  One or more python statements
+    (stmts) are executed for each individual. Information fields of
+    these individuals are then updated from the corresponding
+    variables. For example, a=1 will set information field a of all
+    individuals to 1, a=b will set information field a of all
+    individuals to information field b or a population variable b if b
+    is not an information field but a population variable, and
+    a=ind.sex() will set information field a of all individuals to its
+    sex (needs exposeInd='ind'.  This operator is by default applied
+    post-mating. If it stage is set to DuringMating, it will be
+    applied to all offspring, regardless of subPops settings.
+    Parameter usePopVars is obsolete because population variables will
+    always be usable.
 
 "; 
 
@@ -6607,7 +6576,7 @@ Details:
     Although multiple statements can be executed, it is recommended
     that you use this operator to execute short statements and use
     PyOperator for more complex once. Note that exposed population
-    variable will be removed after the statements are executed.
+    variables will be removed after the statements are executed.
 
 "; 
 

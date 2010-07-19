@@ -129,7 +129,7 @@ public:
 	 *  its local namespace as a variable named by \e exposePop. Although
 	 *  multiple statements can be executed, it is recommended that you use
 	 *  this operator to execute short statements and use \c PyOperator for
-	 *  more complex once. Note that exposed population variable will be
+	 *  more complex once. Note that exposed population variables will be
 	 *  removed after the statements are executed.
 	 */
 	PyExec(const string & stmts = string(), const string & exposePop = string(),
@@ -163,49 +163,41 @@ public:
  *  in a population's local namespace, operator \c InfoEval works at the
  *  individual level, working with individual information fields. When this
  *  operator is applied to a population, information fields of eligible
- *  individuals are put into either a temporary dictionary or in the local
- *  namespace of the population. A Python expression is then evaluated for
- *  each individual. The result is written to an output.
- *
- *  \note Unlike operator ``InfoExec``, individual information fields are not
- *  updated after this operator is applied to a population.
+ *  individuals are put into the local namespace of the population. A
+ *  Python expression is then evaluated for each individual. The result is
+ *  written to an output.
  */
 class InfoEval : public BaseOperator
 {
 public:
 	/** Create an operator that evaluate a Python expression \e expr using
-	 *  individual information fields as variables. For each eligible
-	 *  individual (individuals in (virtual) subpopulations specified by
-	 *  parameter \e subPops, default to all individuals), its information
-	 *  fields are copied either to a temporary namespace (default) or the
-	 *  population's local namespace (if \e usePopVars is \c True). If
-	 *  \e exposeInd is not empty, the individual itself will be exposed in
-	 *  this namespace as a variable with name specified by \e exposeInd. In
-	 *  the <tt>usePopVars=True</tt> case, any population variable whose name
-	 *  matches an information field or \e exposeInd will be silently
-	 *  overridden.
+	 *  individual information fields and population variables as variables.
+	 *  If \e exposeInd is not empty, the individual itself will be exposed in
+	 *  the population's local namespace as a variable with name specified by
+	 *  \e exposeInd.
 	 *
 	 *  A Python expression (\e expr) is evaluated for each individual. The
 	 *  results are converted to strings and are written to an output specified
 	 *  by parameter \e output. Optionally, a statement (or several statements
-	 *  separated by newline) can be executed before \e expr is evaluated.
+	 *  separated by newline) can be executed before \e expr is evaluated. The
+	 *  evaluation of this statement may change the value of information
+	 *  fields.
 	 *
 	 *  This operator is by default applied post-mating. If it stage is set to
 	 *  \c DuringMating, it will be applied to all offspring, regardless of
 	 *  \c subPops settings.
 	 *
-	 *  \note Although \e expr is evaluated in individual or population level
-	 *  local namespaces, it can also access a global namespace which is
-	 *  the module namespace of your script. However, using module level
-	 *  variables and functions in this operator is discouraged.
+	 *  Parameter \e usePopVars is obsolete because population variables are
+	 *  always usable in such expressions.
 	 */
 	InfoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
 		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd)
+		m_expr(expr, stmts), m_exposeInd(exposeInd)
 	{
+		DBG_WARNIF(debug(DBG_COMPATIBILITY) && usePopVars, "WARNING: parameter usePopVars is obsolete.");
 	}
 
 
@@ -232,41 +224,28 @@ public:
 	string describe(bool format = true) const;
 
 protected:
-	string evalInfo(Individual *, PyObject * dict, bool update) const;
+	string evalInfo(Individual *, PyObject * dict) const;
 
 	/// expression to evaluate
 	const Expression m_expr;
-
-	const bool m_usePopVars;
 
 	const string m_exposeInd;
 };
 
 /** Operator \c InfoExec is similar to \c InfoEval in that it works at the
- *  individual level, using individual information fields as variables. The
- *  difference is that instead of evaluating an expression and outputing its
- *  result, this operator execute one or more statements and <bf>update
- *  individual information fields</bf> from the namespace after the
- *  specified statements are execuated. This implies that you have to set new
- *  values to information fields through variables (e.g. <tt>"a = 5"</tt>),
- *  not through functions (e.g. <tt>"ind.setInfo(5, 'a')"</tt> with individuals
- *  exposed as \c "ind" will not work).
- *
+ *  individual level, using individual information fields as variables.
+ *  This is usually used to change the value of information fields. For
+ *  example, <tt>"b=a*2"</tt> will set the value of information field \c b
+ *  to <tt>a*a</tt> for all individuals.
  */
 class InfoExec : public InfoEval
 {
 public:
 	/** Create an operator that executes Python statements \e stmts using
-	 *  individual information fields as variables. For each eligible
-	 *  individual (individuals in (virtual) subpopulations specified by
-	 *  parameter \e subPops, default to all individuals), its information
-	 *  fields are copied either to a temporary namespace (default) or the
-	 *  population's local namespace (if \e usePopVars is \c True). If
-	 *  \e exposeInd is not empty, the individual itself will be exposed in
-	 *  this namespace as a variable with name specified by \e exposeInd. In
-	 *  the <tt>usePopVars=True</tt> case, any population variable whose name
-	 *  matches an information field or \e exposeInd will be silently
-	 *  overridden.
+	 *  individual information fields and population variables as variables.
+	 *  If \e exposeInd is not empty, the individual itself will be exposed in
+	 *  the population's local namespace as a variable with name specified by
+	 *  \e exposeInd.
 	 *
 	 *  One or more python statements (\e stmts) are executed for each
 	 *  individual. Information fields of these individuals are then updated
@@ -274,18 +253,16 @@ public:
 	 *  information field \e a of all individuals to \c 1, <tt>a=b</tt> will
 	 *  set information field \e a of all individuals to information field
 	 *  \c b or a population variable \c b if \c b is not an information field
-	 *  but a population variable (needs <tt>usePopVars=True</tt>), and
-	 *  <tt>a=ind.sex()</tt> will set information field \e a of all individuals
-	 *  to its sex (needs <tt>exposeInd='ind'</tt>.
+	 *  but a population variable, and <tt>a=ind.sex()</tt> will set
+	 *  information field \e a of all individuals to its sex (needs
+	 *  <tt>exposeInd='ind'</tt>.
 	 *
 	 *  This operator is by default applied post-mating. If it stage is set to
 	 *  \c DuringMating, it will be applied to all offspring, regardless of
 	 *  \c subPops settings.
 	 *
-	 *  \note Although \e stmts are executed in individual or population level
-	 *  local namespaces, they also have access to a global namespace which is
-	 *  the module namespace of your script. However, using module level
-	 *  variables and functions in \e stmts is discouraged.
+	 *  Parameter \e usePopVars is obsolete because population variables will
+	 *  always be usable.
 	 */
 	InfoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
