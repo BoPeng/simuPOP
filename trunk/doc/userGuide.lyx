@@ -18011,6 +18011,43 @@ stat
 \end_layout
 
 \begin_layout Standard
+If you would like to calculate some summary statistics that involves individual
+ information fields but cannot be calculated using parameters such as minOfInfo,
+ you can try to use operators such as InfoExec to process individuals one
+ by one and collect result.
+ For example, you can use operators 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+PyExec('s=0')
+\end_layout
+
+\begin_layout Plain Layout
+InfoExec('s+=x*x')
+\end_layout
+
+\begin_layout Plain Layout
+
+PyEval('s')
+\end_layout
+
+\end_inset
+
+ to calculate and report 
+\begin_inset Formula $s=\sum x^{2}$
+\end_inset
+
+ where x is an information field during evolution.
+ This makes use of the fact that operator 
+\family typewriter
+InfoExec
+\family default
+ goes through all individuals and evaluate the statement.
+\end_layout
+
+\begin_layout Standard
 If performance becomes a problem, you might want to have a look at the source
  code of simuPOP and implement your statistics at the C++ level.
  If you believe that your statistics are popular enough, please send your
