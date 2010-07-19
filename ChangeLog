@@ -30,6 +30,9 @@ Regression (minor):
         the same allele.
   - The second parameter of function applyToIndividual, if specified, should now be a
 		population reference.
+  - Parameter usePopVars is not obsolete in operators InfoEval and InfoExec.
+  - Statements specified in operator InfoEval will also change values of individual
+		information fields.
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.
