@@ -195,7 +195,7 @@ public:
 		const stringFunc & output = ">", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_expr(expr, stmts), m_exposeInd(exposeInd)
+		m_expr(expr, stmts), m_exposeInd(exposeInd), m_lastValues()
 	{
 		DBG_WARNIF(debug(DBG_COMPATIBILITY) && usePopVars, "WARNING: parameter usePopVars is obsolete.");
 	}
@@ -224,12 +224,17 @@ public:
 	string describe(bool format = true) const;
 
 protected:
-	string evalInfo(Individual *, PyObject * dict) const;
+	string evalInfo(Individual * ind, PyObject * dict) const;
+	void clearVars(Population & pop) const;
 
 	/// expression to evaluate
 	const Expression m_expr;
 
 	const string m_exposeInd;
+	/// cache last values to speed up evaluation, more specifically,
+	/// if the next individual holds the same value at an information field
+	/// existing variable will not be set again.
+	mutable vectorf m_lastValues;
 };
 
 /** Operator \c InfoExec is similar to \c InfoEval in that it works at the

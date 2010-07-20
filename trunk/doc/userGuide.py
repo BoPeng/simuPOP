@@ -2218,7 +2218,7 @@ sim.infoEval(pop, 'a', subPops=[(0, 0)]);print
 sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
 # use sim.population variables
 pop.dvars().b = 5
-sim.infoEval(pop, '"%d " % (a+b)', usePopVars=True);print
+sim.infoEval(pop, '"%d " % (a+b)');print
 #end_file
 
 #begin_file log/InfoExec.py
@@ -2231,6 +2231,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(100, loci=1, infoFields=['a', 'b', 'c'])
+sim.initSex(pop)
 sim.initGenotype(pop, freq=[0.2, 0.8])
 sim.infoExec(pop, 'a=1')
 print pop.indInfo('a')[:10]
@@ -2239,8 +2240,11 @@ print pop.indInfo('b')[:10]
 sim.infoExec(pop, 'c=a+b')
 print pop.indInfo('c')[:10]
 pop.dvars().d = 5
-sim.infoExec(pop, 'c+=d', usePopVars=True)
+sim.infoExec(pop, 'c+=d')
 print pop.indInfo('c')[:10]
+# the operator can update population variable as well
+sim.infoExec(pop, 'd+=c*c')
+print pop.dvars().d
 #end_file
 
 #begin_file log/migrateByProb.py
