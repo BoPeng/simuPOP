@@ -149,17 +149,27 @@ class InfSitesMutator : public BaseOperator
 public:
 	/** This operator accepts a list of ranges which is the 'real range' of
 	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
-	 *  will be recorded to the population (instead of alleles). If an
-	 *  \e output is given, mutants will be outputted in the format of
-	 *  gen mutant ind
+	 *  will be recorded to the population (instead of alleles). By default,
+	 *  this mutator assumes an infinite-sites mutation model so that mutations
+	 *  can happen only at a new locus. Mutations happen at an existing locus,
+	 *  even if a previous mutant has been lost so that there is no existing
+	 *  mutant at this locus, will be ignored. Alternatively, if \e model=2,
+	 *  all mutations are allowed and if a mutant (allele 1) is mutated, it
+	 *  will be mutated to allele 0 (back mutation). If an \e output is given,
+	 *  mutants will be outputted in the format of "gen mutant ind type" where
+	 *  type is 0 for forward (0->1), 1 for backward (1->0) and 2 for invalid
+	 *  (ignored) mutations. The first mode has the advantage that all mutants
+	 *  in the simulated population can be traced to a single mutation event.
+	 *  If the regions are reasonably wide and mutation rates are low, these
+	 *  two mutation models should yield similar results.
 	 */
-	InfSitesMutator(double rate, const intMatrix & ranges,
+	InfSitesMutator(double rate, const intMatrix & ranges, int model = 1,
 		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_rate(rate), m_ranges(ranges)
+		m_rate(rate), m_ranges(ranges), m_model(model), m_mutants()
 	{
 		const matrixi & rngs = m_ranges.elems();
 
@@ -204,10 +214,14 @@ public:
 
 
 private:
-	double m_rate;
+	const double m_rate;
 
-	intMatrix m_ranges;
+	const intMatrix m_ranges;
 
+	const int m_model;
+
+	/// used to record mutated loci
+	mutable vectoru m_mutants;
 };
 
 
