@@ -29,7 +29,7 @@
 namespace simuPOP {
 
 
-double InfSitesSelector::indFitness(Individual * ind, ULONG gen) const
+double InfSitesSelector::indFitness(Population & pop, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE)
 		return randomSelMulFitness(ind->genoBegin(), ind->genoEnd());
