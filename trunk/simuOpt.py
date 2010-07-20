@@ -1311,7 +1311,7 @@ class Params:
                 # I used not hasattr(kwargs[key], '__iter__') to test single element but
                 # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
                 # solves this problem.
-                if key == 'allowedTypes' and isinstance(kwargs[key], types.ObjectType):
+                if key == 'allowedTypes' and isinstance(kwargs[key], types.TypeType):
                     opt[key] = [kwargs[key]]
                 else:
                     # must be a list.
