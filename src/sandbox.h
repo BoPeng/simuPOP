@@ -99,7 +99,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Individual * ind, ULONG gen) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
