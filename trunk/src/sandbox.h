@@ -39,6 +39,8 @@
 #  include <tr1/unordered_map>
 #endif
 
+#include <set>
+
 namespace simuPOP {
 
 /** This selector assumes that alleles are mutant locations in the mutational
@@ -221,7 +223,7 @@ private:
 	const int m_model;
 
 	/// used to record mutated loci
-	mutable vectoru m_mutants;
+	mutable std::set<ULONG> m_mutants;
 };
 
 
