@@ -95,18 +95,25 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];
 		double val = ind->info(idx);
-		PyObject * obj = PyFloat_FromDouble(val);
-		int err = PyDict_SetItemString(dict, name.c_str(), obj);
-		Py_DECREF(obj);
-		if (err != 0) {
+		// if the value is unchanged, do not set new value
+		if (m_lastValues.size() <= idx || m_lastValues[idx] != val) {
+			if (m_lastValues.size() <= idx)
+				m_lastValues.push_back(val);
+			else
+				m_lastValues[idx] = val;
+			PyObject * obj = PyFloat_FromDouble(val);
+			int err = PyDict_SetItemString(dict, name.c_str(), obj);
+			Py_DECREF(obj);
+			if (err != 0) {
 #ifndef OPTIMIZED
-			if (debug(DBG_GENERAL)) {
-				PyErr_Print();
-				PyErr_Clear();
-			}
+				if (debug(DBG_GENERAL)) {
+					PyErr_Print();
+					PyErr_Clear();
+				}
 #endif
-			throw RuntimeError("Setting information fields as variables failed");
-		}
+				throw RuntimeError("Setting information fields as variables failed");
+			}
+		} 
 	}
 
 	if (!m_exposeInd.empty()) {
@@ -132,17 +139,23 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 				PyObject * var = PyDict_GetItemString(dict, name.c_str());
 				PyObj_As_Double(var, info);
 				ind->setInfo(info, idx);
+				m_lastValues[idx] = info;
 			} catch (...) {
 				DBG_WARNIF(true, "Failed to update information field " + name +
 					" from a dictionary of information fields.");
 			}
 		}
 	}
+	return res;
+}
 
+void InfoEval::clearVars(Population & pop) const
+{
+	vectorstr infos = pop.infoFields();
 	//
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];
-		int err = PyDict_DelItemString(dict, name.c_str());
+		int err = PyDict_DelItemString(pop.dict(), name.c_str());
 		if (err != 0) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -154,8 +167,8 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 		}
 	}
 	if (!m_exposeInd.empty())
-		PyDict_DelItemString(dict, m_exposeInd.c_str());
-	return res;
+		PyDict_DelItemString(pop.dict(), m_exposeInd.c_str());
+	m_lastValues.clear();
 }
 
 
@@ -179,6 +192,7 @@ bool InfoEval::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
+	clearVars(pop);
 	return true;
 }
 
@@ -193,6 +207,7 @@ bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
 		out << res;
 		this->closeOstream();
 	}
+	clearVars(pop);
 	return true;
 }
 
@@ -221,7 +236,7 @@ bool InfoExec::apply(Population & pop) const
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
-			switch (m_simpleStmt.operation()) {
+			switch (oType) {
 			case simpleStmt::NoOperation:
 				evalInfo(&*ind, pop.dict());
 				break;
@@ -252,6 +267,8 @@ bool InfoExec::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
+	if (oType == simpleStmt::NoOperation)
+		clearVars(pop);
 	return true;
 }
 
@@ -260,6 +277,7 @@ bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	evalInfo(&*offspring, pop.dict());
+	clearVars(pop);
 	return true;
 }
 
