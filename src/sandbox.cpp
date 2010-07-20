@@ -182,13 +182,13 @@ bool InfSitesMutator::apply(Population & pop) const
 
 				if (m_model == 1) {
 					// under an infinite-site model
-					if (std::find(m_mutants.begin(), m_mutants.end(), mutLoc) != m_mutants.end()) {
+					if (m_mutants.find(mutLoc) != m_mutants.end()) {
 						// hit an exiting locus, return
 						if (out)
 							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
 						continue;
 					} else
-						m_mutants.push_back(mutLoc);
+						m_mutants.insert(mutLoc);
 				}
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
