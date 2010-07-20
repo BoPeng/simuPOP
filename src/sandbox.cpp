@@ -180,9 +180,16 @@ bool InfSitesMutator::apply(Population & pop) const
 				if (ch > 0)
 					mutLoc -= width[ch - 1];
 
-				if (out)
-					(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << '\n';
-
+				if (m_model == 1) {
+					// under an infinite-site model
+					if (std::find(m_mutants.begin(), m_mutants.end(), mutLoc) != m_mutants.end()) {
+						// hit an exiting locus, return
+						if (out)
+							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
+						continue;
+					} else
+						m_mutants.push_back(mutLoc);
+				}
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
 				if (*(geno + nLoci - 1) != 0) {
@@ -206,6 +213,9 @@ bool InfSitesMutator::apply(Population & pop) const
 						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
 							"Location can not be saved because it exceed max allowed allele.");
 						*(geno + j) = ToAllele(mutLoc);
+						if (out)
+							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
+
 						break;
 					} else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
 						// back mutation
@@ -216,6 +226,8 @@ bool InfSitesMutator::apply(Population & pop) const
 							if (*(geno + k) == 0) {
 								*(geno + j) = *(geno + k - 1);
 								*(geno + k - 1) = 0;
+								if (out)
+									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
 								break;
 							}
 						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
