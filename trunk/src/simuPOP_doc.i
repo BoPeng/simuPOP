@@ -3169,7 +3169,7 @@ Usage:
 
 %feature("docstring") simuPOP::InfSitesSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::InfSitesSelector::indFitness(Individual *ind, ULONG gen) const;
+%ignore simuPOP::InfSitesSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::InfSitesSelector::describe "Obsolete or undocumented function."
 
