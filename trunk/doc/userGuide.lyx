@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -15407,7 +15407,86 @@ Frequency dependent or dynamic selection pressure *
 If individual fitness depends on individual information fields and/or population
  variables, you will have to calculate individual fitness using expressions
  or functions.
- 
+ In order to access individual information fields and population variable
+ and calculate individual fitness, you have the option to 
+\end_layout
+
+\begin_layout Itemize
+Use a 
+\family typewriter
+PySelector
+\family default
+ and pass genotype, values of information fields, references to individual
+ and population to a user-provided function, which returns fitness value
+ for each individual.
+\end_layout
+
+\begin_layout Itemize
+Use of 
+\family typewriter
+PyOperator
+\family default
+ to obtain information of the population (e.g.
+ variables) and all individuals.
+ Determine individual fitness and set information field 
+\family typewriter
+fitness
+\family default
+ of all individuals.
+\end_layout
+
+\begin_layout Itemize
+Use an operator 
+\family typewriter
+InfoExec
+\family default
+ to calculate individual fitness using expressions.
+ This method can be more efficient than others because simuPOP does not
+ have to call a user-provided function.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "freqDependentSelection"
+
+\end_inset
+
+ demonstrates an example where the fitness values of individuals are calculated
+ from allele frequencies calculated using a 
+\family typewriter
+Stat
+\family default
+ operator.
+ Because the fitness values of individuals are 1, 
+\begin_inset Formula $1-(p-0.5)*0.1$
+\end_inset
+
+, 
+\begin_inset Formula $1-(p-0.5)*0.2$
+\end_inset
+
+ for genotype 00, 01 and 11 where 
+\begin_inset Formula $p$
+\end_inset
+
+ is the frequency of allele 1, this allele will be under purifying selection
+ if its frequency is over 0.5, and positive selection if its frequency is
+ less than 0.5.
+ Consequently, the frequency of this allele will oscillate around 0.5 during
+ evolution, as shown in the result of this example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/freqDependentSelector.log"
+lstparams "caption={Frequency dependent selection},label={freqDependentSelection}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

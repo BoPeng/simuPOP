@@ -113,7 +113,7 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 #endif
 				throw RuntimeError("Setting information fields as variables failed");
 			}
-		} 
+		}
 	}
 
 	if (!m_exposeInd.empty()) {
@@ -149,9 +149,11 @@ string InfoEval::evalInfo(Individual * ind, PyObject * dict) const
 	return res;
 }
 
+
 void InfoEval::clearVars(Population & pop) const
 {
 	vectorstr infos = pop.infoFields();
+
 	//
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];

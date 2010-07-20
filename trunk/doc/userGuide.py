@@ -4000,6 +4000,38 @@ pop.evolve(
 #end_file
 
 
+#begin_file log/freqDependentSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population(size=2000, loci=1, infoFields='fitness')
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[.5, .5])
+    ],
+    preOps=[
+        sim.Stat(alleleFreq=0),
+        sim.InfoExec('''fitness = {
+            0: 1,
+            1: 1 - (alleleFreq[0][1] - 0.5)*0.1, 
+            2: 1 - (alleleFreq[0][1] - 0.5)*0.2}[ind.allele(0,0)+ind.allele(0,1)]''',
+            exposeInd='ind'),
+        sim.Stat(meanOfInfo='fitness'),
+        sim.PyEval(r"'alleleFreq=%.3f, mean fitness=%.5f\n' % (alleleFreq[0][1], meanOfInfo['fitness'])",
+            step=25),
+    ],
+    matingScheme=sim.RandomMating(),
+    gen=151
+)
+#end_file
+
+
 #begin_file log/vspSelector.py
 #begin_ignore
 import simuOpt

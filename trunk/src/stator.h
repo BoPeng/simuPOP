@@ -225,6 +225,7 @@ public:
 
 protected:
 	string evalInfo(Individual * ind, PyObject * dict) const;
+
 	void clearVars(Population & pop) const;
 
 	/// expression to evaluate
