@@ -8591,7 +8591,7 @@ Details:
     subpopulations will be set to the following variables:
     *   numOfAffected (default): Total number of affected individuals
     in all or specified (virtual) subpopulations.
-    *   numOfAffected (default): Total number of unaffected
+    *   numOfUnaffected (default): Total number of unaffected
     individuals in all or specified (virtual) subpopulations.
     *   propOfAffected: Proportion of affected individuals.
     *   propOfUnaffected: Proportion of unaffected individuals.
