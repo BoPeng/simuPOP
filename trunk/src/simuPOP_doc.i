@@ -3078,17 +3078,16 @@ Details:
     mutants will be recorded to the population (instead of alleles).
     By default, this mutator assumes an infinite-sites mutation model
     so that mutations can happen only at a new locus. Mutations happen
-    at an existing locus, even if a previous mutant has been lost so
-    that there is no existing mutant at this locus, will be ignored.
-    Alternatively, if model=2, all mutations are allowed and if a
-    mutant (allele 1) is mutated, it will be mutated to allele 0 (back
-    mutation). If an output is given, mutants will be outputted in the
-    format of \"gen mutant ind type\" where type is 0 for forward
-    (0->1), 1 for backward (1->0) and 2 for invalid (ignored)
-    mutations. The first mode has the advantage that all mutants in
-    the simulated population can be traced to a single mutation event.
-    If the regions are reasonably wide and mutation rates are low,
-    these two mutation models should yield similar results.
+    at a locus with existing mutant will be ignored. Alternatively, if
+    model=2, all mutations are allowed and if a mutant (allele 1) is
+    mutated, it will be mutated to allele 0 (back mutation). If an
+    output is given, mutants will be outputted in the format of \"gen
+    mutant ind type\" where type is 0 for forward (0->1), 1 for
+    backward (1->0) and 2 for invalid (ignored) mutations. The first
+    mode has the advantage that all mutants in the simulated
+    population can be traced to a single mutation event. If the
+    regions are reasonably wide and mutation rates are low, these two
+    mutation models should yield similar results.
 
 "; 
 
