@@ -876,7 +876,7 @@ public:
 	 *  following variables:
 	 *  \li \c numOfAffected (default): Total number of affected individuals in
 	 *       all or specified (virtual) subpopulations.
-	 *  \li \c numOfAffected (default): Total number of unaffected individuals
+	 *  \li \c numOfUnaffected (default): Total number of unaffected individuals
 	 *       in all or specified (virtual) subpopulations.
 	 *  \li \c propOfAffected: Proportion of affected individuals.
 	 *  \li \c propOfUnaffected: Proportion of unaffected individuals.
