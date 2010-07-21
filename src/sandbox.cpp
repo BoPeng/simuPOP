@@ -183,10 +183,14 @@ bool InfSitesMutator::apply(Population & pop) const
 				if (m_model == 1) {
 					// under an infinite-site model
 					if (m_mutants.find(mutLoc) != m_mutants.end()) {
-						// hit an exiting locus, return
-						if (out)
-							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
-						continue;
+						// there is an existing allele
+						if (find(pop.genoBegin(false), pop.genoEnd(false), mutLoc) != pop.genoEnd(false)) {
+							// hit an exiting locus, return
+							if (out)
+								(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
+							continue;
+						}
+						// if there is no existing mutant, new mutant is allowed
 					} else
 						m_mutants.insert(mutLoc);
 				}
