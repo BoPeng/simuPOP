@@ -1014,20 +1014,19 @@ class _wxParamDialog(_paramDialog):
         box = wx.BoxSizer(wx.VERTICAL)
         # do not use a very long description please
         topLabel = wx.StaticText(parent=self.dlg, id=-1, label='\n' + self.description)
-        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER, 50)
-        topLabel.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL))
+        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.ALIGN_LEFT, 15)
         # add a box for all ...
         paraBox = wx.FlexGridSizer(cols = self.nCol)
         for col in range(self.nCol):
             paraBox.AddGrowableCol(col)
         #
-        # add several FlexGridSizer
+        # add several GridBagSizer
         gridBox = []
         for col in range(self.nCol):
-            gridBox.append(wx.FlexGridSizer(cols=2, vgap=2, hgap=5))
-            gridBox[-1].AddGrowableCol(0)
+            gridBox.append(wx.GridBagSizer(vgap=2, hgap=5))
+            #gridBox[-1].AddGrowableCol(0)
             gridBox[-1].AddGrowableCol(1)
-            paraBox.Add(gridBox[-1], 1, wx.EXPAND | wx.ALL, 10)
+            paraBox.Add(gridBox[-1], 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 5)
         # count numbers of valid parameters..
         # chooseFrom count as many
@@ -1040,12 +1039,13 @@ class _wxParamDialog(_paramDialog):
             colIndex = rowIndex / numRows
             if opt.has_key('separator'):
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
-                self.labelWidgets[g].SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD))
-                gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+                f = self.labelWidgets[g].GetFont()
+                f.SetWeight(wx.BOLD)
+                self.labelWidgets[g].SetFont(f)
+                gridBox[colIndex].Add(self.labelWidgets[g], (rowIndex % numRows, 0), span=(1,2),
+                        border=10, flag=wx.ALIGN_LEFT | wx.ALIGN_BOTTOM | wx.TOP)
                 # no entry widget
                 self.entryWidgets[g] = None
-                # add an empty string to the right... it would be good to extend.
-                gridBox[colIndex].Add(wx.StaticText(parent=self.dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
                 rowIndex += 1
                 continue
             value = self.options[g]['value']
@@ -1053,7 +1053,7 @@ class _wxParamDialog(_paramDialog):
                 value = self.options[g]['default']
             # label
             self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-            gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+            gridBox[colIndex].Add(self.labelWidgets[g], (rowIndex % numRows, 0), flag=wx.ALIGN_LEFT )
             # use different entry method for different types
             if opt.has_key('description'):
                 tooltip = _prettyDesc(opt['description'])
@@ -1062,7 +1062,7 @@ class _wxParamDialog(_paramDialog):
             if opt.has_key('chooseOneOf'):    # single choice
                 self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseOneOf']])
-                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                gridBox[colIndex].Add(self.entryWidgets[g], (rowIndex % numRows, 1), flag=wx.EXPAND )
                 # if an value is given through command line argument or configuration file
                 if value is not None:
                     try:
@@ -1080,20 +1080,20 @@ class _wxParamDialog(_paramDialog):
                             self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
                         self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
-                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
+                gridBox[colIndex].Add(self.entryWidgets[g], (rowIndex % numRows, 1), flag=wx.EXPAND)
                 rowIndex += len(opt['chooseFrom'])
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = 'Yes / No')
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
-                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
+                gridBox[colIndex].Add(self.entryWidgets[g], (rowIndex % numRows, 1), flag=wx.EXPAND)
                 rowIndex += 1
             else: # an edit box
                 # put default value into the entryWidget
                 txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
-                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                gridBox[colIndex].Add(self.entryWidgets[g], (rowIndex % numRows, 1), flag=wx.EXPAND )
                 if opt.has_key('validate') and opt['validate'].__doc__ in \
                     [valueValidFile().__doc__, valueValidDir().__doc__]:
                     self.entryWidgets[g].Bind(wx.EVT_LEFT_DCLICK, self.onOpen, id=g)
@@ -1104,7 +1104,7 @@ class _wxParamDialog(_paramDialog):
         self.addButton(wx.ID_HELP, 'Help', self.onHelp, self.dlg, buttonBox)
         self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel, self.dlg, buttonBox)
         self.addButton(wx.ID_OK, 'OK', self.onOK, self.dlg, buttonBox)
-        box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 20)
+        box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 15)
         self.dlg.SetSizerAndFit(box)
         self.dlg.Layout()
         # set focus to the first un-none entry
