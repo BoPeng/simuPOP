@@ -981,6 +981,7 @@ class _wxParamDialog(_paramDialog):
     def __init__(self, options, title = '', description='', details='', nCol=1):
         _paramDialog.__init__(self, options, title, description, details, nCol)
         import wx
+        import wx.lib.filebrowsebutton
         globals()['wx'] = wx
 
     def onHelp(self, event):
@@ -1105,7 +1106,7 @@ class _wxParamDialog(_paramDialog):
                 f = self.labelWidgets[g].GetFont()
                 f.SetWeight(wx.BOLD)
                 self.labelWidgets[g].SetFont(f)
-                gridBox[c].Add(self.labelWidgets[g], (r, 0), span=(1,2),
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), span=(1, 2),
                         border=2, flag=wx.ALIGN_LEFT | wx.ALIGN_BOTTOM | wx.BOTTOM)
                 # no entry widget
                 self.entryWidgets[g] = None
@@ -1121,10 +1122,12 @@ class _wxParamDialog(_paramDialog):
                 tooltip = 'arg: ' + opt['name']
             if opt.has_key('chooseOneOf'):    # single choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
                 self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseOneOf']])
-                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND )
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
                 # if an value is given through command line argument or configuration file
                 if value is not None:
                     try:
@@ -1133,7 +1136,8 @@ class _wxParamDialog(_paramDialog):
                         raise ValueError('Value: %s is not one of %s.' % (str(value), str(opt['chooseOneOf'])))
             elif opt.has_key('chooseFrom'):    # multiple choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
                 # the height is a little bit too much...
                 self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseFrom']])
@@ -1143,23 +1147,40 @@ class _wxParamDialog(_paramDialog):
                             self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
                         self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
-                gridBox[c].Add(self.entryWidgets[g], (r, 1), span=(rspan, 1), flag=wx.EXPAND)
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), span=(rspan, 1), flag=wx.EXPAND
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = opt['label'])
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
-                gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND)
+                gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
+            elif opt.has_key('validate') and opt['validate'].__doc__ == valueValidFile().__doc__:
+                #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+                #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
+                #    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
+                self.entryWidgets[g] = wx.lib.filebrowsebutton.FileBrowseButton(parent=self.dlg, id=g,
+                    labelText=opt['label'], initialValue=value)
+                gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1,2), flag=wx.EXPAND | wx.ALIGN_LEFT
+                    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
+            elif opt.has_key('validate') and opt['validate'].__doc__ == valueValidDir().__doc__:
+                #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+                #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
+                #    | wx.BOTTOM | wx.TOP, border=2)
+                self.entryWidgets[g] = wx.lib.filebrowsebutton.DirBrowseButton(parent=self.dlg, id=g,
+                    labelText=opt['label'], startDirectory=value)
+                self.entryWidgets[g].SetValue(value)
+                gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND | wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
+                    | wx.BOTTOM | wx.TOP, border=2)
             else: # an edit box
                 # put default value into the entryWidget
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
+                    | wx.BOTTOM | wx.TOP, border=2)
                 txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
-                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND )
-                if opt.has_key('validate') and opt['validate'].__doc__ in \
-                    [valueValidFile().__doc__, valueValidDir().__doc__]:
-                    self.entryWidgets[g].Bind(wx.EVT_LEFT_DCLICK, self.onOpen, id=g)
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND | wx.BOTTOM | wx.TOP | wx.ALIGN_CENTER_VERTICAL, border=2)
             self.entryWidgets[g].SetToolTipString(tooltip)
         # help button
         buttonBox = wx.GridSizer(cols=3)
