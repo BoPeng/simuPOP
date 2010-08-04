@@ -1010,7 +1010,7 @@ class _wxParamDialog(_paramDialog):
                 continue
             try:
                 # get text from different type of entries
-                try:    # an entry box or check box
+                try:    # an entry box or check box, or file/dir browser
                     val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue())
                 except:
                     try:    # a list box?
@@ -1051,29 +1051,6 @@ class _wxParamDialog(_paramDialog):
         button = wx.Button(parent, ID, text)
         box.Add(button, 0, wx.ALIGN_CENTER)
         self.dlg.Bind(wx.EVT_BUTTON, func, button)
-
-    def onOpen(self, event):
-        '''File browse'''
-        opt = self.options[event.GetId()]
-        widget = self.entryWidgets[event.GetId()]
-        if 'valueValidFile' in opt['validate'].__doc__:
-            dlg = wx.FileDialog(self.dlg, opt['label'], '', '',
-                "*.*", wx.OPEN)
-            if dlg.ShowModal() == wx.ID_OK:
-                # only available in Python 2.6
-                if 'relpath' in dir(os.path):
-                    widget.SetValue(os.path.relpath(dlg.GetPath()))
-                else:
-                    widget.SetValue(dlg.GetPath())
-        else:
-            dlg = wx.DirDialog(self.dlg, opt['label'], '', 
-                wx.DD_DEFAULT_STYLE or wx.DD_DIR_MUST_EXIST)
-            if dlg.ShowModal() == wx.ID_OK:
-                if 'relpath' in dir(os.path):
-                    widget.SetValue(os.path.relpath(dlg.GetPath()))
-                else:
-                    widget.SetValue(dlg.GetPath())
-        dlg.Destroy()
 
     def createDialog(self):
         self.app = wx.PySimpleApp(0)
