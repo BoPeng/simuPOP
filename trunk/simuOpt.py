@@ -383,6 +383,12 @@ def valueIsList(size=None):
         return True
     return func
 
+def valueSumTo(a, eps=1e-7):
+    '''Return a function that returns true if passed option sum up to a.
+    An eps value can be specified to allowed for numerical error.'''
+    def func(val):
+        return abs(sum(val) - a) < eps
+    return func
 
 def valueValidDir():
     '''Return a function that returns true if passed option val if a valid
