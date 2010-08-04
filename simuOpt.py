@@ -527,7 +527,7 @@ options:
   --optimized
         Run the script using an optimized simuPOP module.
 
-  --gui=[None|True|False|Tkinter|wxPython] (default: None)
+  --gui=[None|True|False|batch|Tkinter|wxPython] (default: None)
         Which graphical toolkit to use.
 
 ''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
