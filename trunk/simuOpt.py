@@ -458,7 +458,7 @@ def _prettyString(value, quoted=False, outer=True):
         else:
             return "'%s'" % txt.replace("'", "\\'")
     #
-    if type(value) in [types.ListType, types.TupleType] and len(value)>1:
+    if type(value) in [types.ListType, types.TupleType]:
         txt = '[' + ', '.join([_prettyString(x, True, False) for x in value]) + ']'
         if outer:
             return quote(txt)
@@ -659,71 +659,66 @@ class _paramDialog:
                 r = 0
         return row
 
-    def getLayout(self):
+    def setLayout(self):
         '''Design a layout for the parameter dialog. Currently only used by wxPython'''
-        group = 0
-        rows = []
         row = 0
         for opt in self.options:
+            if not (opt.has_key('label') or opt.has_key('separator')):
+                continue
             if opt.has_key('separator'):
-                if row == 0: # a new group
-                    row += 1
-                    continue
-                else:        # close a group
-                    rows.append(row)
-                    row = 1
-                    continue
-            if opt.has_key('label'):
+                row += 2
+                continue
+            elif opt.has_key('label'):
                 row += 1
             if opt.has_key('chooseFrom'):
                 row += len(opt['chooseFrom']) - 1
-        # at the end?
-        if row != 0:
-            rows.append(row)
-        # we now know the groups and rows of each group, and we need to
-        # decide how to arrange these groups. I am using a naive algorithm
-        # here and hope that it can work with most of the cases...
-        if len(rows) == 1:
-            # no or one group
-            nRow = sum(rows)
-            if nRow / self.nCol * self.nCol == nRow:
-                nRow /= self.nCol
-            else:
-                nRow = nRow/self.nCol + 1
-            r = 0
-            c = 0
-            for opt in self.options:
-                if opt.has_key('separator'):
-                    opt['layout'] = (0, r, c)
-                    r = 0
-                    continue
-                elif opt.has_key('label'):
-                    r += 1
-                elif opt.has_key('chooseFrom'):
-                    r += len(opt['chooseFrom']) - 1
-                opt['layout'] = (0, r, c)
-                if r > nRow:
-                    c += 1            
-            return nRow, c
-        # multiple groups
-        nRow = len(rows)
+        nRow = row
         if nRow / self.nCol * self.nCol == nRow:
             nRow /= self.nCol
         else:
             nRow = nRow/self.nCol + 1
+        # set row and col for each item.
+        headerRow = 0
         r = 0
-        g = 0
+        c = 0
         for opt in self.options:
-            if opt.has_key('separator'):
-                g += 1
-                opt['layout'] = (g, g / nRow, g % nRow)
-                r = 0
+            if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
-            elif opt.has_key('label'):
+            if opt.has_key('separator'):
+                # start of a column
+                if r == 0:
+                    opt['layout'] = r, c, 1
+                    r += 1
+                else:
+                    r += 1
+                    # middle, the last one?
+                    if r == nRow - 1:
+                        if c + 1 == self.nCol:
+                            opt['layout'] = r - 1, c, 1
+                        else:
+                            c += 1
+                            opt['layout'] = 0, c, 1
+                            r = 1
+                    else:
+                        opt['layout'] = r, c, 1
+                        r += 1
+                continue
+            if opt.has_key('chooseFrom'):
+                if len(opt['chooseFrom']) <= 3:
+                    rspan = 3
+                else:
+                    rspan = len(opt['chooseFrom']) * 4 / 5
+                opt['layout'] = r, c, rspan
+                r += rspan
+                if r >= nRow and c + 1 < self.nCol:
+                    r = 0
+                    c += 1
+            else:
+                opt['layout'] = r, c, 1
                 r += 1
-            elif opt.has_key('chooseFrom'):
-                r += len(opt['chooseFrom']) - 1
-            opt['layout'] = (g, r-1, 0)
+                if r == nRow and c + 1 < self.nCol:
+                    r = 0
+                    c += 1
         return nRow, self.nCol
 
     def createDialog(self):
@@ -1082,61 +1077,54 @@ class _wxParamDialog(_paramDialog):
         # the main window
         box = wx.BoxSizer(wx.VERTICAL)
         # do not use a very long description please
-        topLabel = wx.StaticText(parent=self.dlg, id=-1, label=self.description.strip())
-        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.ALIGN_LEFT | wx.TOP, 15)
+        topLabel = wx.StaticText(parent=self.dlg, id=-1, label='\n' + self.description)
+        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.ALIGN_LEFT, 15)
         # add a box for all ...
-        nRow, nCol = self.getLayout()
-        paraBox = wx.FlexGridSizer(rows=nRow, cols=nCol)
+        paraBox = wx.FlexGridSizer(cols = self.nCol)
         for col in range(self.nCol):
             paraBox.AddGrowableCol(col)
-        box.Add(paraBox, 0, wx.EXPAND | wx.ALL, 5)
         #
-        self.curBox = self.dlg
-        # if there is no separator, ...
-        if True not in [opt.has_key('separator') for opt in self.options]:
-            self.gridBox = wx.GridBagSizer(vgap=2, hgap=5)
-            self.gridBox.AddGrowableCol(1)
-            paraBox.Add(self.gridBox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-        # the first option does not belong to any group?
-        elif not self.options[0].has_key('separator'):
-            bbox = wx.StaticBox(parent=self.dlg, id=-1, label='')
-            sizer = wx.StaticBoxSizer(bbox)
-            self.gridBox = wx.GridBagSizer(vgap=2, hgap=5)
-            self.gridBox.AddGrowableCol(1)
-            sizer.Add(self.gridBox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-            paraBox.Add(sizer, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        # add several GridBagSizer
+        gridBox = []
+        for col in range(self.nCol):
+            gridBox.append(wx.GridBagSizer(vgap=2, hgap=5))
+            #gridBox[-1].AddGrowableCol(0)
+            gridBox[-1].AddGrowableCol(1)
+            paraBox.Add(gridBox[-1], 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 5)
+        # count numbers of valid parameters..
+        # chooseFrom count as many
+        numRows, numCols = self.setLayout()
         # all entries
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
+            r, c, rspan = opt['layout']
             if opt.has_key('separator'):
-                bbox = wx.StaticBox(parent=self.dlg, id=-1, label=opt['separator'])
-                self.labelWidgets[g] = bbox
-                sizer = wx.StaticBoxSizer(bbox)
-                self.gridBox = wx.GridBagSizer(vgap=2, hgap=5)
-                self.gridBox.AddGrowableCol(1)
-                sizer.Add(self.gridBox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-                paraBox.Add(sizer, 1, flag=wx.EXPAND | wx.ALIGN_LEFT | wx.ALIGN_BOTTOM | wx.ALL, border=10)
+                self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
+                f = self.labelWidgets[g].GetFont()
+                f.SetWeight(wx.BOLD)
+                self.labelWidgets[g].SetFont(f)
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), span=(1,2),
+                        border=2, flag=wx.ALIGN_LEFT | wx.ALIGN_BOTTOM | wx.BOTTOM)
                 # no entry widget
                 self.entryWidgets[g] = None
                 continue
             value = self.options[g]['value']
             if value is None:
                 value = self.options[g]['default']
+            # label
             # use different entry method for different types
             if opt.has_key('description'):
                 tooltip = _prettyDesc(opt['description'])
             else:
                 tooltip = 'arg: ' + opt['name']
             if opt.has_key('chooseOneOf'):    # single choice
-                # label
-                self.labelWidgets[g] = wx.StaticText(parent=self.curBox, id=-1, label=opt['label'])
-                self.gridBox.Add(self.labelWidgets[g], (opt['layout'][1], 2*opt['layout'][2]),
-                    flag=wx.ALIGN_LEFT | wx.TOP | wx.BOTTOM, border=2)
-                self.entryWidgets[g] = wx.Choice(parent=self.curBox, id=g,
+                self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
+                self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseOneOf']])
-                self.gridBox.Add(self.entryWidgets[g], (opt['layout'][1], 2*opt['layout'][2] + 1),
-                    flag=wx.EXPAND  | wx.TOP | wx.BOTTOM, border=2 )
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND )
                 # if an value is given through command line argument or configuration file
                 if value is not None:
                     try:
@@ -1144,10 +1132,8 @@ class _wxParamDialog(_paramDialog):
                     except:
                         raise ValueError('Value: %s is not one of %s.' % (str(value), str(opt['chooseOneOf'])))
             elif opt.has_key('chooseFrom'):    # multiple choice
-                # label
-                self.labelWidgets[g] = wx.StaticText(parent=self.curBox, id=-1, label=opt['label'])
-                self.gridBox.Add(self.labelWidgets[g], (opt['layout'][1], 2*opt['layout'][2]),
-                    flag=wx.ALIGN_LEFT | wx.TOP | wx.BOTTOM, border=2)
+                self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
                 # the height is a little bit too much...
                 self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseFrom']])
@@ -1157,25 +1143,20 @@ class _wxParamDialog(_paramDialog):
                             self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
                         self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
-                self.gridBox.Add(self.entryWidgets[g], (opt['layout'][1], 2*opt['layout'][2]+1),
-                    flag=wx.EXPAND | wx.TOP | wx.BOTTOM, border=2)
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), span=(rspan, 1), flag=wx.EXPAND)
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
-                self.entryWidgets[g] = wx.CheckBox(parent=self.curBox, id=g, label = opt['label'])
+                self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = opt['label'])
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
-                self.gridBox.Add(self.entryWidgets[g], (opt['layout'][1], 2*opt['layout'][2]), 
-                    span=(1, 2), flag=wx.EXPAND  | wx.TOP | wx.BOTTOM, border=2)
+                gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND)
             else: # an edit box
-                # label
-                self.labelWidgets[g] = wx.StaticText(parent=self.curBox, id=-1, label=opt['label'])
-                self.gridBox.Add(self.labelWidgets[g], (opt['layout'][1], opt['layout'][2]),
-                    flag=wx.ALIGN_LEFT  | wx.TOP | wx.BOTTOM, border=2)
                 # put default value into the entryWidget
+                self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+                gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT )
                 txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
-                self.gridBox.Add(self.entryWidgets[g], (opt['layout'][1], opt['layout'][2]+1),
-                    flag=wx.EXPAND  | wx.TOP | wx.BOTTOM, border=2)
+                gridBox[c].Add(self.entryWidgets[g], (r, 1), flag=wx.EXPAND )
                 if opt.has_key('validate') and opt['validate'].__doc__ in \
                     [valueValidFile().__doc__, valueValidDir().__doc__]:
                     self.entryWidgets[g].Bind(wx.EVT_LEFT_DCLICK, self.onOpen, id=g)
