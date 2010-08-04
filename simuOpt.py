@@ -629,7 +629,10 @@ class _paramDialog:
         # now, initialize variables
         self.options = options
         self.title = title
-        self.description = _prettyDesc(description, indent='', width=80)
+        if nCol > 1:
+            self.description = _prettyDesc(description, indent='', width=80)
+        else:
+            self.description = _prettyDesc(description, indent='', width=55)
         self.details = details
         if nCol is None:
             self.nCol = len(self.options)/20 + 1
