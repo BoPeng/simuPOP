@@ -16,6 +16,7 @@ New features:
   - Allow user-specified function for operator PySelector and PyPenetrance to accept
 		parameter pop.
   - Beautify wxPython based parameter dialog.
+  - Add validation function valueSumTo.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
