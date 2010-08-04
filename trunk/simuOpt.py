@@ -478,7 +478,7 @@ def _prettyString(value, quoted=False, outer=True):
         return str(value)
 
 
-def _prettyDesc(text, indent=''):
+def _prettyDesc(text, indent='', width=80):
     '''Reformat description of options. All lines are joined and all extra
     spaces are removed before the text is wrapped with specified *indent*.
     An exception is that lines with '|' as the first non-space/tab character
@@ -505,11 +505,11 @@ def _prettyDesc(text, indent=''):
                 if c not in [' ', '\t']:
                     break
                 blk_indent += c
-            txt.extend(textwrap.wrap(blk[1:], width=80,
+            txt.extend(textwrap.wrap(blk[1:], width=width,
                 initial_indent=indent + blk_indent, # keep spaces after | character
                 subsequent_indent=indent))
         else:
-            txt.extend(textwrap.wrap(blk, width=80, initial_indent=indent,
+            txt.extend(textwrap.wrap(blk, width=width, initial_indent=indent,
                 subsequent_indent=indent))
     return '\n'.join(txt)
 
@@ -629,43 +629,14 @@ class _paramDialog:
         # now, initialize variables
         self.options = options
         self.title = title
-        self.description = description
+        self.description = _prettyDesc(description, indent='', width=80)
         self.details = details
         if nCol is None:
             self.nCol = len(self.options)/20 + 1
         else:
             self.nCol = nCol
 
-    def getNumOfRows(self, multiLineChooseOneOf=False):
-        '''Count the number of rows that is needed for all parameters'''
-        row = 0
-        for opt in self.options:
-            if opt.has_key('label') or opt.has_key('separator'):
-                row += 1
-            if opt.has_key('chooseFrom'):
-                row += len(opt['chooseFrom']) - 1
-            elif opt.has_key('chooseOneOf') and multiLineChooseOneOf:
-                row += len(opt['chooseOneOf']) - 1
-        if row / self.nCol * self.nCol == row:
-            row /= self.nCol
-        else:
-            row = row/self.nCol + 1
-        # it is possible but the row'th row sits between chooseOneOf or chooseFrom ...
-        r = 0
-        for opt in self.options:
-            if opt.has_key('label') or opt.has_key('separator'):
-                r += 1
-            if opt.has_key('chooseFrom'):
-                r += len(opt['chooseFrom']) - 1
-            elif opt.has_key('chooseOneOf') and multiLineChooseOneOf:
-                r += len(opt['chooseOneOf']) - 1
-            if r >= row:
-                row = r
-                # starts new
-                r = 0
-        return row
-
-    def setLayout(self):
+    def setLayout(self, useTk=False):
         '''Design a layout for the parameter dialog. Currently only used by wxPython'''
         row = 0
         for opt in self.options:
@@ -677,7 +648,14 @@ class _paramDialog:
             elif opt.has_key('label'):
                 row += 1
             if opt.has_key('chooseFrom'):
-                row += len(opt['chooseFrom']) - 1
+                if len(opt['chooseFrom']) <= 3 or useTk:
+                    rspan = len(opt['chooseFrom'])
+                else:
+                    rspan = len(opt['chooseFrom']) * 4 / 5
+                row += rspan - 1
+            elif opt.has_key('chooseOneOf') and useTk:
+                rspan = len(opt['chooseOneOf'])
+                row += rspan - 1
         nRow = row
         if nRow / self.nCol * self.nCol == nRow:
             nRow /= self.nCol
@@ -710,19 +688,29 @@ class _paramDialog:
                         r += 1
                 continue
             if opt.has_key('chooseFrom'):
-                if len(opt['chooseFrom']) <= 3:
-                    rspan = 3
+                if len(opt['chooseFrom']) <= 3 or useTk:
+                    rspan = len(opt['chooseFrom'])
                 else:
                     rspan = len(opt['chooseFrom']) * 4 / 5
                 opt['layout'] = r, c, rspan
                 r += rspan
                 if r >= nRow and c + 1 < self.nCol:
+                    nRow = r
+                    r = 0
+                    c += 1
+            elif opt.has_key('chooseOneOf') and useTk:
+                rspan = len(opt['chooseOneOf'])
+                opt['layout'] = r, c, rspan
+                r += rspan
+                if r >= nRow and c + 1 < self.nCol:
+                    nRow = r
                     r = 0
                     c += 1
             else:
                 opt['layout'] = r, c, 1
                 r += 1
-                if r == nRow and c + 1 < self.nCol:
+                if r >= nRow and c + 1 < self.nCol:
+                    nRow = r
                     r = 0
                     c += 1
         return nRow, self.nCol
@@ -863,56 +851,52 @@ class _tkParamDialog(_paramDialog):
         self.labelWidgets = [None]*len(self.options)
         # all use grid management
         # top message
-        topMsg = tk.Label(self.app, text=self.description)
-        topMsg.grid(row=0, column=0, columnspan = 2 * self.nCol, sticky=tk.E + tk.W,
-            padx=10, pady=5)
+        topMsg = tk.Label(self.app, text=self.description.strip(), justify=tk.LEFT)
+        topMsg.grid(row=0, column=0, columnspan = 2 * self.nCol, sticky=tk.W,
+            padx=10, pady=10)
         # find out number of items etc
-        numRows = self.getNumOfRows(True)
-        rowIndex = 0
+        numRows, numCols = self.setLayout(True)
         # all entries
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
-            colIndex = rowIndex / numRows
+            r, c, rspan = opt['layout']
+            print r, c, rspan
+            # skip the top label...
+            r += 1
             # use different entry method for different types
             if opt.has_key('separator'):
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'],
-                    font=tkFont.Font(size=12, weight='bold'))
-                self.labelWidgets[g].grid(column=colIndex*2, row= rowIndex % numRows + 1,
-                    ipadx=0, padx=0, sticky=tk.E)
-                emptyInput = tk.Label(self.app, text='')
-                emptyInput.grid(column = colIndex*2 + 1, row= rowIndex % numRows + 1,
-                    ipadx=0, padx=0)
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'])
+                f = tkFont.Font(font=self.labelWidgets[g]["font"]).copy()
+                f.config(weight='bold')
+                self.labelWidgets[g].config(font=f)
+                self.labelWidgets[g].grid(column=c*2, row= r,
+                    columnspan=2, ipadx=0, padx=10, sticky=tk.W + tk.N + tk.S)
                 self.entryWidgets[g] = None
-                rowIndex += 1
                 continue
             value = self.options[g]['value']
             if value is None:
                 value = self.options[g]['default']
             if opt.has_key('chooseOneOf'):    # single choice
-                height = len(opt['chooseOneOf'])
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
-                    padx=5, rowspan = height, sticky=tk.E)
+                self.labelWidgets[g].grid(column=c*2, row= r,
+                    padx=10, rowspan = 1, sticky=tk.W, pady=2)
                 self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.SINGLE,
-                    exportselection=0, height = height)
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
-                    padx=5, rowspan = height)
-                rowIndex += height
+                    exportselection=0, height = rspan)
+                self.entryWidgets[g].grid(column=c*2+1, row=r,
+                    padx=10, rowspan = rspan, pady=2)
                 for entry in opt['chooseOneOf']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
                 if value is not None:
                     self.entryWidgets[g].select_set(opt['chooseOneOf'].index(value))
             elif opt.has_key('chooseFrom'):    # multiple choice
-                height = len(opt['chooseFrom'])
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
-                    padx=5, rowspan = height, sticky=tk.E)
+                self.labelWidgets[g].grid(column=c*2, row=r,
+                    padx=10, sticky=tk.W, pady=2)
                 self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.EXTENDED,
-                    exportselection=0, height = height)
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
-                    padx=5, rowspan = height)
-                rowIndex += height
+                    exportselection=0, height = rspan)
+                self.entryWidgets[g].grid(column=c*2+1, row=r,
+                    padx=10, rowspan = rspan, pady=2)
                 for entry in opt['chooseFrom']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
                 if value is not None:
@@ -923,33 +907,23 @@ class _tkParamDialog(_paramDialog):
                         self.entryWidgets[g].select_set( opt['chooseFrom'].index( value ))
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1, padx=10,
-                    rowspan = 1, sticky=tk.E)
-                # replace value by a tk IntVar() because tk.Checkbutton has to store
-                # its value in such a variable. value.get() will be used to return the
-                # state of this Checkbutton.
-                # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
                 iv = tk.IntVar()
                 iv.set(self.options[g]['value'] == True) # value can be None, True or False
                 self.options[g]['value'] = iv
                 self.entryWidgets[g] = tk.Checkbutton(self.app, height=1,
-                    text = "Yes / No", variable=self.options[g]['value'])
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, padx=5,
+                    text = opt['label'], variable=self.options[g]['value'])
+                self.entryWidgets[g].grid(column=c*2, row=r, padx=10, columnspan=2, 
                     sticky=tk.W)
-                rowIndex += 1
-                #self.entryWidgets[g].deselect()
             else:
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
-                    padx=5, sticky=tk.E)
+                self.labelWidgets[g].grid(column=c*2, row=r,
+                    padx=10, sticky=tk.W, pady=2)
                 self.entryWidgets[g] = tk.Entry(self.app)
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
-                    padx=5, ipadx=0)
+                self.entryWidgets[g].grid(column=c*2+1, row=r,
+                    padx=10, ipadx=0, pady=2)
                 if opt.has_key('validate') and opt['validate'].__doc__ in \
                     [valueValidFile().__doc__, valueValidDir().__doc__]:
                     self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
-                rowIndex += 1
                 # put default value into the entryWidget
                 self.entryWidgets[g].insert(0, _prettyString(value))
             self.entryWidgets[g].bind("<Return>", self.onOK)
@@ -958,7 +932,7 @@ class _tkParamDialog(_paramDialog):
         helpButton = tk.Button(self.app, takefocus=1, text="Help")
         helpButton.bind("<Return>", self.onHelp)
         helpButton.bind("<Button-1>", self.onHelp)
-        helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20, sticky='w', padx=10)
+        helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20, sticky='w', padx=20)
         # ok button: right
         okButton = tk.Button(self.app, takefocus=1, text="Run!")
         okButton.bind("<Return>", self.onOK)
@@ -1061,8 +1035,8 @@ class _wxParamDialog(_paramDialog):
         # the main window
         box = wx.BoxSizer(wx.VERTICAL)
         # do not use a very long description please
-        topLabel = wx.StaticText(parent=self.dlg, id=-1, label='\n' + self.description)
-        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.ALIGN_LEFT, 15)
+        topLabel = wx.StaticText(parent=self.dlg, id=-1, label=self.description.strip())
+        box.Add(topLabel, 0, wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT | wx.ALIGN_LEFT, 15)
         # add a box for all ...
         paraBox = wx.FlexGridSizer(cols = self.nCol)
         for col in range(self.nCol):
@@ -1078,7 +1052,7 @@ class _wxParamDialog(_paramDialog):
         box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 5)
         # count numbers of valid parameters..
         # chooseFrom count as many
-        numRows, numCols = self.setLayout()
+        numRows, numCols = self.setLayout(False)
         # all entries
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')):
