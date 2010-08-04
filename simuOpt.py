@@ -87,6 +87,7 @@ __all__ = [
     'valueValidDir',
     'valueValidFile',
     'valueListOf',
+    'valueSumTo',
     'Params',
     'param',
 ]
