@@ -861,7 +861,6 @@ class _tkParamDialog(_paramDialog):
             if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
             r, c, rspan = opt['layout']
-            print r, c, rspan
             # skip the top label...
             r += 1
             # use different entry method for different types
