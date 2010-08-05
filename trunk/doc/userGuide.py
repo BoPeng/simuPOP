@@ -4447,10 +4447,8 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 import types, simuOpt
 options = [
-    {'arg': 'r',
-     'name': 'rate',
+    {'name': 'rate',
      'default': [0.01],
-     'useDefault': True,
      'label': 'Recombination rate',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Recombination rate for each replicate. If a single value
@@ -4529,10 +4527,8 @@ print par2.rep, par2.pop
 import types, simuOpt
 options = [
     simuOpt.param(
-        arg = 'r',
         name = 'rate',
         default = [0.01],
-        useDefault = True,
         label = 'Recombination rate',
         allowedTypes = [types.ListType, types.TupleType],
         description = '''Recombination rate for each replicate. If a single value
