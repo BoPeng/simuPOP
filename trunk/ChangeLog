@@ -18,7 +18,7 @@ New features:
   - Beautify wxPython based parameter dialog.
   - Add validation function valueSumTo.
   - Allow the use of expressions to validate options.
-  - Add name and validator to parameter definition dictionary.
+  - Add name, type and validator to parameter definition dictionary.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
@@ -37,7 +37,8 @@ Regression (minor):
   - Parameter usePopVars is not obsolete in operators InfoEval and InfoExec.
   - Statements specified in operator InfoEval will also change values of individual
 		information fields.
-  - Mark validate, arg, longarg in parameter definition dictionary obsolete 
+  - Mark validate, arg, longarg, chooseFrom, chooseOneOf in parameter definition
+        dictionary obsolete 
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.
