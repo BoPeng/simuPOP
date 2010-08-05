@@ -4450,7 +4450,7 @@ options = [
     {'name': 'rate',
      'default': [0.01],
      'label': 'Recombination rate',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': 'numbers',
      'description': '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
      'validator': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
@@ -4458,21 +4458,20 @@ options = [
     {'name': 'rep',
      'default': 5,
      'label': 'Number of replicates',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': 'number',
      'description': 'Number of replicates to simulate.',
      'validator': simuOpt.valueGT(0)
     }, 
     {'name': 'pop',
      'default': 'CEU',
      'label': 'Initial population',
-     'allowedTypes': [types.StringType],
+     'type': ('chooseOneOf', ['CEU', 'YRI', 'CHB+JPT']),
      'description': '''Use one of the HapMap sim.populations as the initial
             sim.Population for this simulation. You can choose from:
             |YRI: 33 trios from the Yoruba people in Nigeria (Africa)
             |CEU: 30 trios from Utah with European ancestry (European)
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''',
-     'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
     }
 ]
 pars = simuOpt.Params(options, 'A demo simulation')
@@ -4529,7 +4528,7 @@ options = [
         name = 'rate',
         default = [0.01],
         label = 'Recombination rate',
-        allowedTypes = [types.ListType, types.TupleType],
+        type = 'numbers',
         description = '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
         validator = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
@@ -4537,21 +4536,20 @@ options = [
         name = 'rep',
         default = 5,
         label = 'Number of replicates',
-        allowedTypes = [types.IntType, types.LongType],
+        type = 'integer',
         description = 'Number of replicates to simulate.',
         validator = simuOpt.valueGT(0)), 
     simuOpt.param(
         name = 'pop',
         default = 'CEU',
         label = 'Initial population',
-        allowedTypes = [types.StringType],
+        type = ('chooseOneOf', ['CEU', 'YRI', 'CHB+JPT']),
         description = '''Use one of the HapMap sim.populations as the initial
             sim.Population for this simulation. You can choose from:
             |YRI: 33 trios from the Yoruba people in Nigeria (Africa)
             |CEU: 30 trios from Utah with European ancestry (European)
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
-            ''',
-        chooseOneOf = ['CEU', 'YRI', 'CHB+JPT'],
+            ''')
 ]
 #begin_ignore
 pars = simuOpt.Params(options, 'A demo simulation')
@@ -4965,12 +4963,12 @@ options = [
      'default': 'instant',
      'label': 'Population growth model',
      'description': 'How does a sim.Population grow from N0 to N1.',
-     'chooseOneOf': ['instant', 'exponential'],
+     'type': ('chooseOneOf', ['instant', 'exponential']),
     },
     {'name': 'N0',
      'default': 10000,
      'label': 'Initial sim.population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': 'integer',
      'description': '''Initial sim.population size. This size will be maintained
                 till the end of burnin stage''',
      'validator': simuOpt.valueGT(0)
@@ -4978,28 +4976,28 @@ options = [
     {'name': 'N1',
      'default': 100000,
      'label': 'Final sim.population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': 'integer',
      'description': 'Ending sim.population size (after sim.population expansion)',
      'validator': simuOpt.valueGT(0)
     }, 
     {'name': 'G0',
      'default': 500,
      'label': 'Length of burn-in stage',
-     'allowedTypes': [types.IntType],
+     'type': 'integer',
      'description': 'Number of generations of the burn in stage.',
      'validator': simuOpt.valueGT(0)
     },
     {'name': 'G1',
      'default': 1000,
      'label': 'Length of expansion stage',
-     'allowedTypes': [types.IntType],
+     'type': 'integer',
      'description': 'Number of geneartions of the sim.population expansion stage',
      'validator': simuOpt.valueGT(0)
     },
     {'name': 'spec',
      'default': [0.9] + [0.02]*5,
      'label': 'Initial allelic spectrum',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'type': 'numbers',
      'description': '''Initial allelic spectrum, should be a list of allele
             frequencies, for allele 0, 1, 2, ... respectively.''',
      'validator': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
@@ -5007,7 +5005,7 @@ options = [
     {'name': 's',
      'default': 0.01,
      'label': 'Selection pressure',
-     'allowedTypes': [types.IntType, types.FloatType],
+     'type': 'number',
      'description': '''Selection coefficient for homozygtes (aa) genotype.
             A recessive selection model is used so the fitness values of
             genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
@@ -5016,14 +5014,14 @@ options = [
     {'name': 'mu',
      'default': 1e-4,
      'label': 'Mutation rate',
-     'allowedTypes': [types.IntType, types.FloatType],
+     'type': 'number',
      'description': 'Mutation rate of a k-allele mutation model',
      'validator': simuOpt.valueBetween(0, 1),
     },
     {'name': 'k',
      'default': 200,
      'label': 'Maximum allelic state',
-     'allowedTypes': [types.IntType],
+     'type': 'integer',
      'description': 'Maximum allelic state for a k-allele mutation model',
      'validator': simuOpt.valueGT(1),
     },

@@ -82,6 +82,7 @@ __all__ = [
     'valueLE',
     'valueEqual',
     'valueNotEqual',
+    'valueIsInteger',
     'valueIsNum',
     'valueIsList',
     'valueValidDir',
@@ -353,6 +354,11 @@ def valueNotEqual(a):
         return val != a
     return func
 
+def valueIsInteger():
+    'Return a function that returns true if passed option is an integer (int, long)'
+    def func(val):
+        return isinstance(val, (int, long))
+    return func
 
 def valueIsNum():
     'Return a function that returns true if passed option is a number (int, long or float)'
@@ -519,14 +525,14 @@ def _paramType(opt):
     '''Determine the type of an option'''
     
 
-def _validate(opt, options=[]):
+def _validate(value, opt, options=[]):
     '''validate an option against other options'''
     # if no validator is specified
     if not opt.has_key('validator'):
         return True
     # if a function is given, easy
     if callable(opt['validator']):
-        return opt['validator'](opt['value'])
+        return opt['validator'](value)
     # we need a dictionary
     env = {}
     for o in options:
@@ -534,6 +540,7 @@ def _validate(opt, options=[]):
             continue
         name = o['name']
         env[name] = o['value']
+    env[opt['name']] = value
     return eval(opt['validator'], globals(), env) is True
 
 
@@ -568,12 +575,12 @@ options:
         name = ''
         # this is obsolete
         if opt.has_key('arg'):
-            if opt['type'] != 'boolean':
+            if opt['gui_type'] != 'boolean':
                 name += '-%s=ARG, ' % opt['arg']
             else:
                 name += '-%s, ' % opt['arg']
         #
-        if opt['type'] != 'boolean':
+        if opt['gui_type'] != 'boolean':
             name += '--%s=ARG' % opt['name']
         else:
             name += '--%s' % opt['name']
@@ -595,7 +602,7 @@ options:
 
 def _getParamValue(p, val, options):
     ''' try to get a value from value, raise exception if error happens. '''
-    if p['type'] == 'separator':
+    if p['gui_type'] == 'separator':
         raise exceptions.ValueError('Cannot get a value for separator')
     # if we are giving a unicode string, convert!
     if type(val) == types.UnicodeType:
@@ -607,12 +614,12 @@ def _getParamValue(p, val, options):
                 val = val[len(quote):-len(quote)]
                 break
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
-        if not _validate(p, options):
+        if not _validate(val, p, options):
             raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
                 (str(val), p['name']))
         return val
     # handle another 'auto-boolean' case
-    elif p['type'] == 'boolean':
+    elif p['gui_type'] == 'boolean':
         if val in ['1', 'true', 'True']:
             return True
         elif val in ['0', 'false', 'False']:
@@ -632,11 +639,11 @@ def _getParamValue(p, val, options):
                     val.append(i.strip())
     # evaluated type is OK now.
     if type(val) in p['allowedTypes']:
-        if not _validate(p, options):
+        if not _validate(val, p, options):
             raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif types.ListType in p['allowedTypes'] or types.TupleType in p['allowedTypes']:
-        if not _validate(p, options):
+        if not _validate(val, p, options):
             raise exceptions.ValueError("Value "+str([val])+' does not pass validation')
         return [val]
     elif type(val) == type(True) and types.IntType in p['allowedTypes']: # compatibility problem
@@ -646,6 +653,7 @@ def _getParamValue(p, val, options):
     else:
         raise exceptions.ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
             p['name'])
+    print p, val
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
@@ -778,7 +786,7 @@ class _tkParamDialog(_paramDialog):
         widget = event.widget
         opt = self.options[self.entryWidgets.index(widget)]
         import tkFileDialog as fileDlg
-        if opt['type'] == 'browseFile':
+        if opt['gui_type'] == 'browseFile':
             filename = fileDlg.askopenfilename(title=opt['label'])
             if filename is not None:
                 # only available in Python 2.6
@@ -835,20 +843,20 @@ class _tkParamDialog(_paramDialog):
             if self.entryWidgets[g] == None:
                 continue
             try:
-                # get text from different type of entries
-                if self.entryWidgets[g].winfo_class() == "Entry":    # an entry box?
-                    val = _getParamValue(self.options[g], self.entryWidgets[g].get(), self.options)
-                elif self.entryWidgets[g].winfo_class() == "Listbox":    # a listbox
-                    sel = self.entryWidgets[g].curselection()
-                    if self.options[g].has_key('chooseOneOf'):
-                        items = self.options[g]['chooseOneOf'][int(sel[0])]
-                    else:
-                        items = [self.options[g]['chooseFrom'][int(x)] for x in sel]
-                    val = _getParamValue(self.options[g], items, self.options)
-                elif self.entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
+                if self.options[g]['gui_type'] == 'boolean':
                     # gets 0/1 for false/true
                     var = self.options[g]['value'].get()
                     val = _getParamValue(self.options[g], var == 1, self.options)
+                elif self.options[g]['gui_type'] == 'chooseOneOf':
+                    sel = self.entryWidgets[g].curselection()
+                    items = self.options[g]['chooseOneOf'][int(sel[0])]
+                    val = _getParamValue(self.options[g], items, self.options)
+                elif self.options[g]['gui_type'] == 'chooseFrom':
+                    sel = self.entryWidgets[g].curselection()
+                    items = [self.options[g]['chooseFrom'][int(x)] for x in sel]
+                    val = _getParamValue(self.options[g], items, self.options)
+                else:
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].get(), self.options)
             except Exception,e:
                 for lab in self.labelWidgets:
                     if lab is not None:
@@ -888,7 +896,7 @@ class _tkParamDialog(_paramDialog):
             # skip the top label...
             r += 1
             # use different entry method for different types
-            if opt['type'] == 'separator':
+            if opt['gui_type'] == 'separator':
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'])
                 f = tkFont.Font(font=self.labelWidgets[g]["font"]).copy()
                 f.config(weight='bold')
@@ -900,7 +908,7 @@ class _tkParamDialog(_paramDialog):
             value = self.options[g]['value']
             if value is None:
                 value = self.options[g]['default']
-            if opt['type'] == 'chooseOneOf':    # single choice
+            if opt['gui_type'] == 'chooseOneOf':    # single choice
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row= r,
                     padx=10, rowspan = 1, sticky=tk.W, pady=2)
@@ -912,7 +920,7 @@ class _tkParamDialog(_paramDialog):
                     self.entryWidgets[g].insert(tk.END, str(entry))
                 if value is not None:
                     self.entryWidgets[g].select_set(opt['chooseOneOf'].index(value))
-            elif opt['type'] == 'chooseFrom':    # multiple choice
+            elif opt['gui_type'] == 'chooseFrom':    # multiple choice
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row=r,
                     padx=10, sticky=tk.W, pady=2)
@@ -928,7 +936,7 @@ class _tkParamDialog(_paramDialog):
                             self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
                     else:
                         self.entryWidgets[g].select_set( opt['chooseFrom'].index( value ))
-            elif opt['type'] == 'boolean':
+            elif opt['gui_type'] == 'boolean':
                 iv = tk.IntVar()
                 iv.set(self.options[g]['value'] == True) # value can be None, True or False
                 self.options[g]['value'] = iv
@@ -943,7 +951,7 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g] = tk.Entry(self.app)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, ipadx=0, pady=2)
-                if opt['type'] in ['browseFile', 'browseDir']:
+                if opt['gui_type'] in ['browseFile', 'browseDir']:
                     self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
                 # put default value into the entryWidget
                 self.entryWidgets[g].insert(0, _prettyString(value))
@@ -1004,20 +1012,18 @@ class _wxParamDialog(_paramDialog):
             if self.entryWidgets[g] == None:
                 continue
             try:
-                # get text from different type of entries
-                try:    # an entry box or check box, or file/dir browser
-                    val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue(), self.options)
-                except:
-                    try:    # a list box?
-                        val = _getParamValue(self.options[g],
+                if self.options[g]['gui_type'] == 'chooseOneOf':
+                    val = _getParamValue(self.options[g],
                             self.options[g]['chooseOneOf'][int(self.entryWidgets[g].GetSelection())],
                             self.options)
-                    except: # a checklist box?
-                        items = []
-                        for s in range(len(self.options[g]['chooseFrom'])):
-                            if self.entryWidgets[g].IsChecked(s):
-                                items.append(self.options[g]['chooseFrom'][s])
-                        val = _getParamValue(self.options[g], items, self.options)
+                elif self.options[g]['gui_type'] == 'chooseFrom':
+                    items = []
+                    for s in range(len(self.options[g]['chooseFrom'])):
+                        if self.entryWidgets[g].IsChecked(s):
+                            items.append(self.options[g]['chooseFrom'][s])
+                    val = _getParamValue(self.options[g], items, self.options)
+                else:
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue(), self.options)
             except exceptions.Exception, e:
                 # incorrect value
                 # set to red
@@ -1026,6 +1032,8 @@ class _wxParamDialog(_paramDialog):
                     if lab is not None:
                         lab.SetForegroundColour('black')
                         lab.Refresh()
+                print 'Error handling paramter %s' % self.options[g]['name']
+                print e
                 if self.labelWidgets[g] is not None:
                     # happen to a boolean set...
                     # set this one to red
@@ -1079,10 +1087,10 @@ class _wxParamDialog(_paramDialog):
         numRows, numCols = self.setLayout(False)
         # all entries
         for g,opt in enumerate(self.options):
-            if opt['type'] == 'hidden':
+            if opt['gui_type'] == 'hidden':
                 continue
             r, c, rspan = opt['layout']
-            if opt['type'] == 'separator':
+            if opt['gui_type'] == 'separator':
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
                 f = self.labelWidgets[g].GetFont()
                 f.SetWeight(wx.BOLD)
@@ -1101,7 +1109,7 @@ class _wxParamDialog(_paramDialog):
                 tooltip = _prettyDesc(opt['description'])
             else:
                 tooltip = 'arg: ' + opt['name']
-            if opt['type'] == 'chooseOneOf':    # single choice
+            if opt['gui_type'] == 'chooseOneOf':    # single choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
@@ -1115,7 +1123,7 @@ class _wxParamDialog(_paramDialog):
                         self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(value))
                     except:
                         raise ValueError('Value: %s is not one of %s.' % (str(value), str(opt['chooseOneOf'])))
-            elif opt['type'] == 'chooseFrom':    # multiple choice
+            elif opt['gui_type'] == 'chooseFrom':    # multiple choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
@@ -1130,18 +1138,18 @@ class _wxParamDialog(_paramDialog):
                         self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
                 gridBox[c].Add(self.entryWidgets[g], (r, 1), span=(rspan, 1), flag=wx.EXPAND
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt['type'] == 'boolean':
+            elif opt['gui_type'] == 'boolean':
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = opt['label'])
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt['type'] == 'browseFile':
+            elif opt['gui_type'] == 'browseFile':
                 self.entryWidgets[g] = wx.lib.filebrowsebutton.FileBrowseButton(parent=self.dlg, id=g,
                     labelText=opt['label'], initialValue=value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1,2), flag=wx.EXPAND | wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt['type'] == 'browseDir':
+            elif opt['gui_type'] == 'browseDir':
                 self.entryWidgets[g] = wx.lib.filebrowsebutton.DirBrowseButton(parent=self.dlg, id=g,
                     labelText=opt['label'], startDirectory=value)
                 self.entryWidgets[g].SetValue(value)
@@ -1246,22 +1254,29 @@ class Params:
         ``False``. This module defines a large number of such validation
         functions but user defined functions are also acceptable.
 
-    chooseOneOf
-        If specified, a list of specified values will be displayed in the
-        parameter input dialog and users are allowed to choose one of them.
-
-    chooseFrom
-        If specified, a list of specified values will be displayed in the
-        parameter input dialog and users are allowed to choose one or more
-        of them.
+    type
+        Type of the input parameter. Which can be ``'chooseOneOf', values``,
+        ``'chooseFrom', values``, ``'boolean'``, ``'filename'``, ``'dirname'``,
+        ``'integer'``, ``'integers'``, ``'number'``, ``'numbers'``,
+        ``'string'``, ``'strings'`` or a specific list of allowed types.
+        These types will advise simuPOP how to accept them in the simuPOP
+        graphical userface, and how to convert user input to appropriate
+        types. ``'integer'`` is equvalent to ``[types.IntType, types.LongType]``
+        and ``'integers'`` accepts a list of integers. Single inputs will
+        be automatically converted to a list. ``'number'`` means any number,
+        including ``types.IntType``, ``types.LongType``, and
+        ``types.FloatType``. ``'filename'`` will let simuPOP uses a file
+        browser to browse for an existing filename (use a ``string`` if this
+        file does not exist yet). ``'dirname'`` will let simuPOP uses a
+        browser to browse for an existing directory.
 
     separator
         This item specifies a separator (group header) in the parameter input
         dialog. All other fields are ignored.
    
-    arg, longarg, useDefault
+    arg, longarg, useDefault, chooseFrom, chooseOneOf, allowedTypes
         These parameters are deprecated because of the introduction of the
-        'name' key and the 'batch' mode.
+        'name', 'gui_type' keys and the 'batch' mode.
 
     Not all keys need to be specified in each option description. Missing
     values are handled using some internal rules. For example, items without
@@ -1333,18 +1348,17 @@ class Params:
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
         ``name='option'``. More specifically, you can specify parameters
-        ``name`` (required), ``label``, ``allowedTypes``, ``default``
-        (required), ``description``, ``validator``, ``chooseOneOf``,
-        ``chooseFrom`` and ``separator``. This option will have a name
-        specified by ``name`` and an initial default value specified by
-        ``default``.
+        ``name`` (required), ``label``, ``default`` (required),
+        ``description``, ``validator``, ``type``, and ``separator``.
+        This option will have a name specified by ``name`` and an initial
+        default value specified by ``default``.
 
         An optional parameter *pos* can be given to specify an index before
         which this option will be inserted.
         '''
-        allowed_keys = ['arg', 'name', 'longarg', 'label', 'allowedTypes',
-            'useDefault', 'default', 'description', 'validate',
-            'validator', 'chooseOneOf', 'chooseFrom', 'separator']
+        allowed_keys = ['name', 'default', 'label', 'description', 'validator',
+            'separator', 'type', 'arg', 'longarg', 'allowedTypes', 'useDefault',
+            'validate', 'chooseOneOf', 'chooseFrom']
         #
         methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
             'usage', 'processArgs', 'guiGetParam', 'termGetParam', 'addOption']
@@ -1360,6 +1374,8 @@ class Params:
             # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
             # solves this problem.
             if key == 'allowedTypes':
+                if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                    print >> sys.stderr, 'WARNING: allowedTypes is obsolete and might be removed from a future version of simuPOP.'
                 if isinstance(kwargs[key], types.TypeType):
                     opt[key] = [kwargs[key]]
                 else:
@@ -1374,16 +1390,22 @@ class Params:
                     print >> sys.stderr, 'WARNING: longarg is obsolete and might be removed from a future version of simuPOP.'
                 opt['name'] = kwargs[key].rstrip('=')
                 if not kwargs[key].endswith('='):
-                    opt['type'] = 'boolean'
+                    opt['gui_type'] = 'boolean'
             elif key == 'arg':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                     print >> sys.stderr, 'WARNING: arg is obsolete and might be removed from a future version of simuPOP.'
                 opt[key] = kwargs[key].rstrip(':')
                 if not kwargs[key].endswith(':'):
-                    opt['type'] = 'boolean'
+                    opt['gui_type'] = 'boolean'
                 if len(opt['arg']) != 1 or not opt['arg'][0].isalpha():
                     raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
             else:
+                if key == 'chooseOneOf':
+                    if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                        print >> sys.stderr, 'WARNING: chooseOneOf is obsolete and might be removed from a future version of simuPOP. Use type instead.'
+                elif key == 'chooseFrom':
+                    if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                        print >> sys.stderr, 'WARNING: chooseFrom is obsolete and might be removed from a future version of simuPOP. Use type instead.'
                 opt[key] = kwargs[key]
             if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                 print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
@@ -1393,7 +1415,7 @@ class Params:
         else:
             self.options.append(opt)
         if opt.has_key('separator'):
-            opt['type'] = 'separator'
+            opt['gui_type'] = 'separator'
             return
         if 'name' not in opt.keys():
             raise exceptions.ValueError('Item name cannot be ignored in an option specification dictionary')
@@ -1415,7 +1437,129 @@ class Params:
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
                 (opt['name'], (opt['name'])))
         #
+        # 
+        # simuPOP 1.0.3 disallow invalid default value in parameter specification
+        # dictionary. This seemed to be a logic change but it turned out that invalid
+        # default value cannot always be avoided (e.g. a valid filename that cannot have
+        # a valid default value). This version allows invalid default value again.
+        #
+        #if not _validate(opt['value'], opt, self.options):
+        #    raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
+        opt['value'] = opt['default']
+        opt['processed'] = False
+        #
+        if self.dict.has_key(opt['name']):
+            raise exceptions.ValueError('Option %s already exists.' % opt['name'])
+        # process raw_type
+        if opt.has_key('type'):
+            if len(opt['type']) == 2 and opt['type'][0] == 'chooseOneOf':
+                opt['gui_type'] = 'chooseOneOf'
+                opt['chooseOneOf'] = opt['type'][1]
+                if len(opt['chooseOneOf']) == 0:
+                    raise exceptions.ValueError('Empty list to choose from')
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueOneOf(opt['chooseOneOf'])
+                if not opt.has_key('allowedTypes'):
+                    opt['allowedTypes'] = [type(opt['chooseOneOf'][0])]
+            elif len(opt['type']) == 2 and opt['type'][0] == 'chooseFrom':
+                opt['gui_type'] = 'chooseFrom'
+                opt['chooseFrom'] = opt['type'][1]
+                if len(opt['chooseFrom']) == 0:
+                    raise exceptions.ValueError('Empty list to choose from')
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueOneOf(opt['chooseFrom'])
+                if not opt.has_key('allowedTypes'):
+                    opt['allowedTypes'] = [type(opt['chooseFrom'][0])]
+            elif opt['type'] == 'boolean':
+                opt['gui_type'] = 'boolean'
+                opt['allowedTypes'] = [types.BooleanType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueTrueFalse()
+            elif opt['type'] == 'integer':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.IntType, types.LongType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueIsInteger()
+            elif opt['type'] == 'integers':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueListOf(valueIsInteger())
+            elif opt['type'] == 'number':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.IntType, types.LongType, types.FloatType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueIsNum()
+            elif opt['type'] == 'numbers':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueListOf(valueIsNum())
+            elif opt['type'] == 'string':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.StringType]
+            elif opt['type'] == 'strings':
+                opt['gui_type'] = 'others'
+                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueListOf(types.StringType)
+            elif opt['type'] == 'filename':
+                opt['gui_type'] = 'browseFile'
+                opt['allowedTypes'] = [types.StringType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueValidFile()
+            elif opt['type'] == 'dirname':
+                opt['gui_type'] = 'browseDir'
+                opt['allowedTypes'] = [types.StringType]
+                if not opt.has_key('validator'):
+                    opt['validator'] = valueValidDir()
+            else:
+                if isinstance(opt['type'], types.TypeType):
+                    opt['allowedTypes'] = [opt['type']]
+                elif type(opt['type']) in [types.ListType, types.TupleType]:
+                    # must be a list.
+                    for v in opt['type']:
+                        if not isinstance(v, types.TypeType):
+                            raise exceptions.ValueError('Key type is not one of the specified types, or a list of types.')
+                    opt['allowedTypes'] = opt['type']            
+                else:
+                    raise exceptions.ValueError('Key type is not one of the specified types, or a list of types.')
+        # if raw_type is not specified.
+        # determine type of option
+        if opt.has_key('gui_type'):
+            if opt['gui_type'] == 'boolean' and (opt.has_key('chooseOneOf') or opt.has_key('chooseFrom')):
+	             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
+        elif not (opt.has_key('label') or opt.has_key('separator')):
+            opt['gui_type'] = 'hidden'
+        elif opt.has_key('separator'):
+            opt['gui_type'] = 'separator'
+        elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
+            opt['gui_type'] = 'boolean'
+        elif opt.has_key('chooseFrom'):
+            opt['gui_type'] = 'chooseFrom'
+            if not opt.has_key('validator'):
+                opt['validator'] = valueListOf(valueOneOf(opt['chooseFrom']))
+        elif opt.has_key('chooseOneOf'):
+            opt['gui_type'] = 'chooseOneOf'
+            if not opt.has_key('validator'):
+                opt['validator'] = valueOneOf(opt['chooseOneOf'])
+        elif opt.has_key('validator') and callable(opt['validator']) and \
+            opt['validator'].__doc__ == valueValidFile().__doc__:
+            opt['gui_type'] = 'browseFile'
+        elif opt.has_key('validator') and callable(opt['validator']) and \
+            opt['validator'].__doc__ == valueValidDir().__doc__:
+            opt['gui_type'] = 'browseDir'
+        else:
+            opt['gui_type'] = 'others'
+        #
+        if opt['gui_type'] == 'boolean' and opt['default'] is True and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+            print >> sys.stderr, 'WARNING: the default value for a boolean parameter should be False.'
         # is default value allowed?
+        if not opt.has_key('allowedTypes'):
+            if opt.has_key('chooseFrom'):
+                opt['allowedTypes'] = [type(()), type([])]
+            else:
+                opt['allowedTypes'] = [type(opt['default'])]
         if opt.has_key('allowedTypes') and type(opt['default']) not in opt['allowedTypes']:
             if types.ListType in opt['allowedTypes']:
                 opt['default'] = [opt['default']]
@@ -1423,53 +1567,6 @@ class Params:
                 opt['default'] = (opt['default'],)
             else:
                 raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
-        # 
-        # simuPOP 1.0.3 disallow invalid default value in parameter specification
-        # dictionary. This seemed to be a logic change but it turned out that invalid
-        # default value cannot always be avoided (e.g. a valid filename that cannot have
-        # a valid default value). This version allows invalid default value again.
-        #
-        #if not _validate(opt, self.options):
-        #    raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
-        opt['value'] = opt['default']
-        opt['processed'] = False
-        if not opt.has_key('allowedTypes'):
-            if opt.has_key('chooseFrom'):
-                opt['allowedTypes'] = [type(()), type([])]
-            else:
-                opt['allowedTypes'] = [type(opt['default'])]
-        #
-        if self.dict.has_key(opt['name']):
-            raise exceptions.ValueError('Option %s already exists.' % opt['name'])
-        # determine type of option
-        if opt.has_key('type'):
-            if opt.has_key('chooseOneOf') or opt.has_key('chooseFrom'):
-	             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
-        elif not (opt.has_key('label') or opt.has_key('separator')):
-            opt['type'] = 'hidden'
-        elif opt.has_key('separator'):
-            opt['type'] = 'separator'
-        elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
-            opt['type'] = 'boolean'
-        elif opt.has_key('chooseFrom'):
-            opt['type'] = 'chooseFrom'
-            if not opt.has_key('validator'):
-                opt['validator'] = valueListOf(valueOneOf(opt['chooseFrom']))
-        elif opt.has_key('chooseOneOf'):
-            opt['type'] = 'chooseOneOf'
-            if not opt.has_key('validator'):
-                opt['validator'] = valueOneOf(opt['chooseOneOf'])
-        elif opt.has_key('validator') and callable(opt['validator']) and \
-            opt['validator'].__doc__ == valueValidFile().__doc__:
-            opt['type'] = 'browseFile'
-        elif opt.has_key('validator') and callable(opt['validator']) and \
-            opt['validator'].__doc__ == valueValidDir().__doc__:
-            opt['type'] = 'browseDir'
-        else:
-            opt['type'] = 'others'
-        #
-        if opt['type'] == 'boolean' and opt['default'] is True and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-            print >> sys.stderr, 'WARNING: the default value for a boolean parameter should be False.'
         self.dict[opt['name']] = opt
 
 
@@ -1516,7 +1613,7 @@ class Params:
             if opt.has_key('separator') or not opt.has_key('label'):
                 continue
             defaultVal = opt.has_key('useDefault') and opt['useDefault'] and str(opt['value']) == str(opt['default'])
-            if opt['type'] != 'boolean':
+            if opt['gui_type'] != 'boolean':
                 if ',' in str(opt['value']):    # has single quote
                     arg = " --" + opt['name'] + '=' + _prettyString(opt['value'], quoted=True)
                     cmd += arg
@@ -1573,11 +1670,11 @@ class Params:
             print self.usage()
             return False
         for opt in self.options:
-            if opt['type'] == 'separator':
+            if opt['gui_type'] == 'separator':
                 continue
             if len(params) > 0 and opt['name'] not in params:
                 continue
-            if opt['type'] == 'boolean': # do not expect an argument, simple
+            if opt['gui_type'] == 'boolean': # do not expect an argument, simple
                 # this part is complex in order to be backward compatible.
                 # In the new version, only --name is allowed.
                 value = None
@@ -1856,7 +1953,7 @@ class Params:
                 if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
                     raise exceptions.ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
-                if not _validate(self.options, opt):
+                if not _validate(opt['value'], opt, self.options):
                     raise exceptions.ValueError("Value '%s' is not allowed for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
             return True
