@@ -515,6 +515,28 @@ def _prettyDesc(text, indent='', width=80):
     return '\n'.join(txt)
 
 
+def _validate(opt, options=[]):
+    '''validate an option against other options'''
+    # if no validator is specified
+    if not opt.has_key('validate'):
+        return True
+    print opt['validate'], callable(opt['validate'])
+    # if a function is given, easy
+    if callable(opt['validate']):
+        return opt['validate'](opt['value'])
+    # we need a dictionary
+    env = {}
+    for o in options:
+        if o.has_key('separator'):
+            continue
+        name = o['name']
+        env[name] = o['value']
+    print 'ENV IS', env
+    print 'expr is', opt['validate']
+    print 'RES of %s is "%s"' % (opt['validate'], eval(opt['validate'], globals(), env))
+    return eval(opt['validate'], globals(), env) is True
+
+
 def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'):
     'Return a usage message.'
     if msg != '':
@@ -570,7 +592,7 @@ options:
         message += '\n'
     return message
 
-def _getParamValue(p, val):
+def _getParamValue(p, val, options):
     ''' try to get a value from value, raise exception if error happens. '''
     if p.has_key('separator'):
         raise exceptions.ValueError('Cannot get a value for separator')
@@ -584,9 +606,9 @@ def _getParamValue(p, val):
                 val = val[len(quote):-len(quote)]
                 break
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
-        if p.has_key('validate') and not p['validate'](val):
-                raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
-                    (str(val), p['name']))
+        if not _validate(p, options):
+            raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
+                (str(val), p['name']))
         return val
     # handle another 'auto-boolean' case
     elif not (p['longarg'].endswith('=')):
@@ -609,12 +631,12 @@ def _getParamValue(p, val):
                     val.append(i.strip())
     # evaluated type is OK now.
     if type(val) in p['allowedTypes']:
-        if p.has_key('validate') and not p['validate'](val):
-                raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
+        if not _validate(p, options):
+            raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif types.ListType in p['allowedTypes'] or types.TupleType in p['allowedTypes']:
-        if p.has_key('validate') and not p['validate']([val]):
-                raise exceptions.ValueError("Value "+str([val])+' does not pass validation')
+        if not _validate(p, options):
+            raise exceptions.ValueError("Value "+str([val])+' does not pass validation')
         return [val]
     elif type(val) == type(True) and types.IntType in p['allowedTypes']: # compatibility problem
         return val
@@ -817,18 +839,18 @@ class _tkParamDialog(_paramDialog):
             try:
                 # get text from different type of entries
                 if self.entryWidgets[g].winfo_class() == "Entry":    # an entry box?
-                    val = _getParamValue(self.options[g], self.entryWidgets[g].get())
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].get(), self.options)
                 elif self.entryWidgets[g].winfo_class() == "Listbox":    # a listbox
                     sel = self.entryWidgets[g].curselection()
                     if self.options[g].has_key('chooseOneOf'):
                         items = self.options[g]['chooseOneOf'][int(sel[0])]
                     else:
                         items = [self.options[g]['chooseFrom'][int(x)] for x in sel]
-                    val = _getParamValue(self.options[g], items)
+                    val = _getParamValue(self.options[g], items, self.options)
                 elif self.entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
                     # gets 0/1 for false/true
                     var = self.options[g]['value'].get()
-                    val = _getParamValue(self.options[g], var == 1)
+                    val = _getParamValue(self.options[g], var == 1, self.options)
             except Exception,e:
                 for lab in self.labelWidgets:
                     if lab is not None:
@@ -924,7 +946,7 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g] = tk.Entry(self.app)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, ipadx=0, pady=2)
-                if opt.has_key('validate') and opt['validate'].__doc__ in \
+                if opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ in \
                     [valueValidFile().__doc__, valueValidDir().__doc__]:
                     self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
                 # put default value into the entryWidget
@@ -988,17 +1010,18 @@ class _wxParamDialog(_paramDialog):
             try:
                 # get text from different type of entries
                 try:    # an entry box or check box, or file/dir browser
-                    val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue())
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue(), self.options)
                 except:
                     try:    # a list box?
                         val = _getParamValue(self.options[g],
-                            self.options[g]['chooseOneOf'][int(self.entryWidgets[g].GetSelection())])
+                            self.options[g]['chooseOneOf'][int(self.entryWidgets[g].GetSelection())],
+                            self.options)
                     except: # a checklist box?
                         items = []
                         for s in range(len(self.options[g]['chooseFrom'])):
                             if self.entryWidgets[g].IsChecked(s):
                                 items.append(self.options[g]['chooseFrom'][s])
-                        val = _getParamValue(self.options[g], items)
+                        val = _getParamValue(self.options[g], items, self.options)
             except exceptions.Exception, e:
                 # incorrect value
                 # set to red
@@ -1116,7 +1139,7 @@ class _wxParamDialog(_paramDialog):
                     self.entryWidgets[g].SetValue(value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt.has_key('validate') and opt['validate'].__doc__ == valueValidFile().__doc__:
+            elif opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ == valueValidFile().__doc__:
                 #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
                 #    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
@@ -1124,7 +1147,7 @@ class _wxParamDialog(_paramDialog):
                     labelText=opt['label'], initialValue=value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1,2), flag=wx.EXPAND | wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt.has_key('validate') and opt['validate'].__doc__ == valueValidDir().__doc__:
+            elif opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ == valueValidDir().__doc__:
                 #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
                 #    | wx.BOTTOM | wx.TOP, border=2)
@@ -1237,8 +1260,11 @@ class Params:
         is acceptable, a single value can be used as input (ignore []).
 
     validate
-        A function to validate the parameter. The function will be applied to
-        user input. The option will not be accepted if this function returns
+        An expression or a function to validate the parameter. If an expression
+        (a string) is used, it will be evaluated using current values of
+        parameters as inputs. If a function is specified, it will be called
+        with the value of the parameter. The option will not be accepted if
+        the expression is evalulated as ''False'' or if the function returns
         ``False``. This module defines a large number of such validation
         functions but user defined functions are also acceptable.
 
@@ -1413,7 +1439,7 @@ class Params:
         # default value cannot always be avoided (e.g. a valid filename that cannot have
         # a valid default value). This version allows invalid default value again.
         #
-        #if opt.has_key('validate') and not opt['validate'](opt['default']):
+        #if not _validate(opt, self.options):
         #    raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
         opt['value'] = opt['default']
         opt['processed'] = False
@@ -1514,7 +1540,7 @@ class Params:
                 scan = re.compile(name + r'\s*=\s*(.*)')
                 if scan.match(line):
                     value = scan.match(line).groups()[0]
-                    opt['value'] = _getParamValue(opt, value.strip('''"'\n'''))
+                    opt['value'] = _getParamValue(opt, value.strip('''"'\n'''), self.options)
                     opt['processed'] = True
         cfg.close()
 
@@ -1587,7 +1613,7 @@ class Params:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
-                        val = _getParamValue(opt, cmdArgs[idx+1])
+                        val = _getParamValue(opt, cmdArgs[idx+1], self.options)
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
@@ -1599,7 +1625,7 @@ class Params:
                 # case 2 --arg=something
                 else:
                     try:
-                        val = _getParamValue(opt, cmdArgs[idx][(len(name)+3):])
+                        val = _getParamValue(opt, cmdArgs[idx][(len(name)+3):], self.options)
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
@@ -1619,7 +1645,7 @@ class Params:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
-                        val = _getParamValue(opt, cmdArgs[idx+1])
+                        val = _getParamValue(opt, cmdArgs[idx+1], self.options)
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
@@ -1635,9 +1661,9 @@ class Params:
                     try:
                         arg = cmdArgs[idx]
                         if len(arg) > 3 and arg[2] == '=':
-                            val = _getParamValue(opt, cmdArgs[idx][3:])
+                            val = _getParamValue(opt, cmdArgs[idx][3:], self.options)
                         else:
-                            val = _getParamValue(opt, cmdArgs[idx][2:])
+                            val = _getParamValue(opt, cmdArgs[idx][2:], self.options)
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
@@ -1694,7 +1720,7 @@ class Params:
                     opt['processed'] = True
                     break
                 try:
-                    opt['value'] = _getParamValue(opt, value)
+                    opt['value'] = _getParamValue(opt, value, self.options)
                     opt['processed'] = True
                     break
                 except:
@@ -1814,7 +1840,7 @@ class Params:
                 if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
                     raise exceptions.ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
-                if opt.has_key('validate') and not opt['validate'](opt['value']):
+                if not _validate(self.options, opt):
                     raise exceptions.ValueError("Value '%s' is not allowed for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
             return True

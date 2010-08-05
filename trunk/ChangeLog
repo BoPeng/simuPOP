@@ -17,6 +17,7 @@ New features:
 		parameter pop.
   - Beautify wxPython based parameter dialog.
   - Add validation function valueSumTo.
+  - Allow the use of expressions to validate options.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
