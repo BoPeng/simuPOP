@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -19028,7 +19028,7 @@ allowedTypes
 \family typewriter
 validate
 \family default
- (a function that return tells if a user input is valid), 
+ (a function or an expression that tells if a user input is valid), 
 \family typewriter
 chooseOneOf
 \family default
@@ -19041,6 +19041,92 @@ chooseFrom
  values from the provided values).
  Although it can be lengthy to describe a parameter in this way, it is a
  self-documentary process from which your users and even yourself will benefit.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+validate
+\family default
+ is very useful in that it helps simuPOP determine whether or not a user
+ input should be accepted.
+ It accepts a function or an expression.
+ Module 
+\family typewriter
+simuOpt
+\family default
+ defines a number of functions that you can use.
+ For example, if a parameter defines a probability, you might want to use
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+simuOpt.valueBetween(0, 1)
+\end_layout
+
+\end_inset
+
+to validate if the input is between 0 and 1.
+ If a list of probabilities is needed, you can use 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
+\end_layout
+
+\end_inset
+
+More complex logics can be defined using 
+\family typewriter
+simuOpt.valueOr
+\family default
+ or 
+\family typewriter
+simuOpt.valueAnd
+\family default
+.
+ Moreover, simuPOP looks for the use of 
+\family typewriter
+simuOpt.valueValidDir
+\family default
+ or 
+\family typewriter
+simuOpt.valueValidFile
+\family default
+ to determine if a valid directory or file is needed, and use a file browser
+ in the parameter input dialog.
+\end_layout
+
+\begin_layout Standard
+If validation of one parameter involves the values of other parameters,
+ a Python expression can be used.
+ For example, if two parameters need to have the same length, you can use
+ 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+'len(opt1) == len(opt2)'
+\end_layout
+
+\end_inset
+
+to validate 
+\family typewriter
+opt1
+\family default
+ or 
+\family typewriter
+opt2
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -19377,23 +19463,6 @@ reference "fig:parameter-input-dialog"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Note
-If 
-\family typewriter
-Params.valueValidFile()
-\family default
- or 
-\family typewriter
-Params.valueValidDir()
-\family default
- is used to validate a parameter, 
-\series bold
-double click
-\series default
- the input textbox of this parameter will open a file or directory browse
- dialog.
 \end_layout
 
 \begin_layout Standard
