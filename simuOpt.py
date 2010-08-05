@@ -520,7 +520,6 @@ def _validate(opt, options=[]):
     # if no validator is specified
     if not opt.has_key('validate'):
         return True
-    print opt['validate'], callable(opt['validate'])
     # if a function is given, easy
     if callable(opt['validate']):
         return opt['validate'](opt['value'])
@@ -531,9 +530,6 @@ def _validate(opt, options=[]):
             continue
         name = o['name']
         env[name] = o['value']
-    print 'ENV IS', env
-    print 'expr is', opt['validate']
-    print 'RES of %s is "%s"' % (opt['validate'], eval(opt['validate'], globals(), env))
     return eval(opt['validate'], globals(), env) is True
 
 
