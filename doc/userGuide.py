@@ -4447,8 +4447,8 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 import types, simuOpt
 options = [
-    {'arg': 'r:',
-     'longarg': 'rate=',
+    {'arg': 'r',
+     'name': 'rate',
      'default': [0.01],
      'useDefault': True,
      'label': 'Recombination rate',
@@ -4457,16 +4457,16 @@ options = [
             is given, it will be used for all replicates.''',
      'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
     },
-    {'longarg': 'rep=',
+    {'name': 'rep',
      'default': 5,
      'label': 'Number of replicates',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Number of replicates to simulate.',
      'validate': simuOpt.valueGT(0)
     }, 
-    {'longarg': 'pop=',
+    {'name': 'pop',
      'default': 'CEU',
-     'label': 'Initial sim.Population',
+     'label': 'Initial population',
      'allowedTypes': [types.StringType],
      'description': '''Use one of the HapMap sim.populations as the initial
             sim.Population for this simulation. You can choose from:
@@ -4529,8 +4529,8 @@ print par2.rep, par2.pop
 import types, simuOpt
 options = [
     simuOpt.param(
-        arg = 'r:',
-        longarg = 'rate=',
+        arg = 'r',
+        name = 'rate',
         default = [0.01],
         useDefault = True,
         label = 'Recombination rate',
@@ -4539,16 +4539,16 @@ options = [
             is given, it will be used for all replicates.''',
         validate = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
     simuOpt.param(
-        longarg = 'rep=',
+        name = 'rep',
         default = 5,
         label = 'Number of replicates',
         allowedTypes = [types.IntType, types.LongType],
         description = 'Number of replicates to simulate.',
         validate = simuOpt.valueGT(0)), 
     simuOpt.param(
-        longarg = 'pop=',
+        name = 'pop',
         default = 'CEU',
-        label = 'Initial sim.Population',
+        label = 'Initial population',
         allowedTypes = [types.StringType],
         description = '''Use one of the HapMap sim.populations as the initial
             sim.Population for this simulation. You can choose from:
@@ -4967,13 +4967,13 @@ simuOpt.setOptions(quiet=True, alleleType='long')
 import simuPOP as sim
 import sys, types, os, math
 options = [
-    {'longarg': 'demo=',
+    {'name': 'demo',
      'default': 'instant',
      'label': 'Population growth model',
      'description': 'How does a sim.Population grow from N0 to N1.',
      'chooseOneOf': ['instant', 'exponential'],
     },
-    {'longarg': 'N0=',
+    {'name': 'N0',
      'default': 10000,
      'label': 'Initial sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
@@ -4981,28 +4981,28 @@ options = [
                 till the end of burnin stage''',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'N1=',
+    {'name': 'N1',
      'default': 100000,
      'label': 'Final sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending sim.population size (after sim.population expansion)',
      'validate': simuOpt.valueGT(0)
     }, 
-    {'longarg': 'G0=',
+    {'name': 'G0',
      'default': 500,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'G1=',
+    {'name': 'G1',
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of geneartions of the sim.population expansion stage',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'spec=',
+    {'name': 'spec',
      'default': [0.9] + [0.02]*5,
      'label': 'Initial allelic spectrum',
      'allowedTypes': [types.TupleType, types.ListType],
@@ -5010,7 +5010,7 @@ options = [
             frequencies, for allele 0, 1, 2, ... respectively.''',
      'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
     },
-    {'longarg': 's=',
+    {'name': 's',
      'default': 0.01,
      'label': 'Selection pressure',
      'allowedTypes': [types.IntType, types.FloatType],
@@ -5019,14 +5019,14 @@ options = [
             genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
      'validate': simuOpt.valueGT(-1),
     },
-    {'longarg': 'mu=',
+    {'name': 'mu',
      'default': 1e-4,
      'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': 'Mutation rate of a k-allele mutation model',
      'validate': simuOpt.valueBetween(0, 1),
     },
-    {'longarg': 'k=',
+    {'name': 'k',
      'default': 200,
      'label': 'Maximum allelic state',
      'allowedTypes': [types.IntType],
