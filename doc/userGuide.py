@@ -4453,14 +4453,14 @@ options = [
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
+     'validator': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
     },
     {'name': 'rep',
      'default': 5,
      'label': 'Number of replicates',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Number of replicates to simulate.',
-     'validate': simuOpt.valueGT(0)
+     'validator': simuOpt.valueGT(0)
     }, 
     {'name': 'pop',
      'default': 'CEU',
@@ -4473,7 +4473,6 @@ options = [
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''',
      'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
-     'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
     }
 ]
 pars = simuOpt.Params(options, 'A demo simulation')
@@ -4533,14 +4532,14 @@ options = [
         allowedTypes = [types.ListType, types.TupleType],
         description = '''Recombination rate for each replicate. If a single value
             is given, it will be used for all replicates.''',
-        validate = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
+        validator = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
     simuOpt.param(
         name = 'rep',
         default = 5,
         label = 'Number of replicates',
         allowedTypes = [types.IntType, types.LongType],
         description = 'Number of replicates to simulate.',
-        validate = simuOpt.valueGT(0)), 
+        validator = simuOpt.valueGT(0)), 
     simuOpt.param(
         name = 'pop',
         default = 'CEU',
@@ -4553,7 +4552,6 @@ options = [
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''',
         chooseOneOf = ['CEU', 'YRI', 'CHB+JPT'],
-        validate = simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT']))
 ]
 #begin_ignore
 pars = simuOpt.Params(options, 'A demo simulation')
@@ -4975,28 +4973,28 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': '''Initial sim.population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate': simuOpt.valueGT(0)
+     'validator': simuOpt.valueGT(0)
     },
     {'name': 'N1',
      'default': 100000,
      'label': 'Final sim.population size',
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'Ending sim.population size (after sim.population expansion)',
-     'validate': simuOpt.valueGT(0)
+     'validator': simuOpt.valueGT(0)
     }, 
     {'name': 'G0',
      'default': 500,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
-     'validate': simuOpt.valueGT(0)
+     'validator': simuOpt.valueGT(0)
     },
     {'name': 'G1',
      'default': 1000,
      'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of geneartions of the sim.population expansion stage',
-     'validate': simuOpt.valueGT(0)
+     'validator': simuOpt.valueGT(0)
     },
     {'name': 'spec',
      'default': [0.9] + [0.02]*5,
@@ -5004,7 +5002,7 @@ options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'description': '''Initial allelic spectrum, should be a list of allele
             frequencies, for allele 0, 1, 2, ... respectively.''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
+     'validator': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
     },
     {'name': 's',
      'default': 0.01,
@@ -5013,21 +5011,21 @@ options = [
      'description': '''Selection coefficient for homozygtes (aa) genotype.
             A recessive selection model is used so the fitness values of
             genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
-     'validate': simuOpt.valueGT(-1),
+     'validator': simuOpt.valueGT(-1),
     },
     {'name': 'mu',
      'default': 1e-4,
      'label': 'Mutation rate',
      'allowedTypes': [types.IntType, types.FloatType],
      'description': 'Mutation rate of a k-allele mutation model',
-     'validate': simuOpt.valueBetween(0, 1),
+     'validator': simuOpt.valueBetween(0, 1),
     },
     {'name': 'k',
      'default': 200,
      'label': 'Maximum allelic state',
      'allowedTypes': [types.IntType],
      'description': 'Maximum allelic state for a k-allele mutation model',
-     'validate': simuOpt.valueGT(1),
+     'validator': simuOpt.valueGT(1),
     },
 ]
 
