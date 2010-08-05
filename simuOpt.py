@@ -566,6 +566,7 @@ options:
         if opt.has_key('separator'):
             continue
         name = ''
+        # this is obsolete
         if opt.has_key('arg'):
             if opt['type'] != 'boolean':
                 name += '-%s=ARG, ' % opt['arg']
@@ -1195,27 +1196,16 @@ class Params:
     parameter input dialog, acceptable types, validation rules and a default
     value. The following keys are currently supported:
 
-    arg
-        Short command line option name. For example ``'p'`` checks the presence
-        of argument ``-p``. For example, ``'p'`` matches command line option
-        ``-p``, ``-p=100`` or ``-p 100``. An options that does not expect a
-        value is identified as a BooleanType in allowedTypes, which will be
-        displayed in the parameter input dialog as an on/off switch. Such
-        options can be set to ``True`` by ``-arg`` or ``-arg=True`` or set to
-        ``False`` by ``-arg=False`` from commandline. Values ``1``, ``0``,
-        ``true`` or ``false`` are also acceptable.
-
     name
         Long command line option name.  For example ``'version'``  checks the
         presence of argument ``--version``. For example, ``'mu'`` matches
         command line option ``--mu=0.001`` or ``--mu 0.001``. **This item
         defines the name of an option and cannot be ignored**. An options that
         does not expect a value is identified as a single BooleanType in
-        allowedTypes, which will be displayed in the parameter input dialog as
-        an on/off switch. Such options can be set to ``True`` by ``--name``
-        or ``--name=True`` or set to ``False`` by ``--name=False`` from
-        commandline. Values ``1``, ``0``, ``true`` or ``false`` are also
-        acceptable.
+        allowedTypes or a default value ``False`` when no allowedTypes is
+        defined. Such a value should have default value ``False`` and the
+        presence of this argument in the command line (e.g. ``--verbose``)
+        change it to ``True``.
 
     label
         The label of the input field in a parameter input dialog. It will also
@@ -1269,9 +1259,9 @@ class Params:
         This item specifies a separator (group header) in the parameter input
         dialog. All other fields are ignored.
    
-    useDefault
-        This parameter is deprecated because of the introduction of the
-        'batch' mode.
+    arg, longarg, useDefault
+        These parameters are deprecated because of the introduction of the
+        'name' key and the 'batch' mode.
 
     Not all keys need to be specified in each option description. Missing
     values are handled using some internal rules. For example, items without
@@ -1343,8 +1333,8 @@ class Params:
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
         ``name='option'``. More specifically, you can specify parameters
-        ``arg``, ``name`` (required), ``label``, ``allowedTypes``,
-        ``default`` (required), ``description``, ``validate``, ``chooseOneOf``,
+        ``name`` (required), ``label``, ``allowedTypes``, ``default``
+        (required), ``description``, ``validate``, ``chooseOneOf``,
         ``chooseFrom`` and ``separator``. This option will have a name
         specified by ``name`` and an initial default value specified by
         ``default``.
@@ -1382,7 +1372,11 @@ class Params:
                 if not kwargs[key].endswith('='):
                     opt['type'] = 'boolean'
             elif key == 'arg':
+                if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                    print >> sys.stderr, 'WARNING: arg is obsolete and might be removed from a future version of simuPOP.'
                 opt[key] = kwargs[key].rstrip(':')
+                if not kwargs[key].endswith(':'):
+                    opt['type'] = 'boolean'
                 if len(opt['arg']) != 1 or not opt['arg'][0].isalpha():
                     raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
             else:
@@ -1402,6 +1396,8 @@ class Params:
         # allow alphabet, number and underscore (_).
         if not opt['name'].replace('_', '').isalnum() or not opt['name'][0].isalpha():
             raise exceptions.ValueError('Invalid option name %s' % opt['name'])
+        if kwargs.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in kwargs]) > 1: 	 
+	             raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
             raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['name'])
         if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'] == opt['arg'] for x in self.options]) > 1:
@@ -1442,25 +1438,34 @@ class Params:
         if self.dict.has_key(opt['name']):
             raise exceptions.ValueError('Option %s already exists.' % opt['name'])
         # determine type of option
-        if not opt.has_key('type'):
-            if not (opt.has_key('label') or opt.has_key('separator')):
-                opt['type'] = 'hidden'
-            elif opt.has_key('separator'):
-                opt['type'] = 'separator'
-            elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
-                opt['type'] = 'boolean'
-            elif opt.has_key('chooseFrom'):
-                opt['type'] = 'chooseFrom'
-            elif opt.has_key('chooseOneOf'):
-                opt['type'] = 'chooseOneOf'
-            elif opt.has_key('validate') and callable(opt['validate']) and \
-                opt['validate'].__doc__ == valueValidFile().__doc__:
-                opt['type'] = 'browseFile'
-            elif opt.has_key('validate') and callable(opt['validate']) and \
-                opt['validate'].__doc__ == valueValidDir().__doc__:
-                opt['type'] = 'browseDir'
-            else:
-                opt['type'] = 'others'
+        if opt.has_key('type'):
+            if opt.has_key('chooseOneOf') or opt.has_key('chooseFrom'):
+	             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
+        elif not (opt.has_key('label') or opt.has_key('separator')):
+            opt['type'] = 'hidden'
+        elif opt.has_key('separator'):
+            opt['type'] = 'separator'
+        elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
+            opt['type'] = 'boolean'
+        elif opt.has_key('chooseFrom'):
+            opt['type'] = 'chooseFrom'
+            if not opt.has_key('validate'):
+                opt['validate'] = valueListOf(valueOneOf(opt['chooseFrom']))
+        elif opt.has_key('chooseOneOf'):
+            opt['type'] = 'chooseOneOf'
+            if not opt.has_key('validate'):
+                opt['validate'] = valueOneOf(opt['chooseOneOf'])
+        elif opt.has_key('validate') and callable(opt['validate']) and \
+            opt['validate'].__doc__ == valueValidFile().__doc__:
+            opt['type'] = 'browseFile'
+        elif opt.has_key('validate') and callable(opt['validate']) and \
+            opt['validate'].__doc__ == valueValidDir().__doc__:
+            opt['type'] = 'browseDir'
+        else:
+            opt['type'] = 'others'
+        #
+        if opt['type'] == 'boolean' and opt['default'] is True and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+            print >> sys.stderr, 'WARNING: the default value for a boolean parameter should be False.'
         self.dict[opt['name']] = opt
 
 
@@ -1491,11 +1496,6 @@ class Params:
             # write arg and long arg
             if opt.has_key('label'):
                 print >> cfg, "# label:\t%s" % opt['label']
-            if opt.has_key('arg'):
-                if opt['arg'].endswith(':'):
-                    print >> cfg, "# shortarg:\t-%s = %s" % (opt['arg'], _prettyString(opt['value']))
-                else:
-                    print >> cfg, "# shortarg:\t-%s" % opt['arg']
             # write description
             if opt.has_key('description'):
                 desc = opt['description'].splitlines()
@@ -1574,6 +1574,8 @@ class Params:
             if len(params) > 0 and opt['name'] not in params:
                 continue
             if opt['type'] == 'boolean': # do not expect an argument, simple
+                # this part is complex in order to be backward compatible.
+                # In the new version, only --name is allowed.
                 value = None
                 indexes = []
                 for idx,arg in enumerate(cmdArgs):
