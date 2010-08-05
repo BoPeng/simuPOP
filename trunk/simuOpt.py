@@ -522,11 +522,11 @@ def _paramType(opt):
 def _validate(opt, options=[]):
     '''validate an option against other options'''
     # if no validator is specified
-    if not opt.has_key('validate'):
+    if not opt.has_key('validator'):
         return True
     # if a function is given, easy
-    if callable(opt['validate']):
-        return opt['validate'](opt['value'])
+    if callable(opt['validator']):
+        return opt['validator'](opt['value'])
     # we need a dictionary
     env = {}
     for o in options:
@@ -534,7 +534,7 @@ def _validate(opt, options=[]):
             continue
         name = o['name']
         env[name] = o['value']
-    return eval(opt['validate'], globals(), env) is True
+    return eval(opt['validator'], globals(), env) is True
 
 
 def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'):
@@ -1237,7 +1237,7 @@ class Params:
         specified, the type of the default value will be used. If only one type
         is acceptable, a single value can be used as input (ignore []).
 
-    validate
+    validator
         An expression or a function to validate the parameter. If an expression
         (a string) is used, it will be evaluated using current values of
         parameters as inputs. If a function is specified, it will be called
@@ -1289,7 +1289,7 @@ class Params:
         *details*, using parameter ``details=__doc__``.
         '''
         #
-        # validate
+        # validator
         if type(options) != type([]):
             raise exceptions.ValueError('An option specification list is expected')
         #
@@ -1334,7 +1334,7 @@ class Params:
         entries should be specified as keyword arguments such as
         ``name='option'``. More specifically, you can specify parameters
         ``name`` (required), ``label``, ``allowedTypes``, ``default``
-        (required), ``description``, ``validate``, ``chooseOneOf``,
+        (required), ``description``, ``validator``, ``chooseOneOf``,
         ``chooseFrom`` and ``separator``. This option will have a name
         specified by ``name`` and an initial default value specified by
         ``default``.
@@ -1343,8 +1343,8 @@ class Params:
         which this option will be inserted.
         '''
         allowed_keys = ['arg', 'name', 'longarg', 'label', 'allowedTypes',
-            'useDefault', 'default', 'description',
-            'validate', 'chooseOneOf', 'chooseFrom', 'separator']
+            'useDefault', 'default', 'description', 'validate',
+            'validator', 'chooseOneOf', 'chooseFrom', 'separator']
         #
         methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
             'usage', 'processArgs', 'guiGetParam', 'termGetParam', 'addOption']
@@ -1365,6 +1365,10 @@ class Params:
                 else:
                     # must be a list.
                     opt[key] = kwargs[key]
+            elif key == 'validate':
+                if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                    print >> sys.stderr, 'WARNING: key validate has been renamed to validator.'
+                opt['validator'] = kwargs[key]
             elif key == 'longarg':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                     print >> sys.stderr, 'WARNING: longarg is obsolete and might be removed from a future version of simuPOP.'
@@ -1449,17 +1453,17 @@ class Params:
             opt['type'] = 'boolean'
         elif opt.has_key('chooseFrom'):
             opt['type'] = 'chooseFrom'
-            if not opt.has_key('validate'):
-                opt['validate'] = valueListOf(valueOneOf(opt['chooseFrom']))
+            if not opt.has_key('validator'):
+                opt['validator'] = valueListOf(valueOneOf(opt['chooseFrom']))
         elif opt.has_key('chooseOneOf'):
             opt['type'] = 'chooseOneOf'
-            if not opt.has_key('validate'):
-                opt['validate'] = valueOneOf(opt['chooseOneOf'])
-        elif opt.has_key('validate') and callable(opt['validate']) and \
-            opt['validate'].__doc__ == valueValidFile().__doc__:
+            if not opt.has_key('validator'):
+                opt['validator'] = valueOneOf(opt['chooseOneOf'])
+        elif opt.has_key('validator') and callable(opt['validator']) and \
+            opt['validator'].__doc__ == valueValidFile().__doc__:
             opt['type'] = 'browseFile'
-        elif opt.has_key('validate') and callable(opt['validate']) and \
-            opt['validate'].__doc__ == valueValidDir().__doc__:
+        elif opt.has_key('validator') and callable(opt['validator']) and \
+            opt['validator'].__doc__ == valueValidDir().__doc__:
             opt['type'] = 'browseDir'
         else:
             opt['type'] = 'others'
