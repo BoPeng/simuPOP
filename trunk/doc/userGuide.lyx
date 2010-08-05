@@ -19005,7 +19005,7 @@ Params
  and optional short and long descriptions of a script.
  Each parameter specification dictionary consits of mandatory fields 
 \family typewriter
-longarg
+name
 \family default
  (long command line argument) and 
 \family typewriter

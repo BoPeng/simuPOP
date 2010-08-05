@@ -515,6 +515,10 @@ def _prettyDesc(text, indent='', width=80):
     return '\n'.join(txt)
 
 
+def _paramType(opt):
+    '''Determine the type of an option'''
+    
+
 def _validate(opt, options=[]):
     '''validate an option against other options'''
     # if no validator is specified
@@ -563,15 +567,15 @@ options:
             continue
         name = ''
         if opt.has_key('arg'):
-            if opt['arg'].endswith(':'):
-                name += '-%s=ARG, ' % opt['arg'].rstrip(':')
+            if opt['type'] != 'boolean':
+                name += '-%s=ARG, ' % opt['arg']
             else:
                 name += '-%s, ' % opt['arg']
         #
-        if opt['longarg'].endswith('='):
+        if opt['type'] != 'boolean':
             name += '--%s=ARG' % opt['name']
         else:
-            name += '--%s' % opt['longarg']
+            name += '--%s' % opt['name']
         #
         if isinstance(opt['default'], str):
             defaultVal = "'%s'" % opt['default']
@@ -590,7 +594,7 @@ options:
 
 def _getParamValue(p, val, options):
     ''' try to get a value from value, raise exception if error happens. '''
-    if p.has_key('separator'):
+    if p['type'] == 'separator':
         raise exceptions.ValueError('Cannot get a value for separator')
     # if we are giving a unicode string, convert!
     if type(val) == types.UnicodeType:
@@ -607,7 +611,7 @@ def _getParamValue(p, val, options):
                 (str(val), p['name']))
         return val
     # handle another 'auto-boolean' case
-    elif not (p['longarg'].endswith('=')):
+    elif p['type'] == 'boolean':
         if val in ['1', 'true', 'True']:
             return True
         elif val in ['0', 'false', 'False']:
@@ -648,15 +652,12 @@ class _paramDialog:
         # now, initialize variables
         self.options = options
         self.title = title
-        if nCol > 1:
-            self.description = _prettyDesc(description, indent='', width=80)
-        else:
-            self.description = _prettyDesc(description, indent='', width=55)
-        self.details = details
         if nCol is None:
             self.nCol = len(self.options)/20 + 1
         else:
             self.nCol = nCol
+        self.description = _prettyDesc(description, indent='', width=55*self.nCol)
+        self.details = details
 
     def setLayout(self, useTk=False):
         '''Design a layout for the parameter dialog. Currently only used by wxPython'''
@@ -776,7 +777,7 @@ class _tkParamDialog(_paramDialog):
         widget = event.widget
         opt = self.options[self.entryWidgets.index(widget)]
         import tkFileDialog as fileDlg
-        if 'valueValidFile' in opt['validate'].__doc__:
+        if opt['type'] == 'browseFile':
             filename = fileDlg.askopenfilename(title=opt['label'])
             if filename is not None:
                 # only available in Python 2.6
@@ -886,7 +887,7 @@ class _tkParamDialog(_paramDialog):
             # skip the top label...
             r += 1
             # use different entry method for different types
-            if opt.has_key('separator'):
+            if opt['type'] == 'separator':
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'])
                 f = tkFont.Font(font=self.labelWidgets[g]["font"]).copy()
                 f.config(weight='bold')
@@ -898,7 +899,7 @@ class _tkParamDialog(_paramDialog):
             value = self.options[g]['value']
             if value is None:
                 value = self.options[g]['default']
-            if opt.has_key('chooseOneOf'):    # single choice
+            if opt['type'] == 'chooseOneOf':    # single choice
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row= r,
                     padx=10, rowspan = 1, sticky=tk.W, pady=2)
@@ -910,7 +911,7 @@ class _tkParamDialog(_paramDialog):
                     self.entryWidgets[g].insert(tk.END, str(entry))
                 if value is not None:
                     self.entryWidgets[g].select_set(opt['chooseOneOf'].index(value))
-            elif opt.has_key('chooseFrom'):    # multiple choice
+            elif opt['type'] == 'chooseFrom':    # multiple choice
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row=r,
                     padx=10, sticky=tk.W, pady=2)
@@ -926,8 +927,7 @@ class _tkParamDialog(_paramDialog):
                             self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
                     else:
                         self.entryWidgets[g].select_set( opt['chooseFrom'].index( value ))
-            elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
-                 (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+            elif opt['type'] == 'boolean':
                 iv = tk.IntVar()
                 iv.set(self.options[g]['value'] == True) # value can be None, True or False
                 self.options[g]['value'] = iv
@@ -942,8 +942,7 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g] = tk.Entry(self.app)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, ipadx=0, pady=2)
-                if opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ in \
-                    [valueValidFile().__doc__, valueValidDir().__doc__]:
+                if opt['type'] in ['browseFile', 'browseDir']:
                     self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
                 # put default value into the entryWidget
                 self.entryWidgets[g].insert(0, _prettyString(value))
@@ -1026,10 +1025,12 @@ class _wxParamDialog(_paramDialog):
                     if lab is not None:
                         lab.SetForegroundColour('black')
                         lab.Refresh()
-                # set this one to red
-                self.labelWidgets[g].SetForegroundColour('red')
-                self.entryWidgets[g].SetFocus()
-                self.labelWidgets[g].Refresh()
+                if self.labelWidgets[g] is not None:
+                    # happen to a boolean set...
+                    # set this one to red
+                    self.labelWidgets[g].SetForegroundColour('red')
+                    self.entryWidgets[g].SetFocus()
+                    self.labelWidgets[g].Refresh()
                 return
             else:
                 # convert to values
@@ -1077,10 +1078,10 @@ class _wxParamDialog(_paramDialog):
         numRows, numCols = self.setLayout(False)
         # all entries
         for g,opt in enumerate(self.options):
-            if not (opt.has_key('label') or opt.has_key('separator')):
+            if opt['type'] == 'hidden':
                 continue
             r, c, rspan = opt['layout']
-            if opt.has_key('separator'):
+            if opt['type'] == 'separator':
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
                 f = self.labelWidgets[g].GetFont()
                 f.SetWeight(wx.BOLD)
@@ -1099,7 +1100,7 @@ class _wxParamDialog(_paramDialog):
                 tooltip = _prettyDesc(opt['description'])
             else:
                 tooltip = 'arg: ' + opt['name']
-            if opt.has_key('chooseOneOf'):    # single choice
+            if opt['type'] == 'chooseOneOf':    # single choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
@@ -1113,7 +1114,7 @@ class _wxParamDialog(_paramDialog):
                         self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(value))
                     except:
                         raise ValueError('Value: %s is not one of %s.' % (str(value), str(opt['chooseOneOf'])))
-            elif opt.has_key('chooseFrom'):    # multiple choice
+            elif opt['type'] == 'chooseFrom':    # multiple choice
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
@@ -1128,32 +1129,24 @@ class _wxParamDialog(_paramDialog):
                         self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
                 gridBox[c].Add(self.entryWidgets[g], (r, 1), span=(rspan, 1), flag=wx.EXPAND
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
-                 (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+            elif opt['type'] == 'boolean':
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = opt['label'])
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ == valueValidFile().__doc__:
-                #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-                #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT
-                #    | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
+            elif opt['type'] == 'browseFile':
                 self.entryWidgets[g] = wx.lib.filebrowsebutton.FileBrowseButton(parent=self.dlg, id=g,
                     labelText=opt['label'], initialValue=value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1,2), flag=wx.EXPAND | wx.ALIGN_LEFT
                     | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=2)
-            elif opt.has_key('validate') and callable(opt['validate']) and opt['validate'].__doc__ == valueValidDir().__doc__:
-                #self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
-                #gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
-                #    | wx.BOTTOM | wx.TOP, border=2)
+            elif opt['type'] == 'browseDir':
                 self.entryWidgets[g] = wx.lib.filebrowsebutton.DirBrowseButton(parent=self.dlg, id=g,
                     labelText=opt['label'], startDirectory=value)
                 self.entryWidgets[g].SetValue(value)
                 gridBox[c].Add(self.entryWidgets[g], (r, 0), span=(1, 2), flag=wx.EXPAND | wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
                     | wx.BOTTOM | wx.TOP, border=2)
             else: # an edit box
-                # put default value into the entryWidget
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
                 gridBox[c].Add(self.labelWidgets[g], (r, 0), flag=wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL
                     | wx.BOTTOM | wx.TOP, border=2)
@@ -1203,27 +1196,26 @@ class Params:
     value. The following keys are currently supported:
 
     arg
-        Short command line option name. For example ``'c'`` checks the presence
-        of argument ``-c``. If a value is expected, a comma should be appened
-        to the option name. For example, ``'p:'`` matches command line option
-        ``-p=100`` or ``-p 100``. An options that does not expect a value is
+        Short command line option name. For example ``'p'`` checks the presence
+        of argument ``-p``. For example, ``'p'`` matches command line option
+        ``-p``, ``-p=100`` or ``-p 100``. An options that does not expect a
+        value is identified as a BooleanType in allowedTypes, which will be
         displayed in the parameter input dialog as an on/off switch. Such
         options can be set to ``True`` by ``-arg`` or ``-arg=True`` or set to
         ``False`` by ``-arg=False`` from commandline. Values ``1``, ``0``,
         ``true`` or ``false`` are also acceptable.
 
-    longarg
+    name
         Long command line option name.  For example ``'version'``  checks the
-        presence of argument ``--version``. A equal character should be
-        appended to the option name if a value is expected. For example,
-        ``'mu='`` matches command line option ``--mu=0.001`` or ``--mu 0.001``.
-        **This item defines the name of an option and cannot be ignored**.
-        An options that does not expect a value is displayed in the parameter
-        input dialog as an on/off switch. Such options can be set to ``True``
-        by ``--longarg`` or ``--longarg=True`` or set to ``False`` by
-        ``--longarg=False`` from commandline. Values ``1``, ``0``, ``true``
-        or ``false`` are also acceptable.
-
+        presence of argument ``--version``. For example, ``'mu'`` matches
+        command line option ``--mu=0.001`` or ``--mu 0.001``. **This item
+        defines the name of an option and cannot be ignored**. An options that
+        does not expect a value is identified as a single BooleanType in
+        allowedTypes, which will be displayed in the parameter input dialog as
+        an on/off switch. Such options can be set to ``True`` by ``--name``
+        or ``--name=True`` or set to ``False`` by ``--name=False`` from
+        commandline. Values ``1``, ``0``, ``true`` or ``false`` are also
+        acceptable.
 
     label
         The label of the input field in a parameter input dialog. It will also
@@ -1350,17 +1342,17 @@ class Params:
         '''
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
-        ``longarg='option='``. More specifically, you can specify parameters
-        ``arg``, ``longarg`` (required), ``label``, ``allowedTypes``,
+        ``name='option'``. More specifically, you can specify parameters
+        ``arg``, ``name`` (required), ``label``, ``allowedTypes``,
         ``default`` (required), ``description``, ``validate``, ``chooseOneOf``,
         ``chooseFrom`` and ``separator``. This option will have a name
-        specified by ``longarg`` (without optional trailing ``=``) and an
-        initial default value specified by ``default``.
+        specified by ``name`` and an initial default value specified by
+        ``default``.
 
         An optional parameter *pos* can be given to specify an index before
         which this option will be inserted.
         '''
-        allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
+        allowed_keys = ['arg', 'name', 'longarg', 'label', 'allowedTypes',
             'useDefault', 'default', 'description',
             'validate', 'chooseOneOf', 'chooseFrom', 'separator']
         #
@@ -1372,54 +1364,56 @@ class Params:
         opt = {}
         # allow the input of single value for allowed types.
         for key in kwargs:
-            if key in allowed_keys:
-                # I used not hasattr(kwargs[key], '__iter__') to test single element but
-                # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
-                # solves this problem.
-                if key == 'allowedTypes' and isinstance(kwargs[key], types.TypeType):
+            if key not in allowed_keys:
+                raise exceptions.ValueError('Invalid option specification key %s' % key)
+            # I used not hasattr(kwargs[key], '__iter__') to test single element but
+            # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
+            # solves this problem.
+            if key == 'allowedTypes':
+                if isinstance(kwargs[key], types.TypeType):
                     opt[key] = [kwargs[key]]
                 else:
                     # must be a list.
                     opt[key] = kwargs[key]
-                if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                    print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
+            elif key == 'longarg':
+                if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                    print >> sys.stderr, 'WARNING: longarg is obsolete and might be removed from a future version of simuPOP.'
+                opt['name'] = kwargs[key].rstrip('=')
+                if not kwargs[key].endswith('='):
+                    opt['type'] = 'boolean'
+            elif key == 'arg':
+                opt[key] = kwargs[key].rstrip(':')
+                if len(opt['arg']) != 1 or not opt['arg'][0].isalpha():
+                    raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
             else:
-                raise exceptions.ValueError('Invalid option specification key %s' % key)
+                opt[key] = kwargs[key]
+            if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+                print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
         #
         if pos >= 0 and pos < len(self.options):
             self.options.insert(pos, opt)
         else:
             self.options.append(opt)
         if opt.has_key('separator'):
+            opt['type'] = 'separator'
             return
-        if 'longarg' not in opt.keys():
-            raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
-        opt['name'] = opt['longarg'].rstrip('=')
+        if 'name' not in opt.keys():
+            raise exceptions.ValueError('Item name cannot be ignored in an option specification dictionary')
         # allow alphabet, number and underscore (_).
-        if not opt['name'].replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
+        if not opt['name'].replace('_', '').isalnum() or not opt['name'][0].isalpha():
             raise exceptions.ValueError('Invalid option name %s' % opt['name'])
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
             raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['name'])
-        if opt.has_key('arg') and \
-            opt['arg'].endswith(':') != opt['longarg'].endswith('='):
-            raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
-        if opt.has_key('arg') and (len(opt['arg'].rstrip(':')) != 1 or not opt['arg'][0].isalpha()):
-            raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
-        if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]) > 1:
-            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'].rstrip(':'))
+        if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'] == opt['arg'] for x in self.options]) > 1:
+            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
         if opt['name'] in reserved_options:
             raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['name'])
-        if (not opt['longarg'].endswith('=')) and (opt.has_key('chooseOneOf') or \
-            opt.has_key('chooseFrom')):
-            raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
         if opt['name'] in methods:
             raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the Params class." % \
                 (opt['name'], (opt['name'])))
         if opt['name'] in self.__dict__.keys():
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
                 (opt['name'], (opt['name'])))
-        if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
-            raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s. Missing '=' after longarg?" % opt['longarg'])
         #
         # is default value allowed?
         if opt.has_key('allowedTypes') and type(opt['default']) not in opt['allowedTypes']:
@@ -1447,6 +1441,26 @@ class Params:
         #
         if self.dict.has_key(opt['name']):
             raise exceptions.ValueError('Option %s already exists.' % opt['name'])
+        # determine type of option
+        if not opt.has_key('type'):
+            if not (opt.has_key('label') or opt.has_key('separator')):
+                opt['type'] = 'hidden'
+            elif opt.has_key('separator'):
+                opt['type'] = 'separator'
+            elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
+                opt['type'] = 'boolean'
+            elif opt.has_key('chooseFrom'):
+                opt['type'] = 'chooseFrom'
+            elif opt.has_key('chooseOneOf'):
+                opt['type'] = 'chooseOneOf'
+            elif opt.has_key('validate') and callable(opt['validate']) and \
+                opt['validate'].__doc__ == valueValidFile().__doc__:
+                opt['type'] = 'browseFile'
+            elif opt.has_key('validate') and callable(opt['validate']) and \
+                opt['validate'].__doc__ == valueValidDir().__doc__:
+                opt['type'] = 'browseDir'
+            else:
+                opt['type'] = 'others'
         self.dict[opt['name']] = opt
 
 
@@ -1479,7 +1493,7 @@ class Params:
                 print >> cfg, "# label:\t%s" % opt['label']
             if opt.has_key('arg'):
                 if opt['arg'].endswith(':'):
-                    print >> cfg, "# shortarg:\t-%s = %s" % (opt['arg'].rstrip(':'), _prettyString(opt['value']))
+                    print >> cfg, "# shortarg:\t-%s = %s" % (opt['arg'], _prettyString(opt['value']))
                 else:
                     print >> cfg, "# shortarg:\t-%s" % opt['arg']
             # write description
@@ -1498,21 +1512,21 @@ class Params:
             if opt.has_key('separator') or not opt.has_key('label'):
                 continue
             defaultVal = opt.has_key('useDefault') and opt['useDefault'] and str(opt['value']) == str(opt['default'])
-            if opt['longarg'][-1] == '=':
+            if opt['type'] != 'boolean':
                 if ',' in str(opt['value']):    # has single quote
-                    arg = " --" + opt['longarg'][0:-1] + '=' + _prettyString(opt['value'], quoted=True)
+                    arg = " --" + opt['name'] + '=' + _prettyString(opt['value'], quoted=True)
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
                 else:
-                    arg = " --" + opt['longarg'][0:-1] + "=" + _prettyString(opt['value'], quoted=True)
+                    arg = " --" + opt['name'] + "=" + _prettyString(opt['value'], quoted=True)
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
             elif opt['value']: # this option is True
-                cmd += " --" + opt['longarg']
+                cmd += " --" + opt['name']
                 if not defaultVal:
-                    scmd += " --" + opt['longarg']
+                    scmd += " --" + opt['name']
         print >> cfg, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
         # print out shorter version
         print >> cfg, "\n\n#Or a shorter version if default arguments are ignored"
@@ -1555,15 +1569,15 @@ class Params:
             print self.usage()
             return False
         for opt in self.options:
-            if opt.has_key('separator'):
+            if opt['type'] == 'separator':
                 continue
             if len(params) > 0 and opt['name'] not in params:
                 continue
-            if not opt['longarg'].endswith('='): # do not expect an argument, simple
+            if opt['type'] == 'boolean': # do not expect an argument, simple
                 value = None
                 indexes = []
                 for idx,arg in enumerate(cmdArgs):
-                    if arg == '--' + opt['longarg']:
+                    if arg == '--' + opt['name']:
                         value = True
                         indexes.append(idx)
                         if idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['True', 'true', '1']:
@@ -1571,10 +1585,10 @@ class Params:
                         elif idx < len(cmdArgs) - 1 and cmdArgs[idx+1] in ['False', 'false', '0']:
                             value = False
                             indexes.append(idx+1)
-                    elif arg in ['--%s=%s' % (opt['longarg'], x) for x in  ['True', 'true', '1']]:
+                    elif arg in ['--%s=%s' % (opt['name'], x) for x in  ['True', 'true', '1']]:
                         value = True
                         indexes.append(idx)
-                    elif arg in ['--%s=%s' % (opt['longarg'], x) for x in  ['False', 'false', '0']]:
+                    elif arg in ['--%s=%s' % (opt['name'], x) for x in  ['False', 'false', '0']]:
                         value = False
                         indexes.append(idx)
                     elif opt.has_key('arg') and arg == '-' + opt['arg']:
