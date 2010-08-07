@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -18984,6 +18984,15 @@ myscript.py --gui=False --config configFile
  will execute a previous simulation directly.
 \end_layout
 
+\begin_layout Itemize
+Using 
+\family typewriter
+--gui=batch
+\family default
+, the script will use all default variables unless some of them are specified
+ from command line arguments.
+\end_layout
+
 \begin_layout Standard
 The following sections describes how to use the 
 \family typewriter
@@ -19003,50 +19012,141 @@ Params
 \family default
  object is created from a list of parameter specification dictionaries,
  and optional short and long descriptions of a script.
- Each parameter specification dictionary consits of mandatory fields 
+ Each parameter specification dictionary consits of the following fields:
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 name
 \family default
- (long command line argument) and 
+ (required): This field specifies the name of the argument.
+ The argument can be specified from a commandline using 
+\family typewriter
+--name=value
+\family default
+, or 
+\family typewriter
+--name
+\family default
+ if this argument is of a boolean type.
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 default
 \family default
- (default value for this parameter) and optional fields such as 
+ (required): default value for this parameter.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+type
+\family default
+ (optional): Type of acceptable input, which can be 
+\family typewriter
+'boolean'
+\family default
+, 
+\family typewriter
+'integer'
+\family default
+, 
+\family typewriter
+'integers',
+\family default
+ 
+\family typewriter
+'number'
+\family default
+, 
+\family typewriter
+'numbers'
+\family default
+, 
+\family typewriter
+'string'
+\family default
+, 
+\family typewriter
+'strings'
+\family default
+, 
+\family typewriter
+'filename'
+\family default
+, 
+\family typewriter
+'dirname'
+\family default
+, 
+\family typewriter
+('chooseOneOf', values)
+\family default
+, 
+\family typewriter
+('chooseFrom', values)
+\family default
+, and a list of acceptable types (e.g.
+ 
+\family typewriter
+types.ListType
+\family default
+).
+ This type determines the GUI widget to accept a parameter (e.g.
+ a checkbox for boolean type, and a listbox for choosing one or more values
+ from list, a file browser to browser for filename), how to convert user
+ input to appropriate format (e.g.
+ convert a string to float and a single value to a list), and how to validate
+ a parameter (e.g.
+ a valid filename).
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 label
 \family default
- (label to display in the parameter input dialog and as prompt for user
- input), 
+ (optional): A label to display in the parameter input dialog (when 
+\family typewriter
+--gui=True
+\family default
+) and as prompt for user input (when 
+\family typewriter
+--gui=False
+\family default
+).
+ If this field is missing, a parameter will not be displayed in the parameter
+ input dialog.
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
 description
 \family default
- (a detailed description), 
+ (optional): A detailed description of the parameter, which will be displayed
+ as tooltip of the parameter in the parameter input dialog, and be used
+ to generate help messages of the script.
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
-allowedTypes
+validator
 \family default
- (allowed types of input parameter), 
+ (optional): A function or an expression to validate if a user input is
+ valid
 \family typewriter
-validate
-\family default
- (a function or an expression that tells if a user input is valid), 
-\family typewriter
-chooseOneOf
-\family default
- (tells the parameter input dialog to allow users to choose one of the provided
- values) and 
-\family typewriter
-chooseFrom
-\family default
- (tells the parameter input dialog to allow users to choose one or more
- values from the provided values).
- Although it can be lengthy to describe a parameter in this way, it is a
- self-documentary process from which your users and even yourself will benefit.
+.
 \end_layout
 
 \begin_layout Standard
-
+Field 
 \family typewriter
-validate
+validator
 \family default
  is very useful in that it helps simuPOP determine whether or not a user
  input should be accepted.
@@ -19090,20 +19190,7 @@ simuOpt.valueOr
 simuOpt.valueAnd
 \family default
 .
- Moreover, simuPOP looks for the use of 
-\family typewriter
-simuOpt.valueValidDir
-\family default
- or 
-\family typewriter
-simuOpt.valueValidFile
-\family default
- to determine if a valid directory or file is needed, and use a file browser
- in the parameter input dialog.
-\end_layout
-
-\begin_layout Standard
-If validation of one parameter involves the values of other parameters,
+ If validation of one parameter involves the values of other parameters,
  a Python expression can be used.
  For example, if two parameters need to have the same length, you can use
  
