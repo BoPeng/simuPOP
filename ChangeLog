@@ -39,6 +39,7 @@ Regression (minor):
 		information fields.
   - Mark validate, arg, longarg, chooseFrom, chooseOneOf in parameter definition
         dictionary obsolete 
+  - Mark parameter revision in simuOpt.setOptions as obsolete.
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.
