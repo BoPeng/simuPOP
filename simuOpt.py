@@ -541,27 +541,27 @@ def _validate(value, opt, options=[]):
     return eval(opt['validator'], globals(), env) is True
 
 
-def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'):
+def _usage(options, msg='', details='', usage='usage: %prog [--opt[=arg]] ...'):
     'Return a usage message.'
     if msg != '':
-        message = msg + '\n'
+        message = _prettyDesc(msg, width=80) + '\n\n' + _prettyDesc(details, width=80) + '\n'
     else:
-        message = ''
+        message = _prettyDesc(details, width=80) + '\n'
     #
-    message += '''%s
+    message += '''\n%s
 
 options:
   -h, --help
-        Show this help message and exit.
+        Display this help message and exit.
 
   --config=ARG (default: None)
-        Load parameters from file ARG.
+        Load parameters from a configuration file ARG.
 
   --optimized
         Run the script using an optimized simuPOP module.
 
   --gui=[None|True|False|batch|Tkinter|wxPython] (default: None)
-        Which graphical toolkit to use.
+        Run the script in batch, interactive or GUI mode.
 
 ''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
     for opt in options:
@@ -806,7 +806,7 @@ class _tkParamDialog(_paramDialog):
         self.helpDlg.title('Help for ' + self.title)
         #
         msg = tk.Text(self.helpDlg, wrap=tk.WORD)
-        msg.insert(tk.END, _usage(self.options, self.details))
+        msg.insert(tk.END, _usage(self.options, '', self.details))
         msg.grid(column=0, row=0, pady=10, padx=10,
             sticky = tk.E + tk.W + tk.N + tk.S)
         # scrollbar
@@ -996,7 +996,7 @@ class _wxParamDialog(_paramDialog):
         box = wx.BoxSizer(wx.VERTICAL)
         box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[600,400],
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            value=_usage(self.options, self.details)), 0, wx.ALL, 20)
+            value=_usage(self.options, '', self.details)), 0, wx.ALL, 20)
         self.addButton(wx.ID_OK, "OK", lambda event:helpDlg.EndModal(wx.ID_OK), helpDlg, box)
         helpDlg.SetSizerAndFit(box)
         helpDlg.Layout()
@@ -1316,8 +1316,8 @@ class Params:
             raise exceptions.ValueError('Parameter doc must be a string.')
         if type(details) != type(''):
             raise exceptions.ValueError('Parameter details must be a string.')
-        self.doc = doc
-        self.details = details
+        self.doc = doc.strip()
+        self.details = details.strip()
         self.processedArgs = []
         # allow the change of default parameter or addition of parameters
         # using additional key=value pairs.
@@ -1789,7 +1789,7 @@ class Params:
         ``'%prog'`` in parameter *usage* will be replaced by
         ``os.path.basename(sys.argv[0])``.
         '''
-        return _usage(self.options, self.doc + '\n' + self.details)
+        return _usage(self.options, self.doc, self.details)
 
     def termGetParam(self, params=[]):
         '''Get parameters from interactive user input. By default, all
