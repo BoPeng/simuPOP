@@ -312,6 +312,8 @@ if simuOptions['Revision'] is not None:
         raise exceptions.ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
             'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
             'Please upgrade your simuPOP installation.')
+    if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
+        print >> sys.stderr, 'WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.'
 
 if not simuOptions['Quiet']:
     info = moduleInfo()

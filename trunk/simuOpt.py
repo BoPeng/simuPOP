@@ -34,7 +34,7 @@ When simuPOP is loaded, it checkes a few environmental variables
 (``SIMUOPTIMIZED``, ``SIMUALLELETYPE``, and ``SIMUDEBUG``) to determine which
 simuPOP module to load, and how to load it. More options can be set using the
 ``simuOpt.setOptions`` function. For example, you can suppress the banner
-message when simuPOP is loaded and require a minimal revision of simuPOP for
+message when simuPOP is loaded and require a minimal version of simuPOP for
 your script. simuPOP recognize the following commandline arguments
 
 ``--optimized``
@@ -197,10 +197,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         installed version is older than the required version.
 
     revision
-        A number indicating the required revision number for the simuPOP module
-        to be loaded. simuPOP will fail to load if the installed simuPOP is
-        older than the required revision. Please check simuPOP ChangeLog for
-        the revision number of distributed versions.
+        Obsolete with the introduction of parameter version.
     '''
     # Optimized
     if optimized in [True, False]:
