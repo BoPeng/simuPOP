@@ -19,6 +19,8 @@ New features:
   - Add validation function valueSumTo.
   - Allow the use of expressions to validate options.
   - Add name, type and validator to parameter definition dictionary.
+  - Add mode --gui=interactive which is repsented by --gui=False in previous
+		versions of simuPOP.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
@@ -27,6 +29,7 @@ Bugs:
         a valid default value). This version allows invalid default value again.
   - Fix a bug that prevents types.TupleType and types.ListType of being used alone in
 		allowedTypes of simuOpt.
+  - Fix a bug in the parameter input dialog.
 
 Regression (minor):
   - User provided function in function Population.recodeAlleles will be called once
@@ -43,7 +46,6 @@ Regression (minor):
 
 New features (minor):
   - Add mode EXPONENTIAL to MlSelector.
-
 
 version 1.0.3 - Rev 3592 (Jun. 8, 2010)
 
