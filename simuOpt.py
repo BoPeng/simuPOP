@@ -40,13 +40,16 @@ your script. simuPOP recognize the following commandline arguments
 ``--optimized``
     Load the optimized version of a simuPOP module.
 
-``--gui=True|batch|False|wxPython|Tkinter``
+``--gui=None|batch|interactive|True|wxPython|Tkinter``
     Whether or not use a graphical toolkit and which one to use.
     ``--gui=batch`` is usually used to run a script in batch mode (do not start
     a parameter input dialog and use all default values unless a parameter is
-    specified from command line or a configuraiton file. If ``--gui=False``, an
-    interactive shell will be used to solicit input from users. Please refer to
-    parameter ``gui`` for ``simuOpt.setOptions`` for details.
+    specified from command line or a configuraiton file. If
+    ``--gui=interactive``, an interactive shell will be used to solicit input
+    from users. Otherwise, simuPOP will try to use a graphical parameter input
+    dialog, and falls to an interactive mode when no graphical Toolkit is
+    available. Please refer to parameter ``gui`` for ``simuOpt.setOptions``
+    for details.
 
 class ``params.Params`` provides a powerful way to handle commandline
 arguments. Briefly speaking, a ``Params`` object can be created from a list
@@ -140,7 +143,7 @@ if _gui in ['True', 'true', '1']:
     simuOptions['GUI'] = True
 elif _gui in ['False', 'false', '0']:
     simuOptions['GUI'] = False
-elif _gui in ['wxPython', 'Tkinter', 'batch']:
+elif _gui in ['wxPython', 'Tkinter', 'batch', 'interactive']:
     simuOptions['GUI'] = _gui
 elif _gui is not None:
     print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
@@ -171,14 +174,16 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         ``SIMUGUI`` or commandline option ``--gui`` for a value, and assume
         ``True`` if such an option is unavailable. If ``gui=True``, simuPOP
         will use ``wxPython``-based dialogs if ``wxPython`` is available, and
-        use ``Tkinter``-based dialogs if ``Tkinter`` is available.
+        use ``Tkinter``-based dialogs if ``Tkinter`` is available and use an
+        interactive shell if no graphical toolkit is available.
         ``gui='Tkinter'`` or ``'wxPython'`` can be used to specify the
-        graphical toolkit to used. If ``gui='False'``, a simuPOP script will
-        try to get arguments from commandline or a configuration file, and will
-        prompt users to input the rest of the parameters. If ``gui='batch'``,
-        default values of unspecified parameters will be used. This option is
-        usually left to ``None`` so that the same script can be ran in both
-        GUI and batch mode using commandline option ``--gui``.
+        graphical toolkit to use. If ``gui='interactive'``, a simuPOP script
+        prompt users to input values of parameters. If ``gui='batch'``,
+        default values of unspecified parameters will be used. In any case,
+        commandline arguments and a configuration file specified by parameter
+        --config will be processed. This option is usually left to ``None`` so
+        that the same script can be run in both GUI and batch mode using
+        commandline option ``--gui``.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -560,7 +565,7 @@ options:
   --optimized
         Run the script using an optimized simuPOP module.
 
-  --gui=[None|True|False|batch|Tkinter|wxPython] (default: None)
+  --gui=[batch|interactive|True|Tkinter|wxPython] (default: None)
         Run the script in batch, interactive or GUI mode.
 
 ''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
@@ -595,7 +600,7 @@ options:
         elif opt.has_key('label'):
             message += _prettyDesc(opt['label'], indent=' '*8) + '\n'
         message += '\n'
-    return message
+    return message.strip()
 
 def _getParamValue(p, val, options):
     ''' try to get a value from value, raise exception if error happens. '''
@@ -836,6 +841,7 @@ class _tkParamDialog(_paramDialog):
 
     def onOK(self, event):
         ''' get result and convert values '''
+        print 'HEREE'
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
                 continue
@@ -992,12 +998,14 @@ class _wxParamDialog(_paramDialog):
 
     def onHelp(self, event):
         # open another dialog
-        helpDlg = wx.Dialog(parent=self.dlg, id=-1, title='Help for ' + self.title)
+        helpDlg = wx.Dialog(parent=self.dlg, id=-1,
+                    title='Help for ' + self.title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         box = wx.BoxSizer(wx.VERTICAL)
-        box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[600,400],
+        box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[450, 400],
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            value=_usage(self.options, '', self.details)), 0, wx.ALL, 20)
-        self.addButton(wx.ID_OK, "OK", lambda event:helpDlg.EndModal(wx.ID_OK), helpDlg, box)
+            value=_usage(self.options, '', self.details)), 0, wx.ALL, 10)
+        self.addButton(wx.ID_OK, "", lambda event:helpDlg.EndModal(wx.ID_OK), 
+                    helpDlg, box)
         helpDlg.SetSizerAndFit(box)
         helpDlg.Layout()
         helpDlg.ShowModal()
@@ -1052,8 +1060,8 @@ class _wxParamDialog(_paramDialog):
 
     def addButton(self, ID, text, func, parent, box):
         button = wx.Button(parent, ID, text)
-        box.Add(button, 0, wx.ALIGN_CENTER)
-        self.dlg.Bind(wx.EVT_BUTTON, func, button)
+        box.Add(button, 0, wx.ALIGN_CENTER | wx.ALL, border=5)
+        parent.Bind(wx.EVT_BUTTON, func, button)
 
     def createDialog(self):
         self.app = wx.PySimpleApp(0)
@@ -1162,10 +1170,10 @@ class _wxParamDialog(_paramDialog):
             self.entryWidgets[g].SetToolTipString(tooltip)
         # help button
         buttonBox = wx.GridSizer(cols=3)
-        self.addButton(wx.ID_HELP, 'Help', self.onHelp, self.dlg, buttonBox)
-        self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel, self.dlg, buttonBox)
-        self.addButton(wx.ID_OK, 'OK', self.onOK, self.dlg, buttonBox)
-        box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 15)
+        self.addButton(wx.ID_HELP, '', self.onHelp, self.dlg, buttonBox)
+        self.addButton(wx.ID_CANCEL, '', self.onCancel, self.dlg, buttonBox)
+        self.addButton(wx.ID_OK, '', self.onOK, self.dlg, buttonBox)
+        box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 5)
         self.dlg.SetSizerAndFit(box)
         self.dlg.Layout()
         # set focus to the first un-none entry
@@ -1942,7 +1950,7 @@ class Params:
                 raise exceptions.ValueError('Command line argument %s is not process.' % cmdArgs[i] +
                     'You may have misspelled the argument name or passed it an invalid value.')
         #
-        if self.gui == False:
+        if self.gui in [False, 'interactive']:
             return self.termGetParam()
         elif self.gui == 'batch':
             # valid values because some default values can be false

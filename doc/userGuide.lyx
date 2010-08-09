@@ -18971,7 +18971,7 @@ Each parameter can also be set using command line options.
 \begin_layout Itemize
 If command line option 
 \family typewriter
---gui=False
+--gui=interactive
 \family default
  is given, the script will work in batch mode.
  If the value of a parameter cannot be determined through command line or
@@ -18979,7 +18979,7 @@ If command line option
  be asked to enter its value interactively.
  For example, 
 \family typewriter
-myscript.py --gui=False --config configFile
+myscript.py --gui=interactive --config configFile
 \family default
  will execute a previous simulation directly.
 \end_layout
