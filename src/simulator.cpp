@@ -218,6 +218,13 @@ vectoru Simulator::evolve(
 		return evolvedGens;
 
 
+	// make sure rep and gen exists in pop
+	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+		if (!m_pops[curRep]->getVars().hasVar("gen"))
+			m_pops[curRep]->setGen(0);
+		m_pops[curRep]->setRep(curRep);
+	}
+
 	initClock();
 
 	// appy pre-op, most likely initializer. Do not check if they are active
@@ -226,13 +233,6 @@ vectoru Simulator::evolve(
 		apply(initOps);
 
 	elapsedTime("PreopDone");
-
-	// make sure rep and gen exists in pop
-	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
-		if (!m_pops[curRep]->getVars().hasVar("gen"))
-			m_pops[curRep]->setGen(0);
-		m_pops[curRep]->setRep(curRep);
-	}
 
 	while (1) {
 		// save refcount at the beginning
