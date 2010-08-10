@@ -8575,7 +8575,7 @@ Details:
     be set to the following variables:
     *   numOfMales (default): Total number of male individuals in all
     or specified (virtual) subpopulations.
-    *   numOfMales (default): Total number of female individuals in
+    *   numOfFemales (default): Total number of female individuals in
     all or specified (virtual) subpopulations.
     *   propOfMales: Proportion of male individuals.
     *   propOfFemales: Proportion of female individuals.

@@ -858,7 +858,7 @@ public:
 	 *  variables:
 	 *  \li \c numOfMales (default): Total number of male individuals in all
 	 *       or specified (virtual) subpopulations.
-	 *  \li \c numOfMales (default): Total number of female individuals in all
+	 *  \li \c numOfFemales (default): Total number of female individuals in all
 	 *       or specified (virtual) subpopulations.
 	 *  \li \c propOfMales: Proportion of male individuals.
 	 *  \li \c propOfFemales: Proportion of female individuals.
