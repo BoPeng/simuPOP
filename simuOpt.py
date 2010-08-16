@@ -96,7 +96,7 @@ __all__ = [
     'param',
 ]
 
-import os, sys, exceptions, types, re, time, textwrap
+import os, sys, exceptions, re, time, textwrap
 
 #
 # simuOptions that will be checked when simuPOP is loaded. This structure
@@ -226,12 +226,12 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         raise exceptions.TypeError('Parameter quiet can be either True or False.')
     # Debug
     if debug is not None:
-        if type(debug) == type(''):
+        if type(debug) == str:
             simuOptions['Debug'] = [debug]
         else:
             simuOptions['Debug'] = debug
     # Version
-    if type(version) == type(''):
+    if type(version) == str:
         try:
             major, minor, release = [int(x) for x in version.rstrip('svn').split('.')]
         except:
@@ -240,7 +240,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     elif version is not None:
         raise exceptions.TypeError('A version string is expected for parameter version.')
     # Revision
-    if type(revision) == type(1):
+    if type(revision) == int:
         simuOptions['Revision'] = revision
     elif revision is not None:
         raise exceptions.TypeError('A revision number is expected for parameter revision.')
@@ -253,7 +253,7 @@ def valueNot(t):
     '''Return a function that returns true if passed option does not passes
     validator t'''
     def func(val):
-        if type(t) == types.FunctionType:
+        if iscallable(t):
             return not t(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -264,7 +264,7 @@ def valueOr(t1, t2):
     '''Return a function that returns true if passed option passes validator
     t1 or t2'''
     def func(val):
-        if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
+        if iscallable(t1) and iscallable(t2):
             return t1(val) or t2(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -275,7 +275,7 @@ def valueAnd(t1, t2):
     '''Return a function that returns true if passed option passes validator
     t1 and t2'''
     def func(val):
-        if type(t1) == types.FunctionType and type(t2) == types.FunctionType:
+        if iscallable(t1) and iscallable(t2):
             return t1(val) and t2(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -285,14 +285,14 @@ def valueAnd(t1, t2):
 def valueOneOf(t):
     '''Return a function that returns true if passed option is one of the values
     list in t'''
-    if not type(t) in [types.ListType, types.TupleType]:
+    if not type(t) in [list, tuple]:
         raise exceptions.ValueError('argument of valueOneOf should be a list')
     def func(val):
         yes = False
         for item in t:
             if item == val:    # equal value
                 return True
-            if type(item) == types.FunctionType: # a test function
+            if iscallable(item): # a test function
                 if item(val):
                     return True
         return False
@@ -427,11 +427,11 @@ def valueListOf(t, size=None):
     def func(val):
         if not hasattr(val, '__iter__'):
             return False
-        if type(t) in [types.ListType, types.TupleType]:
+        if type(t) in [list, tuple]:
             for i in val:
                 if not i in t:
                     return False
-        elif type(t) == types.FunctionType:
+        elif iscallable(t):
             for i in val:
                 if not t(i):
                     return False
@@ -473,13 +473,13 @@ def _prettyString(value, quoted=False, outer=True):
         else:
             return "'%s'" % txt.replace("'", "\\'")
     #
-    if type(value) in [types.ListType, types.TupleType]:
+    if type(value) in [list, tuple]:
         txt = '[' + ', '.join([_prettyString(x, True, False) for x in value]) + ']'
         if outer:
             return quote(txt)
         else:
             return txt
-    elif type(value) == types.StringType:
+    elif type(value) == str:
         return quote(value)
     elif outer:
         return quote(str(value))
@@ -607,10 +607,10 @@ def _getParamValue(p, val, options):
     if p['gui_type'] == 'separator':
         raise exceptions.ValueError('Cannot get a value for separator')
     # if we are giving a unicode string, convert!
-    if type(val) == types.UnicodeType:
+    if type(val) == unicode:
         val = str(val)
     # remove quotes from string?
-    if p.has_key('allowedTypes') and type('') in p['allowedTypes'] and type('') == type(val):
+    if p.has_key('allowedTypes') and str in p['allowedTypes'] and str == type(val):
         for quote in ['"', "'", '"""', "'''"]:
             if val.startswith(quote) and val.endswith(quote):
                 val = val[len(quote):-len(quote)]
@@ -629,7 +629,7 @@ def _getParamValue(p, val, options):
         else:
             raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['name'])
     # other wise, need conversion
-    if type(val) in [types.StringType, types.UnicodeType]:
+    if type(val) in [str, unicode]:
         try:
             val = eval(val)
         except:
@@ -644,13 +644,13 @@ def _getParamValue(p, val, options):
         if not _validate(val, p, options):
             raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
-    elif types.ListType in p['allowedTypes'] or types.TupleType in p['allowedTypes']:
+    elif list in p['allowedTypes'] or tuple in p['allowedTypes']:
         if not _validate(val, p, options):
             raise exceptions.ValueError("Value "+str([val])+' does not pass validation')
         return [val]
-    elif type(val) == type(True) and types.IntType in p['allowedTypes']: # compatibility problem
+    elif type(val) == bool and int in p['allowedTypes']: # compatibility problem
         return val
-    elif type(val) == types.UnicodeType and types.StringType in p['allowedTypes']:
+    elif type(val) == unicode and str in p['allowedTypes']:
         return str(val)
     else:
         raise exceptions.ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
@@ -841,7 +841,6 @@ class _tkParamDialog(_paramDialog):
 
     def onOK(self, event):
         ''' get result and convert values '''
-        print 'HEREE'
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
                 continue
@@ -934,7 +933,7 @@ class _tkParamDialog(_paramDialog):
                 for entry in opt['chooseFrom']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
                 if value is not None:
-                    if type(value) in [types.TupleType, types.ListType]:
+                    if type(value) in [tuple, list]:
                         for val in value:
                             self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
                     else:
@@ -1136,7 +1135,7 @@ class _wxParamDialog(_paramDialog):
                 self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseFrom']])
                 if value is not None:
-                    if type(value) in [types.ListType, types.TupleType]:
+                    if type(value) in [list, tuple]:
                         for val in value:
                             self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
@@ -1244,7 +1243,7 @@ class Params:
     allowedTypes
         A list of acceptable types of this option. class ``Params`` will try
         to convert user input to these types. For example, if ``allowedTypes``
-        is ``types.ListType`` or ``types.TupleType`` and the user's input is a
+        is ``list`` or ``tuple`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
         will not be accepted if such conversion fails. If this item is not
         specified, the type of the default value will be used. If only one type
@@ -1260,20 +1259,20 @@ class Params:
         functions but user defined functions are also acceptable.
 
     type
-        Type of the input parameter. Which can be ``'chooseOneOf', values``,
-        ``'chooseFrom', values``, ``'boolean'``, ``'filename'``, ``'dirname'``,
-        ``'integer'``, ``'integers'``, ``'number'``, ``'numbers'``,
-        ``'string'``, ``'strings'`` or a specific list of allowed types.
-        These types will advise simuPOP how to accept them in the simuPOP
-        graphical userface, and how to convert user input to appropriate
-        types. ``'integer'`` is equvalent to ``[types.IntType, types.LongType]``
-        and ``'integers'`` accepts a list of integers. Single inputs will
-        be automatically converted to a list. ``'number'`` means any number,
-        including ``types.IntType``, ``types.LongType``, and
-        ``types.FloatType``. ``'filename'`` will let simuPOP uses a file
-        browser to browse for an existing filename (use a ``string`` if this
-        file does not exist yet). ``'dirname'`` will let simuPOP uses a
-        browser to browse for an existing directory.
+        Type of the input parameter. Which can be a datatype (e.g. ``bool``),
+        a list of acceptable types (e.g. ``(int, long)``), or one of 
+        ``'chooseOneOf', values``, ``'chooseFrom', values``, ``'filename'``
+        (a valid filename), ``'dirname'`` (a valid directory name),
+        ``'integer'`` (``int`` or ``long``), ``'integers'`` (list of integers),
+        ``'number'`` (``int``, ``long`` or ``float``), ``'numbers'`` (list of
+        numbers), ``'string'`` (the same as ``str``), ``'strings'`` (list of
+        strings). These types will advise class ``simuOpt.Params`` how to
+        accept parameters, and how to convert user input to appropriate
+        types. For example, a file browser will be used to browse for a valid
+        filename in a parameter input dialog (if ``--gui=True``) for a
+        parameter of type ``'filename'``, and input ``'52'`` will be
+        automatically converted to ``(52,)`` for a parameter of type
+        ``'integers'``.
 
     separator
         This item specifies a separator (group header) in the parameter input
@@ -1310,19 +1309,19 @@ class Params:
         '''
         #
         # validator
-        if type(options) != type([]):
+        if type(options) != list:
             raise exceptions.ValueError('An option specification list is expected')
         #
         self.options = []
         self.dict = {}
         for opt in options:
-            if type(opt) != type({}):
+            if type(opt) != dict:
                 raise exceptions.ValueError('An option specification dictionary is expected')
             self.addOption(**opt)
         #
-        if type(doc) != type(''):
+        if type(doc) != str:
             raise exceptions.ValueError('Parameter doc must be a string.')
-        if type(details) != type(''):
+        if type(details) != str:
             raise exceptions.ValueError('Parameter details must be a string.')
         self.doc = doc.strip()
         self.details = details.strip()
@@ -1376,12 +1375,12 @@ class Params:
             if key not in allowed_keys:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
             # I used not hasattr(kwargs[key], '__iter__') to test single element but
-            # hasattr(types.TupleType, '__iter__') returns True. Using isinstance
+            # hasattr(tuple, '__iter__') returns True. Using isinstance
             # solves this problem.
             if key == 'allowedTypes':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                     print >> sys.stderr, 'WARNING: allowedTypes is obsolete and might be removed from a future version of simuPOP.'
-                if isinstance(kwargs[key], types.TypeType):
+                if isinstance(kwargs[key], type(int)):
                     opt[key] = [kwargs[key]]
                 else:
                     # must be a list.
@@ -1457,7 +1456,8 @@ class Params:
             raise exceptions.ValueError('Option %s already exists.' % opt['name'])
         # process raw_type
         if opt.has_key('type'):
-            if len(opt['type']) == 2 and opt['type'][0] == 'chooseOneOf':
+            if type(opt['type']) in (tuple, list) and \
+                len(opt['type']) == 2 and opt['type'][0] == 'chooseOneOf':
                 opt['gui_type'] = 'chooseOneOf'
                 opt['chooseOneOf'] = opt['type'][1]
                 if len(opt['chooseOneOf']) == 0:
@@ -1466,7 +1466,8 @@ class Params:
                     opt['validator'] = valueOneOf(opt['chooseOneOf'])
                 if not opt.has_key('allowedTypes'):
                     opt['allowedTypes'] = [type(opt['chooseOneOf'][0])]
-            elif len(opt['type']) == 2 and opt['type'][0] == 'chooseFrom':
+            elif type(opt['type']) in (tuple, list) and \
+                len(opt['type']) == 2 and opt['type'][0] == 'chooseFrom':
                 opt['gui_type'] = 'chooseFrom'
                 opt['chooseFrom'] = opt['type'][1]
                 if len(opt['chooseFrom']) == 0:
@@ -1475,56 +1476,51 @@ class Params:
                     opt['validator'] = valueOneOf(opt['chooseFrom'])
                 if not opt.has_key('allowedTypes'):
                     opt['allowedTypes'] = [type(opt['chooseFrom'][0])]
-            elif opt['type'] == 'boolean':
-                opt['gui_type'] = 'boolean'
-                opt['allowedTypes'] = [types.BooleanType]
-                if not opt.has_key('validator'):
-                    opt['validator'] = valueTrueFalse()
             elif opt['type'] == 'integer':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.IntType, types.LongType]
+                opt['allowedTypes'] = [int, long]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueIsInteger()
             elif opt['type'] == 'integers':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                opt['allowedTypes'] = [list, tuple]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueListOf(valueIsInteger())
             elif opt['type'] == 'number':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.IntType, types.LongType, types.FloatType]
+                opt['allowedTypes'] = [int, long, float]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueIsNum()
             elif opt['type'] == 'numbers':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                opt['allowedTypes'] = [list, tuple]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueListOf(valueIsNum())
             elif opt['type'] == 'string':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.StringType]
+                opt['allowedTypes'] = [str]
             elif opt['type'] == 'strings':
                 opt['gui_type'] = 'others'
-                opt['allowedTypes'] = [types.ListType, types.TupleType]
+                opt['allowedTypes'] = [list, tuple]
                 if not opt.has_key('validator'):
-                    opt['validator'] = valueListOf(types.StringType)
+                    opt['validator'] = valueListOf(str)
             elif opt['type'] == 'filename':
                 opt['gui_type'] = 'browseFile'
-                opt['allowedTypes'] = [types.StringType]
+                opt['allowedTypes'] = [str]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueValidFile()
             elif opt['type'] == 'dirname':
                 opt['gui_type'] = 'browseDir'
-                opt['allowedTypes'] = [types.StringType]
+                opt['allowedTypes'] = [str]
                 if not opt.has_key('validator'):
                     opt['validator'] = valueValidDir()
             else:
-                if isinstance(opt['type'], types.TypeType):
+                if isinstance(opt['type'], type(int)):
                     opt['allowedTypes'] = [opt['type']]
-                elif type(opt['type']) in [types.ListType, types.TupleType]:
+                elif type(opt['type']) in [list, tuple]:
                     # must be a list.
                     for v in opt['type']:
-                        if not isinstance(v, types.TypeType):
+                        if not isinstance(v, type(int)):
                             raise exceptions.ValueError('Key type is not one of the specified types, or a list of types.')
                     opt['allowedTypes'] = opt['type']            
                 else:
@@ -1538,7 +1534,7 @@ class Params:
             opt['gui_type'] = 'hidden'
         elif opt.has_key('separator'):
             opt['gui_type'] = 'separator'
-        elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == types.BooleanType:
+        elif opt.has_key('allowedTypes') and len(opt['allowedTypes']) == 1 and opt['allowedTypes'][0] == bool:
             opt['gui_type'] = 'boolean'
         elif opt.has_key('chooseFrom'):
             opt['gui_type'] = 'chooseFrom'
@@ -1562,13 +1558,13 @@ class Params:
         # is default value allowed?
         if not opt.has_key('allowedTypes'):
             if opt.has_key('chooseFrom'):
-                opt['allowedTypes'] = [type(()), type([])]
+                opt['allowedTypes'] = [list, tuple]
             else:
                 opt['allowedTypes'] = [type(opt['default'])]
         if opt.has_key('allowedTypes') and type(opt['default']) not in opt['allowedTypes']:
-            if types.ListType in opt['allowedTypes']:
+            if list in opt['allowedTypes']:
                 opt['default'] = [opt['default']]
-            elif types.TupleType in opt['allowedTypes']:
+            elif tuple in opt['allowedTypes']:
                 opt['default'] = (opt['default'],)
             else:
                 raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
@@ -1843,7 +1839,7 @@ class Params:
                     break
                 except:
                     print "Invalid input.\n"
-            if value is None and not (opt.has_key('allowedTypes') and types.NoneType in opt['allowedTypes']):
+            if value is None and not (opt.has_key('allowedTypes') and type(None) in opt['allowedTypes']):
                 # should have a valid value now.
                 return False
         # successfully handled all parameters
