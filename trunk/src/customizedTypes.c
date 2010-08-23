@@ -42,7 +42,7 @@
 /// CPPONLY
 struct arrayobject;                                                             /* Forward */
 
-#if PY_MAJOR_VERSION <= 25
+#if PY_VERSION_HEX <= 0x0205FFFF
 #define Py_SIZE(obj) (((PyVarObject*)(obj))->ob_size)
 #endif
 
