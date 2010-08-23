@@ -42,6 +42,10 @@
 /// CPPONLY
 struct arrayobject;                                                             /* Forward */
 
+#if PY_MAJOR_VERSION <= 25
+#define Py_SIZE(obj) (((PyVarObject*)(ob))->ob_size)
+#endif
+
 /** All possible arraydescr values are defined in the vector "descriptors"
  * below.    That's defined later because the appropriate get and set
  * functions aren't visible yet.
