@@ -253,7 +253,7 @@ def valueNot(t):
     '''Return a function that returns true if passed option does not passes
     validator t'''
     def func(val):
-        if iscallable(t):
+        if callable(t):
             return not t(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -264,7 +264,7 @@ def valueOr(t1, t2):
     '''Return a function that returns true if passed option passes validator
     t1 or t2'''
     def func(val):
-        if iscallable(t1) and iscallable(t2):
+        if callable(t1) and callable(t2):
             return t1(val) or t2(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -275,7 +275,7 @@ def valueAnd(t1, t2):
     '''Return a function that returns true if passed option passes validator
     t1 and t2'''
     def func(val):
-        if iscallable(t1) and iscallable(t2):
+        if callable(t1) and callable(t2):
             return t1(val) and t2(val)
         else:
             raise exceptions.ValueError("We expect a function valueXXX")
@@ -292,7 +292,7 @@ def valueOneOf(t):
         for item in t:
             if item == val:    # equal value
                 return True
-            if iscallable(item): # a test function
+            if callable(item): # a test function
                 if item(val):
                     return True
         return False
@@ -431,7 +431,7 @@ def valueListOf(t, size=None):
             for i in val:
                 if not i in t:
                     return False
-        elif iscallable(t):
+        elif callable(t):
             for i in val:
                 if not t(i):
                     return False

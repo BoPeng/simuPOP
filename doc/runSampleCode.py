@@ -82,6 +82,9 @@ def runScript(inputFile, outputFile):
     sys.stderr = outFile
     sys.stdout = outFile
     #
+    # force the reload of simuPOP module
+    if sys.modules.has_key('simuPOP'):
+        sys.modules.pop('simuPOP')
     b = runScriptInteractively(locals=locals(), filename = inputFile)
     b.interact(None)
     b.exit()
