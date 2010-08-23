@@ -43,7 +43,8 @@ import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
-boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0']
+boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
+    '1_42_0', '1_43_0', '1_44_0']
 invalid_boost_versions = ['1_41_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]

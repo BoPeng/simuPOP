@@ -99,7 +99,7 @@ env = Environment(
     ENV=os.environ,
 	# force the use of MS Visual Studio .NET 2003 if under windows
 	# This does not work right when there are multiple versions of MSVS.
-	MSVS_VERSION = '7.1',
+	#MSVS_VERSION = '7.1',
     #MSVS_IGNORE_IDE_PATHS = 1,
     tools=['default', 'swig'])
 # try to use the compiler used to build python
@@ -137,7 +137,7 @@ if env.has_key('library-dirs') and env['library-dirs'] is not None:
     boost_lib_search_paths.extend(env['library-dirs'].split(os.pathsep))
 
 build_dir = 'build'
-env.BuildDir(build_dir, 'src', duplicate = 0)
+env.VariantDir(build_dir, 'src', duplicate = 0)
 env['build_dir'] = build_dir
 
 if os.name == 'nt':
