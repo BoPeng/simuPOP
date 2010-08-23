@@ -43,7 +43,7 @@
 struct arrayobject;                                                             /* Forward */
 
 #if PY_MAJOR_VERSION <= 25
-#define Py_SIZE(obj) (((PyVarObject*)(ob))->ob_size)
+#define Py_SIZE(obj) (((PyVarObject*)(obj))->ob_size)
 #endif
 
 /** All possible arraydescr values are defined in the vector "descriptors"
