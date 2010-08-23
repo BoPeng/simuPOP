@@ -465,6 +465,7 @@ class VarPlotter(PyOperator):
                 'plot_ylab': '',
                 'lines_lty': 1,
                 'legend_bty': 'n',
+                'legend_x': 'topright',
             },
             **kwargs
         )
@@ -614,7 +615,7 @@ class VarPlotter(PyOperator):
                         args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                             'rep', range(self.nRep))
                         args.update(self.args.getArgs('legend', pop))
-                        r.legend('topright', legend=self.legend, **args)
+                        r.legend(legend=self.legend, **args)
         else:
             # all replicate in one figure
             if self.byDim:
@@ -633,7 +634,7 @@ class VarPlotter(PyOperator):
                         args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                             'rep', range(self.nRep))
                         args.update(self.args.getArgs('legend', pop))
-                        r.legend('topright', legend=self.legend, **args)
+                        r.legend(legend=self.legend, **args)
             else:
                 data = self._getData(0, 0)
                 r.plot(self.gen, data,
@@ -650,7 +651,7 @@ class VarPlotter(PyOperator):
                     args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                         ['rep', 'dim'], [(x,y) for x in range(self.nRep) for y in range(self.nDim)])
                     args.update(self.args.getArgs('legend', pop))
-                    r.legend('topright', legend=self.legend, **args)
+                    r.legend(legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(r)
@@ -765,6 +766,7 @@ class ScatterPlotter(PyOperator):
                 'legend_bty': 'n',
                 'plot_xlab': self.infoFields[0],
                 'plot_ylab': self.infoFields[1],
+                'legend_x': 'topright',
             },
             **kwargs)
         if len(self.subPops) > 1:
@@ -818,7 +820,7 @@ class ScatterPlotter(PyOperator):
                 args = self.args.getLegendArgs('points', pop, ['col', 'pch', 'lwd', 'cex'],
                     'sp', range(len(self.subPops)))
                 args.update(self.args.getArgs('legend', pop))
-                r.legend('topright', legend=self.legend, **args)
+                r.legend(legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(r)
@@ -940,14 +942,14 @@ class InfoPlotter(PyOperator):
                 defaultFuncs = [],
                 allFuncs = ['par', 'dev_print'],
                 suffixes = ['sp', 'fld', 'spfld'],
-                defaultParams = {},
+                defaultParams = {'legend_x': 'topright'},
                 **kwargs)
         else:
             self.args = DerivedArgs(
                 defaultFuncs = [self.func],
                 allFuncs = ['par', self.func, 'dev_print'],
                 suffixes = ['sp', 'fld', 'spfld'],
-                defaultParams = {},
+                defaultParams = {'legend_x': 'topright'},
                 **kwargs)
         # when apply is called, self._plot is called.
         PyOperator.__init__(self, func=self._plot, begin=begin, end=end,
@@ -1145,7 +1147,7 @@ class BoxPlotter(PyOperator):
             defaultFuncs = ['boxplot'],
             allFuncs = ['par', 'boxplot', 'dev_print'],
             suffixes = ['sp', 'fld', 'spfld'],
-            defaultParams = {},
+            defaultParams = {'legend_x': 'topright'},
             **kwargs)
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
