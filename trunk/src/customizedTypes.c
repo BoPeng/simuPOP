@@ -241,7 +241,7 @@ static PyObject * getarrayitem(PyObject * op, int i)
 
 	assert(is_carrayobject(op));
 	ap = (arrayobject *)op;
-	if (i < 0 || i >= ap->ob_size) {
+	if (i < 0 || i >= Py_SIZE(ap)) {
 		// use automatic increase of size?
 		PyErr_SetString(PyExc_IndexError, "array index out of range");
 		return NULL;
@@ -279,7 +279,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		va = (arrayobject *)v;
 		wa = (arrayobject *)w;
 
-		if (va->ob_size != wa->ob_size && (op == Py_EQ || op == Py_NE)) {
+		if (Py_SIZE(va) != Py_SIZE(wa) && (op == Py_EQ || op == Py_NE)) {
 			/* Shortcut: if the lengths differ, the arrays differ */
 			if (op == Py_EQ)
 				res = Py_False;
@@ -291,7 +291,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 
 		/* Search for the first index where items are different */
 		k = 1;
-		for (i = 0; i < va->ob_size && i < wa->ob_size; i++) {
+		for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
 			vi = getarrayitem(v, i);
 			wi = getarrayitem(w, i);
 			if (vi == NULL || wi == NULL) {
@@ -310,8 +310,8 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 
 		if (k) {
 			/* No more items to compare -- compare sizes */
-			int vs = va->ob_size;
-			int ws = wa->ob_size;
+			int vs = Py_SIZE(va);
+			int ws = Py_SIZE(wa);
 			int cmp;
 			switch (op) {
 			case Py_LT: cmp = vs < ws; break;
@@ -366,7 +366,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 			return NULL;
 		}
 
-		vs = va->ob_size;
+		vs = Py_SIZE(va);
 		ws = PySequence_Size(wa);
 
 		if (vs != ws && (op == Py_EQ || op == Py_NE)) {
@@ -449,7 +449,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 /// CPPONLY
 static Py_ssize_t array_length(arrayobject * a)
 {
-	return a->ob_size;
+	return Py_SIZE(a);
 }
 
 
@@ -474,7 +474,7 @@ static PyObject * array_repeat(arrayobject * a, Py_ssize_t n)
 /// CPPONLY
 static PyObject * array_item(arrayobject * a, Py_ssize_t i)
 {
-	if (i < 0 || i >= a->ob_size) {
+	if (i < 0 || i >= Py_SIZE(a)) {
 		PyErr_SetString(PyExc_IndexError, "array index out of range");
 		return NULL;
 	}
@@ -489,14 +489,14 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 
 	if (ilow < 0)
 		ilow = 0;
-	else if (ilow > a->ob_size)
-		ilow = a->ob_size;
+	else if (ilow > Py_SIZE(a))
+		ilow = Py_SIZE(a);
 	if (ihigh < 0)
 		ihigh = 0;
 	if (ihigh < ilow)
 		ihigh = ilow;
-	else if (ihigh > a->ob_size)
-		ihigh = a->ob_size;
+	else if (ihigh > Py_SIZE(a))
+		ihigh = Py_SIZE(a);
 	if (a->ob_descr->typecode == 'a')
 		np = (arrayobject *)newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
 			a->ob_iterator.ob_iter + ihigh);
@@ -519,14 +519,14 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 
 	if (ilow < 0)
 		ilow = 0;
-	else if (ilow > a->ob_size)
-		ilow = a->ob_size;
+	else if (ilow > Py_SIZE(a))
+		ilow = Py_SIZE(a);
 	if (ihigh < 0)
 		ihigh = 0;
 	if (ihigh < ilow)
 		ihigh = ilow;
-	else if (ihigh > a->ob_size)
-		ihigh = a->ob_size;
+	else if (ihigh > Py_SIZE(a))
+		ihigh = Py_SIZE(a);
 
 	// use a single number to propagate v
 	if (PyNumber_Check(v) ) {
@@ -536,7 +536,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 	}
 #define b ((arrayobject *)v)
 	if (is_carrayobject(v)) {                                                  /* v is of array type */
-		int n = b->ob_size;
+		int n = Py_SIZE(b);
 		if (b->ob_descr != a->ob_descr) {
 			PyErr_BadArgument();
 			return -1;
@@ -578,7 +578,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 /// CPPONLY
 static Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 {
-	if (i < 0 || i >= a->ob_size) {
+	if (i < 0 || i >= Py_SIZE(a)) {
 		PyErr_SetString(PyExc_IndexError,
 			"array assignment index out of range");
 		return -1;
@@ -607,7 +607,7 @@ static PyObject * array_count(arrayobject * self, PyObject * args)
 
 	if (!PyArg_ParseTuple(args, "O:count", &v))
 		return NULL;
-	for (i = 0; i < self->ob_size; i++) {
+	for (i = 0; i < Py_SIZE(self); i++) {
 		PyObject * selfi = getarrayitem((PyObject *)self, i);
 		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
 		Py_DECREF(selfi);
@@ -631,13 +631,13 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 {
 	int i;
 	PyObject * v;
-	Py_ssize_t start = 0, stop = self->ob_size;
+	Py_ssize_t start = 0, stop = Py_SIZE(self);
 
 	if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
 			_PyEval_SliceIndex, &start, _PyEval_SliceIndex, &stop))
 		return NULL;
 	if (start < 0) {
-		start += self->ob_size;
+		start += Py_SIZE(self);
 		if (start < 0)
 			start = 0;
 	}
@@ -664,14 +664,14 @@ Return index of first occurence of x in the array.";
 /// CPPONLY
 static PyObject * array_tolist(arrayobject * self, PyObject * args)
 {
-	PyObject * list = PyList_New(self->ob_size);
+	PyObject * list = PyList_New(Py_SIZE(self));
 	int i;
 
 	if (!PyArg_ParseTuple(args, ":tolist"))
 		return NULL;
 	if (list == NULL)
 		return NULL;
-	for (i = 0; i < self->ob_size; i++) {
+	for (i = 0; i < Py_SIZE(self); i++) {
 		PyObject * v = getarrayitem((PyObject *)self, i);
 		if (v == NULL) {
 			Py_DECREF(list);
@@ -742,7 +742,7 @@ static int array_print(arrayobject * a, FILE * fp, int flags)
 	int i, len;
 	PyObject * v;
 
-	len = a->ob_size;
+	len = Py_SIZE(a);
 	if (len == 0) {
 		fprintf(fp, "[]");
 		return ok;
@@ -768,7 +768,7 @@ array_repr(arrayobject * a)
 	PyObject * s, * t, * comma, * v;
 	int i, len;
 
-	len = a->ob_size;
+	len = Py_SIZE(a);
 	if (len == 0) {
 		PyOS_snprintf(buf, sizeof(buf), "[]");
 		return PyString_FromString(buf);
@@ -882,7 +882,7 @@ bool is_carrayobject(PyObject * op)
 /// CPPONLY
 int carray_length(PyObject * a)
 {
-	return ((arrayobject *)(a))->ob_size;
+	return Py_SIZE((arrayobject *)(a));
 }
 
 
@@ -928,7 +928,7 @@ PyObject * newcarrayobject(char * ptr, char type, int size)
 				PyObject_Del(op);
 				return PyErr_NoMemory();
 			}
-			op->ob_size = size;
+			Py_SIZE(op) = size;
 			op->ob_descr = descr;
 			op->ob_iterator.ob_item = ptr;
 			return (PyObject *)op;
@@ -954,7 +954,7 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 	//
 	op->ob_descr = descriptors;
 	op->ob_iterator.ob_iter = begin;
-	op->ob_size = end - begin;
+	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
 
