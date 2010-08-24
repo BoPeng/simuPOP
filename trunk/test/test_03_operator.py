@@ -185,15 +185,13 @@ class TestOperator(unittest.TestCase):
         '''Testing operator InfoEval'''
         pop = Population(10, infoFields=['a', 'b'])
         infoEval(pop, expr='b', stmts='b=a+1', output='')
-        # information field b is NOT updated
-        self.assertEqual(pop.indInfo('b'), tuple([0]*10))
+        # information field b is updated
+        self.assertEqual(pop.indInfo('b'), tuple([1.]*10))
         #
         # use population variable
         pop.vars()['c'] = 5
-        # this should fail because there is no information field c
-        self.assertRaises(exceptions.RuntimeError, infoEval, pop, 'c+4')
         # usePopVars is needed
-        infoEval(pop, 'c+4', usePopVars=True, output='')
+        infoEval(pop, 'c+4', output='')
 
 
     def testInfoExec(self):
@@ -208,10 +206,7 @@ class TestOperator(unittest.TestCase):
         #
         # use population variable
         pop.vars()['c'] = 5
-        # this should fail because there is no information field c
-        self.assertRaises(exceptions.RuntimeError, infoExec, pop, 'b=c+4')
-        # usePopVars is needed
-        infoExec(pop, 'b=c+4', usePopVars=True)
+        infoExec(pop, 'b=c+4')
         self.assertEqual(pop.indInfo('b'), tuple([9]*10))
         #
         # as an operator

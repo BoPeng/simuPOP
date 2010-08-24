@@ -940,14 +940,14 @@ class InfoPlotter(PyOperator):
         if self.func is None:
             self.args = DerivedArgs(
                 defaultFuncs = [],
-                allFuncs = ['par', 'dev_print'],
+                allFuncs = ['par', 'dev_print', 'legend'],
                 suffixes = ['sp', 'fld', 'spfld'],
                 defaultParams = {'legend_x': 'topright'},
                 **kwargs)
         else:
             self.args = DerivedArgs(
                 defaultFuncs = [self.func],
-                allFuncs = ['par', self.func, 'dev_print'],
+                allFuncs = ['par', self.func, 'dev_print', 'legend'],
                 suffixes = ['sp', 'fld', 'spfld'],
                 defaultParams = {'legend_x': 'topright'},
                 **kwargs)
@@ -1145,7 +1145,7 @@ class BoxPlotter(PyOperator):
             self.bySubPop = False
         self.args = DerivedArgs(
             defaultFuncs = ['boxplot'],
-            allFuncs = ['par', 'boxplot', 'dev_print'],
+            allFuncs = ['par', 'boxplot', 'dev_print', 'legend'],
             suffixes = ['sp', 'fld', 'spfld'],
             defaultParams = {'legend_x': 'topright'},
             **kwargs)
