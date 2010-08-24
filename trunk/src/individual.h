@@ -793,7 +793,7 @@ public:
 
 	InformationIterator(UINT info, InfoIterator ptr, UINT size)
 		: m_info(info), m_useGappedIterator(true),
-		m_it(), m_ptr(&*ptr), m_step(size)
+		m_it(), m_ptr(ptr), m_step(size)
 	{
 	}
 
@@ -864,7 +864,7 @@ private:
 	// Individual iterator
 	IndividualIterator<T> m_it;
 	//
-	double * m_ptr;
+	InfoIterator m_ptr;
 	//
 	UINT m_step;
 };
