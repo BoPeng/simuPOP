@@ -4813,7 +4813,7 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 class ne(sim.PyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a sim.Population
+    alleles at given loci. The result is saved in a population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
@@ -4884,7 +4884,7 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
 
 class ne(sim.PyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a sim.Population
+    alleles at given loci. The result is saved in a population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
@@ -5055,7 +5055,7 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
 
 class ne(sim.PyOperator):
     '''Define an operator that calculates effective number of
-    alleles at given loci. The result is saved in a sim.Population
+    alleles at given loci. The result is saved in a population
     variable ne.
     '''
     def __init__(self, loci, *args, **kwargs):
