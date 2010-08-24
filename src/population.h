@@ -1241,7 +1241,7 @@ public:
 		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndInfoIterator(idx, IndIterator(m_inds.end(), m_inds.end(), false));
 		else
-			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
+			return IndInfoIterator(idx, m_info.end() + idx, infoSize());
 	}
 
 
