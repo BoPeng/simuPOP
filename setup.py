@@ -351,7 +351,7 @@ SWIG_CC_FLAGS = '-python -keyword'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
 # etc to this directory.
-SWIG_OUTDIR = 'src'
+SWIG_OUTDIR = 'build'
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
@@ -363,12 +363,12 @@ MACROS = {
 }
  
 WRAP_INFO = {
-    'std':    ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
-    'op':     ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
-    'la':     ['src/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
-    'laop':   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
-    'ba':     ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
-    'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
+    'std':    ['build/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
+    'op':     ['build/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
+    'la':     ['build/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
+    'laop':   ['build/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
+    'ba':     ['build/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
+    'baop':   ['build/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
 }
 
 DESCRIPTION = """
@@ -402,7 +402,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     boost_lib_names = []
     boost_lib_path = None
     res = {}
-    res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
+    res['src'] =  ['build/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
         res['src'].append(src[:-4] + '_' + modu + '.cpp')
     res['src'].extend(LIB_FILES)
@@ -474,7 +474,7 @@ if __name__ == '__main__':
     #
     # if any of the wrap files does not exist
     # or if the wrap files are older than any of the source files.
-    if (not os.path.isfile('src/gsl_wrap.c') or \
+    if (not os.path.isfile('build/gsl_wrap.c') or \
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
@@ -483,8 +483,8 @@ if __name__ == '__main__':
             print 'Swig >= 1.3.35 is required, please upgrade it.'
             sys.exit(1)
         # generate header file 
-        print "Generating external runtime header file..."
-        os.system('%s %s swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
+        print "Generating external runtime header file build/swigpyrun.h..."
+        os.system('%s %s build/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
         for lib in MODULES:
             print "Generating wrapper file " + WRAP_INFO[lib][0]
@@ -492,9 +492,9 @@ if __name__ == '__main__':
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
-        print "Generating wrapper file src/gsl_wrap.c"
+        print "Generating wrapper file build/gsl_wrap.c"
         if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
-            SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
+            SWIG_OUTDIR, '', 'build/gsl_wrap.c', 'src/gsl.i')) != 0:
             print "Calling swig failed. Please check your swig version."
             sys.exit(1)
         print
@@ -516,7 +516,7 @@ if __name__ == '__main__':
     # For module simuPOP.gsl
     EXT_MODULES = [
         Extension('simuPOP._gsl',
-            sources = GSL_FILES + ['src/gsl_wrap.c'],
+            sources = GSL_FILES + ['build/gsl_wrap.c'],
             include_dirs = ['gsl', 'gsl/specfunc', '.'],
         )
     ]
@@ -526,7 +526,8 @@ if __name__ == '__main__':
             Extension('simuPOP._simuPOP_%s' % modu,
                 sources = info['src'],
                 extra_compile_args = info['extra_compile_args'],
-                include_dirs = info['include_dirs'],
+                # src for config.h etc, build for swigpyrun.h
+                include_dirs = info['include_dirs'] + ['src', 'build'],
                 library_dirs = info['library_dirs'],
                 libraries = info['libraries'],
                 define_macros = info['define_macros'],
@@ -567,7 +568,7 @@ if __name__ == '__main__':
             'simuPOP.plotter', 
             'simuPOP.sampling', 
             'simuPOP.sandbox',
-        ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
+        ], # + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,
     )
