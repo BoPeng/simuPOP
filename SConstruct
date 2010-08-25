@@ -48,15 +48,13 @@
 #
 #
 import os, sys
-
-all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+import distutils.sysconfig
 
 # load all the module information from setup.py
 from setup import *
 # do not update version for this development version to avoid rebuild
 SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
 # get information from python distutils
-import distutils.sysconfig, os
 vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS',
     'CCSHARED', 'LDSHARED', 'SO', 'LIBDEST', 'INCLUDEPY')
 for i in range(len(vars)):
@@ -83,6 +81,7 @@ opts.AddVariables(
     PathVariable('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
 )
 
+# common environment
 env = Environment(
     options=opts,
 	# pass all environment variables because MSVC needs INCLUDE and LIB
@@ -91,9 +90,9 @@ env = Environment(
     tools=['default', 'swig'])
 
 # try to use the compiler used to build python
-if cc != "":
+if cc != '':
     env['CC'] = cc
-if cxx != "":
+if cxx != '':
     env['CXX'] = cxx
 if ldshared != '':
     env['SHLINK'] = ldshared
@@ -117,10 +116,9 @@ else:
 # Building library gsl
 #
 gsl_env = env.Clone()
-gsl_env['SWIGFLAGS'] = SWIG_CPP_FLAGS
-gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS 
 gsl_env.VariantDir('build/gsl', '.')
-gsl_env['SWIGOUTDIR'] = 'build/gsl'
+gsl_env['SWIGOUTDIR'] = 'build/gsl/src'
+gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS 
 gsl = gsl_env.SharedLibrary(
     target = 'build/gsl/_gsl%s' % so_ext,
     source = ['build/gsl/' + x for x in GSL_FILES] + ['build/gsl/src/gsl.i'],
@@ -134,9 +132,11 @@ gsl = gsl_env.SharedLibrary(
 )
 Alias('gsl', gsl)
 Alias('all', gsl)
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext), gsl[0]))
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), 'build/gsl/src/gsl.py'))
 #
 #
-# Building extra libs
+# Building a library for common files
 #
 common_env = env.Clone()
 common_env.VariantDir('build/common', '.')
@@ -149,6 +149,18 @@ common_lib = common_env.StaticLibrary(
 )
 #
 # Building modules
+# 
+targets = []
+all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+for key in all_modu:
+    if key in BUILD_TARGETS:
+        targets.append(key)
+
+if targets == [] and 'gsl' not in BUILD_TARGETS:
+    targets = all_modu
+if 'all' in BUILD_TARGETS:
+    targets = all_modu
+
 def convert_def(defines):
     new_list = []
     for d in defines:
@@ -156,15 +168,17 @@ def convert_def(defines):
             new_list.append(d)
         else:
             new_list.append(d[0])
-    return new_list#
+    return new_list
 
-for mod in all_modu:
+for mod in targets:
     mod_env = env.Clone()
     mod_env.VariantDir('build/' + mod, '.')
+    mod_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -Isrc'  # -Isrc for %include interface files under src
+    mod_env['SWIGOUTDIR'] = 'build/%s/src' % mod
     info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
     mod_env.Command('build/%s/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
     mod_lib = mod_env.SharedLibrary(
-        target = 'build/_simuPOP_%s' % mod,
+        target = 'build/%s/_simuPOP_%s' % (mod, mod),
         source = ['build/%s/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
         LIBS = info['libraries'] + [common_lib],
         SHLIBPREFIX = "",
@@ -176,52 +190,23 @@ for mod in all_modu:
         CCFLAGS = info['extra_compile_args'] + comp.compile_options,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
-    #env.Depends(module_source, '$build_dir/swigpyrun.h')
-    #env.Depends(['$build_dir/simuPOP_%s_wrap$CXXFILESUFFIX' % mod, lib],
-    #    ['src/simuPOP_cfg.h', 'src/simuPOP_common.i', 'src/simuPOP_doc.i'] + \
-    #    HEADER_FILES)
-    #env.Depends('src/utility_%s.cpp' % mod, 'src/customizedTypes.c')
-    #
     Alias(mod, mod_lib)
     Alias('all', mod_lib)
-    #dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
-    #    '$build_dir/simuPOP_%s.py' % mod)
-    #dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
-    #    lib[0])
-    #env.Depends(dp1, dp2)
-    #Alias('install', dp1)
+    Alias('install', env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
+        'build/%s/src/simuPOP_%s.py' % (mod, mod)))
+    Alias('install', env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
+		mod_lib[0]))
 
+env.Install(pylib_dir, 'simuOpt.py')
+Alias('install', pylib_dir)
+for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
+    env.Install(dest_dir, 'src/%s' % pyfile)
+    Alias('install', dest_dir)
 
-## targets = []
-## for key in all_modu:
-##     if key in BUILD_TARGETS:
-##         targets.append(key)
-## if targets == [] and 'gsl' not in BUILD_TARGETS:
-##     targets = all_modu
-## if 'all' in BUILD_TARGETS:
-##     targets = all_modu
-## 
-## def mod_src(file, mod):
-##     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)
-## 
+for data in DATA_FILES:
+    dest = data[0]
+    for file in data[1]:
+        env.Install(os.path.join(prefix, dest), file)
+        Alias('install', os.path.join(prefix, dest))
 
-## 
-## envs = []
-## 
-## Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext), gsl[0]))
-## Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), '$build_dir/gsl.py'))
-## 
-## env.Install(pylib_dir, 'simuOpt.py')
-## Alias('install', pylib_dir)
-## 
-## for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
-##     env.Install(dest_dir, 'src/%s' % pyfile)
-##     Alias('install', dest_dir)
-## 
-## for data in DATA_FILES:
-##     dest = data[0]
-##     for file in data[1]:
-##         env.Install(os.path.join(prefix, dest), file)
-##         Alias('install', os.path.join(prefix, dest))
-## 
-## Default('install')
+Default('install')
