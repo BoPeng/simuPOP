@@ -177,7 +177,7 @@ for mod in targets:
     mod_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -Isrc'  # -Isrc for %include interface files under src
     mod_env['SWIGOUTDIR'] = 'build/%s/src' % mod
     info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
-    mod_env.Command('build/%s/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
+    mod_env.Command('build/%s/src/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
         source = ['build/%s/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
@@ -191,6 +191,7 @@ for mod in targets:
         CCFLAGS = info['extra_compile_args'] + comp.compile_options,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
+    env.Depends('build/%s/src/swigpyrun.h' % mod, 'build/%s/src/utility.cpp' % mod)
     Alias(mod, mod_lib)
     Alias('all', mod_lib)
     Alias('install', env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
