@@ -147,27 +147,27 @@ def replaceIntHeader(file):
 #
 
 HEADER_FILES = [
-    'src/simuPOP_cfg.h',
-    'src/utility.h',
-    'src/genoStru.h',
-    'src/individual.h',
-    'src/population.h',
-    'src/simulator.h',
-    'src/mating.h',
-    'src/operator.h',
-    'src/initializer.h',
-    'src/migrator.h',
-    'src/outputer.h',
-    'src/selector.h',
-    'src/penetrance.h',
-    'src/qtrait.h',
-    'src/stator.h',
-    'src/mutator.h',
-    'src/transmitter.h',
-    'src/tagger.h',
-    'src/pedigree.h',
-    'src/virtualSubPop.h',
-    'src/sandbox.h',
+    'simuPOP_cfg.h',
+    'utility.h',
+    'genoStru.h',
+    'individual.h',
+    'population.h',
+    'simulator.h',
+    'mating.h',
+    'operator.h',
+    'initializer.h',
+    'migrator.h',
+    'outputer.h',
+    'selector.h',
+    'penetrance.h',
+    'qtrait.h',
+    'stator.h',
+    'mutator.h',
+    'transmitter.h',
+    'tagger.h',
+    'pedigree.h',
+    'virtualSubPop.h',
+    'sandbox.h',
 ]
 
 SOURCE_FILES = [
@@ -477,7 +477,7 @@ if __name__ == '__main__':
     # or if the wrap files are older than any of the source files.
     if (not os.path.isfile('build/gsl_wrap.c') or \
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
-        (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
+        (max( [os.path.getmtime('src/' + x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
