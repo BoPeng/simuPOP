@@ -76,7 +76,7 @@ class TestSampling(unittest.TestCase):
             self.largepop.setIndInfo(range(self.largepop.popSize()), 'oldindex')
 
     def testRandomSample(self):
-        'Testing random sampling (imcomplete)'
+        'Testing random sampling (incomplete)'
         #
         s = drawRandomSample(self.pop, 10)
         self.assertEqual(s.popSize(), 10)
@@ -114,7 +114,7 @@ class TestSampling(unittest.TestCase):
                 self.assertEqual(ind.sex(), MALE)
 
     def testCaseControlSample(self):
-        'Testing case control sampling (imcomplete)'
+        'Testing case control sampling (incomplete)'
         # case control sampling.
         s = drawCaseControlSample(self.pop, 10, 10)
         self.assertEqual(s.popSize(), 20)
@@ -134,7 +134,7 @@ class TestSampling(unittest.TestCase):
 
 
     def testAffectedSibpairSample(self):
-        'Testing affected sibpair sampling (imcomplete)'
+        'Testing affected sibpair sampling (incomplete)'
 		# FIXME: testing sharing of parents
 		# (father_idx and mother_idx of original and sample Population,
 		# and if the parents are the same.)
@@ -178,7 +178,7 @@ class TestSampling(unittest.TestCase):
 
 
     def testNuclearFamilySample(self):
-        'Testing nuclear family sampling (imcomplete)'
+        'Testing nuclear family sampling (incomplete)'
         s = drawNuclearFamilySample(self.largepop, families=50, numOffspring=(1,5),
             affectedParents=(0, 2), affectedOffspring=(1,5))
         for ind in s.individuals():
