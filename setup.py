@@ -351,6 +351,8 @@ SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
 # etc to this directory.
 SWIG_OUTDIR = 'build'
+if not os.path.isdir('build'):
+    os.mkdir('build')
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
