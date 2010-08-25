@@ -146,7 +146,7 @@ common_lib = common_env.StaticLibrary(
     target = 'build/common/common',
     source = ['build/common/' + x for x in LIB_FILES],
     CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
-    CPPPATH = ['.', 'gsl', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
+    CPPPATH = ['.', 'gsl', 'build', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
     CPPFLAGS = ccshared + ' ' + opt,
 )
 #
