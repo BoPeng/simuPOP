@@ -54,6 +54,7 @@ import distutils.sysconfig
 from setup import *
 # do not update version for this development version to avoid rebuild
 SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
+print 'Using swig version %d.%d.%d' % tuple(swig_version())
 # get information from python distutils
 vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS',
     'CCSHARED', 'LDSHARED', 'SO', 'LIBDEST', 'INCLUDEPY')
