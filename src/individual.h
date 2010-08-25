@@ -595,12 +595,18 @@ public:
 
 	reference operator*() const
 	{
+		DBG_ASSERT(m_it < m_end, ValueError,
+			"Can not refer to an invalid iterator");
+
 		return *m_it;
 	}
 
 
 	pointer operator->() const
 	{
+		DBG_ASSERT(m_it < m_end, ValueError,
+			"Can not refer to an invalid iterator");
+
 		return &*m_it;
 	}
 
@@ -616,8 +622,8 @@ public:
 
 		// save current state
 		IndividualIterator tmp(*this);
-		while (m_it < m_end)
-			if ((++m_it)->visible())
+		while (++m_it < m_end)
+			if (m_it->visible())
 				break;
 		// return the original one
 		return tmp;
@@ -633,9 +639,10 @@ public:
 			return *this;
 		}
 
-		while (m_it < m_end)
-			if ((++m_it)->visible())
+		while (++m_it < m_end)
+			if (m_it->visible())
 				return *this;
+        // in this case, m_it must equals m_end
 		DBG_ASSERT(m_it == m_end, IndexError,
 			"Something wrong with operator++ here");
 		return *this;
@@ -654,8 +661,8 @@ public:
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		while (i < diff && tmp.m_it < tmp.m_end)
-			if ((++tmp.m_it)->visible())
+		while (i < diff && ++tmp.m_it < tmp.m_end)
+			if (tmp.m_it->visible())
 				++i;
 		DBG_FAILIF(i != diff, ValueError,
 			"Can not add to IndIterator");
@@ -672,8 +679,8 @@ public:
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		while (i < diff && m_it < m_end)
-			if ((++m_it)->visible())
+		while (i < diff && ++m_it < m_end)
+			if (m_it->visible())
 				++i;
 		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
 		return *this;
