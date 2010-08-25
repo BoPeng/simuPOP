@@ -30,6 +30,8 @@ Bugs:
   - Fix a bug that prevents types.TupleType and types.ListType of being used alone in
 		allowedTypes of simuOpt.
   - Fix a bug in the parameter input dialog.
+  - (core) Fix a bug that prevents proper iteration through individuals in
+		virtual subpopulations under certain condition.
 
 Regression (minor):
   - User provided function in function Population.recodeAlleles will be called once
