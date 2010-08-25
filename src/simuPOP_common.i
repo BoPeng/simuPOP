@@ -29,7 +29,7 @@
 ////////////////////////// INCLUDE FILES //////////////////////////
 %{
 
-#include "../config.h"
+#include "config.h"
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 #include "individual.h"
@@ -78,7 +78,7 @@ def _swig_repr(self):
 
 ////////////////////////// CLEAN EXTRA SYMBOLS //////////////////////////
 
-// do not load these constants in ../config.h
+// do not load these constants in config.h
 %ignore HAVE__BOOL;
 %ignore HAVE_DECL_ACOSH;
 %ignore HAVE_DECL_ASINH;
@@ -156,7 +156,7 @@ def _swig_repr(self):
 %include "stl.i"
 %include "std_map.i"
 
-%include "../config.h"
+%include "config.h"
 %include "simuPOP_cfg.h"
 
 namespace std

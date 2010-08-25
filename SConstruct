@@ -127,7 +127,8 @@ gsl = gsl_env.SharedLibrary(
     SHLIBSUFFIX = so_ext,
     SHLINKFLAGS = comp.ldflags_shared,
     LIBPATH = extra_path,
-    CPPPATH = ['.', 'gsl', 'gsl/cdf', 'gsl/specfunc', python_inc_dir],
+    # build for config.h
+    CPPPATH = ['.', 'gsl', 'gsl/cdf', 'gsl/specfunc', 'build', python_inc_dir],
     CCFLAGS = comp.compile_options,
     CPPFLAGS = ' '.join([basicflags, ccshared, opt])
 )
@@ -180,13 +181,13 @@ for mod in targets:
     mod_env.Command('build/%s/src/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
-        source = ['build/%s/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
+        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
         LIBS = info['libraries'] + [common_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
         LIBPATH = info['library_dirs'] + extra_path,
-        CPPPATH = [python_inc_dir, '.', 'src'] + info['include_dirs'],
+        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
         CCFLAGS = info['extra_compile_args'] + comp.compile_options,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])

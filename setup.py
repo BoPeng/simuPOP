@@ -171,26 +171,26 @@ HEADER_FILES = [
 ]
 
 SOURCE_FILES = [
-    'src/utility.cpp',
-    'src/genoStru.cpp',
-    'src/individual.cpp',
-    'src/population.cpp',
-    'src/simulator.cpp',
-    'src/mating.cpp',
-    'src/operator.cpp',
-    'src/initializer.cpp',
-    'src/migrator.cpp',
-    'src/outputer.cpp',
-    'src/selector.cpp',
-    'src/penetrance.cpp',
-    'src/qtrait.cpp',
-    'src/stator.cpp',
-    'src/mutator.cpp',
-    'src/transmitter.cpp',
-    'src/tagger.cpp',
-    'src/pedigree.cpp',
-    'src/virtualSubPop.cpp',
-    'src/sandbox.cpp',
+    'utility.cpp',
+    'genoStru.cpp',
+    'individual.cpp',
+    'population.cpp',
+    'simulator.cpp',
+    'mating.cpp',
+    'operator.cpp',
+    'initializer.cpp',
+    'migrator.cpp',
+    'outputer.cpp',
+    'selector.cpp',
+    'penetrance.cpp',
+    'qtrait.cpp',
+    'stator.cpp',
+    'mutator.cpp',
+    'transmitter.cpp',
+    'tagger.cpp',
+    'pedigree.cpp',
+    'virtualSubPop.cpp',
+    'sandbox.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
@@ -345,8 +345,7 @@ if os.name == 'nt':
     ])
 
 
-
-SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild'
 SWIG_CC_FLAGS = '-python -keyword'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
@@ -404,7 +403,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     res = {}
     res['src'] =  ['build/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
-        res['src'].append(src[:-4] + '_' + modu + '.cpp')
+        res['src'].append('build/' + src[:-4] + '_' + modu + '.cpp')
     res['src'].extend(LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
@@ -451,19 +450,19 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 ############################################################################
 # checking os type and copy configuration files
 if os.name == 'nt':    # Windows
-    shutil.copy('config_win32.h', 'config.h')
+    shutil.copy('config_win32.h', 'build/config.h')
 elif os.name == 'posix':
     if sys.platform == 'linux2':     # Linux
-        shutil.copy('config_linux.h', 'config.h')
+        shutil.copy('config_linux.h', 'build/config.h')
     elif sys.platform == 'sunos5': # Solaris
-        shutil.copy('config_solaris.h', 'config.h')
+        shutil.copy('config_solaris.h', 'build/config.h')
     elif sys.platform == 'darwin':    # MacOS
-        shutil.copy('config_mac.h', 'config.h')
+        shutil.copy('config_mac.h', 'build/config.h')
     else: # HPUX?
-        shutil.copy('config_linux.h', 'config.h')
+        shutil.copy('config_linux.h', 'build/config.h')
 else:
     # otherwise, assume a posix system
-    shutil.copy('config_linux.h', 'config.h')
+    shutil.copy('config_linux.h', 'build/config.h')
 
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
@@ -509,15 +508,15 @@ if __name__ == '__main__':
     copied_files = []
     for modu in MODULES:
         for src in SOURCE_FILES:
-            mod_src = src[:-4] + '_' + modu + '.cpp'
-            shutil.copy(src, mod_src)
+            mod_src = 'build/' + src[:-4] + '_' + modu + '.cpp'
+            shutil.copy('src/' + src, mod_src)
             copied_files.append(mod_src)
     # build
     # For module simuPOP.gsl
     EXT_MODULES = [
         Extension('simuPOP._gsl',
             sources = GSL_FILES + ['build/gsl_wrap.c'],
-            include_dirs = ['gsl', 'gsl/specfunc', '.'],
+            include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'],
         )
     ]
     for modu in MODULES:
