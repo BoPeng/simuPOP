@@ -48,27 +48,12 @@ struct arrayobject;                                                             
 #define Py_SIZE(obj) (((PyVarObject*)(obj))->ob_size)
 #endif
 
-/** All possible arraydescr values are defined in the vector "descriptors"
- * below.    That's defined later because the appropriate get and set
- * functions aren't visible yet.
-   CPPONLY
- */
-struct arraydescr
-{
-	int itemsize;
-	PyObject * (* getitem)(struct arrayobject *, int);
-	int (* setitem)(struct arrayobject *, int, PyObject *);
-};
-
 /// CPPONLY
 typedef struct arrayobject
 {
 	PyObject_VAR_HEAD
-	// pointer to the beginning of the item.
-	// this will be used by binary type only.
+	// pointer to the beginning of the genotype
 	GenoIterator ob_iter;
-	// description of the type, the exact get and set item functions.
-	struct arraydescr * ob_descr;
 } arrayobject;
 
 // redefinition of type...
@@ -79,19 +64,6 @@ bool is_carrayobject(PyObject * op);
 
 // #define is_carrayobject(op) ((op)->ob_type == &Arraytype)
 
-/****************************************************************************
-   Get and Set functions for each type.
-   A Get function takes an arrayobject* and an integer index, returning the
-   array value at that index wrapped in an appropriate PyObject*.
-   A Set function takes an arrayobject, integer index, and PyObject*; sets
-   the array value at that index to the raw C data extracted from the PyObject*,
-   and returns 0 if successful, else nonzero on failure (PyObject* not of an
-   appropriate type or value).
-   Note that the basic Get and Set functions do NOT check that the index is
-   in bounds; that's the responsibility of the caller.
-****************************************************************************/
-
-// allele type
 /// CPPONLY
 static PyObject *
 a_getitem(arrayobject * ap, int i)
@@ -121,21 +93,6 @@ a_setitem(arrayobject * ap, int i, PyObject * v)
 	return 0;
 }
 
-
-/* Description of types */
-static struct arraydescr descriptors[] =
-{
-	{ 0,			   a_getitem,			   a_setitem			  },
-	{                                                                                             /* Sentinel */
-	 0, 0, 0
-	}
-};
-
-/****************************************************************************
-   Implementations of array object methods.
-****************************************************************************/
-// you can not create a object from python,
-// error will occur
 /// CPPONLY
 static PyObject *
 carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
@@ -173,7 +130,7 @@ static PyObject * getarrayitem(PyObject * op, int i)
 		PyErr_SetString(PyExc_IndexError, "array index out of range");
 		return NULL;
 	}
-	return (*ap->ob_descr->getitem)(ap, i);
+	return a_getitem(ap, i);
 }
 
 
@@ -424,8 +381,7 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 		ihigh = ilow;
 	else if (ihigh > Py_SIZE(a))
 		ihigh = Py_SIZE(a);
-	np = (arrayobject *)newcarrayiterobject(a->ob_iter + ilow,
-			a->ob_iter + ihigh);
+	np = (arrayobject *)newcarrayiterobject(a->ob_iter + ilow, a->ob_iter + ihigh);
 	if (np == NULL)
 		return NULL;
 	return (PyObject *)np;
@@ -454,22 +410,18 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 	// use a single number to propagate v
 	if (PyNumber_Check(v) ) {
 		for (int i = ilow; i < ihigh; ++i)
-			(*a->ob_descr->setitem)(a, i, v);
+			a_setitem(a, i, v);
 		return 0;
 	}
 #define b ((arrayobject *)v)
 	if (is_carrayobject(v)) {                                                  /* v is of array type */
 		int n = Py_SIZE(b);
-		if (b->ob_descr != a->ob_descr) {
-			PyErr_BadArgument();
-			return -1;
-		}
 		if (n != ihigh - ilow) {
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
 		}
 		for (int i = 0; i < n; ++i)
-			(*a->ob_descr->setitem)(a, i + ilow, (*b->ob_descr->getitem)(b, i) );
+			a_setitem(a, i + ilow, a_getitem(b, i) );
 		return 0;
 	}
 #undef b
@@ -483,7 +435,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 		// iterator sequence
 		for (int i = 0; i < n; ++i) {
 			PyObject * item = PySequence_GetItem(v, i);
-			(*a->ob_descr->setitem)(a, i + ilow, item);
+			a_setitem(a, i + ilow, item);
 			Py_DECREF(item);
 		}
 		return 0;
@@ -503,18 +455,9 @@ static Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 	}
 	if (v == NULL)
 		return array_ass_slice(a, i, i + 1, v);
-	return (*a->ob_descr->setitem)(a, i, v);
+	return a_setitem(a, i, v);
 }
 
-
-/* not used */
-/*
-   static int setarrayitem(PyObject *a, int i, PyObject *v)
-   {
-    assert(is_carrayobject(a));
-    return array_ass_item((arrayobject *)a, i, v);
-   }
- */
 
 /// CPPONLY
 static PyObject * array_count(arrayobject * self, PyObject * args)
@@ -628,19 +571,8 @@ PyMethodDef array_methods[] =
 /// CPPONLY
 static PyObject * array_getattr(arrayobject * a, char * name)
 {
-	if (strcmp(name, "itemsize") == 0) {
-		return PyInt_FromLong((long)a->ob_descr->itemsize);
-	}
 	if (strcmp(name, "__members__") == 0) {
-		PyObject * list = PyList_New(1);
-		if (list) {
-			PyList_SetItem(list, 0,
-				PyString_FromString("itemsize"));
-			if (PyErr_Occurred()) {
-				Py_DECREF(list);
-				list = NULL;
-			}
-		}
+		PyObject * list = PyList_New(0);
 		return list;
 	}
 	return Py_FindMethod(array_methods, (PyObject *)a, name);
@@ -663,7 +595,7 @@ static int array_print(arrayobject * a, FILE * fp, int flags)
 	for (i = 0; i < len && ok == 0; i++) {
 		if (i > 0)
 			fprintf(fp, ", ");
-		v = (a->ob_descr->getitem)(a, i);
+		v = a_getitem(a, i);
 		ok = PyObject_Print(v, fp, 0);
 		Py_XDECREF(v);
 	}
@@ -691,7 +623,7 @@ array_repr(arrayobject * a)
 	for (i = 0; i < len && !PyErr_Occurred(); i++) {
 		if (i > 0)
 			PyString_Concat(&s, comma);
-		v = (a->ob_descr->getitem)(a, i);
+		v = a_getitem(a, i);
 		t = PyObject_Repr(v);
 		Py_XDECREF(v);
 		PyString_ConcatAndDel(&s, t);
@@ -733,10 +665,6 @@ Methods:\n\
 count() -- return number of occurences of an object\n\
 index() -- return index of first occurence of an object\n\
 tolist() -- return the array converted to an ordinary list\n\
-\n\
-Variables:\n\
-\n\
-itemsize -- the length in bytes of one array item\n\
         "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
 
 PyTypeObject Arraytype =
@@ -802,7 +730,6 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 		return PyErr_NoMemory();
 	}
 	//
-	op->ob_descr = descriptors;
 	op->ob_iter = begin;
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;

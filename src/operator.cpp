@@ -26,7 +26,7 @@
 #include "operator.h"
 
 #if PY_VERSION_HEX >= 0x03000000
-#define PyString_Check PyUnicode_Check
+#  define PyString_Check PyUnicode_Check
 #endif
 
 namespace simuPOP {
