@@ -919,8 +919,8 @@ public:
 	}
 
 
-	CombinedAlleleIterator(GenoIterator ptr, GenoIterator ptrEnd, UINT size)
-		: m_useGappedIterator(true), m_valid(true),
+	CombinedAlleleIterator(UINT shift, GenoIterator ptr, GenoIterator ptrEnd, UINT size)
+		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
 		// ignored
 		m_it(), m_index(0), m_ploidy(0), m_chromType(0),
@@ -931,7 +931,7 @@ public:
 
 
 	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it)
-		: m_useGappedIterator(false), m_valid(true),
+		: m_useGappedIterator(false), m_valid(true), m_shift(),
 		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
@@ -972,7 +972,7 @@ public:
 	AlleleRef operator *() const
 	{
 		if (m_useGappedIterator)
-			return *m_ptr;
+			return *(m_ptr + m_shift);
 		else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
@@ -983,7 +983,7 @@ public:
 	GenoIterator ptr()
 	{
 		if (m_useGappedIterator)
-			return m_ptr;
+			return m_ptr + m_shift;
 		else
 			return m_it->genoBegin() + m_index + m_p * m_size;
 	}
@@ -1107,7 +1107,7 @@ public:
 	bool operator!=(const CombinedAlleleIterator & rhs)
 	{
 		if (m_useGappedIterator)
-			return m_ptr != rhs.m_ptr;
+			return m_ptr != rhs.m_ptr || m_shift != rhs.m_shift;
 		else {
 			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() &&
 			//	(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
@@ -1124,6 +1124,8 @@ private:
 	bool m_useGappedIterator;
 	///
 	bool m_valid;
+    //
+    UINT m_shift;
 	//
 	GenoIterator m_ptr;
 	//
