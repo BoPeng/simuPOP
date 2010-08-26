@@ -36,6 +36,25 @@
 
 #include "gsl/gsl_machine.h"
 
+
+#if PY_VERSION_HEX >= 0x03000000
+
+#define PyString_Check PyUnicode_Check
+#define PyString_FromStringAndSize PyUnicode_FromStringAndSize
+#define PyString_FromString PyUnicode_FromString
+#define PyString_Concat PyUnicode_Concat
+#define PyString_ConcatAndDel PyUnicode_ConcatAndDel
+
+#define PyInt_Check(x) PyLong_Check(x)
+#define PyInt_AsLong(x) PyLong_AsLong(x)
+#define PyInt_FromLong(x) PyLong_FromLong(x)
+#define PyNumber_Int(x) PyNumber_Long(x)
+#define PyInt_FromString PyLong_FromString
+#define PyInt_Type PyLong_Type
+#define PyString_Type PyUnicode_Type
+
+#endif
+
 #include <sstream>
 using std::stringstream;
 using std::ostringstream;
@@ -475,7 +494,7 @@ void stringList::addString(PyObject * str)
 
 	if (res == NULL)
 		return;
-	string value = string(PyString_AsString(res));
+	string value = PyObj_AsString(res);
 	m_elems.push_back(value);
 	Py_DECREF(res);
 }
@@ -614,7 +633,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 				"A mixture of string and list is not allowed.")
 			if (m_elems.empty())
 				m_elems.push_back(vectorstr());
-			string value = string(PyString_AsString(item));
+			string value = PyObj_AsString(item);
 			m_elems[0].push_back(value);
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
@@ -623,7 +642,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 				PyObject * str = PySequence_GetItem(item, j);
 				DBG_ASSERT(PyString_Check(str), ValueError,
 					"A list or nested list of string is expected");
-				string value = string(PyString_AsString(str));
+				string value = PyObj_AsString(str);
 				m_elems.back().push_back(value);
 				Py_DECREF(str);
 			}
@@ -653,7 +672,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 			PyObject * item = PySequence_GetItem(args, i);
 			DBG_ASSERT(PyString_Check(item), ValueError,
 				"Attribute args in a simuPOP WithArgs object should be a list of strings");
-			m_args.push_back(string(PyString_AsString(item)));
+			m_args.push_back(PyObj_AsString(item));
 			Py_DECREF(item);
 		}
 		Py_DECREF(args);
@@ -662,7 +681,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
 			"The func attribute of the passed object should be callable.");
 		PyObject * name = PyObject_GetAttrString(func, "__name__");
-		m_name = string(PyString_AsString(name));
+		m_name = PyObj_AsString(name);
 		Py_DECREF(name);
 		Py_DECREF(func);
 		return;
@@ -672,7 +691,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 
 	// find its name.
 	PyObject * name = PyObject_GetAttrString(obj, "__name__");
-	m_name = string(PyString_AsString(name));
+	m_name = PyObj_AsString(name);
 	Py_DECREF(name);
 
 	// free python functions have a 'func_code' attribute
@@ -694,7 +713,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
 	for (int i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
-		m_args.push_back(string(PyString_AsString(item)));
+		m_args.push_back(PyObj_AsString(item));
 	}
 	Py_DECREF(co_varnames);
 	// accepting arbitrary number of parameters?
@@ -782,7 +801,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
 	else if (PyString_Check(obj)) {
 		m_status = DYNAMIC;
 		m_elems.resize(1);
-		m_names.push_back(PyString_AsString(obj));
+		m_names.push_back(PyObj_AsString(obj));
 	} else if (PyNumber_Check(obj)) {
 		m_status = REGULAR;
 		// accept a number
@@ -799,7 +818,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
 			} else if (PyString_Check(item)) {
 				DBG_FAILIF(i != 0 && m_status != DYNAMIC, ValueError, "Cannot mix index and loci names.");
 				m_status = DYNAMIC;
-				m_names.push_back(PyString_AsString(item));
+				m_names.push_back(PyObj_AsString(item));
 			} else {
 				DBG_ASSERT(false, ValueError, "Invalid input for a list of loci (index or name should be used).");
 			}
@@ -926,7 +945,7 @@ void PyObj_As_String(PyObject * obj, string & val)
 	if (res == NULL)
 		throw ValueError("Can not convert to a string");
 
-	val = string(PyString_AsString(res));
+	val = PyObj_AsString(res);
 	Py_DECREF(res);
 }
 
@@ -1019,6 +1038,26 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
 	return res;
+}
+
+
+string PyObj_AsChar(PyObject *str)
+{
+#if PY_VERSION_HEX >= 0x03000000
+  char *cstr;
+  char *newstr;
+  Py_ssize_t len;
+  str = PyUnicode_AsUTF8String(str);
+  PyBytes_AsStringAndSize(str, &cstr, &len);
+  newstr = (char *) malloc(len+1);
+  memcpy(newstr, cstr, len+1);
+  Py_XDECREF(str);
+  string res(newstr);
+  free(newstr);
+  return res;
+#else
+  return string(PyString_AsString(str));
+#endif
 }
 
 
@@ -1638,9 +1677,7 @@ PyObject * load_float(const string & str, size_t & offset)
 
 void save_string(string & str, PyObject * args)
 {
-	char * s = PyString_AsString(args);
-
-	str += 's' + string(s) + '\0';
+	str += 's' + PyObj_AsString(args) + '\0';
 }
 
 
