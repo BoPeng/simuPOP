@@ -25,6 +25,10 @@
 
 #include "selector.h"
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyInt_FromLong(x) PyLong_FromLong(x)
+#endif
+
 namespace simuPOP {
 bool BaseSelector::apply(Population & pop) const
 {
