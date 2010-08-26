@@ -39,6 +39,8 @@
 #  endif                                                                                        /* DONT_HAVE_SYS_TYPES_H */
 #endif                                                                                          /* !STDC_HEADERS */
 
+#if PY_VERSION_HEX < 0x03000000
+
 /// CPPONLY
 struct arrayobject;                                                             /* Forward */
 
@@ -884,34 +886,6 @@ bool is_carrayobject(PyObject * op)
 
 
 /// CPPONLY
-int carray_length(PyObject * a)
-{
-	return Py_SIZE((arrayobject *)(a));
-}
-
-
-/// CPPONLY
-int carray_itemsize(PyObject * a)
-{
-	return ((arrayobject *)(a))->ob_descr->itemsize;
-}
-
-
-/// CPPONLY
-char carray_type(PyObject * a)
-{
-	return ((arrayobject *)(a))->ob_descr->typecode;
-}
-
-
-/// CPPONLY
-char * carray_data(PyObject * a)
-{
-	return ((arrayobject *)(a))->ob_iterator.ob_item;
-}
-
-
-/// CPPONLY
 PyObject * newcarrayobject(char * ptr, char type, int size)
 {
 	struct arraydescr * descr;
@@ -1157,4 +1131,5 @@ int initCustomizedTypes(void)
 	return 0;
 }
 
-
+#else
+#endif
