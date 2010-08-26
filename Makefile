@@ -24,8 +24,8 @@ rebuild:
 	2to3-3.1 -w test/*.py
 
 clean:
-	@find . -name '*~' -depth 1 -delete
-	@find . -name '*.bak' -depth 1 -delete
-	@find . -name '*.py?' -depth 1 -delete
+	@find . -name '*~' -delete
+	@find . -name '*.bak' -delete
+	@find . -name '*.py?' -delete
 	@rm -f MANIFEST doc/*.aux doc/*.log doc/*.idx
 
