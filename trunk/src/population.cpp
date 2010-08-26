@@ -32,6 +32,10 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyInt_FromLong(x) PyLong_FromLong(x)
+#endif
+
 namespace simuPOP {
 
 Population::Population(const uintList & size,
@@ -2586,8 +2590,6 @@ void Population::useAncestralGen(UINT idx)
 
 void Population::save(const string & filename) const
 {
-	// this does not appear to work.
-#pragma warning(disable : 4996)
 	boost::iostreams::filtering_ostream ofs;
 
 	ofs.push(boost::iostreams::gzip_compressor());
@@ -2598,13 +2600,11 @@ void Population::save(const string & filename) const
 
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
-#pragma warning(default : 4996)
 }
 
 
 void Population::load(const string & filename)
 {
-#pragma warning(disable : 4996)
 	boost::iostreams::filtering_istream ifs;
 
 	ifs.push(boost::iostreams::gzip_decompressor());
@@ -2619,8 +2619,7 @@ void Population::load(const string & filename)
 		ia >> *this;
 	} catch (...) {
 		throw ValueError("Failed to load Population " + filename + ".\n");
-	}                                                                                               // try bin
-#pragma warning(default : 4996)
+	}
 }
 
 
