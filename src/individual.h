@@ -678,11 +678,16 @@ public:
 		}
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
+		if (diff == 0)
+			return *this;
 		difference_type i = 0;
-		while (i < diff && ++m_it < m_end)
-			if (m_it->visible())
+		while (++m_it < m_end) {
+			if (m_it->visible()) {
 				++i;
-		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
+				if (i == diff)
+					break;
+			}
+		}
 		return *this;
 	}
 
@@ -1007,8 +1012,8 @@ public:
 		} else if (m_chromType == CHROMOSOME_Y) {
 			DBG_ASSERT(it->sex() == MALE, SystemError,
 				"There is no chromosome Y for FEMALE Individuals");
-			while (it.valid())
-				if ((++it)->sex() == MALE)
+			while ((++it).valid())
+				if (it->sex() == MALE)
 					break;
 			p = 1;
 			valid = it.valid();
