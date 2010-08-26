@@ -960,6 +960,9 @@ PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY
+string PyObj_AsString(PyObject * str);
+
+/// CPPONLY
 int NumArray_Size(PyObject * obj);
 
 /// CPPONLY
