@@ -497,7 +497,7 @@ IndAlleleIterator Population::alleleIterator(UINT locus, UINT subPop)
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
 		// this is a complex case
-		return IndAlleleIterator(locus, 
+		return IndAlleleIterator(locus,
 			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());

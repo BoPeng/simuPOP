@@ -642,7 +642,7 @@ public:
 		while (++m_it < m_end)
 			if (m_it->visible())
 				return *this;
-        // in this case, m_it must equals m_end
+		// in this case, m_it must equals m_end
 		DBG_ASSERT(m_it == m_end, IndexError,
 			"Something wrong with operator++ here");
 		return *this;
@@ -832,14 +832,15 @@ public:
 			return *(m_it->infoPtr() + m_info);
 	}
 
-    //
-    pointer operator->() const
-    {
+
+	//
+	pointer operator->() const
+	{
 		if (m_useGappedIterator)
 			return m_ptr + m_info;
 		else
 			return m_it->infoPtr() + m_info;
-    }
+	}
 
 
 	// return, then advance.
@@ -1124,8 +1125,8 @@ private:
 	bool m_useGappedIterator;
 	///
 	bool m_valid;
-    //
-    UINT m_shift;
+	//
+	UINT m_shift;
 	//
 	GenoIterator m_ptr;
 	//
