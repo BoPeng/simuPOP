@@ -478,7 +478,7 @@ IndAlleleIterator Population::alleleIterator(UINT locus)
 		return IndAlleleIterator(locus, indIterator());
 	else
 		// a simplere case with straightforward iterator
-		return IndAlleleIterator(m_genotype.begin() + locus, m_genotype.end() + locus,
+		return IndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
 			totNumLoci());
 }
 
@@ -497,9 +497,9 @@ IndAlleleIterator Population::alleleIterator(UINT locus, UINT subPop)
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
 		// this is a complex case
-		return IndAlleleIterator(
-			m_genotype.begin() + m_subPopIndex[subPop] * genoSize() + locus,
-			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() + locus,
+		return IndAlleleIterator(locus, 
+			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
+			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
 }
 

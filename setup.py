@@ -440,7 +440,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             ('NO_ZLIB', 0), ('NO_BZIP' , 1),
 			# this one disables a lot of warnings about VC Checked iterators. Might not be a good idea.
 			#('_SCL_SECURE_NO_WARNINGS', None)
-            ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0),
+            ('_SECURE_SCL', 1),
+            #('_HAS_ITERATOR_DEBUGGING', 0),
 			])
     res['undef_macros'] = []
     return res
