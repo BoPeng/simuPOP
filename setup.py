@@ -355,12 +355,18 @@ if not os.path.isdir('build'):
     os.mkdir('build')
                 
 MACROS = {
-    'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
-    'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None)],
-    'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None)],
-    'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None)],
-    'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ],
-    'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None)],
+    'std':    [('SIMUPOP_MODULE', 'simuPOP_std'), 
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+    'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None),
+                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None), 
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+    'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None),
+                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None), 
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+    'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None),
+                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
 }
  
 WRAP_INFO = {
@@ -438,10 +444,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
             ('NO_ZLIB', 0), ('NO_BZIP' , 1),
-			# this one disables a lot of warnings about VC Checked iterators. Might not be a good idea.
+			# this one disables a lot of warnings about VC Checked iterators.
 			#('_SCL_SECURE_NO_WARNINGS', None)
-            ('_SECURE_SCL', 1),
-            #('_HAS_ITERATOR_DEBUGGING', 0),
 			])
     res['undef_macros'] = []
     return res
