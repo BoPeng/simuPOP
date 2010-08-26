@@ -25,6 +25,10 @@
 
 #include "mutator.h"
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyInt_FromLong(x) PyLong_FromLong(x)
+#endif
+
 namespace simuPOP {
 
 double BaseMutator::mutRate(UINT loc) const
