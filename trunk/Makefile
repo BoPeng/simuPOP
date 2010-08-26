@@ -21,6 +21,7 @@ rebuild:
 	2to3-3.1 -w src/utils.py
 	2to3-3.1 -w tools/build.py
 	2to3-3.1 -w tools/doxy2swig.py
+	2to3-3.1 -w test/*.py
 
 clean:
 	@find . -name '*~' -depth 1 -delete
