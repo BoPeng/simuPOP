@@ -942,18 +942,6 @@ void PyObj_As_Array(PyObject * obj, vectorf & val);
 void PyObj_As_IntArray(PyObject * obj, vectori & val);
 
 /// CPPONLY
-bool PyObj_Is_IntNumArray(PyObject * obj);
-
-/// CPPONLY
-bool PyObj_Is_DoubleNumArray(PyObject * obj);
-
-/// CPPONLY
-bool PyObj_Is_AlleleNumArray(PyObject * obj);
-
-/// CPPONLY
-PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
-
-/// CPPONLY
 PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
 
 /// CPPONLY

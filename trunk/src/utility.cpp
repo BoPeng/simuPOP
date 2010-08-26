@@ -105,10 +105,6 @@ extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
 
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
-extern "C" bool is_carrayobject(PyObject *);
-
-extern "C" char carray_type(PyObject *);
-
 extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
@@ -985,34 +981,6 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 	}
 }
 
-
-bool PyObj_Is_IntNumArray(PyObject * obj)
-{
-	return is_carrayobject(obj) &&
-	       carray_type(obj) == 'i' ;
-}
-
-
-bool PyObj_Is_DoubleNumArray(PyObject * obj)
-{
-	return is_carrayobject(obj) &&
-	       carray_type(obj) == 'd';
-}
-
-
-bool PyObj_Is_AlleleNumArray(PyObject * obj)
-{
-	return is_carrayobject(obj) && carray_type(obj) == 'a';
-}
-
-
-PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end)
-{
-	PyObject * res = newcarrayobject(reinterpret_cast<char *>(&*begin), 'd', end - begin);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert vector to double num array");
-	return res;
-}
 
 
 PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
