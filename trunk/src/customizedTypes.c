@@ -55,7 +55,6 @@ struct arrayobject;                                                             
  */
 struct arraydescr
 {
-	int typecode;
 	int itemsize;
 	PyObject * (* getitem)(struct arrayobject *, int);
 	int (* setitem)(struct arrayobject *, int, PyObject *);
@@ -127,82 +126,12 @@ a_setitem(arrayobject * ap, int i, PyObject * v)
 }
 
 
-/// CPPONLY
-static PyObject *
-f_getitem(arrayobject * ap, int i)
-{
-	return PyFloat_FromDouble((double)((float *)ap->ob_iterator.ob_item)[i]);
-}
-
-
-/// CPPONLY
-static int
-f_setitem(arrayobject * ap, int i, PyObject * v)
-{
-	float x;
-
-	if (!PyArg_Parse(v, "f;array item must be float", &x))
-		return -1;
-	if (i >= 0)
-		((float *)ap->ob_iterator.ob_item)[i] = x;
-	return 0;
-}
-
-
-/// CPPONLY
-static PyObject *
-d_getitem(arrayobject * ap, int i)
-{
-	return PyFloat_FromDouble(((double *)ap->ob_iterator.ob_item)[i]);
-}
-
-
-/// CPPONLY
-static int
-d_setitem(arrayobject * ap, int i, PyObject * v)
-{
-	double x;
-
-	if (!PyArg_Parse(v, "d;array item must be float", &x))
-		return -1;
-	if (i >= 0)
-		((double *)ap->ob_iterator.ob_item)[i] = x;
-	return 0;
-}
-
-
-/// CPPONLY
-static PyObject *
-i_getitem(arrayobject * ap, int i)
-{
-	return PyInt_FromLong((long)((int *)ap->ob_iterator.ob_item)[i]);
-}
-
-
-/// CPPONLY
-static int
-i_setitem(arrayobject * ap, int i, PyObject * v)
-{
-	int x;
-
-	/* 'i' == signed int, maps to PyArg_Parse's 'i' formatter */
-	if (!PyArg_Parse(v, "i;array item must be integer", &x))
-		return -1;
-	if (i >= 0)
-		((int *)ap->ob_iterator.ob_item)[i] = x;
-	return 0;
-}
-
-
 /* Description of types */
 static struct arraydescr descriptors[] =
 {
-	{ 'a', 0,			   a_getitem,			   a_setitem			  },
-	{ 'f', sizeof(float),  f_getitem,			   f_setitem			  },
-	{ 'd', sizeof(double), d_getitem,			   d_setitem			  },
-	{ 'i', sizeof(int),	   i_getitem,			   i_setitem			  },
+	{ 0,			   a_getitem,			   a_setitem			  },
 	{                                                                                             /* Sentinel */
-		'\0', 0, 0, 0
+	 0, 0, 0
 	}
 };
 
@@ -232,10 +161,6 @@ carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
 	return NULL;
 }
 
-
-// declaration only to avoid use of Arraytype
-/// CPPONLY
-PyObject * newcarrayobject(char * ptr, char type, int size);
 
 /// CPPONLY
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
@@ -503,12 +428,8 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 		ihigh = ilow;
 	else if (ihigh > Py_SIZE(a))
 		ihigh = Py_SIZE(a);
-	if (a->ob_descr->typecode == 'a')
-		np = (arrayobject *)newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
+	np = (arrayobject *)newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
 			a->ob_iterator.ob_iter + ihigh);
-	else
-		np = (arrayobject *)newcarrayobject(a->ob_iterator.ob_item + ilow * a->ob_descr->itemsize,
-			a->ob_descr->typecode, ihigh - ilow);
 	if (np == NULL)
 		return NULL;
 	return (PyObject *)np;
@@ -551,13 +472,8 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
 		}
-		if (a->ob_descr->typecode != 'a')
-			memcpy(a->ob_iterator.ob_item + ilow * a->ob_descr->itemsize,
-				b->ob_iterator.ob_item, (ihigh - ilow) * a->ob_descr->itemsize);
-		else{
-			for (int i = 0; i < n; ++i)
-				(*a->ob_descr->setitem)(a, i + ilow, (*b->ob_descr->getitem)(b, i) );
-		}
+		for (int i = 0; i < n; ++i)
+			(*a->ob_descr->setitem)(a, i + ilow, (*b->ob_descr->getitem)(b, i) );
 		return 0;
 	}
 #undef b
@@ -716,19 +632,13 @@ PyMethodDef array_methods[] =
 /// CPPONLY
 static PyObject * array_getattr(arrayobject * a, char * name)
 {
-	if (strcmp(name, "typecode") == 0) {
-		char tc = a->ob_descr->typecode;
-		return PyString_FromStringAndSize(&tc, 1);
-	}
 	if (strcmp(name, "itemsize") == 0) {
 		return PyInt_FromLong((long)a->ob_descr->itemsize);
 	}
 	if (strcmp(name, "__members__") == 0) {
-		PyObject * list = PyList_New(2);
+		PyObject * list = PyList_New(1);
 		if (list) {
 			PyList_SetItem(list, 0,
-				PyString_FromString("typecode"));
-			PyList_SetItem(list, 1,
 				PyString_FromString("itemsize"));
 			if (PyErr_Occurred()) {
 				Py_DECREF(list);
@@ -830,7 +740,6 @@ tolist() -- return the array converted to an ordinary list\n\
 \n\
 Variables:\n\
 \n\
-typecode -- the typecode character used to create the array\n\
 itemsize -- the length in bytes of one array item\n\
         "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
 
@@ -882,39 +791,6 @@ PyTypeObject Arraytype =
 bool is_carrayobject(PyObject * op)
 {
 	return op->ob_type == &Arraytype;
-}
-
-
-/// CPPONLY
-PyObject * newcarrayobject(char * ptr, char type, int size)
-{
-	struct arraydescr * descr;
-
-	if (size < 0) {
-		PyErr_BadInternalCall();
-		return NULL;
-	}
-
-	// skip the first one, which is for iterator
-	for (descr = descriptors + 1; descr->typecode != '\0'; descr++) {
-		if (descr->typecode == type) {
-			// create an object and copy data
-			arrayobject * op;
-
-			op = PyObject_New(arrayobject, &Arraytype);
-			if (op == NULL) {
-				PyObject_Del(op);
-				return PyErr_NoMemory();
-			}
-			Py_SIZE(op) = size;
-			op->ob_descr = descr;
-			op->ob_iterator.ob_item = ptr;
-			return (PyObject *)op;
-		}
-	}
-	PyErr_SetString(PyExc_ValueError,
-		"bad typecode (must be c, b, B, h, H, i, I, l, L, f or d)");
-	return NULL;
 }
 
 
