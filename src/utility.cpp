@@ -1033,7 +1033,7 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 }
 
 
-string PyObj_AsChar(PyObject *str)
+string PyObj_AsString(PyObject *str)
 {
 #if PY_VERSION_HEX >= 0x03000000
   char *cstr;
