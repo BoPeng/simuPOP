@@ -114,6 +114,15 @@ else:
     extra_path = []
 
 #
+def convert_def(defines):
+    new_list = []
+    for d in defines:
+        if d[1] is not None:
+            new_list.append(d)
+        else:
+            new_list.append(d[0])
+    return new_list
+#
 # Building library gsl
 #
 gsl_env = env.Clone()
@@ -147,6 +156,7 @@ common_lib = common_env.StaticLibrary(
     source = ['build/common/' + x for x in LIB_FILES],
     CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
     CPPPATH = ['.', 'gsl', 'build', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
+    CPPDEFINES = convert_def(ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
 )
 #
@@ -162,15 +172,6 @@ if targets == [] and 'gsl' not in BUILD_TARGETS:
     targets = all_modu
 if 'all' in BUILD_TARGETS:
     targets = all_modu
-
-def convert_def(defines):
-    new_list = []
-    for d in defines:
-        if d[1] is not None:
-            new_list.append(d)
-        else:
-            new_list.append(d[0])
-    return new_list
 
 for mod in targets:
     mod_env = env.Clone()

@@ -21,6 +21,7 @@ New features:
   - Add name, type and validator to parameter definition dictionary.
   - Add mode --gui=interactive which is repsented by --gui=False in previous
 		versions of simuPOP.
+  - Support Python 2.7, boost 1.44.0 and swig 2.0.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification
