@@ -65,12 +65,8 @@ typedef struct arrayobject
 {
 	PyObject_VAR_HEAD
 	// pointer to the beginning of the item.
-	struct iterator
-	{
-		char * ob_item;
-		// this will be used by binary type only.
-		GenoIterator ob_iter;
-	} ob_iterator;
+	// this will be used by binary type only.
+	GenoIterator ob_iter;
 	// description of the type, the exact get and set item functions.
 	struct arraydescr * ob_descr;
 } arrayobject;
@@ -100,7 +96,7 @@ bool is_carrayobject(PyObject * op);
 static PyObject *
 a_getitem(arrayobject * ap, int i)
 {
-	return PyInt_FromLong(*(ap->ob_iterator.ob_iter + i) );
+	return PyInt_FromLong(*(ap->ob_iter + i) );
 }
 
 
@@ -118,9 +114,9 @@ a_setitem(arrayobject * ap, int i, PyObject * v)
 		return -1;
 	// force the value to bool to avoid a warning
 #ifdef BINARYALLELE
-	*(ap->ob_iterator.ob_iter + i) = (x != 0);
+	*(ap->ob_iter + i) = (x != 0);
 #else
-	*(ap->ob_iterator.ob_iter + i) = Allele(x);
+	*(ap->ob_iter + i) = Allele(x);
 #endif
 	return 0;
 }
@@ -428,8 +424,8 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 		ihigh = ilow;
 	else if (ihigh > Py_SIZE(a))
 		ihigh = Py_SIZE(a);
-	np = (arrayobject *)newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
-			a->ob_iterator.ob_iter + ihigh);
+	np = (arrayobject *)newcarrayiterobject(a->ob_iter + ilow,
+			a->ob_iter + ihigh);
 	if (np == NULL)
 		return NULL;
 	return (PyObject *)np;
@@ -807,7 +803,7 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
 	}
 	//
 	op->ob_descr = descriptors;
-	op->ob_iterator.ob_iter = begin;
+	op->ob_iter = begin;
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
