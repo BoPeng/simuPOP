@@ -25,6 +25,11 @@
 
 #include "penetrance.h"
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyInt_FromLong(x) PyLong_FromLong(x)
+#endif
+
+
 namespace simuPOP {
 
 // set pentrance to all individuals and record penetrance if requested.
