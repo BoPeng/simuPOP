@@ -2254,7 +2254,7 @@ void Population::push(Population & rhs)
 		"Evolution can not continue because the new generation has different \n"
 		"genotypic structure.\n");
 
-	DBG_FAILIF(!m_genotype.empty() && m_genotype.begin() == rhs.m_genotype.begin(), ValueError,
+	DBG_FAILIF(!m_genotype.empty() && (&*m_genotype.begin() == &*rhs.m_genotype.begin()), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
 
 	// front -1 pop, -2 pop, .... end
@@ -2588,6 +2588,8 @@ void Population::useAncestralGen(UINT idx)
 
 void Population::save(const string & filename) const
 {
+	// this does not appear to work.
+#pragma warning(disable : 4996)
 	boost::iostreams::filtering_ostream ofs;
 
 	ofs.push(boost::iostreams::gzip_compressor());
@@ -2598,11 +2600,13 @@ void Population::save(const string & filename) const
 
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
+#pragma warning(default : 4996)
 }
 
 
 void Population::load(const string & filename)
 {
+#pragma warning(disable : 4996)
 	boost::iostreams::filtering_istream ifs;
 
 	ifs.push(boost::iostreams::gzip_decompressor());
@@ -2618,6 +2622,7 @@ void Population::load(const string & filename)
 	} catch (...) {
 		throw ValueError("Failed to load Population " + filename + ".\n");
 	}                                                                                               // try bin
+#pragma warning(default : 4996)
 }
 
 

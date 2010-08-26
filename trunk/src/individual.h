@@ -827,10 +827,19 @@ public:
 	double & operator *() const
 	{
 		if (m_useGappedIterator)
-			return *m_ptr;
+			return *(m_ptr + m_info);
 		else
 			return *(m_it->infoPtr() + m_info);
 	}
+
+    //
+    pointer operator->() const
+    {
+		if (m_useGappedIterator)
+			return m_ptr + m_info;
+		else
+			return m_it->infoPtr() + m_info;
+    }
 
 
 	// return, then advance.
