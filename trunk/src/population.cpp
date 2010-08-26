@@ -1665,11 +1665,9 @@ Population & Population::extractMarkedIndividuals() const
 			// will be kept
 			if (oldInd->marked()) {
 				++newSize;
-				if (oldPtr != newPtr) {
-					*newInd = *oldInd;
-					copy(oldPtr, oldPtr + step, newPtr);
-					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
-				}
+				*newInd = *oldInd;
+				copy(oldPtr, oldPtr + step, newPtr);
+				copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 				++newInd;
 				newPtr += step;
 				newInfoPtr += infoStep;
