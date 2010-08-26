@@ -39,19 +39,19 @@
 
 #if PY_VERSION_HEX >= 0x03000000
 
-#define PyString_Check PyUnicode_Check
-#define PyString_FromStringAndSize PyUnicode_FromStringAndSize
-#define PyString_FromString PyUnicode_FromString
-#define PyString_Concat PyUnicode_Concat
-#define PyString_ConcatAndDel PyUnicode_ConcatAndDel
+#  define PyString_Check PyUnicode_Check
+#  define PyString_FromStringAndSize PyUnicode_FromStringAndSize
+#  define PyString_FromString PyUnicode_FromString
+#  define PyString_Concat PyUnicode_Concat
+#  define PyString_ConcatAndDel PyUnicode_ConcatAndDel
 
-#define PyInt_Check(x) PyLong_Check(x)
-#define PyInt_AsLong(x) PyLong_AsLong(x)
-#define PyInt_FromLong(x) PyLong_FromLong(x)
-#define PyNumber_Int(x) PyNumber_Long(x)
-#define PyInt_FromString PyLong_FromString
-#define PyInt_Type PyLong_Type
-#define PyString_Type PyUnicode_Type
+#  define PyInt_Check(x) PyLong_Check(x)
+#  define PyInt_AsLong(x) PyLong_AsLong(x)
+#  define PyInt_FromLong(x) PyLong_FromLong(x)
+#  define PyNumber_Int(x) PyNumber_Long(x)
+#  define PyInt_FromString PyLong_FromString
+#  define PyInt_Type PyLong_Type
+#  define PyString_Type PyUnicode_Type
 
 #endif
 
@@ -989,24 +989,25 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 }
 
 
-string PyObj_AsString(PyObject *str)
+string PyObj_AsString(PyObject * str)
 {
 #if PY_VERSION_HEX >= 0x03000000
-  char *cstr;
-  char *newstr;
-  Py_ssize_t len;
-  str = PyUnicode_AsUTF8String(str);
-  PyBytes_AsStringAndSize(str, &cstr, &len);
-  newstr = (char *) malloc(len+1);
-  memcpy(newstr, cstr, len+1);
-  Py_XDECREF(str);
-  string res(newstr);
-  free(newstr);
-  return res;
+	char * cstr;
+	char * newstr;
+	Py_ssize_t len;
+	str = PyUnicode_AsUTF8String(str);
+	PyBytes_AsStringAndSize(str, &cstr, &len);
+	newstr = (char *)malloc(len + 1);
+	memcpy(newstr, cstr, len + 1);
+	Py_XDECREF(str);
+	string res(newstr);
+	free(newstr);
+	return res;
 #else
-  return string(PyString_AsString(str));
+	return string(PyString_AsString(str));
 #endif
 }
+
 
 // copy constructor
 SharedVariables::SharedVariables(const SharedVariables & rhs)

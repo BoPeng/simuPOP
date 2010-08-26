@@ -9999,21 +9999,9 @@ Usage:
 
 %ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
 
-%ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
-
-%ignore simuPOP::PyObj_Is_DoubleNumArray(PyObject *obj);
-
-%ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
-
-%ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
-
-%ignore simuPOP::Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
-
 %ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
-%ignore simuPOP::NumArray_Size(PyObject *obj);
-
-%ignore simuPOP::NumArray_Data(PyObject *obj);
+%ignore simuPOP::PyObj_AsString(PyObject *str);
 
 %ignore simuPOP::mainVars();
 

@@ -29,7 +29,7 @@ using std::ostringstream;
 using std::setprecision;
 
 #if PY_VERSION_HEX >= 0x03000000
-#define PyInt_FromLong(x) PyLong_FromLong(x)
+#  define PyInt_FromLong(x) PyLong_FromLong(x)
 #endif
 
 namespace simuPOP {

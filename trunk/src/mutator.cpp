@@ -26,7 +26,7 @@
 #include "mutator.h"
 
 #if PY_VERSION_HEX >= 0x03000000
-#define PyInt_FromLong(x) PyLong_FromLong(x)
+#  define PyInt_FromLong(x) PyLong_FromLong(x)
 #endif
 
 namespace simuPOP {
@@ -347,7 +347,7 @@ void PyMutator::mutate(AlleleRef allele, UINT) const
 		if (arg == "allele")
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));
 		else if (arg == "context") {
-			const vectori & cnt = context();	
+			const vectori & cnt = context();
 			PyObject * c = PyTuple_New(cnt.size());
 			for (size_t j = 0; j < cnt.size(); ++i)
 				PyTuple_SET_ITEM(c, j, PyInt_FromLong(static_cast<int>(cnt[j])));
