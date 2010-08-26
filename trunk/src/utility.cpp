@@ -101,8 +101,6 @@ using boost::cmatch;
 
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
-extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
-
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
 extern "C" PyObject * PyDefDict_New();
@@ -979,16 +977,6 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		val.resize(1);
 		PyObj_As_Int(obj, val[0]);
 	}
-}
-
-
-
-PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
-{
-	PyObject * res = newcarrayobject(reinterpret_cast<char *>(&*begin), 'i', end - begin);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert vector to int num array");
-	return res;
 }
 
 

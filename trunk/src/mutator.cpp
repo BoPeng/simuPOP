@@ -346,9 +346,13 @@ void PyMutator::mutate(AlleleRef allele, UINT) const
 		const string & arg = m_func.arg(i);
 		if (arg == "allele")
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));
-		else if (arg == "context")
-			PyTuple_SET_ITEM(args, i, Int_Vec_As_NumArray(context().begin(), context().end()));
-		else {
+		else if (arg == "context") {
+			const vectori & cnt = context();	
+			PyObject * c = PyTuple_New(cnt.size());
+			for (size_t j = 0; j < cnt.size(); ++i)
+				PyTuple_SET_ITEM(c, j, PyInt_FromLong(static_cast<int>(cnt[j])));
+			PyTuple_SET_ITEM(args, i, c);
+		} else {
 			DBG_FAILIF(true, ValueError,
 				"Only parameters 'allele' and 'context' are acceptable in a user-provided mutation function.");
 		}
