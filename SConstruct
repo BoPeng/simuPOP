@@ -159,6 +159,7 @@ common_lib = common_env.StaticLibrary(
     CPPDEFINES = convert_def(ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
 )
+Alias('common', common_lib)
 #
 # Building modules
 # 

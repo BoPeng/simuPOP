@@ -1230,7 +1230,7 @@ public:
 			return IndInfoIterator(idx, indIterator());
 		else
 			// if not required order, or if the information is ordered
-			return IndInfoIterator(idx, m_info.begin() + idx, infoSize());
+			return IndInfoIterator(idx, m_info.begin(), infoSize());
 	}
 
 
@@ -1241,7 +1241,7 @@ public:
 		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndInfoIterator(idx, IndIterator(m_inds.end(), m_inds.end(), false));
 		else
-			return IndInfoIterator(idx, m_info.end() + idx, infoSize());
+			return IndInfoIterator(idx, m_info.end(), infoSize());
 	}
 
 
@@ -1263,7 +1263,7 @@ public:
 		if (vsp.isVirtual() || !indOrdered())
 			return IndInfoIterator(idx, indIterator(subPop));
 		else
-			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
+			return IndInfoIterator(idx, m_info.begin() + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
 
 
@@ -1279,7 +1279,7 @@ public:
 		if (vsp.isVirtual() || hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop), true));
 		else
-			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
+			return IndInfoIterator(idx, m_info.begin() + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}
 
 
