@@ -962,12 +962,6 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 /// CPPONLY
 string PyObj_AsString(PyObject * str);
 
-/// CPPONLY
-int NumArray_Size(PyObject * obj);
-
-/// CPPONLY
-char * NumArray_Data(PyObject * obj);
-
 // ///////////////////////////////////////////////////////
 /** CPPONLY shared variables.
 

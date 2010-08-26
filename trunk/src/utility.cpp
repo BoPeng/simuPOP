@@ -107,21 +107,13 @@ extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
 extern "C" bool is_carrayobject(PyObject *);
 
-extern "C" int carray_length(PyObject * a);
-
-extern "C" int carray_itemsize(PyObject * a);
-
-extern "C" char carray_type(PyObject * a);
-
-extern "C" char * carray_data(PyObject * a);
+extern "C" char carray_type(PyObject *);
 
 extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
 
 extern "C" int initCustomizedTypes(void);
-
-extern "C" PyTypeObject Arraytype;
 
 // for streambuf stuff
 #include <streambuf>
@@ -1059,21 +1051,6 @@ string PyObj_AsChar(PyObject *str)
   return string(PyString_AsString(str));
 #endif
 }
-
-
-int NumArray_Size(PyObject * obj)
-{
-	// return PyArray_Size(obj);
-	return carray_length(obj);
-}
-
-
-char * NumArray_Data(PyObject * obj)
-{
-	// return reinterpret_cast<PyArrayObject*>(obj)->data;
-	return carray_data(obj);
-}
-
 
 // copy constructor
 SharedVariables::SharedVariables(const SharedVariables & rhs)
