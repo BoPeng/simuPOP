@@ -46,19 +46,6 @@ struct arrayobject;                                                             
 #define Py_SIZE(obj) (((PyVarObject*)(obj))->ob_size)
 #endif
 
-#if PY_VERSION_HEX >= 0x03000000
-
-#define PyString_FromStringAndSize PyUnicode_FromStringAndSize
-#define PyString_FromString PyUnicode_FromString
-#define PyString_Concat PyUnicode_Concat
-#define PyString_ConcatAndDel PyUnicode_ConcatAndDel
-
-#define PyInt_Check(x) PyLong_Check(x)
-#define PyInt_AsLong(x) PyLong_AsLong(x)
-#define PyInt_FromLong(x) PyLong_FromLong(x)
-
-#endif
-
 /** All possible arraydescr values are defined in the vector "descriptors"
  * below.    That's defined later because the appropriate get and set
  * functions aren't visible yet.
@@ -724,7 +711,6 @@ PyMethodDef array_methods[] =
 	}
 };
 
-#if PY_VERSION_HEX < 0x03000000
 /// CPPONLY
 static PyObject * array_getattr(arrayobject * a, char * name)
 {
@@ -751,7 +737,6 @@ static PyObject * array_getattr(arrayobject * a, char * name)
 	}
 	return Py_FindMethod(array_methods, (PyObject *)a, name);
 }
-#endif
 
 
 /// CPPONLY
@@ -779,27 +764,10 @@ static int array_print(arrayobject * a, FILE * fp, int flags)
 }
 
 
-#if PY_VERSION_HEX >= 0x03000000
-static PyObject *
-array_tounicode(arrayobject *self, PyObject *unused)
-{
-	char typecode;
-	typecode = self->ob_descr->typecode;
-	if ((typecode != 'u')) {
-		PyErr_SetString(PyExc_ValueError,
-		     "tounicode() may only be called on unicode type arrays");
-		return NULL;
-	}
-	return PyUnicode_FromUnicode((Py_UNICODE *) self->ob_iterator.ob_item, Py_SIZE(self));
-}
-#endif
-
-
 /// CPPONLY
 static PyObject *
 array_repr(arrayobject * a)
 {
-#if PY_VERSION_HEX < 0x03000000
 	char buf[256];
 	PyObject * s, * t, * comma, * v;
 	int i, len;
@@ -823,25 +791,6 @@ array_repr(arrayobject * a)
 	Py_XDECREF(comma);
 	PyString_ConcatAndDel(&s, PyString_FromString("]"));
 	return s;
-#else
-	char typecode;
-	PyObject *s, *v = NULL;
-	Py_ssize_t len;
-
-	len = Py_SIZE(a);
-	typecode = a->ob_descr->typecode;
-	if (len == 0) {
-		return PyUnicode_FromFormat("array('%c')", typecode);
-	}
-        if ((typecode == 'u'))
-		v = array_tounicode(a, NULL);
-	else
-		v = array_tolist(a, NULL);
-
-	s = PyUnicode_FromFormat("array('%c', %R)", typecode, v);
-	Py_DECREF(v);
-	return s;
-#endif
 }
 
 
@@ -855,7 +804,7 @@ static PySequenceMethods array_as_sequence =
 	(intintargfunc)array_slice,                                                 /*sq_slice*/
 	(intobjargproc)array_ass_item,                                              /*sq_ass_item*/
 	(intintobjargproc)array_ass_slice,                                          /*sq_ass_slice*/
-#elif PY_VERSION_HEX < 0x03000000
+#else
 	(lenfunc)array_length,                                                      /*sq_length*/
 	(binaryfunc)array_concat,                                                   /*sq_concat*/
 	(ssizeargfunc)array_repeat,                                                 /*sq_repeat*/
@@ -863,17 +812,6 @@ static PySequenceMethods array_as_sequence =
 	(ssizessizeargfunc)array_slice,                                             /*sq_slice*/
 	(ssizeobjargproc)array_ass_item,                                            /*sq_ass_item*/
 	(ssizessizeobjargproc)array_ass_slice,                                      /*sq_ass_slice*/
-#else
-	(lenfunc)array_length,		        /*sq_length*/
-	(binaryfunc)array_concat,               /*sq_concat*/
-	(ssizeargfunc)array_repeat,		/*sq_repeat*/
-	(ssizeargfunc)array_item,		        /*sq_item*/
-	0,					/*sq_slice*/
-	(ssizeobjargproc)array_ass_item,		/*sq_ass_item*/
-	0,					/*sq_ass_slice*/
-	(objobjproc)array_contains,		/*sq_contains*/
-	(binaryfunc)array_inplace_concat,	/*sq_inplace_concat*/
-	(ssizeargfunc)array_inplace_repeat	/*sq_inplace_repeat*/
 #endif
 };
 
@@ -903,11 +841,7 @@ PyTypeObject Arraytype =
 	0,
 	(destructor)array_dealloc,  /* tp_dealloc */
 	(printfunc)array_print,     /* tp_print */
-#if PY_VERSION_HEX < 0x03000000
 	(getattrfunc)array_getattr, /* tp_getattr */
-#else
-	PyObject_GenericGetAttr,
-#endif
 	0,                          /* tp_setattr */
 	0,                          /* tp_compare */
 	(reprfunc)array_repr,       /* tp_repr */
