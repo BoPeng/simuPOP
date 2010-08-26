@@ -149,17 +149,27 @@ Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), 'build/gsl/
 #
 # Building a library for common files
 #
-common_env = env.Clone()
-common_env.VariantDir('build/common', '.')
-common_lib = common_env.StaticLibrary(
-    target = 'build/common/common',
-    source = ['build/common/' + x for x in LIB_FILES],
+std_common_env = env.Clone()
+std_common_env.VariantDir('build/std_common', '.')
+std_common_lib = std_common_env.StaticLibrary(
+    target = 'build/std_common/common',
+    source = ['build/std_common/' + x for x in LIB_FILES],
     CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
     CPPPATH = ['.', 'gsl', 'build', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
     CPPDEFINES = convert_def(ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
 )
-Alias('common', common_lib)
+op_common_env = env.Clone()
+op_common_env.VariantDir('build/op_common', '.')
+op_common_lib = op_common_env.StaticLibrary(
+    target = 'build/op_common/common',
+    source = ['build/op_common/' + x for x in LIB_FILES],
+    CCFLAGS = ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
+    CPPPATH = ['.', 'gsl', 'build', ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
+    CPPDEFINES = convert_def(ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
+    CPPFLAGS = ccshared + ' ' + opt,
+)
+Alias('common', (std_common_lib, op_common_lib))
 #
 # Building modules
 # 
@@ -181,6 +191,10 @@ for mod in targets:
     mod_env['SWIGOUTDIR'] = 'build/%s/src' % mod
     info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
     mod_env.Command('build/%s/src/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
+    if 'op' in mod:
+        common_lib = op_common_lib
+    else:
+        common_lib = std_common_lib
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
