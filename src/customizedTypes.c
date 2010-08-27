@@ -907,4 +907,26 @@ int initCustomizedTypes(void)
 }
 
 #else
+
+/// CPPONLY
+PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
+{
+	return NULL;
+}
+
+bool is_defdict(PyTypeObject * type)
+{
+	return true;
+}
+
+PyObject * PyDefDict_New()
+{
+	return NULL;
+}
+
+int initCustomizedTypes(void)
+{
+	return 0;
+}
+
 #endif
