@@ -416,7 +416,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
-        res['src'].append('src/' + src[:-4] + '_' + modu + '.cpp')
+        res['src'].append('build/' + src[:-4] + '_' + modu + '.cpp')
     res['src'].extend(LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
