@@ -101,7 +101,7 @@ using boost::cmatch;
 
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
-extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
+extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
 extern "C" PyObject * PyDefDict_New();
 
@@ -982,7 +982,7 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
-	PyObject * res = newcarrayiterobject(begin, end);
+	PyObject * res = newcarrayobject(begin, end);
 
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
 	return res;

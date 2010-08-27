@@ -108,7 +108,7 @@ carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
 
 
 /// CPPONLY
-PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
+PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY
 static void
@@ -357,7 +357,7 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 		ihigh = ilow;
 	else if (ihigh > Py_SIZE(a))
 		ihigh = Py_SIZE(a);
-	np = (arrayobject *)newcarrayiterobject(a->ob_iter + ilow, a->ob_iter + ihigh);
+	np = (arrayobject *)newcarrayobject(a->ob_iter + ilow, a->ob_iter + ihigh);
 	if (np == NULL)
 		return NULL;
 	return (PyObject *)np;
@@ -695,7 +695,7 @@ bool is_carrayobject(PyObject * op)
 
 
 /// CPPONLY
-PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
+PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
 	// create an object and copy data
 	arrayobject * op;
