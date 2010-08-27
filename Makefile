@@ -26,6 +26,7 @@ build3: 2to3
 	python3 setup.py install
 
 clean:
+	@rm -f src/*wrap* src/simuPOP_*.py
 	@find . -name '*~' -delete
 	@find . -name '*.bak' -delete
 	@find . -name '*.py?' -delete
