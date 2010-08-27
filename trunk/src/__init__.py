@@ -275,7 +275,6 @@ __all__ = [
 # get options
 from simuOpt import simuOptions
 import os, sys
-import exceptions
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
@@ -301,7 +300,7 @@ if simuOptions['Version'] is not None:
     myMajor, myMinor, myRelease = [int(x) for x in moduleInfo()['version'].rstrip('svn').split('.')]
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
-        raise exceptions.ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
+        raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
             (moduleInfo()['version'], simuOptions['Version']) + 
             'Please upgrade your simuPOP installation.')
 
@@ -309,7 +308,7 @@ if simuOptions['Revision'] is not None:
     ver = moduleInfo()['version']
     rev = moduleInfo()['revision']
     if rev < simuOptions['Revision']:
-        raise exceptions.ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
+        raise ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
             'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
             'Please upgrade your simuPOP installation.')
     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
@@ -354,7 +353,7 @@ class _dw(object):
         try:
             self.__dict__ = var
         except TypeError:
-            raise exceptions.TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
+            raise TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
     def clear(self):
         self.__dict__.clear()
     def __repr__(self):
@@ -751,7 +750,7 @@ class AcgtMutator(MatrixMutator):
         if model == 'JC69':
             if type(rate) in [type(()), type([])]:
                 if len(rate) != 1:
-                    raise exceptions.ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
+                    raise ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
                 mu = rate[0]
             else:
                 mu = rate
@@ -761,7 +760,7 @@ class AcgtMutator(MatrixMutator):
                  [mu/4., mu/4., mu/4., 0    ]]
         elif model == 'K80':
             if len(rate) != 2:
-                raise exceptions.ValueError('A Kimura 2-parameter model requires two parameters mu and k')
+                raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
             mu, k = rate
             m = [[0,       mu/4.,   mu*k/4., mu/4.  ],
                  [mu/4.,   0,       mu/4.,   mu*k/4.],
@@ -769,74 +768,74 @@ class AcgtMutator(MatrixMutator):
                  [mu/4.,   mu*k/4., mu/4.,   0      ]]
         elif model == 'F81':
             if len(rate) != 4:
-                raise exceptions.ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
+                raise ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
             mu, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
+                raise ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,      mu*piC, mu*piG, mu*piT],
                  [mu*piA, 0,      mu*piG, mu*piT],
                  [mu*piA, mu*piC, 0,      mu*piT],
                  [mu*piA, mu*piC, mu*piG, 0     ]]
         elif model == 'HKY85':
             if len(rate) != 5:
-                raise exceptions.ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
+                raise ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
             mu, k, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
+                raise ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,        mu*piC,   mu*k*piG, mu*piT  ],
                  [mu*piA,   0,        mu*piG,   mu*k*piT],
                  [mu*k*piA, mu*piC,   0,        mu*piT  ],
                  [mu*piA,   mu*k*piC, mu*piG,   0       ]]
         elif model == 'T92':
             if len(rate) != 2:
-                raise exceptions.ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
+                raise ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
             mu, piGC = rate
             piG = piC = piGC/2.
             piA = piT = (1 - piGC)/2.
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
+                raise ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,      mu*piC, mu*piG, mu*piT],
                  [mu*piA, 0,      mu*piG, mu*piT],
                  [mu*piA, mu*piC, 0,      mu*piT],
                  [mu*piA, mu*piC, mu*piG, 0     ]]
         elif model == 'TN93':
             if len(rate) != 6:
-                raise exceptions.ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
+                raise ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
             mu, k1, k2, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
+                raise ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,         mu*piC,    mu*k1*piG, mu*piT   ],
                  [mu*piA,    0,         mu*piG,    mu*k2*piT],
                  [mu*k1*piA, mu*piC,    0,         mu*piT   ],
                  [mu*piA,    mu*k2*piC, mu*piG,    0        ]]
         elif model == 'GTR':
             if len(rate) != 9:
-                raise exceptions.ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
+                raise ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
             x1, x2, x3, x4, x5, x6, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise exceptions.ValueError('Basic frequencies should be between 0 and 1')
+                raise ValueError('Basic frequencies should be between 0 and 1')
             m = [[0,  piA*x1/piC, piA*x2/piG, piA*x3/piT],
                  [x1, 0,          piC*x4/piG, piC*x5/piT],
                  [x2, x4,         0,          piG*x6/piT],
                  [x3, x5,         x6,         0         ]]
         elif model == 'general':
             if len(rate) != 12:
-                raise exceptions.ValueError('Please specify 12 parameters for this general nucleotide mutation model')
+                raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
             m = [[0,       rate[0],  rate[1],  rate[2]],
                  [rate[3], 0,        rate[4],  rate[5]],
                  [rate[6], rate[7],  0,        rate[8]],
                  [rate[9], rate[10], rate[11], 0      ]]
         else:
-            raise exceptions.ValueError('Unrecognized nucleotide mutation model %s' % model)
+            raise ValueError('Unrecognized nucleotide mutation model %s' % model)
         MatrixMutator.__init__(self, m, *args, **kwargs)
 
 
