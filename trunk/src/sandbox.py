@@ -42,7 +42,6 @@ __all__ = [
 # get options
 from simuOpt import simuOptions
 import os, sys
-import exceptions
 
 #
 # These classes are available in binary modules but are not exposed

@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 class TestTransmitters(unittest.TestCase):
     def getPop(self, *args, **kwargs):
@@ -261,7 +261,7 @@ class TestTransmitters(unittest.TestCase):
         #
         pop = self.getPop(size=100, loci=[10, 20] + [20] + [30]*4,
             chromTypes=[CHROMOSOME_X, CHROMOSOME_Y] + [CUSTOMIZED]*5)
-        self.assertRaises(exceptions.ValueError,
+        self.assertRaises(ValueError,
             applyDuringMatingOperator, MitochondrialGenoTransmitter(),
             pop, dad = 0, mom = 1, off = 2)
         #
@@ -758,7 +758,7 @@ class TestTransmitters(unittest.TestCase):
             "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075)))
         try:    # do not have this haplotype
             simu.dvars(0).haploFreq[(3,4)][(a1,a2)]
-        except exceptions.KeyError:
+        except KeyError:
             pass
         self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
             "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))

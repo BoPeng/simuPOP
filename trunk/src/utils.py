@@ -155,17 +155,17 @@ def migrHierarchicalIslandRates(r1, r2, n):
     the size of group.
     '''
     if type(n) not in [type(()), type([])]:
-        raise exceptions.ValueError('A list of size of island groups is expected for parameter n')
+        raise ValueError('A list of size of island groups is expected for parameter n')
     nIslands = sum(n)
     if type(r1) in [type(0), type(1.)]:
         r1 = [r1] * len(n)
     elif len(r1) != len(n):
-        raise exceptions.ValueError('If multiple r1 is given, it should be given to all island groups.')
+        raise ValueError('If multiple r1 is given, it should be given to all island groups.')
     #
     if type(r2) in [type(0), type(1.)]:
         r2 = [r2] * len(n)
     elif len(r2) != len(n):
-        raise exceptions.ValueError('If multiple r2 is given, it should be given to all island groups.')
+        raise ValueError('If multiple r2 is given, it should be given to all island groups.')
     #
     m = []
     for groupIdx, groupSize in enumerate(n):
@@ -333,8 +333,8 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
             out = open(filename, "w")
         else:
             out = sys.stdout
-    except exceptions.IOError:
-        raise exceptions.IOError, "Can not open file " + filename +" to write."
+    except IOError:
+        raise IOError, "Can not open file " + filename +" to write."
     # parameter subPops
     if subPops == ALL_AVAIL:
         subPops = range(pop.numSubPop())
@@ -793,14 +793,14 @@ class Trajectory:
                     if self.traj[gen][sp][loc] == 0 and self.traj[gen + 1][sp][loc] > 0:
                         if type(loci) in [type(()), type([])]:
                             if len(loci) != self.nLoci:
-                                raise exceptions.ValueError('%d loci is expected' % self.nLoci)
+                                raise ValueError('%d loci is expected' % self.nLoci)
                             mut.append(PointMutator(inds=inds, loci=loci[loc], allele=allele,
                                 subPops=sp, at=gen + 1, *args, **kwargs))
                         elif self.nLoci == 1 and type(loci) == type(0):
                             mut.append(PointMutator(inds=inds, loci=loci, allele=allele,
                                 subPops=sp, at=gen + 1, *args, **kwargs))
                         else:
-                            raise exceptions.ValueError('Invalid parameter loci')
+                            raise ValueError('Invalid parameter loci')
         return mut
 
     def _setFreq(self, freq, gen):
@@ -970,7 +970,7 @@ class TrajectorySimulator:
         else:
             # fitness is a list or a function
             if type(fitness) in [type(()), type([])] and len(fitness) not in [3, 3*nLoci, 3**nLoci]:
-                raise exceptions.ValueError('Invalid list of fitness.')
+                raise ValueError('Invalid list of fitness.')
             self.fitness = fitness
         self.logger = logger
         self.nLoci = nLoci
@@ -1060,14 +1060,14 @@ class TrajectorySimulator:
         if len(fit) == 3 * self.nLoci:
             for i in range(self.nLoci):
                 if fit[3 * i] == 0:
-                    raise exceptions.ValueError('fitness['+ str(3 * i) + '] should be a non zero value.')
+                    raise ValueError('fitness['+ str(3 * i) + '] should be a non zero value.')
                 s.append(0.)
                 s.append(float(fit[3 * i + 1]) / float(fit[3 * i]) - 1.)
                 s.append(float(fit[3 * i + 2]) / float(fit[3 * i]) - 1.)
         # case 2: same fitness for multiple loci
         elif len(fit) == 3 and self.nLoci > 1:
             if fit[0] == 0:
-                raise exceptions.ValueError('fitness[0] should be a non zero value.')
+                raise ValueError('fitness[0] should be a non zero value.')
             s.append(0.)
             s.append(float(fit[1]) / float(fit[0]) - 1.)
             s.append(float(fit[2]) / float(fit[0]) - 1.)
@@ -1079,7 +1079,7 @@ class TrajectorySimulator:
             # different s for each subpopulation because different allele frequencies.
             s.extend(self._marginalFitness(fit, freq))
         else:
-            raise exceptions.ValueError('Wrong length of list of fitness: ' + str(len(fit)))
+            raise ValueError('Wrong length of list of fitness: ' + str(len(fit)))
         return s
 
     def _getNextXt(self, curXt, Nt, s):
@@ -1194,7 +1194,7 @@ class TrajectorySimulator:
             if len(Nt) > len(beginXt):
                 # split (forward sense) from one population to nSP subpopulations
                 if len(beginXt) != 1:
-                    raise exceptions.RuntimeError('Can only split from one subpopulation.')
+                    raise RuntimeError('Can only split from one subpopulation.')
                 #
                 # get NextXt using one subpopulation, then split...
                 tmpXt = self._getNextXt(beginXt[0], sum(Nt), self._getS(gen, 0, beginXt[0]))
@@ -1209,11 +1209,11 @@ class TrajectorySimulator:
             elif len(Nt) < len(beginXt):
                 # check length of next Nt.
                 if len(Nt) != 1:
-                    raise exceptions.RuntimeError('Can only merge into one subpopulation')
+                    raise RuntimeError('Can only merge into one subpopulation')
                 # merge (forward sense) from multiple subpopulations to one pop.
                 Nt_prev = self._Nt(gen - 1)
                 if len(beginXt) != len(Nt_prev):
-                    raise exceptions.RuntimeError('Subpopulation size and allele frequency mismatch.')
+                    raise RuntimeError('Subpopulation size and allele frequency mismatch.')
                 Nt_tmp = [int(x * 1.0 / sum(Nt_prev) * Nt[0]) for x in Nt_prev]
                 #
                 endingXt = [[0] * self.nLoci]
@@ -1286,7 +1286,7 @@ class TrajectorySimulator:
         an exception.
         '''
         if endGen <= 0:
-            raise exceptions.ValueError("A positive ending generation is needed.")
+            raise ValueError("A positive ending generation is needed.")
         # done[i] is used to track at which generation a trajectory
         # is successfully generated at locus i.
         done = [False] * self.nLoci
@@ -1304,7 +1304,7 @@ class TrajectorySimulator:
             Nt_end = self._Nt(gen)
             if len(Nt) > len(endingXt):
                 if len(endingXt) != 1:
-                    raise exceptions.RuntimeError('Can only merge to one subpopulation')
+                    raise RuntimeError('Can only merge to one subpopulation')
                 # merge (forward sense)
                 tmpXt = self._getPrevXt(endingXt[0], sum(Nt), self._getS(gen, 0, endingXt[0]))
                 assert len(tmpXt) == self.nLoci
@@ -1317,7 +1317,7 @@ class TrajectorySimulator:
             elif len(Nt) < len(endingXt):
                 # check length of previous Nt.
                 if len(Nt) != 1:
-                    raise exceptions.ValueError('Can only split from one subpoplation.')
+                    raise ValueError('Can only split from one subpoplation.')
                 # split (forward sense)
                 Nt_tmp = [int(float(x) / sum(Nt_end) * Nt[0]) for x in Nt_end]
                 beginXt = [[0] * self.nLoci]
@@ -1419,7 +1419,7 @@ class TrajectorySimulator:
         #
         # endGen
         if not beginGen <= endGen or endGen <= 0:
-            raise exceptions.ValueError('Beginning generation should be less than ending generation')
+            raise ValueError('Beginning generation should be less than ending generation')
         # beginFreq
         if type(beginFreq) in [type(0), type(0.)]:
             freq = [[beginFreq] * self.nLoci for sp in self._Nt(beginGen)]
@@ -1431,25 +1431,25 @@ class TrajectorySimulator:
                 for sp in range(len(self._Nt(endGen))):
                     freq.append(beginFreq[self.nLoci*sp : self.nLoci * (sp+1)])
             else:
-                raise exceptions.ValueError("Invalid initial frequency list")
+                raise ValueError("Invalid initial frequency list")
         else:
-            raise exceptions.ValueError("Invalid initial frequency list")
+            raise ValueError("Invalid initial frequency list")
         #
         # endFreq
         if type(endFreq) not in [type(()), type([])] or len(endFreq) == 0:
-            raise exceptions.ValueError('A list of frequency range is expected')
+            raise ValueError('A list of frequency range is expected')
         elif type(endFreq[0]) not in [type(()), type([])]:
             if len(endFreq) == 2:
                 endFreq = [endFreq]
             else:
-                raise exceptions.ValueError('A list of frequency range is expected.')
+                raise ValueError('A list of frequency range is expected.')
         if len(endFreq) not in [self.nLoci, self.nLoci * len(self._Nt(endGen))]:
-            raise exceptions.ValueError('Please specify a frequency range for each locus')
+            raise ValueError('Please specify a frequency range for each locus')
         for rng in endFreq:
             if len(rng) != 2:
-                raise exceptions.ValueError('Please specify frequency range of each marker')
+                raise ValueError('Please specify frequency range of each marker')
             if rng[0] > rng[1]:
-                raise exceptions.ValueError('Invalid frequency range %f - %f' % (rng[0], rng[1]))
+                raise ValueError('Invalid frequency range %f - %f' % (rng[0], rng[1]))
         failedFreq = []
         for failedCount in range(maxAttempts):
             xt = self._simuForward(freq, endFreq, beginGen, endGen)
@@ -1491,10 +1491,10 @@ class TrajectorySimulator:
         # validation and maxAttempts.
         #
         if endGen <= 0:
-            raise exceptions.ValueError('A positive ending generation number is expected.')
+            raise ValueError('A positive ending generation number is expected.')
 
         if minMutAge is not None and minMutAge > endGen:
-            raise exceptions.ValueError('Minimal mutation age is larger than ending generation.')
+            raise ValueError('Minimal mutation age is larger than ending generation.')
         #
         if minMutAge is None:
             self.minMutAge = 0
@@ -1507,11 +1507,11 @@ class TrajectorySimulator:
             self.maxMutAge = maxMutAge
         
         if not self.maxMutAge >= self.minMutAge:
-            raise exceptions.ValueError('maxMutAge should >= minMutAge')
+            raise ValueError('maxMutAge should >= minMutAge')
         if endGen == 0 and (callable(self.N) or callable(self.fitness)):
-            raise exceptions.ValueError('endGen should be > 0 if N or fitness is defined in the form of function')
+            raise ValueError('endGen should be > 0 if N or fitness is defined in the form of function')
         if endGen > 0 and endGen < self.maxMutAge:
-            raise exceptions.ValueError('endGen should be >= maxMutAge')
+            raise ValueError('endGen should be >= maxMutAge')
         #
         # endFreq
         if type(endFreq) in [type(0), type(0.)]:
@@ -1524,9 +1524,9 @@ class TrajectorySimulator:
                 for sp in range(len(self._Nt(endGen))):
                     freq.append(endFreq[self.nLoci*sp : self.nLoci * (sp+1)])
             else:
-                raise exceptions.ValueError("Invalid ending frequency list")
+                raise ValueError("Invalid ending frequency list")
         else:
-            raise exceptions.ValueError("Invalid ending frequency list")
+            raise ValueError("Invalid ending frequency list")
         #
         failedFreq = []
         for failedCount in range(maxAttempts):

@@ -14,7 +14,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 class TestGenoStru(unittest.TestCase):
     # define a function to create basic populations
@@ -30,7 +30,7 @@ class TestGenoStru(unittest.TestCase):
         'Testing the specification of loci position'
         pop = Population(loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 5, 4, 3, 2])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 1, 2, 3, 4, 5))
-        self.assertRaises(exceptions.ValueError, Population, loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 3, 4, 3, 2])
+        self.assertRaises(ValueError, Population, loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 3, 4, 3, 2])
         #
         pop = Population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5], lociNames=['1', '2', '3', '4', '5', '6'])
         self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
@@ -75,7 +75,7 @@ class TestGenoStru(unittest.TestCase):
         else:
             self.assertEqual(arr.count(1), 9)
         # index
-        self.assertRaises(exceptions.ValueError,
+        self.assertRaises(ValueError,
             arr.index, 10)
         self.assertEqual(arr.index(1), 0)
         # can read write
@@ -146,7 +146,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.ploidyName(), 'tetraploid')
         pop = Population(size=100, ploidy=5, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), '5-ploid')
-        self.assertRaises(exceptions.ValueError, Population, size=[20, 20], ploidy=0)
+        self.assertRaises(ValueError, Population, size=[20, 20], ploidy=0)
 
     def testChromBeginEnd(self):
         'Testing genoStruTrait::ChromBegin(chrom), chromEnd(chrom)'
@@ -156,8 +156,8 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.chromEnd(0), 5)
         self.assertEqual(pop.chromEnd(1), 12)
         self.assertEqual(pop.numChrom(), 2)
-        self.assertRaises(exceptions.IndexError, pop.chromBegin, 2 )
-        self.assertRaises(exceptions.IndexError, pop.chromEnd, 2 )
+        self.assertRaises(IndexError, pop.chromBegin, 2 )
+        self.assertRaises(IndexError, pop.chromEnd, 2 )
 
     def testChromName(self):
         'Testing genoStruTrait::chromByName(name), chromName(chrom), chromNames()'
@@ -169,8 +169,8 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.chromName(1), 'c2')
         self.assertEqual(pop.chromNames(), ('c1', 'c2'))
         self.assertEqual(pop.chromByName("c2"), 1)
-        self.assertRaises(exceptions.ValueError, pop.chromByName, 'c3')
-        self.assertRaises(exceptions.IndexError, pop.chromName, 2)
+        self.assertRaises(ValueError, pop.chromByName, 'c3')
+        self.assertRaises(IndexError, pop.chromName, 2)
 
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
@@ -180,7 +180,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.chromType(1), CHROMOSOME_X)
         self.assertEqual(pop.chromType(2), CHROMOSOME_Y)
         self.assertEqual(pop.chromType(3), CUSTOMIZED)
-        self.assertRaises(exceptions.ValueError, Population, ploidy=4,
+        self.assertRaises(ValueError, Population, ploidy=4,
             chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
 
     def testNumChrom(self):
@@ -193,13 +193,13 @@ class TestGenoStru(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.absLocusIndex(1, 5), 10)
         self.assertEqual(pop.locusPos(pop.absLocusIndex(1, 2) ), 6)
-        self.assertRaises(exceptions.IndexError, pop.absLocusIndex, 2, 5 )
+        self.assertRaises(IndexError, pop.absLocusIndex, 2, 5 )
 
     def testChromLocusPair(self):
         'Testing genoStruTrait::chromLocusPair(locus)'
         pop = self.getPop()
         self.assertEqual(pop.chromLocusPair(10), (1, 5) )
-        self.assertRaises(exceptions.IndexError, pop.chromLocusPair, 50 )
+        self.assertRaises(IndexError, pop.chromLocusPair, 50 )
 
     def testLociName(self):
         'Testing genoStruTrait::lociByNames(names), lociNames(), locusByName(name), locusName(loc)'
@@ -214,9 +214,9 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.locusByName("la"), 0)
         self.assertEqual(pop.locusByName("lb"), 1)
         self.assertEqual(pop.locusByName("lc"), 2)
-        self.assertRaises(exceptions.IndexError, pop.locusName, 5)
-        self.assertRaises(exceptions.ValueError, pop.locusByName, 'somename')
-        self.assertRaises(exceptions.ValueError, pop.lociByNames, ['somename', 'other'])
+        self.assertRaises(IndexError, pop.locusName, 5)
+        self.assertRaises(ValueError, pop.locusByName, 'somename')
+        self.assertRaises(ValueError, pop.lociByNames, ['somename', 'other'])
         self.assertEqual(pop.lociByNames(['lb', 'lc']), (1, 2))
         self.assertEqual(pop.lociByNames(['lb', 'la']), (1, 0))
 
@@ -225,13 +225,13 @@ class TestGenoStru(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.lociDist(0, 3), 3)
         self.assertEqual(pop.lociDist(2, 4), 2)
-        self.assertRaises(exceptions.ValueError, pop.lociDist, 2, 8)
+        self.assertRaises(ValueError, pop.lociDist, 2, 8)
 
     def testLocusPos(self):
         'Testing genoStruTrait::lociPos(), locusPos(loc)'
         pop = self.getPop()
         self.assertEqual(pop.locusPos(10), 12)
-        self.assertRaises(exceptions.IndexError, pop.locusPos, 20 )
+        self.assertRaises(IndexError, pop.locusPos, 20 )
 
     def testNumLoci(self):
         'Testing genoStruTrait::numLoci(chrom), numLoci(), totNumLoci()'
@@ -240,7 +240,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.numLoci(1), 7)
         self.assertEqual(pop.totNumLoci(), 12)
         self.assertEqual(pop.numLoci(), (5, 7))
-        self.assertRaises(exceptions.IndexError, pop.numLoci, 2 )
+        self.assertRaises(IndexError, pop.numLoci, 2 )
 
     def testAlleleName(self):
         'Testing genoStruTrait::AlleleName(allele), alleleNames()'
@@ -257,7 +257,7 @@ class TestGenoStru(unittest.TestCase):
             self.assertEqual(pop.alleleNames(), ('_', 'A', 'C', 'T', 'G'))
         else:
             self.assertEqual(pop.alleleNames(), ('_', 'A'))
-        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
+        self.assertRaises((IndexError, TypeError, OverflowError), pop.alleleName, 
             moduleInfo()['maxAllele']+1)
         # test locus-specific allele names
         pop = Population(size=[20, 80], ploidy=2, loci=[1, 2],
@@ -272,7 +272,7 @@ class TestGenoStru(unittest.TestCase):
         else:
             self.assertEqual(pop.alleleName(1), 'A2')
             self.assertEqual(pop.alleleNames(1), ('B1', 'B2'))
-        self.assertRaises((exceptions.IndexError, exceptions.TypeError, exceptions.OverflowError), pop.alleleName, 
+        self.assertRaises((IndexError, TypeError, OverflowError), pop.alleleName, 
             moduleInfo()['maxAllele']+1)
 
 
@@ -283,7 +283,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.infoField(2), 'trait1')
         self.assertEqual(pop.infoIdx('age'), 0)
         self.assertEqual(pop.infoIdx('fitness'), 1)
-        self.assertRaises(exceptions.IndexError, pop.infoField, 3)
+        self.assertRaises(IndexError, pop.infoField, 3)
         self.assertEqual(pop.infoFields(), ('age', 'fitness', 'trait1'))
 
 

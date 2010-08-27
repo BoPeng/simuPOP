@@ -11,7 +11,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 class TestSimulator(unittest.TestCase):
 
@@ -44,7 +44,7 @@ class TestSimulator(unittest.TestCase):
         pop = Population(size=1, loci=[1])
         simu = Simulator(pop, rep=3)
         # no terminator, no ending generation is specified
-        self.assertRaises(exceptions.ValueError, simu.evolve)
+        self.assertRaises(ValueError, simu.evolve)
         # sample
         pop = Population(size=[200, 80], loci=[3])
         pop.evolve(
@@ -87,8 +87,8 @@ class TestSimulator(unittest.TestCase):
         repnum = simu.numRep()
         simu.extract(2)
         self.assertEqual(simu.numRep(), repnum-1)
-        self.assertRaises(exceptions.IndexError, simu.population, 5)
-        self.assertRaises(exceptions.IndexError, simu.extract, 5)
+        self.assertRaises(IndexError, simu.population, 5)
+        self.assertRaises(IndexError, simu.extract, 5)
 
     def testAdd(self):
         'Testing Simulator::add(pop)'
@@ -138,7 +138,7 @@ class TestSimulator(unittest.TestCase):
         for onepop in simu.populations():
             for idx in range(onepop.popSize()):
                 self.assertEqual(onepop.individual(idx).allele(0), 0)
-        self.assertRaises(exceptions.IndexError, simu.population, 5)
+        self.assertRaises(IndexError, simu.population, 5)
 
     def testAddInfoField(self):
         'Testing setMatingScheme(matingScheme)'

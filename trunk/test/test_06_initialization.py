@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions, random
+import unittest, os, sys, random
 
 class TestInitialization(unittest.TestCase):
 
@@ -210,7 +210,7 @@ class TestInitialization(unittest.TestCase):
             for allele in ind.genotype():
                  self.assertEqual(allele, 0)
         self.clearGenotype(pop)
-        self.assertRaises(exceptions.ValueError,initGenotype, pop, freq=[-1,2])
+        self.assertRaises(ValueError,initGenotype, pop, freq=[-1,2])
         #
         pop = Population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():

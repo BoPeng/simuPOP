@@ -14,7 +14,7 @@ import math
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 try:
     import rpy
@@ -32,9 +32,9 @@ class Teststat(unittest.TestCase):
         stat(pop, popSize=1, subPops=[])
         self.assertEqual(pop.dvars().subPopSize, [])
         self.assertEqual(pop.dvars().popSize, 0)
-        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        self.assertRaises(ValueError, pop.dvars, 0)
         stat(pop, popSize=1, subPops=1, vars='popSize_sp')
-        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        self.assertRaises(ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(SexSplitter())
@@ -63,7 +63,7 @@ class Teststat(unittest.TestCase):
         stat(pop, numOfMales=True, vars=['numOfMales', 'numOfFemales'])
         self.assertEqual(pop.dvars().numOfMales, 200)
         self.assertEqual(pop.dvars().numOfFemales, 800)
-        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        self.assertRaises(ValueError, pop.dvars, 0)
         # all subpopulations
         stat(pop, numOfMales=True, vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfMales_sp', 'propOfFemales_sp'])
         self.assertEqual(pop.dvars(0).numOfMales, 100)
@@ -75,7 +75,7 @@ class Teststat(unittest.TestCase):
         # test virtual subpopulations
         pop.setVirtualSplitter(ProportionSplitter([0.4, 0.6]))
         stat(pop, numOfMales=True, subPops=[(0, 0), (1, 1)], vars=['numOfMales_sp', 'numOfFemales_sp', 'propOfFemales_sp'])
-        self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
+        self.assertRaises(ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfMales, 80)
         self.assertEqual(pop.dvars([0, 0]).propOfFemales, 0)
         self.assertEqual(pop.dvars([1, 1]).numOfFemales, 480)
@@ -109,7 +109,7 @@ class Teststat(unittest.TestCase):
         pop.setVirtualSplitter(SexSplitter())
         stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)],
             vars=['numOfAffected_sp', 'propOfUnaffected_sp', 'numOfUnaffected_sp'])
-        self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
+        self.assertRaises(ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
         self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars([1, 1]).numOfUnaffected, 350)
@@ -232,7 +232,7 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars().genoFreq[0][(0, 0)], 175./1600)
         self.assertEqual(pop.dvars().genoFreq[0][(0, 1)], 880./1600)
         self.assertEqual(pop.dvars().genoFreq[0][(1, 1)], 545./1600)
-        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        self.assertRaises(ValueError, pop.dvars, 0)
         #
         stat(pop, genoFreq=[0], vars=['genoNum_sp', 'genoFreq_sp'])
         self.assertEqual(pop.dvars(0).genoNum[0][(0, 0)], 125)

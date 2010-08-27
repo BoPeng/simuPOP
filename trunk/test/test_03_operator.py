@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 # record active generations in pop.dvars().hist
 def genRecorder(pop):
@@ -54,7 +54,7 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(getActiveGens(begin=-10, end=-5), range(10,16))
         #
         self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(10,16,2))
-        self.assertRaises( exceptions.ValueError,
+        self.assertRaises( ValueError,
             getActiveGens, begin=-10, step=-3, end=-5 )
 
     def testReplicate(self):
@@ -67,11 +67,11 @@ class TestOperator(unittest.TestCase):
         )
         try:
             simu.population(0).dvars().hist
-        except exceptions.AttributeError:
+        except AttributeError:
             pass
         try:
             simu.population(1).dvars().hist
-        except exceptions.AttributeError:
+        except AttributeError:
             pass
         self.assertEqual(simu.population(2).dvars().hist, range(10))
 
@@ -227,12 +227,12 @@ class TestOperator(unittest.TestCase):
         pop = Population(100, loci=[2])
         dump(pop, output='a.pop')
         size = len(open('a.pop').read())
-        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
+        self.assertRaises(RuntimeError, closeOutput, 'a.pop')
         dump(pop, output='>>a.pop')
         closeOutput('a.pop')
         self.assertEqual(len(open('a.pop').read()), size)
-        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
-        self.assertRaises(exceptions.RuntimeError, closeOutput, 'b.pop')
+        self.assertRaises(RuntimeError, closeOutput, 'a.pop')
+        self.assertRaises(RuntimeError, closeOutput, 'b.pop')
         dump(pop, output='>>a.pop')
         dump(pop, output='>>a.pop')
         self.assertEqual(len(open('a.pop').read()), size * 2)
@@ -241,7 +241,7 @@ class TestOperator(unittest.TestCase):
         dump(pop, output='>>>a.pop')
         self.assertEqual(len(open('a.pop').read()), size * 4)
         closeOutput('a.pop')
-        self.assertRaises(exceptions.RuntimeError, closeOutput, 'a.pop')
+        self.assertRaises(RuntimeError, closeOutput, 'a.pop')
         os.remove('a.pop')
 
 
@@ -383,7 +383,7 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(evolveGen(True), 10)
         self.assertEqual(evolveGen('False'), 1)
         self.assertEqual(evolveGen('True'), 10)
-        self.assertRaises(exceptions.RuntimeError, evolveGen, 'nonsense')
+        self.assertRaises(RuntimeError, evolveGen, 'nonsense')
 
     def testIfElseOperators(self):
         'Testing opeartor IfElse with multiple operators'

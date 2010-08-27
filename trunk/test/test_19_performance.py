@@ -24,7 +24,7 @@ import simuOpt
 simuOpt.setOptions(quiet=False, optimized=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions, time
+import unittest, os, sys, time
 
 class TestPerformance(unittest.TestCase):
 

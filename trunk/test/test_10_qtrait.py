@@ -14,7 +14,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions, math, random
+import unittest, os, sys, math, random
 
 class TestQuanTrait(unittest.TestCase):
 

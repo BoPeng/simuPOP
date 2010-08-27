@@ -89,7 +89,6 @@ __all__ = [
     #
 ]
 
-import exceptions
 import random
 
 
@@ -327,10 +326,10 @@ class CaseControlSampler(BaseSampler):
         self.cases = cases
         self.controls = controls
         if type(self.cases) != type(controls):
-            raise exceptions.ValueError("Parameter cases and controls should have the same type.")
+            raise ValueError("Parameter cases and controls should have the same type.")
         if isSequence(self.cases) and isSequence(self.controls) and \
             len(self.cases) != len(self.controls):
-            raise exceptions.ValueError("Cases and controls should have the same type")
+            raise ValueError("Cases and controls should have the same type")
 
     def prepareSample(self, input_pop):
         '''Find out indexes all affected and unaffected individuales.

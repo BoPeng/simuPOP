@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, time, exceptions
+import unittest, time
 
 class TestMigrator(unittest.TestCase):
 
@@ -30,7 +30,7 @@ class TestMigrator(unittest.TestCase):
                              [50, 0, 0] ])
         self.assertEqual(pop.subPopSizes(), (1900, 4050, 4050))
         # rate should be a matrix
-        self.assertRaises(exceptions.ValueError,
+        self.assertRaises(ValueError,
             migrate, pop, [ [0, 50],
                              [50, 0, 0],
                              [50, 0, 0] ], BY_COUNTS)
@@ -39,7 +39,7 @@ class TestMigrator(unittest.TestCase):
         'Testing migrate by proportion'
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
-        self.assertRaises(exceptions.ValueError, migrate, pop, rate=[1, 0.1])
+        self.assertRaises(ValueError, migrate, pop, rate=[1, 0.1])
         migrate(pop, mode=BY_PROPORTION,
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
@@ -297,7 +297,7 @@ class TestMigrator(unittest.TestCase):
         self.assertNotEqual(pop.genotype(), genotype)
         # test subpopulation names
         pop = Population(size=10, loci=[2,6], infoFields=['migrate_to'])
-        self.assertRaises(exceptions.ValueError, splitSubPops, pop, subPops=0,
+        self.assertRaises(ValueError, splitSubPops, pop, subPops=0,
             sizes=[2, 8], names='ab', randomize=False)
         splitSubPops(pop, subPops=0, sizes=[2, 8], names=['ab', 'cd'],
             randomize=False)
