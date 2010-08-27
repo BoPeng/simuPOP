@@ -56,17 +56,12 @@ typedef struct arrayobject
 	GenoIterator ob_iter;
 } arrayobject;
 
-// redefinition of type...
-// staticforward PyTypeObject Arraytype;
-
 /// CPPONLY
 bool is_carrayobject(PyObject * op);
 
-// #define is_carrayobject(op) ((op)->ob_type == &Arraytype)
-
 /// CPPONLY
 static PyObject *
-a_getitem(arrayobject * ap, int i)
+getarrayitem(arrayobject * ap, int i)
 {
 	return PyInt_FromLong(*(ap->ob_iter + i) );
 }
@@ -74,7 +69,7 @@ a_getitem(arrayobject * ap, int i)
 
 /// CPPONLY
 static int
-a_setitem(arrayobject * ap, int i, PyObject * v)
+setarrayitem(arrayobject * ap, int i, PyObject * v)
 {
 	// right now, the longest allele is uint16_t, but we need to be careful.
 	int x;
@@ -102,9 +97,6 @@ carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
 	return NULL;
 }
 
-
-// you can not init a object from python,
-// error will occur
 /// CPPONLY
 static PyObject *
 carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
@@ -117,22 +109,6 @@ carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
 
 /// CPPONLY
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
-
-/// CPPONLY
-static PyObject * getarrayitem(PyObject * op, int i)
-{
-	register arrayobject * ap;
-
-	assert(is_carrayobject(op));
-	ap = (arrayobject *)op;
-	if (i < 0 || i >= Py_SIZE(ap)) {
-		// use automatic increase of size?
-		PyErr_SetString(PyExc_IndexError, "array index out of range");
-		return NULL;
-	}
-	return a_getitem(ap, i);
-}
-
 
 /// CPPONLY
 static void
@@ -176,8 +152,8 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		/* Search for the first index where items are different */
 		k = 1;
 		for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
-			vi = getarrayitem(v, i);
-			wi = getarrayitem(w, i);
+			vi = getarrayitem((arrayobject *)v, i);
+			wi = getarrayitem((arrayobject *)w, i);
 			if (vi == NULL || wi == NULL) {
 				Py_XDECREF(vi);
 				Py_XDECREF(wi);
@@ -268,7 +244,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		PyObject * wi = NULL;
 		int k = 1;
 		for (int i = 0; i < vs && i < ws; i++) {
-			vi = getarrayitem((PyObject *)(va), i);
+			vi = getarrayitem(va, i);
 			wi = PySequence_GetItem(wa, i);
 			if (vi == NULL || wi == NULL) {
 				Py_XDECREF(vi);
@@ -362,7 +338,7 @@ static PyObject * array_item(arrayobject * a, Py_ssize_t i)
 		PyErr_SetString(PyExc_IndexError, "array index out of range");
 		return NULL;
 	}
-	return getarrayitem((PyObject *)a, i);
+	return getarrayitem(a, i);
 }
 
 
@@ -410,7 +386,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 	// use a single number to propagate v
 	if (PyNumber_Check(v) ) {
 		for (int i = ilow; i < ihigh; ++i)
-			a_setitem(a, i, v);
+			setarrayitem(a, i, v);
 		return 0;
 	}
 #define b ((arrayobject *)v)
@@ -421,7 +397,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 			return -1;
 		}
 		for (int i = 0; i < n; ++i)
-			a_setitem(a, i + ilow, a_getitem(b, i) );
+			setarrayitem(a, i + ilow, getarrayitem(b, i) );
 		return 0;
 	}
 #undef b
@@ -435,7 +411,7 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 		// iterator sequence
 		for (int i = 0; i < n; ++i) {
 			PyObject * item = PySequence_GetItem(v, i);
-			a_setitem(a, i + ilow, item);
+			setarrayitem(a, i + ilow, item);
 			Py_DECREF(item);
 		}
 		return 0;
@@ -455,7 +431,7 @@ static Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 	}
 	if (v == NULL)
 		return array_ass_slice(a, i, i + 1, v);
-	return a_setitem(a, i, v);
+	return setarrayitem(a, i, v);
 }
 
 
@@ -469,7 +445,7 @@ static PyObject * array_count(arrayobject * self, PyObject * args)
 	if (!PyArg_ParseTuple(args, "O:count", &v))
 		return NULL;
 	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * selfi = getarrayitem((PyObject *)self, i);
+		PyObject * selfi = getarrayitem(self, i);
 		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
 		Py_DECREF(selfi);
 		if (cmp > 0)
@@ -504,7 +480,7 @@ static PyObject * array_index(arrayobject * self, PyObject * args)
 	}
 
 	for (i = start; i < stop; i++) {
-		PyObject * selfi = getarrayitem((PyObject *)self, i);
+		PyObject * selfi = getarrayitem(self, i);
 		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
 		Py_DECREF(selfi);
 		if (cmp > 0) {
@@ -533,7 +509,7 @@ static PyObject * array_tolist(arrayobject * self, PyObject * args)
 	if (list == NULL)
 		return NULL;
 	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * v = getarrayitem((PyObject *)self, i);
+		PyObject * v = getarrayitem(self, i);
 		if (v == NULL) {
 			Py_DECREF(list);
 			return NULL;
@@ -595,7 +571,7 @@ static int array_print(arrayobject * a, FILE * fp, int flags)
 	for (i = 0; i < len && ok == 0; i++) {
 		if (i > 0)
 			fprintf(fp, ", ");
-		v = a_getitem(a, i);
+		v = getarrayitem(a, i);
 		ok = PyObject_Print(v, fp, 0);
 		Py_XDECREF(v);
 	}
@@ -623,7 +599,7 @@ array_repr(arrayobject * a)
 	for (i = 0; i < len && !PyErr_Occurred(); i++) {
 		if (i > 0)
 			PyString_Concat(&s, comma);
-		v = a_getitem(a, i);
+		v = getarrayitem(a, i);
 		t = PyObject_Repr(v);
 		Py_XDECREF(v);
 		PyString_ConcatAndDel(&s, t);
