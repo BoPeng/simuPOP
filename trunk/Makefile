@@ -22,6 +22,9 @@ rebuild:
 	2to3-3.1 -w test/*.py
 	2to3-3.1 -w doc/userGuide.py doc/runSampleCode.py
 
+build3: 2to3
+	python3 setup.py install
+
 clean:
 	@find . -name '*~' -delete
 	@find . -name '*.bak' -delete
