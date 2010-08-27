@@ -25,10 +25,6 @@
 
 %module simuPOP_baop
 
-%pythoncode %{
-cppModule = _simuPOP_baop
-%}
-
 #define BINARYALLELE
 #define OPTIMIZED
 

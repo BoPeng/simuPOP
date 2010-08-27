@@ -25,9 +25,5 @@
 
 %module simuPOP_op
 
-%pythoncode %{
-cppModule = _simuPOP_op
-%}
-
 #define OPTIMIZED
 %include "simuPOP_common.i"

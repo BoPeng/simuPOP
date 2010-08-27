@@ -25,10 +25,6 @@
 
 %module simuPOP_la
 
-%pythoncode %{
-cppModule = _simuPOP_la
-%}
-
 #define LONGALLELE
 
 %include "simuPOP_common.i"

@@ -278,22 +278,23 @@ import os, sys
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
-        from simuPOP_op import *
+        from simuPOP.simuPOP_op import *
     elif simuOptions['AlleleType'] == 'long':
-        from simuPOP_laop import *
+        from simuPOP.simuPOP_laop import *
     elif simuOptions['AlleleType'] == 'binary':
-        from simuPOP_baop import *
+        from simuPOP.simuPOP_baop import *
     else:
-        from simuPOP_op import *
+        from simuPOP.simuPOP_op import *
 else:
     if simuOptions['AlleleType'] == 'short':
-        from simuPOP_std import *
+        from simuPOP.simuPOP_std import *
     elif simuOptions['AlleleType'] == 'long':
-        from simuPOP_la import *
+        from simuPOP.simuPOP_la import *
     elif simuOptions['AlleleType'] == 'binary':
-        from simuPOP_ba import *
+        from simuPOP.simuPOP_ba import *
     else:
-        from simuPOP_std import *
+        from simuPOP.simuPOP_std import *
+
 
 if simuOptions['Version'] is not None:
     expMajor, expMinor, expRelease = [int(x) for x in simuOptions['Version'].rstrip('svn').split('.')]
@@ -346,6 +347,123 @@ if simuOptions['Debug'] != []:
         if g not in ['', None]:
             print "Turn on debug '%s'" % g
             turnOnDebug(g)
+
+
+ALL_AVAIL = True
+UNSPECIFIED = False
+
+def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
+    finalOps=[], gen=-1, dryrun=False):
+    '''Evolve the current population <em>gen</em> generations using mating
+    scheme <em>matingScheme</em> and operators <em>initOps</em> (applied before
+    evolution), <em>preOps</em> (applied to the parental population at the
+    beginning of each life cycle), <em>postOps</em> (applied to the offspring
+    population at the end of each life cycle) and <em>finalOps</em> (applied at
+    the end of evolution). More specifically, this function creates a
+    <em>Simulator</em> using the current population, call its <em>evolve</em>
+    function using passed parameters and then replace the current population
+    with the evolved population. Please refer to function 
+    <tt>Simulator.evolve</tt> for more details about each parameter.'''
+    if dryrun:
+        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
+        return (0,)
+    if isinstance(self, Pedigree):
+        raise ValueError("Evolving a pedigree object directly is not allowed.")
+    # create a simulator with self
+    simu = Simulator(self)
+    # evolve
+    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
+    # get the evolved population
+    self.swap(simu.population(0))
+    return gen[0]
+
+Population.evolve = evolve_pop
+
+def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
+    '''Return an iterator that iterat through all (virtual) subpopulations
+    in all ancestral generations. A list of (virtual) subpopulations
+    (<em>subPops</em>) and a list of ancestral generations (<em>ancGens</em>,
+    can be a single number) could be specified to iterate through only
+    selected subpopulation and generations. Value <tt>ALL_AVAIL</tt> is acceptable
+    in the specification of <tt>sp</tt> and/or <tt>vsp</tt> in specifying
+    a virtual subpopulation <tt>(sp, vsp)</tt> for the iteration through
+    all or specific virtual subpopulation in all or specific subpopulations.
+    '''
+    if ancGens is ALL_AVAIL:
+        gens = range(self.ancestralGens() + 1)
+    elif hasattr(ancGens, '__iter__'):
+        gens = ancGens
+    else:
+        gens = [ancGens]
+    #
+    curGen = self.curAncestralGen()
+    for gen in gens:
+        self.useAncestralGen(gen)
+        if subPops is ALL_AVAIL:
+            for ind in self.individuals():
+                yield ind
+        else:
+            for subPop in subPops:
+                if hasattr(subPop, '__iter__'):
+                    if len(subPop) != 2:
+                        raise exceptions.ValueError('Invalid subpopulation ID %s' % subPop)
+                    if subPop[0] is ALL_AVAIL:
+                        # (ALL_AVAIL, ALL_AVAIL)
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
+                            for sp in range(self.numSubPop()):
+                                for vsp in range(self.numVirtualSubPop()):
+                                    for ind in self.individuals([sp, vsp]):
+                                        yield ind
+                        # (ALL_AVAIL, vsp)
+                        else:
+                            for sp in range(self.numSubPop()):
+                                for ind in self.individuals([sp, subPop[1]]):
+                                    yield ind
+                    else:
+                        # (sp, ALL_AVAIL)
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
+                                for vsp in range(self.numVirtualSubPop()):
+                                    for ind in self.individuals([subPop[0], vsp]):
+                                        yield ind
+                        # (sp, vsp)
+                        else:
+                            for ind in self.individuals(subPop):
+                                yield ind
+                else:
+                    for ind in self.individuals(subPop):
+                        yield ind
+    self.useAncestralGen(curGen)
+
+Population.allIndividuals = all_individuals
+
+def as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+    '''Convert the existing population object to a pedigree. After this function
+    pedigree function should magically be usable for this function.
+    '''
+    if isinstance(self, Pedigree):
+        return
+    ped = Pedigree(self, loci=ALL_AVAIL, infoFields=ALL_AVAIL, ancGens=ALL_AVAIL,
+        idField=idField, fatherField=fatherField, motherField=motherField,
+        stealPop=True)
+    # swap ped and this object. (I do not know if this is the right thing to do)
+    self.__class__, ped.__class__ = ped.__class__, self.__class__
+    self.this, ped.this = ped.this, self.this
+
+Population.asPedigree = as_pedigree
+
+def as_population(self):
+    '''Convert the existing pedigree object to a population. This function will
+    behave like a regular population after this function call.'''
+    if isinstance(self, Population):
+        return
+    pop = population(0)
+    # the pedigree data has been swapped to pop
+    pop.swap(self)
+    # swap ped and this object. (I do not know if this is the right thing to do)
+    self.__class__, pop.__class__ = pop.__class__, self.__class__
+    self.this, pop.this = pop.this, self.this
+
+Pedigree.asPopulation = as_population
 
 # Other definitions that does not really belong to simuUtil.py
 class _dw(object):
