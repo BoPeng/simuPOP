@@ -817,7 +817,7 @@ static PyMappingMethods defdict_as_mapping = *PyDict_Type.tp_as_mapping;
 static PyTypeObject defdict_type = {
 	PyObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type))
 	0,                              /* ob_size */
-	"collections.defdict",          /* tp_name */
+	"simupop.defdict",              /* tp_name */
 	sizeof(defdictobject),          /* tp_basicsize */
 	0,                              /* tp_itemsize */
 	/* methods */
