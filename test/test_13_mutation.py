@@ -14,7 +14,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     '''HIDDEN
@@ -282,10 +282,10 @@ class TestMutator(unittest.TestCase):
         'Testing mixed mutator'
         pop = Population(1000, loci=[1])
         simu = Simulator(pop)
-        self.assertRaises(exceptions.ValueError,
+        self.assertRaises(ValueError,
             MixedMutator, mutators=[KAlleleMutator(k=10), KAlleleMutator(k=10)],
             prob=[0.2, 0.4])
-        self.assertRaises(exceptions.ValueError,
+        self.assertRaises(ValueError,
             MixedMutator, mutators=[KAlleleMutator(k=10), KAlleleMutator(k=10)],
             prob=[0.2, 0.4, 0.4])
 
@@ -314,11 +314,11 @@ class TestMutator(unittest.TestCase):
         self.assertAlmostEqual(pop.dvars().alleleFreq[1][1], 0.01, places=2)
         self.assertAlmostEqual(pop.dvars().alleleFreq[4][1], 0.1, places=2)
         # test parameters
-        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
+        self.assertRaises(ValueError, contextMutate, pop, 
             contexts=[(0, 0, 0)])
-        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
+        self.assertRaises(ValueError, contextMutate, pop, 
             mutators=[SNPMutator(u=0.1)], contexts=[(0, 0), (1, 1)])
-        self.assertRaises(exceptions.ValueError, contextMutate, pop, 
+        self.assertRaises(ValueError, contextMutate, pop, 
             mutators=[SNPMutator(u=0.1), SNPMutator(u=0.01)],
             contexts=[(0, 0), (1, 1, 2, 2)])
 

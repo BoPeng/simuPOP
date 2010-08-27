@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 class TestIndividual(unittest.TestCase):
 
@@ -48,11 +48,11 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(ind.allele(2, 1), 0)
             self.assertEqual(ind.allele(2, 1, 1), 1)
             self.assertEqual(ind.allele(2, 0, 1), 1)
-            self.assertRaises(exceptions.IndexError, ind.allele, 24)
-            self.assertRaises(exceptions.IndexError, ind.allele, 12, 0)
-            self.assertRaises(exceptions.IndexError, ind.allele, 5, 0, 0)
-            self.assertRaises(exceptions.IndexError, ind.allele, 0, 2)
-            self.assertRaises(exceptions.IndexError, ind.allele, 0, 0, 2)
+            self.assertRaises(IndexError, ind.allele, 24)
+            self.assertRaises(IndexError, ind.allele, 12, 0)
+            self.assertRaises(IndexError, ind.allele, 5, 0, 0)
+            self.assertRaises(IndexError, ind.allele, 0, 2)
+            self.assertRaises(IndexError, ind.allele, 0, 0, 2)
         else:
             # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4
             self.assertEqual(ind.allele(0), 2)
@@ -62,11 +62,11 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(ind.allele(2, 1), 4)
             self.assertEqual(ind.allele(2, 1, 1), 3)
             self.assertEqual(ind.allele(2, 0, 1), 3)
-            self.assertRaises(exceptions.IndexError, ind.allele, 24)
-            self.assertRaises(exceptions.IndexError, ind.allele, 12, 0)
-            self.assertRaises(exceptions.IndexError, ind.allele, 5, 0, 0)
-            self.assertRaises(exceptions.IndexError, ind.allele, 0, 2)
-            self.assertRaises(exceptions.IndexError, ind.allele, 0, 0, 2)
+            self.assertRaises(IndexError, ind.allele, 24)
+            self.assertRaises(IndexError, ind.allele, 12, 0)
+            self.assertRaises(IndexError, ind.allele, 5, 0, 0)
+            self.assertRaises(IndexError, ind.allele, 0, 2)
+            self.assertRaises(IndexError, ind.allele, 0, 0, 2)
         if moduleInfo()['alleleType'] == 'binary':
             # set allele
             # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
@@ -82,11 +82,11 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(ind.allele(2, 1, 1), 0)
             ind.setAllele(0, 2, 0, 1)
             self.assertEqual(ind.allele(2, 0, 1), 0)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 24)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 12, 0)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 5, 0, 0)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 2)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 0, 2)
+            self.assertRaises(IndexError, ind.setAllele, 0, 24)
+            self.assertRaises(IndexError, ind.setAllele, 0, 12, 0)
+            self.assertRaises(IndexError, ind.setAllele, 0, 5, 0, 0)
+            self.assertRaises(IndexError, ind.setAllele, 0, 0, 2)
+            self.assertRaises(IndexError, ind.setAllele, 0, 0, 0, 2)
         else:
             # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4
             ind.setAllele(1, 1)
@@ -103,11 +103,11 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(ind.allele(2, 1, 1), 1)
             ind.setAllele(1, 2, 0, 1)
             self.assertEqual(ind.allele(2, 0, 1), 1)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 24)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 12, 0)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 5, 0, 0)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 2)
-            self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 0, 2)
+            self.assertRaises(IndexError, ind.setAllele, 0, 24)
+            self.assertRaises(IndexError, ind.setAllele, 0, 12, 0)
+            self.assertRaises(IndexError, ind.setAllele, 0, 5, 0, 0)
+            self.assertRaises(IndexError, ind.setAllele, 0, 0, 2)
+            self.assertRaises(IndexError, ind.setAllele, 0, 0, 0, 2)
 
     def testGenotype(self):
         'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
@@ -133,8 +133,8 @@ class TestIndividual(unittest.TestCase):
         else:
             self.assertEqual(gt, [4, 2, 3, 4, 2, 3, 4])
         #
-        self.assertRaises(exceptions.IndexError, ind.genotype, 2)
-        self.assertRaises(exceptions.IndexError, ind.genotype, 0, 2)
+        self.assertRaises(IndexError, ind.genotype, 2)
+        self.assertRaises(IndexError, ind.genotype, 0, 2)
         # accept single form
         pop.setGenotype(1)
         self.assertEqual(pop.individual(0).allele(0), 1)

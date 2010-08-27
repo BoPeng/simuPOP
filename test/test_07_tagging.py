@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions
+import unittest, os, sys
 
 class TestTagger(unittest.TestCase):
 
@@ -145,7 +145,7 @@ class TestTagger(unittest.TestCase):
         self.assertEqual(ped.subPopSizes(ped.gen()-1), (20, 20))
         ped.setFather(5, 11, 0)
         ped.setMother(5, 11, 0)
-        self.assertRaises(exceptions.IndexError, ped.setMother, 500, 11, 0)
+        self.assertRaises(IndexError, ped.setMother, 500, 11, 0)
         self.assertEqual(ped.father(11, 0), 5)
         self.assertEqual(ped.mother(11, 0), 5)
 

@@ -17,7 +17,7 @@ from simuPOP import *
 from simuPOP.utils import *
 from simuPOP.gsl import *
 
-import unittest, os, sys, exceptions
+import unittest, os, sys
 import random
 
 # for memory leak testing.
@@ -71,7 +71,7 @@ class TestUtility(unittest.TestCase):
         simu = Simulator( Population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
-        self.assertRaises( exceptions.SystemError, simu.evolve,
+        self.assertRaises( SystemError, simu.evolve,
             postOps=[ Pause(at=[10]),
                         # should quite, can not reach generation 12
                         TerminateIf("True", at=[12] ) ] )
@@ -257,36 +257,36 @@ class TestUtility(unittest.TestCase):
     def testTrajectorySimulatorInputs(self):
         'Testing invalid inputs for Trajectory simulation functions'
         # both backward and forward
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, fitness=[1, 1.01], beginGen=100, endGen=1000,
             beginFreq=0.1, endFreq=[0.1, 0.2])
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, beginGen=2000, endGen=1000,
             beginFreq=0.1, endFreq=[0.2, 0.3])
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, fitness=[1]*5, beginGen=0, endGen=1000,
             beginFreq=0.1, endFreq=[0.2, 0.3])
         #
         # forward Trajectory simulation
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, beginGen=100, endGen=200, beginFreq=0.1, endFreq=0.09)
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, beginGen=100, endGen=200, beginFreq=0.1, endFreq=[0.09])
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[0.08, 0.09])
-        self.assertRaises(exceptions.ValueError, simulateForwardTrajectory,
+        self.assertRaises(ValueError, simulateForwardTrajectory,
             N=1000, nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.18, 0.09]*2])
         #
         # backward Trajectory simulation
-        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
+        self.assertRaises(ValueError, simulateBackwardTrajectory,
             N=1000, endGen=3000, endFreq=[0.1, 0.2])
-        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
+        self.assertRaises(ValueError, simulateBackwardTrajectory,
             N=1000, endGen=0, endFreq=0.1)
-        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
+        self.assertRaises(ValueError, simulateBackwardTrajectory,
             N=1000, endGen=3000, endFreq=[0.1, 0.2, 0.3])
-        self.assertRaises(exceptions.ValueError, simulateBackwardTrajectory,
+        self.assertRaises(ValueError, simulateBackwardTrajectory,
             N=1000, endGen=0, endFreq=0.1)
 
     def testBackTrajectorySimple(self):

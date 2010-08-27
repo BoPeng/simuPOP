@@ -406,7 +406,7 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
             for subPop in subPops:
                 if hasattr(subPop, '__iter__'):
                     if len(subPop) != 2:
-                        raise exceptions.ValueError('Invalid subpopulation ID %s' % subPop)
+                        raise ValueError('Invalid subpopulation ID %s' % subPop)
                     if subPop[0] is ALL_AVAIL:
                         # (ALL_AVAIL, ALL_AVAIL)
                         if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:

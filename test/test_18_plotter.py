@@ -12,14 +12,14 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, sys, os, exceptions
+import unittest, sys, os
 
 from time import sleep
 
 hasRPy = True
 try:
     from simuPOP.plotter import *
-except exceptions.ImportError:
+except ImportError:
     print "simuRPy can not be imported. Either rpy or r is not installed properly."
     hasRPy = False
 
@@ -52,7 +52,7 @@ class TestPlotter(unittest.TestCase):
         self.assertEqual(args.getArgs('par', pop, rep=4, dim=5),
             {'val':[1,3], 'blah': 2})
         #
-        self.assertRaises(exceptions.ValueError, args.getArgs, 'par1', pop)
+        self.assertRaises(ValueError, args.getArgs, 'par1', pop)
         self.assertEqual(args.getArgs('par', pop, blah=1), {'val': [1, 3], 'blah': 1})
         #
         self.assertEqual(args.getArgs('lines', pop, rep=1),

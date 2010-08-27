@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, random, math, exceptions
+import unittest, os, sys, random, math
 
 class TestMatingSchemes(unittest.TestCase):
 
@@ -363,9 +363,9 @@ class TestMatingSchemes(unittest.TestCase):
         testPyRetValue(retIndexes)
         testPyRetValue(retInd)
         testPyRetValue(retInds)
-        self.assertRaises(exceptions.ValueError, testPyRetValue, retPop)
-        self.assertRaises(exceptions.ValueError, testPyRetValue, retWrongIndex)
-        self.assertRaises(exceptions.ValueError, testPyRetValue, retWrongIndexes)
+        self.assertRaises(ValueError, testPyRetValue, retPop)
+        self.assertRaises(ValueError, testPyRetValue, retWrongIndex)
+        self.assertRaises(ValueError, testPyRetValue, retWrongIndexes)
 
   
     def testHaploidRandomMating(self):
