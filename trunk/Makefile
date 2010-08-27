@@ -15,8 +15,9 @@ rebuild:
 	make dist_svn
 
 2to3:
-	2to3-3.1 -w setup.py simuOpt.py
-	2to3-3.1 -w src/sampling.py src/plotter.py src/utils.py
+	2to3-3.1 -w setup.py
+	2to3 -w simuOpt.py  # 2to3-3.1 does not work for this file under mac
+	2to3-3.1 -w src/__init__.py src/sampling.py src/plotter.py src/utils.py
 	2to3-3.1 -w tools/build.py tools/doxy2swig.py
 	2to3-3.1 -w test/*.py
 	2to3-3.1 -w doc/userGuide.py doc/runSampleCode.py

@@ -96,7 +96,7 @@ __all__ = [
     'param',
 ]
 
-import os, sys, exceptions, re, time, textwrap
+import os, sys, re, time, textwrap
 
 #
 # simuOptions that will be checked when simuPOP is loaded. This structure
@@ -132,7 +132,7 @@ if os.getenv('SIMUGUI') is not None:
     _gui = os.getenv('SIMUGUI')
 elif '--gui' in sys.argv:
     if sys.argv[-1] == '--gui':
-        raise exceptions.ValueError('An value is expected for command line option --gui')
+        raise ValueError('An value is expected for command line option --gui')
     _gui = sys.argv[sys.argv.index('--gui') + 1]
 elif True in [x.startswith('--gui=') for x in sys.argv]:
     _gui = sys.argv[[x.startswith('--gui=') for x in sys.argv].index(True)][len('--gui='):]
@@ -208,22 +208,22 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
     elif optimized is not None:
-        raise exceptions.TypeError('Parameter optimized can be either True or False.')
+        raise TypeError('Parameter optimized can be either True or False.')
     # Allele type
     if alleleType in ['long', 'binary', 'short']:
         simuOptions['AlleleType'] = alleleType
     elif alleleType is not None:
-        raise exceptions.TypeError('Parameter alleleType can be either short, long, or binary.')
+        raise TypeError('Parameter alleleType can be either short, long, or binary.')
     # Graphical toolkit
     if gui in [True, False, 'wxPython', 'Tkinter', 'batch']:
         simuOptions['GUI'] = gui
     elif gui is not None:
-        raise exceptions.TypeError('Parameter gui can be True/False, wxPython or Tkinter.')
+        raise TypeError('Parameter gui can be True/False, wxPython or Tkinter.')
     # Quiet
     if quiet in [True, False]:
         simuOptions['Quiet'] = quiet
     elif quiet is not None:
-        raise exceptions.TypeError('Parameter quiet can be either True or False.')
+        raise TypeError('Parameter quiet can be either True or False.')
     # Debug
     if debug is not None:
         if type(debug) == str:
@@ -238,12 +238,12 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
             print 'Invalid version string %s' % simuOptions['Version']
         simuOptions['Version'] = version
     elif version is not None:
-        raise exceptions.TypeError('A version string is expected for parameter version.')
+        raise TypeError('A version string is expected for parameter version.')
     # Revision
     if type(revision) == int:
         simuOptions['Revision'] = revision
     elif revision is not None:
-        raise exceptions.TypeError('A revision number is expected for parameter revision.')
+        raise TypeError('A revision number is expected for parameter revision.')
 
 
 #
@@ -256,7 +256,7 @@ def valueNot(t):
         if callable(t):
             return not t(val)
         else:
-            raise exceptions.ValueError("We expect a function valueXXX")
+            raise ValueError("We expect a function valueXXX")
     return func
 
 
@@ -267,7 +267,7 @@ def valueOr(t1, t2):
         if callable(t1) and callable(t2):
             return t1(val) or t2(val)
         else:
-            raise exceptions.ValueError("We expect a function valueXXX")
+            raise ValueError("We expect a function valueXXX")
     return func
 
 
@@ -278,7 +278,7 @@ def valueAnd(t1, t2):
         if callable(t1) and callable(t2):
             return t1(val) and t2(val)
         else:
-            raise exceptions.ValueError("We expect a function valueXXX")
+            raise ValueError("We expect a function valueXXX")
     return func
 
 
@@ -286,7 +286,7 @@ def valueOneOf(t):
     '''Return a function that returns true if passed option is one of the values
     list in t'''
     if not type(t) in [list, tuple]:
-        raise exceptions.ValueError('argument of valueOneOf should be a list')
+        raise ValueError('argument of valueOneOf should be a list')
     def func(val):
         yes = False
         for item in t:
@@ -388,7 +388,7 @@ def valueIsList(size=None):
                 else:
                     return len(val) >= size[0]
             else:
-                raise exceptions.ValueError('Invalid size specification for simuOpt.valueIsList')
+                raise ValueError('Invalid size specification for simuOpt.valueIsList')
         return True
     return func
 
@@ -450,7 +450,7 @@ def valueListOf(t, size=None):
                 else:
                     return len(val) >= size[0]
             else:
-                raise exceptions.ValueError('Invalid size specification for simuOpt.valueIsList')
+                raise ValueError('Invalid size specification for simuOpt.valueIsList')
         return True
     return func
 
@@ -605,7 +605,7 @@ options:
 def _getParamValue(p, val, options):
     ''' try to get a value from value, raise exception if error happens. '''
     if p['gui_type'] == 'separator':
-        raise exceptions.ValueError('Cannot get a value for separator')
+        raise ValueError('Cannot get a value for separator')
     # if we are giving a unicode string, convert!
     if type(val) == unicode:
         val = str(val)
@@ -617,7 +617,7 @@ def _getParamValue(p, val, options):
                 break
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
         if not _validate(val, p, options):
-            raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
+            raise ValueError("Value '%s' is not allowed for parameter %s" % \
                 (str(val), p['name']))
         return val
     # handle another 'auto-boolean' case
@@ -627,7 +627,7 @@ def _getParamValue(p, val, options):
         elif val in ['0', 'false', 'False']:
             return False
         else:
-            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['name'])
+            raise ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['name'])
     # other wise, need conversion
     if type(val) in [str, unicode]:
         try:
@@ -642,18 +642,18 @@ def _getParamValue(p, val, options):
     # evaluated type is OK now.
     if type(val) in p['allowedTypes']:
         if not _validate(val, p, options):
-            raise exceptions.ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
+            raise ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif list in p['allowedTypes'] or tuple in p['allowedTypes']:
         if not _validate(val, p, options):
-            raise exceptions.ValueError("Value "+str([val])+' does not pass validation')
+            raise ValueError("Value "+str([val])+' does not pass validation')
         return [val]
     elif type(val) == bool and int in p['allowedTypes']: # compatibility problem
         return val
     elif type(val) == unicode and str in p['allowedTypes']:
         return str(val)
     else:
-        raise exceptions.ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
+        raise ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
             p['name'])
     print p, val
 
@@ -750,10 +750,10 @@ class _paramDialog:
         return nRow, self.nCol
 
     def createDialog(self):
-        raise exceptions.SystemError('Please define createDialog')
+        raise SystemError('Please define createDialog')
 
     def runDialog(self):
-        raise exceptions.SystemError('Please define runDialog')
+        raise SystemError('Please define runDialog')
 
     def getParam(self):
         '''Create, run a dialog, return result'''
@@ -1028,7 +1028,7 @@ class _wxParamDialog(_paramDialog):
                     val = _getParamValue(self.options[g], items, self.options)
                 else:
                     val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue(), self.options)
-            except exceptions.Exception, e:
+            except Exception, e:
                 # incorrect value
                 # set to red
                 # clear other red colors
@@ -1310,19 +1310,19 @@ class Params:
         #
         # validator
         if type(options) != list:
-            raise exceptions.ValueError('An option specification list is expected')
+            raise ValueError('An option specification list is expected')
         #
         self.options = []
         self.dict = {}
         for opt in options:
             if type(opt) != dict:
-                raise exceptions.ValueError('An option specification dictionary is expected')
+                raise ValueError('An option specification dictionary is expected')
             self.addOption(**opt)
         #
         if type(doc) != str:
-            raise exceptions.ValueError('Parameter doc must be a string.')
+            raise ValueError('Parameter doc must be a string.')
         if type(details) != str:
-            raise exceptions.ValueError('Parameter details must be a string.')
+            raise ValueError('Parameter details must be a string.')
         self.doc = doc.strip()
         self.details = details.strip()
         self.processedArgs = []
@@ -1338,7 +1338,7 @@ class Params:
         'Return the value of a parameter as an attribute.'
         if self.dict.has_key(name):
             return self.dict[name]['value']
-        raise exceptions.AttributeError('Can not locate attribute %s.' % name)
+        raise AttributeError('Can not locate attribute %s.' % name)
 
     def __setattr__(self, name, value):
         'Set the value of a parameter as an attribute.'
@@ -1373,7 +1373,7 @@ class Params:
         # allow the input of single value for allowed types.
         for key in kwargs:
             if key not in allowed_keys:
-                raise exceptions.ValueError('Invalid option specification key %s' % key)
+                raise ValueError('Invalid option specification key %s' % key)
             # I used not hasattr(kwargs[key], '__iter__') to test single element but
             # hasattr(tuple, '__iter__') returns True. Using isinstance
             # solves this problem.
@@ -1402,7 +1402,7 @@ class Params:
                 if not kwargs[key].endswith(':'):
                     opt['gui_type'] = 'boolean'
                 if len(opt['arg']) != 1 or not opt['arg'][0].isalpha():
-                    raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
+                    raise ValueError('Short arg should have one and only one alphabetic character.')
             else:
                 if key == 'chooseOneOf':
                     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
@@ -1422,23 +1422,23 @@ class Params:
             opt['gui_type'] = 'separator'
             return
         if 'name' not in opt.keys():
-            raise exceptions.ValueError('Item name cannot be ignored in an option specification dictionary')
+            raise ValueError('Item name cannot be ignored in an option specification dictionary')
         # allow alphabet, number and underscore (_).
         if not opt['name'].replace('_', '').isalnum() or not opt['name'][0].isalpha():
-            raise exceptions.ValueError('Invalid option name %s' % opt['name'])
+            raise ValueError('Invalid option name %s' % opt['name'])
         if kwargs.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in kwargs]) > 1: 	 
-	             raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
+	             raise ValueError("Duplicated short argument '%s'" % opt['arg'])
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
-            raise exceptions.ValueError('A default value is not provided for option "%s"' % opt['name'])
+            raise ValueError('A default value is not provided for option "%s"' % opt['name'])
         if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'] == opt['arg'] for x in self.options]) > 1:
-            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
+            raise ValueError("Duplicated short argument '%s'" % opt['arg'])
         if opt['name'] in reserved_options:
-            raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['name'])
+            raise ValueError("Option '--%s' is reserved. Please use another name." % opt['name'])
         if opt['name'] in methods:
-            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the Params class." % \
+            raise ValueError("Option '%s' conflicts with the '%s' member function of the Params class." % \
                 (opt['name'], (opt['name'])))
         if opt['name'] in self.__dict__.keys():
-            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
+            raise ValueError("Option '%s' conflicts with attribute '%s' of this Params object." % \
                 (opt['name'], (opt['name'])))
         #
         # 
@@ -1448,12 +1448,12 @@ class Params:
         # a valid default value). This version allows invalid default value again.
         #
         #if not _validate(opt['value'], opt, self.options):
-        #    raise exceptions.ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
+        #    raise ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
         opt['value'] = opt['default']
         opt['processed'] = False
         #
         if self.dict.has_key(opt['name']):
-            raise exceptions.ValueError('Option %s already exists.' % opt['name'])
+            raise ValueError('Option %s already exists.' % opt['name'])
         # process raw_type
         if opt.has_key('type'):
             if type(opt['type']) in (tuple, list) and \
@@ -1461,7 +1461,7 @@ class Params:
                 opt['gui_type'] = 'chooseOneOf'
                 opt['chooseOneOf'] = opt['type'][1]
                 if len(opt['chooseOneOf']) == 0:
-                    raise exceptions.ValueError('Empty list to choose from')
+                    raise ValueError('Empty list to choose from')
                 if not opt.has_key('validator'):
                     opt['validator'] = valueOneOf(opt['chooseOneOf'])
                 if not opt.has_key('allowedTypes'):
@@ -1471,7 +1471,7 @@ class Params:
                 opt['gui_type'] = 'chooseFrom'
                 opt['chooseFrom'] = opt['type'][1]
                 if len(opt['chooseFrom']) == 0:
-                    raise exceptions.ValueError('Empty list to choose from')
+                    raise ValueError('Empty list to choose from')
                 if not opt.has_key('validator'):
                     opt['validator'] = valueOneOf(opt['chooseFrom'])
                 if not opt.has_key('allowedTypes'):
@@ -1521,15 +1521,15 @@ class Params:
                     # must be a list.
                     for v in opt['type']:
                         if not isinstance(v, type(int)):
-                            raise exceptions.ValueError('Key type is not one of the specified types, or a list of types.')
+                            raise ValueError('Key type is not one of the specified types, or a list of types.')
                     opt['allowedTypes'] = opt['type']            
                 else:
-                    raise exceptions.ValueError('Key type is not one of the specified types, or a list of types.')
+                    raise ValueError('Key type is not one of the specified types, or a list of types.')
         # if raw_type is not specified.
         # determine type of option
         if opt.has_key('gui_type'):
             if opt['gui_type'] == 'boolean' and (opt.has_key('chooseOneOf') or opt.has_key('chooseFrom')):
-	             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
+	             raise ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
         elif not (opt.has_key('label') or opt.has_key('separator')):
             opt['gui_type'] = 'hidden'
         elif opt.has_key('separator'):
@@ -1567,7 +1567,7 @@ class Params:
             elif tuple in opt['allowedTypes']:
                 opt['default'] = (opt['default'],)
             else:
-                raise exceptions.ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
+                raise ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
         self.dict[opt['name']] = opt
 
 
@@ -1712,7 +1712,7 @@ class Params:
                 if value is not None:
                     for idx in indexes:
                         if idx in self.processedArgs:
-                            raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
+                            raise ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                         self.processedArgs.append(idx)
                     opt['value'] = value
                     opt['processed'] = True
@@ -1725,7 +1725,7 @@ class Params:
                 # case 1: --arg something
                 if cmdArgs[idx] == '--' + name:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
+                        raise ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
                         val = _getParamValue(opt, cmdArgs[idx+1], self.options)
                         self.processedArgs.extend([idx, idx+1])
@@ -1757,7 +1757,7 @@ class Params:
                 # case 1: -a file
                 if cmdArgs[idx] == '-' + opt['arg'][0]:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
+                        raise ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
                         val = _getParamValue(opt, cmdArgs[idx+1], self.options)
                         self.processedArgs.extend([idx, idx+1])
@@ -1771,7 +1771,7 @@ class Params:
                 # case 2: -aopt or -a=opt
                 else:
                     if idx in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
+                        raise ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
                         arg = cmdArgs[idx]
                         if len(arg) > 3 and arg[2] == '=':
@@ -1861,7 +1861,7 @@ class Params:
         if gui != 'Tkinter':
             try:
                 return _wxParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
-            except exceptions.ImportError:
+            except ImportError:
                 # continue to try tk
                 pass
         # try tkinter
@@ -1943,7 +1943,7 @@ class Params:
                     continue
                 elif i > 0 and cmdArgs[i-1] in ['--config', '--gui']:
                     continue
-                raise exceptions.ValueError('Command line argument %s is not process.' % cmdArgs[i] +
+                raise ValueError('Command line argument %s is not process.' % cmdArgs[i] +
                     'You may have misspelled the argument name or passed it an invalid value.')
         #
         if self.gui in [False, 'interactive']:
@@ -1952,16 +1952,16 @@ class Params:
             # valid values because some default values can be false
             for opt in self.options:
                 if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
-                    raise exceptions.ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
+                    raise ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
                 if not _validate(opt['value'], opt, self.options):
-                    raise exceptions.ValueError("Value '%s' is not allowed for parameter '%s'." % \
+                    raise ValueError("Value '%s' is not allowed for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
             return True
         # GUI
         try:
             return self.guiGetParam(nCol, gui=self.gui)
-        except exceptions.ImportError:
+        except ImportError:
             return self.termGetParam()
         return False
 
