@@ -34,10 +34,10 @@ Migrator::Migrator(const floatMatrix & rate, int mode, const uintList & toSubPop
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_rate(rate.elems()), m_mode(mode), m_to(toSubPops)
 {
-	DBG_FAILIF(!subPops.empty() && subPops.size() != m_rate.size(),
+	DBG_FAILIF(mode != BY_IND_INFO && !subPops.empty() && subPops.size() != m_rate.size(),
 		ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-	DBG_FAILIF(!m_to.elems().empty() && m_to.elems().size() != m_rate[0].size(),
+	DBG_FAILIF(mode != BY_IND_INFO && !m_to.elems().empty() && m_to.elems().size() != m_rate[0].size(),
 		ValueError, "Length of param toSubPop must match columns of rate matrix.");
 }
 

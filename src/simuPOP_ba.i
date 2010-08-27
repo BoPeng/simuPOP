@@ -25,9 +25,5 @@
 
 %module simuPOP_ba
 
-%pythoncode %{
-cppModule = _simuPOP_ba
-%}
-
 #define BINARYALLELE
 %include "simuPOP_common.i"
