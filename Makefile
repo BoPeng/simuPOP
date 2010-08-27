@@ -15,13 +15,11 @@ rebuild:
 	make dist_svn
 
 2to3:
-	2to3-3.1 -w setup.py
-	2to3-3.1 -w src/sampling.py
-	2to3-3.1 -w src/plotter.py
-	2to3-3.1 -w src/utils.py
-	2to3-3.1 -w tools/build.py
-	2to3-3.1 -w tools/doxy2swig.py
+	2to3-3.1 -w setup.py simuOpt.py
+	2to3-3.1 -w src/sampling.py src/plotter.py src/utils.py
+	2to3-3.1 -w tools/build.py tools/doxy2swig.py
 	2to3-3.1 -w test/*.py
+	2to3-3.1 -w doc/userGuide.py doc/runSampleCode.py
 
 clean:
 	@find . -name '*~' -delete
