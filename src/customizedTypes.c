@@ -975,85 +975,187 @@ array_dealloc(arrayobject * op)
 static PyObject *
 array_richcompare(PyObject * v, PyObject * w, int op)
 {
-	arrayobject * va, * wa;
-	PyObject * vi = NULL;
-	PyObject * wi = NULL;
-	Py_ssize_t i, k;
-	PyObject * res;
-
-	if (!is_carrayobject(v) || !is_carrayobject(w)) {
+	// will really has this case?
+	if (!is_carrayobject(v) && !is_carrayobject(w)) {
 		Py_INCREF(Py_NotImplemented);
 		return Py_NotImplemented;
 	}
 
-	va = (arrayobject *)v;
-	wa = (arrayobject *)w;
+	// both are array
+	if (is_carrayobject(v) && is_carrayobject(w) ) {
+		arrayobject * va, * wa;
+		PyObject * vi = NULL;
+		PyObject * wi = NULL;
+		int i, k;
+		PyObject * res;
 
-	if (Py_SIZE(va) != Py_SIZE(wa) && (op == Py_EQ || op == Py_NE)) {
-		/* Shortcut: if the lengths differ, the arrays differ */
-		if (op == Py_EQ)
-			res = Py_False;
-		else
-			res = Py_True;
-		Py_INCREF(res);
-		return res;
-	}
+		va = (arrayobject *)v;
+		wa = (arrayobject *)w;
 
-	/* Search for the first index where items are different */
-	k = 1;
-	for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
-		vi = getarrayitem(v, i);
-		wi = getarrayitem(w, i);
-		if (vi == NULL || wi == NULL) {
-			Py_XDECREF(vi);
-			Py_XDECREF(wi);
-			return NULL;
+		if (Py_SIZE(va) != Py_SIZE(wa) && (op == Py_EQ || op == Py_NE)) {
+			/* Shortcut: if the lengths differ, the arrays differ */
+			if (op == Py_EQ)
+				res = Py_False;
+			else
+				res = Py_True;
+			Py_INCREF(res);
+			return res;
 		}
-		k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-		if (k == 0)
-			break;  /* Keeping vi and wi alive! */
+
+		/* Search for the first index where items are different */
+		k = 1;
+		for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
+			vi = getarrayitem(v, i);
+			wi = getarrayitem(w, i);
+			if (vi == NULL || wi == NULL) {
+				Py_XDECREF(vi);
+				Py_XDECREF(wi);
+				return NULL;
+			}
+			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
+			if (k == 0)
+				break;                                                                        /* Keeping vi and wi alive! */
+			Py_DECREF(vi);
+			Py_DECREF(wi);
+			if (k < 0)
+				return NULL;
+		}
+
+		if (k) {
+			/* No more items to compare -- compare sizes */
+			int vs = Py_SIZE(va);
+			int ws = Py_SIZE(wa);
+			int cmp;
+			switch (op) {
+			case Py_LT: cmp = vs < ws; break;
+			case Py_LE: cmp = vs <= ws; break;
+			case Py_EQ: cmp = vs == ws; break;
+			case Py_NE: cmp = vs != ws; break;
+			case Py_GT: cmp = vs > ws; break;
+			case Py_GE: cmp = vs >= ws; break;
+			default: return NULL;                                             /* cannot happen */
+			}
+			if (cmp)
+				res = Py_True;
+			else
+				res = Py_False;
+			Py_INCREF(res);
+			return res;
+		}
+		/* We have an item that differs.    First, shortcuts for EQ/NE */
+		if (op == Py_EQ) {
+			Py_INCREF(Py_False);
+			res = Py_False;
+		} else if (op == Py_NE) {
+			Py_INCREF(Py_True);
+			res = Py_True;
+		} else {
+			/* Compare the final item again using the proper operator */
+			res = PyObject_RichCompare(vi, wi, op);
+		}
 		Py_DECREF(vi);
 		Py_DECREF(wi);
-		if (k < 0)
-			return NULL;
-	}
+		return res;
+	} else {
+		arrayobject * va;
+		PyObject * wa, * res;
+		bool dir;
+		int vs, ws;                                                                     // direction
 
-	if (k) {
-		/* No more items to compare -- compare sizes */
-		Py_ssize_t vs = Py_SIZE(va);
-		Py_ssize_t ws = Py_SIZE(wa);
-		int cmp;
-		switch (op) {
-		case Py_LT: cmp = vs < ws; break;
-		case Py_LE: cmp = vs <= ws; break;
-		case Py_EQ: cmp = vs == ws; break;
-		case Py_NE: cmp = vs != ws; break;
-		case Py_GT: cmp = vs > ws; break;
-		case Py_GE: cmp = vs >= ws; break;
-		default: return NULL; /* cannot happen */
+		// one of them is not array
+		if (is_carrayobject(v) ) {
+			va = (arrayobject *)v;
+			wa = w;
+			dir = true;
+		} else {
+			va = (arrayobject *)w;
+			wa = v;
+			dir = false;
 		}
-		if (cmp)
-			res = Py_True;
-		else
+
+		if (!PySequence_Check(wa) ) {
+			// use automatic increase of size?
+			PyErr_SetString(PyExc_IndexError, "only sequence can be compared");
+			return NULL;
+		}
+
+		vs = Py_SIZE(va);
+		ws = PySequence_Size(wa);
+
+		if (vs != ws && (op == Py_EQ || op == Py_NE)) {
+			/* Shortcut: if the lengths differ, the arrays differ */
+			if (op == Py_EQ)
+				res = Py_False;
+			else
+				res = Py_True;
+			Py_INCREF(res);
+			return res;
+		}
+
+		/* Search for the first index where items are different */
+		PyObject * vi = NULL;
+		PyObject * wi = NULL;
+		int k = 1;
+		for (int i = 0; i < vs && i < ws; i++) {
+			vi = PyInt_FromLong(*(va->ob_iter + i));
+			wi = PySequence_GetItem(wa, i);
+			if (vi == NULL || wi == NULL) {
+				Py_XDECREF(vi);
+				Py_XDECREF(wi);
+				return NULL;
+			}
+			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
+			if (k == 0)
+				break;                                                                        /* Keeping vi and wi alive! */
+			Py_DECREF(vi);
+			Py_DECREF(wi);
+			// -1 for error
+			if (k < 0)
+				return NULL;
+		}
+
+		if (k) {                                                                              // if equal
+			/* No more items to compare -- compare sizes */
+			int cmp;
+			switch (op) {
+			case Py_LT: cmp = vs < ws; break;
+			case Py_LE: cmp = vs <= ws; break;
+			case Py_EQ: cmp = vs == ws; break;
+			case Py_NE: cmp = vs != ws; break;
+			case Py_GT: cmp = vs > ws; break;
+			case Py_GE: cmp = vs >= ws; break;
+			default: return NULL;                                             /* cannot happen */
+			}
+			if ((cmp && dir) || (!cmp && !dir))
+				res = Py_True;
+			else
+				res = Py_False;
+			Py_INCREF(res);
+			return res;
+		}
+
+		/* We have an item that differs.    First, shortcuts for EQ/NE */
+		if (op == Py_EQ) {
+			Py_INCREF(Py_False);
 			res = Py_False;
-		Py_INCREF(res);
+		} else if (op == Py_NE) {
+			Py_INCREF(Py_True);
+			res = Py_True;
+		} else {
+			/* Compare the final item again using the proper operator */
+			int r = PyObject_RichCompareBool(vi, wi, op);
+			if ( (r == 0 && dir) || (r != 0 && !dir) ) {           // false
+				Py_INCREF(Py_False);
+				res = Py_False;
+			} else {
+				Py_INCREF(Py_True);
+				res = Py_True;
+			}
+		}
+		Py_DECREF(vi);
+		Py_DECREF(wi);
 		return res;
 	}
-
-	/* We have an item that differs.  First, shortcuts for EQ/NE */
-	if (op == Py_EQ) {
-		Py_INCREF(Py_False);
-		res = Py_False;
-	}else if (op == Py_NE) {
-		Py_INCREF(Py_True);
-		res = Py_True;
-	}else  {
-		/* Compare the final item again using the proper operator */
-		res = PyObject_RichCompare(vi, wi, op);
-	}
-	Py_DECREF(vi);
-	Py_DECREF(wi);
-	return res;
 }
 
 
@@ -1269,9 +1371,9 @@ static PySequenceMethods array_as_sequence = {
 	0,                                      /*sq_concat*/
 	0,                                      /*sq_repeat*/
 	(ssizeargfunc)array_item,               /*sq_item*/
-	(ssizessizeargfunc)array_slice,         /*sq_slice*/
+	0,                                      /*sq_slice*/
 	(ssizeobjargproc)array_ass_item,        /*sq_ass_item*/
-	(ssizessizeobjargproc)array_ass_slice,  /*sq_ass_slice*/
+	0,					/*sq_ass_slice*/
 	0,                                      /*sq_contains*/
 	0,                                      /*sq_inplace_concat*/
 	0                                       /*sq_inplace_repeat*/
