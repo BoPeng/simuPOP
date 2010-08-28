@@ -74,6 +74,11 @@ public:
 
 	Population & next();
 
+	// Python 3 uses __next__ instead of next.
+	Population & __next__()
+	{
+		return next();
+	}
 private:
 	// current (initial population)
 	vector<Population *>::iterator m_index;
