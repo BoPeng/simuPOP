@@ -336,6 +336,7 @@ public:
 	}
 
 
+#if PY_VERSION_HEX < 0x03000000
 	/** read info as attribute
 	 */
 	double __getattr__(const string & field) const
@@ -350,6 +351,7 @@ public:
 	{
 		m_infoPtr[infoIdx(field)] = value;
 	}
+#endif
 
 
 	/** set the value of an information field \e field (by index or name) to
