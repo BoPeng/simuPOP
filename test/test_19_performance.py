@@ -331,23 +331,23 @@ class TestPerformance(unittest.TestCase):
         # With the old infoIterator,
         # op
         # 0.37   7.82   114.52
-		# 0.19   4.65   58.93
-		# 0.18   2.90   30.34
-		#
+        # 0.19   4.65   58.93
+        # 0.18   2.90   30.34
+        #
         # laop
         # 0.38   8.26   116.15
-		# 0.21   5.13   70.09
-		# 0.18   2.97   30.64
-		#
+        # 0.21   5.13   70.09
+        # 0.18   2.97   30.64
+        #
         # baop
         # 0.53   9.56   125.22
-		# 0.33   5.99   75.34
-		# 0.47   5.72   58.07
-		#
-		#
+        # 0.33   5.99   75.34
+        # 0.47   5.72   58.07
+        #
+        #
         # With the new individual based IndInfoIterator.
-		# (2007/11/12, r1316) The performance loss is noticable.
-		#
+        # (2007/11/12, r1316) The performance loss is noticable.
+        #
         # op:
         # 0.37   7.76  112.79
         # 0.23   4.77  61.21
@@ -362,7 +362,7 @@ class TestPerformance(unittest.TestCase):
         # 0.55   9.85   127.83
         # 0.38   6.50   80.08
         # 0.51   6.12   62.07
-		#
+        #
         # With the combined iterator, we have
         #
         # op:
@@ -825,24 +825,24 @@ class TestPerformance(unittest.TestCase):
             pop = Population(10000, loci=[N])
             c1 = time.clock()
             for ind in pop.individuals():
-				ind.setGenotype([1]*(pop.totNumLoci()*2))
+                ind.setGenotype([1]*(pop.totNumLoci()*2))
             c2 = time.clock()
             print "For genotype writing: %f " % (c2 - c1)
             c1 = time.clock()
             for ind in pop.individuals():
-				sum(ind.genotype())
+                sum(ind.genotype())
             c2 = time.clock()
             print "For genotype reading: %f " % (c2 - c1)
             c1 = time.clock()
             for ind in pop.individuals():
-				geno = ind.arrGenotype()
-				geno[:] = [1]*(pop.totNumLoci()*2)
+                geno = ind.arrGenotype()
+                geno[:] = [1]*(pop.totNumLoci()*2)
             c2 = time.clock()
             print "For arrGenotype writing: %f " % (c2 - c1)
             c1 = time.clock()
             for ind in pop.individuals():
-				geno = ind.arrGenotype()
-				sum(geno)
+                geno = ind.arrGenotype()
+                sum(geno)
             c2 = time.clock()
             print "For arrGenotype reading: %f " % (c2 - c1)
         
@@ -860,103 +860,103 @@ class TestPerformance(unittest.TestCase):
         #
         # Windows result
         # Short modual:
-		# N=100
-		# For genotype writing: 0.331818
-		# For genotype reading: 0.160001
-		# For arrGenotype writing: 0.273920
-		# For arrGenotype reading: 0.148057
-		# N=1000
-		# For genotype writing: 2.415126
-		# For genotype reading: 1.356521
-		# For arrGenotype writing: 2.303960
-		# For arrGenotype reading: 1.294205
-		# N=10000
-		# For genotype writing: 23.452248
-		# For genotype reading: 13.992072
-		# For arrGenotype writing: 22.342265
-		# For arrGenotype reading: 12.868873
-		# Long modual:
-		# N=100
-		# For genotype writing: 0.321894
-		# For genotype reading: 0.160523
-		# For arrGenotype writing: 0.269319
-		# For arrGenotype reading: 0.148007
-		# N=1000
-		# For genotype writing: 2.324584
-		# For genotype reading: 1.376434
-		# For arrGenotype writing: 2.301938
-		# For arrGenotype reading: 1.295467
-		# N=10000
-		# For genotype writing: 23.234146
-		# For genotype reading: 13.494426
-		# For arrGenotype writing: 22.797773
-		# For arrGenotype reading: 12.826390
-		# Binary modual:
-		# N=100
-		# For genotype writing: 0.435293
-		# For genotype reading: 0.183319
-		# For arrGenotype writing: 0.274531
-		# For arrGenotype reading: 0.169256
-		# N=1000
-		# For genotype writing: 3.648646
-		# For genotype reading: 1.568618
-		# For arrGenotype writing: 2.374255
-		# For arrGenotype reading: 1.476079
-		# N=10000
-		# For genotype writing: 35.354781
-		# For genotype reading: 15.545612
-		# For arrGenotype writing: 23.066307
-		# For arrGenotype reading: 14.525967
-		
-		# Linux result
-		# Short modual:
-		# N=100
-		# For genotype writing: 0.240000 
-		# For genotype reading: 0.190000 
-		# For arrGenotype writing: 0.310000 
-		# For arrGenotype reading: 0.160000 
-		# N=1000
-		# For genotype writing: 1.230000 
-		# For genotype reading: 1.270000 
-		# For arrGenotype writing: 2.250000 
-		# For arrGenotype reading: 1.010000 
-		# N=10000
-		# For genotype writing: 11.050000 
-		# For genotype reading: 11.950000 
-		# For arrGenotype writing: 22.360000 
-		# For arrGenotype reading: 9.510000
-		# Long modual
-		# N=100
-		# For genotype writing: 0.240000 
-		# For genotype reading: 0.190000 
-		# For arrGenotype writing: 0.310000 
-		# For arrGenotype reading: 0.160000 
-		# N=1000
-		# For genotype writing: 1.210000 
-		# For genotype reading: 1.240000 
-		# For arrGenotype writing: 2.320000 
-		# For arrGenotype reading: 1.040000 
-		# N=10000
-		# For genotype writing: 11.300000 
-		# For genotype reading: 11.700000 
-		# For arrGenotype writing: 22.870000 
-		# For arrGenotype reading: 9.800000
-		# Binary modual:
-		# N=100
-		# For genotype writing: 0.230000 
-		# For genotype reading: 0.230000 
-		# For arrGenotype writing: 0.300000 
-		# For arrGenotype reading: 0.170000 
-		# N=1000
-		# For genotype writing: 1.280000 
-		# For genotype reading: 1.780000 
-		# For arrGenotype writing: 2.130000 
-		# For arrGenotype reading: 1.280000 
-		# N=10000
-		# For genotype writing: 12.520000 
-		# For genotype reading: 17.180000 
-		# For arrGenotype writing: 21.120000 
-		# For arrGenotype reading: 12.240000
+        # N=100
+        # For genotype writing: 0.331818
+        # For genotype reading: 0.160001
+        # For arrGenotype writing: 0.273920
+        # For arrGenotype reading: 0.148057
+        # N=1000
+        # For genotype writing: 2.415126
+        # For genotype reading: 1.356521
+        # For arrGenotype writing: 2.303960
+        # For arrGenotype reading: 1.294205
+        # N=10000
+        # For genotype writing: 23.452248
+        # For genotype reading: 13.992072
+        # For arrGenotype writing: 22.342265
+        # For arrGenotype reading: 12.868873
+        # Long modual:
+        # N=100
+        # For genotype writing: 0.321894
+        # For genotype reading: 0.160523
+        # For arrGenotype writing: 0.269319
+        # For arrGenotype reading: 0.148007
+        # N=1000
+        # For genotype writing: 2.324584
+        # For genotype reading: 1.376434
+        # For arrGenotype writing: 2.301938
+        # For arrGenotype reading: 1.295467
+        # N=10000
+        # For genotype writing: 23.234146
+        # For genotype reading: 13.494426
+        # For arrGenotype writing: 22.797773
+        # For arrGenotype reading: 12.826390
+        # Binary modual:
+        # N=100
+        # For genotype writing: 0.435293
+        # For genotype reading: 0.183319
+        # For arrGenotype writing: 0.274531
+        # For arrGenotype reading: 0.169256
+        # N=1000
+        # For genotype writing: 3.648646
+        # For genotype reading: 1.568618
+        # For arrGenotype writing: 2.374255
+        # For arrGenotype reading: 1.476079
+        # N=10000
+        # For genotype writing: 35.354781
+        # For genotype reading: 15.545612
+        # For arrGenotype writing: 23.066307
+        # For arrGenotype reading: 14.525967
+        
+        # Linux result
+        # Short modual:
+        # N=100
+        # For genotype writing: 0.240000 
+        # For genotype reading: 0.190000 
+        # For arrGenotype writing: 0.310000 
+        # For arrGenotype reading: 0.160000 
+        # N=1000
+        # For genotype writing: 1.230000 
+        # For genotype reading: 1.270000 
+        # For arrGenotype writing: 2.250000 
+        # For arrGenotype reading: 1.010000 
+        # N=10000
+        # For genotype writing: 11.050000 
+        # For genotype reading: 11.950000 
+        # For arrGenotype writing: 22.360000 
+        # For arrGenotype reading: 9.510000
+        # Long modual
+        # N=100
+        # For genotype writing: 0.240000 
+        # For genotype reading: 0.190000 
+        # For arrGenotype writing: 0.310000 
+        # For arrGenotype reading: 0.160000 
+        # N=1000
+        # For genotype writing: 1.210000 
+        # For genotype reading: 1.240000 
+        # For arrGenotype writing: 2.320000 
+        # For arrGenotype reading: 1.040000 
+        # N=10000
+        # For genotype writing: 11.300000 
+        # For genotype reading: 11.700000 
+        # For arrGenotype writing: 22.870000 
+        # For arrGenotype reading: 9.800000
+        # Binary modual:
+        # N=100
+        # For genotype writing: 0.230000 
+        # For genotype reading: 0.230000 
+        # For arrGenotype writing: 0.300000 
+        # For arrGenotype reading: 0.170000 
+        # N=1000
+        # For genotype writing: 1.280000 
+        # For genotype reading: 1.780000 
+        # For arrGenotype writing: 2.130000 
+        # For arrGenotype reading: 1.280000 
+        # N=10000
+        # For genotype writing: 12.520000 
+        # For genotype reading: 17.180000 
+        # For arrGenotype writing: 21.120000 
+        # For arrGenotype reading: 12.240000
 
 if __name__ == '__main__':
     unittest.main()
