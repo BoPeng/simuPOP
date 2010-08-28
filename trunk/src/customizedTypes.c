@@ -1257,12 +1257,8 @@ static PyObject *
 array_repr(arrayobject * a)
 {
 	PyObject * s, * v = NULL;
-	Py_ssize_t len;
-
-	len = Py_SIZE(a);
 	v = array_tolist(a, NULL);
-
-	s = PyUnicode_FromFormat("array(%R)", v);
+	s = PyUnicode_FromFormat("%R", v);
 	Py_DECREF(v);
 	return s;
 }
@@ -1273,9 +1269,9 @@ static PySequenceMethods array_as_sequence = {
 	0,                                      /*sq_concat*/
 	0,                                      /*sq_repeat*/
 	(ssizeargfunc)array_item,               /*sq_item*/
-	0,                                      /*sq_slice*/
+	(ssizessizeargfunc)array_slice,         /*sq_slice*/
 	(ssizeobjargproc)array_ass_item,        /*sq_ass_item*/
-	0,                                      /*sq_ass_slice*/
+	(ssizessizeobjargproc)array_ass_slice,  /*sq_ass_slice*/
 	0,                                      /*sq_contains*/
 	0,                                      /*sq_inplace_concat*/
 	0                                       /*sq_inplace_repeat*/
