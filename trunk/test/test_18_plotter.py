@@ -26,6 +26,8 @@ except (ImportError, RuntimeError):
 class TestPlotter(unittest.TestCase):
     def testDerivedArgs(self):
         'Testing class derivedARgs'
+        if not hasRPy:
+            return True
         pop = Population(0)
         pop.dvars().gen = 100
         args = DerivedArgs(
