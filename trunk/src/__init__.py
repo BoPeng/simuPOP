@@ -518,6 +518,14 @@ else:
     Individual.__setattr__ = ind_setInfo2
     Individual.__getattr__ = Individual.info
 
+
+def pop_equal(self, pop):
+    return self.__cmp__(pop) == 0
+
+if sys.version_info.major == 3:
+    Population.__eq__ = pop_equal
+    Pedigree.__eq__ = pop_equal
+
 ##
 ## This is the result of an attemp to move describeEvolProcess from the C++
 ## level to the Python level so that it can correctly call the 'describe'
