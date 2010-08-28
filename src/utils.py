@@ -47,7 +47,6 @@ __all__ = [
     'simulateForwardTrajectory',
 ]
 
-import exceptions
 import sys
 
 from simuOpt import simuOptions
