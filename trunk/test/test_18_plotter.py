@@ -19,7 +19,7 @@ from time import sleep
 hasRPy = True
 try:
     from simuPOP.plotter import *
-except ImportError:
+except (ImportError, RuntimeError):
     print "simuRPy can not be imported. Either rpy or r is not installed properly."
     hasRPy = False
 
@@ -310,6 +310,8 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotter(self):
         'Testing ScatterPlotter'
+        if not hasRPy:
+            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -330,6 +332,8 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotterSP(self):
         'Testing ScatterPlotter with multiple virtual subpopulations'
+        if not hasRPy:
+            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -354,6 +358,8 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotterSubSet(self):
         'Testing ScatterPlotter with partial individuals'
+        if not hasRPy:
+            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -381,6 +387,8 @@ class TestPlotter(unittest.TestCase):
 
     def testInfoPlotterBase(self):
         'Testing basic histogram using InfoPlotter'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 1000], infoFields=['x'])
         initSex(pop)
@@ -398,6 +406,8 @@ class TestPlotter(unittest.TestCase):
 
     def testInfoPlotterFields(self):
         'Testing Stat plotter with multiple fields and subpopulations'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 1000], infoFields=['x', 'y'])
         initSex(pop)
@@ -427,6 +437,8 @@ class TestPlotter(unittest.TestCase):
 
     def testInfoPlotterQQplot(self):
         'Testing barplotter with multiple fields and subpopulations'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
@@ -459,6 +471,8 @@ class TestPlotter(unittest.TestCase):
 
     def testInfoPlotterNoFunc(self):
         'Testing the Stat plotter when no function is specified'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
@@ -489,6 +503,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterBase(self):
         'Testing the base boxplotter'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x'])
         initSex(pop)
@@ -508,6 +524,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterFields(self):
         'Testing barplotter with multiple fields and subpopulations'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'])
         initSex(pop)
@@ -529,6 +547,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterFieldsAndSubPop(self):
         'Testing BoxPlotter with both fields and subpopulation'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
@@ -557,6 +577,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterByField(self):
         'Testing BoxPlotter separated by information field'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'],
             subPopNames=['sp1', 'sp2'])
@@ -582,6 +604,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterBySubPop(self):
         'Testing BoxPlotter separated by subpopulation'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
@@ -606,6 +630,8 @@ class TestPlotter(unittest.TestCase):
 
     def testBoxPlotterByFieldSubPop(self):
         'Testing BoxPlotter separated by both field and subpopulation'
+        if not hasRPy:
+            return True
         import random
         pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
         initSex(pop)
