@@ -673,7 +673,11 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 		return;
 	}
 	// is it unbounded?
+#if PY_VERSION_HEX < 0x03000000
 	int bounded = PyObject_HasAttrString(obj, "im_self");
+#else
+	int bounded = PyObject_HasAttrString(obj, "__self__");
+#endif
 
 	// find its name.
 	PyObject * name = PyObject_GetAttrString(obj, "__name__");
@@ -682,10 +686,16 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 
 	// free python functions have a 'func_code' attribute
 	// built-in functions might not have (e.g. random.random)
+#if PY_VERSION_HEX < 0x03000000
 	if (!PyObject_HasAttrString(obj, "func_code"))
 		return;
-
 	PyObject * code = PyObject_GetAttrString(obj, "func_code");
+#else
+	if (!PyObject_HasAttrString(obj, "__code__"))
+		return;
+	PyObject * code = PyObject_GetAttrString(obj, "__code__");
+#endif
+
 	DBG_ASSERT(code, SystemError, "Invalid attribute func_code for a function object");
 	// probe number of parameters
 	PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
