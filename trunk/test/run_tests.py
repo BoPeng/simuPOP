@@ -36,7 +36,7 @@
 #   run_tests.py [ short | long | binary ]
 #       Run the tests for specified modules.
 #
-import dircache, re, unittest, sys, os
+import re, unittest, sys, os
 
 from simuOpt import setOptions
 if len(sys.argv) > 1:
@@ -48,7 +48,7 @@ def importTests():
     # Find all files with names like test_MODULE.py.  For each such file,
     # import it as a module.  If it defines a function called "tests", call
     # that function and add its result to the test suite.
-    for file in dircache.listdir('.'):
+    for file in os.listdir('.'):
         match = re.match("^(test_(.*))\\.py$", file)
         if match:
             m = match.group(1)
