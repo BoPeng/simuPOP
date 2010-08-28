@@ -82,9 +82,6 @@ def runScript(inputFile, outputFile):
     sys.stderr = outFile
     sys.stdout = outFile
     #
-    # force the reload of simuPOP module
-    if sys.modules.has_key('simuPOP'):
-        sys.modules.pop('simuPOP')
     b = runScriptInteractively(locals=locals(), filename = inputFile)
     b.interact(None)
     b.exit()
@@ -169,7 +166,7 @@ def runSampleCode(srcFile, names):
             tmpSrc = None
             tmp, tmpLogName = tempfile.mkstemp()
             os.close(tmp)
-            runScript(tmpSrcName, tmpLogName)
+            os.system('%s %s %s' % (sys.argv[0], tmpSrcName, tmpLogName))
             #
             writeFile(open(tmpSrcName).readlines(), filename)
             logFile = filename.replace('.py', '.log')
@@ -187,12 +184,14 @@ def runSampleCode(srcFile, names):
     print 'Finished processing %d examples.' % count
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2 or sys.argv[1] == '-h' or not os.path.isfile(sys.argv[1]):
+    if len(sys.argv) == 3 and os.path.isfile(sys.argv[1]):
+        runScript(sys.argv[1], sys.argv[2])
+    elif len(sys.argv) > 1:
+        runSampleCode('userGuide.py', sys.argv[2:])
+    else:
         print 'Usage: runSampleCode scriptToRun [name1 name2]'
         print '    execute script. If a list of names is given, only examples containing'
         print '    one of the names will be executed'
         print '    -h: view this help information'
         sys.exit(0)
-    #
-    runSampleCode(sys.argv[1], sys.argv[2:])
 
