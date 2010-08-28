@@ -497,16 +497,13 @@ Simulator.__deepcopy__ = _deepcopy
 BaseOperator.__deepcopy__ = _deepcopy
 
 def ind_setInfo2(self, field, value):
-    self.setInfo(field, value)
-
-def ind_getInfo2(self, field):
-    return self.info(field)
+    self.setInfo(value, field)
 
 def ind_setInfo3(self, field, value):
     if field == 'this':
         self.__dict__['this'] = value
     else:
-        self.setInfo(field, value)
+        self.setInfo(value, field)
 
 def ind_getInfo3(self, field):
     if field == 'this':
@@ -519,7 +516,7 @@ if sys.version_info.major == 3:
     Individual.__getattr__ = ind_getInfo3
 else:
     Individual.__setattr__ = ind_setInfo2
-    Individual.__getattr__ = ind_getInfo2
+    Individual.__getattr__ = Individual.info
 
 ##
 ## This is the result of an attemp to move describeEvolProcess from the C++
