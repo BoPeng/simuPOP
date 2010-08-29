@@ -79,6 +79,8 @@ public:
 	{
 		return next();
 	}
+
+
 private:
 	// current (initial population)
 	vector<Population *>::iterator m_index;
