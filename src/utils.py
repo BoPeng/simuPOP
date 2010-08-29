@@ -1529,7 +1529,7 @@ class TrajectorySimulator:
         #
         failedFreq = []
         for failedCount in range(maxAttempts):
-            xt = self._simuBackward(endGen, freq, minMutAge, maxMutAge)
+            xt = self._simuBackward(endGen, freq, self.minMutAge, self.maxMutAge)
             if isinstance(xt, Trajectory):
                 if self.logger:
                     self.logger.info(('Simulation succeeded after %d attempts with average generation and frequencies' \
