@@ -335,6 +335,7 @@ public:
 		return static_cast<int>(m_infoPtr[idx]);
 	}
 
+
 	/** set the value of an information field \e field (by index or name) to
 	 *  \e value. <tt>ind.setInfo(value, field)</tt> is equivalent to
 	 *  <tt>ind.field = value</tt> although the function form allows the use

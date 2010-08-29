@@ -98,6 +98,7 @@ public:
 		return *this;
 	}
 
+
 	// python 2.x uses next()
 	Individual & next()
 	{
@@ -119,11 +120,14 @@ public:
 		} while (true);
 	}
 
+
 	// python 3.x uses __next__ instead of next.
 	Individual & __next__()
 	{
 		return next();
 	}
+
+
 private:
 	// current (initial individual)
 	vector<Individual>::iterator m_begin;
