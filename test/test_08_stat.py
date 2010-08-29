@@ -483,9 +483,9 @@ class Teststat(unittest.TestCase):
         diff = []
         pd = sample.ploidy()
         for i in range(pd * sample.popSize() - 1):
-            g1 = sample.individual(i / pd).genotype(i % pd)
+            g1 = sample.individual(int(i / pd)).genotype(i % pd)
             for j in range(i + 1, pd * sample.popSize()):
-                g2 = sample.individual(j / pd).genotype(j % pd)
+                g2 = sample.individual(int(j / pd)).genotype(j % pd)
                 diff.append(sum([x!=y for idx, x,y in zip(range(len(g1)), g1, g2) if idx in loci]) * 1.0)
         # return 0 if only one sequence
         if len(diff) == 0:
