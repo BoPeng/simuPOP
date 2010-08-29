@@ -1164,6 +1164,10 @@ public:
 		if (m_locals == NULL)
 			m_locals = mainVars().dict();
 
+		if (PyDict_GetItemString(m_locals, "__builtins__") == NULL)
+			if (PyDict_SetItemString(m_locals, "__builtins__", PyEval_GetBuiltins()) != 0)
+				throw RuntimeError("Cannot set __builtins__ for a dictionary.");
+
 		// empty expression
 		if (expr.empty() && stmts.empty())
 			return;
@@ -1199,6 +1203,9 @@ public:
 	void setLocalDict(PyObject * dict) const
 	{
 		m_locals = dict;
+		if (PyDict_GetItemString(m_locals, "__builtins__") == NULL)
+			if (PyDict_SetItemString(m_locals, "__builtins__", PyEval_GetBuiltins()) != 0)
+				throw RuntimeError("Cannot set __builtins__ for a dictionary.");
 	}
 
 
