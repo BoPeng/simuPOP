@@ -1001,8 +1001,8 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.info('x'), 1)
                 else:
                     self.assertEqual(ind.info('x'), 2)
-            self.assertEqual(pop.indInfo('x', 0), tuple([1, 2]*(pop.subPopSize(0)/2)))
-            self.assertEqual(pop.indInfo(0, 1), tuple([3, 4]*(pop.subPopSize(1)/2)))
+            self.assertEqual(pop.indInfo('x', 0), tuple([1, 2]*(int(pop.subPopSize(0)/2))))
+            self.assertEqual(pop.indInfo(0, 1), tuple([3, 4]*(int(pop.subPopSize(1)/2))))
         #
         testSetAndRead(self.getPop())
         testSetAndRead(self.getPop(True))
