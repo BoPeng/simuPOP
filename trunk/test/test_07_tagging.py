@@ -29,7 +29,7 @@ class TestTagger(unittest.TestCase):
         pop = simu.population(0)
         # check if all siblings have the same parents
         for sp in range(pop.numSubPop()):
-            for i in range(pop.subPopSize(sp)/2):
+            for i in range(int(pop.subPopSize(sp)/2)):
                 self.assertEqual(pop.individual(i*2,sp).info(0),
                     pop.individual(i*2+1,sp).info(0) )
                 self.assertEqual(pop.individual(i*2,sp).info(1),
