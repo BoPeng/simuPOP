@@ -349,7 +349,7 @@ void PyMutator::mutate(AlleleRef allele, UINT) const
 		else if (arg == "context") {
 			const vectori & cnt = context();
 			PyObject * c = PyTuple_New(cnt.size());
-			for (size_t j = 0; j < cnt.size(); ++i)
+			for (size_t j = 0; j < cnt.size(); ++j)
 				PyTuple_SET_ITEM(c, j, PyInt_FromLong(static_cast<int>(cnt[j])));
 			PyTuple_SET_ITEM(args, i, c);
 		} else {
