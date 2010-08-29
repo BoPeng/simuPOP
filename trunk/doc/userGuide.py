@@ -1166,7 +1166,7 @@ def demo(gen, pop):
     if gen == 2:
         # this happens right before mating at generation 2
         size = pop.popSize()
-        pop.splitSubPop(0, [size/2, size - size/2]) 
+        pop.splitSubPop(0, [int(size/2), size - int(size/2)]) 
     # for generation two and later
     return [x + 50 * gen for x in pop.subPopSizes()]
 
