@@ -116,7 +116,7 @@ def writeFile(content, srcFile, logFile=False):
         elif line.startswith('#expect_error') or line.startswith('>>> #expect_error'):
             expect_error = True
         elif not ignore:
-            print >> src, line,
+            src.write(line)
     # if there is error
     if not expect_error and True in ['Error' in x for x in content]:
         print
@@ -177,7 +177,7 @@ def runSampleCode(srcFile, names):
             print ' done.'
         else:
             if tmpSrc is not None:
-                print >> tmpSrc, line,
+                tmpSrc.write(line)
             elif line.strip() != '' and not line.startswith('#'):
                 print 'Unprocessed:', line
     src.close()
@@ -186,12 +186,6 @@ def runSampleCode(srcFile, names):
 if __name__ == '__main__':
     if len(sys.argv) == 3 and os.path.isfile(sys.argv[1]):
         runScript(sys.argv[1], sys.argv[2])
-    elif len(sys.argv) > 1:
-        runSampleCode('userGuide.py', sys.argv[2:])
     else:
-        print 'Usage: runSampleCode scriptToRun [name1 name2]'
-        print '    execute script. If a list of names is given, only examples containing'
-        print '    one of the names will be executed'
-        print '    -h: view this help information'
-        sys.exit(0)
+        runSampleCode('userGuide.py', sys.argv[2:])
 
