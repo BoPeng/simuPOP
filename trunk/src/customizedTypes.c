@@ -1379,6 +1379,150 @@ static PySequenceMethods array_as_sequence = {
 	0                                       /*sq_inplace_repeat*/
 };
 
+
+static PyObject*
+array_subscr(arrayobject* self, PyObject* item)
+{
+	if (PyIndex_Check(item)) {
+		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+		if (i==-1 && PyErr_Occurred()) {
+			return NULL;
+		}
+		if (i < 0)
+			i += Py_SIZE(self);
+		return array_item(self, i);
+	}
+	else if (PySlice_Check(item)) {
+		Py_ssize_t start, stop, step, slicelength;
+
+		if (PySlice_GetIndicesEx((PySliceObject*)item, Py_SIZE(self),
+				 &start, &stop, &step, &slicelength) < 0) {
+			return NULL;
+		}
+		if (step > 1) {
+			PyErr_SetString(PyExc_TypeError,
+					"Slice with step > 1 is not supported for type simuPOP.array");
+			return NULL;
+		}
+
+		if (slicelength <= 0)
+			return newcarrayobject(self->ob_iter, self->ob_iter);
+		return newcarrayobject(self->ob_iter + start,
+						self->ob_iter + stop);
+	}
+	else {
+		PyErr_SetString(PyExc_TypeError, 
+				"array indices must be integers");
+		return NULL;
+	}
+}
+
+
+static int
+array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
+{
+	Py_ssize_t start, stop, step, slicelength, needed;
+	arrayobject* other;
+
+	if (PyIndex_Check(item)) {
+		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+		
+		if (i == -1 && PyErr_Occurred())
+			return -1;
+		if (i < 0)
+			i += Py_SIZE(self);
+		if (i < 0 || i >= Py_SIZE(self)) {
+			PyErr_SetString(PyExc_IndexError,
+				"array assignment index out of range");
+			return -1;
+		}
+		if (value == NULL) {
+			/* Fall through to slice assignment */
+			start = i;
+			stop = i + 1;
+			step = 1;
+			slicelength = 1;
+		}
+		else
+			return setarrayitem(self, i, value);
+	}
+	else if (PySlice_Check(item)) {
+		if (PySlice_GetIndicesEx((PySliceObject *)item,
+					 Py_SIZE(self), &start, &stop,
+					 &step, &slicelength) < 0) {
+			return -1;
+		}
+	}
+	else {
+		PyErr_SetString(PyExc_TypeError,
+				"array indices must be integer");
+		return -1;
+	}
+	if (value == NULL) {
+		other = NULL;
+		needed = 0;
+	}
+	else if (is_carrayobject(value)) {
+		other = (arrayobject *)value;
+		needed = Py_SIZE(other);
+		if (self == other) {
+			/* Special case "self[i:j] = self" -- copy self first */
+			int ret;
+			value = array_slice(other, 0, needed);
+			if (value == NULL)
+				return -1;
+			ret = array_ass_subscr(self, item, value);
+			Py_DECREF(value);
+			return ret;
+		}
+	}
+	else if (PyLong_Check(value)) {
+		for (Py_ssize_t i = 0; start + i < stop; ++i)
+			setarrayitem(self, start + i, value);
+		return 0;
+	} else if (PySequence_Check(value)) {
+		needed = PySequence_Size(value);
+	}
+       	else {
+		PyErr_Format(PyExc_TypeError,
+	     "can only assign array (not \"%.200s\") to array slice",
+			     Py_TYPE(value)->tp_name);
+		return -1;
+	}
+	/* for 'a[2:1] = ...', the insertion point is 'start', not 'stop' */
+	if ((step > 0 && stop < start) ||
+	    (step < 0 && stop > start))
+		stop = start;
+
+	if (step != 1) {
+		PyErr_SetString(PyExc_BufferError, 
+			"Slice with step > 1 is not supported for type simuPOP.array.");
+		return -1;
+	}
+
+	if (slicelength != needed) {
+		PyErr_SetString(PyExc_BufferError, 
+			"Slice size must match.");
+		return -1;
+	}
+	if (needed > 0) {
+		// copy sequence
+		if (is_carrayobject(value))
+			std::copy(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
+		else {
+			for (Py_ssize_t i = 0; start + i < stop; ++i)
+				setarrayitem(self, start + i, PySequence_GetItem(value, i));
+		}
+	}
+	return 0;
+}
+
+static PyMappingMethods array_as_mapping = {
+	(lenfunc)array_length,
+	(binaryfunc)array_subscr,
+	(objobjargproc)array_ass_subscr
+};
+
 PyObject * array_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
 	return NULL;
@@ -1425,7 +1569,7 @@ static PyTypeObject Arraytype = {
 	(reprfunc)array_repr,                       /* tp_repr */
 	0,                                          /* tp_as_number*/
 	&array_as_sequence,                         /* tp_as_sequence*/
-	0,                                          /* tp_as_mapping*/
+	&array_as_mapping,                          /* tp_as_mapping*/
 	0,                                          /* tp_hash */
 	0,                                          /* tp_call */
 	0,                                          /* tp_str */
