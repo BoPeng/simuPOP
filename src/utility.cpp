@@ -1649,6 +1649,12 @@ void save_dict(string & str, PyObject * args)
 	str += 'd';                                                                       // dictionary
 	Py_ssize_t i = 0;
 	while (PyDict_Next(args, &i, &key, &value)) {
+		if (PyString_Check(key)) {
+			string k = PyObj_AsString(key);
+			// do not save things like __builtins__
+			if (!k.empty() && k[0] == '_')
+				continue;
+		}
 		saveObj(str, key);
 		saveObj(str, value);
 	}
@@ -2000,8 +2006,7 @@ PyObject * Expression::evaluate() const
 
 	PyObject * res = NULL;
 	if (m_stmts != NULL) {
-		res = PyEval_EvalCode((PyCodeObject *)m_stmts,
-			mainVars().dict(), m_locals);
+		res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -2017,8 +2022,7 @@ PyObject * Expression::evaluate() const
 	}
 
 	if (m_expr != NULL) {
-		res = PyEval_EvalCode((PyCodeObject *)m_expr,
-			mainVars().dict(), m_locals);
+		res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
