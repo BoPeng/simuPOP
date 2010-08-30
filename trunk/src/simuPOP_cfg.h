@@ -415,8 +415,8 @@ public:
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
-		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
-			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
 		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
@@ -424,8 +424,8 @@ public:
     if (cond) \
 	{ \
 		int line = __LINE__; \
-		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
-			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
 		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
@@ -452,8 +452,8 @@ public:
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
-		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
-			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
 		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
@@ -461,8 +461,8 @@ public:
     if (cond) \
 	{ \
 		int line = __LINE__; \
-		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
-			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
 		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
