@@ -415,14 +415,18 @@ public:
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
-		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
 		int line = __LINE__; \
-		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define PARAM_ASSERT DBG_ASSERT
@@ -448,14 +452,18 @@ public:
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
-		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define PARAM_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
 		int line = __LINE__; \
-		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
+		char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+			(strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
+		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define DBG_WARNIF(cond, message)
