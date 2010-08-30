@@ -34,23 +34,23 @@ class TestPerformance(unittest.TestCase):
         # From individual or from population as a whole
         # Let us see which one is faster
         for N in [10000, 100000, 1000000]:
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(N, loci=[1], infoFields=['a', 'b'])
             c1 = time.clock()
             for rep in range(100):
                 testGetinfoFromInd(pop)
             c2 = time.clock()
-            print "From ind: %f " % (c2 - c1)
+            print("From ind: %f " % (c2 - c1))
             c1 = time.clock()
             for rep in range(100):
                 testGetinfoFromPop(pop, False)
             c2 = time.clock()
-            print "From pop, no rearrange: %f " % (c2 - c1)
+            print("From pop, no rearrange: %f " % (c2 - c1))
             c1 = time.clock()
             for rep in range(100):
                 testGetinfoFromPop(pop, True)
             c2 = time.clock()
-            print "From pop, with rearrange: %f " % (c2 - c1)
+            print("From pop, with rearrange: %f " % (c2 - c1))
         # result: (optimized module)
 
         # Conclusion: (strange)
@@ -96,7 +96,7 @@ class TestPerformance(unittest.TestCase):
         migr = Migrator(rate=[[1-r,r],[r,1-r]])
         p = 0.4
         for N in [10000, 100000, 1000000]:
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             pop.evolve(
@@ -108,10 +108,10 @@ class TestPerformance(unittest.TestCase):
                 gen = 101
             )
             c2 = time.clock()
-            print "From ind (no sel): %f " % (c2 - c1)
+            print("From ind (no sel): %f " % (c2 - c1))
             #
             # with sel
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             pop.evolve(
@@ -124,7 +124,7 @@ class TestPerformance(unittest.TestCase):
                 gen = 101
             )
             c2 = time.clock()
-            print "From ind (sel): %f " % (c2 - c1)
+            print("From ind (sel): %f " % (c2 - c1))
             # with migr and sel
             pop = Population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
             c1 = time.clock()
@@ -138,7 +138,7 @@ class TestPerformance(unittest.TestCase):
                 gen = 101
             )
             c2 = time.clock()
-            print "From ind (with migration): %f " % (c2 - c1)
+            print("From ind (with migration): %f " % (c2 - c1))
 
             # before optimization
             # Time: (N=10^4,5,6)
@@ -301,8 +301,8 @@ class TestPerformance(unittest.TestCase):
                 end = 100
             )
             c2 = time.clock()
-            print " %.2f " % (c2 - c1),
-        print
+            print(" %.2f " % (c2 - c1))
+        print()
         for N in [10000, 100000, 1000000]:
             # with sel
             pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
@@ -314,8 +314,8 @@ class TestPerformance(unittest.TestCase):
                 end = 100
             )
             c2 = time.clock()
-            print " %.2f " % (c2 - c1),
-        print
+            print(" %.2f " % (c2 - c1))
+        print()
         for N in [10000, 100000, 1000000]:
             # with sel
             pop = Population(N, loci=[1], infoFields=['a', 'fitness'])
@@ -324,8 +324,8 @@ class TestPerformance(unittest.TestCase):
                 maPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
                 info = pop.indInfo('fitness')
             c2 = time.clock()
-            print " %.2f " % (c2 - c1),
-        print
+            print(" %.2f " % (c2 - c1))
+        print()
 
         #
         # With the old infoIterator,
@@ -390,12 +390,12 @@ class TestPerformance(unittest.TestCase):
                 initGenotype(pop, freq=[0.2, 0.8])
                 initGenotype(pop, freq=[0.4, 0.6])
                 initGenotype(pop, freq=[0.5, 0.5])
-                stat(pop, alleleFreq=range(0, pop.totNumLoci()))
-                stat(pop, heteroFreq=range(0, pop.totNumLoci()))
-                stat(pop, genoFreq=range(0, pop.totNumLoci()))
+                stat(pop, alleleFreq=list(range(0, pop.totNumLoci())))
+                stat(pop, heteroFreq=list(range(0, pop.totNumLoci())))
+                stat(pop, genoFreq=list(range(0, pop.totNumLoci())))
             c2 = time.clock()
-            print "%.2f" % (c2-c1)
-        print
+            print("%.2f" % (c2-c1))
+        print()
         #
         # Original iterator
         #
@@ -425,7 +425,7 @@ class TestPerformance(unittest.TestCase):
         migr = Migrator(rate=[[1-r,r],[r,1-r]])
         p = 0.4
         for N in [10000]:
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
@@ -435,7 +435,7 @@ class TestPerformance(unittest.TestCase):
                 end=100
             )
             c2 = time.clock()
-            print "Random mating: %f " % (c2 - c1)
+            print("Random mating: %f " % (c2 - c1))
             #
             # with recombination
             pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
@@ -447,7 +447,7 @@ class TestPerformance(unittest.TestCase):
                 end=100
             )
             c2 = time.clock()
-            print "Low recombination: %f " % (c2 - c1)
+            print("Low recombination: %f " % (c2 - c1))
             # with high recombination
             pop = Population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
@@ -458,7 +458,7 @@ class TestPerformance(unittest.TestCase):
                 end=100
             )
             c2 = time.clock()
-            print "High recombination: %f " % (c2 - c1)
+            print("High recombination: %f " % (c2 - c1))
     # binary (before optimization, copy bits one by one)
     # 52.93, 76, 103
     #
@@ -502,7 +502,7 @@ class TestPerformance(unittest.TestCase):
             for rep in range(400):
                 bt.doTrial()
             c2 = time.clock()
-            print "p = %f: %f " % (pi, c2 - c1)
+            print("p = %f: %f " % (pi, c2 - c1))
         #
     #
     #
@@ -531,13 +531,13 @@ class TestPerformance(unittest.TestCase):
         pop = loadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         for i in range(4):
             pop1 = pop.clone();
-            print pop1.popSize()
+            print(pop1.popSize())
             pop.addIndFrom(pop1)
-        print pop.popSize()
+        print(pop.popSize())
         c1 = time.clock()
-        stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=list(range(pop.totNumLoci())))
         c2 = time.clock()
-        print c2 - c1
+        print(c2 - c1)
         # NOTE that this test is unfair in the sense that it only has two alleles
         # and the list implementation is supposed to be faster.
         #
@@ -554,14 +554,14 @@ class TestPerformance(unittest.TestCase):
         'Testing the performance of calculating LD for a large number of loci'
         pop = loadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         c1 = time.clock()
-        stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=list(range(pop.totNumLoci())))
         c2 = time.clock()
-        print 'Allele freq: %.2f' % (c2 - c1)
+        print('Allele freq: %.2f' % (c2 - c1))
         for length in [10000, 20000, 50000, 100000]:
             LD = [[x, x-1] for x in range(1, length)]
             stat(pop, LD=LD)
             c3 = time.clock()
-            print 'LD: %.2f' % (c3 - c2)
+            print('LD: %.2f' % (c3 - c2))
             c2 = c3
         pop.save('LD.pop')
         # version 0.9.6: 
@@ -585,7 +585,7 @@ class TestPerformance(unittest.TestCase):
         'Testing the performance of mating algorithm'
         sel = MaSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         for N in [40000, 400000]:
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, binomialSelection())
@@ -596,8 +596,8 @@ class TestPerformance(unittest.TestCase):
                 end = 100
             )
             c2 = time.clock()
-            print "From ind: %f " % (c2 - c1)
-            print "Random mating"
+            print("From ind: %f " % (c2 - c1))
+            print("Random mating")
             pop = Population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = Simulator(pop, RandomMating())
@@ -608,7 +608,7 @@ class TestPerformance(unittest.TestCase):
                 end = 100
             )
             c2 = time.clock()
-            print "From ind: %f " % (c2 - c1)
+            print("From ind: %f " % (c2 - c1))
 
         # The version 0.7.3:
         #      0.69 (bin), 1.94 (random mating), 14.63, 34.45
@@ -647,7 +647,7 @@ class TestPerformance(unittest.TestCase):
             --recRate='[0.0005]' --savePop='[]' --simuName='simu' --saveFormat='txt'
             '''
         cmd = ' '.join(cmd.split())
-        print cmd
+        print(cmd)
         os.system(cmd)
         #
         # 0.7.3  (baop):       the same (134u, 2min 14s)
@@ -684,7 +684,7 @@ class TestPerformance(unittest.TestCase):
            end = 500
         )
         c2 = time.clock()
-        print "One chromosome with no recombination: %f " % (c2 - c1)
+        print("One chromosome with no recombination: %f " % (c2 - c1))
 
     def TestRecombinationAlgorithm1(self):
         ''' Testing the performance of different recombination algorithms '''
@@ -704,7 +704,7 @@ class TestPerformance(unittest.TestCase):
            end = 500
         )
         c2 = time.clock()
-        print "Recombinator with rate 0.5: %f " % (c2 - c1)
+        print("Recombinator with rate 0.5: %f " % (c2 - c1))
         #
 
     def TestRecombinationAlgorithm2(self):
@@ -723,7 +723,7 @@ class TestPerformance(unittest.TestCase):
            end = 500
         )
         c2 = time.clock()
-        print "200 chromosomes: %f " % (c2 - c1)
+        print("200 chromosomes: %f " % (c2 - c1))
 
     def TestRecombinationAlgorithm3(self):
         # form 1
@@ -742,7 +742,7 @@ class TestPerformance(unittest.TestCase):
            end = 100
         )
         c2 = time.clock()
-        print "20x10 with low rec rate: %f " % (c2 - c1)
+        print("20x10 with low rec rate: %f " % (c2 - c1))
         # case 0: no rec, 1 chrom:    6.74
         # case 1: 0.5 rec, 200 chrom: 49.33
         # case 2: 200 chrom, no rec:  27.28
@@ -769,7 +769,7 @@ class TestPerformance(unittest.TestCase):
         #simu = Simulator(pop, RandomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
         #pop = simu.population(0)
-        print 'Start saving file'
+        print('Start saving file')
         for format in ['txt', 'bin', 'xml']:
             for comp in [True, False]:
                 if comp:
@@ -779,13 +779,13 @@ class TestPerformance(unittest.TestCase):
                 c1 = time.clock()
                 pop.SavePopulation('exp_%s.%s' % (label, format), compress=comp)
                 c2 = time.clock()
-                print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
-                    os.Stat('exp_%s.%s' % (label, format) )[Stat.ST_SIZE]/1024./1024.)
+                print("%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
+                    os.Stat('exp_%s.%s' % (label, format) )[Stat.ST_SIZE]/1024./1024.))
                 c1 = time.clock()
                 pop1 = loadPopulation('exp_%s.%s' % (label, format))
                 self.assertEqual(pop, pop1)
                 c2 = time.clock()
-                print "%s, load, %s: %.1f " % (format, label, c2 - c1)
+                print("%s, load, %s: %.1f " % (format, label, c2 - c1))
 
         #
         #  xml, save, comp: 842.8, size: 166.50M
@@ -821,30 +821,30 @@ class TestPerformance(unittest.TestCase):
     def TestArrGenotype(self):
         '''Comparing the time for genotype and arrGenotype '''
         for N in [100, 1000, 10000]:
-            print "N=%d" % N
+            print("N=%d" % N)
             pop = Population(10000, loci=[N])
             c1 = time.clock()
             for ind in pop.individuals():
                 ind.setGenotype([1]*(pop.totNumLoci()*2))
             c2 = time.clock()
-            print "For genotype writing: %f " % (c2 - c1)
+            print("For genotype writing: %f " % (c2 - c1))
             c1 = time.clock()
             for ind in pop.individuals():
                 sum(ind.genotype())
             c2 = time.clock()
-            print "For genotype reading: %f " % (c2 - c1)
+            print("For genotype reading: %f " % (c2 - c1))
             c1 = time.clock()
             for ind in pop.individuals():
                 geno = ind.arrGenotype()
                 geno[:] = [1]*(pop.totNumLoci()*2)
             c2 = time.clock()
-            print "For arrGenotype writing: %f " % (c2 - c1)
+            print("For arrGenotype writing: %f " % (c2 - c1))
             c1 = time.clock()
             for ind in pop.individuals():
                 geno = ind.arrGenotype()
                 sum(geno)
             c2 = time.clock()
-            print "For arrGenotype reading: %f " % (c2 - c1)
+            print("For arrGenotype reading: %f " % (c2 - c1))
         
         #
         # Compare the performance of returning a tuple of

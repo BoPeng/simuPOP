@@ -45,7 +45,7 @@ class TestSampling(unittest.TestCase):
         )
         for gen in range(self.pop.ancestralGens(), -1, -1):
             self.pop.useAncestralGen(gen)
-            self.pop.setIndInfo(range(self.pop.popSize()), 'oldindex')
+            self.pop.setIndInfo(list(range(self.pop.popSize())), 'oldindex')
         # more complicated one
         self.largepop = Population(size=[5000, 20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex', 'father_id', 'mother_id', 'ind_id'])
@@ -53,7 +53,7 @@ class TestSampling(unittest.TestCase):
             initOps=[
                  InitSex(),
                  InitGenotype(freq=[.2, .8], loci=[0]),
-                 InitGenotype(freq=[.2]*5, loci=range(1, self.largepop.totNumLoci())),
+                 InitGenotype(freq=[.2]*5, loci=list(range(1, self.largepop.totNumLoci()))),
                  IdTagger(),
             ],
             #preOps = Migrator(rate=[[0.1,0.1],[0.1,0.1]]),
@@ -73,7 +73,7 @@ class TestSampling(unittest.TestCase):
         )
         for gen in range(self.largepop.ancestralGens(), -1, -1):
             self.largepop.useAncestralGen(gen)
-            self.largepop.setIndInfo(range(self.largepop.popSize()), 'oldindex')
+            self.largepop.setIndInfo(list(range(self.largepop.popSize())), 'oldindex')
 
     def testRandomSample(self):
         'Testing random sampling (incomplete)'

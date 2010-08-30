@@ -46,7 +46,7 @@ class Teststat(unittest.TestCase):
         # test the vars parameter
         pop = Population(size=[200,800])
         stat(pop, popSize=1, vars='popSize')
-        self.assertEqual(pop.vars().has_key('subPopSize'), False)
+        self.assertEqual('subPopSize' in pop.vars(), False)
         self.assertEqual(pop.dvars().popSize, 1000)
 
 
@@ -118,12 +118,12 @@ class Teststat(unittest.TestCase):
         'Testing the default dictionary feature of statistics'
         pop = Population(size=1000, loci=[10])
         initGenotype(pop, freq=[0, 0.2, 0.8])
-        stat(pop, alleleFreq=range(10))
+        stat(pop, alleleFreq=list(range(10)))
         d = pop.dvars().alleleFreq[0]
         if moduleInfo()['alleleType'] == 'binary':
-            self.assertEqual(d.keys(), [1])
+            self.assertEqual(list(d.keys()), [1])
         else:
-            self.assertEqual(d.keys(), [1, 2])
+            self.assertEqual(list(d.keys()), [1, 2])
         self.assertEqual(d[0], 0)
         
 
@@ -157,9 +157,9 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).alleleNum[0][1], 1400)
         pop.vars().clear()
         stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'])
-        self.assertEqual(pop.vars().has_key('alleleNum'), True)
-        self.assertEqual(pop.vars().has_key('alleleFreq'), False)
-        self.assertEqual(pop.vars(0).has_key('alleleNum'), False)
+        self.assertEqual('alleleNum' in pop.vars(), True)
+        self.assertEqual('alleleFreq' in pop.vars(), False)
+        self.assertEqual('alleleNum' in pop.vars(0), False)
         # Virtual subpopulation?
         stat(pop, alleleFreq=[0], vars = ['alleleNum', 'alleleFreq_sp'], subPops=[(0,0), (1,3), (1,4)])
         self.assertEqual(pop.dvars((0,0)).alleleFreq[0][0], 1)
@@ -296,9 +296,9 @@ class Teststat(unittest.TestCase):
         #        2	-0.103	 0.102	-0.229	 0.228
         #    All	-0.103	 0.102	-0.229	 0.228	 0.373	 0.051	-0.102	 0.550
         stat(pop, structure=[0])
-        self.assertTrue(pop.vars().has_key('F_st'))
-        self.assertTrue(not pop.vars().has_key('f_it'))
-        self.assertTrue(not pop.vars().has_key('f_st'))
+        self.assertTrue('F_st' in pop.vars())
+        self.assertTrue('f_it' not in pop.vars())
+        self.assertTrue('f_st' not in pop.vars())
         stat(pop, structure=[0], vars=['f_is', 'f_it', 'f_st', 'F_is', 'F_it'])
         self.assertAlmostEqual(pop.dvars().f_is[0], -0.2290202)
         self.assertAlmostEqual(pop.dvars().f_it[0], -0.1034594)
@@ -437,8 +437,8 @@ class Teststat(unittest.TestCase):
             ChiSq = 0
             #allele1 is alleles in loc1
             N = var.popSize * 2.
-            for allele1, p in var.alleleNum[loc1].iteritems():
-                for allele2, q in var.alleleNum[loc2].iteritems():
+            for allele1, p in var.alleleNum[loc1].items():
+                for allele2, q in var.alleleNum[loc2].items():
                     pq = var.haploNum[(loc1, loc2)][(allele1, allele2)]
                     if p > 0 and q > 0:
                         ChiSq += (pq  - p * q / N) ** 2 / (p * q / N)
@@ -468,9 +468,9 @@ class Teststat(unittest.TestCase):
         pop = Population(size=[500,100,1000], ploidy=2, loci = [5])
         initGenotype(pop, freq=[.2, .3, .5])
         stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
-        self.assertTrue(pop.vars().has_key('alleleFreq'))
-        self.assertTrue(pop.vars().has_key('LD'))
-        self.assertTrue(pop.vars().has_key('haploFreq'))
+        self.assertTrue('alleleFreq' in pop.vars())
+        self.assertTrue('LD' in pop.vars())
+        self.assertTrue('haploFreq' in pop.vars())
         pop.dvars().LD[1][2]
         pop.dvars().LD[1][4]
         pop.dvars().alleleFreq[1][0]
@@ -486,7 +486,7 @@ class Teststat(unittest.TestCase):
             g1 = sample.individual(int(i / pd)).genotype(i % pd)
             for j in range(i + 1, pd * sample.popSize()):
                 g2 = sample.individual(int(j / pd)).genotype(j % pd)
-                diff.append(sum([x!=y for idx, x,y in zip(range(len(g1)), g1, g2) if idx in loci]) * 1.0)
+                diff.append(sum([x!=y for idx, x,y in zip(list(range(len(g1))), g1, g2) if idx in loci]) * 1.0)
         # return 0 if only one sequence
         if len(diff) == 0:
             return 0.0

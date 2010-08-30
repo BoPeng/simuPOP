@@ -66,7 +66,7 @@ class TestPopulation(unittest.TestCase):
         pop = Population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         self.assertEqual(pop.numVirtualSubPop(), 5)
         self.assertEqual(pop.subPopName(0), "")
         self.assertEqual(pop.subPopName([0, 0]), "x = 10")
@@ -78,7 +78,7 @@ class TestPopulation(unittest.TestCase):
         pop = Population(size=[200, 500], infoFields=['x'], subPopNames=['A', 'B'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         self.assertEqual(pop.numVirtualSubPop(), 5)
         self.assertEqual(pop.subPopName(0), "A")
         self.assertEqual(pop.subPopName(1), "B")
@@ -583,7 +583,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop, pop1)
         # 3) pop.removeIndividuals(range(15, 25)) ...
         pop = pop1.clone()
-        inds = range(15, 25)
+        inds = list(range(15, 25))
         random.shuffle(inds)
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (15, 95, 30))
@@ -594,7 +594,7 @@ class TestPopulation(unittest.TestCase):
         # 4) pop.removeIndividuals(range(15, 125)) removes the middle subpopulation
         #    and some individuals in subpopulation 0? Check if subpopulation name is handled correctly.
         pop = pop1.clone()
-        inds = range(15, 125)
+        inds = list(range(15, 125))
         random.shuffle(inds)
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (15, 0, 25))
@@ -606,7 +606,7 @@ class TestPopulation(unittest.TestCase):
         # 5) pop.removeIndividuals(range(pop.subPopBegin(1), pop.subPopEnd(1))) removes the middle subpopulation.
         #    Check if subpopulation name is handled correctly.
         pop = pop1.clone()
-        inds = range(pop.subPopBegin(1), pop.subPopEnd(1))
+        inds = list(range(pop.subPopBegin(1), pop.subPopEnd(1)))
         random.shuffle(inds)
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (20, 0, 30))
@@ -617,7 +617,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopNames(), pop1.subPopNames())
         # 6) pop.removeIndividuals(range(pop.popSize())) removes all individuals in this population.
         pop = pop1.clone()
-        inds = range(0, 150)
+        inds = list(range(0, 150))
         random.shuffle(inds)
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (0, 0, 0))
@@ -1083,7 +1083,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('a'), pop1.indInfo('a'))
         self.assertEqual(pop.indInfo('b'), pop1.indInfo('b'))
         #
-        stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=list(range(pop.totNumLoci())))
         a = pop.dvars().alleleFreq[0][1]
         pop.save("popout")
         pop1 = loadPopulation("popout")
@@ -1096,7 +1096,7 @@ class TestPopulation(unittest.TestCase):
         pop = self.getPop(size=1000, loci=[2, 4])
         initSex(pop)
         initGenotype(pop, freq=[.2, .3, .5])
-        stat(pop, alleleFreq=range(0, 6))
+        stat(pop, alleleFreq=list(range(0, 6)))
         pop1 = pop.clone()
         self.assertEqual(len(pop.vars()["alleleFreq"]), 6)
         self.assertEqual(len(pop.dvars().alleleFreq), 6)
@@ -1106,7 +1106,7 @@ class TestPopulation(unittest.TestCase):
         pop = self.getPop(size=[20, 80], loci=[2, 4])
         initSex(pop)
         initGenotype(pop, freq=[.2, .3, .5])
-        stat(pop, alleleFreq=range(0, 6), vars='alleleFreq_sp')
+        stat(pop, alleleFreq=list(range(0, 6)), vars='alleleFreq_sp')
         pop1 = pop.clone()
         self.assertEqual(len(pop.vars(0)["alleleFreq"]), 6)
         self.assertEqual(len(pop.dvars(1).alleleFreq), 6)
@@ -1175,7 +1175,7 @@ class TestPopulation(unittest.TestCase):
         pop = Population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         self.assertEqual(pop.numVirtualSubPop(), 5)
         infos = list(pop.indInfo('x'))
         self.assertEqual(pop.subPopName([0, 0]), "x = 10")
@@ -1352,7 +1352,7 @@ class TestPopulation(unittest.TestCase):
         #
         pop = Population(1000, loci=[2], infoFields='a')
         initInfo(pop, random.randint(0, 3), infoFields='a')
-        pop.setVirtualSplitter(CombinedSplitter([InfoSplitter(field='a', values=range(4))], vspMap=[[0,2], [1,3]]))
+        pop.setVirtualSplitter(CombinedSplitter([InfoSplitter(field='a', values=list(range(4)))], vspMap=[[0,2], [1,3]]))
         self.assertEqual(pop.numVirtualSubPop(), 2)
         self.assertEqual(pop.subPopName([0, 0]), "a = 0 or a = 2")
         for ind in pop.individuals([0,0]):
@@ -1513,7 +1513,7 @@ class TestPopulation(unittest.TestCase):
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         pop1 = pop.clone()
-        pop1.mergeSubPops(range(5))
+        pop1.mergeSubPops(list(range(5)))
         self.assertEqual(pop1.numSubPop(), 6)
         pop.push(pop1)
         #

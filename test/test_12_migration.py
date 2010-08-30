@@ -319,7 +319,7 @@ class TestMigrator(unittest.TestCase):
             return
         #turnOnDebug('DBG_POPULATION')
         pop = Population(size=[4, 6], loci=[1], infoFields=['a', 'b', 'migrate_to'])
-        pop.genotype()[:] = range(20)
+        pop.genotype()[:] = list(range(20))
 ##         pop.arrIndInfo()[:] = range(20)
 ##         self.assertEqual([x.allele(0,0) for x in pop.individuals(0)],
 ##             [int(x) for x in pop.indInfo('a', 0)])

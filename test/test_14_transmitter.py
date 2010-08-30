@@ -828,7 +828,7 @@ class TestTransmitters(unittest.TestCase):
         initGenotype(pop, genotype=geno)
         simu = Simulator(pop)
         simu.evolve(  gen=100, matingScheme=RandomMating(ops=Recombinator(rates = 0.4)))
-        stat(simu.population(0), alleleFreq=range(0,7))
+        stat(simu.population(0), alleleFreq=list(range(0,7)))
         for i in range(7):
             self.assertEqual(simu.dvars(0).alleleFreq[i][geno[i]], 1.)
 

@@ -40,20 +40,20 @@ class TestOperator(unittest.TestCase):
             simu.evolve(postOps=d, gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10),
-            range(2,11))
+            list(range(2,11)))
         self.assertEqual(getActiveGens(begin=2, end=10, step=2),
-            range(2,11,2))
+            list(range(2,11,2)))
         self.assertEqual(getActiveGens(begin=2, step=2),
-            range(2,20,2))
-        self.assertEqual(getActiveGens(step=2), range(0,19,2))
-        self.assertEqual(getActiveGens(), range(0,20))
+            list(range(2,20,2)))
+        self.assertEqual(getActiveGens(step=2), list(range(0,19,2)))
+        self.assertEqual(getActiveGens(), list(range(0,20)))
         self.assertEqual(getActiveGens(at=[2,5,9]), [2,5,9])
         self.assertEqual(getActiveGens(at=[2,5,-1]), [2,5,19])
-        self.assertEqual(getActiveGens(begin=-10), range(10,20))
+        self.assertEqual(getActiveGens(begin=-10), list(range(10,20)))
         # 20=-1, 16=-5
-        self.assertEqual(getActiveGens(begin=-10, end=-5), range(10,16))
+        self.assertEqual(getActiveGens(begin=-10, end=-5), list(range(10,16)))
         #
-        self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(10,16,2))
+        self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), list(range(10,16,2)))
         self.assertRaises( ValueError,
             getActiveGens, begin=-10, step=-3, end=-5 )
 
@@ -73,7 +73,7 @@ class TestOperator(unittest.TestCase):
             simu.population(1).dvars().hist
         except AttributeError:
             pass
-        self.assertEqual(simu.population(2).dvars().hist, range(10))
+        self.assertEqual(simu.population(2).dvars().hist, list(range(10)))
 
     def assertFileContent(self, file, text):
         f = open(file)
@@ -310,7 +310,7 @@ class TestOperator(unittest.TestCase):
         bring allele frequency of these loci at an equal level.'''
         # unpack parameter
         (cutoff, mu1, mu2) = param;
-        stat(pop, alleleFreq=range( pop.totNumLoci() ) )
+        stat(pop, alleleFreq=list(range( pop.totNumLoci())) )
         if moduleInfo()['alleleType'] == 'binary':
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
@@ -337,7 +337,7 @@ class TestOperator(unittest.TestCase):
             matingScheme=RandomMating(),
             postOps = [
                 PyOperator( func=self.dynaMutator, param=(.5, .1, 0) ),
-                Stat(alleleFreq=range(5)),
+                Stat(alleleFreq=list(range(5))),
                 TerminateIf( 'alleleFreq[0][1] < 0.2' )
                 ],
             gen = 30

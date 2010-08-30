@@ -52,15 +52,15 @@ def importTests():
         match = re.match("^(test_(.*))\\.py$", file)
         if match:
             m = match.group(1)
-            print "Adding test cases in ", m
+            print("Adding test cases in %s" % m)
             module = __import__(m)
-            tests.addTest( unittest.defaultTestLoader.loadTestsFromModule( module ) )
+            tests.addTest(unittest.defaultTestLoader.loadTestsFromModule( module ))
     return tests
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         for allele in ['binary', 'short', 'long']:
-            print '\n\n===== Testing %s module =====\n\n' % allele
+            print('\n\n===== Testing %s module =====\n\n' % allele)
             os.system('%s %s' % (sys.argv[0], allele))
     else:
         test_runner = unittest.TextTestRunner(verbosity=2)
