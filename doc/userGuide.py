@@ -4227,6 +4227,12 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
+try:
+    import rpy
+except:
+    import sys
+    sys.exit(1)
+
 sim.getRNG().set(seed=12345)
 #end_ignore
 from simuPOP.plotter import VarPlotter
@@ -4257,6 +4263,12 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
+try:
+    import rpy
+except:
+    import sys
+    sys.exit(1)
+
 sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
@@ -4288,6 +4300,12 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
+try:
+    import rpy
+except:
+    import sys
+    sys.exit(1)
+
 sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
@@ -4337,6 +4355,12 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
+try:
+    import rpy
+except:
+    import sys
+    sys.exit(1)
+
 sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
@@ -4387,6 +4411,12 @@ simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
+try:
+    import rpy
+except:
+    import sys
+    sys.exit(1)
+
 sim.getRNG().set(seed=12345)
 #end_ignore
 import simuPOP as sim
