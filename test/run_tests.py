@@ -61,7 +61,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         for allele in ['binary', 'short', 'long']:
             print '\n\n===== Testing %s module =====\n\n' % allele
-            os.system('python %s %s' % (sys.argv[0], allele))
+            os.system('%s %s' % (sys.argv[0], allele))
     else:
         test_runner = unittest.TextTestRunner(verbosity=2)
         test_runner.run(importTests())

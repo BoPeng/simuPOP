@@ -15,7 +15,7 @@
 	2to3-3.1 -w test/test_03_operator.py test/test_09_selection.py test/test_15_penetrance.py
 	2to3-3.1 -w test/test_04_simulator.py test/test_10_qtrait.py test/test_16_sampling.py
 	2to3-3.1 -w doc/userGuide.py doc/runSampleCode.py
-	perl -pi -e 's/env python/env python3/' doc/runSampleCode.py
+	perl -pi -e 's/env python/env python3/' doc/runSampleCode.py test/run_tests.py
 
 rebuild:
 	bcpp src/*.h src/*.cpp
