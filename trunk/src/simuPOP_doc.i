@@ -2727,30 +2727,6 @@ Details:
 
 %ignore simuPOP::Individual::intInfo(const uintString &field) const;
 
-%feature("docstring") simuPOP::Individual::__getattr__ "
-
-Usage:
-
-    x.__getattr__(field)
-
-Details:
-
-    read info as attribute
-
-"; 
-
-%feature("docstring") simuPOP::Individual::__setattr__ "
-
-Usage:
-
-    x.__setattr__(field, value)
-
-Details:
-
-    write info as attribute
-
-"; 
-
 %feature("docstring") simuPOP::Individual::setInfo "
 
 Usage:
@@ -2780,7 +2756,7 @@ Details:
 
 %ignore simuPOP::Individual::infoEnd() const;
 
-%feature("docstring") simuPOP::Individual::__cmp__ "
+%feature("docstring") simuPOP::Individual::cmp "
 
 Description:
 
@@ -5487,7 +5463,7 @@ Details:
 
 %feature("docstring") simuPOP::Population::deactivateVirtualSubPop "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Population::__cmp__ "
+%feature("docstring") simuPOP::Population::cmp "
 
 Description:
 
@@ -6729,7 +6705,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyIndIterator::__iter__ "
+%feature("docstring") simuPOP::pyIndIterator::iter "
 
 Usage:
 
@@ -6742,6 +6718,14 @@ Usage:
 Usage:
 
     x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::next "
+
+Usage:
+
+    x.__next__()
 
 "; 
 
@@ -7045,7 +7029,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyPopIterator::__iter__ "
+%feature("docstring") simuPOP::pyPopIterator::iter "
 
 Usage:
 
@@ -7058,6 +7042,14 @@ Usage:
 Usage:
 
     x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::next "
+
+Usage:
+
+    x.__next__()
 
 "; 
 
@@ -7807,9 +7799,9 @@ Details:
 
 %ignore simuPOP::RNG::randomShuffle(T begin, T end) const;
 
-%ignore simuPOP::RNG_func;
+%ignore simuPOP::RNGfunc;
 
-%feature("docstring") simuPOP::RNG_func::RNG_func "
+%feature("docstring") simuPOP::RNGfunc::RNGfunc "
 
 Usage:
 
@@ -8402,7 +8394,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Simulator::__cmp__ "
+%feature("docstring") simuPOP::Simulator::cmp "
 
 Description:
 
@@ -9396,7 +9388,7 @@ Usage:
 
 %ignore simuPOP::stringList::contains(const string &str) const;
 
-%ignore simuPOP::stringList::push_back(const string &str);
+%ignore simuPOP::stringList::pushback(const string &str);
 
 %ignore simuPOP::stringList::elems() const;
 
@@ -9442,7 +9434,7 @@ Usage:
 
 %ignore simuPOP::subPopList::size() const;
 
-%feature("docstring") simuPOP::subPopList::__len__ "
+%feature("docstring") simuPOP::subPopList::len "
 
 Usage:
 
@@ -9450,7 +9442,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::subPopList::push_back(const vspID subPop);
+%ignore simuPOP::subPopList::pushback(const vspID subPop);
 
 %ignore simuPOP::subPopList::contains(const vspID subPop) const;
 
@@ -9983,25 +9975,25 @@ Usage:
 
 "; 
 
-%ignore simuPOP::simuPOP_kbhit();
+%ignore simuPOP::simuPOPkbhit();
 
-%ignore simuPOP::simuPOP_getch();
+%ignore simuPOP::simuPOPgetch();
 
-%ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
+%ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
-%ignore simuPOP::PyObj_As_Int(PyObject *obj, long int &val);
+%ignore simuPOP::PyObjAsInt(PyObject *obj, long int &val);
 
-%ignore simuPOP::PyObj_As_Double(PyObject *obj, double &val);
+%ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 
-%ignore simuPOP::PyObj_As_String(PyObject *obj, string &val);
+%ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
 
-%ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
+%ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
 
-%ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
+%ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
 
-%ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+%ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 
-%ignore simuPOP::PyObj_AsString(PyObject *str);
+%ignore simuPOP::PyObjAsString(PyObject *str);
 
 %ignore simuPOP::mainVars();
 
@@ -10092,104 +10084,7 @@ Details:
 
 %ignore simuPOP::cnull();
 
-%ignore std::pow3(unsigned n);
-
-%feature("docstring") _swig_repr "
-
-Usage:
-
-    _swig_repr(self)
-
-"; 
-
-%feature("docstring") evolve_pop "
-
-Description:
-
-    Evolve the current population gen generations using mating scheme
-    matingScheme and operators initOps (applied before evolution),
-    preOps (applied to the parental population at the beginning of
-    each life cycle), postOps (applied to the offspring population at
-    the end of each life cycle) and finalOps (applied at the end of
-    evolution). More specifically, this function creates a Simulator
-    using the current population, call its evolve function using
-    passed parameters and then replace the current population with the
-    evolved population. Please refer to function Simulator.evolve for
-    more details about each parameter.
-
-Usage:
-
-    evolve_pop(self, initOps=[], preOps=[],
-      matingScheme=MatingScheme(), postOps=[],finalOps=[], gen=-1,
-      dryrun=False)
-
-"; 
-
-%feature("docstring") all_individuals "
-
-Description:
-
-    Return an iterator that iterat through all (virtual)
-    subpopulations in all ancestral generations. A list of (virtual)
-    subpopulations (subPops) and a list of ancestral generations
-    (ancGens, can be a single number) could be specified to iterate
-    through only selected subpopulation and generations. Value
-    ALL_AVAIL is acceptable in the specification of sp and/or vsp in
-    specifying a virtual subpopulation (sp, vsp) for the iteration
-    through all or specific virtual subpopulation in all or specific
-    subpopulations.
-
-Usage:
-
-    all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
-
-"; 
-
-%feature("docstring") as_pedigree "
-
-Description:
-
-    Convert the existing population object to a pedigree. After this
-    function pedigree function should magically be usable for this
-    function.
-
-Usage:
-
-    as_pedigree(self, idField='ind_id', fatherField='father_id',
-      motherField='mother_id')
-
-"; 
-
-%feature("docstring") as_population "
-
-Description:
-
-    Convert the existing pedigree object to a population. This
-    function will behave like a regular population after this function
-    call.
-
-Usage:
-
-    as_population(self)
-
-"; 
-
-%feature("docstring") _new_Migrator "
-
-Usage:
-
-    _new_Migrator(self, rate=[], *args, **kwargs)
-
-"; 
-
-%feature("docstring") _new_GenotypeSplitter "
-
-Usage:
-
-    _new_GenotypeSplitter(self, loci=[], alleles=[], *args,
-      **kwargs)
-
-"; 
+%ignore std::powthree(unsigned n);
 
 %feature("docstring") simuPOP::Population::dvars "
 
@@ -10214,77 +10109,6 @@ Details:
 
     Return a wrapper of Python dictionary returned by vars(rep,
     subPop) so that dictionary keys can be accessed as attributes.
-
-"; 
-
-%feature("docstring") simuPOP::Population::evolve "
-
-Usage:
-
-    x.evolve(initOps=[], preOps=[], matingScheme=MatingScheme(),
-      postOps=[],finalOps=[], gen=-1, dryrun=False)
-
-Details:
-
-    Evolve the current population gen generations using mating scheme
-    matingScheme and operators initOps (applied before evolution),
-    preOps (applied to the parental population at the beginning of
-    each life cycle), postOps (applied to the offspring population at
-    the end of each life cycle) and finalOps (applied at the end of
-    evolution). More specifically, this function creates a Simulator
-    using the current population, call its evolve function using
-    passed parameters and then replace the current population with the
-    evolved population. Please refer to function Simulator.evolve for
-    more details about each parameter.
-
-"; 
-
-%feature("docstring") simuPOP::Population::allIndividuals "
-
-Usage:
-
-    x.allIndividuals(subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
-
-Details:
-
-    Return an iterator that iterat through all (virtual)
-    subpopulations in all ancestral generations. A list of (virtual)
-    subpopulations (subPops) and a list of ancestral generations
-    (ancGens, can be a single number) could be specified to iterate
-    through only selected subpopulation and generations. Value
-    ALL_AVAIL is acceptable in the specification of sp and/or vsp in
-    specifying a virtual subpopulation (sp, vsp) for the iteration
-    through all or specific virtual subpopulation in all or specific
-    subpopulations.
-
-"; 
-
-%feature("docstring") simuPOP::Population::asPedigree "
-
-Usage:
-
-    x.asPedigree(idField='ind_id', fatherField='father_id',
-      motherField='mother_id')
-
-Details:
-
-    Convert the existing population object to a pedigree. After this
-    function pedigree function should magically be usable for this
-    function.
-
-"; 
-
-%feature("docstring") simuPOP::Pedigree::asPopulation "
-
-Usage:
-
-    x.asPopulation()
-
-Details:
-
-    Convert the existing pedigree object to a population. This
-    function will behave like a regular population after this function
-    call.
 
 "; 
 
