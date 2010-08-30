@@ -686,45 +686,6 @@ class Doxy2SWIG:
             print >> out, '\"; \n'
 
 
-    def scan_interface(self, file):
-        ''' scan simuPOP_common.i and retrieve function definitions '''
-        add_def = False
-        add_desc = False
-        begin_desc = False
-        for line in open(file).readlines():
-            if line.startswith('def '):
-                # remove def, and ending :
-                self.content.append({'type': 'global_function', 'ignore': False, 'hidden':False})
-                self.content[-1]['Name'] = line[4:].split('(')[0]
-                self.content[-1]['Usage'] = line[4:].strip()
-                self.content[-1]['Description'] = ''
-                self.content[-1]['Doc'] = self.content[-1]['Description']
-                if line.strip().endswith(':'):
-                    # remove ending :
-                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
-                    add_desc = True
-                    begin_desc = True
-                else:
-                    add_def = True
-            elif add_def:
-                self.content[-1]['Usage'] += line.strip()
-                if line.strip().endswith(':'):
-                    self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
-                    add_desc = True
-                    begin_desc = True
-                    add_def = False
-            elif add_desc:
-                if begin_desc:
-                    if not (line.strip().startswith('"') or line.strip().startswith("'")):
-                        add_desc = False
-                        continue
-                    begin_desc = False
-                self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'")
-                self.content[-1]['Doc'] = self.content[-1]['Description']
-                if line.endswith('"\n') or line.endswith("'\n"):
-                    add_desc = False
-
-
     def replacePythonConstants(self, text):
         '''replace True by ALL_AVAIL etc'''
         try:
@@ -1433,8 +1394,6 @@ if __name__ == '__main__':
     p = Doxy2SWIG(xml_file)
     # generate interface file.
     p.generate()
-    # add some other functions
-    p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
     # clean up, and process CPPONLY etc
     p.post_process()
     # write interface file to output interface file.
