@@ -511,7 +511,7 @@ def ind_getInfo3(self, field):
     else:
         return self.info(field)
 
-if sys.version_info.major == 3:
+if sys.version_info[0] == 3:
     Individual.__setattr__ = ind_setInfo3
     Individual.__getattr__ = ind_getInfo3
 else:
@@ -522,7 +522,7 @@ else:
 def obj_equal(self, obj):
     return self.__cmp__(obj) == 0
 
-if sys.version_info.major == 3:
+if sys.version_info[0] == 3:
     Population.__eq__ = obj_equal
     Pedigree.__eq__ = obj_equal
     Simulator.__eq__ = obj_equal
