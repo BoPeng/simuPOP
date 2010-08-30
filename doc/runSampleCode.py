@@ -119,12 +119,12 @@ def writeFile(content, srcFile, logFile=False):
             src.write(line)
     # if there is error
     if not expect_error and True in ['Error' in x for x in content]:
-        print
-        print 'An Error occured in log file %s ' % srcFile
-        print "If this is expected, please add '#expecterror' in your source code."
-        print
-        print ''.join(content)
-        print
+        print()
+        print('An Error occured in log file %s ' % srcFile)
+        print("If this is expected, please add '#expecterror' in your source code.")
+        print()
+        print(''.join(content))
+        print()
         sys.exit(1)
     src.close()
 
@@ -141,7 +141,7 @@ def runSampleCode(srcFile, names):
     for lineno, line in enumerate(src.readlines()):
         if begin_re.match(line):
             if tmpSrc is not None:
-                print 'ERROR (Unmatched file/end at line %s): %s' % (lineno, line)
+                print('ERROR (Unmatched file/end at line %s): %s' % (lineno, line))
                 sys.exit(1)
             filename = begin_re.match(line).groups()[0].strip()
             if len(names) > 0 and not (True in [name in filename for name in names]):
@@ -157,10 +157,10 @@ def runSampleCode(srcFile, names):
             continue
         if end_re.match(line):
             if tmpSrc is None:
-                print 'ERROR (Unmatched file/end at line %d): %s' % (lineno, line)
+                print('ERROR (Unmatched file/end at line %d): %s' % (lineno, line))
                 sys.exit(1)
             #
-            print 'Processing %s...' % filename,
+            print('Processing %s...' % filename)
             sys.stdout.flush()
             tmpSrc.close()
             tmpSrc = None
@@ -174,14 +174,13 @@ def runSampleCode(srcFile, names):
             #
             os.remove(tmpSrcName)
             os.remove(tmpLogName)
-            print ' done.'
         else:
             if tmpSrc is not None:
                 tmpSrc.write(line)
             elif line.strip() != '' and not line.startswith('#'):
-                print 'Unprocessed:', line
+                print('Unprocessed:', line)
     src.close()
-    print 'Finished processing %d examples.' % count
+    print('Finished processing %d examples.' % count)
 
 if __name__ == '__main__':
     if len(sys.argv) == 3 and os.path.isfile(sys.argv[1]):
