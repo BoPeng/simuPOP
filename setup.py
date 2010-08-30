@@ -56,18 +56,18 @@ boost_dir = ''
 if len(included_version) > 0:
     boost_dir = 'boost_' + included_version[-1]  # use the latest version
 elif len(invalid_version) > 0:
-    print 'This version of boost is known to cause problems to simuPOP: ' + ', '.join(invalid_version)
+    print('This version of boost is known to cause problems to simuPOP: ' + ', '.join(invalid_version))
 
 if boost_dir == '' and len(unsupported_version) > 0:
-    print 'This version of boost is not tested. It may or may not work: ' + ', '.join(unsupported_version)
+    print('This version of boost is not tested. It may or may not work: ' + ', '.join(unsupported_version))
     boost_dir = unsupported_version[-1]  # use the latest version
 
 if boost_dir == '':
-    print 'Cannot find an useful version of boost header files.'
-    print 'Please download boost from http://www.boost.org and unpack it under the simuPOP directory'
+    print('Cannot find an useful version of boost header files.')
+    print('Please download boost from http://www.boost.org and unpack it under the simuPOP directory')
     sys.exit(1)
 elif len(included_version + unsupported_version) > 1:
-    print 'Using boost version: %s' % boost_dir
+    print('Using boost version: %s' % boost_dir)
 
 boost_include_dir = boost_dir
 boost_serialization_dir = os.path.join(boost_dir, 'libs', 'serialization', 'src')
@@ -85,6 +85,11 @@ SWIG = 'swig'
 
 from distutils.core import setup, Extension
 from distutils.sysconfig import get_config_var
+try:
+   from distutils.command.build_py import build_py_2to3 as build_py
+except ImportError:
+   from distutils.command.build_py import build_py
+
 
 def swig_version():
     ''' get the version of swig '''
@@ -93,9 +98,9 @@ def swig_version():
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
     except:
-        print 'Can not obtain swig version, please install swig'
+        print('Can not obtain swig version, please install swig')
         sys.exit(1)
-    return map(int, version)
+    return [int(x) for x in version]
 
 
 def simuPOP_version():
@@ -128,9 +133,9 @@ def replaceIntHeader(file):
     output = open(name, 'w')
     for line in input.readlines():
         if '#include <stdint.h>' in line:
-            print >> output, '#include <inttypes.h>  /* no stdint.h is found so we use inttypes.h instead */'
+            output.write('#include <inttypes.h>  /* no stdint.h is found so we use inttypes.h instead */\n')
         else:
-            print >> output, line,
+            output.write(line)
     output.close()
     input.close()
     # replace file with temp file
@@ -492,26 +497,26 @@ if __name__ == '__main__':
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
-            print 'Swig >= 1.3.35 is required, please upgrade it.'
+            print('Swig >= 1.3.35 is required, please upgrade it.')
             sys.exit(1)
         # generate header file 
-        print "Generating external runtime header file src/swigpyrun.h..."
+        print("Generating external runtime header file src/swigpyrun.h...")
         os.system('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
         for lib in MODULES:
-            print "Generating wrapper file " + WRAP_INFO[lib][0]
+            print("Generating wrapper file " + WRAP_INFO[lib][0])
             if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CPP_FLAGS, \
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
-                print "Calling swig failed. Please check your swig version."
+                print("Calling swig failed. Please check your swig version.")
                 sys.exit(1)
-        print "Generating wrapper file src/gsl_wrap.c"
+        print("Generating wrapper file src/gsl_wrap.c")
         if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
             SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
-            print "Calling swig failed. Please check your swig version."
+            print("Calling swig failed. Please check your swig version.")
             sys.exit(1)
-        print
-        print "All wrap files are generated successfully."
-        print
+        print()
+        print("All wrap files are generated successfully.")
+        print()
     # under solaris, there is no stdint.h so I need to replace stdint.h
     # in the wrap files with inttypes.h
     if sys.platform == 'sunos5':
@@ -585,6 +590,7 @@ if __name__ == '__main__':
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,
+        cmdclass = {'build_py': build_py}
     )
     # remove copied files
     for file in copied_files:
