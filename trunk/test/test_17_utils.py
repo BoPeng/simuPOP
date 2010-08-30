@@ -70,7 +70,7 @@ class TestUtility(unittest.TestCase):
         'Testing resume to simulation'
         simu = Simulator( Population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
-        print "\n\nUSER INTERACTION: Please press q\n\n"
+        print("\n\nUSER INTERACTION: Please press q\n\n")
         self.assertRaises( SystemError, simu.evolve,
             postOps=[ Pause(at=[10]),
                         # should quite, can not reach generation 12
@@ -80,12 +80,12 @@ class TestUtility(unittest.TestCase):
         'Testing exit to a shell'
         simu = Simulator( Population(size=10, ploidy=2, loci=[2, 3]),
             RandomMating(), reps=5)
-        print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
-        print "Please check the existence of variable pop\n\n"
+        print("\n\nUSER INTERACTION: Please press s and then Ctrl-D")
+        print("Please check the existence of variable pop\n\n")
         simu.evolve(
             postOps=[ Pause(at=[10]) ], end=12)
-        print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
-        print "Please check the existence of variable tmpPop\n\n"
+        print("\n\nUSER INTERACTION: Please press s and then Ctrl-D")
+        print("Please check the existence of variable tmpPop\n\n")
         simu.evolve(
             postOps=[ Pause(at=[20], popName='tmpPop') ], end=25)
 
@@ -236,12 +236,12 @@ class TestUtility(unittest.TestCase):
         # run this and see if memory usage goes up continuously
         pop = Population(100, loci=[400])
         initGenotype(pop, freq=[0.2, 0.8])
-        stat(pop, alleleFreq=range(pop.totNumLoci()))
+        stat(pop, alleleFreq=list(range(pop.totNumLoci())))
         pop.save('test.bin')
         for i in range(4):
             pop = loadPopulation('test.bin')
             #pop = Population(100, loci=[1000]*10)
-            stat(pop, alleleFreq=range(pop.totNumLoci()))
+            stat(pop, alleleFreq=list(range(pop.totNumLoci())))
             #print pop.dvars().alleleFreq[100][0]
             if i < 2:
                 # let m0 stablize

@@ -273,7 +273,7 @@ class TestSelector(unittest.TestCase):
         s = 0.10
         if os.path.isfile('dist.py'):
             res = {}
-            execfile('dist.py', res, res)
+            exec(compile(open('dist.py').read(), 'dist.py', 'exec'), res, res)
             lost = res['lost']
         else:
             fixed = 0
@@ -287,16 +287,16 @@ class TestSelector(unittest.TestCase):
                     length_fixed.append(len(traj))
                 else:
                     length_lost.append(len(traj))
-                print len(traj)
+                print(len(traj))
             out = open('dist.py', 'w')
             fixed = rpy.r.quantile(length_fixed, [0.05, 0.25, 0.5, 0.75, 0.95])
             lost = rpy.r.quantile(length_lost,  [0.05, 0.25, 0.5, 0.75, 0.95])
             if len(length_fixed) > 0:
-                print >> out, 'fixed = %s' % str(fixed)
+                out.write('fixed = %s\n' % str(fixed))
             if len(length_lost) > 0:
-                print >> out, 'lost = %s' % str(lost)
+                out.write('lost = %s\n' % str(lost))
             out.close()
-            print open('dist.py').read()
+            print(open('dist.py').read())
         # real case
         simulated = []
         sel = MlSelector(
@@ -317,11 +317,11 @@ class TestSelector(unittest.TestCase):
                     #PyEval(r'"%d\n"%alleleNum[0][0]', step=100)
                 ]
             )
-            print i, simu.dvars(0).gen
+            print(i, simu.dvars(0).gen)
             simulated.append(simu.dvars(0).gen)
             #if simu.dvars(0).gen < lost[0] or simu.dvars(0).gen > lost[1]:
             #    print "Warning: something may be wrong %d outside: [%f %f]. " % (simu.dvars(0).gen, lost[0], lost[1])
-        print rpy.r.quantile(simulated,  [0.05, 0.25, 0.5, 0.75, 0.95])
+        print(rpy.r.quantile(simulated,  [0.05, 0.25, 0.5, 0.75, 0.95]))
 
 
     def testSubPopDirSelection(self):

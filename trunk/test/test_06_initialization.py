@@ -27,11 +27,11 @@ class TestInitialization(unittest.TestCase):
         elif len(atPloidy) > 0:
             ploidy = atPloidy
         else:
-            ploidy = range(0, pop.ploidy())
+            ploidy = list(range(0, pop.ploidy()))
         if len(atLoci) > 0:
             loci = atLoci
         else:
-            loci = range(pop.totNumLoci())
+            loci = list(range(pop.totNumLoci()))
         gs = pop.genoSize()
         tl = pop.totNumLoci()
         if len(subPop) > 0:
@@ -112,7 +112,7 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             if ind.sex() == MALE:
                 count += 1
-        print count
+        print(count)
         self.assertTrue(count / 1500. > 0.25 , 
             "Expression count / 1500. (test value %f) be greater than to 0.25 . This test may occasionally fail due to the randomness of outcome." % (count / 1500.))
         self.assertTrue(count /1500. < 0.35, 
@@ -133,7 +133,7 @@ class TestInitialization(unittest.TestCase):
         pop = Population(size=[500, 1000], loci=[1], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         initSex(pop, sex=[MALE, FEMALE, FEMALE], subPops=[[0,0],[1,0]])
         idx = 0
         for sp in range(2):
@@ -178,7 +178,7 @@ class TestInitialization(unittest.TestCase):
         pop = Population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         for idx in range(3):
             freq=[[0.2, 0.3, 0.5], [0.2,0.8], [0.5, 0.5]]
             subPops=[[0,0],[1,1], [2,0]]
@@ -215,7 +215,7 @@ class TestInitialization(unittest.TestCase):
         pop = Population(size=[500,1000, 500], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
-        pop.setVirtualSplitter(InfoSplitter('x', values=range(10, 15)))
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         # can initialize an invidiausl
         initGenotype(pop, genotype=[0]*5 + [2]*3 + [3]*5 +[4]*3)
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*pop.popSize())
@@ -244,7 +244,7 @@ class TestInitialization(unittest.TestCase):
         'Testing initialization by haplotypes (operator InitGenotype)'
         pop = Population(size=[500, 1000, 500], loci=[2,4,2], infoFields=['x'])
         initGenotype(pop, haplotypes=[[0, 0], [1, 1]])
-        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=range(8))
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=list(range(8)))
         initGenotype(pop, haplotypes=[[0, 0, 1, 0], [1, 1, 0, 0]])
         self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=[0, 1, 2, 4, 5])
         self.assertGenotypeFreq(pop, [1, 0], [1, 0], loci=[3])

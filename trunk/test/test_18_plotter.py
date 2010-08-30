@@ -20,7 +20,7 @@ hasRPy = True
 try:
     from simuPOP.plotter import *
 except (ImportError, RuntimeError):
-    print "simuRPy can not be imported. Either rpy or r is not installed properly."
+    print("simuRPy can not be imported. Either rpy or r is not installed properly.")
     hasRPy = False
 
 class TestPlotter(unittest.TestCase):
@@ -60,9 +60,9 @@ class TestPlotter(unittest.TestCase):
         self.assertEqual(args.getArgs('lines', pop, rep=1),
             {'expr': 100, 'some_var':4, 'main': 'g', 'lty':1, 'cex':2})
         #
-        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch'], 'rep', range(5)),
+        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch'], 'rep', list(range(5))),
             {'cex': [1, 2, 3, 1, 2]})
-        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch', 'lty'], 'rep', range(5)),
+        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch', 'lty'], 'rep', list(range(5))),
             {'cex': [1, 2, 3, 1, 2], 'lty':[1, 1, 1, 1, 1]})
         self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch', 'lty'],
             ['rep', 'dim'], [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]),
@@ -191,7 +191,7 @@ class TestPlotter(unittest.TestCase):
             postOps = VarPlotter('[x**2 for x in subPopSize]', ylab='sp',
                  col_rep=['red', 'green', 'blue'], update=10,
                  main='9 lines, col rep, lty dim',
-                 lty_dim=range(1, 4), ylim=[0, 10000],
+                 lty_dim=list(range(1, 4)), ylim=[0, 10000],
                  legend=['rep1-sp1', 'rep1-sp2', 'rep1-sp3', 'rep2-sp1',
                     'rep2-sp2', 'rep2-sp3', 'rep3-sp1', 'rep3-sp2', 'rep3-sp3']),
              gen = 30
@@ -217,7 +217,7 @@ class TestPlotter(unittest.TestCase):
              VarPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  byDim=True, byRep=True, update=10,
                  win=10, main_repdim=['rep dim %d' % x for x in range(4)],
-                 col_rep=['red', 'green'], lty_dim=range(1, 3))
+                 col_rep=['red', 'green'], lty_dim=list(range(1, 3)))
              ],
              gen = 30
         )

@@ -38,11 +38,11 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     elif len(atPloidy) > 0:
         ploidy = atPloidy
     else:
-        ploidy = range(0, pop.ploidy())
+        ploidy = list(range(0, pop.ploidy()))
     if len(atLoci) > 0:
         loci = atLoci
     else:
-        loci = range(pop.totNumLoci())
+        loci = list(range(pop.totNumLoci()))
     gs = pop.genoSize()
     tl = pop.totNumLoci()
     if len(indRange) > 0:
@@ -122,7 +122,7 @@ class TestMutator(unittest.TestCase):
                 subPops=1)],
             gen = 100)
         pop = simu.extract(0)
-        stat(pop, alleleFreq=range(5), vars='alleleFreq_sp')
+        stat(pop, alleleFreq=list(range(5)), vars='alleleFreq_sp')
         for loc in [0, 2, 3]:
             self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 1.0)
             self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 1.0)
@@ -140,7 +140,7 @@ class TestMutator(unittest.TestCase):
             postOps = [ KAlleleMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
             gen = 1)
         pop = simu.extract(0)
-        stat(pop, alleleFreq=range(5))
+        stat(pop, alleleFreq=list(range(5)))
         for loc in [0, 2, 3]:
             self.assertEqual(pop.dvars().alleleFreq[loc][0], 1.0)
         for loc in [1, 4]:
