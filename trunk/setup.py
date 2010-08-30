@@ -416,7 +416,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
-        res['src'].append('build/' + src[:-4] + '_' + modu + '.cpp')
+        res['src'].append('build/%s/%s' % (modu, src))
     res['src'].extend(LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
@@ -520,8 +520,10 @@ if __name__ == '__main__':
     # copy needed files
     copied_files = []
     for modu in MODULES:
+        if not os.path.isdir('build/%s' % modu):
+            os.mkdir('build/%s' % modu)
         for src in SOURCE_FILES:
-            mod_src = 'build/' + src[:-4] + '_' + modu + '.cpp'
+            mod_src = 'build/%s/%s' % (modu, src)
             shutil.copy('src/' + src, mod_src)
             copied_files.append(mod_src)
     # build
