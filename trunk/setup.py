@@ -405,14 +405,6 @@ evolutionary scenarios.
             
 
 #
-DATA_FILES = [
-    ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
-        'COPYING', 'TODO', 'simuPOP_version.py']), 
-    ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-    ('share/simuPOP/test', glob.glob('test/test_*.py') + ['test/run_tests.py'])
-]
-
-
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     #
     boost_inc_path = boost_include_dir
@@ -589,7 +581,6 @@ if __name__ == '__main__':
             'simuPOP.sandbox',
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
-        data_files = DATA_FILES,
         cmdclass = {'build_py': build_py}
     )
     # remove copied files
