@@ -67,10 +67,10 @@ import simuPOP as sim
 sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[10, 20], loci=[5, 7])
-print pop.chromLocusPair(7)
-print pop.absLocusIndex(1, 1)
-print pop.absIndIndex(2, 1)
-print pop.subPopIndPair(25)
+print(pop.chromLocusPair(7))
+print(pop.absLocusIndex(1, 1))
+print(pop.absIndIndex(2, 1))
+print(pop.subPopIndPair(25))
 #end_file
 
 #begin_file log/iterator.py
@@ -86,8 +86,8 @@ pop = sim.Population(size=2, loci=[5, 6])
 sim.initGenotype(pop, freq=[0.2, 0.3, 0.5])
 for ind in pop.individuals():
     for loc in range(pop.chromBegin(1), pop.chromEnd(1)):
-        print ind.allele(loc),
-    print 
+        print(ind.allele(loc))
+
 #end_file
 
 #begin_file log/defdict.py
@@ -104,10 +104,9 @@ sim.initGenotype(pop, freq=[0, 0.2, 0.8], subPops=0)
 sim.initGenotype(pop, freq=[0.2, 0.8], subPops=1)
 sim.stat(pop, alleleFreq=0, vars=['alleleFreq_sp'])
 for sp in range(2):
-    print 'Subpop %d (with %d alleles): ' % (sp, len(pop.dvars(sp).alleleFreq[0])),
+    print('Subpop %d (with %d alleles): ' % (sp, len(pop.dvars(sp).alleleFreq[0])))
     for a in range(3):
-        print '%.2f ' % pop.dvars(sp).alleleFreq[0][a],
-    print
+        print('%.2f ' % pop.dvars(sp).alleleFreq[0][a])
 
 #end_file
 
@@ -135,7 +134,7 @@ def func(geno, smoking):
 
 sim.pyPenetrance(pop, loci=0, func=func)
 sim.stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
+print(pop.dvars().numOfAffected)
 
 #end_file
 
@@ -161,7 +160,7 @@ def func(*fields):
 # it will pass values at fields x and y to func.
 sim.pyPenetrance(pop, loci=0, func=sim.WithArgs(func, pop.infoFields()))
 sim.stat(pop, numOfAffected=True)
-print pop.dvars().numOfAffected
+print(pop.dvars().numOfAffected)
 #end_file
 
 #begin_file log/genoStru.py
@@ -174,7 +173,7 @@ import simuPOP as sim
 sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[2, 3], ploidy=2, loci=[5, 10],
-    lociPos=range(0, 5) + range(0, 20, 2), chromNames=['Chr1', 'Chr2'],
+    lociPos=list(range(0, 5)) + list(range(0, 20, 2)), chromNames=['Chr1', 'Chr2'],
     alleleNames=['A', 'C', 'T', 'G'])
 # access genotypic information from the sim.Population
 pop.ploidy()
@@ -253,9 +252,9 @@ pop.evolve(
 pop.indInfo('mother_idx')  # mother of all offspring
 ind = pop.individual(0)
 mom = pop.ancestor(ind.mother_idx, 1)
-print ind.genotype(0)
-print mom.genotype(0)
-print mom.genotype(1)
+print(ind.genotype(0))
+print(mom.genotype(0))
+print(mom.genotype(1))
 #end_file
 
 #begin_file log/individual.py
@@ -295,7 +294,7 @@ for ind in pop.individuals(1):
     for marker in range(pop.totNumLoci()):
         ind.setAllele(marker % 2, marker, 0)
         ind.setAllele(marker % 2, marker, 1)
-        print '%d %d ' % (ind.allele(marker, 0), ind.allele(marker, 1))
+        print('%d %d ' % (ind.allele(marker, 0), ind.allele(marker, 1)))
 
 ind = pop.individual(1)
 geno = ind.genotype(1)      # the second homologous copy
@@ -311,10 +310,10 @@ geno
 geno.count(1)           # count
 geno.index(2)           # index 
 ind.setAllele(5, 3)    # change underlying genotype using setAllele
-print geno              # geno is change
-print geno             # but not geno
+print(geno)              # geno is change
+print(geno)             # but not geno
 geno[2:5] = 4           # can use regular Python slice operation
-print ind.genotype()
+print(ind.genotype())
 #end_file
 
 
@@ -329,7 +328,7 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 pop = sim.Population(size=[3, 4, 5], ploidy=1, loci=1, infoFields='x')
 # individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
-pop.setGenotype(range(pop.popSize()))
+pop.setGenotype(list(range(pop.popSize())))
 #
 pop.subPopSize(1)
 # merge subpopulations
@@ -475,9 +474,9 @@ sim.getRNG().set(seed=12345)
 # create a sim.population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
 pop = sim.Population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
-pop.setIndInfo(range(10, 20), 'x')
+pop.setIndInfo(list(range(10, 20)), 'x')
 pop1 = pop.clone()
-pop1.setIndInfo(range(10), 'x')
+pop1.setIndInfo(list(range(10)), 'x')
 pop.push(pop1)
 #
 ind = pop.individual(5)       # using absolute index
@@ -485,21 +484,21 @@ ind.x
 ind.x       # the same as ind.x
 # use a for loop, and relative index
 for idx in range(pop.subPopSize(1)):
-    print pop.individual(idx, 1).x,
+    print(pop.individual(idx, 1).x)
 
 # It is usually easier to use an iterator
 for ind in pop.individuals(1):
-    print ind.x,
+    print(ind.x)
 
 # Access individuals in VSPs
 pop.setVirtualSplitter(sim.InfoSplitter(cutoff=[3, 7, 17], field='x'))
 for ind in pop.individuals([1, 1]):
-    print ind.x,
+    print(ind.x)
 
 # Access all individuals in all ancestral generations
-print [ind.x for ind in pop.allIndividuals()]
+print([ind.x for ind in pop.allIndividuals()])
 # or only specified subpopulations or ancestral generations
-print [ind.x for ind in pop.allIndividuals(subPops=[(0,2), (1,3)], ancGens=1)]
+print([ind.x for ind in pop.allIndividuals(subPops=[(0,2), (1,3)], ancGens=1)])
 
 # Access individuals in ancetral generations
 pop.ancestor(5, 1).x        # absolute index
@@ -561,7 +560,7 @@ pop.setIndInfo([1], 'c')
 for ind in pop.individuals():
     ind.e = ind.c + 1
 
-print pop.indInfo('e')
+print(pop.indInfo('e'))
 #end_file
 
 #begin_file log/ancestralPop.py
@@ -596,7 +595,7 @@ pop.subPopSize((0,0)), pop.subPopSize((0,0), ancGen=1)
 for i in range(pop.ancestralGens(), -1, -1):
   pop.useAncestralGen(i)
   sim.stat(pop, alleleFreq=0)
-  print '%d   %.3f' % (i, pop.dvars().alleleFreq[0][0])
+  print('%d   %.3f' % (i, pop.dvars().alleleFreq[0][0]))
 
 # restore to the current generation  
 pop.useAncestralGen(0)  
@@ -644,10 +643,10 @@ sim.getRNG().set(seed=12345)
 pop = sim.Population(5, loci=[5], alleleNames=['A', 'T', 'C', 'G'])
 sim.initGenotype(pop, freq=[0.2, 0.3, 0.4, 0.1])
 sim.dump(pop, structure=False)
-print pop.genotype()
+print(pop.genotype())
 pop.recodeAlleles([0, 3, 1, 2], alleleNames=['A', 'C', 'G', 'T'])
 sim.dump(pop, structure=False)
-print pop.genotype()
+print(pop.genotype())
 #end_file
 
 #begin_file log/extract.py
@@ -661,26 +660,26 @@ sim.getRNG().set(seed=12345)
 #end_ignore
 import random
 pop = sim.Population(size=[200, 200], loci=[5, 5], infoFields='age')
-sim.initGenotype(pop, genotype=range(10))
+sim.initGenotype(pop, genotype=list(range(10)))
 sim.initInfo(pop, lambda: random.randint(0,75), infoFields='age')
 pop.setVirtualSplitter(sim.InfoSplitter(field='age', cutoff=[20, 60]))
 # remove individuals
-pop.removeIndividuals(indexes=range(0, 300, 10))
-print pop.subPopSizes()
+pop.removeIndividuals(indexes=list(range(0, 300, 10)))
+print(pop.subPopSizes())
 # remove individuals using IDs
 pop.setIndInfo([1, 2, 3, 4], field='age')
 pop.removeIndividuals(IDs=[2, 4], idField='age')
 # remove indiviuals using a filter function
 sim.initSex(pop)
 pop.removeIndividuals(filter=lambda ind: ind.sex() == sim.MALE)
-print [pop.individual(x).sex() for x in range(8)]
+print([pop.individual(x).sex() for x in range(8)])
 #
 # remove subpopulation
 pop.removeSubPops(1)
-print pop.subPopSizes()
+print(pop.subPopSizes())
 # remove virtual subpopulation (people with age between 20 and 60)
 pop.removeSubPops([(0, 1)])
-print pop.subPopSizes()
+print(pop.subPopSizes())
 # extract another virtual subpopulation (people with age greater than 60)
 pop1 = pop.extractSubPops([(0,2)])
 sim.dump(pop1, structure=False, max=10)
@@ -699,17 +698,17 @@ sim.getRNG().set(seed=12345)
 from pprint import pprint
 pop = sim.Population(100, loci=2)
 sim.initGenotype(pop, freq=[0.3, 0.7])
-print pop.vars()    # No variable now
+print(pop.vars())    # No variable now
 pop.dvars().myVar = 21
-print pop.vars()
+print(pop.vars())
 sim.stat(pop, popSize=1, alleleFreq=0)
 # pprint prints in a less messy format
 pprint(pop.vars())
 # print number of allele 1 at locus 0
-print pop.vars()['alleleNum'][0][1]
+print(pop.vars()['alleleNum'][0][1])
 # use the dvars() function to access dictionary keys as attributes
-print pop.dvars().alleleNum[0][1]
-print pop.dvars().alleleFreq[0]
+print(pop.dvars().alleleNum[0][1])
+print(pop.dvars().alleleFreq[0])
 #end_file
 
 #begin_file log/expression.py
@@ -844,9 +843,9 @@ simu.evolve(
     ],
     gen=100
 )
-print open('LD.txt').read()
-print open('R2.txt').read()    # Only the last write operation succeed.
-print open('LD_2.txt').read()  # Each replicate writes to a different file.
+print(open('LD.txt').read())
+print(open('R2.txt').read())    # Only the last write operation succeed.
+print(open('LD_2.txt').read())  # Each replicate writes to a different file.
 #begin_ignore
 import os
 for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt']:
@@ -896,7 +895,7 @@ pop.evolve(
     ],
     gen=100
 )
-print open('simulation.log').read()
+print(open('simulation.log').read())
 #begin_ignore
 logging.shutdown()
 import os
@@ -978,7 +977,7 @@ def dynaMutator(pop, param):
     of rare loci to an higher level.'''
     # unpack parameter
     (cutoff, mu1, mu2) = param;
-    sim.stat(pop, alleleFreq=range(pop.totNumLoci()))
+    sim.stat(pop, alleleFreq=list(range(pop.totNumLoci())))
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
@@ -997,7 +996,7 @@ pop.evolve(
     preOps=sim.PyOperator(func=dynaMutator, param=(.2, 1e-2, 1e-5)),
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=range(5), step=10),
+        sim.Stat(alleleFreq=list(range(5)), step=10),
         sim.PyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
             step=10),
     ],
@@ -1369,8 +1368,8 @@ pop.evolve(
 )
 ind = pop.individual(0)
 par = pop.ancestor(ind.parent_idx, 1)
-print ind.sex(), ind.genotype()
-print par.sex(), par.genotype()
+print(ind.sex(), ind.genotype())
+print(par.sex(), par.genotype())
 #end_file
 
 
@@ -1548,9 +1547,9 @@ simu.evolve(
 # print out allele frequency
 for pop in simu.populations():
     sim.stat(pop, alleleFreq=0)
-    print '%.2f' % pop.dvars().alleleFreq[0][0],
+    print('%.2f' % pop.dvars().alleleFreq[0][0])
 
-print
+print()
 # get a population
 pop = simu.extract(0)
 simu.numRep()
@@ -1603,7 +1602,7 @@ def outputstat(pop):
     return True
 
 # describe this evolutionary process
-print sim.describeEvolProcess(
+print(sim.describeEvolProcess(
     initOps=[
         sim.InitSex(),
         sim.InitInfo(lambda: random.randint(0, 75), infoFields='age'),
@@ -1625,7 +1624,7 @@ print sim.describeEvolProcess(
     ],
     gen = 100,
     numRep = 3
-)     
+))     
 #end_file
 
 #begin_file log/twoStage.py
@@ -1704,7 +1703,7 @@ simu.evolve(
     gen = 200
 )
 for pop in simu.populations():
-    print pop.totNumLoci(), pop.lociPos()
+    print(pop.totNumLoci(), pop.lociPos())
 
 #end_file
 
@@ -1761,14 +1760,14 @@ def idString(IDs):
     uniqueIDs.sort()
     return ', '.join(['%d' % x for x in uniqueIDs if x >= 1])
 
-print '''GrandParents: %d, %d
+print('''GrandParents: %d, %d
 Children: %s
 Spouses of children: %s
 Parents of children: %s
 GrandChildren: %s
 Parents of grandChildren: %s ''' % \
 (grandFather, grandMother, idString(children), idString(childrenSpouse),
-    idString(childrenParents), idString(grandChildren), idString(grandChildrenParents))
+    idString(childrenParents), idString(grandChildren), idString(grandChildrenParents)))
 
 # let us look at the structure of this complete pedigree using another method
 famSz = ped.identifyFamilies()
@@ -1852,13 +1851,13 @@ pop.evolve(
     gen = 2
 )
 #
-print open('pedigree.ped').read()
+print(open('pedigree.ped').read())
 pop.asPedigree()
 pop.save('pedigree1.ped', loci=0)
-print open('pedigree1.ped').read()
+print(open('pedigree1.ped').read())
 # 
 ped = sim.loadPedigree('pedigree1.ped')
-sim.dump(ped, ancGens=range(3))
+sim.dump(ped, ancGens=list(range(3)))
 #begin_ignore
 import os
 os.remove('pedigree.ped')
@@ -1879,8 +1878,8 @@ pop = sim.Population(size=[1000, 1000])
 sim.initSex(pop, maleFreq=0.3, subPops=0)
 sim.initSex(pop, sex=[sim.MALE, sim.FEMALE, sim.FEMALE], subPops=1)
 sim.stat(pop, numOfMales=True, vars='numOfMales_sp')
-print pop.dvars(0).numOfMales
-print pop.dvars(1).numOfMales
+print(pop.dvars(0).numOfMales)
+print(pop.dvars(1).numOfMales)
 #end_file
 
 #begin_file log/InitGenotype.py
@@ -1896,21 +1895,21 @@ pop = sim.Population(size=[20, 30], loci=[5, 7])
 # by allele frequency
 sim.initGenotype(pop, freq=[.4, .6])
 sim.dump(pop, max=6, structure=False)
-sim.stat(pop, alleleFreq=range(12))
-print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+sim.stat(pop, alleleFreq=list(range(12)))
+print(['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)])
 # by proportion
 sim.initGenotype(pop, prop=[0.4, 0.6])
-sim.stat(pop, alleleFreq=range(12))
-print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+sim.stat(pop, alleleFreq=list(range(12)))
+print(['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)])
 # by haplotype frequency
 sim.initGenotype(pop, freq=[.4, .6], haplotypes=[[1, 1, 0, 1], [0, 0, 1]])
 sim.dump(pop, max=6, structure=False)
-sim.stat(pop, alleleFreq=range(12))
-print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+sim.stat(pop, alleleFreq=list(range(12)))
+print(['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)])
 # by haplotype proportion
 sim.initGenotype(pop, prop=[0.4, 0.6], haplotypes=[[1, 1, 0], [0, 0, 1, 1]])
-sim.stat(pop, alleleFreq=range(12))
-print ['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)]
+sim.stat(pop, alleleFreq=list(range(12)))
+print(['%.2f' % pop.dvars().alleleFreq[x][0] for x in range(5)])
 # by genotype
 pop = sim.Population(size=[2, 3], loci=[5, 7])
 sim.initGenotype(pop, genotype=[1]*5 + [2]*7 + [3]*5 +[4]*7)
@@ -1919,9 +1918,9 @@ sim.dump(pop, structure=False)
 # use virtual subpopulation
 pop.setVirtualSplitter(sim.SexSplitter())
 sim.initSex(pop)
-sim.initGenotype(pop, genotype=range(10), loci=range(5))
+sim.initGenotype(pop, genotype=list(range(10)), loci=list(range(5)))
 # initialize all males
-sim.initGenotype(pop, genotype=[2]*7, loci=range(5, 12),
+sim.initGenotype(pop, genotype=[2]*7, loci=list(range(5, 12)),
     subPops=[(0, 0), (1, 0)])
 sim.dump(pop, structure=False)
 # assign genotype by proportions
@@ -2066,8 +2065,8 @@ simu.evolve(
     ]
 )
 for pop in simu.populations():
-    print 'Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
-        (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
+    print('Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
+        (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60))
 
 #end_file
 
@@ -2168,7 +2167,7 @@ simu.evolve(
     gen=5
 )
 # print Trajectory
-print ', '.join(['%.3f' % x for x in simu.dvars(0).traj])
+print(', '.join(['%.3f' % x for x in simu.dvars(0).traj]))
 #end_file
 
 #begin_file log/PyEval.py
@@ -2214,11 +2213,11 @@ pop = sim.Population(20, loci=1, infoFields='a')
 pop.setVirtualSplitter(sim.InfoSplitter('a', cutoff=[3]))
 sim.initGenotype(pop, freq=[0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
-sim.infoEval(pop, 'a', subPops=[(0, 0)]);print
-sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
+sim.infoEval(pop, 'a', subPops=[(0, 0)]);print()
+sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print()
 # use sim.population variables
 pop.dvars().b = 5
-sim.infoEval(pop, '"%d " % (a+b)');print
+sim.infoEval(pop, '"%d " % (a+b)');print()
 #end_file
 
 #begin_file log/InfoExec.py
@@ -2234,17 +2233,17 @@ pop = sim.Population(100, loci=1, infoFields=['a', 'b', 'c'])
 sim.initSex(pop)
 sim.initGenotype(pop, freq=[0.2, 0.8])
 sim.infoExec(pop, 'a=1')
-print pop.indInfo('a')[:10]
+print(pop.indInfo('a')[:10])
 sim.infoExec(pop, 'b=ind.sex()', exposeInd='ind')
-print pop.indInfo('b')[:10]
+print(pop.indInfo('b')[:10])
 sim.infoExec(pop, 'c=a+b')
-print pop.indInfo('c')[:10]
+print(pop.indInfo('c')[:10])
 pop.dvars().d = 5
 sim.infoExec(pop, 'c+=d')
-print pop.indInfo('c')[:10]
+print(pop.indInfo('c')[:10])
 # the operator can update population variable as well
 sim.infoExec(pop, 'd+=c*c')
-print pop.dvars().d
+print(pop.dvars().d)
 #end_file
 
 #begin_file log/migrateByProb.py
@@ -2424,11 +2423,11 @@ sim.getRNG().set(seed=12345)
 import random
 pop = sim.Population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields='x')
 pop.setIndInfo([random.randint(0, 3) for x in range(1000)], 'x')
-print pop.subPopSizes()
-print pop.subPopNames()
+print(pop.subPopSizes())
+print(pop.subPopNames())
 sim.splitSubPops(pop, subPops=[0, 2], infoFields=['x'])
-print pop.subPopSizes()
-print pop.subPopNames()
+print(pop.subPopSizes())
+print(pop.subPopNames())
 #end_file
 
 #begin_file log/MergeSubPops.py
@@ -2491,7 +2490,7 @@ simu.evolve(
     ],
     matingScheme=sim.RandomMating(ops = [
         sim.Recombinator(rates=0.01, reps=0),
-        sim.Recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
+        sim.Recombinator(rates=[0.01]*10, loci=list(range(50, 60)), reps=1),
     ]),
     postOps=[
         sim.Stat(LD=[[40, 55], [60, 70]]),
@@ -2577,7 +2576,7 @@ pop.evolve(
 )
 rec = open('rec.log')
 # print the first three lines of the log file
-print ''.join(rec.readlines()[:4])
+print(''.join(rec.readlines()[:4]))
 #begin_ignore
 rec.close()
 import os
@@ -2630,7 +2629,7 @@ pop.evolve(
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.KAlleleMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
-        sim.Stat(alleleFreq=range(3), step=100),
+        sim.Stat(alleleFreq=list(range(3)), step=100),
         sim.PyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
             step=100),
     ],
@@ -2722,8 +2721,8 @@ for ind in pop.individuals():
     cnt0 += ind.allele(0, 0) + ind.allele(0, 1)
     cnt1 += ind.allele(1, 0) + ind.allele(1, 1)
 
-print 'Average number of repeats at two loci are %.2f and %.2f.' % \
-    (cnt0/2000., cnt1/2000.)
+print('Average number of repeats at two loci are %.2f and %.2f.' % \
+    (cnt0/2000., cnt1/2000.))
 #end_file
 
 #begin_file log/PyMutator.py
@@ -2754,8 +2753,8 @@ def avgAllele(pop, loc):
         ret += ind.allele(loc, 0) + ind.allele(loc, 1)
     return ret / (pop.popSize() * 2.)
 
-print 'Average number of repeats at two loci are %.2f and %.2f.' % \
-    (avgAllele(pop, 2), avgAllele(pop, 10))
+print('Average number of repeats at two loci are %.2f and %.2f.' % \
+    (avgAllele(pop, 2), avgAllele(pop, 10)))
 #end_file
 
 #begin_file log/MixedMutator.py
@@ -2791,8 +2790,8 @@ for ind in pop.individuals():
     geno0.extend([ind.allele(0, 0), ind.allele(0, 1)])
     geno1.extend([ind.allele(1, 0), ind.allele(1, 1)])
 
-print 'Locus 0 has alleles', ', '.join([str(x) for x in set(geno0)])
-print 'Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)])
+print('Locus 0 has alleles', ', '.join([str(x) for x in set(geno0)]))
+print('Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)]))
 #end_file
 
 #begin_file log/ContextMutator.py
@@ -2987,7 +2986,7 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.KAlleleMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
+        sim.KAlleleMutator(k=4, rates=1e-4, mapIn=[0]*4 + list(range(4)),
             mapOut=[4, 5, 6, 7]),
         sim.Stat(alleleFreq=0, step=100),
         sim.PyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
@@ -3027,7 +3026,7 @@ def infSitesMutate(pop, param):
                     ind.setAllele(startPos + loc, idx, ploidy=p)
                 except:
                     raise
-                    print 'Warning: more than %d mutations have accumulated' % pop.totNumLoci()
+                    print('Warning: more than %d mutations have accumulated' % pop.totNumLoci())
                     pass
     return True
 
@@ -3043,21 +3042,21 @@ pop.evolve(
 )
 # now, we get a sim.Population. Let us have a look at the 'alleles'.
 # print the first five mutation locations
-print pop.individual(0).genotype()[:5]
+print(pop.individual(0).genotype()[:5])
 # how many alleles are there (does not count 0)?
-print len(set(pop.genotype())) - 1
+print(len(set(pop.genotype())) - 1)
 # Allele count a simple count of alleles.
 cnt = {}
 for allele in pop.genotype():
     if allele == 0:
         continue
-    if cnt.has_key(allele):
+    if allele in cnt:
         cnt[allele] += 1
     else:
         cnt[allele] = 1
 
 # highest allele frequency?
-print max(cnt.values()) *0.5 / pop.popSize()
+print(max(cnt.values()) *0.5 / pop.popSize())
 #end_file
 
 
@@ -3078,10 +3077,10 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(structure=range(5), subPops=(0, 1), suffix='_01', step=40),
-        sim.Stat(structure=range(5), subPops=(1, 2), suffix='_12', step=40),
-        sim.Stat(structure=range(5), subPops=(0, 2), suffix='_02', step=40),
-        sim.Stat(structure=range(5), step=40),
+        sim.Stat(structure=list(range(5)), subPops=(0, 1), suffix='_01', step=40),
+        sim.Stat(structure=list(range(5)), subPops=(1, 2), suffix='_12', step=40),
+        sim.Stat(structure=list(range(5)), subPops=(0, 2), suffix='_02', step=40),
+        sim.Stat(structure=list(range(5)), step=40),
         sim.PyEval(r"'Fst=%.3f (pairwise: %.3f %.3f %.3f)\n' % (F_st, F_st_01, F_st_12, F_st_02)",
             step=40),
     ],
@@ -3109,26 +3108,26 @@ sim.stat(pop, popSize=True, subPops=[(0, 0), (0, 2)])
 # popSize is the size of two VSPs, does not equal to total sim.population size.
 # Because two VSPs overlap (all males and all unaffected), popSize can be
 # greater than real sim.population size.
-print pop.dvars().subPopSize, pop.dvars().popSize
+print(pop.dvars().subPopSize, pop.dvars().popSize)
 # print popSize of each virtual subpopulation.
 sim.stat(pop, popSize=True, subPops=[(0, 0), (0, 2)], vars='popSize_sp')
 # Note the two ways to access variable in (virtual) subpopulations.
-print pop.dvars((0,0)).popSize, pop.dvars().subPop[(0,2)]['popSize']
+print(pop.dvars((0,0)).popSize, pop.dvars().subPop[(0,2)]['popSize'])
 # Count number of male (should be the same as the size of VSP (0,0).
 sim.stat(pop, numOfMales=True)
-print pop.dvars().numOfMales
+print(pop.dvars().numOfMales)
 # Count the number of affected and unaffected male individual
 sim.stat(pop, numOfMales=True, subPops=[(0, 2), (0, 3)], vars='numOfMales_sp')
-print pop.dvars((0,2)).numOfMales, pop.dvars((0,3)).numOfMales
+print(pop.dvars((0,2)).numOfMales, pop.dvars((0,3)).numOfMales)
 # or number of affected male and females
 sim.stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
-print pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected
+print(pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected)
 # These can also be done using a sim.ProductSplitter...
 pop.setVirtualSplitter(sim.ProductSplitter(
     [sim.SexSplitter(), sim.AffectionSplitter()]))
 sim.stat(pop, popSize=True, subPops=[(0, x) for x in range(4)])
 # counts for male unaffected, male affected, female unaffected and female affected
-print pop.dvars().subPopSize
+print(pop.dvars().subPopSize)
 #end_file
 
 #begin_file log/statAlleleFreq.py
@@ -3173,13 +3172,13 @@ pop = sim.Population(100, loci=[1, 1, 1], lociNames=['A', 'X', 'Y'],
     chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
 sim.initGenotype(pop, freq=[0.01, 0.05, 0.94])
 sim.stat(pop, genoFreq=['A', 'X']) # both loci indexes and names can be used.
-print 'Available genotypes on autosome:', pop.dvars().genoFreq[0].keys()
+print('Available genotypes on autosome:', list(pop.dvars().genoFreq[0].keys()))
 for i in range(3):
     for j in range(3):
-        print '%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[0][(i,j)])
+        print('%d-%d: %.3f' % (i, j, pop.dvars().genoFreq[0][(i,j)]))
 
-print 'Genotype frequency on chromosome X:\n', \
-    '\n'.join(['%s: %.3f' % (x,y) for x,y in pop.dvars().genoFreq[1].iteritems()])
+print('Genotype frequency on chromosome X:\n', \
+    '\n'.join(['%s: %.3f' % (x,y) for x,y in pop.dvars().genoFreq[1].items()]))
 #end_file
 
 #begin_file log/statHeteroFreq.py
@@ -3293,10 +3292,10 @@ def assoTest(pop):
     'Draw case-control sample and apply association tests'
     sample = drawCaseControlSample(pop, cases=500, controls=500)
     sim.stat(sample, association=(0, 2), vars=['Allele_ChiSq_p', 'Geno_ChiSq_p', 'Armitage_p'])
-    print 'Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
+    print('Allele test: %.2e, %.2e, Geno test: %.2e, %.2e, Trend test: %.2e, %.2e' \
         % (sample.dvars().Allele_ChiSq_p[0], sample.dvars().Allele_ChiSq_p[2],
         sample.dvars().Geno_ChiSq_p[0], sample.dvars().Geno_ChiSq_p[2],
-        sample.dvars().Armitage_p[0], sample.dvars().Armitage_p[2])
+        sample.dvars().Armitage_p[0], sample.dvars().Armitage_p[2]))
     return True
 
 pop = sim.Population(size=100000, loci=3)
@@ -3336,7 +3335,7 @@ simu.evolve(
     preOps=sim.Migrator(rate=migrIslandRates(0.01, 3), reps=1),
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(structure=range(10), step=40),
+        sim.Stat(structure=list(range(10)), step=40),
         sim.PyEval("'Fst=%.3f (rep=%d without migration) ' % (F_st, rep)", step=40, reps=0),
         sim.PyEval("'Fst=%.3f (rep=%d with migration) ' % (F_st, rep)", step=40, reps=1),
         sim.PyOutput('\n', reps=-1, step=40)
@@ -3456,11 +3455,11 @@ pop.evolve(
     ]),
     gen = 1
 )
-print [int(ind.ind_id) for ind in pop.individuals()]
+print([int(ind.ind_id) for ind in pop.individuals()])
 pop.useAncestralGen(1)
-print [int(ind.ind_id) for ind in pop.individuals()]
+print([int(ind.ind_id) for ind in pop.individuals()])
 sim.tagID(pop) # re-assign ID
-print [int(ind.ind_id) for ind in pop.individuals()]
+print([int(ind.ind_id) for ind in pop.individuals()])
 #end_file
 
 #begin_file log/PedigreeTagger.py
@@ -3491,9 +3490,9 @@ ped = open('pedigree.txt')
 lines = ped.readlines()
 ped.close()
 # first few lines, saved by the first PedigreeTagger
-print ''.join(lines[:3])
+print(''.join(lines[:3]))
 # last several lines, saved by the second PedigreeTagger
-print ''.join(lines[-3:])
+print(''.join(lines[-3:]))
 # load this file
 ped = sim.loadPedigree('pedigree.txt')
 # should have 100 ancestral generations (plus one present generation)
@@ -4126,7 +4125,7 @@ traj = simulateBackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      endGen=1000, endFreq=[0.1, 0.2])
 traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
     col_loc=['red', 'blue'], plot_main='Simulated Trajectory (backward-time)')
-print 'Trajectory simulated with length %s ' % len(traj.traj)
+print('Trajectory simulated with length %s ' % len(traj.traj))
 pop = sim.Population(size=Nt(0), loci=[1]*2)
 # save Trajectory function in the sim.population's local namespace
 # so that the sim.PyEval operator can access it.
@@ -4182,7 +4181,7 @@ pop = sim.Population([1000, 2000], loci=3)
 sim.initGenotype(pop, freq=[0.2, 0.4, 0.4], loci=0)
 sim.initGenotype(pop, freq=[0.2, 0.8], loci=2)
 sim.stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
-    alleleFreq=range(3),
+    alleleFreq=list(range(3)),
     vars=['genoFreq', 'genoNum', 'haploFreq', 'alleleNum_sp'])
 viewVars(pop.vars())
 #end_file
@@ -4213,7 +4212,7 @@ saveCSV(pop, infoFields='age', affectionFormatter={True: 1, False: 2},
 # save to a file
 saveCSV(pop, filename='pop.csv', infoFields='age', affectionFormatter={True: 1, False: 2},
     genoFormatter=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')
-print open('pop.csv').read()
+print(open('pop.csv').read())
 #begin_ignore
 import os
 os.remove('pop.csv')
@@ -4280,7 +4279,7 @@ simu.evolve(
         [sim.InitGenotype(freq=[0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=range(4)),
+        sim.Stat(alleleFreq=list(range(4))),
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
             update=10, saveAs='log/rpy_byRep.png',
             legend=['Locus %d' % x for x in range(4)],
@@ -4327,7 +4326,7 @@ simu.evolve(
         [sim.InitGenotype(freq=[0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=range(4)),
+        sim.Stat(alleleFreq=list(range(4))),
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
             update=10, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
@@ -4505,7 +4504,7 @@ options = [
     }
 ]
 pars = simuOpt.Params(options, 'A demo simulation')
-print pars.usage()
+print(pars.usage())
 # You can manually feed parameters...
 pars.processArgs(['--rep=10'])
 pars.rep
@@ -4515,7 +4514,7 @@ oldArg = [x for x in sys.argv]
 sys.argv.pop()
 import os
 if not os.path.isfile('figures/getParam.png'):
-    print 'Run a GUI if getParam has not been runned'
+    print('Run a GUI if getParam has not been runned')
 else:
     sys.argv = ['getParam.py', '--rate=[0.25]', '--rep=5', '--pop="CEU"']
     simuOpt.setOptions(gui=False)
@@ -4544,11 +4543,11 @@ par1 = simuOpt.Params(options, # all parameters with default values
     additional=10               # derived parameters are added
 )
 # print all parameters except for derived ones.
-print par1.asDict()
+print(par1.asDict())
 # All parameters are derived ...
 par2 = simuOpt.Params(rep=50, pop='CEU', rate=[0.5])
-print par2.asDict()
-print par2.rep, par2.pop
+print(par2.asDict())
+print(par2.rep, par2.pop)
 #end_file
 
 #begin_file log/paramFunc.py
@@ -4583,7 +4582,7 @@ options = [
 ]
 #begin_ignore
 pars = simuOpt.Params(options, 'A demo simulation')
-print pars.usage()
+print(pars.usage())
 #end_ignore
 #end_file
 
@@ -4601,10 +4600,10 @@ from simuPOP.sampling import drawRandomSample
 pop = sim.Population([2000]*5, loci=1)
 # sample from the whole population
 sample = drawRandomSample(pop, sizes=500)
-print sample.subPopSizes()
+print(sample.subPopSizes())
 # sample from each subpopulation
 sample = drawRandomSample(pop, sizes=[100]*5)
-print sample.subPopSizes()
+print(sample.subPopSizes())
 #end_file
 
 
@@ -4624,8 +4623,8 @@ sim.maPenetrance(pop, loci=2, penetrance=[0.11, 0.15, 0.20])
 # draw multiple case control sample
 samples = drawCaseControlSamples(pop, cases=500, controls=500, numOfSamples=5)
 for sample in samples:
-    sim.stat(sample, association=range(5))
-    print ', '.join(['%.6f' % sample.dvars().Allele_ChiSq_p[x] for x in range(5)])
+    sim.stat(sample, association=list(range(5)))
+    print(', '.join(['%.6f' % sample.dvars().Allele_ChiSq_p[x] for x in range(5)]))
 
 #end_file
 
@@ -4652,7 +4651,7 @@ pop.evolve(
 )
 indexToID(pop, reset=True)
 # three information fields were added
-print pop.infoFields()
+print(pop.infoFields())
 # save this population for future use
 pop.save('log/pedigree.pop')
 # draw pedigree
@@ -4695,10 +4694,10 @@ sample.asPedigree()
 sample.addInfoFields('ped_id')
 # return size of families
 sz = sample.identifyFamilies(pedField='ped_id')
-print sz
+print(sz)
 ped1 = sample.extractIndividuals(IDs=0, idField='ped_id')
 # print the ID of all individuals in the first pedigree
-print [ind.ind_id for ind in ped1.allIndividuals()]
+print([ind.ind_id for ind in ped1.allIndividuals()])
 plotPedigree(sample, filename='log/nuclerFamily.png')
 #end_file
 
@@ -4760,7 +4759,7 @@ sim.maPenetrance(pop, loci=5, penetrance=(0.1, 0.2, 0.3))
 from simuPOP.sampling import drawCaseControlSample
 sample = drawCaseControlSample(pop, cases=500, controls=500, subPops=[(0,1)])
 ageInSample = sample.indInfo('age')
-print min(ageInSample), max(ageInSample)
+print(min(ageInSample), max(ageInSample))
 #end_file
 
 #begin_file log/samplingSeparateVSPs.py
@@ -4783,12 +4782,12 @@ sim.maPenetrance(pop, loci=5, penetrance=(0.1, 0.2, 0.3), subPops=[(0,1)])
 sim.maPenetrance(pop, loci=5, penetrance=(0.2, 0.4, 0.6), subPops=[(0,2)])
 # count the number of affected individuals in each group
 sim.stat(pop, numOfAffected=True, subPops=[(0,1), (0,2)], vars='numOfAffected_sp')
-print pop.dvars((0,1)).numOfAffected, pop.dvars((0,2)).numOfAffected
+print(pop.dvars((0,1)).numOfAffected, pop.dvars((0,2)).numOfAffected)
 #
 from simuPOP.sampling import drawRandomSample
 sample = drawRandomSample(pop, sizes=[500, 500], subPops=[(0,1), (0,2)])
 # virtual subpopulations are rearranged to different subpopulations.
-print sample.subPopSizes()
+print(sample.subPopSizes())
 #end_file
 
 
@@ -4829,7 +4828,7 @@ def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
 # when needed, create a demographic function as follows
 demo_func = demo_model('exponential', 1000, 100000, 500, 500)
 # sim.population size at generation 700
-print demo_func(700)
+print(demo_func(700))
 #end_file
 
 #begin_file log/reichstat.py
@@ -4859,7 +4858,7 @@ class ne(sim.PyOperator):
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in list(freq.keys()) if x != 0])
         # save the result to the sim.Population.
         pop.dvars().ne = ne
         return True
@@ -4871,7 +4870,7 @@ def Ne(pop, loci):
 
 pop = sim.Population(100, loci=[10])
 sim.initGenotype(pop, freq=[.2] * 5)
-print Ne(pop, loci=[2, 4])
+print(Ne(pop, loci=[2, 4]))
 #end_file
 
 #begin_file log/reichEvolve.py
@@ -4930,7 +4929,7 @@ class ne(sim.PyOperator):
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in list(freq.keys()) if x != 0])
         # save the result to the sim.Population.
         pop.dvars().ne = ne
         return True
@@ -5101,7 +5100,7 @@ class ne(sim.PyOperator):
             if sumFreq == 0:
                 ne[loc] = 0
             else:
-                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in freq.keys() if x != 0])
+                ne[loc] = 1. / sum([(freq[x]/sumFreq)**2 for x in list(freq.keys()) if x != 0])
         # save the result to the sim.Population.
         pop.dvars().ne = ne
         return True
@@ -5118,7 +5117,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
     k: maximum allele for the k-allele model
     '''
     demo_func = demo_model(model, N0, N1, G0, G1)
-    print demo_func(0)
+    print(demo_func(0))
     pop = sim.Population(size=demo_func(0), loci=1, infoFields='fitness')
     pop.evolve(
         initOps=[
@@ -5144,7 +5143,7 @@ if __name__ == '__main__':
         sys.exit(1)
     
     if not sum(par.spec) == 1:
-        print 'Initial allelic spectrum should add up to 1.'
+        print('Initial allelic spectrum should add up to 1.')
         sys.exit(1)
     # save user input to a configuration file
     par.saveConfig('simuCDCV.cfg')
@@ -5156,7 +5155,7 @@ import os
 if os.path.isfile('log/simuCDCV.py'):
     out = os.popen('python log/simuCDCV.py -h')
     hlp = open('log/simuCDCV.hlp', 'w')
-    print >> hlp, out.read()
+    hlp.write(out.read())
     hlp.close()
 
 #end_ignore
@@ -5189,13 +5188,13 @@ def simulate():
 
 seed = sim.getRNG().seed()
 random.seed(seed)
-print '%.4f' % simulate()
+print('%.4f' % simulate())
 # will yield different result
-print '%.4f' % simulate()
+print('%.4f' % simulate())
 sim.getRNG().set(seed=seed)
 random.seed(seed)
 # will yield identical result because the same seeds are used
-print '%.4f' % simulate()
+print('%.4f' % simulate())
 #end_file
 
 
@@ -5236,7 +5235,7 @@ simu.evolve(
 # replace standard stdandard error
 sys.stderr = old_stderr
 debugOutput.close()
-print ''.join(open('debug.txt').readlines()[:5])
+print(''.join(open('debug.txt').readlines()[:5]))
 #begin_ignore
 sim.turnOffDebug("DBG_MUTATOR")
 #end_ignore
@@ -5295,7 +5294,7 @@ sim.initGenotype(pop, freq=[0.5, 0.5])
 saveCSV(pop, filename='sample.csv', affectionFormatter=None,
     sexFormatter={sim.MALE:1, sim.FEMALE:2})
 # have a look at the file
-print open('sample.csv').read()
+print(open('sample.csv').read())
 pop1 = importData('sample.csv')
 sim.dump(pop1)
 #end_file
@@ -5321,7 +5320,7 @@ class dynaMutator(sim.PyOperator):
         sim.PyOperator.__init__(self, func=self.mutate, *args, **kwargs)
     #
     def mutate(self, pop):
-        sim.stat(pop, alleleFreq=range(pop.totNumLoci()))
+        sim.stat(pop, alleleFreq=list(range(pop.totNumLoci())))
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
@@ -5340,7 +5339,7 @@ pop.evolve(
     preOps=dynaMutator(cutoff=.2, mu1=1e-2, mu2=1e-5),
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(alleleFreq=range(5), step=10),
+        sim.Stat(alleleFreq=list(range(5)), step=10),
         sim.PyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
             step=10),
     ],
@@ -5516,7 +5515,7 @@ def func():
         yield all 
 
 for i in func():
-    print '%.3f' % i,
+    print('%.3f' % i)
 
 #end_file
 
@@ -5726,10 +5725,10 @@ def outputstat(pop):
         subPops=[(0, sim.ALL_AVAIL)],
         vars=['popSize_sp', 'propOfAffected_sp'])
     for sp in range(3):
-        print '%s: %.3f%% (size %d)' % (pop.subPopName((0,sp)),
+        print('%s: %.3f%% (size %d)' % (pop.subPopName((0,sp)),
             pop.dvars((0,sp)).propOfAffected * 100.,
-            pop.dvars((0,sp)).popSize),
-    print
+            pop.dvars((0,sp)).popSize))
+    print()
     return True
 
 
@@ -5837,12 +5836,12 @@ pop.evolve(
     gen=100
 )
 # let us compare the pedigree and the population object
-print ped.indInfo('ind_id')[:5]
-print pop.indInfo('ind_id')[:5]
-print [ped.individual(x).sex() for x in range(5)]
-print [pop.individual(x).sex() for x in range(5)]
-print ped.subPopSizes()
-print pop.subPopSizes()
+print(ped.indInfo('ind_id')[:5])
+print(pop.indInfo('ind_id')[:5])
+print([ped.individual(x).sex() for x in range(5)])
+print([pop.individual(x).sex() for x in range(5)])
+print(ped.subPopSizes())
+print(pop.subPopSizes())
 #end_file
 
 
@@ -5926,10 +5925,10 @@ pop.evolve(
     gen=100
 )
 # 
-print pop.indInfo('ind_id')[:5]
-print [pop.individual(x).sex() for x in range(5)]
+print(pop.indInfo('ind_id')[:5])
+print([pop.individual(x).sex() for x in range(5)])
 # The pedigree object does not have population structure
-print pop.subPopSizes()
+print(pop.subPopSizes())
 #begin_ignore
 import os
 os.remove('structured.ped')
