@@ -2,7 +2,7 @@
 # Makefile for processing simuPOP
 #
 
-rebuild:
+build:
 	bcpp src/*.h src/*.cpp
 	doxygen
 	tools/doxy2swig.py
