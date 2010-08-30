@@ -2,17 +2,6 @@
 # Makefile for processing simuPOP
 #
 
-build:
-	bcpp src/*.h src/*.cpp
-	doxygen
-	tools/doxy2swig.py
-	scons install -j4 std
-	tools/doxy2swig.py
-	scons install -j4
-	cd doc
-	#make pdf
-	python runSampleCode.py userGuide.py
-	make dist_svn
 
 2to3:
 	2to3-3.1 -w setup.py
@@ -27,7 +16,19 @@ build:
 	2to3-3.1 -w test/test_04_simulator.py test/test_10_qtrait.py test/test_16_sampling.py
 	2to3-3.1 -w doc/userGuide.py doc/runSampleCode.py
 
-build3: 2to3
+rebuild:
+	bcpp src/*.h src/*.cpp
+	doxygen
+	tools/doxy2swig.py
+	scons install -j4 std
+	tools/doxy2swig.py
+	scons install -j4
+	cd doc
+	#make pdf
+	python runSampleCode.py userGuide.py
+	make dist_svn
+
+rebuild3: 2to3
 	python3 setup.py install
 
 clean:
