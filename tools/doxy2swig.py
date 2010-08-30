@@ -531,46 +531,7 @@ class Doxy2SWIG:
             #    print e
             #    pass
 
-
-    def post_process(self):
-        # remove duplicate entry
-        # They might be introduced if a function is list both under 'file' and under 'namespace'
-        # Add additional entries manually
-        self.content.extend([
-            {'Name': u'simuPOP::Population::dvars',
-             'type': u'memberofclass_simuPOP::Population',
-             'Description': '',
-             'Details': ur'<group>9-var1</group>' \
-                'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
-                'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(vspID subPop=[])',
-             'Usage': u'x.dvars(subPop=[])',
-             },
-            {'Name': u'simuPOP::Simulator::dvars',
-             'type': u'memberofclass_simuPOP::Simulator',
-             'Description': '',
-             'Details': ur'<group>9-var1</group>' \
-                'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
-                'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(int rep, vspID subPop=[])',
-             'Usage': u'x.dvars(rep, subPop=[])',
-            }
-        ])
-        for func,realClass,realFunc,group in [
-                ('evolve_pop', 'Population', 'evolve', '7-evolve'),
-                ('all_individuals', 'Population', 'allIndividuals', '4-ind'),
-                ('as_pedigree', 'Population', 'asPedigree', '1-popConvert'),
-                ('as_population', 'Pedigree', 'asPopulation', '1-pedConvert')]:
-            entry = [x for x in self.content if func in x['Name']][0]
-            entry['ignore'] = True
-            self.content.append({'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
-                 'type': u'memberofclass_simuPOP::%s' % realClass,
-                 'Description': '',
-                 'Details': ur'<group>%s</group>' % group + entry['Description'],
-                 'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', '').replace('self)', ')'),
-                })
-        # change a few usages:
-        print "Number of entries: ", len(self.content)
+    def fix_entries(self):
         def myhash(entry):
             'encode an entry to a string for easy comparison'
             ret = entry['Name']
@@ -584,6 +545,8 @@ class Doxy2SWIG:
         print "Unique entries: ", len(self.content)
         #
         for entry in self.content:
+            # latex names cannot have _ or number (for all_ind, getInfo2 etc)
+            entry['Name'] = entry['Name'].replace('_', '').replace('2','two').replace('3', 'three')
             if (entry.has_key('Details') and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
                 try:
@@ -645,6 +608,33 @@ class Doxy2SWIG:
                     entry['ExampleFile'] = None
                     entry['ExampleTitle'] = title
                     print "File " + filename + " does not exist\n"
+
+    def post_process(self):
+        # remove duplicate entry
+        # They might be introduced if a function is list both under 'file' and under 'namespace'
+        # Add additional entries manually
+        self.content.extend([
+            {'Name': u'simuPOP::Population::dvars',
+             'type': u'memberofclass_simuPOP::Population',
+             'Description': '',
+             'Details': ur'<group>9-var1</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
+                'so that dictionary keys can be accessed as attributes.',
+             'cppArgs': u'(vspID subPop=[])',
+             'Usage': u'x.dvars(subPop=[])',
+             },
+            {'Name': u'simuPOP::Simulator::dvars',
+             'type': u'memberofclass_simuPOP::Simulator',
+             'Description': '',
+             'Details': ur'<group>9-var1</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
+                'so that dictionary keys can be accessed as attributes.',
+             'cppArgs': u'(int rep, vspID subPop=[])',
+             'Usage': u'x.dvars(rep, subPop=[])',
+            }
+        ])
+        print "Number of entries: ", len(self.content)
+        self.fix_entries()
         #
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
 
@@ -1025,6 +1015,10 @@ class Doxy2SWIG:
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
             def sort_member(x, y):
+                if not x.has_key('group'):
+                    print x
+                if not y.has_key('group'):
+                    print y
                 res = cmp(x['group'], y['group'])
                 if res == 0:
                     return cmp(x['Name'], y['Name'])
@@ -1261,6 +1255,10 @@ class Doxy2SWIG:
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
             def sort_member(x, y):
+                if not x.has_key('group'):
+                    print x
+                if not y.has_key('group'):
+                    print y
                 res = cmp(x['group'], y['group'])
                 if res == 0:
                     return cmp(x['Name'], y['Name'])
@@ -1407,6 +1405,24 @@ if __name__ == '__main__':
     p.scan_module('simuPOP.sampling')
     p.scan_module('simuPOP.sandbox')
     p.scan_module('simuPOP.gsl')
+    #
+    for func,realClass,realFunc,group in [
+        ('evolve_pop', 'Population', 'evolve', '7-evolve'),
+        ('all_individuals', 'Population', 'allIndividuals', '4-ind'),
+        ('as_pedigree', 'Population', 'asPedigree', '1-popConvert'),
+        ('as_population', 'Pedigree', 'asPopulation', '1-pedConvert')]:
+        entry = [x for x in p.content if func in x['Name']][0]
+        entry['ignore'] = True
+        entry['hidden'] = True
+        p.content.append({'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
+             'type': u'memberofclass_simuPOP::%s' % realClass,
+             'Description': '',
+             'Details': ur'<group>%s</group>' % group + entry['Description'].replace('\n', ' '),
+             'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', '').replace('self)', ')'),
+        })
+    p.fix_entries()
+    # hange a few usages:
+    #
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []
