@@ -348,7 +348,7 @@ if os.name == 'nt':
 SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild'
 SWIG_CC_FLAGS = '-python -keyword'
 
-if sys.version_info.major == 3:
+if sys.version_info[0] == 3:
     SWIG_CPP_FLAGS += ' -py3'
     SWIG_CC_FLAGS += ' -py3'
 
