@@ -460,14 +460,35 @@ stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 	else if (PyBool_Check(obj))
 		// accept True/False
 		m_allAvail = obj == Py_True;
-	else if (PyString_Check(obj))
-		addString(obj);
+	else if (PyString_Check(obj)) {
+        	string value = PyObj_AsString(obj);
+	        m_elems.push_back(value);
+        }
+#if PY_VERSION_HEX >= 0x03000000
+        else if (PyBytes_Check(obj)) {
+        	string value = PyBytes_AsString(obj);
+	        m_elems.push_back(value);
+        }
+#endif        
 	else if (PySequence_Check(obj)) {
 		// assign values
 		UINT numStr = PySequence_Size(obj);
 		for (size_t i = 0; i < numStr; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
-			addString(item);
+	                if (PyString_Check(item)) {
+                        	string value = PyObj_AsString(item);
+	                        m_elems.push_back(value);
+                        }
+#if PY_VERSION_HEX >= 0x03000000
+                          else if (PyBytes_Check(item)) {
+       	                        string value = PyBytes_AsString(item);
+                	        m_elems.push_back(value);
+                           }
+#endif                
+                        else {
+                                cerr << "A string is expected" << endl;
+                                throw ValueError("A string is expected.");
+                        }
 			Py_DECREF(item);
 		}
 	}
@@ -477,7 +498,6 @@ stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 void stringList::addString(PyObject * str)
 {
 	PyObject * res = PyObject_Str(str);
-
 	if (res == NULL)
 		return;
 	string value = PyObj_AsString(res);
@@ -615,21 +635,46 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyString_Check(item)) {
-			DBG_FAILIF(m_elems.size() > 1, ValueError,
-				"A mixture of string and list is not allowed.")
+			if (m_elems.size() > 1) {
+                                cerr << "A mixture of string and list is not allowed." << endl;
+                                throw ValueError("A mixture of string and list is not allowed.");
+                        }
 			if (m_elems.empty())
 				m_elems.push_back(vectorstr());
 			string value = PyObj_AsString(item);
 			m_elems[0].push_back(value);
-		} else if (PySequence_Check(item)) {
+                }
+#if PY_VERSION_HEX >= 0x03000000 
+                else if (PyBytes_Check(item)) {
+			if (m_elems.size() > 1) {
+                                cerr << "A mixture of string and list is not allowed." << endl;
+                                throw ValueError("A mixture of string and list is not allowed.");
+                        }
+			if (m_elems.empty())
+				m_elems.push_back(vectorstr());
+			string value = PyBytes_AsString(item);
+			m_elems[0].push_back(value);
+                }
+#endif
+                else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
 			int numStrs = PySequence_Size(item);
 			for (int j = 0; j < numStrs; ++j) {
 				PyObject * str = PySequence_GetItem(item, j);
-				DBG_ASSERT(PyString_Check(str), ValueError,
-					"A list or nested list of string is expected");
-				string value = PyObj_AsString(str);
-				m_elems.back().push_back(value);
+				if (PyString_Check(str)) {
+        				string value = PyObj_AsString(str);
+				        m_elems.back().push_back(value);
+                                }
+#if PY_VERSION_HEX >= 0x03000000 
+                                else if (PyBytes_Check(str)) {
+                                        string value = PyBytes_AsString(str);
+				        m_elems.back().push_back(value);
+                                }                                
+#endif
+                                else {                              
+					cerr << "A list or nested list of string is expected" << endl;
+                                        throw ValueError("A list or nested list of string is expected.");
+                                }
 				Py_DECREF(str);
 			}
 		} else {
