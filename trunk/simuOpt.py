@@ -771,9 +771,11 @@ class _tkParamDialog(_paramDialog):
         # style wise, this seems to be very bad
         import Tkinter
         import tkFont
-        globals()['Tkinter'] = Tkinter
         if sys.version_info[0] < 3:
+            globals()['Tkinter'] = Tkinter
             globals()['tkFont'] = tkFont
+	else:
+            globals()['tkinter'] = tkinter
 
     def denyWindowManagerClose(self):
         '''Don't allow WindowManager close'''
