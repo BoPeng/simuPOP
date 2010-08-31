@@ -664,7 +664,7 @@ class _paramDialog:
         self.options = options
         self.title = title
         if nCol is None:
-            self.nCol = len(self.options)/20 + 1
+            self.nCol = int(len(self.options)/20) + 1
         else:
             self.nCol = nCol
         self.description = _prettyDesc(description, indent='', width=55*self.nCol)
@@ -691,10 +691,10 @@ class _paramDialog:
                 rspan = len(opt['chooseOneOf'])
                 row += rspan - 1
         nRow = row
-        if nRow / self.nCol * self.nCol == nRow:
-            nRow /= self.nCol
+        if int(nRow / self.nCol) * self.nCol == nRow:
+            nRow = int(nRow / self.nCol)
         else:
-            nRow = nRow/self.nCol + 1
+            nRow = int(nRow/self.nCol) + 1
         # set row and col for each item.
         headerRow = 0
         r = 0
@@ -772,7 +772,8 @@ class _tkParamDialog(_paramDialog):
         import Tkinter as tk
         import tkFont
         globals()['tk'] = tk
-        globals()['tkFont'] = tkFont
+        if sys.version_info[0] < 3:
+            globals()['tkFont'] = tkFont
 
     def denyWindowManagerClose(self):
         '''Don't allow WindowManager close'''
