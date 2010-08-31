@@ -769,7 +769,7 @@ class _tkParamDialog(_paramDialog):
         ''' get options from a given options structure '''
         _paramDialog.__init__(self, options, title, description, details, nCol)
         # style wise, this seems to be very bad
-        import Tkinter as tk
+        import Tkinter
         import tkFont
         globals()['tk'] = tk
         if sys.version_info[0] < 3:
@@ -777,7 +777,7 @@ class _tkParamDialog(_paramDialog):
 
     def denyWindowManagerClose(self):
         '''Don't allow WindowManager close'''
-        x = tk.Tk()
+        x = Tkinter.Tk()
         x.withdraw()
         x.bell()
         x.destroy()
@@ -793,7 +793,7 @@ class _tkParamDialog(_paramDialog):
             filename = fileDlg.askopenfilename(title=opt['label'])
             if filename is not None:
                 # only available in Python 2.6
-                widget.delete(0, tk.END)
+                widget.delete(0, Tkinter.END)
                 if 'relpath' in dir(os.path):
                     widget.insert(0, os.path.relpath(filename))
                 else:
@@ -801,30 +801,30 @@ class _tkParamDialog(_paramDialog):
         else:
             dirname = fileDlg.askdirectory(title=opt['label'])
             if dirname is not None:
-                widget.delete(0, tk.END)
+                widget.delete(0, Tkinter.END)
                 if 'relpath' in dir(os.path):
                     widget.insert(0, os.path.relpath(dirname))
                 else:
                     widget.insert(0, dirname)
 
     def createHelpDialog(self):
-        self.helpDlg = tk.Toplevel(self.app)
+        self.helpDlg = Tkinter.Toplevel(self.app)
         self.helpDlg.title('Help for ' + self.title)
         #
-        msg = tk.Text(self.helpDlg, wrap=tk.WORD)
-        msg.insert(tk.END, _usage(self.options, '', self.details))
+        msg = Tkinter.Text(self.helpDlg, wrap=Tkinter.WORD)
+        msg.insert(Tkinter.END, _usage(self.options, '', self.details))
         msg.grid(column=0, row=0, pady=10, padx=10,
-            sticky = tk.E + tk.W + tk.N + tk.S)
+            sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S)
         # scrollbar
-        sb = tk.Scrollbar(self.helpDlg)
+        sb = Tkinter.Scrollbar(self.helpDlg)
         sb.config(command=msg.yview)
-        sb.grid(column=1, row=0, sticky=tk.N + tk.S,
+        sb.grid(column=1, row=0, sticky=Tkinter.N + Tkinter.S,
             padx=0, pady=10)
         msg["yscrollcommand"] = sb.set
         self.helpDlg.columnconfigure(0, weight=1)
         self.helpDlg.rowconfigure(0, weight=1)
         self.helpDlg.rowconfigure(1, weight=0)
-        okButton = tk.Button(self.helpDlg, takefocus=1, text="OK")
+        okButton = Tkinter.Button(self.helpDlg, takefocus=1, text="OK")
         okButton.grid(column=0, row=1, columnspan=2, pady=10, padx=10)
         # bind the keyboard events to the widget
         okButton.bind("<Return>", self.onHelpOK)
@@ -877,7 +877,7 @@ class _tkParamDialog(_paramDialog):
         self.app.quit()
 
     def createDialog(self):
-        self.app = tk.Tk()
+        self.app = Tkinter.Tk()
         self.app.protocol('WM_DELETE_WINDOW', self.denyWindowManagerClose)
         self.app.title(self.title)
         #
@@ -886,8 +886,8 @@ class _tkParamDialog(_paramDialog):
         self.labelWidgets = [None]*len(self.options)
         # all use grid management
         # top message
-        topMsg = tk.Label(self.app, text=self.description.strip(), justify=tk.LEFT)
-        topMsg.grid(row=0, column=0, columnspan = 2 * self.nCol, sticky=tk.W,
+        topMsg = Tkinter.Label(self.app, text=self.description.strip(), justify=Tkinter.LEFT)
+        topMsg.grid(row=0, column=0, columnspan = 2 * self.nCol, sticky=Tkinter.W,
             padx=10, pady=10)
         # find out number of items etc
         numRows, numCols = self.setLayout(True)
@@ -900,39 +900,39 @@ class _tkParamDialog(_paramDialog):
             r += 1
             # use different entry method for different types
             if opt['gui_type'] == 'separator':
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'])
+                self.labelWidgets[g] = Tkinter.Label(self.app, text=opt['separator'])
                 f = tkFont.Font(font=self.labelWidgets[g]["font"]).copy()
                 f.config(weight='bold')
                 self.labelWidgets[g].config(font=f)
                 self.labelWidgets[g].grid(column=c*2, row= r,
-                    columnspan=2, ipadx=0, padx=10, sticky=tk.W + tk.N + tk.S)
+                    columnspan=2, ipadx=0, padx=10, sticky=Tkinter.W + Tkinter.N + Tkinter.S)
                 self.entryWidgets[g] = None
                 continue
             value = self.options[g]['value']
             if value is None:
                 value = self.options[g]['default']
             if opt['gui_type'] == 'chooseOneOf':    # single choice
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g] = Tkinter.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row= r,
-                    padx=10, rowspan = 1, sticky=tk.W, pady=2)
-                self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.SINGLE,
+                    padx=10, rowspan = 1, sticky=Tkinter.W, pady=2)
+                self.entryWidgets[g] = Tkinter.Listbox(self.app, selectmode=Tkinter.SINGLE,
                     exportselection=0, height = rspan)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, rowspan = rspan, pady=2)
                 for entry in opt['chooseOneOf']:
-                    self.entryWidgets[g].insert(tk.END, str(entry))
+                    self.entryWidgets[g].insert(Tkinter.END, str(entry))
                 if value is not None:
                     self.entryWidgets[g].select_set(opt['chooseOneOf'].index(value))
             elif opt['gui_type'] == 'chooseFrom':    # multiple choice
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g] = Tkinter.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row=r,
-                    padx=10, sticky=tk.W, pady=2)
-                self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.EXTENDED,
+                    padx=10, sticky=Tkinter.W, pady=2)
+                self.entryWidgets[g] = Tkinter.Listbox(self.app, selectmode=Tkinter.EXTENDED,
                     exportselection=0, height = rspan)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, rowspan = rspan, pady=2)
                 for entry in opt['chooseFrom']:
-                    self.entryWidgets[g].insert(tk.END, str(entry))
+                    self.entryWidgets[g].insert(Tkinter.END, str(entry))
                 if value is not None:
                     if type(value) in [tuple, list]:
                         for val in value:
@@ -940,18 +940,18 @@ class _tkParamDialog(_paramDialog):
                     else:
                         self.entryWidgets[g].select_set( opt['chooseFrom'].index( value ))
             elif opt['gui_type'] == 'boolean':
-                iv = tk.IntVar()
+                iv = Tkinter.IntVar()
                 iv.set(self.options[g]['value'] == True) # value can be None, True or False
                 self.options[g]['value'] = iv
-                self.entryWidgets[g] = tk.Checkbutton(self.app, height=1,
+                self.entryWidgets[g] = Tkinter.Checkbutton(self.app, height=1,
                     text = opt['label'], variable=self.options[g]['value'])
                 self.entryWidgets[g].grid(column=c*2, row=r, padx=10, columnspan=2, 
-                    sticky=tk.W)
+                    sticky=Tkinter.W)
             else:
-                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g] = Tkinter.Label(self.app, text=opt['label'])
                 self.labelWidgets[g].grid(column=c*2, row=r,
-                    padx=10, sticky=tk.W, pady=2)
-                self.entryWidgets[g] = tk.Entry(self.app)
+                    padx=10, sticky=Tkinter.W, pady=2)
+                self.entryWidgets[g] = Tkinter.Entry(self.app)
                 self.entryWidgets[g].grid(column=c*2+1, row=r,
                     padx=10, ipadx=0, pady=2)
                 if opt['gui_type'] in ['browseFile', 'browseDir']:
@@ -961,17 +961,17 @@ class _tkParamDialog(_paramDialog):
             self.entryWidgets[g].bind("<Return>", self.onOK)
             self.entryWidgets[g].bind("<Escape>", self.onCancel)
         # help button: left
-        helpButton = tk.Button(self.app, takefocus=1, text="Help")
+        helpButton = Tkinter.Button(self.app, takefocus=1, text="Help")
         helpButton.bind("<Return>", self.onHelp)
         helpButton.bind("<Button-1>", self.onHelp)
         helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20, sticky='w', padx=20)
         # ok button: right
-        okButton = tk.Button(self.app, takefocus=1, text="Run!")
+        okButton = Tkinter.Button(self.app, takefocus=1, text="Run!")
         okButton.bind("<Return>", self.onOK)
         okButton.bind("<Button-1>", self.onOK)
         okButton.grid(column=self.nCol, columnspan=self.nCol, row = numRows+1, sticky='e', pady=20, padx=10)
         # cancel button: middle
-        cancelButton = tk.Button(self.app, takefocus=1, text="Cancel")
+        cancelButton = Tkinter.Button(self.app, takefocus=1, text="Cancel")
         cancelButton.bind("<Return>", self.onCancel)
         cancelButton.bind("<Button-1>", self.onCancel)
         cancelButton.grid(column=0, columnspan=2*self.nCol, row = numRows+1, pady=20)
