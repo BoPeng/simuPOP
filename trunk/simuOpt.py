@@ -771,7 +771,7 @@ class _tkParamDialog(_paramDialog):
         # style wise, this seems to be very bad
         import Tkinter
         import tkFont
-        globals()['tk'] = tk
+        globals()['Tkinter'] = Tkinter
         if sys.version_info[0] < 3:
             globals()['tkFont'] = tkFont
 
