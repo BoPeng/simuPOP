@@ -774,7 +774,7 @@ class _tkParamDialog(_paramDialog):
         if sys.version_info[0] < 3:
             globals()['Tkinter'] = Tkinter
             globals()['tkFont'] = tkFont
-	else:
+        else:
             globals()['tkinter'] = tkinter
 
     def denyWindowManagerClose(self):

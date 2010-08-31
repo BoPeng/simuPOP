@@ -1422,7 +1422,7 @@ static int
 array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
 {
 	Py_ssize_t start, stop, step, slicelength, needed;
-	arrayobject* other;
+	arrayobject* other = NULL;
 
 	if (PyIndex_Check(item)) {
 		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
