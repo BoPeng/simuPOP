@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -48,12 +48,12 @@ Last modified \\
 \inputencoding auto
 \font_roman default
 \font_sans default
-\font_typewriter default
+\font_typewriter beramono
 \font_default_family default
 \font_sc false
 \font_osf false
 \font_sf_scale 100
-\font_tt_scale 100
+\font_tt_scale 70
 
 \graphics default
 \float_placement h
@@ -88,7 +88,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\small\ttfamily\color{VerbatimColor}},commentstyle={\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}\bf},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},xleftmargin=10pt"
+\listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},commentstyle={\small\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}\bf},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},xleftmargin=10pt"
 \tracking_changes false
 \output_changes false
 \author "" 
@@ -218,6 +218,9 @@ This user's guide shows you how to install and use simuPOP using a large
  number of examples.
  It describes all important concepts and features of simuPOP and demonstrates
  how to use them in a simuPOP script.
+ Although the new Python 3.x releases are incompatible with Python 2.x, examples
+ in this book are written in a style that is compatible with both versions
+ of Python.
  For a complete and detailed description about all simuPOP functions and
  classes, please refer to the 
 \emph on
@@ -885,6 +888,70 @@ installation
 \family default
  section of the simupop website for instructions for specific platforms
  and compilers.
+\end_layout
+
+\begin_layout Standard
+simuPOP is available for Python 2.4 and later, including the new Python 3.x
+ releases.
+ Although Python 3 is incompatible with Python 2 in many ways, examples
+ in this guide are written in a style that is compatible with both versions
+ of Python.
+ For example, 
+\family typewriter
+int(a/2)
+\family default
+ instead of 
+\family typewriter
+a/2
+\family default
+ is used to ensure an integer is returned for both versions, and 
+\family typewriter
+list(range(5))
+\family default
+ is used to get a list of numbers.
+ In particular, we use 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+print(
+\begin_inset Quotes eld
+\end_inset
+
+Population size is %d
+\begin_inset Quotes erd
+\end_inset
+
+ % size)
+\end_layout
+
+\end_inset
+
+ instead of 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+print 
+\begin_inset Quotes eld
+\end_inset
+
+Population size is
+\begin_inset Quotes erd
+\end_inset
+
+, size
+\end_layout
+
+\end_inset
+
+ to output strings because the former is valid in Python 2.x (print a tuple
+ with one element) and will generate the same output in Python 3.x.
+ Of course, users of simuPOP can choose to use other styles.
 \end_layout
 
 \begin_layout Standard
