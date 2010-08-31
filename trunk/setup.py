@@ -483,7 +483,7 @@ if __name__ == '__main__':
     #
     # if any of the wrap files does not exist
     # or if the wrap files are older than any of the source files.
-    if (not os.path.isfile('src/gsl_wrap.c') or \
+    if (not os.path.isfile('src/gsl_wrap.c') or (not os.path.isfile('src/swigpyrun.h')) or \
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         (max( [os.path.getmtime('src/' + x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
