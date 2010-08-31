@@ -2256,7 +2256,8 @@ void Population::push(Population & rhs)
 		"Evolution can not continue because the new generation has different \n"
 		"genotypic structure.\n");
 
-	DBG_FAILIF(!m_genotype.empty() && (&*m_genotype.begin() == &*rhs.m_genotype.begin()), ValueError,
+	DBG_FAILIF(!m_genotype.empty() && !rhs.m_genotype.empty() &&
+			(&*m_genotype.begin() == &*rhs.m_genotype.begin()), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
 
 	// front -1 pop, -2 pop, .... end
