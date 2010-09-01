@@ -871,14 +871,8 @@ logging.basicConfig(
     format='%(levelname)s: %(message)s',
     filemode='w'
 )
-# logging to standard output with less information
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(message)s')
-console.setFormatter(formatter)
 logger = logging.getLogger('')
-logger.addHandler(console)
-#
 pop = sim.Population(size=1000, loci=2)
 pop.evolve(
     initOps=[
@@ -1388,8 +1382,8 @@ pop.setVirtualSplitter(sim.SexSplitter())
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.InitGenotype(genotype=[0]*10, subPops=[(0, 0)]),
-        sim.InitGenotype(genotype=[1]*10+[2]*10, subPops=[(0, 1)])
+        sim.InitGenotype(genotype=[0]*10, subPops=[(0, 'Male')]),
+        sim.InitGenotype(genotype=[1]*10+[2]*10, subPops=[(0, 'Female')])
     ],
     preOps=sim.Dumper(structure=False),
     matingScheme=sim.HaplodiploidMating(

@@ -47,28 +47,27 @@ class Population;
 class vspID
 {
 public:
-	vspID(const vectori & subPop, bool allAvailSP = false, bool allAvailVSP = false)
+	vspID(const vectori & subPop, bool allAvailSP = false, bool allAvailVSP = false,
+		const string & spName=string(), const string & vspName=string()) : 
+		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
 		DBG_FAILIF(subPop.size() > 2, ValueError,
 			"VSP should be specified as a subPop and virtualSubPop ID pair");
 		m_subPop = subPop.size() > 0 && subPop[0] >= 0 ? subPop[0] : InvalidSubPopID;
 		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
-		m_allAvailSP = allAvailSP;
-		m_allAvailVSP = allAvailVSP;
 	}
 
 
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID,
-		bool allAvailSP = false, bool allAvailVSP = false)
-		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
+		bool allAvailSP = false, bool allAvailVSP = false, 
+		const string & spName=string(), const string & vspName=string()) 
+		: m_subPop(subPop), m_virtualSubPop(virtualSubPop),
+		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
 		if (m_subPop < 0)
 			m_subPop = InvalidSubPopID;
 		if (m_virtualSubPop < 0)
 			m_virtualSubPop = InvalidSubPopID;
-
-		m_allAvailSP = allAvailSP;
-		m_allAvailVSP = allAvailVSP;
 	}
 
 
@@ -80,12 +79,14 @@ public:
 
 	SubPopID subPop() const
 	{
+		DBG_FAILIF(!m_spName.empty(), ValueError, "Unresolved population name.");
 		return m_subPop;
 	}
 
 
 	SubPopID virtualSubPop() const
 	{
+		DBG_FAILIF(!m_vspName.empty(), ValueError, "Unresolved virtual subpopulation name.");
 		return m_virtualSubPop;
 	}
 
@@ -110,16 +111,29 @@ public:
 		return m_allAvailSP;
 	}
 
-
+	/// CPPONLY
 	bool allAvailVSP() const
 	{
 		return m_allAvailVSP;
 	}
 
+	/// CPPONLY
+	const string & spName() const
+	{
+		return m_spName;
+	}
+
+	/// CPPONLY
+	const string & vspName() const
+	{
+		return m_vspName;
+	}
 
 private:
 	SubPopID m_subPop;
 	SubPopID m_virtualSubPop;
+	string m_spName;
+	string m_vspName;
 	bool m_allAvailSP;
 	bool m_allAvailVSP;
 };
@@ -298,7 +312,7 @@ public:
 
 	/** Return the number of VSPs defined by this splitter.
 	 */
-	virtual UINT numVirtualSubPop() = 0;
+	virtual UINT numVirtualSubPop() const = 0;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -322,7 +336,9 @@ public:
 	/** Return the name of VSP \e vsp (an index between \c 0 and
 	 *  <tt>numVirtualSubPop()</tt>).
 	 */
-	virtual string name(SubPopID vsp) = 0;
+	virtual string name(SubPopID vsp) const = 0;
+
+	UINT vspByName(const string & name) const;
 
 protected:
 	ULONG countVisibleInds(const Population & pop, SubPopID sp) const;
@@ -403,7 +419,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
 	 */
-	UINT numVirtualSubPop()
+	UINT numVirtualSubPop() const
 	{
 		return m_vspMap.size();
 	}
@@ -423,7 +439,7 @@ public:
 	 *  of the combined splitters unless a new set of names is specified. If
 	 *  a \e vspMap was used, names from different VSPs will be joined by \c "or".
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	/// the splitters
@@ -469,7 +485,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
 	 */
-	UINT numVirtualSubPop()
+	UINT numVirtualSubPop() const
 	{
 		return m_numVSP;
 	}
@@ -490,7 +506,7 @@ public:
 	 *  separated by a comma, unless a new set of names is specified for each
 	 *  VSP.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	vectori getVSPs(SubPopID vsp) const;
@@ -532,7 +548,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return \c 2.
-	UINT numVirtualSubPop()
+	UINT numVirtualSubPop() const
 	{
 		return 2;
 	}
@@ -553,7 +569,7 @@ public:
 	/** Return \c "Male" if \e vsp=0 and \c "Female" otherwise, unless a new
 	 *  set of names are specified.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 };
 
@@ -586,7 +602,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return 2.
-	UINT numVirtualSubPop()
+	UINT numVirtualSubPop() const
 	{
 		return 2;
 	}
@@ -607,7 +623,7 @@ public:
 	/** Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1,
 	 *  unless a new set of names are specified.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 };
 
@@ -653,7 +669,7 @@ public:
 	 *  parameter \e values or the length of \e cutoff plus one, depending on
 	 *  which parameter is specified.
 	 */
-	UINT numVirtualSubPop();
+	UINT numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -672,7 +688,7 @@ public:
 	 *  last VSP) if VSPs are defined by cutoff values. A user-specified name,
 	 *  if specified, will be returned instead.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	string m_info;
@@ -712,7 +728,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the length
 	 *  of parameter \e proportions.
 	 */
-	UINT numVirtualSubPop();
+	UINT numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -728,7 +744,7 @@ public:
 	 *  <tt>p=propotions[vsp]</tt>. A user specified name will be returned if
 	 *  specified.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	vectorf m_proportions;
@@ -766,7 +782,7 @@ public:
 	/** Return the number of VSPs, which is the number of ranges defined in
 	 *  parameter \e ranges.
 	 */
-	UINT numVirtualSubPop();
+	UINT numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -782,7 +798,7 @@ public:
 	 *  <tt>[a, b)</tt> is range <tt>ranges[vsp]</tt>. A user specified name
 	 *  will be returned if specified.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	matrixi m_ranges;
@@ -843,7 +859,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
-	UINT numVirtualSubPop();
+	UINT numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -859,7 +875,7 @@ public:
 	 *  as defined by parameters \e loci and \e alleles. A user provided name
 	 *  will be returned if specified.
 	 */
-	string name(SubPopID vsp);
+	string name(SubPopID vsp) const;
 
 private:
 	bool match(const Individual * ind, const vectori & alleles) const;
