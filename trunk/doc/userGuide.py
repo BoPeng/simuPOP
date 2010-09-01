@@ -379,7 +379,8 @@ sim.initInfo(pop, lambda: random.randint(0, 3), infoFields='x')
 pop.setVirtualSplitter(sim.SexSplitter())
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
-pop.subPopSize([0, 1])    # Size of VSP 0 in subpopulation 0
+pop.subPopSize([0, 1])    # Size of VSP 1 in subpopulation 0
+pop.subPopSize([0, 'Female'])    # Refer to vsp by its name
 # define a virtual splitter by information field 'x'
 pop.setVirtualSplitter(sim.InfoSplitter(field='x', values=[0, 1, 2, 3]))
 pop.numVirtualSubPop()    # Number of defined VSPs

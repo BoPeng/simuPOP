@@ -4116,9 +4116,17 @@ x
 \begin_layout Standard
 A VSP is represented by a 
 \family typewriter
-[spID, vspID]
+[sp, vsp]
 \family default
- pair.
+ pair where 
+\family typewriter
+sp
+\family default
+ and 
+\family typewriter
+vsp
+\family default
+ can be subpopulation indexes or names.
  Its name and size can be obtained using functions 
 \family typewriter
 subPopName()
