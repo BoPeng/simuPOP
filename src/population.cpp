@@ -510,7 +510,7 @@ IndAlleleIterator Population::alleleIterator(UINT locus, UINT subPop)
 
 PyObject * Population::genotype(vspID subPopID)
 {
-	
+
 	DBG_WARNIF(true, "The returned object of function Population.genotype() is a special "
 		             "carray object that reflects the underlying genotype of a "
 		             "population. It will become invalid once the population changes. "
@@ -542,6 +542,7 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	const vectoru & geno = genoList.elems();
 
 	vspID subPop = subPopID.resolve(*this);
+
 	sortIndividuals();
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
@@ -2498,9 +2499,10 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 
 
 void Population::setIndInfo(const floatList & valueList, const uintString &
-field, vspID subPopID)
+                            field, vspID subPopID)
 {
 	vspID subPop = subPopID.resolve(*this);
+
 	DBG_FAILIF(subPop.valid() && hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 

@@ -52,7 +52,7 @@ public:
 
 	/// CPPONLY
 	vspID(const vectori & subPop, bool allAvailSP = false, bool allAvailVSP = false,
-		const string & spName=string(), const string & vspName=string()) : 
+		const string & spName = string(), const string & vspName = string()) :
 		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
 		DBG_FAILIF(subPop.size() > 2, ValueError,
@@ -61,10 +61,11 @@ public:
 		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
 	}
 
+
 	/// CPPONLY
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID,
-		bool allAvailSP = false, bool allAvailVSP = false, 
-		const string & spName=string(), const string & vspName=string()) 
+		bool allAvailSP = false, bool allAvailVSP = false,
+		const string & spName = string(), const string & vspName = string())
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop),
 		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
@@ -74,11 +75,18 @@ public:
 			m_virtualSubPop = InvalidSubPopID;
 	}
 
+
+	~vspID()
+	{
+	}
+
+
 	/// CPPONLY
 	bool operator==(const vspID & rhs) const
 	{
 		return m_subPop == rhs.m_subPop && m_virtualSubPop == rhs.m_virtualSubPop;
 	}
+
 
 	/// CPPONLY
 	SubPopID subPop() const
@@ -116,25 +124,29 @@ public:
 		return m_allAvailSP;
 	}
 
+
 	/// CPPONLY
 	bool allAvailVSP() const
 	{
 		return m_allAvailVSP;
 	}
 
+
 	vspID resolve(const Population & pop) const;
-	
+
 	/// CPPONLY
 	const string & spName() const
 	{
 		return m_spName;
 	}
 
+
 	/// CPPONLY
 	const string & vspName() const
 	{
 		return m_vspName;
 	}
+
 
 private:
 	SubPopID m_subPop;

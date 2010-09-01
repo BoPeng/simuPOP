@@ -34,7 +34,7 @@
 namespace simuPOP {
 
 vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(InvalidSubPopID),
-		m_spName(""), m_vspName(""), m_allAvailSP(false), m_allAvailVSP(false)
+	m_spName(""), m_vspName(""), m_allAvailSP(false), m_allAvailVSP(false)
 {
 	if (PyNumber_Check(obj)) {
 		// accept a number
@@ -85,15 +85,17 @@ vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(Invali
 	}
 }
 
+
 vspID vspID::resolve(const Population & pop) const
 {
 	SubPopID sp = m_subPop;
 	SubPopID vsp = m_virtualSubPop;
+
 	if (!m_spName.empty())
 		sp = pop.subPopByName(m_spName);
 	if (!m_vspName.empty()) {
 		DBG_ASSERT(pop.hasVirtualSubPop(), ValueError,
-				"No virtual subpopulation is defined.");
+			"No virtual subpopulation is defined.");
 		vsp = pop.virtualSplitter()->vspByName(m_vspName);
 	}
 	return vspID(sp, vsp);
@@ -289,7 +291,7 @@ UINT BaseVspSplitter::vspByName(const string & vspName) const
 {
 	if (!m_names.empty()) {
 		vectorstr::const_iterator it = std::find(m_names.begin(), m_names.end(), vspName);
-		DBG_FAILIF(it == m_names.end(), ValueError, "An invalid virtual subpopulation name is given: " 
+		DBG_FAILIF(it == m_names.end(), ValueError, "An invalid virtual subpopulation name is given: "
 			+ vspName + ". Available names are: " + toStr(m_names));
 		return it - m_names.begin();
 	}
@@ -300,11 +302,10 @@ UINT BaseVspSplitter::vspByName(const string & vspName) const
 	string allNames;
 	for (size_t i = 0; i < numVirtualSubPop(); ++i)
 		allNames += name(i) + ", ";
-	DBG_FAILIF(true, ValueError, "An invalid virtual subpopulation name is given: " 
-			+ vspName + ". Available names are: " + allNames);
+	DBG_FAILIF(true, ValueError, "An invalid virtual subpopulation name is given: "
+		+ vspName + ". Available names are: " + allNames);
 	return 0;
 }
-
 
 
 CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
