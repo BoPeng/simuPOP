@@ -29,6 +29,7 @@
 
 #if PY_VERSION_HEX >= 0x03000000
 #  define PyInt_AsLong(x) PyLong_AsLong(x)
+#  define PyString_Check(x) PyUnicode_Check(x)
 #endif
 
 namespace simuPOP {
