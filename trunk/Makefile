@@ -10,7 +10,7 @@ rebuild:
 	scons install -j4 std
 	tools/doxy2swig.py
 	scons install -j4
-	cd doc; python runSampleCode.py userGuide.py; make dist_svn
+	cd doc; python runSampleCode.py; make dist_svn
 
 rebuild3:
 	python3 setup.py install

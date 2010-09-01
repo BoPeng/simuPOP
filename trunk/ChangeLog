@@ -21,7 +21,7 @@ New features:
   - Add name, type and validator to parameter definition dictionary.
   - Add mode --gui=interactive which is repsented by --gui=False in previous
 		versions of simuPOP.
-  - Support Python 2.7, boost 1.44.0 and swig 2.0.
+  - Support Python 2.7, Python 3.0, boost 1.44.0 and swig 2.0.
   - Allow the use of subpopulation and virtual subpopulation names in parameter subPops
 		and functions Population.subPopSize, Population.genotype,
 		Population.setGenotype, Population.setIndInfo.
@@ -43,7 +43,7 @@ Regression (minor):
         the same allele.
   - The second parameter of function applyToIndividual, if specified, should now be a
 		population reference.
-  - Parameter usePopVars is not obsolete in operators InfoEval and InfoExec.
+  - Parameter usePopVars is now obsolete in operators InfoEval and InfoExec.
   - Statements specified in operator InfoEval will also change values of individual
 		information fields.
   - Mark validate, arg, longarg, chooseFrom, chooseOneOf in parameter definition
