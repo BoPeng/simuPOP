@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2700,11 +2700,15 @@ subPops
  are widely used in simuPOP to specify which loci, replicates, ancestral
  generations, or (virtual) subpulations a function or operator is applied
  to.
- These parameter accepts a list of values such as 
+ These parameter accepts a list of indexes such as 
 \family typewriter
 [1, 2]
 \family default
- and take single form inputs (e.g.
+, names such as 
+\family typewriter
+['a', 'b']
+\family default
+, and take single form inputs (e.g.
  
 \family typewriter
 loci=1
@@ -2741,6 +2745,46 @@ Recombinator(loci=[1,2,4])
  recombine at loci 1, 2, and 4
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+Recombinator(loci=['a2', 'a4'])
+\family default
+ recombine at loci 
+\family typewriter
+'a2'
+\family default
+ and 
+\family typewriter
+'a4'
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The last method is easier to understand in some cases.
+ Moreover, when you use loci names instead of indexes in an operator, this
+ operator can be applied to populations with loci at different locations.
+ For example
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+MaSelector(loci='a2', fitness=[1,1.01,1.02])
+\end_layout
+
+\end_inset
+
+will be applied to locus 
+\family typewriter
+a2
+\family default
+ regardless the actual location of this locus in the population to which
+ this operator is applied.
+\end_layout
+
 \begin_layout Standard
 However, in the majority of the cases, these parameters take a default value
  
@@ -2765,6 +2809,15 @@ UNSPECIFIED
 \family default
  is sometimes used as default parameter of these parameters, indicating
  that no value has been specified.
+ Similarly, 
+\family typewriter
+subPops=[0, 'Male']
+\family default
+ can be used to refer a virtual subpopulation with name 
+\family typewriter
+'Male'
+\family default
+, regardless its virtual subpopulation index.
 \end_layout
 
 \begin_layout Standard
@@ -2796,65 +2849,6 @@ subPops=[(ALL_AVAIL, ALL_AVAIL)]
  to specify all virtual subpopulations in specified or all subpopulations.
  This becomes handy when you, for example, would like to list all male individua
 ls in a population, regardless of number of subpopulations.
-\end_layout
-
-\begin_layout Standard
-Parameter loci in many cases also accept a list of loci names.
- For example, if a population has loci a0, a1, a2, a3, a4, instead of
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop.removeLoci(1)     # remove locus a1
-\end_layout
-
-\begin_layout Plain Layout
-
-pop.removeLoci((1,3)) # remove locus a2 and a4 because loci indexes have
- been changed
-\end_layout
-
-\end_inset
-
-you can use
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop.removeLoci('a1')
-\end_layout
-
-\begin_layout Plain Layout
-
-pop.removeLoci(['a2', 'a4'])
-\end_layout
-
-\end_inset
-
-which is much easier to understand in some cases.
- Moreover, when you use loci names instead of indexes in an operator, this
- operator can be applied to populations with different numbers of loci.
- For example
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-MaSelector(loci='a2', fitness=[1,1.01,1.02])
-\end_layout
-
-\end_inset
-
-will be applied to locus a2 regardless the actual location of this locus
- in the population to which this operator is applied.
 \end_layout
 
 \begin_layout Subsection

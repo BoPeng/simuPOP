@@ -47,6 +47,16 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 		// accept a number
 		m_allAvail = false;
 		m_subPops.push_back(vspID(PyInt_AsLong(obj)));
+	} else if (PyString_Check(obj)) {
+		m_allAvail = false;
+		string name = PyObj_AsString(obj);
+		m_subPops.push_back(vspID(InvalidSubPopID, InvalidSubPopID, false, false, name));
+#if PY_VERSION_HEX >= 0x03000000
+	} else if (PyBytes_Check(obj)) {
+		m_allAvail = false;
+		string name = PyBytes_AsString(obj);
+		m_subPops.push_back(vspID(InvalidSubPopID, InvalidSubPopID, false, false, name));
+#endif
 	} else if (PySequence_Check(obj)) {
 		m_subPops.resize(PySequence_Size(obj));
 		// assign values
@@ -56,16 +66,54 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 				"Invalid input for a (virtual) subpopulation in a subpopulation list.");
 			if (PyNumber_Check(item))           // subpopulation
 				m_subPops[i] = vspID(PyInt_AsLong(item));
+			else if (PyString_Check(item)) {
+				string name = PyObj_AsString(item);
+				m_subPops[i] = vspID(InvalidSubPopID, InvalidSubPopID, false, false, name);
+			}
+#if PY_VERSION_HEX >= 0x03000000
+			else if (PyBytes_Check(item)) {
+				string name = PyBytes_AsString(obj);
+				m_subPops[i] = vspID(InvalidSubPopID, InvalidSubPopID, false, false, name);
+			}
+#endif
 			else if (PySequence_Check(item)) {  // virtual subpopulation
 				DBG_ASSERT(PySequence_Size(item) == 2, ValueError,
 					"Invalid virtual subpopulation ID");
 				PyObject * sp = PySequence_GetItem(item, 0);
 				PyObject * vsp = PySequence_GetItem(item, 1);
-				DBG_ASSERT(sp == Py_True || PyNumber_Check(sp), ValueError, "Invalid vsp id for a list of (virtual) subpopulations.");
-				DBG_ASSERT(vsp == Py_True || PyNumber_Check(vsp), ValueError, "Invalid input for a list of (virtual) subpopulations.");
-				m_subPops[i] = vspID(sp == Py_True ? InvalidSubPopID : PyInt_AsLong(sp),
-					vsp == Py_True ? InvalidSubPopID : PyInt_AsLong(vsp),
-					sp == Py_True, vsp == Py_True);
+				SubPopID sp_id(InvalidSubPopID);
+				SubPopID vsp_id(InvalidSubPopID);
+				string sp_name;
+				string vsp_name;
+				if (PyNumber_Check(sp))
+					sp_id = PyInt_AsLong(sp);
+				else if (PyString_Check(sp)) {
+					sp_name = PyObj_AsString(sp);
+				}
+#if PY_VERSION_HEX >= 0x03000000
+				else if (PyBytes_Check(sp)) {
+					sp_name = PyBytes_AsString(sp);
+				}
+#endif
+				else if (!PyBool_Check(sp)) {
+					cerr << "Invalid vsp id for a subpopulation." << endl;
+					throw ValueError("Invalid vsp id for a subpopulation");
+				}
+				if (PyNumber_Check(vsp))
+					vsp_id = PyInt_AsLong(vsp);
+				else if (PyString_Check(vsp)) {
+					vsp_name = PyObj_AsString(vsp);
+				}
+#if PY_VERSION_HEX >= 0x03000000
+				else if (PyBytes_Check(vsp)) {
+					vsp_name = PyBytes_AsString(vsp);
+				}
+#endif
+				else if (!PyBool_Check(vsp)) {
+					cerr << "Invalid vsp id for a subpopulation." << endl;
+					throw ValueError("Invalid vsp id for a subpopulation");
+				}
+				m_subPops[i] = vspID(sp_id, vsp_id, sp == Py_True, vsp == Py_True, sp_name, vsp_name);
 				Py_DECREF(sp);
 				Py_DECREF(vsp);
 			} else {
@@ -111,18 +159,36 @@ subPopList subPopList::expandFrom(const Population & pop) const
 						else
 							for (size_t vsp = 0; vsp < pop.numVirtualSubPop(); ++vsp)
 								vsps.push_back(vspID(sp, vsp));
-					} else
+					} else if (it->vspName().empty()) {
+						// valid or invalid...
 						vsps.push_back(vspID(sp, it->virtualSubPop()));
+					} else {
+						// with a name
+						DBG_FAILIF(pop.numVirtualSubPop() == 0, ValueError,
+							"No virtual subpopulation is defined.");
+						vsps.push_back(vspID(sp, pop.virtualSplitter()->vspByName(it->vspName())));
+					}
 				}
 			} else {
+				SubPopID sp = InvalidSubPopID;
+				if (it->spName().empty())
+					sp = it->subPop();
+				else
+					sp = pop.subPopByName(it->spName());
 				if (it->allAvailVSP()) {
 					if (pop.numVirtualSubPop() == 0)
-						vsps.push_back(vspID(it->subPop()));
+						vsps.push_back(vspID(sp));
 					else
 						for (size_t vsp = 0; vsp < pop.numVirtualSubPop(); ++vsp)
-							vsps.push_back(vspID(it->subPop(), vsp));
-				} else
-					vsps.push_back(*it);
+							vsps.push_back(vspID(sp, vsp));
+				} else if (it->vspName().empty())
+					vsps.push_back(vspID(sp, it->virtualSubPop()));
+				else {
+					// with a name
+					DBG_FAILIF(pop.numVirtualSubPop() == 0, ValueError,
+						"No virtual subpopulation is defined.");
+					vsps.push_back(vspID(sp, pop.virtualSplitter()->vspByName(it->vspName())));
+				}
 			}
 		}
 	}
@@ -151,6 +217,28 @@ ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop)
 			++count;
 	return count;
 }
+
+
+UINT BaseVspSplitter::vspByName(const string & vspName) const
+{
+	if (!m_names.empty()) {
+		vectorstr::const_iterator it = std::find(m_names.begin(), m_names.end(), vspName);
+		DBG_FAILIF(it == m_names.end(), ValueError, "An invalid virtual subpopulation name is given: " 
+			+ vspName + ". Available names are: " + toStr(m_names));
+		return it - m_names.begin();
+	}
+	for (size_t i = 0; i < numVirtualSubPop(); ++i) {
+		if (vspName == name(i))
+			return i;
+	}
+	string allNames;
+	for (size_t i = 0; i < numVirtualSubPop(); ++i)
+		allNames += name(i) + ", ";
+	DBG_FAILIF(true, ValueError, "An invalid virtual subpopulation name is given: " 
+			+ vspName + ". Available names are: " + allNames);
+	return 0;
+}
+
 
 
 CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
@@ -282,7 +370,7 @@ void CombinedSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 }
 
 
-string CombinedSplitter::name(SubPopID sp)
+string CombinedSplitter::name(SubPopID sp) const
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -404,7 +492,7 @@ void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID
 }
 
 
-string ProductSplitter::name(SubPopID sp)
+string ProductSplitter::name(SubPopID sp) const
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -462,7 +550,7 @@ void SexSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vir
 }
 
 
-string SexSplitter::name(SubPopID vsp)
+string SexSplitter::name(SubPopID vsp) const
 {
 	DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
 
@@ -512,7 +600,7 @@ void AffectionSplitter::activate(const Population & pop, SubPopID subPop, SubPop
 }
 
 
-string AffectionSplitter::name(SubPopID vsp)
+string AffectionSplitter::name(SubPopID vsp) const
 {
 	DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
 
@@ -619,7 +707,7 @@ ULONG InfoSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtu
 }
 
 
-UINT InfoSplitter::numVirtualSubPop()
+UINT InfoSplitter::numVirtualSubPop() const
 {
 	if (!m_cutoff.empty())
 		return m_cutoff.size() + 1;
@@ -718,7 +806,7 @@ void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vi
 }
 
 
-string InfoSplitter::name(SubPopID sp)
+string InfoSplitter::name(SubPopID sp) const
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -783,7 +871,7 @@ ULONG ProportionSplitter::size(const Population & pop, SubPopID subPop, SubPopID
 }
 
 
-UINT ProportionSplitter::numVirtualSubPop()
+UINT ProportionSplitter::numVirtualSubPop() const
 {
 	return m_proportions.size();
 }
@@ -830,7 +918,7 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
 }
 
 
-string ProportionSplitter::name(SubPopID subPop)
+string ProportionSplitter::name(SubPopID subPop) const
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -872,7 +960,7 @@ ULONG RangeSplitter::size(const Population & pop, SubPopID subPop, SubPopID virt
 }
 
 
-UINT RangeSplitter::numVirtualSubPop()
+UINT RangeSplitter::numVirtualSubPop() const
 {
 	return m_ranges.size();
 }
@@ -904,7 +992,7 @@ void RangeSplitter::activate(const Population & pop, SubPopID subPop, SubPopID v
 }
 
 
-string RangeSplitter::name(SubPopID subPop)
+string RangeSplitter::name(SubPopID subPop) const
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -945,7 +1033,7 @@ ULONG GenotypeSplitter::size(const Population & pop, SubPopID subPop, SubPopID v
 }
 
 
-UINT GenotypeSplitter::numVirtualSubPop()
+UINT GenotypeSplitter::numVirtualSubPop() const
 {
 	return m_alleles.size();
 }
@@ -986,7 +1074,7 @@ void GenotypeSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 // 1: 0 1 1 1
 // Two possibilities (depending on ploidy)
 // 1, 2: 0 1 1 0 1 1 1 1
-string GenotypeSplitter::name(SubPopID subPop)
+string GenotypeSplitter::name(SubPopID subPop) const
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
