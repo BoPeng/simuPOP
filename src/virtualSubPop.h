@@ -47,6 +47,10 @@ class Population;
 class vspID
 {
 public:
+	/** Create a subpopulation id. Accept id as well as names. */
+	vspID(PyObject * id);
+
+	/// CPPONLY
 	vspID(const vectori & subPop, bool allAvailSP = false, bool allAvailVSP = false,
 		const string & spName=string(), const string & vspName=string()) : 
 		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
@@ -57,7 +61,7 @@ public:
 		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
 	}
 
-
+	/// CPPONLY
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID,
 		bool allAvailSP = false, bool allAvailVSP = false, 
 		const string & spName=string(), const string & vspName=string()) 
@@ -70,13 +74,13 @@ public:
 			m_virtualSubPop = InvalidSubPopID;
 	}
 
-
+	/// CPPONLY
 	bool operator==(const vspID & rhs) const
 	{
 		return m_subPop == rhs.m_subPop && m_virtualSubPop == rhs.m_virtualSubPop;
 	}
 
-
+	/// CPPONLY
 	SubPopID subPop() const
 	{
 		DBG_FAILIF(!m_spName.empty(), ValueError, "Unresolved population name.");
@@ -84,6 +88,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	SubPopID virtualSubPop() const
 	{
 		DBG_FAILIF(!m_vspName.empty(), ValueError, "Unresolved virtual subpopulation name.");
@@ -117,6 +122,8 @@ public:
 		return m_allAvailVSP;
 	}
 
+	vspID resolve(const Population & pop) const;
+	
 	/// CPPONLY
 	const string & spName() const
 	{

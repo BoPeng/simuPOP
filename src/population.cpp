@@ -508,12 +508,15 @@ IndAlleleIterator Population::alleleIterator(UINT locus, UINT subPop)
 }
 
 
-PyObject * Population::genotype(vspID vsp)
+PyObject * Population::genotype(vspID subPopID)
 {
+	
 	DBG_WARNIF(true, "The returned object of function Population.genotype() is a special "
 		             "carray object that reflects the underlying genotype of a "
 		             "population. It will become invalid once the population changes. "
 		             "Please use list(pop.genotype()) if you would like to keep a copy of genotypes");
+
+	vspID vsp = subPopID.resolve(*this);
 
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
 		"Function genotype currently does not support virtual subpopulation");
@@ -534,10 +537,11 @@ PyObject * Population::genotype(vspID vsp)
 }
 
 
-void Population::setGenotype(const uintList & genoList, vspID subPop)
+void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
 	const vectoru & geno = genoList.elems();
 
+	vspID subPop = subPopID.resolve(*this);
 	sortIndividuals();
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
@@ -701,6 +705,44 @@ void Population::setSubPopStru(const vectoru & newSubPopSizes,
 	UINT i = 1;
 	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+}
+
+
+ULONG Population::subPopSize(vspID subPopID, int ancGen) const
+{
+	vspID subPop = subPopID.resolve(*this);
+
+	if (!subPop.valid())
+		return popSize(ancGen);
+
+	DBG_FAILIF(ancGen > 0 && static_cast<UINT>(ancGen) > ancestralGens(),
+		IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
+		+ toStr(ancestralGens()));
+
+	if (ancGen < 0 || static_cast<UINT>(ancGen) == m_curAncestralGen) {
+		CHECKRANGESUBPOP(subPop.subPop());
+		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+		if (subPop.isVirtual())
+			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+		else
+			return m_subPopSize[subPop.subPop()];
+	} else if (subPop.isVirtual()) {
+		int curGen = m_curAncestralGen;
+		const_cast<Population *>(this)->useAncestralGen(ancGen);
+		CHECKRANGESUBPOP(subPop.subPop());
+		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+		ULONG size = m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+		const_cast<Population *>(this)->useAncestralGen(curGen);
+		return size;
+	} else {
+		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
+		DBG_FAILIF(static_cast<UINT>(subPop.subPop()) >= sizes.size(), IndexError,
+			"Subpopulation index " + toStr(subPop.subPop()) + " out of range of 0 ~ "
+			+ toStr(sizes.size() - 1) + " at ancestral generation " + toStr(ancGen));
+		return sizes[subPop.subPop()];
+	}
+	// avoid a warning message.
+	return 0;
 }
 
 
@@ -2455,8 +2497,10 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 }
 
 
-void Population::setIndInfo(const floatList & valueList, const uintString & field, vspID subPop)
+void Population::setIndInfo(const floatList & valueList, const uintString &
+field, vspID subPopID)
 {
+	vspID subPop = subPopID.resolve(*this);
 	DBG_FAILIF(subPop.valid() && hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 

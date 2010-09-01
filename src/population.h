@@ -390,43 +390,11 @@ public:
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>) in the current
 	 *  generation (default) or a specified ancestral generation \e ancGen. If
-	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>.
+	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>. 
+	 *  Population and virtual subpopulation names can be used.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG subPopSize(vspID subPop = vspID(), int ancGen = -1) const
-	{
-		if (!subPop.valid())
-			return popSize(ancGen);
-
-		DBG_FAILIF(ancGen > 0 && static_cast<UINT>(ancGen) > ancestralGens(),
-			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
-			+ toStr(ancestralGens()));
-
-		if (ancGen < 0 || static_cast<UINT>(ancGen) == m_curAncestralGen) {
-			CHECKRANGESUBPOP(subPop.subPop());
-			CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-			if (subPop.isVirtual())
-				return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
-			else
-				return m_subPopSize[subPop.subPop()];
-		} else if (subPop.isVirtual()) {
-			int curGen = m_curAncestralGen;
-			const_cast<Population *>(this)->useAncestralGen(ancGen);
-			CHECKRANGESUBPOP(subPop.subPop());
-			CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-			ULONG size = m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
-			const_cast<Population *>(this)->useAncestralGen(curGen);
-			return size;
-		} else {
-			const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
-			DBG_FAILIF(static_cast<UINT>(subPop.subPop()) >= sizes.size(), IndexError,
-				"Subpopulation index " + toStr(subPop.subPop()) + " out of range of 0 ~ "
-				+ toStr(sizes.size() - 1) + " at ancestral generation " + toStr(ancGen));
-			return sizes[subPop.subPop()];
-		}
-		// avoid a warning message.
-		return 0;
-	}
+	ULONG subPopSize(vspID subPop = vspID(), int ancGen = -1) const;
 
 
 	/** Return the index of the first subpopulation with name \e name. An
