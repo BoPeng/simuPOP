@@ -22,7 +22,9 @@ New features:
   - Add mode --gui=interactive which is repsented by --gui=False in previous
 		versions of simuPOP.
   - Support Python 2.7, boost 1.44.0 and swig 2.0.
-  - Allow the use of subpopulation and virtual subpopulation names in parameter subPops.
+  - Allow the use of subpopulation and virtual subpopulation names in parameter subPops
+		and functions Population.subPopSize, Population.genotype,
+		Population.setGenotype, Population.setIndInfo.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification

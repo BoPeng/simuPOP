@@ -33,6 +33,72 @@
 
 namespace simuPOP {
 
+vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(InvalidSubPopID),
+		m_spName(""), m_vspName(""), m_allAvailSP(false), m_allAvailVSP(false)
+{
+	if (PyNumber_Check(obj)) {
+		// accept a number
+		m_subPop = PyInt_AsLong(obj);
+	} else if (PyString_Check(obj)) {
+		m_spName = PyObj_AsString(obj);
+#if PY_VERSION_HEX >= 0x03000000
+	} else if (PyBytes_Check(obj)) {
+		m_spName = PyBytes_AsString(obj);
+#endif
+	} else if (PySequence_Check(obj)) {
+		DBG_ASSERT(PySequence_Size(obj) == 2, ValueError,
+			"Invalid virtual subpopulation ID");
+		PyObject * sp = PySequence_GetItem(obj, 0);
+		PyObject * vsp = PySequence_GetItem(obj, 1);
+		if (PyNumber_Check(sp))
+			m_subPop = PyInt_AsLong(sp);
+		else if (PyString_Check(sp)) {
+			m_spName = PyObj_AsString(sp);
+		}
+#if PY_VERSION_HEX >= 0x03000000
+		else if (PyBytes_Check(sp)) {
+			m_spName = PyBytes_AsString(sp);
+		}
+#endif
+		else {
+			cerr << "Invalid vsp id for a subpopulation." << endl;
+			throw ValueError("Invalid vsp id for a subpopulation");
+		}
+		if (PyNumber_Check(vsp))
+			m_virtualSubPop = PyInt_AsLong(vsp);
+		else if (PyString_Check(vsp)) {
+			m_vspName = PyObj_AsString(vsp);
+		}
+#if PY_VERSION_HEX >= 0x03000000
+		else if (PyBytes_Check(vsp)) {
+			m_vspName = PyBytes_AsString(vsp);
+		}
+#endif
+		else if (!PyBool_Check(vsp)) {
+			cerr << "Invalid vsp id for a subpopulation." << endl;
+			throw ValueError("Invalid vsp id for a subpopulation");
+		}
+		Py_DECREF(sp);
+		Py_DECREF(vsp);
+	} else {
+		DBG_FAILIF(true, ValueError, "Invalid input for a (virtual) subpopulation.");
+	}
+}
+
+vspID vspID::resolve(const Population & pop) const
+{
+	SubPopID sp = m_subPop;
+	SubPopID vsp = m_virtualSubPop;
+	if (!m_spName.empty())
+		sp = pop.subPopByName(m_spName);
+	if (!m_vspName.empty()) {
+		DBG_ASSERT(pop.hasVirtualSubPop(), ValueError,
+				"No virtual subpopulation is defined.");
+		vsp = pop.virtualSplitter()->vspByName(m_vspName);
+	}
+	return vspID(sp, vsp);
+}
+
 
 subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 {
