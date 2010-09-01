@@ -390,7 +390,7 @@ public:
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>) in the current
 	 *  generation (default) or a specified ancestral generation \e ancGen. If
-	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>. 
+	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>.
 	 *  Population and virtual subpopulation names can be used.
 	 *  <group>2-subpopsize</group>
 	 */

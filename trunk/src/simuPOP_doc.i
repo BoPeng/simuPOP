@@ -691,6 +691,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BaseVspSplitter::vspByName "
+
+Usage:
+
+    x.vspByName(name)
+
+"; 
+
 %feature("docstring") simuPOP::Bernullitrials "
 
 Details:
@@ -5503,7 +5511,8 @@ Details:
     Return the size of a subpopulation (subPopSize(sp)) or a virtual
     subpopulation (subPopSize([sp, vsp])) in the current generation
     (default) or a specified ancestral generation ancGen. If no subpop
-    is given, it is the same as popSize(ancGen).
+    is given, it is the same as popSize(ancGen). Population and
+    virtual subpopulation names can be used.
 
 "; 
 
@@ -9747,25 +9756,27 @@ Details:
 
 Usage:
 
-    vspID(subPop, allAvailSP=False, allAvailVSP=False)
+    vspID(id)
+
+Details:
+
+    Create a subpopulation id. Accept id as well as names.
 
 "; 
 
-%feature("docstring") simuPOP::vspID::subPop "
+%ignore simuPOP::vspID::vspID(const vectori &subPop, bool allAvailSP=false, bool allAvailVSP=false, const string &spName=string(), const string &vspName=string());
+
+%feature("docstring") simuPOP::vspID::~vspID "
 
 Usage:
 
-    x.subPop()
+    x.~vspID()
 
 "; 
 
-%feature("docstring") simuPOP::vspID::virtualSubPop "
+%ignore simuPOP::vspID::subPop() const;
 
-Usage:
-
-    x.virtualSubPop()
-
-"; 
+%ignore simuPOP::vspID::virtualSubPop() const;
 
 %ignore simuPOP::vspID::valid() const;
 
@@ -9773,13 +9784,19 @@ Usage:
 
 %ignore simuPOP::vspID::allAvailSP() const;
 
-%feature("docstring") simuPOP::vspID::allAvailVSP "
+%ignore simuPOP::vspID::allAvailVSP() const;
+
+%feature("docstring") simuPOP::vspID::resolve "
 
 Usage:
 
-    x.allAvailVSP()
+    x.resolve(pop)
 
 "; 
+
+%ignore simuPOP::vspID::spName() const;
+
+%ignore simuPOP::vspID::vspName() const;
 
 %feature("docstring") simuPOP::WeightedSampler "
 

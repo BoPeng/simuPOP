@@ -242,6 +242,7 @@ namespace std
 %implicitconv floatList;
 %implicitconv repList;
 
+%implicitconv vspID;
 %implicitconv intList;
 %implicitconv uintString;
 %implicitconv uintList;
