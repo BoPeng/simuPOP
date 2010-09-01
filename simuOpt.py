@@ -664,7 +664,7 @@ class _paramDialog:
         self.options = options
         self.title = title
         if nCol is None:
-            self.nCol = int(len(self.options)/20) + 1
+            self.nCol = len(self.options)//20 + 1
         else:
             self.nCol = nCol
         self.description = _prettyDesc(description, indent='', width=55*self.nCol)
@@ -691,10 +691,10 @@ class _paramDialog:
                 rspan = len(opt['chooseOneOf'])
                 row += rspan - 1
         nRow = row
-        if int(nRow / self.nCol) * self.nCol == nRow:
-            nRow = int(nRow / self.nCol)
+        if nRow // self.nCol * self.nCol == nRow:
+            nRow = nRow // self.nCol
         else:
-            nRow = int(nRow/self.nCol) + 1
+            nRow = nRow // self.nCol + 1
         # set row and col for each item.
         headerRow = 0
         r = 0
