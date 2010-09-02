@@ -2207,11 +2207,11 @@ pop = sim.Population(20, loci=1, infoFields='a')
 pop.setVirtualSplitter(sim.InfoSplitter('a', cutoff=[3]))
 sim.initGenotype(pop, freq=[0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
-sim.infoEval(pop, 'a', subPops=[(0, 0)]);print()
-sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print()
+sim.infoEval(pop, 'a', subPops=[(0, 0)]);print(' ')
+sim.infoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print(' ')
 # use sim.population variables
 pop.dvars().b = 5
-sim.infoEval(pop, '"%d " % (a+b)');print()
+sim.infoEval(pop, '"%d " % (a+b)');print(' ')
 #end_file
 
 #begin_file log/InfoExec.py
