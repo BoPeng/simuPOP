@@ -1544,7 +1544,6 @@ for pop in simu.populations():
     sim.stat(pop, alleleFreq=0)
     print('%.2f' % pop.dvars().alleleFreq[0][0])
 
-print()
 # get a population
 pop = simu.extract(0)
 simu.numRep()
@@ -5723,7 +5722,7 @@ def outputstat(pop):
         print('%s: %.3f%% (size %d)' % (pop.subPopName((0,sp)),
             pop.dvars((0,sp)).propOfAffected * 100.,
             pop.dvars((0,sp)).popSize))
-    print()
+    #
     return True
 
 
