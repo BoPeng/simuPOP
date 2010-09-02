@@ -506,9 +506,7 @@ if __name__ == '__main__':
             SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
             print("Calling swig failed. Please check your swig version.")
             sys.exit(1)
-        print()
-        print("All wrap files are generated successfully.")
-        print()
+        print("\nAll wrap files are generated successfully.\n")
     # under solaris, there is no stdint.h so I need to replace stdint.h
     # in the wrap files with inttypes.h
     if sys.platform == 'sunos5':
