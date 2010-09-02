@@ -48,26 +48,28 @@ vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(Invali
 #endif
 	} else if (PySequence_Check(obj)) {
 		int sz = PySequence_Size(obj);
-		if (sz == 0 || sz > 2) {
+		if (sz > 2) {
 			cerr << "Invalid subpopulation ID." << endl;
 			throw ValueError("Invalid subpopulation ID");
 		}
-		PyObject * sp = PySequence_GetItem(obj, 0);
-		if (PyNumber_Check(sp))
-			m_subPop = PyInt_AsLong(sp);
-		else if (PyString_Check(sp)) {
-			m_spName = PyObj_AsString(sp);
-		}
+		if (sz >= 1) {
+			PyObject * sp = PySequence_GetItem(obj, 0);
+			if (PyNumber_Check(sp))
+				m_subPop = PyInt_AsLong(sp);
+			else if (PyString_Check(sp)) {
+				m_spName = PyObj_AsString(sp);
+			}
 #if PY_VERSION_HEX >= 0x03000000
-		else if (PyBytes_Check(sp)) {
-			m_spName = PyBytes_AsString(sp);
-		}
+			else if (PyBytes_Check(sp)) {
+				m_spName = PyBytes_AsString(sp);
+			}
 #endif
-		else {
-			cerr << "Invalid vsp id for a subpopulation." << endl;
-			throw ValueError("Invalid vsp id for a subpopulation");
+			else {
+				cerr << "Invalid vsp id for a subpopulation." << endl;
+				throw ValueError("Invalid vsp id for a subpopulation");
+			}
+			Py_DECREF(sp);
 		}
-		Py_DECREF(sp);
 		if (sz == 2) {
 			PyObject * vsp = PySequence_GetItem(obj, 1);
 			if (PyNumber_Check(vsp))
@@ -152,7 +154,11 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 #endif
 			else if (PySequence_Check(item)) {  // virtual subpopulation
 				int sz = PySequence_Size(item);
-				if (sz == 0 || sz > 2) {
+				if (sz == 0) {
+					m_subPops[i] = vspID();
+					continue;
+				}
+				if (sz > 2) {
 					cerr << "Invalid subpopulation ID." << endl;
 					throw ValueError("Invalid subpopulation ID");
 				}

@@ -16,6 +16,7 @@ rebuild3:
 	python3 setup.py install
 
 clean:
+	@rm -rf build
 	@rm -f src/*wrap* src/simuPOP_*.py
 	@find . -name '*~' -delete
 	@find . -name '*.bak' -delete
