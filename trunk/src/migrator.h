@@ -224,6 +224,8 @@ public:
 				"Virtual subpopulations are not supported in operator SplitSubPops");
 		}
 
+        DBG_ASSERT(m_proportions.empty() || fcmp_eq(accumulate(m_proportions.begin(), m_proportions.end(), 0.), 1.),
+                ValueError, "Proportions should add up to one.");
 		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.elems().empty() != 2, ValueError,
 			"Please specify one and only one of sizes, proportions and infoFields.");
 	}
