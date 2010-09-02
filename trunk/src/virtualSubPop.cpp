@@ -51,7 +51,7 @@ vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(Invali
 		if (sz == 0 || sz > 2) {
 			cerr << "Invalid subpopulation ID." << endl;
 			throw ValueError("Invalid subpopulation ID");
-		} 
+		}
 		PyObject * sp = PySequence_GetItem(obj, 0);
 		if (PyNumber_Check(sp))
 			m_subPop = PyInt_AsLong(sp);
@@ -75,11 +75,11 @@ vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(Invali
 			else if (PyString_Check(vsp)) {
 				m_vspName = PyObj_AsString(vsp);
 			}
-	#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03000000
 			else if (PyBytes_Check(vsp)) {
 				m_vspName = PyBytes_AsString(vsp);
 			}
-	#endif
+#endif
 			else if (!PyBool_Check(vsp)) {
 				cerr << "Invalid vsp id for a subpopulation." << endl;
 				throw ValueError("Invalid vsp id for a subpopulation");
@@ -185,18 +185,18 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 					else if (PyString_Check(vsp)) {
 						vsp_name = PyObj_AsString(vsp);
 					}
-	#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03000000
 					else if (PyBytes_Check(vsp)) {
 						vsp_name = PyBytes_AsString(vsp);
 					}
-	#endif
+#endif
 					else if (!PyBool_Check(vsp)) {
 						cerr << "Invalid vsp id for a subpopulation." << endl;
 						throw ValueError("Invalid vsp id for a subpopulation");
 					}
 					Py_DECREF(vsp);
 					m_subPops[i] = vspID(sp_id, vsp_id, sp == Py_True, vsp == Py_True, sp_name, vsp_name);
-				} 
+				}
 			} else {
 				cerr << "Invalid input for a list of (virtual) subpopulations." << endl;
 				throw ValueError("Invalid input for a list of (virtual) subpopulations.");
