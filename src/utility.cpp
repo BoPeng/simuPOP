@@ -713,13 +713,19 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 			PyObject * func = PyObject_GetAttrString(obj, "__call__");
 			DBG_ASSERT(PyCallable_Check(func), ValueError,
 				"The func attribute of the passed object should be callable.");
-			if (!PyObject_HasAttrString(func, "__name__")) {
-				cerr << "Cannot find name of the passed function. " << endl;
-				throw ValueError("Cannot find name of the passed function.");
+			if (PyObject_HasAttrString(func, "__name__")) {
+				PyObject * name = PyObject_GetAttrString(func, "__name__");
+				m_name = PyObj_AsString(name);
+				Py_DECREF(name);
+			} else if (PyObject_HasAttrString(func, "__call__")) {
+				PyObject * func1 = PyObject_GetAttrString(func, "__call__");
+				if (PyObject_HasAttrString(func1, "__name__")) {
+					PyObject * name = PyObject_GetAttrString(func1, "__name__");
+					m_name = PyObj_AsString(name);
+					Py_DECREF(name);
+				}
+				Py_DECREF(func1);
 			}
-			PyObject * name = PyObject_GetAttrString(func, "__name__");
-			m_name = PyObj_AsString(name);
-			Py_DECREF(name);
 			Py_DECREF(func);
 			return;
 #if PY_VERSION_HEX < 0x03000000
