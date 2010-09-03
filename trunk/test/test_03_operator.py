@@ -25,6 +25,20 @@ def genRecorder(pop):
 def opRecorder(*args, **kwargs):
     return PyOperator(func=genRecorder, *args, **kwargs)
 
+class func:
+    def __init__(self):
+        self.__call__ = self.func
+
+    def func(self, *args):
+        return sum(args)
+
+class func1:
+    def __init__(self):
+        self.__call__ = self.func
+
+    def func(self, x1, x2):
+        return sum([x1, x2])
+
 class TestOperator(unittest.TestCase):
 
     def setUp(self):
@@ -167,11 +181,16 @@ class TestOperator(unittest.TestCase):
             os.remove('gen%d.txt'%i)
 
     def testWithArgs(self):
+        '''Testing class WithArgs'''
         def blah(*args):
             return sum(args)
         pop = Population(100, infoFields=['trait'] + ['x%d' % x for x in range(20)])
         pyQuanTrait(pop, WithArgs(blah, ['x%d' % x for x in range(20)]),
             infoFields='trait')
+        pyQuanTrait(pop, WithArgs(func(), ['x%d' % x for x in range(20)]),
+            infoFields='trait')
+        pop = Population(100, infoFields=['trait'] + ['x%d' % x for x in range(20)])
+        pyQuanTrait(pop, func1(), infoFields='trait')
 
     def testOutputFunc(self):
         '''Testing output to a function'''
