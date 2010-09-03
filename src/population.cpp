@@ -825,13 +825,24 @@ void Population::setSubPopByIndInfo(const string & field)
 }
 
 
-vectoru Population::splitSubPop(UINT subPop, const vectoru & sizes, const vectorstr & names)
+vectoru Population::splitSubPop(UINT subPop, const vectorf & sizes, const vectorstr & names)
 {
 	if (sizes.size() <= 1)
 		return vectoru(1, subPop);
 
-	DBG_FAILIF(accumulate(sizes.begin(), sizes.end(), 0LU) != subPopSize(subPop), ValueError,
-		"Sum of parameter sizes should be the size of subpopulation " + toStr(subPop));
+	double s = accumulate(sizes.begin(), sizes.end(), 0.);
+	vectoru count(sizes.size());
+
+	if (fcmp_eq(s, 1.)) {
+		// proportions
+		propToCount(sizes, subPopSize(subPop), count);
+	} else if (fcmp_eq(s, subPopSize(subPop))) {
+		for (size_t i = 0; i < sizes.size(); ++i) {
+			count[i] = static_cast<ULONG>(sizes[i] + 0.5);
+		}
+	}
+	DBG_FAILIF(accumulate(count.begin(), count.end(), 0LU) != subPopSize(subPop), ValueError,
+		"Sum of parameter sizes should be 1 or the size of subpopulation " + toStr(subPop));
 
 	DBG_ASSERT(names.empty() || sizes.size() == names.size(), ValueError,
 		"Names should be given to none or all of the split subpopulations");
@@ -841,22 +852,22 @@ vectoru Population::splitSubPop(UINT subPop, const vectoru & sizes, const vector
 
 	vectoru subPopSizes;
 	vectorstr subPopNames;
-	vectoru ret(sizes.size());
+	vectoru ret(count.size());
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (sp != subPop) {
 			subPopSizes.push_back(subPopSize(sp));
 			if (!m_subPopNames.empty())
 				subPopNames.push_back(m_subPopNames[sp]);
 		} else {
-			subPopSizes.insert(subPopSizes.end(), sizes.begin(), sizes.end());
+			subPopSizes.insert(subPopSizes.end(), count.begin(), count.end());
 			if (!m_subPopNames.empty()) {
 				if (names.empty()) {
-					for (size_t i = 0; i < sizes.size(); ++i)
+					for (size_t i = 0; i < count.size(); ++i)
 						subPopNames.push_back(m_subPopNames[subPop]);
 				} else
 					subPopNames.insert(subPopNames.end(), names.begin(), names.end());
 			}
-			for (size_t i = 0; i < sizes.size(); ++i)
+			for (size_t i = 0; i < count.size(); ++i)
 				ret[i] = sp + i;
 		}
 	}

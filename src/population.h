@@ -912,7 +912,8 @@ public:
 	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
-	 *  which should add up to the size of subpopulation \e subPop. If \e subPop
+	 *  which should add up to the size of subpopulation \e subPop or \e 1,
+	 *  in which case \e sizes are treated as proportions. If \e subPop
 	 *  is not the last subpopulation, indexes of subpopulations after
 	 *  \e subPop are shifted. If \e subPop is named, the same name will be
 	 *  given to all new subpopulations unless a new set of \e names are
@@ -920,7 +921,7 @@ public:
 	 *  split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru splitSubPop(UINT subPop, const vectoru & sizes, const vectorstr & names = vectorstr());
+	vectoru splitSubPop(UINT subPop, const vectorf & sizes, const vectorstr & names = vectorstr());
 
 
 	/** Remove (virtual) subpopulation(s) \e subPops and all their individuals.

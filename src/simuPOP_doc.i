@@ -5821,12 +5821,13 @@ Usage:
 Details:
 
     Split subpopulation subPop into subpopulations of given sizes,
-    which should add up to the size of subpopulation subPop. If subPop
-    is not the last subpopulation, indexes of subpopulations after
-    subPop are shifted. If subPop is named, the same name will be
-    given to all new subpopulations unless a new set of names are
-    specified for these subpopulations. This function returns the IDs
-    of split subpopulations.
+    which should add up to the size of subpopulation subPop or 1, in
+    which case sizes are treated as proportions. If subPop is not the
+    last subpopulation, indexes of subpopulations after subPop are
+    shifted. If subPop is named, the same name will be given to all
+    new subpopulations unless a new set of names are specified for
+    these subpopulations. This function returns the IDs of split
+    subpopulations.
 
 "; 
 
