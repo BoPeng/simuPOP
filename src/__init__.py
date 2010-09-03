@@ -630,11 +630,8 @@ class WithArgs:
         '''Return a callable object that wraps around function ``func``.
         Parameter ``args`` should be a list of parameter names.
         '''
-        self.args = args
-        self.func = func
-
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
+        self.__args__ = args
+        self.__call__ = func
 
 
 # mating schemes
