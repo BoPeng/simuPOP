@@ -112,6 +112,11 @@ void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits) const
 	PyObject * res = PyEval_CallObject(m_func.func(), args);
 	Py_XDECREF(args);
 
+	if (res == NULL) {
+		PyErr_Print();
+		PyErr_Clear();
+		throw RuntimeError("Function call " + m_func.name() + " failed.");
+	}
 	if (PyNumber_Check(res)) {
 		DBG_ASSERT(infoSize() == 1, RuntimeError,
 			"A number is returned from a user-defined function but a sequence is expected.");

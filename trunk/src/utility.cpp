@@ -695,31 +695,41 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 
 	DBG_ASSERT(PyCallable_Check(obj), ValueError,
 		"Passed parameter should be None or a Python function");
-	
-	if (PyObject_HasAttrString(obj, "__call__"))
-		obj = PyObject_GetAttrString(obj, "__call__");
 
-	if (PyObject_HasAttrString(obj, "args") && PyObject_HasAttrString(obj, "func")) {
-		// in this case, a WithArgs object must have been passed.
-		PyObject * args = PyObject_GetAttrString(obj, "args");
-		m_numArgs = PySequence_Size(args);
-		for (int i = 0; i < m_numArgs; ++i) {
-			PyObject * item = PySequence_GetItem(args, i);
-			DBG_ASSERT(PyString_Check(item), ValueError,
-				"Attribute args in a simuPOP WithArgs object should be a list of strings");
-			m_args.push_back(PyObj_AsString(item));
-			Py_DECREF(item);
+	if (PyObject_HasAttrString(obj, "__call__")) {
+		if (PyObject_HasAttrString(obj, "__args__")) {
+			// in this case, a WithArgs object must have been passed.
+			PyObject * args = PyObject_GetAttrString(obj, "__args__");
+			m_numArgs = PySequence_Size(args);
+			for (int i = 0; i < m_numArgs; ++i) {
+				PyObject * item = PySequence_GetItem(args, i);
+				DBG_ASSERT(PyString_Check(item), ValueError,
+					"Attribute args in a simuPOP WithArgs object should be a list of strings");
+				m_args.push_back(PyObj_AsString(item));
+				Py_DECREF(item);
+			}
+			Py_DECREF(args);
+			// find its name.
+			PyObject * func = PyObject_GetAttrString(obj, "__call__");
+			DBG_ASSERT(PyCallable_Check(func), ValueError,
+				"The func attribute of the passed object should be callable.");
+			if (!PyObject_HasAttrString(func, "__name__")) {
+				cerr << "Cannot find name of the passed function. " << endl;
+				throw ValueError("Cannot find name of the passed function.");
+			}
+			PyObject * name = PyObject_GetAttrString(func, "__name__");
+			m_name = PyObj_AsString(name);
+			Py_DECREF(name);
+			Py_DECREF(func);
+			return;
+#if PY_VERSION_HEX < 0x03000000
+		} else if (!PyObject_HasAttrString(obj, "func_code")) {
+#else
+		} else if (!PyObject_HasAttrString(obj, "__code__")) {
+#endif
+			// if there is no arg so it is a member function of a class
+			obj = PyObject_GetAttrString(obj, "__call__");
 		}
-		Py_DECREF(args);
-		// find its name.
-		PyObject * func = PyObject_GetAttrString(obj, "func");
-		DBG_ASSERT(PyCallable_Check(func), ValueError,
-			"The func attribute of the passed object should be callable.");
-		PyObject * name = PyObject_GetAttrString(func, "__name__");
-		m_name = PyObj_AsString(name);
-		Py_DECREF(name);
-		Py_DECREF(func);
-		return;
 	}
 	// is it unbounded?
 #if PY_VERSION_HEX < 0x03000000
@@ -728,6 +738,10 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	int bounded = PyObject_HasAttrString(obj, "__self__");
 #endif
 
+	if (!PyObject_HasAttrString(obj, "__name__")) {
+		cerr << "Cannot find name of the passed function. " << endl;
+		throw ValueError("Cannot find name of the passed function.");
+	}
 	// find its name.
 	PyObject * name = PyObject_GetAttrString(obj, "__name__");
 	m_name = PyObj_AsString(name);
@@ -745,7 +759,10 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	PyObject * code = PyObject_GetAttrString(obj, "__code__");
 #endif
 
-	DBG_ASSERT(code, SystemError, "Invalid attribute func_code for a function object");
+	if (!code) {
+		cerr << "Invalid attribute func_code or __code__ for a function object" << endl;
+		throw SystemError("Invalid attribute func_code or __code for a function object");
+	}
 	// probe number of parameters
 	PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
 	DBG_ASSERT(co_argcount, SystemError, "Invalid attribute co_argcount for a function object");

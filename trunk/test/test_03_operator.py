@@ -166,6 +166,13 @@ class TestOperator(unittest.TestCase):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
             os.remove('gen%d.txt'%i)
 
+    def testWithArgs(self):
+        def blah(*args):
+            return sum(args)
+        pop = Population(100, infoFields=['trait'] + ['x%d' % x for x in range(20)])
+        pyQuanTrait(pop, WithArgs(blah, ['x%d' % x for x in range(20)]),
+            infoFields='trait')
+
     def testOutputFunc(self):
         '''Testing output to a function'''
         simu = Simulator(Population(), rep=5)
