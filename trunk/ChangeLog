@@ -26,6 +26,7 @@ New features:
 		and functions Population.subPopSize, Population.genotype,
 		Population.setGenotype, Population.setIndInfo.
   - Allow the passing of object with __call__ object as a demographic function.
+  - Parameter sizes in function Population.splitSubPop can now be proportions.
 
 Bugs:
   - Regression: version 1.0.3 disallow invalid default value in parameter specification

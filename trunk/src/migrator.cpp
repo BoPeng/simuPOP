@@ -213,7 +213,7 @@ bool Migrator::apply(Population & pop) const
 	pop.setSubPopByIndInfo(infoField(0));
 	// try to keep number of subpopulations.
 	if (pop.numSubPop() < oldNumSubPop) {
-		vectoru split(oldNumSubPop - pop.numSubPop() + 1, 0);
+		vectorf split(oldNumSubPop - pop.numSubPop() + 1, 0);
 		split[0] = pop.subPopSize(pop.numSubPop() - 1);
 		pop.splitSubPop(pop.numSubPop() - 1, split);
 	}
@@ -253,22 +253,20 @@ bool SplitSubPops::apply(Population & pop) const
 			pop.setIndOrdered(false);
 		}
 
-		if (!m_subPopSizes.empty())
-			pop.splitSubPop(sp, m_subPopSizes, m_names);
-		else if (!m_proportions.empty()) {
-			vectoru sizes;
-			for (size_t i = 0; i < m_proportions.size(); ++i)
-				sizes.push_back(static_cast<ULONG>(pop.subPopSize(sp) * m_proportions[i]));
-			// floating point problem.
-			sizes[m_proportions.size() - 1] += pop.subPopSize(sp) - accumulate(sizes.begin(), sizes.end(), 0LU);
-			pop.splitSubPop(sp, sizes, m_names);
+		if (!m_subPopSizes.empty()) {
+			vectorf sz(m_subPopSizes.size());
+			for (size_t i = 0; i < sz.size(); ++i)
+				sz[i] = m_subPopSizes[i];
+			pop.splitSubPop(sp, sz, m_names);
+		} else if (!m_proportions.empty()) {
+			pop.splitSubPop(sp, m_proportions, m_names);
 		} else {
 			// using an information field
 			UINT idx = pop.infoIdx(infoField(0));
 			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp), indCompare(idx));
 			ConstRawIndIterator it = pop.rawIndBegin(sp);
 			ConstRawIndIterator it_end = pop.rawIndEnd(sp);
-			vectoru spSize(1, 1);
+			vectorf spSize(1, 1);
 			double value = it->info(idx);
 			for (++it; it != it_end; ++it) {
 				if (fcmp_ne(it->info(idx), value)) {

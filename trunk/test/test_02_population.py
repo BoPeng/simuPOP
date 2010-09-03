@@ -949,6 +949,13 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName(1), 'A1')
         self.assertEqual(pop.subPopName(2), 'A2')
         self.assertEqual(pop.subPopNames(), ('', 'A1', 'A2', ''))
+        # split by proportion
+        pop = Population(size=[100, 80, 50])
+        self.assertRaises(ValueError, pop.splitSubPop, 1, [0.2, 0.7])
+        pop.splitSubPop(1, [0.3, 0.7])
+        self.assertEqual(pop.subPopSizes(), (100, 24, 56, 50))
+        pop.splitSubPop(0, [0.333, 0.667])
+        self.assertEqual(pop.subPopSizes(), (33, 67, 24, 56, 50))
 
     def testSetSubPopByIndInfo(self):
         'Testing Population::setSubPopByIndInfo(field)'
