@@ -695,6 +695,9 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 
 	DBG_ASSERT(PyCallable_Check(obj), ValueError,
 		"Passed parameter should be None or a Python function");
+	
+	if (PyObject_HasAttrString(obj, "__call__"))
+		obj = PyObject_GetAttrString(obj, "__call__");
 
 	if (PyObject_HasAttrString(obj, "args") && PyObject_HasAttrString(obj, "func")) {
 		// in this case, a WithArgs object must have been passed.
