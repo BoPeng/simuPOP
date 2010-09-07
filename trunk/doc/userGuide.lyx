@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -19385,9 +19385,9 @@ lstparams "caption={A sample parameter specification list},label={paramSpec},las
 \begin_layout Standard
 If you dislike an explicit list of dictionaries, you can use function 
 \family typewriter
-simuOpt.param
+simuOpt.addOption
 \family default
- with keyword arguments to return such a dictionary.
+ to add options one by one.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -19395,12 +19395,17 @@ reference "paramFunc"
 
 \end_inset
 
- shows an equivalent parameter specification dictionaries using this style.
+ shows an equivalent way of specifying three options using this function.
+ This style is used by Python modules such as 
+\family typewriter
+optparse
+\family default
+ and 
+\family typewriter
+argparse
+\family default
+, and is preferred by some simuPOP users.
  
-\series bold
-There is no functional difference between these two styles.
-\series default
-
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/paramFunc.py"

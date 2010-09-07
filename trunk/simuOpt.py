@@ -1191,11 +1191,11 @@ class _wxParamDialog(_paramDialog):
         # related function is called.
         del self.app
 
-def param(**kwargs):
+def param(name='', default=None, **kwargs):
     '''A simple wrapper that allows the specification of a parameter using a
     function instead of a dictionary. Please refer to class
     ``simuOpt.Params`` for allowed keyword arguments and their meanings.'''
-    return kwargs
+    return kwargs.update({'name':name, 'default':default})
 
 class Params:
     '''
@@ -1350,7 +1350,7 @@ class Params:
         else:
             self.__dict__[name] = value
 
-    def addOption(self, pos=-1, **kwargs):
+    def addOption(self, name='', default=None, **kwargs):
         '''
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
@@ -1359,9 +1359,6 @@ class Params:
         ``description``, ``validator``, ``type``, and ``separator``.
         This option will have a name specified by ``name`` and an initial
         default value specified by ``default``.
-
-        An optional parameter *pos* can be given to specify an index before
-        which this option will be inserted.
         '''
         allowed_keys = ['name', 'default', 'label', 'description', 'validator',
             'separator', 'type', 'arg', 'longarg', 'allowedTypes', 'useDefault',
@@ -1417,10 +1414,11 @@ class Params:
             if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
                 print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
         #
-        if pos >= 0 and pos < len(self.options):
-            self.options.insert(pos, opt)
-        else:
-            self.options.append(opt)
+        if not opt.has_key('name') and name != '':
+            opt['name'] = name
+        if not opt.has_key('default'):
+            opt['default'] = default
+        self.options.append(opt)
         if opt.has_key('separator'):
             opt['gui_type'] = 'separator'
             return
