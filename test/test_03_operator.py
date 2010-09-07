@@ -27,16 +27,16 @@ def opRecorder(*args, **kwargs):
 
 class func:
     def __init__(self):
-        self.__call__ = self.func
+        pass
 
-    def func(self, *args):
+    def __call__(self, *args):
         return sum(args)
 
 class func1:
     def __init__(self):
-        self.__call__ = self.func
+        pass
 
-    def func(self, x1, x2):
+    def __call__(self, x1, x2):
         return sum([x1, x2])
 
 class TestOperator(unittest.TestCase):
