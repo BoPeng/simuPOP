@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
 
-version 1.0.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
 New features:
   - Add module simuPOP.sandbox as a place to store experimental and specialized classes and
