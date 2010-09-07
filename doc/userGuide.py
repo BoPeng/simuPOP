@@ -4546,26 +4546,14 @@ print(par2.rep, par2.pop)
 
 #begin_file log/paramFunc.py
 import types, simuOpt
-options = [
-    simuOpt.param(
-        name = 'rate',
-        default = [0.01],
-        label = 'Recombination rate',
-        type = 'numbers',
-        description = '''Recombination rate for each replicate. If a single value
-            is given, it will be used for all replicates.''',
-        validator = simuOpt.valueListOf(simuOpt.valueBetween(0, 1))),
-    simuOpt.param(
-        name = 'rep',
-        default = 5,
-        label = 'Number of replicates',
-        type = 'integer',
+pars = simuOpt.Params(doc='A demo simulation')
+pars.addOption('rate', [0.01], label = 'Recombination rate',
+        type = 'numbers', description = '''Recombination rate for each replicate.
+            If a single value is given, it will be used for all replicates.''')
+pars.addOption('rep', 5, label = 'Number of replicates', type = 'integer',
         description = 'Number of replicates to simulate.',
-        validator = simuOpt.valueGT(0)), 
-    simuOpt.param(
-        name = 'pop',
-        default = 'CEU',
-        label = 'Initial population',
+        validator = simuOpt.valueGT(0)) 
+pars.addOption('pop', 'CEU', label = 'Initial population',
         type = ('chooseOneOf', ['CEU', 'YRI', 'CHB+JPT']),
         description = '''Use one of the HapMap sim.populations as the initial
             sim.Population for this simulation. You can choose from:
@@ -4573,11 +4561,7 @@ options = [
             |CEU: 30 trios from Utah with European ancestry (European)
             |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
             ''')
-]
-#begin_ignore
-pars = simuOpt.Params(options, 'A demo simulation')
 print(pars.usage())
-#end_ignore
 #end_file
 
 
