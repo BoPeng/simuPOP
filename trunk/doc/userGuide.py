@@ -5601,8 +5601,7 @@ setup(name = "myParentsChooser",
     ext_modules = [
         Extension('_myParentsChooser',
             sources = ['myParentsChooser.i'],
-            swig_opts = ['-O', '-templatereduce', '-shadow',
-                '-python', '-c++', '-keyword', '-nodefaultctor'],
+            swig_opts = ['-O', '-shadow', '-c++', '-keyword',],
             include_dirs = ["."],
     )
   ]
