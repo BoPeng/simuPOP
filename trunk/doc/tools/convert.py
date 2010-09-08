@@ -208,7 +208,7 @@ class MyRestWriter(RestWriter):
             file = file.replace('.log', '.py')
             # get the file
             txt = open(file).read()
-            outfilename = 'example_' + os.path.split(file)[-1]
+            outfilename = os.path.split(file)[-1]
             with open(os.path.join('build', outfilename), 'w') as outfile:
                 print >> outfile, '''#!/usr/bin/env python
 
