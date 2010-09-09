@@ -2,6 +2,7 @@ ChangeLog of simuPOP
 
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
+  - BUG: Textbox in Tkinter help dialog does not resize.
 
 version 1.0.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
