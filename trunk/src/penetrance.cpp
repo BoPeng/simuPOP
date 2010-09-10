@@ -97,6 +97,9 @@ bool BasePenetrance::applyToIndividual(Individual * ind, Population * pop)
 bool BasePenetrance::applyDuringMating(Population & pop, RawIndIterator offspring,
                                        Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	double p = penet(&pop, &*offspring);
 
 	if (infoSize() > 0)

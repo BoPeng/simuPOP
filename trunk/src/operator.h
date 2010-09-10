@@ -272,6 +272,14 @@ public:
 		return m_subPops.expandFrom(pop);
 	}
 
+	/// CPPONLY
+	bool applicableToAllOffspring() const
+	{
+		return ISSETFLAG(m_flags, m_flagAllSubPops);
+	}
+
+	/// CPPONLY
+	bool applicableToOffspring(const Population & pop, RawIndIterator offspring) const;
 
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
@@ -283,6 +291,7 @@ private:
 	static const size_t m_flagAtAllGen = 1;
 	static const size_t m_flagOnlyAtBegin = 2;
 	static const size_t m_flagOnlyAtEnd = 4;
+	static const size_t m_flagAllSubPops = 8;
 
 private:
 	/// starting generation, default to 0

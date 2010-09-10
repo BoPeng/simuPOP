@@ -325,6 +325,14 @@ Details:
 
 %ignore simuPOP::BaseOperator::applicableSubPops(const Population &pop) const;
 
+%feature("docstring") simuPOP::BaseOperator::applicableToOffspring "
+
+Usage:
+
+    x.applicableToOffspring(pop, offspring)
+
+"; 
+
 %feature("docstring") simuPOP::BasePenetrance "
 
 Details:
@@ -558,11 +566,11 @@ Details:
     parents. These two implementation can be identical or different
     depending on the mating scheme used.
     *   Seleting offspring is less efficient than the selecting
-    parents, especially when fitness values are low. It is worth
-    noting that a selector used as a during-mating operator does not
-    support parameter subPops. If you need to apply different
-    selection scheme to different virtual subpopulations, you can use
-    different selectors in a heterogeneous mating scheme.
+    parents, especially when fitness values are low.
+    *   Parameter subPops are applied to the offspring population and
+    is used to judge if an operator should be applied. It thus does
+    not make sense to apply a selector to a virtual subpopulation with
+    affected individuals.
 
 "; 
 

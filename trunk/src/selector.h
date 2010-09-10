@@ -95,11 +95,10 @@ namespace simuPOP {
  *       the mating scheme used.
  *  \li Seleting offspring is less efficient than the selecting parents,
  *       especially when fitness values are low.
- *
- *  It is worth noting that a selector used as a during-mating operator does
- *  not support parameter \e subPops. If you need to apply different selection
- *  scheme to different virtual subpopulations, you can use different selectors
- *  in a heterogeneous mating scheme.
+ *  \li Parameter \e subPops are applied to the offspring population and is
+ *       used to judge if an operator should be applied. It thus does not make
+ *       sense to apply a selector to a virtual subpopulation with affected
+ *       individuals.
  */
 class BaseSelector : public BaseOperator
 {
@@ -144,6 +143,10 @@ public:
 	bool applyDuringMating(Population & pop, RawIndIterator offspring,
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
+		// if offspring does not belong to subPops, do nothing, but does not fail.
+		if (!applicableToOffspring(pop, offspring))
+			return true;
+
 		double fitness = indFitness(pop, &*offspring);
 
 		DBG_FAILIF(fcmp_lt(fitness, 0) || fcmp_gt(fitness, 1), ValueError,
