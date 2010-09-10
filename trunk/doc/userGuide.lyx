@@ -6162,6 +6162,11 @@ lstparams "caption={Genotype transmitters},label={transmitter}"
 \end_layout
 
 \begin_layout Standard
+During-mating operators can be applied to (virtual) subpopulations using
+ parameter subPops.
+\end_layout
+
+\begin_layout Standard
 Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6184,15 +6189,6 @@ reference "sub:Customized-genotype-transmitter"
 \end_inset
 
  demonstrates how to define your own genotype transmitter.
- Note that during-mating operators do not support parameter 
-\family typewriter
-subPops
-\family default
-.
- If you would like to apply different during-mating operators to different
- (virtual) subpopulations, you can use a heterogeneous mating scheme that
- applies different homogeneous mating schemes with different operators to
- different (virtual) subpopulations.
 \end_layout
 
 \begin_layout Subsection
