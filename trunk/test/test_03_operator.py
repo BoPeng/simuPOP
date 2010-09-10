@@ -442,14 +442,31 @@ class TestOperator(unittest.TestCase):
 
     def testSubPopsOfDuringMatingOperator(self):
         'Testing subPops parameter of during mating operators'
-        pop = Population([100]*10, infoFields='a')
+        pop = Population([100]*2, infoFields='a')
         pop.evolve(
-            matingScheme=RandomSelection(ops=
-                [CloneGenoTransmitter()] + 
+            initOps=InitSex(),
+            matingScheme=RandomMating(ops=
+                [MendelianGenoTransmitter()] + 
                  [InfoExec('a=%d' % i, subPops=i) for i in range(10)]),
             gen=1
         )
-        print(pop.indInfo('a'))
+        self.assertEqual(pop.indInfo('a'), tuple([0.0]*100 + [1.0]*100))
+        # virtual subpopulation
+        pop.setVirtualSplitter(SexSplitter())
+        pop.evolve(
+            initOps=InfoExec('a=0'),
+            matingScheme=RandomMating(ops=
+                [MendelianGenoTransmitter(),
+                 InfoExec('a=1', subPops=[(ALL_AVAIL,0)]),
+                 InfoExec('a=2', subPops=[(ALL_AVAIL,1)])]),
+            gen=1
+        )
+        for ind in pop.individuals():
+            if ind.sex() == MALE:
+                self.assertEqual(ind.a, 1.0)
+            else:
+                self.assertEqual(ind.a, 2.0)
+
 if __name__ == '__main__':
     unittest.main()
 
