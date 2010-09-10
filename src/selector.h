@@ -144,7 +144,7 @@ public:
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
 		// if offspring does not belong to subPops, do nothing, but does not fail.
-		if (!applicableToOffspring(pop, offspring))
+		if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 			return true;
 
 		double fitness = indFitness(pop, &*offspring);

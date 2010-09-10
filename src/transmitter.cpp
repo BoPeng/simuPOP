@@ -128,7 +128,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator of
                                              Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 
 	initializeIfNeeded(*offspring);
@@ -288,7 +288,7 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterato
                                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
@@ -305,7 +305,7 @@ bool SelfingGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator 
                                                Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	//
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
@@ -334,7 +334,7 @@ bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIter
                                                     Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
 		"haplodiploid offspring generator: one of the parents is invalid.");
@@ -377,7 +377,7 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIte
                                                      Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	initializeIfNeeded(*offspring);
 
@@ -877,7 +877,7 @@ bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                      Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	// this tells the recombinator how to initialize m_bt.
 	// if the recombinator member function is used directly, this information will

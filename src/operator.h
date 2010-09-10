@@ -272,11 +272,13 @@ public:
 		return m_subPops.expandFrom(pop);
 	}
 
+
 	/// CPPONLY
 	bool applicableToAllOffspring() const
 	{
 		return ISSETFLAG(m_flags, m_flagAllSubPops);
 	}
+
 
 	/// CPPONLY
 	bool applicableToOffspring(const Population & pop, RawIndIterator offspring) const;

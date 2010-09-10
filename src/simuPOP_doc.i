@@ -325,13 +325,9 @@ Details:
 
 %ignore simuPOP::BaseOperator::applicableSubPops(const Population &pop) const;
 
-%feature("docstring") simuPOP::BaseOperator::applicableToOffspring "
+%ignore simuPOP::BaseOperator::applicableToAllOffspring() const;
 
-Usage:
-
-    x.applicableToOffspring(pop, offspring)
-
-"; 
+%ignore simuPOP::BaseOperator::applicableToOffspring(const Population &pop, RawIndIterator offspring) const;
 
 %feature("docstring") simuPOP::BasePenetrance "
 

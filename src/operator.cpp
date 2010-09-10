@@ -170,7 +170,7 @@ void BaseOperator::setFlags()
 		if (m_stepGen < 1)
 			throw IndexError("active generation interval should be at least 1.");
 
-		if (m_atGen[0] == 0)	
+		if (m_atGen[0] == 0)
 			SETFLAG(m_flags, m_flagOnlyAtBegin);
 		if (m_atGen[0] == -1)
 			SETFLAG(m_flags, m_flagOnlyAtEnd);
@@ -441,7 +441,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	bool res = true;
 
@@ -666,7 +666,7 @@ bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                    Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
 		return true;
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
