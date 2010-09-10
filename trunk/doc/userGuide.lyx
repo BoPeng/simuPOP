@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6163,11 +6163,16 @@ lstparams "caption={Genotype transmitters},label={transmitter}"
 
 \begin_layout Standard
 During-mating operators can be applied to (virtual) subpopulations using
- parameter subPops.
-\end_layout
-
-\begin_layout Standard
-Section 
+ parameter 
+\family typewriter
+subPops
+\family default
+, which 
+\series bold
+refers to (virtual) subpopulations in the offspring population
+\series default
+.
+ Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Pre-defined-genotype-transmitters"
@@ -6188,7 +6193,14 @@ reference "sub:Customized-genotype-transmitter"
 
 \end_inset
 
- demonstrates how to define your own genotype transmitter.
+ demonstrates how to define your own genotype transmitter, Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:vspSelection"
+
+\end_inset
+
+ demonstrates the use of during-mating operator in virtual subpopulations.
 \end_layout
 
 \begin_layout Subsection
@@ -15562,6 +15574,12 @@ lstparams "caption={Frequency dependent selection},label={freqDependentSelection
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:vspSelection"
+
+\end_inset
+
 Support for virtual subpopulations *
 \end_layout
 
@@ -15597,23 +15615,42 @@ reference "vspSelector"
  and female individuals in the second subpopulation.
  However, because the sex of offspring is randomly determined, the selection
  actually decreases the disease allele frequency for all inviduals.
- Note that the second selector that set fitness 
-\family typewriter
-[1,1,1]
-\family default
- to females in the first subpopulation and males in the second subpopulation
- is, strictly speaking, not needed because 
-\family typewriter
-RandomMating
-\family default
- performs naturally selection separately in males and females so females
- will be handled correctly in the first subpopulation if their fitness values
- are all zero.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/vspSelector.log"
 lstparams "caption={Selector in virtual subpopulations},label={vspSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Selecting through offspring can also be applied to virtual subpopulations.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "vspDuringMatingSelector"
+
+\end_inset
+
+ moves the selectors to the 
+\family typewriter
+ops
+\family default
+ parameter of 
+\family typewriter
+RandomMating
+\family default
+.
+ In this way, male and female offspring will have different survival probabiliti
+es according to their genotype.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/vspDuringMatingSelector.log"
+lstparams "caption={Selection against offspring in virtual subpopulations},label={vspDuringMatingSelector}"
 
 \end_inset
 

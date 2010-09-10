@@ -1483,24 +1483,16 @@ sim.getRNG().set(seed=12345)
 pop = sim.Population(size=[1000], loci=2,
     infoFields='mark')
 pop.setVirtualSplitter(sim.RangeSplitter([[0, 500], [200, 1000]]))
-def markOff(param):
-    '''define a Python during mating operator that marks
-       individual information field 'mark'
-    '''
-    def func(off, param):
-        off.mark = param
-        return True
-    return sim.PyOperator(func=func, param=param)
 
 pop.evolve(
     initOps=sim.InitSex(),
     matingScheme=sim.HeteroMating([
         sim.RandomMating(subPops=0, weight=-0.5,
-            ops=[markOff(0), sim.MendelianGenoTransmitter()]),
+            ops=[sim.InfoExec('mark=0'), sim.MendelianGenoTransmitter()]),
         sim.RandomMating(subPops=[(0, 0)], weight=2,
-            ops=[markOff(1), sim.MendelianGenoTransmitter()]),
+            ops=[sim.InfoExec('mark=1'), sim.MendelianGenoTransmitter()]),
         sim.RandomMating(subPops=[(0, 1)], weight=3,
-            ops=[markOff(2), sim.MendelianGenoTransmitter()])
+            ops=[sim.InfoExec('mark=2'), sim.MendelianGenoTransmitter()])
     ]),
     gen = 10
 )
@@ -4043,7 +4035,7 @@ pop.evolve(
     ],
     preOps=[
         sim.MaSelector(loci=0, fitness=[1, 1, 0.98], subPops=[(0,0), (1,1)]),
-        sim.MaSelector(loci=0, fitness=[1, 1, 1], subPops=[(0,1), (1,0)]),
+        sim.MaSelector(loci=0, fitness=[1, 0.99, 0.98], subPops=[(0,1), (1,0)]),
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
@@ -4057,6 +4049,38 @@ pop.evolve(
 )
 #end_file
 
+
+#begin_file log/vspDuringMatingSelector.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population(size=[5000, 5000], loci=1, infoFields='fitness')
+pop.setVirtualSplitter(sim.SexSplitter())
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[.5, .5])
+    ],
+    matingScheme=sim.RandomMating(ops=[
+        sim.MendelianGenoTransmitter(),
+        sim.MaSelector(loci=0, fitness=[1, 1, 0.98], subPops=[(0,0), (1,1)]),
+        sim.MaSelector(loci=0, fitness=[1, 0.99, 0.98], subPops=[(0,1), (1,0)]),
+        ]),
+    postOps=[
+        sim.Stat(alleleFreq=[0], subPops=[(sim.ALL_AVAIL, sim.ALL_AVAIL)],
+            vars='alleleFreq_sp', step=50),
+        sim.PyEval(r"'%.4f\t%.4f\t%.4f\t%.4f\n' % "
+            "tuple([subPop[x]['alleleFreq'][0][1] for x in ((0,0),(0,1),(1,0),(1,1))])",
+            step=50)
+    ],
+    gen=151
+)
+#end_file
 
 #begin_file log/forwardTrajectory.py
 #begin_ignore
