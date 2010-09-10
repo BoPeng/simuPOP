@@ -259,11 +259,10 @@ bool BaseOperator::applicableToOffspring(const Population & pop, RawIndIterator 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 
-	for (; sp != spEnd; ++sp) {
-		if (static_cast<ULONG>(sp->subPop()) != pp.first)
-			continue;
-		if (sp->isVirtual())
-			return pop.virtualSplitter()->contains(pop, pp.second, *sp);
+	for (; sp != spEnd; ++sp)
+		if (static_cast<ULONG>(sp->subPop()) == pp.first &&
+			(!sp->isVirtual() || pop.virtualSplitter()->contains(pop, pp.second, *sp))) {
+			return true;
 	}
 	return false;
 }
@@ -699,7 +698,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               Population * pop, Population *offPop, int dad, int mom, ULONG off)
+                               Population * pop, Population * offPop, int dad, int mom, ULONG off)
 {
 	BaseOperator * opPtr = op.clone();
 
