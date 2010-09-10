@@ -440,6 +440,16 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(simu.dvars(0).gen, 1000)
 
 
+    def testSubPopsOfDuringMatingOperator(self):
+        'Testing subPops parameter of during mating operators'
+        pop = Population([100]*10, infoFields='a')
+        pop.evolve(
+            matingScheme=RandomSelection(ops=
+                [CloneGenoTransmitter()] + 
+                 [InfoExec('a=%d' % i, subPops=i) for i in range(10)]),
+            gen=1
+        )
+        print(pop.indInfo('a'))
 if __name__ == '__main__':
     unittest.main()
 

@@ -98,7 +98,7 @@ public:
 	virtual void initialize(const Individual & ind) const;
 
 	/// CPPONLY
-	bool applyDuringMating(Population & pop,
+	bool applyDuringMating(Population & pop, Population & offPop,
 	                       RawIndIterator offspring,
 	                       Individual * dad = NULL,
 	                       Individual * mom = NULL) const
@@ -166,7 +166,7 @@ public:
 
 
 	/// CPPONLY
-	bool applyDuringMating(Population & pop,
+	bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
@@ -215,7 +215,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool applyDuringMating(Population & pop,
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
@@ -281,7 +281,7 @@ public:
 
 
 	/// CPPONLY
-	bool applyDuringMating(Population & pop,
+	bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
@@ -332,7 +332,7 @@ public:
 	void initialize(const Individual & ind) const;
 
 	/// CPPONLY
-	virtual bool applyDuringMating(Population & pop,
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
@@ -387,7 +387,7 @@ public:
 	void initialize(const Individual & ind) const;
 
 	/// CPPONLY
-	virtual bool applyDuringMating(Population & pop,
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
@@ -560,7 +560,7 @@ public:
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
-	virtual bool applyDuringMating(Population & pop,
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
 		RawIndIterator offspring,
 		Individual * dad, Individual * mom) const;
 

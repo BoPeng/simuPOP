@@ -188,7 +188,7 @@ bool BaseOperator::apply(Population & pop) const
 }
 
 
-bool BaseOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool BaseOperator::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                      Individual * dad, Individual * mom) const
 {
 	DBG_FAILIF(true, RuntimeError,
@@ -437,12 +437,13 @@ string IfElse::describe(bool format) const
 }
 
 
-bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool IfElse::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
+
 	bool res = true;
 
 	if (m_fixedCond != -1)
@@ -480,7 +481,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 		for (; it != itEnd; ++it) {
 			if (!(*it)->isActive(pop.rep(), pop.gen()))
 				continue;
-			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
+			bool ret = (*it)->applyDuringMating(pop, offPop, offspring, dad, mom);
 			if (!ret)
 				return false;
 		}
@@ -491,7 +492,7 @@ bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
 		for (; it != itEnd; ++it) {
 			if (!(*it)->isActive(pop.rep(), pop.gen()))
 				continue;
-			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
+			bool ret = (*it)->applyDuringMating(pop, offPop, offspring, dad, mom);
 			if (!ret)
 				return false;
 		}
@@ -662,11 +663,11 @@ bool PyOperator::apply(Population & pop) const
 }
 
 
-bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                    Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -698,11 +699,11 @@ bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               Population * pop, int dad, int mom, ULONG off)
+                               Population * pop, Population *offPop, int dad, int mom, ULONG off)
 {
 	BaseOperator * opPtr = op.clone();
 
-	opPtr->applyDuringMating(*pop, pop->rawIndBegin() + off,
+	opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + off,
 		dad < 0 ? NULL : &pop->individual(dad),
 		mom < 0 ? NULL : &pop->individual(mom));
 }

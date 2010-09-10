@@ -103,7 +103,7 @@ public:
 	bool apply(Population & pop) const;
 
 	/// CPPONLY
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN

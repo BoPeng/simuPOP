@@ -256,7 +256,7 @@ string OffspringGenerator::describe(bool format) const
 }
 
 
-UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
+UINT OffspringGenerator::generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
                                            RawIndIterator & it,
                                            RawIndIterator & itEnd)
 {
@@ -284,7 +284,7 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Individual * dad, I
 			try {
 				if (!(*iop)->isActive(pop.rep(), pop.gen()))
 					continue;
-				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
+				if (!(*iop)->applyDuringMating(pop, offPop, it, dad, mom)) {
 					accept = false;
 					break;
 				}
@@ -492,7 +492,7 @@ void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID s
 
 
 /// CPPONLY
-UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individual * dad, Individual * mom,
+UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
                                                      RawIndIterator & offBegin,
                                                      RawIndIterator & offEnd)
 {
@@ -503,7 +503,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Individua
 	// record family size (this may be wrong for the last family)
 	//
 	RawIndIterator itBegin = offBegin;
-	UINT numOff = OffspringGenerator::generateOffspring(pop,
+	UINT numOff = OffspringGenerator::generateOffspring(pop, offPop,
 		dad, mom, offBegin, offEnd);
 
 	//
@@ -1238,7 +1238,7 @@ bool MatingScheme::mate(Population & pop, Population & scratch)
 		return false;
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
-		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
+		if (!mateSubPop(pop, scratch, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
 			return false;
 	submitScratch(pop, scratch);
 	return true;
@@ -1274,7 +1274,7 @@ string HomoMating::describe(bool format) const
 }
 
 
-bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
+bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
@@ -1297,7 +1297,7 @@ bool HomoMating::mateSubPop(Population & pop, SubPopID subPop,
 		mom = parents.second;
 
 		//
-		UINT numOff = m_OffspringGenerator->generateOffspring(pop, dad, mom, it, offEnd);
+		UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
 		(void)numOff;             // silent warning about unused variable.
 	}
 	m_ParentChooser->finalize(pop, subPop);
@@ -1367,7 +1367,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		for (; iop != iopEnd; ++iop) {
 			try {
 				if ((*iop)->isActive(pop.rep(), pop.gen()))
-					(*iop)->applyDuringMating(pop, it, dad, mom);
+					(*iop)->applyDuringMating(pop, scratch, it, dad, mom);
 			} catch (Exception e) {
 				cerr	<< "One of the transmitters " << (*iop)->describe()
 				        << " throws an exception.\n" << e.message() << "\n" << endl;
@@ -1590,7 +1590,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 
 			// real mating
 			try {
-				if (!m[idx]->mateSubPop(pop, sp, ind, ind + *itSize))
+				if (!m[idx]->mateSubPop(pop, scratch, sp, ind, ind + *itSize))
 					return false;
 			} catch (...) {
 				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;

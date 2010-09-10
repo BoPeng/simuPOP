@@ -123,7 +123,7 @@ public:
 
 	/// set penetrance to all individuals
 	/// CPPONLY
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN

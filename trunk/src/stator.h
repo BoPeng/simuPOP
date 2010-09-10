@@ -217,7 +217,7 @@ public:
 	/// HIDDEN apply the \c InfoEval operator
 	bool apply(Population & pop) const;
 
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
@@ -295,7 +295,7 @@ public:
 	/// HIDDEN apply the \c InfoExec operator
 	bool apply(Population & pop) const;
 
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
