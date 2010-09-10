@@ -91,7 +91,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c IdTagger
 	 */
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of an \c IdTagger
@@ -150,7 +150,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c InheritTagger
 	 */
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of a \c InheritTagger
@@ -210,7 +210,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c SummaryTagger
 	 */
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN Deep copy of a \c SummaryTagger
@@ -274,7 +274,7 @@ public:
 	/** CPPONLY
 	 * apply the \c ParentsTagger
 	 */
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 };
@@ -356,7 +356,7 @@ public:
 	/** CPPONLY
 	 * apply the \c PedigreeTagger
 	 */
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 private:
@@ -421,7 +421,7 @@ public:
 	/** CPPONLY
 	 *  apply the \c PyTagger
 	 */
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 private:

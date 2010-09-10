@@ -199,11 +199,11 @@ bool InfoEval::apply(Population & pop) const
 }
 
 
-bool InfoEval::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool InfoEval::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	string res = evalInfo(&*offspring, pop.dict());
 
@@ -278,11 +278,11 @@ bool InfoExec::apply(Population & pop) const
 }
 
 
-bool InfoExec::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool InfoExec::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	evalInfo(&*offspring, pop.dict());
 	clearVars(pop);

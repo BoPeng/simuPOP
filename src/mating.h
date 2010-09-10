@@ -554,7 +554,7 @@ public:
 	virtual void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
+	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
 		RawIndIterator & offBegin, RawIndIterator & offEnd);
 
 	/// CPPONLY
@@ -654,7 +654,7 @@ public:
 	void initialize(const Population & pop, SubPopID subPop);
 
 	/// CPPONLY
-	virtual UINT generateOffspring(Population & pop, Individual * dad, Individual * mom,
+	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd);
 
@@ -1306,7 +1306,7 @@ public:
 	/** CPPONLY
 	 *  mate a subpopulation, called by mate().
 	 */
-	virtual bool mateSubPop(Population & pop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd)
 	{
 		return true;
@@ -1417,7 +1417,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool mateSubPop(Population & pop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:

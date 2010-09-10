@@ -222,7 +222,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 
@@ -488,7 +488,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                               Individual * dad = NULL, Individual * mom = NULL) const
 	{
 		return true;
@@ -557,7 +557,7 @@ public:
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN apply the \c IfElse operator to population \e pop.
@@ -738,7 +738,7 @@ public:
 	virtual bool apply(Population & pop) const;
 
 	/// CPPONLY
-	virtual bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
 	/// HIDDEN
@@ -759,7 +759,7 @@ private:
  *  If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	Population * pop, int dad, int mom, ULONG off);
+	Population * pop, Population * offPop, int dad, int mom, ULONG off);
 
 }
 #endif

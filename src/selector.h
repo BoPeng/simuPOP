@@ -140,11 +140,11 @@ public:
 	bool apply(Population & pop) const;
 
 	/// CPPONLY
-	bool applyDuringMating(Population & pop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
 		// if offspring does not belong to subPops, do nothing, but does not fail.
-		if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+		if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 			return true;
 
 		double fitness = indFitness(pop, &*offspring);

@@ -65,11 +65,11 @@ bool IdTagger::apply(Population & pop) const
 }
 
 
-bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	UINT idx = pop.infoIdx(infoField(0));
 
@@ -85,11 +85,11 @@ bool IdTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
 }
 
 
-bool InheritTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	UINT sz = infoSize();
 
@@ -158,11 +158,11 @@ string InheritTagger::describe(bool format) const
 }
 
 
-bool SummaryTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
 		"Invalid father and mother for SummaryTagger.");
@@ -252,11 +252,11 @@ string ParentsTagger::describe(bool format) const
 }
 
 
-bool ParentsTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
@@ -363,11 +363,11 @@ bool PedigreeTagger::apply(Population & pop) const
 }
 
 
-bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool PedigreeTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                        Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
@@ -398,11 +398,11 @@ bool PedigreeTagger::applyDuringMating(Population & pop, RawIndIterator offsprin
 }
 
 
-bool PyTagger::applyDuringMating(Population & pop, RawIndIterator offspring,
+bool PyTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
-	if (!applicableToAllOffspring() && !applicableToOffspring(pop, offspring))
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
