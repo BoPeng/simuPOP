@@ -480,7 +480,7 @@ public:
 	 *  its absolute index \c idx.
 	 *  <group>2-subpop</group>
 	 */
-	pairu subPopIndPair(ULONG idx)
+	pairu subPopIndPair(ULONG idx) const
 	{
 		CHECKRANGEIND(idx);
 

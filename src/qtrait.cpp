@@ -78,6 +78,9 @@ bool BaseQuanTrait::applyDuringMating(Population & pop, RawIndIterator offspring
                                       Individual * dad, Individual * mom) const
 
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	vectorf traits(infoSize());
 
 	qtrait(&*offspring, pop.gen(), traits);

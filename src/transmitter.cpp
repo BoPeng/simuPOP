@@ -127,6 +127,10 @@ string CloneGenoTransmitter::describe(bool format) const
 bool CloneGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                              Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
+
 	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError,
@@ -283,6 +287,9 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                                  Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
 
@@ -297,6 +304,9 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop, RawIndIterato
 bool SelfingGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                                Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	//
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Selfing genotype transmitter requires at least one valid parents");
@@ -323,6 +333,9 @@ void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                                     Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
 		"haplodiploid offspring generator: one of the parents is invalid.");
 
@@ -363,6 +376,9 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, RawIndIterator offspring,
                                                      Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(mom == NULL, ValueError,
@@ -860,6 +876,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 bool Recombinator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                      Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	// this tells the recombinator how to initialize m_bt.
 	// if the recombinator member function is used directly, this information will
 	// not be available.

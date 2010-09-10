@@ -153,6 +153,7 @@ void BaseOperator::setFlags()
 	RESETFLAG(m_flags, m_flagAtAllGen);
 	RESETFLAG(m_flags, m_flagOnlyAtBegin);
 	RESETFLAG(m_flags, m_flagOnlyAtEnd);
+	RESETFLAG(m_flags, m_flagAllSubPops);
 
 	// atGen has higher priority: if it is not empty, use it.
 	if (m_atGen.empty()) {
@@ -169,9 +170,13 @@ void BaseOperator::setFlags()
 		if (m_stepGen < 1)
 			throw IndexError("active generation interval should be at least 1.");
 
-		if (m_atGen[0] == 0) SETFLAG(m_flags, m_flagOnlyAtBegin);
-		if (m_atGen[0] == -1) SETFLAG(m_flags, m_flagOnlyAtEnd);
+		if (m_atGen[0] == 0)	
+			SETFLAG(m_flags, m_flagOnlyAtBegin);
+		if (m_atGen[0] == -1)
+			SETFLAG(m_flags, m_flagOnlyAtEnd);
 	}
+	if (m_subPops.allAvail())
+		SETFLAG(m_flags, m_flagAllSubPops);
 }
 
 
@@ -243,6 +248,24 @@ string BaseOperator::applicability(bool subPops, bool gen) const
 	if (desc.empty())
 		return desc;
 	return "(" + desc + ")";
+}
+
+
+bool BaseOperator::applicableToOffspring(const Population & pop, RawIndIterator offspring) const
+{
+	pairu pp = pop.subPopIndPair(offspring - pop.rawIndBegin());
+
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+
+	for (; sp != spEnd; ++sp) {
+		if (static_cast<ULONG>(sp->subPop()) != pp.first)
+			continue;
+		if (sp->isVirtual())
+			return pop.virtualSplitter()->contains(pop, pp.second, *sp);
+	}
+	return false;
 }
 
 
@@ -417,6 +440,9 @@ string IfElse::describe(bool format) const
 bool IfElse::applyDuringMating(Population & pop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	bool res = true;
 
 	if (m_fixedCond != -1)
@@ -639,6 +665,9 @@ bool PyOperator::apply(Population & pop) const
 bool PyOperator::applyDuringMating(Population & pop, RawIndIterator offspring,
                                    Individual * dad, Individual * mom) const
 {
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToOffspring(pop, offspring))
+		return true;
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
