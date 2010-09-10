@@ -261,9 +261,9 @@ bool BaseOperator::applicableToOffspring(const Population & pop, RawIndIterator 
 
 	for (; sp != spEnd; ++sp)
 		if (static_cast<ULONG>(sp->subPop()) == pp.first &&
-			(!sp->isVirtual() || pop.virtualSplitter()->contains(pop, pp.second, *sp))) {
+		    (!sp->isVirtual() || pop.virtualSplitter()->contains(pop, pp.second, *sp))) {
 			return true;
-	}
+		}
 	return false;
 }
 
