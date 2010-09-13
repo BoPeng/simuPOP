@@ -725,6 +725,78 @@ class TestSelector(unittest.TestCase):
         )
 
 
+    def testDuringMatingSelector(self):
+        'Testing the use of selector during mating'
+        s1 = .1
+        s2 = .2
+        p = .2/ (.1+.2)
+        # specify relative fitness: w11, w12/w21, w22
+        simu = Simulator(
+            Population(size=1000, ploidy=2, loci=[1],
+            infoFields=['fitness', 'spare']))
+        # 2. heterozygote superiority
+        #     w11 < w12, w12 > w22
+        #    stable.
+        # let
+        #        s1 = w12-    w11
+        #        s2 = w12 - w22
+        #    p_ = s2/ (s1+s2)
+        #
+        simu.evolve(
+            matingScheme = RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                MaSelector(loci=0, wildtype=0, fitness=[1-s1, 1, 1-s2])]),
+            postOps = [
+                Stat( alleleFreq=[0], genoFreq=[0]),
+                TerminateIf('alleleFreq[0][0] < 0.5', begin=50),
+                TerminateIf('alleleFreq[0][0] > 0.9', begin=50)
+            ],
+            initOps=[ InitSex(), InitGenotype(freq=[.5,.5])],
+            gen=100
+        )
+        # simulation did not terminate unexpectedly
+        self.assertEqual(simu.dvars(0).gen, 100)
+
+    def testDuringMatingSubPops(self):
+        'Testing the use of subPops parameter in during mating selector'
+        s1 = .1
+        s2 = .2
+        p = .2/ (.1+.2)
+        # specify relative fitness: w11, w12/w21, w22
+        pop = Population(size=1000, ploidy=2, loci=[1],
+            infoFields=['fitness', 'spare'])
+        # 2. heterozygote superiority
+        #     w11 < w12, w12 > w22
+        #    stable.
+        # let
+        #        s1 = w12-    w11
+        #        s2 = w12 - w22
+        #    p_ = s2/ (s1+s2)
+        #
+        def testPop(pop):
+            for ind in pop.individuals():
+                if ind.sex() == MALE:
+                    self.assertEqual(ind.allele(0), 0)
+                    self.assertEqual(ind.allele(1), 0)
+                if ind.sex() == FEMALE:
+                    self.assertEqual(ind.allele(0), 1)
+                    self.assertEqual(ind.allele(1), 1)
+            return True
+        pop.setVirtualSplitter(SexSplitter())
+        # this can only evolve one generation because AA and aa mating can
+        # only produce Aa in the next generation.
+        pop.evolve(
+            initOps=[ InitSex(), InitGenotype(freq=[.5,.5])],
+            matingScheme = RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                MaSelector(loci=0, wildtype=0, fitness=[1, 0, 0], subPops=[(0,'Male')]),
+                MaSelector(loci=0, wildtype=0, fitness=[0, 0, 1], subPops=[(0,'Female')])]),
+            postOps = [
+                PyOperator(testPop),
+            ],
+            gen=1
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
