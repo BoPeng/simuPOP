@@ -2082,6 +2082,43 @@ simu.evolve(
 
 #end_file
 
+#begin_file log/DiscardIf.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.getRNG().set(seed=12345)
+#end_ignore
+pop = sim.Population(size=500, loci=1)
+pop.setVirtualSplitter(sim.ProductSplitter([
+    sim.AffectionSplitter(),
+    sim.RangeSplitter([[0,500], [500, 1000]]),
+    ])
+)
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.5, 0.5]),
+    ],
+    matingScheme=sim.RandomMating(
+        ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.MaPenetrance(loci=0, penetrance=[0, 0.01, 0.1]),
+            sim.DiscardIf(True, subPops=[
+                (0, 'Unaffected, Range [0, 500)'),
+                (0, 'Affected, Range [500, 1000)')])
+        ],
+        subPopSize=1000,
+    ),
+    gen = 1
+)
+sim.stat(pop, numOfAffected=True)
+print(pop.dvars().numOfAffected, pop.dvars().numOfUnaffected)
+#end_file
+
+
 
 #begin_file log/Pause.py
 #begin_ignore

@@ -578,7 +578,7 @@ private:
 
 
 /** This operator evaluates an expression in a population's local namespace
- *  and terminate the evolution of this population, or the whole Simulator,
+ *  and terminate the evolution of this population, or the whole simulator,
  *  if the return value of this expression is \c True. Termination caused by
  *  an operator will stop the execution of all operators after it. The
  *  generation at which the population is terminated will be counted in the
@@ -635,6 +635,65 @@ private:
 
 	/// message to print when terminated
 	const string m_message;
+};
+
+
+/** This operator is a during mating operator that discards individuals
+ *  according to either an expression that evaluates according to individual
+ *  information field, or a Python function that accepts individual and its
+ *  information fields.
+ */
+class DiscardIf : public BaseOperator
+{
+
+public:
+	/** Create a during mating operator with an expression \e condition, which
+	 *  will be evalulated with each individual's information fields (see
+	 *  operator \c InfoEval for details), or a function that accepts
+	 *  parameters \e off, \e dad, \e mom, \e pop (parental population), or
+	 *  names of information fields. If \e exposeInd is non-empty, an offspring
+	 *  will be available for evaluation in the expression as an variable with
+	 *  name spacied by \e exposeInd. If the condition evaluates to be \c True,
+	 *  or if the function returns \c True, the offspring will be discarded.
+	 *  A constant expression (e.g. \c True) is also acceptable). Because this
+	 *  operator supports parameter \e subPops, only individuals belonging to
+	 *  specified (virtual) subpopulations will be screened.
+	 */
+	DiscardIf(PyObject * cond, const string & exposeInd = string(),
+		const stringFunc & output = "", int begin = 0, int end = -1,
+		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr());
+
+
+	/// HIDDEN Deep copy of a \c DiscardIf terminator
+	virtual BaseOperator * clone() const
+	{
+		return new DiscardIf(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/// CPPONLY
+	bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+		Individual * dad, Individual * mom) const;
+
+	virtual ~DiscardIf()
+	{
+		Py_XDECREF(m_dict);
+	}
+
+
+private:
+	Expression m_cond;
+	pyFunc m_func;
+	int m_fixedCond;
+
+	const string m_exposeInd;
+	mutable PyObject * m_dict;
+	mutable vectorf m_lastValues;
 };
 
 
