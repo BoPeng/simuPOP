@@ -1243,6 +1243,54 @@ Details:
 
 %feature("docstring") simuPOP::ControlledOffspringGenerator::describe "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::DiscardIf "
+
+Details:
+
+    This operator is a during mating operator that discards
+    individuals according to either an expression that evaluates
+    according to individual information field, or a Python function
+    that accepts individual and its information fields.
+
+"; 
+
+%feature("docstring") simuPOP::DiscardIf::DiscardIf "
+
+Usage:
+
+    DiscardIf(cond, exposeInd=\"\", output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a during mating operator with an expression condition,
+    which will be evalulated with each individual's information fields
+    (see operator InfoEval for details), or a function that accepts
+    parameters off, dad, mom, pop (parental population), or names of
+    information fields. If exposeInd is non-empty, an offspring will
+    be available for evaluation in the expression as an variable with
+    name spacied by exposeInd. If the condition evaluates to be True,
+    or if the function returns True, the offspring will be discarded.
+    A constant expression (e.g. True) is also acceptable). Because
+    this operator supports parameter subPops, only individuals
+    belonging to specified (virtual) subpopulations will be screened.
+
+"; 
+
+%feature("docstring") simuPOP::DiscardIf::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::DiscardIf::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::DiscardIf::DiscardIf::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+
+%feature("docstring") simuPOP::DiscardIf::~DiscardIf "
+
+Usage:
+
+    x.~DiscardIf()
+
+"; 
+
 %feature("docstring") simuPOP::Dumper "
 
 Details:
@@ -9547,7 +9595,7 @@ Details:
 
     This operator evaluates an expression in a population's local
     namespace and terminate the evolution of this population, or the
-    whole Simulator, if the return value of this expression is True.
+    whole simulator, if the return value of this expression is True.
     Termination caused by an operator will stop the execution of all
     operators after it. The generation at which the population is
     terminated will be counted in the evolved generations (return

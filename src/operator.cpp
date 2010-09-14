@@ -584,6 +584,126 @@ bool TerminateIf::apply(Population & pop) const
 }
 
 
+DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops,
+	const stringList & infoFields) :
+	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
+	m_func(PyCallable_Check(cond) ? cond : NULL),
+	m_fixedCond(-1), m_exposeInd(exposeInd), m_dict(NULL),
+	m_lastValues()
+{
+	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
+		bool c;
+		PyObj_As_Bool(cond, c);
+		const_cast<DiscardIf *>(this)->m_fixedCond = c ? 1 : 0;
+	}
+}
+
+
+string DiscardIf::describe(bool format) const
+{
+	string desc;
+
+	if (m_fixedCond != -1) {
+		if (m_fixedCond == 1)
+			desc += "<simuPOP.DiscardIf> discard all individuals";
+		else
+			desc += "<simuPOP.DiscardIf> keep all individuals";
+	} else if (m_func.isValid())
+		desc += "<simuPOP.DiscardIf> discard individuals if function " + m_func.name() + " returns True";
+	else
+		desc += "<simuPOP.DiscardIf> discard individuals if expression " + m_cond.expr();
+	desc += applicability();
+	return format ? formatDescription(desc) : desc;
+}
+
+
+bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+                                  Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+
+	bool res = false;
+
+	if (m_fixedCond != -1)
+		res = m_fixedCond == 1;
+	else if (m_func.isValid()) {
+		PyObject * args = PyTuple_New(m_func.numArgs());
+
+		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+		for (int i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else if (arg == "off")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
+			else if (arg == "dad")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
+			else if (arg == "mom")
+				PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(mom)));
+			else {
+				DBG_FAILIF(!offspring->hasInfoField(arg), ValueError,
+					"Only parameters 'off', 'dad', 'mom', 'pop', and names of information fields are "
+					"acceptable in function " + m_func.name());
+				PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(offspring->info(arg)));
+			}
+		}
+		res = m_func(PyObj_As_Bool, args);
+		Py_XDECREF(args);
+	} else {
+		if (!m_dict)
+			m_dict = PyDict_New();
+
+		vectorstr infos = offspring->infoFields();
+
+		for (UINT idx = 0; idx < infos.size(); ++idx) {
+			string name = infos[idx];
+			double val = offspring->info(idx);
+			// if the value is unchanged, do not set new value
+			if (m_lastValues.size() <= idx || m_lastValues[idx] != val) {
+				if (m_lastValues.size() <= idx)
+					m_lastValues.push_back(val);
+				else
+					m_lastValues[idx] = val;
+				PyObject * obj = PyFloat_FromDouble(val);
+				int err = PyDict_SetItemString(m_dict, name.c_str(), obj);
+				Py_DECREF(obj);
+				if (err != 0) {
+#ifndef OPTIMIZED
+					if (debug(DBG_GENERAL)) {
+						PyErr_Print();
+						PyErr_Clear();
+					}
+#endif
+					throw RuntimeError("Setting information fields as variables failed");
+				}
+			}
+		}
+
+		if (!m_exposeInd.empty()) {
+			PyObject * indObj = pyIndObj(static_cast<void *>(&*offspring));
+			if (indObj == NULL)
+				throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
+
+			// set dictionary variable pop to this object
+			PyDict_SetItemString(m_dict, m_exposeInd.c_str(), indObj);
+			Py_DECREF(indObj);
+		}
+
+		m_cond.setLocalDict(m_dict);
+		// evaluate
+		res = m_cond.valueAsBool();
+	}
+	// discard if result is True
+	return !res;
+}
+
+
 string TicToc::describe(bool format) const
 {
 	return "<simuPOP.TicToc> output performance monitor>" ;

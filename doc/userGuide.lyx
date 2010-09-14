@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -18440,8 +18440,11 @@ TerminateIf
 \end_layout
 
 \begin_layout Standard
-Operator TerminateIf has been described and used in several examples such
- as Example 
+Operator 
+\family typewriter
+TerminateIf
+\family default
+ has been described and used in several examples such as Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "simuGen"
@@ -18519,6 +18522,108 @@ n being fixed.
 LatexCommand lstinputlisting
 filename "log/TerminateIf.log"
 lstparams "caption={Terminate the evolution of all populations in a simulator},label={TerminateIf}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conditional during mating operator (operator 
+\family typewriter
+DiscardIf
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+DiscardIf
+\family default
+ accepts a condition or a Python function.
+ When it is applied during mating, it will evaluate the condition or call
+ the function for each offspring, and discard the offspring if the return
+ value of the expression or function is True.
+ The python expression accepts information fields as variables so operator
+ 
+\family typewriter
+DiscardIf('age > 80')
+\family default
+ will discard all individuals with age > 80.
+ Optionally, the offspring itself can be used in the expression if parameter
+ exposeInd is used to set the variable name of the offspring.
+ 
+\end_layout
+
+\begin_layout Standard
+Alternatively, a Python function can be passed to this operator.
+ This function should be defined with parameters 
+\family typewriter
+pop
+\family default
+, 
+\family typewriter
+off
+\family default
+, 
+\family typewriter
+mom
+\family default
+, 
+\family typewriter
+dad
+\family default
+ or names of information fields.
+ For example, 
+\family typewriter
+DiscardIf(lambda age: age > 80)
+\family default
+ will remove individuals with age > 80.
+\end_layout
+
+\begin_layout Standard
+A constant expression is also allowed in this operator.
+ Although it does not make sense to use 
+\family typewriter
+DiscardIf(True)
+\family default
+ because all offspring will be discarded, it is quite useful to use this
+ operator in the context of 
+\family typewriter
+DiscardIf(True, subPops=[(0, 0)])
+\family default
+ to remove all individuals in a virtual subpopulation.
+ If virtual subpopulation 
+\family typewriter
+(0, 0)
+\family default
+ is defined as all individuals with age > 80, the last method achieves the
+ same effect as the first two methods.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "DiscardIf"
+
+\end_inset
+
+ demonstrates an interesting application of this operator.
+ This example evolves a population for one generation.
+ Instead of keeping all offspring, it keeps only 500 affected and 500 unaffected
+ offspring.
+ This is achieved by defining virtual subpopulations by affection status
+ and range, and discard the first 500 offspring if they are unaffected,
+ and the last 500 offspring if they are affected.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/DiscardIf.log"
+lstparams "caption={Use operator DiscardIf to generate case control samples},label={DiscardIf}"
 
 \end_inset
 

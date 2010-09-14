@@ -8,6 +8,7 @@ version 1.0.5 - Not released, available at https://simupop.svn.sourceforge.net/s
 New features:
   - Support parameter subPops in during mating operators so that different
 		operators can be applied to offspring with different opportunities.
+  - Add operator DiscardIf to discard individuals if some condition is met.
 
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
