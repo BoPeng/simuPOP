@@ -196,6 +196,7 @@ __all__ = [
     'SummaryTagger',
     #
     'TerminateIf',
+    'DiscardIf',
     #
     'PyOperator',
     #
