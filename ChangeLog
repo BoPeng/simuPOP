@@ -10,6 +10,10 @@ New features:
 		operators can be applied to offspring with different opportunities.
   - Add operator DiscardIf to discard individuals if some condition is met.
 
+Bug:
+  - Fix a bug in the handling of obsolete key 'arg' in parameter specification
+  dictionary.
+
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
 New features:
