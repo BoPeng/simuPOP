@@ -1427,8 +1427,8 @@ class Params:
         # allow alphabet, number and underscore (_).
         if not opt['name'].replace('_', '').isalnum() or not opt['name'][0].isalpha():
             raise ValueError('Invalid option name %s' % opt['name'])
-        if kwargs.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]) > 1: 	 
-	    raise ValueError("Duplicated short argument '%s'" % opt['arg'])
+        if kwargs.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]) > 1:
+            raise ValueError("Duplicated short argument '%s'" % opt['arg'])
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
             raise ValueError('A default value is not provided for option "%s"' % opt['name'])
         if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'] == opt['arg'] for x in self.options]) > 1:
