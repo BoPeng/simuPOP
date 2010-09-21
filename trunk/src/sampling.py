@@ -350,11 +350,11 @@ class CaseControlSampler(BaseSampler):
                     self.unaffected.append(idx)
             #
             if self.cases > len(self.affected):
-                print 'Warning: number of cases %d is greater than number of self.affectedected individuals %d.' \
+                print 'Warning: number of cases %d is greater than number of affectedected individuals %d.' \
                     % (self.cases, len(self.affected))
             #
             if self.controls > len(self.unaffected):
-                print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d.' \
+                print 'Warning: number of controls %d is greater than number of affectedected individuals %d.' \
                     % (self.controls, len(self.unaffected))
         else:
             if len(self.cases) != self.pop.numSubPop():
@@ -372,11 +372,11 @@ class CaseControlSampler(BaseSampler):
                         unaff.append(idx)
                 #
                 if self.cases[sp] > len(aff):
-                    print 'Warning: number of cases %d is greater than number of self.affectedected individuals %d in subpopulation %d.' \
+                    print 'Warning: number of cases %d is greater than number of affectedected individuals %d in subpopulation %d.' \
                         % (self.cases[sp], len(aff), sp)
                 #
                 if self.controls[sp] > len(unaff):
-                    print 'Warning: number of controls %d is greater than number of self.affectedected individuals %d in subpopulation %d.' \
+                    print 'Warning: number of controls %d is greater than number of affectedected individuals %d in subpopulation %d.' \
                         % (self.controls[sp], len(unaff), sp)
                 self.affected.append(aff)
                 self.unaffected.append(unaff)
