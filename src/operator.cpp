@@ -776,9 +776,11 @@ bool PyOperator::apply(Population & pop) const
 		}
 	}
 
-	bool resBool = m_func(PyObj_As_Bool, args);
+	PyObject * res = m_func(args);
 	Py_XDECREF(args);
-	return resBool;
+	DBG_FAILIF(res != Py_True && res != Py_False, RuntimeError,
+		"A callback function for operator PyOperator has to return either True or False");
+	return res == Py_True;
 }
 
 
@@ -811,9 +813,11 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 		}
 	}
 
-	bool res = m_func(PyObj_As_Bool, args);
+	PyObject * res = m_func(args);
 	Py_XDECREF(args);
-	return res;
+	DBG_FAILIF(res != Py_True && res != Py_False, RuntimeError,
+		"A callback function for operator PyOperator has to return either True or False");
+	return res == Py_True;
 }
 
 
