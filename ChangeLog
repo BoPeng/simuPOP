@@ -14,7 +14,9 @@ New features:
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification
-  dictionary.
+		dictionary.
+  - Fix a bug in the identifying of OUTBRED_SPOUSE when parentship of parents is
+		unknown.
 
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 

@@ -310,7 +310,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
-			if (f >= 0 && m >= 0) {
+			if (f > 0 && m > 0) {
 				if (excludeOutbred) {
 					// if they share a father or a mother.
 					try {
@@ -318,7 +318,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 						double m1 = indByID(m).info(m_motherIdx);
 						double f2 = indByID(f).info(m_fatherIdx);
 						double m2 = indByID(f).info(m_motherIdx);
-						if ((fcmp_ne(f1, -1) && fcmp_eq(f1, f2)) || (fcmp_ne(m1, -1) && fcmp_eq(m1, m2)))
+						if ((fcmp_ge(f1, 1) && fcmp_eq(f1, f2)) || (fcmp_ge(m1, 1) && fcmp_eq(m1, m2)))
 							continue;
 					} catch (IndexError &) {
 						// if parent not found, does not matter.
@@ -462,9 +462,9 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
-			if (f >= 0)
+			if (f >= 1)
 				families[toID(f)].push_back(toID(individual(i).info(m_idIdx)));
-			if (m >= 0)
+			if (m >= 1)
 				families[toID(m)].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
@@ -559,7 +559,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
-			if (f >= 0 && m >= 0)
+			if (f >= 1 && m >= 1)
 				families[couple(toID(f), toID(m))].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
@@ -654,7 +654,7 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 		for (size_t i = 0; i < popSize(); ++i) {
 			double f = individual(i).info(m_fatherIdx);
 			double m = individual(i).info(m_motherIdx);
-			if (f >= 0 && m >= 0)
+			if (f >= 1 && m >= 1)
 				families[couple(toID(f), toID(m))].push_back(toID(individual(i).info(m_idIdx)));
 		}
 	}
