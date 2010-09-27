@@ -3179,18 +3179,23 @@ Details:
 
     Create a selector that assigns individual fitness values according
     to random fitness effects. selDist can be
-    *   (CONSTANT, s) where s will be used for all mutants.
-    *   (GAMMA_DISTRIBUTION, theta, k where -s (note the - sign)
-    follows a gamma distribution with scale parameter theta and shape
-    parameter k.
+    *   (CONSTANT, s, h) where s will be used for all mutants. The
+    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
+    If h is unspecified, a default value h=0.5 (additive model) will
+    be used.
+    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
+    distribution with scale parameter theta and shape parameter k.
+    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
+    1-s. A default value h=0.5 will be used if h is unspecified.
     *   a Python function, which will be called when selection
-    coefficient of a new mutant is needed. Mutant location will be
-    passed to this function if it accepts a parameter loc. This allows
-    the definition of site-specific selection coefficients. Individual
-    fitness (1+s_i) will be combined in ADDITIVE, MULTIPLICATIVE or
-    EXPONENTIAL mode. (See MlSelector for details). If an output is
-    given, mutants and their fitness values will be written to the
-    output, in the form of 'mutant fitness'.
+    coefficient of a new mutant is needed. This function should return
+    a single value s (with default value h=0.5) or a sequence of (h,
+    s). Mutant location will be passed to this function if it accepts
+    a parameter loc. This allows the definition of site-specific
+    selection coefficients. Individual fitness will be combined in
+    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
+    details). If an output is given, mutants and their fitness values
+    will be written to the output, in the form of 'mutant s h'.
 
 "; 
 

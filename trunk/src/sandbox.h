@@ -53,19 +53,25 @@ class InfSitesSelector : public BaseSelector
 public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
-	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants.
-	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k</tt> where -s (note the - sign)
-	 *      follows a gamma distribution with scale parameter theta and shape
-	 *      parameter k.
+	 *  \li <tt>(CONSTANT, s, h)</tt> where s will be used for all mutants. The
+	 *      fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
+	 *      If h is unspecified, a default value h=0.5 (additive model) will
+	 *      be used.
+	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h</tt> where s follows a gamma
+	 *      distribution with scale parameter theta and shape parameter k.
+	 *      Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and 1-s.
+	 *      A default value h=0.5 will be used if h is unspecified.
 	 *  \li a Python function, which will be called when selection coefficient
-	 *      of a new mutant is needed. Mutant location will be passed to this
-	 *      function if it accepts a parameter \c loc. This allows the
-	 *      definition of site-specific selection coefficients.
-	 *  Individual fitness (1+s_i) will be combined in \c ADDITIVE,
+	 *      of a new mutant is needed. This function should return a single
+	 *      value s (with default value h=0.5) or a sequence of (h, s). Mutant
+	 *      location will be passed to this function if it accepts a parameter
+	 *      \c loc. This allows the definition of site-specific selection
+	 *      coefficients.
+	 *  Individual fitness will be combined in \c ADDITIVE,
 	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
 	 *     details).
 	 *  If an output is given, mutants and their fitness values will be written
-	 *  to the output, in the form of 'mutant fitness'.
+	 *  to the output, in the form of 'mutant s h'.
 	 */
 	InfSitesSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
 		const stringFunc & output = "",
@@ -73,15 +79,15 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
-		m_selDist(selDist), m_mode(mode), m_selFactory()
+		m_selDist(selDist), m_mode(mode), m_selFactory(), m_additive(true)
 	{
 		if (m_selDist.size() == 0) {
 			DBG_FAILIF(!m_selDist.func().isValid(), ValueError,
 				"Please specify either a distribution with parameter or a function.");
 		} else if (static_cast<int>(m_selDist[0]) == CONSTANT) {
-			DBG_FAILIF(m_selDist.size() != 2, ValueError, "One parameters are needed for gamma distribution.");
+			DBG_FAILIF(m_selDist.size() < 2, ValueError, "At least one parameter is needed for constant selection coefficient.");
 		} else if (static_cast<int>(m_selDist[0]) == GAMMA_DISTRIBUTION) {
-			DBG_FAILIF(m_selDist.size() != 3, ValueError, "Two parameters are needed for gamma distribution.");
+			DBG_FAILIF(m_selDist.size() < 3, ValueError, "At least two parameters are needed for gamma distribution.");
 		}
 	}
 
@@ -113,30 +119,41 @@ public:
 	/// CPPONLY
 	bool apply(Population & pop) const;
 
-private:
-	double getFitnessValue(int mutant) const;
+	typedef std::pair<double, double> SelCoef;
 
-	double randomSelMulFitness(GenoIterator it, GenoIterator it_end) const;
+private:
+	SelCoef getFitnessValue(int mutant) const;
+
 
 	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
 
 	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
+	// extended models does not assume additivity (h != 0.5)
+	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
+
+	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
+
+	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
+
 private:
 	///
 	floatListFunc m_selDist;
 
-	///
 	int m_mode;
-
+	///
 #if TR1_SUPPORT == 0
-	typedef std::map<unsigned int, double> SelMap;
+	typedef std::map<unsigned int, SelCoef> SelMap;
+	typedef std::map<unsigned int, int> MutCounter;
 #else
 	// this is faster than std::map
-	typedef std::tr1::unordered_map<unsigned int, double> SelMap;
+	typedef std::tr1::unordered_map<unsigned int, SelCoef> SelMap;
+	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
 #endif
 	mutable SelMap m_selFactory;
 	mutable vectoru m_newMutants;
+	// whether or not all markers are additive.
+	mutable bool m_additive;
 };
 
 
