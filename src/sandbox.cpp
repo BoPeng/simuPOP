@@ -267,6 +267,32 @@ double InfSitesSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
+ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end) const
+{
+	// try 10 times
+	for (size_t i = 0; i < 10; ++i) {
+		ULONG loc = getRNG().randInt(end - beg) + beg;
+		if (std::find(m_mutants.begin(), m_mutants.end(), loc) == m_mutants.end())
+			return loc;
+	}
+	// does not work, use the slow method
+	// step1: rebuild database...
+	m_mutants.clear();
+	GenoIterator it = pop.genoBegin(false);
+	GenoIterator it_end = pop.genoEnd(false);
+	for (; it != it_end; ++it) {
+		if (*it == 0)
+			continue;
+		m_mutants.insert(*it);
+	}
+	for (size_t loc = beg; loc != end; ++loc)
+		if (std::find(m_mutants.begin(), m_mutants.end(), loc) == m_mutants.end())
+			return loc;
+	cerr << "Failed to find a vacent locus for an infinite-site mutation model. Using " << beg << endl;
+	return beg;
+}
+
+
 bool InfSitesMutator::apply(Population & pop) const
 {
 	const matrixi & ranges = m_ranges.elems();
@@ -310,19 +336,19 @@ bool InfSitesMutator::apply(Population & pop) const
 				if (ch > 0)
 					mutLoc -= width[ch - 1];
 
-				if (m_model == 1) {
+				if (m_model == 2) {
 					// under an infinite-site model
 					if (m_mutants.find(mutLoc) != m_mutants.end()) {
 						// there is an existing allele
 						if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
-							// hit an exiting locus, return
+							// hit an exiting locus, find another one
+							mutLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
 							if (out)
 								(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
-							continue;
 						}
 						// if there is no existing mutant, new mutant is allowed
-					} else
-						m_mutants.insert(mutLoc);
+					}
+					m_mutants.insert(mutLoc);
 				}
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
@@ -458,113 +484,63 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 void InfSitesRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
                                              ULONG offIndex, int ploidy) const
 {
-	/*
-	   const matrixi & ranges = m_ranges.elems();
-	   vectoru width(ranges.size());
+	const matrixi & ranges = m_ranges.elems();
 
-	   width[0] = ranges[0][1] - ranges[0][0];
-	   for (size_t i = 1; i < width.size(); ++i)
-	    width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
-
-	   ULONG ploidyWidth = width.back();
-	   ULONG indWidth = pop.ploidy() * ploidyWidth;
-
-	   ostream * out = NULL;
-	   if (!noOutput())
-	    out = &getOstream(pop.dict());
-
-	   subPopList subPops = applicableSubPops(pop);
-	   subPopList::const_iterator sp = subPops.begin();
-	   subPopList::const_iterator spEnd = subPops.end();
-	   for (; sp != spEnd; ++sp) {
-	    DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
-	    for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
-	        ULONG loc = 0;
-	        while (true) {
-	            // using a geometric distribution to determine mutants
-	            loc += getRNG().randGeometric(m_rate);
-	            if (loc > indWidth)
-	                break;
-	            Individual & ind = pop.individual(indIndex);
-	            int p = (loc - 1) / ploidyWidth;
-	            // chromosome and position on chromosome?
-	            ULONG mutLoc = (loc - 1) - p * ploidyWidth;
-	            size_t ch = 0;
-	            for (size_t reg = 0; reg < width.size(); ++reg) {
-	                if (mutLoc < width[reg]) {
-	                    ch = reg;
-	                    break;
-	                }
-	            }
-	            mutLoc += ranges[ch][0];
-	            if (ch > 0)
-	                mutLoc -= width[ch - 1];
-
-	            if (m_model == 1) {
-	                // under an infinite-site model
-	                if (m_mutants.find(mutLoc) != m_mutants.end()) {
-	                    // there is an existing allele
-	                    if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
-	                        // hit an exiting locus, return
-	                        if (out)
-	                            (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
-	                        continue;
-	                    }
-	                    // if there is no existing mutant, new mutant is allowed
-	                } else
-	                    m_mutants.insert(mutLoc);
-	            }
-	            GenoIterator geno = ind.genoBegin(p, ch);
-	            size_t nLoci = pop.numLoci(ch);
-	            if (*(geno + nLoci - 1) != 0) {
-	                // if the number of mutants at this individual exceeds reserved numbers
-	                DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
-	                vectorf added(10);
-	                for (size_t j = 0; j < 10; ++j)
-	                    added[j] = nLoci + j + 1;
-	                vectoru addedChrom(10, ch);
-	                pop.addLoci(addedChrom, added);
-	                // individual might be shifted...
-	                ind = pop.individual(indIndex);
-	                geno = ind.genoBegin(p, ch);
-	                nLoci += 10;
-	            }
-	            // find the first non-zero location
-	            for (size_t j = 0; j < nLoci; ++j) {
-
-	                if (*(geno + j) == 0) {
-	                    // record mutation here
-	                    DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
-	                        "Location can not be saved because it exceed max allowed allele.");
-	 *(geno + j) = ToAllele(mutLoc);
-	                    if (out)
-	                        (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
-
-	                    break;
-	                } else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
-	                    // back mutation
-	                    //  from A b c d 0
-	                    //  to   d b c d 0
-	                    //  to   d b c 0 0
-	                    for (size_t k = j + 1; k < nLoci; ++k)
-	                        if (*(geno + k) == 0) {
-	 *(geno + j) = *(geno + k - 1);
-	 *(geno + k - 1) = 0;
-	                            if (out)
-	                                (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
-	                            break;
-	                        }
-	                    DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
-	                    break;
-	                }
-	            }
-	        }   // while
-	    }       // each individual
-	   }           // each subpopulation
-	   if (out)
-	    closeOstream();
-	   return true;
-	 */
+	for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
+		ULONG width = ranges[ch][1] - ranges[ch][0];
+		ULONG beg = 0;
+		ULONG end = getRNG().randGeometric(m_rate);
+		int p = getRNG().randBit() ? 0 : 1;
+		// no recombination
+		if (end >= width) {
+			copyChromosome(parent, p, offPop.individual(offIndex), ploidy, ch);
+			break;
+		}
+		// we are in trouble...
+		vectoru alleles;
+		do {
+			// copy piece
+			GenoIterator it = parent.genoBegin(p, ch);
+			GenoIterator it_end = parent.genoEnd(p, ch);
+			for (; it != it_end; ++it) {
+				if (*it >= beg + ranges[ch][0] && *it < end + ranges[ch][0])
+					alleles.push_back(*it);
+			}
+			// change ploidy
+			p = (p + 1) % 2;
+			// next step
+			beg = end;
+			end += getRNG().randGeometric(m_rate);
+		} while (end < width);
+		// last piece
+		GenoIterator it = parent.genoBegin(p, ch);
+		GenoIterator it_end = parent.genoEnd(p, ch);
+		for (; it != it_end; ++it) {
+			if (*it >= beg + ranges[ch][0] && *it < end + ranges[ch][0])
+				alleles.push_back(*it);
+		}
+		// set alleles
+		// not enough size
+		if (alleles.size() > offPop.numLoci(ch)) {
+			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
+				" to " << alleles.size() << endl);
+			UINT sz = alleles.size() - offPop.numLoci(ch);
+			vectorf added(sz);
+			for (size_t j = 0; j < sz; ++j)
+				added[j] = offPop.numLoci(ch) + j + 1;
+			vectoru addedChrom(sz, ch);
+			offPop.addLoci(addedChrom, added);
+		}
+		//
+		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		for (size_t i = 0; i < alleles.size(); ++i, ++it) {
+			*it = alleles[i];
+		}
+		// fill the rest with 0.
+		for (; it != it_end; ++it)
+			*it = 0;
+	}
 }
 
 

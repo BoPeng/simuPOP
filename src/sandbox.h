@@ -170,17 +170,20 @@ public:
 	/** This operator accepts a list of ranges which is the 'real range' of
 	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
 	 *  will be recorded to the population (instead of alleles). By default,
-	 *  this mutator assumes an infinite-sites mutation model so that mutations
-	 *  can happen only at a new locus. Mutations happen at a locus with
-	 *  existing mutant will be ignored. Alternatively, if \e model=2,
-	 *  all mutations are allowed and if a mutant (allele 1) is mutated, it
-	 *  will be mutated to allele 0 (back mutation). If an \e output is given,
-	 *  mutants will be outputted in the format of "gen mutant ind type" where
-	 *  type is 0 for forward (0->1), 1 for backward (1->0) and 2 for invalid
-	 *  (ignored) mutations. The first mode has the advantage that all mutants
-	 *  in the simulated population can be traced to a single mutation event.
-	 *  If the regions are reasonably wide and mutation rates are low, these
-	 *  two mutation models should yield similar results.
+	 *  this mutator assumes an finite-allele model where all mutations are
+	 *  allowed and if a mutant (allele 1) is mutated, it will be mutated to
+	 *  allele 0 (back mutation). Alternatively (\e model = 2), an
+	 *  infinite-sites mutation model can be used where mutations can happen
+	 *  only at a new locus. Mutations happen at a locus with existing mutants
+	 *  will be moved to a random locus without existing mutant. A warning
+	 *  message will be printed if there is no vacant locus available. If a
+	 *  valid \e output is given, mutants will be outputted in the format of
+	 *  "gen mutant ind type" where type is 0 for forward (0->1), 1 for
+	 *  backward (1->0) and 2 for relocated mutations. The second mode
+	 *  has the advantage that all mutants in the simulated population can be
+	 *  traced to a single mutation event. If the regions are reasonably wide and
+	 *  mutation rates are low, these two mutation models should yield similar
+	 *  results.
 	 */
 	InfSitesMutator(double rate, const intMatrix & ranges, int model = 1,
 		const stringFunc & output = "",
@@ -231,6 +234,9 @@ public:
 		return "<simuPOP.InfSitesMutator>";
 	}
 
+
+private:
+	ULONG locateVacantLocus(Population & pop, ULONG beg, ULONG end) const;
 
 private:
 	const double m_rate;
@@ -309,10 +315,6 @@ private:
 
 	// use when m_rate < 1e-4
 	void transmitGenotype1(Population & offPop, const Individual & parent,
-		ULONG offIndex, int ploidy) const;
-
-	// use when m_rate >= 1e-4
-	void transmitGenotype2(Population & offPop, const Individual & parent,
 		ULONG offIndex, int ploidy) const;
 
 private:
