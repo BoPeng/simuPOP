@@ -3156,6 +3156,46 @@ Details:
 
 %feature("docstring") simuPOP::InfSitesMutator::describe "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::InfSitesRecombinator "
+
+Details:
+
+    This during mating operator recombine chromosomes, which records
+    mutant locations, using a fixed recombination rate (per base
+    pair).
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesRecombinator::InfSitesRecombinator "
+
+Usage:
+
+    InfSitesRecombinator(rate, ranges, output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a Recombinator (a mendelian genotype transmitter with
+    recombination and gene conversion) that passes genotypes from
+    parents (or a parent in case of self-fertilization) to offspring.
+    A recombination rate in the unit of base pair is needed.
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesRecombinator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InfSitesRecombinator::~InfSitesRecombinator "
+
+Usage:
+
+    x.~InfSitesRecombinator()
+
+"; 
+
+%feature("docstring") simuPOP::InfSitesRecombinator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::InfSitesRecombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+
 %feature("docstring") simuPOP::InfSitesSelector "
 
 Details:

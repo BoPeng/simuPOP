@@ -377,19 +377,200 @@ bool InfSitesMutator::apply(Population & pop) const
 }
 
 
-void InfSitesRecombinator::transmitGenotype1(const Individual & parent, Individual & offspring, int ploidy) const
+void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
+                                             ULONG offIndex, int ploidy) const
 {
+	UINT nCh = parent.numChrom();
+
+	// count duplicates...
+	for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
+		MutCounter cnt;
+		vectoru alleles;
+		alleles.reserve(parent.numLoci(ch));
+		if (nCh == 1) {
+			// this is faster... for a most common case
+			GenoIterator it = parent.genoBegin();
+			GenoIterator it_end = parent.genoEnd();
+			for (; it != it_end; ++it) {
+				if (*it == 0)
+					break;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+		} else {
+			GenoIterator it = parent.genoBegin(0, ch);
+			GenoIterator it_end = parent.genoEnd(0, ch);
+			for (; it != it_end; ++it) {
+				if (*it == 0)
+					break;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+			it = parent.genoBegin(1, ch);
+			it_end = parent.genoEnd(1, ch);
+			for (; it != it_end; ++it) {
+				if (*it == 0)
+					break;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+
+		}
+		// keep 1 count with probability 0.5, keep 2 count with probability 1
+		MutCounter::iterator mit = cnt.begin();
+		MutCounter::iterator mit_end = cnt.end();
+		for (; mit != mit_end; ++mit)
+			if (mit->second == 2 || getRNG().randBit())
+				alleles.push_back(mit->first);
+		// not enough size
+		if (alleles.size() > offPop.numLoci(ch)) {
+			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
+				" to " << alleles.size() << endl);
+			UINT sz = alleles.size() - offPop.numLoci(ch);
+			vectorf added(sz);
+			for (size_t j = 0; j < sz; ++j)
+				added[j] = offPop.numLoci(ch) + j + 1;
+			vectoru addedChrom(sz, ch);
+			offPop.addLoci(addedChrom, added);
+		}
+		//
+		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		for (size_t i = 0; i < alleles.size(); ++i, ++it) {
+			*it = alleles[i];
+		}
+		// fill the rest with 0.
+		for (; it != it_end; ++it)
+			*it = 0;
+	}
 }
 
 
-void InfSitesRecombinator::transmitGenotype2(const Individual & parent, Individual & offspring, int ploidy) const
+void InfSitesRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
+                                             ULONG offIndex, int ploidy) const
 {
+	/*
+	   const matrixi & ranges = m_ranges.elems();
+	   vectoru width(ranges.size());
+
+	   width[0] = ranges[0][1] - ranges[0][0];
+	   for (size_t i = 1; i < width.size(); ++i)
+	    width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
+
+	   ULONG ploidyWidth = width.back();
+	   ULONG indWidth = pop.ploidy() * ploidyWidth;
+
+	   ostream * out = NULL;
+	   if (!noOutput())
+	    out = &getOstream(pop.dict());
+
+	   subPopList subPops = applicableSubPops(pop);
+	   subPopList::const_iterator sp = subPops.begin();
+	   subPopList::const_iterator spEnd = subPops.end();
+	   for (; sp != spEnd; ++sp) {
+	    DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
+	    for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
+	        ULONG loc = 0;
+	        while (true) {
+	            // using a geometric distribution to determine mutants
+	            loc += getRNG().randGeometric(m_rate);
+	            if (loc > indWidth)
+	                break;
+	            Individual & ind = pop.individual(indIndex);
+	            int p = (loc - 1) / ploidyWidth;
+	            // chromosome and position on chromosome?
+	            ULONG mutLoc = (loc - 1) - p * ploidyWidth;
+	            size_t ch = 0;
+	            for (size_t reg = 0; reg < width.size(); ++reg) {
+	                if (mutLoc < width[reg]) {
+	                    ch = reg;
+	                    break;
+	                }
+	            }
+	            mutLoc += ranges[ch][0];
+	            if (ch > 0)
+	                mutLoc -= width[ch - 1];
+
+	            if (m_model == 1) {
+	                // under an infinite-site model
+	                if (m_mutants.find(mutLoc) != m_mutants.end()) {
+	                    // there is an existing allele
+	                    if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
+	                        // hit an exiting locus, return
+	                        if (out)
+	                            (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
+	                        continue;
+	                    }
+	                    // if there is no existing mutant, new mutant is allowed
+	                } else
+	                    m_mutants.insert(mutLoc);
+	            }
+	            GenoIterator geno = ind.genoBegin(p, ch);
+	            size_t nLoci = pop.numLoci(ch);
+	            if (*(geno + nLoci - 1) != 0) {
+	                // if the number of mutants at this individual exceeds reserved numbers
+	                DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
+	                vectorf added(10);
+	                for (size_t j = 0; j < 10; ++j)
+	                    added[j] = nLoci + j + 1;
+	                vectoru addedChrom(10, ch);
+	                pop.addLoci(addedChrom, added);
+	                // individual might be shifted...
+	                ind = pop.individual(indIndex);
+	                geno = ind.genoBegin(p, ch);
+	                nLoci += 10;
+	            }
+	            // find the first non-zero location
+	            for (size_t j = 0; j < nLoci; ++j) {
+
+	                if (*(geno + j) == 0) {
+	                    // record mutation here
+	                    DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
+	                        "Location can not be saved because it exceed max allowed allele.");
+	 *(geno + j) = ToAllele(mutLoc);
+	                    if (out)
+	                        (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
+
+	                    break;
+	                } else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
+	                    // back mutation
+	                    //  from A b c d 0
+	                    //  to   d b c d 0
+	                    //  to   d b c 0 0
+	                    for (size_t k = j + 1; k < nLoci; ++k)
+	                        if (*(geno + k) == 0) {
+	 *(geno + j) = *(geno + k - 1);
+	 *(geno + k - 1) = 0;
+	                            if (out)
+	                                (*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
+	                            break;
+	                        }
+	                    DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
+	                    break;
+	                }
+	            }
+	        }   // while
+	    }       // each individual
+	   }           // each subpopulation
+	   if (out)
+	    closeOstream();
+	   return true;
+	 */
 }
 
 
 bool InfSitesRecombinator::applyDuringMating(Population & pop, Population & offPop,
-		RawIndIterator offspring,
-		Individual * dad, Individual * mom) const
+                                             RawIndIterator offspring,
+                                             Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
@@ -404,14 +585,14 @@ bool InfSitesRecombinator::applyDuringMating(Population & pop, Population & offP
 			copyChromosome(*dad, getRNG().randBit(), *offspring, 1, ch);
 		}
 	} else if (m_rate == 0.5) {
-	} else if (m_rate < 1e-4) {
-		transmitGenotype1(*mom, *offspring, 0);
-		transmitGenotype1(*dad, *offspring, 1);
+		transmitGenotype0(offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype0(offPop, *dad, offspring - offPop.rawIndBegin(), 1);
 	} else {
-		transmitGenotype2(*mom, *offspring, 0);
-		transmitGenotype2(*dad, *offspring, 1);
+		transmitGenotype1(offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype1(offPop, *dad, offspring - offPop.rawIndBegin(), 1);
 	}
 	return true;
 }
+
 
 }
