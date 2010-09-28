@@ -443,8 +443,8 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 			offPop.addLoci(addedChrom, added);
 		}
 		//
-		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
-		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 		for (size_t i = 0; i < alleles.size(); ++i, ++it) {
 			*it = alleles[i];
 		}
