@@ -377,4 +377,41 @@ bool InfSitesMutator::apply(Population & pop) const
 }
 
 
+void InfSitesRecombinator::transmitGenotype1(const Individual & parent, Individual & offspring, int ploidy) const
+{
+}
+
+
+void InfSitesRecombinator::transmitGenotype2(const Individual & parent, Individual & offspring, int ploidy) const
+{
+}
+
+
+bool InfSitesRecombinator::applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+
+	initializeIfNeeded(*offspring);
+
+	// standard genotype transmitter
+	if (m_rate == 0) {
+		for (int ch = 0; static_cast<UINT>(ch) < pop.numChrom(); ++ch) {
+			copyChromosome(*mom, getRNG().randBit(), *offspring, 0, ch);
+			copyChromosome(*dad, getRNG().randBit(), *offspring, 1, ch);
+		}
+	} else if (m_rate == 0.5) {
+	} else if (m_rate < 1e-4) {
+		transmitGenotype1(*mom, *offspring, 0);
+		transmitGenotype1(*dad, *offspring, 1);
+	} else {
+		transmitGenotype2(*mom, *offspring, 0);
+		transmitGenotype2(*dad, *offspring, 1);
+	}
+	return true;
+}
+
 }

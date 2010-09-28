@@ -30,6 +30,7 @@
    \brief head file of module sandbox
  */
 #include "selector.h"
+#include "transmitter.h"
 
 #if TR1_SUPPORT == 0
 #  include <map>
@@ -242,6 +243,67 @@ private:
 	mutable std::set<ULONG> m_mutants;
 };
 
+
+/** This during mating operator recombine chromosomes, which records mutant
+ *  locations, using a fixed recombination rate (per base pair).
+ */
+class InfSitesRecombinator : public GenoTransmitter
+{
+public:
+	/** Create a Recombinator (a mendelian genotype transmitter with
+	 *  recombination and gene conversion) that passes genotypes from parents
+	 *  (or a parent in case of self-fertilization) to offspring. A
+	 *  recombination \e rate in the unit of base pair is needed.
+	 */
+	InfSitesRecombinator(double rate = 0,
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: m_rate(rate),	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
+	{
+		DBG_FAILIF(rate > 0.5 || rate < 0, ValueError, "Recombination rate should be between 0 and 0.5");
+#ifdef BINARYALLELE
+		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
+#endif
+	}
+
+	/// HIDDEN Deep copy of a Recombinator
+	virtual BaseOperator * clone() const
+	{
+		return new InfSitesRecombinator(*this);
+	}
+
+
+	virtual ~InfSitesRecombinator()
+	{
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		return "<simuPOP.InfSitesRecombinator>";
+	}
+
+	/** CPPONLY
+	 *  Apply the Recombinator during mating
+	 */
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad, Individual * mom) const;
+
+private:
+	// use when m_rate < 1e-4
+	void transmitGenotype1(const Individual & parent, Individual & offspring, int ploidy) const; 
+
+	// use when m_rate >= 1e-4
+	void transmitGenotype2(const Individual & parent, Individual & offspring, int ploidy) const; 
+
+private:
+	/// recombination rate
+	const double m_rate;
+};
 
 }
 #endif
