@@ -191,7 +191,7 @@ bool InitGenotype::apply(Population & pop) const
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);
 
-	pop.sortIndividuals();
+	pop.syncIndPointers();
 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator sp_end = subPops.end();
