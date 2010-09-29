@@ -902,6 +902,12 @@ public:
 	 */
 	//@{
 
+	/** Sort individuals according to values at specified information
+	 *  fields (\e infoFields). Individuals will be sorted at an increasing
+	 *  order.
+	 */
+	void sortIndividuals(const stringList & infoFields);
+
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
 	 *  <tt>Individual::info(field)</tt>). individuals with negative values

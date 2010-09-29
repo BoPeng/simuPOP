@@ -5895,6 +5895,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Population::sortIndividuals "
+
+Usage:
+
+    x.sortIndividuals(infoFields)
+
+Details:
+
+    Sort individuals according to values at specified information
+    fields (infoFields). Individuals will be sorted at an increasing
+    order.
+
+"; 
+
 %feature("docstring") simuPOP::Population::setSubPopByIndInfo "
 
 Usage:
@@ -6375,7 +6389,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::sortIndividuals(bool infoOnly=false) const;
+%ignore simuPOP::Population::syncIndPointers(bool infoOnly=false) const;
 
 %feature("docstring") simuPOP::Population::save "
 

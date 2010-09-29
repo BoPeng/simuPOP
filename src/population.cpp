@@ -747,6 +747,20 @@ ULONG Population::subPopSize(vspID subPopID, int ancGen) const
 }
 
 
+void Population::sortIndividuals(const stringList & infoList)
+{
+	const vectorstr & infoFields = infoList.elems();
+
+	if (infoFields.size() == 0)
+		return;
+	vectoru fields(infoFields.size());
+	for (size_t i = 0; i < infoFields.size(); ++i)
+		fields[i] = infoIdx(infoFields[i]);
+	for (size_t sp = 0; sp < numSubPop(); ++sp)
+		std::sort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
+}
+
+
 void Population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -756,7 +770,7 @@ void Population::setSubPopByIndInfo(const string & field)
 
 	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
 	// sort individuals first
-	std::sort(indIterator(), IndIterator(m_inds.end(), m_inds.end(), true), indCompare(info));
+	std::sort(rawIndBegin(), rawIndEnd(), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first
