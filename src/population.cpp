@@ -523,7 +523,7 @@ PyObject * Population::genotype(vspID subPopID)
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	sortIndividuals();
+	syncIndPointers();
 	if (!vsp.valid()) {
 		// directly expose values. Do not copy data over.
 		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
@@ -543,7 +543,7 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 
 	vspID subPop = subPopID.resolve(*this);
 
-	sortIndividuals();
+	syncIndPointers();
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
 		ULONG sz = geno.size();
@@ -878,7 +878,7 @@ vectoru Population::splitSubPop(UINT subPop, const vectorf & sizes, const vector
 
 void Population::removeSubPops(const subPopList & subPops)
 {
-	sortIndividuals();
+	syncIndPointers();
 	vectoru new_size;
 	vectorstr new_spNames;
 
@@ -976,7 +976,7 @@ void Population::removeSubPops(const subPopList & subPops)
 
 void Population::removeMarkedIndividuals()
 {
-	sortIndividuals();
+	syncIndPointers();
 	vectoru new_size(numSubPop(), 0);
 
 	UINT step = genoSize();
@@ -1163,7 +1163,7 @@ UINT Population::mergeSubPops(const uintList & subPops, const string & name)
 		return sps[0];
 	}
 	// difficult case.
-	sortIndividuals();
+	syncIndPointers();
 	// find the new subpop order
 	vectoru sp_order;
 	for (size_t sp = 0; sp < sps[0]; ++sp)
@@ -1257,7 +1257,7 @@ void Population::addChromFrom(const Population & pop)
 	}
 	if (!indOrdered())
 		// sort information only
-		sortIndividuals(true);
+		syncIndPointers(true);
 }
 
 
@@ -1268,8 +1268,8 @@ void Population::addIndFrom(const Population & pop)
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Two populations should have the same number of ancestral generations.");
 	// genotype pointers may be reset so this is needed.
-	sortIndividuals();
-	const_cast<Population &>(pop).sortIndividuals();
+	syncIndPointers();
+	const_cast<Population &>(pop).syncIndPointers();
 	// go to the oldest generation
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
@@ -1361,7 +1361,7 @@ void Population::addLociFrom(const Population & pop)
 	}
 
 	// sort information only
-	sortIndividuals(true);
+	syncIndPointers(true);
 }
 
 
@@ -1411,7 +1411,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 	//   individual genotype is now sorted. If we do not do
 	//   anything, genotype may be resorted. Sort info to
 	//   so that the order is set to True.
-	sortIndividuals(true);
+	syncIndPointers(true);
 }
 
 
@@ -1470,7 +1470,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 	//   individual genotype is now sorted. If we do not do
 	//   anything, genotype may be resorted. Sort info to
 	//   so that the order is set to True.
-	sortIndividuals(true);
+	syncIndPointers(true);
 	return newIndex;
 }
 
@@ -1542,7 +1542,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	incGenoStruRef();
 	pop.setVirtualSplitter(virtualSplitter());
 
-	sortIndividuals();
+	syncIndPointers();
 	vectoru new_size;
 	vectorstr new_spNames;
 
@@ -1692,7 +1692,7 @@ Population & Population::extractMarkedIndividuals() const
 	incGenoStruRef();
 	pop.setVirtualSplitter(virtualSplitter());
 
-	sortIndividuals();
+	syncIndPointers();
 	vectoru new_size;
 
 	UINT step = genoSize();
@@ -1958,7 +1958,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 	for (int genIdx = gens.size() - 1; genIdx >= 0; --genIdx) {
 		int depth = gens[genIdx];
 		const_cast<Population *>(this)->useAncestralGen(depth);
-		sortIndividuals();
+		syncIndPointers();
 		// determine the number of individuals
 		vectoru spSizes(numSubPop());
 		vector<vectoru> indIdx(numSubPop());
@@ -2739,7 +2739,7 @@ PyObject * Population::dict(int subPop)
 }
 
 
-void Population::sortIndividuals(bool infoOnly) const
+void Population::syncIndPointers(bool infoOnly) const
 {
 	if (indOrdered())
 		return;

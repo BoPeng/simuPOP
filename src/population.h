@@ -797,7 +797,7 @@ public:
 			"This function is not valid with an activated virtual subpopulation");
 
 		if (order && !indOrdered())
-			sortIndividuals();
+			syncIndPointers();
 
 		return m_genotype.begin();
 	}
@@ -809,7 +809,7 @@ public:
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
 		if (order && !indOrdered())
-			sortIndividuals();
+			syncIndPointers();
 
 		return m_genotype.end();
 	}
@@ -826,7 +826,7 @@ public:
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 
-		sortIndividuals();
+		syncIndPointers();
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
@@ -838,7 +838,7 @@ public:
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
-		sortIndividuals(order);
+		syncIndPointers(order);
 
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
@@ -1343,7 +1343,7 @@ public:
 	   This function is const because the population is 'not changed'
 	   conceptually.
 	 */
-	void sortIndividuals(bool infoOnly = false) const;
+	void syncIndPointers(bool infoOnly = false) const;
 
 	/** Save population to a file \e filename, which can be loaded by a global
 	 *  function <tt>loadPopulation(filename)</tt>.
@@ -1427,7 +1427,7 @@ private:
 	void save(Archive & ar, const UINT version) const
 	{
 		// deep adjustment: everyone in order
-		const_cast<Population *>(this)->sortIndividuals();
+		const_cast<Population *>(this)->syncIndPointers();
 
 		ar & ModuleMaxAllele;
 
@@ -1465,7 +1465,7 @@ private:
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
 			const_cast<Population *>(this)->useAncestralGen(i + 1);
 			// need to make sure ancestral pop also in order
-			const_cast<Population *>(this)->sortIndividuals();
+			const_cast<Population *>(this)->syncIndPointers();
 			ar & m_subPopSize;
 			ar & m_subPopNames;
 #ifdef BINARYALLELE
