@@ -970,6 +970,16 @@ class TestPopulation(unittest.TestCase):
         for i in range(2, 6):
             self.assertEqual(pop.subPopName(i), '')
 
+    def testSortIndividuals(self):
+        'Testing Population::sortIndividuals(infoFields)'
+        pop = self.getPop(size=[1000, 2000], infoFields=['a', 'b'])
+        initInfo(pop, lambda: random.randint(1, 5), infoFields=['a', 'b'])
+        pop.sortIndividuals('a')
+        for sp in range(2):
+            for i in range(1, pop.subPopSize(sp)):
+                self.assertTrue(pop.individual(i-1, sp).a <= pop.individual(i, sp).a)
+        self.assertTrue(pop.individual(999).a > pop.individual(0, 1).a)
+            
     def testAddInfoFields(self):
         'Testing Population::addInfoFields(fields, init=0)'
         pop = self.getPop()
