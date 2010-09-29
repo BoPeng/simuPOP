@@ -270,6 +270,7 @@ double InfSitesSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end) const
 {
 	ULONG loc = getRNG().randInt(end - beg) + beg;
+
 	std::set<ULONG>::iterator it = std::find(m_mutants.begin(), m_mutants.end(), loc);
 	if (it == m_mutants.end())
 		return loc;
@@ -426,7 +427,7 @@ bool InfSitesMutator::apply(Population & pop) const
 	}           // each subpopulation
 	if (out)
 		closeOstream();
-#endif		
+#endif
 	return true;
 }
 
