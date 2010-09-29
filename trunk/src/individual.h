@@ -518,16 +518,29 @@ class indCompare
 {
 public:
 	// accept the index to an information field
-	indCompare(UINT idx) : m_field(idx) {}
+	indCompare(UINT idx) : m_fields(1, idx) {}
+
+	indCompare(const vectoru & idx) : m_fields(idx) {}
 
 	bool operator()(const Individual & lhs, const Individual & rhs)
 	{
-		return lhs.info(m_field) < rhs.info(m_field);
+		for (size_t i = 0; i < m_fields.size(); ++i) {
+			double v1 = lhs.info(m_fields[i]);
+			double v2 = rhs.info(m_fields[i]);
+			if (v1 == v2)
+				// if equal, look for the next field
+				continue;
+			else
+				// if < or >, we have a comparison
+				return v1 < v2;
+		}
+		// they are actually equal, but we are inplementing operator <
+		return false;
 	}
 
 
 private:
-	UINT m_field;
+	vectoru m_fields;
 };
 
 
