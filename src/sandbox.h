@@ -179,11 +179,12 @@ public:
 	 *  message will be printed if there is no vacant locus available. If a
 	 *  valid \e output is given, mutants will be outputted in the format of
 	 *  "gen mutant ind type" where type is 0 for forward (0->1), 1 for
-	 *  backward (1->0) and 2 for relocated mutations. The second mode
-	 *  has the advantage that all mutants in the simulated population can be
-	 *  traced to a single mutation event. If the regions are reasonably wide and
-	 *  mutation rates are low, these two mutation models should yield similar
-	 *  results.
+	 *  backward (1->0), 2 for relocated mutations, and 3 for ignored mutation
+	 *  because no vacent locus is available. The second mode  has the
+	 *  advantage that all mutants in the simulated population can be traced
+	 *  to a single mutation event. If the regions are reasonably wide and
+	 *  mutation rates are low, these two mutation models should yield
+	 *  similar results.
 	 */
 	InfSitesMutator(double rate, const intMatrix & ranges, int model = 1,
 		const stringFunc & output = "",
