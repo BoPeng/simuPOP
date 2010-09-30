@@ -315,8 +315,7 @@ ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end)
 			return loc_2;
 	}
 	// still cannot find
-	DBG_WARNIF(true, "Failed to find a locus without existing mutant. Please use a wider region or lower mutation rate.");
-	return loc;
+	return 0;
 }
 
 
@@ -371,10 +370,16 @@ bool InfSitesMutator::apply(Population & pop) const
 						if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
 							// hit an exiting locus, find another one
 							DBG_DO(DBG_MUTATOR, cerr << "Relocate locus from " << mutLoc);
-							mutLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
-							DBG_DO(DBG_MUTATOR, cerr << " to locus " << mutLoc << endl);
+							ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
+							// nothing is found
 							if (out)
-								(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t2\n";
+								(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+								        << (newLoc == 0 ? "\t3\n" : "\t2\n");
+							if (newLoc != 0)
+								mutLoc = newLoc;
+							else
+								// ignore this mutation
+								continue;
 						}
 						// if there is no existing mutant, new mutant is allowed
 					}
