@@ -1843,8 +1843,8 @@ PyObject * load_tuple(const string & vars, size_t & offset)
 	for (int i = 0; i < len; ++i) {
 		PyObject * elem = loadObj(vars, offset);
 		PyTuple_SetItem(d, i, elem);
-        // this is not needed because PyTuple_SetItem steals a
-        // referene from elem.
+		// this is not needed because PyTuple_SetItem steals a
+		// referene from elem.
 		//Py_DECREF(elem);
 	}
 	return d;
