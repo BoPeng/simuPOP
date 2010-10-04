@@ -11,6 +11,8 @@ New features:
   - Add operator DiscardIf to discard individuals if some condition is met.
   - Callback functions for PyOperator must return either True or False. A 
 		RuntimeError will be returned otherwise.
+  - Allow simuOpt.valueOneOf(t1, t2, t3) in addition to simuOpt.valueOneOf(list).
+  - Allow simuOpt.valueNot(value) in addition to simuOpt.valueNot(validator).
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification
