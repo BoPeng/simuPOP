@@ -250,13 +250,13 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
 # define some validataion functions
 #
 def valueNot(t):
-    '''Return a function that returns true if passed option does not passes
-    validator t'''
+    '''Return a function that returns true if passed option does not equal t,
+    or does not passes validator t'''
     def func(val):
         if callable(t):
             return not t(val)
         else:
-            raise ValueError("We expect a function valueXXX")
+            return val != t
     return func
 
 
@@ -282,9 +282,13 @@ def valueAnd(t1, t2):
     return func
 
 
-def valueOneOf(t):
-    '''Return a function that returns true if passed option is one of the values
-    list in t'''
+def valueOneOf(*args):
+    '''Return a function that returns true if passed option is one of the
+    parameters, or one of the values in the only parameter'''
+    if len(args) == 1:
+        t = args[0]
+    else:
+        t = args
     if not type(t) in [list, tuple]:
         raise ValueError('argument of valueOneOf should be a list')
     def func(val):
