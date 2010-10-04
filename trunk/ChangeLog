@@ -17,6 +17,7 @@ Bug:
 		dictionary.
   - Fix a bug in the identifying of OUTBRED_SPOUSE when parentship of parents is
 		unknown.
+  - Fix a bug during the loading of tuples in a population's local name space.
 
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
