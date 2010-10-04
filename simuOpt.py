@@ -1508,13 +1508,13 @@ class Params:
             elif opt['type'] == 'filename':
                 opt['gui_type'] = 'browseFile'
                 opt['allowedTypes'] = [str]
-                if not opt.has_key('validator'):
-                    opt['validator'] = valueValidFile()
+                #if not opt.has_key('validator'):
+                #    opt['validator'] = valueValidFile()
             elif opt['type'] == 'dirname':
                 opt['gui_type'] = 'browseDir'
                 opt['allowedTypes'] = [str]
-                if not opt.has_key('validator'):
-                    opt['validator'] = valueValidDir()
+                #if not opt.has_key('validator'):
+                #    opt['validator'] = valueValidDir()
             else:
                 if isinstance(opt['type'], type(int)):
                     opt['allowedTypes'] = [opt['type']]

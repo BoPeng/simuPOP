@@ -19,6 +19,10 @@ Bug:
 		unknown.
   - Fix a bug during the loading of tuples in a population's local name space.
 
+Minor adjustment:
+  - Parameter of type 'filename' and 'dirname' does not have to be a valid
+	file or directory name.
+
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
 New features:
