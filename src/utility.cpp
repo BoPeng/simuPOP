@@ -1809,12 +1809,6 @@ PyObject * load_list(const string & vars, size_t & offset)
 	while (vars[offset] != 'e') {
 		PyObject * elem = loadObj(vars, offset);
 		PyList_Append(d, elem);
-		// There has been a weird bug related to this. Basically,
-		// There is a loaded list [1154, b, c] and a number 1154 somewhere
-		// However, the loaded list does not increase reference count
-		// so the ref count of 1154 is one. Then, when the list element
-		// is replaced, the other instance of 1154 is also changed...
-		//
 		Py_DECREF(elem);
 	}
 	offset++;                                                                         // skip 'e'
@@ -1849,7 +1843,9 @@ PyObject * load_tuple(const string & vars, size_t & offset)
 	for (int i = 0; i < len; ++i) {
 		PyObject * elem = loadObj(vars, offset);
 		PyTuple_SetItem(d, i, elem);
-		Py_DECREF(elem);
+        // this is not needed because PyTuple_SetItem steals a
+        // referene from elem.
+		//Py_DECREF(elem);
 	}
 	return d;
 }
