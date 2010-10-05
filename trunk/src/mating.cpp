@@ -1581,6 +1581,14 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
 			"SubPopulation " + toStr(sp) + " has activated virtual subpopulation.");
 		for (UINT idx = 0; idx < m.size(); ++idx, ++itSize) {
+			DBG_WARNIF(*itSize == 0, "WARNING: One of the mating schemes has zero weight and produces no offspring. "
+				"Because the default weight of a mating scheme is 0, which is handled differently "
+				"when all weights are zero (proportion to sizes of parental subpopulations or virtual "
+				"subpopulations) and when there is a positive weight (weight zero, no offspring). You "
+				"might have forgotten to assign a weight to a mating scheme when you change the weight "
+				"of another mating scheme.");
+			if (*itSize == 0)
+				continue;
 			if (sps[idx].isVirtual())
 				pop.activateVirtualSubPop(sps[idx]);
 			// if previous mating scheme works on a virtual subpop,
