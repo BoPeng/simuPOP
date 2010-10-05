@@ -24,6 +24,8 @@ Bug:
 Minor adjustment:
   - Parameter of type 'filename' and 'dirname' does not have to be a valid
 	file or directory name.
+  - Produce a warning message when one of the mating schemes in a heterogeneous
+	mating scheme produces no offspring.
 
 version 1.0.4 - Rev 3815 (Sep. 7th, 2010)
 
