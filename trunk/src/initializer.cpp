@@ -197,7 +197,7 @@ bool InitGenotype::apply(Population & pop) const
 	subPopList::const_iterator sp_end = subPops.end();
 	size_t sz = m_genotype.size();
 
-	DBG_WARNIF(sz != 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
+	DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
 		"Genotype [" + shorten(toStr(m_genotype)) + "} specified in operator InitGenotype has "
 		+ toStr(m_genotype.size()) + " alleles, which does not match number of loci of individuals. "
 		                             "This sequence will be truncated or repeated and may lead to erroneous results.");
