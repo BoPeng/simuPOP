@@ -982,7 +982,7 @@ class TrajectorySimulator:
         if callable(self.N):
             nt = self.N(gen)
             # the return value of a demographic function sometimes is not integer.
-            if type(nt) in [type(1), type(1L)]:
+            if type(nt) in [int, long, float]:
                 return [int(nt)]
             else:
                 return [int(x) for x in nt]
