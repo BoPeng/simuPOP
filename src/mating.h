@@ -1233,7 +1233,9 @@ public:
 	/// destructor
 	~PyParentsChooser()
 	{
-		DBG_FAILIF(m_popObj != NULL, SystemError, "Python parents chooser is not properly destroyed.");
+		// this is a bad idea because PyParentsChooser will not be properly released when
+		// some error happens, and this exception actually blocks some previous exception.
+		// DBG_FAILIF(m_popObj != NULL, SystemError, "Python parents chooser is not properly destroyed.");
 	}
 
 
