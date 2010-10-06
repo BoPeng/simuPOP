@@ -1430,7 +1430,7 @@ class TrajectorySimulator:
                 for sp in range(len(self._Nt(endGen))):
                     freq.append(beginFreq[self.nLoci*sp : self.nLoci * (sp+1)])
             else:
-                raise ValueError("Invalid initial frequency list")
+                raise ValueError("Initial frequency should be provided for each locus (nLoci) or each locus at each subpopulation (nLoci * len(N)).")
         else:
             raise ValueError("Invalid initial frequency list")
         #
