@@ -767,7 +767,7 @@ class Trajectory:
         return trajFunc
 
     def mutants(self):
-        '''Return a list of mutants in the form of (loc, subPop, gen)'''
+        '''Return a list of mutants in the form of (loc, gen, subPop)'''
         gens = self.traj.keys()
         gens.sort()
         if len(gens) == 0:
@@ -781,14 +781,7 @@ class Trajectory:
             for sp in range(len(self.traj[gen])):
                 for loc in range(self.nLoci):
                     if self.traj[gen][sp][loc] == 0 and self.traj[gen + 1][sp][loc] > 0:
-                        if type(loci) in [type(()), type([])]:
-                            if len(loci) != self.nLoci:
-                                raise ValueError('%d loci is expected' % self.nLoci)
-                            mut.append((loc, sp, gen + 1))
-                        elif self.nLoci == 1 and type(loci) == type(0):
-                            mut.append((0, sp, gen + 1))
-                        else:
-                            raise ValueError('Invalid parameter loci')
+                        mut.append((loc, gen + 1, sp))
         return mut
 
     
@@ -804,13 +797,17 @@ class Trajectory:
         as keyward parameters.
         '''
         ops = []
-        for loc, sp, gen in self.mutants():
+        if hasattr(loci, '__iter__') and len(loci) != self.nLoci:
+            raise ValueError('%d loci is expected' % self.nLoci)
+        for loc, gen, sp in self.mutants():
             if self.nLoci == 1 and type(loci) == type(0):
                 ops.append(PointMutator(inds=inds, loci=loci, allele=allele,
                                 subPops=sp, at=gen, *args, **kwargs))
-            else:
+            elif hasattr(loci, '__iter__'):
                 ops.append(PointMutator(inds=inds, loci=loci[loc], allele=allele,
                                 subPops=sp, at=gen, *args, **kwargs))
+            else:
+                raise ValueError('Invalid value for parameter loci')
         return ops
 
     def _setFreq(self, freq, gen):
