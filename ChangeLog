@@ -13,6 +13,7 @@ New features:
 		RuntimeError will be returned otherwise.
   - Allow simuOpt.valueOneOf(t1, t2, t3) in addition to simuOpt.valueOneOf(list).
   - Allow simuOpt.valueNot(value) in addition to simuOpt.valueNot(validator).
+  - Add function Trajectory.mutants() in simuPOP.utils.
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification
