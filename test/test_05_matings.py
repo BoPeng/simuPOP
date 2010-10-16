@@ -49,6 +49,7 @@ class TestMatingSchemes(unittest.TestCase):
             gen = pop.dvars().gen
             intended_size = demo(gen)
             self.assertEqual(pop.subPopSizes(), intended_size)
+            return True
 
         pop = Population(size=[500, 1000], infoFields=['migrate_to'])
         pop.evolve(

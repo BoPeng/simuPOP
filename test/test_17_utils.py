@@ -441,7 +441,7 @@ class TestUtility(unittest.TestCase):
         self.assertTrue(f1 >= 0.08 and f1 <= 0.13)
         self.assertTrue(f2 >= 0.10 and f2 <= 0.15)
         # no mutation
-        self.assertEqual(len(traj.mutators(loci=[0])), 0)
+        self.assertEqual(len(traj.mutators(loci=[0,1])), 0)
         # the function form
         traj = simulateForwardTrajectory(N=[1000, 3000], nLoci=2, beginGen=100, endGen=200, beginFreq=0.1,
             endFreq=[[0.09, 0.11]]*2) 

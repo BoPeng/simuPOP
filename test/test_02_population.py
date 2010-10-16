@@ -803,7 +803,7 @@ class TestPopulation(unittest.TestCase):
             pop.useAncestralGen(gen)
             initGenotype(pop, freq=[0.5, 0.5])
         pop.useAncestralGen(0)
-        tagID(pop)
+        tagID(pop, reset=True)
         include = set([random.randint(1, 1800) for x in range(600)])
         pop1 = pop.extractIndividuals(IDs=list(include))
         sz1 = []
