@@ -698,6 +698,7 @@ class TestSelector(unittest.TestCase):
             for sp in param[0]:
                 for ind in pop.individuals(sp):
                     self.assertEqual(ind.info('fitness'), 0.)
+            return True
         simu.evolve(
             initOps = [InitSex(), InitGenotype(freq=[.4, .6])],
             preOps = [
