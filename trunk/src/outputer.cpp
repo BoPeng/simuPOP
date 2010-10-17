@@ -167,6 +167,9 @@ string SavePopulation::describe(bool format) const
 
 bool SavePopulation::apply(Population & pop) const
 {
+	if (m_filename.empty())
+		return true;
+
 	string filename;
 
 	if (m_filename[0] != '!')
