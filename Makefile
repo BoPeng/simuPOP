@@ -18,8 +18,8 @@ rebuild3:
 clean:
 	@rm -rf build
 	@rm -f src/*wrap* src/simuPOP_*.py
-	@find . -name '*~' -delete
-	@find . -name '*.bak' -delete
-	@find . -name '*.py?' -delete
+	@find . -name '*~' -exec rm -f {} \;
+	@find . -name '*.bak' -exec rm -f {} \;
+	@find . -name '*.py?' -exec rm -f {} \;
 	@rm -f MANIFEST doc/*.aux doc/*.log doc/*.idx
 

@@ -185,8 +185,7 @@ public:
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_filename(output.value())
 	{
-		if (output.empty())
-			throw ValueError("Please specify a output file.");
+		DBG_WARNIF(output.empty(), "An empty output string is passed to operator SavePopulation. No file will be saved.");
 	}
 
 
