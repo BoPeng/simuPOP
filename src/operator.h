@@ -677,7 +677,7 @@ public:
 
 
 	/// CPPONLY
-	bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad, Individual * mom) const;
 
 	virtual ~DiscardIf()
