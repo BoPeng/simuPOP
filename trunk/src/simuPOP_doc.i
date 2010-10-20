@@ -1247,10 +1247,10 @@ Details:
 
 Details:
 
-    This operator is a during mating operator that discards
-    individuals according to either an expression that evaluates
-    according to individual information field, or a Python function
-    that accepts individual and its information fields.
+    This operator discards individuals according to either an
+    expression that evaluates according to individual information
+    field, or a Python function that accepts individual and its
+    information fields.
 
 "; 
 
@@ -1263,16 +1263,24 @@ Usage:
 
 Details:
 
-    Create a during mating operator with an expression condition,
-    which will be evalulated with each individual's information fields
-    (see operator InfoEval for details), or a function that accepts
-    parameters off, dad, mom, pop (parental population), or names of
-    information fields. If exposeInd is non-empty, an offspring will
-    be available for evaluation in the expression as an variable with
-    name spacied by exposeInd. If the condition evaluates to be True,
-    or if the function returns True, the offspring will be discarded.
-    A constant expression (e.g. True) is also acceptable). Because
-    this operator supports parameter subPops, only individuals
+    Create an operator that discard individuals according to an
+    expression or the return value of a Python function (parameter
+    cond). This operator can be applied to a population before or
+    after mating, or to offspring during mating. If an expression is
+    passed to cond, it will be evalulated with each individual's
+    information fields (see operator InfoEval for details). If
+    exposeInd is non-empty, individuals will be available for
+    evaluation in the expression as an variable with name spacied by
+    exposeInd. If the expression is evaluated to be True, individuals
+    (if applied before or after mating) or offspring (if applied
+    during mating) will be removed or discard. If a function is passed
+    to cond, it should accept paramters ind and pop or names of
+    information fields when it is applied to a population (pre or post
+    mating), or parameters off, dad, mom, pop (parental population),
+    or names of information fields if the operator is applied during
+    mating. Individuals will be discarded if this function returns
+    True. A constant expression (e.g. True) is also acceptable).
+    Because this operator supports parameter subPops, only individuals
     belonging to specified (virtual) subpopulations will be screened.
 
 "; 
@@ -1281,7 +1289,9 @@ Details:
 
 %feature("docstring") simuPOP::DiscardIf::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::DiscardIf::DiscardIf::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+%feature("docstring") simuPOP::DiscardIf::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::DiscardIf::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
 
 %feature("docstring") simuPOP::DiscardIf::~DiscardIf "
 
