@@ -6977,16 +6977,16 @@ Details:
     removed from the population. This operator can therefore perform
     similar functions as operator DiscardIf.  If this operator is
     applied during mating, your function should accept parameters pop,
-    off, dad, mom and param where pop is the parental population, and
-    off, dad, and mom are offspring and their parents for each mating
-    event, and param is an optional parameter. If subPops are
-    provided, only offspring in specified (virtual) subpopulations are
-    acceptable.  This operator does not support parameters output, and
-    infoFields. If certain output is needed, it should be handled in
-    the user defined function func. Because the status of files used
-    by other operators through parameter output is undetermined during
-    evolution, they should not be open or closed in this Python
-    operator.
+    off (or ind), dad, mom and param where pop is the parental
+    population, and off or ind, dad, and mom are offspring and their
+    parents for each mating event, and param is an optional parameter.
+    If subPops are provided, only offspring in specified (virtual)
+    subpopulations are acceptable.  This operator does not support
+    parameters output, and infoFields. If certain output is needed, it
+    should be handled in the user defined function func. Because the
+    status of files used by other operators through parameter output
+    is undetermined during evolution, they should not be open or
+    closed in this Python operator.
 
 "; 
 

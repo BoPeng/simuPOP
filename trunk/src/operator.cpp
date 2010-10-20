@@ -942,7 +942,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 		const string & arg = m_func.arg(i);
 		if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
-		else if (arg == "off")
+		else if (arg == "off" || arg == "ind")
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*offspring)));
 		else if (arg == "dad")
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(dad)));
@@ -952,8 +952,8 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 			Py_INCREF(m_param.object());
 			PyTuple_SET_ITEM(args, i, m_param.object());
 		} else {
-			DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', 'mom', and 'param' are acceptable in "
-				                         "function" + m_func.name());
+			DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'ind', 'dad', 'mom', and 'param' "
+				                         "are acceptable in function" + m_func.name());
 		}
 	}
 

@@ -780,11 +780,11 @@ public:
 	 *  \c DiscardIf.
 	 *
 	 *  If this operator is applied during mating, your function should accept
-	 *  parameters \c pop, \c off, \c dad, \c mom and \c param where \c pop
-	 *  is the parental population, and \c off, \c dad, and \c mom are offspring
-	 *  and their parents for each mating event, and \c param is an optional
-	 *  parameter. If \e subPops are provided, only offspring in specified
-	 *  (virtual) subpopulations are acceptable.
+	 *  parameters \c pop, \c off (or \c ind), \c dad, \c mom and \c param where
+	 *  \c pop is the parental population, and \c off or \c ind, \c dad, and
+	 *  \c mom are offspring and their parents for each mating event, and
+	 *  \c param is an optional parameter. If \e subPops are provided, only
+	 *  offspring in specified (virtual) subpopulations are acceptable.
 	 *
 	 *  This operator does not support parameters \e output, and
 	 *  \e infoFields. If certain output is needed, it should be handled in the
