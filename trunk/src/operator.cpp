@@ -917,7 +917,7 @@ bool PyOperator::apply(Population & pop) const
 			DBG_FAILIF(resObj != Py_True && resObj != Py_False, RuntimeError,
 				"A callback function for operator DiscardIf has to return either True or False");
 			Py_XDECREF(args);
-			it->setMarked(resObj == Py_True);
+			it->setMarked(resObj == Py_False);
 		}
 		if (subPops[idx].isVirtual())
 			pop.deactivateVirtualSubPop(subPops[idx].subPop());
