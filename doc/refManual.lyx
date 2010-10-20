@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1428,6 +1428,13 @@ status open
 
 
 \backslash
+simuPOPdiscardIfRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPdumpRef
 \end_layout
 
@@ -1450,20 +1457,6 @@ simuPOPinitInfoRef
 
 \backslash
 simuPOPinitGenotypeRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPpyEvalRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPpyExecRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1548,6 +1541,20 @@ simuPOPstepwiseMutateRef
 
 \backslash
 simuPOPpyMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpyEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpyExecRef
 \end_layout
 
 \begin_layout Plain Layout

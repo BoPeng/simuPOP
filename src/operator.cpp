@@ -623,14 +623,14 @@ string DiscardIf::describe(bool format) const
 bool DiscardIf::apply(Population & pop) const
 {
 	// mark as not remove for everyone
-	markIndividuals(vspID(), false);
+	pop.markIndividuals(vspID(), false);
 
 	subPopList subPops = applicableSubPops(pop);
 	for (UINT idx = 0; idx < subPops.size(); ++idx) {
 		if (subPops[idx].isVirtual())
-			activateVirtualSubPop(subPops[idx]);
+			pop.activateVirtualSubPop(subPops[idx]);
 
-		IndIterator it = indIterator(subPops[idx].subPop());
+		IndIterator it = pop.indIterator(subPops[idx].subPop());
 		for (; it.valid(); ++it) {
 			bool res = false;
 			if (m_fixedCond != -1)
@@ -647,10 +647,10 @@ bool DiscardIf::apply(Population & pop) const
 					else if (arg == "ind")
 						PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
 					else {
-						DBG_FAILIF(!offspring->hasInfoField(arg), ValueError,
+						DBG_FAILIF(!it->hasInfoField(arg), ValueError,
 							"Only parameters 'ind', 'pop', and names of information fields are "
 							"acceptable in function " + m_func.name());
-						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(offspring->info(arg)));
+						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(it->info(arg)));
 					}
 				}
 				res = m_func(PyObj_As_Bool, args);
@@ -659,11 +659,11 @@ bool DiscardIf::apply(Population & pop) const
 				if (!m_dict)
 					m_dict = PyDict_New();
 
-				vectorstr infos = offspring->infoFields();
+				vectorstr infos = it->infoFields();
 
 				for (UINT idx = 0; idx < infos.size(); ++idx) {
 					string name = infos[idx];
-					double val = offspring->info(idx);
+					double val = it->info(idx);
 					// if the value is unchanged, do not set new value
 					if (m_lastValues.size() <= idx || m_lastValues[idx] != val) {
 						if (m_lastValues.size() <= idx)
@@ -701,8 +701,8 @@ bool DiscardIf::apply(Population & pop) const
 			}
 			it->setMarked(res);
 		}
-		if (subPops[i].isVirtual())
-			deactivateVirtualSubPop(subPops[i].subPop());
+		if (subPops[idx].isVirtual())
+			pop.deactivateVirtualSubPop(subPops[idx].subPop());
 	}
 	pop.removeMarkedIndividuals();
 	return true;

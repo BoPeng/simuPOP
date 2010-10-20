@@ -197,6 +197,7 @@ __all__ = [
     #
     'TerminateIf',
     'DiscardIf',
+    'discardIf',
     #
     'PyOperator',
     #
@@ -1149,3 +1150,7 @@ def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
     this function by default assign affection status to all generations.'''
     PyQuanTrait(func, loci, ancGens, *args, **kwargs).apply(pop)
 
+def discardIf(pop, *args, **kwargs):
+    '''Apply operator ``DiscardIf`` to population *pop* to remove individuals according
+    to an expression or a Python function.'''
+    DiscardIf(*args, **kwargs).apply(pop)
