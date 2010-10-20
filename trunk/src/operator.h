@@ -638,26 +638,33 @@ private:
 };
 
 
-/** This operator is a during mating operator that discards individuals
- *  according to either an expression that evaluates according to individual
- *  information field, or a Python function that accepts individual and its
- *  information fields.
+/** This operator discards individuals according to either an expression that
+ *  evaluates according to individual information field, or a Python function
+ *  that accepts individual and its information fields.
  */
 class DiscardIf : public BaseOperator
 {
 
 public:
-	/** Create a during mating operator with an expression \e condition, which
+	/** Create an operator that discard individuals according to an expression
+	 *  or the return value of a Python function (parameter \e cond). This
+	 *  operator can be applied to a population before or after mating, or 
+	 *  to offspring during mating. If an expression is passed to \e cond, it
 	 *  will be evalulated with each individual's information fields (see
-	 *  operator \c InfoEval for details), or a function that accepts
-	 *  parameters \e off, \e dad, \e mom, \e pop (parental population), or
-	 *  names of information fields. If \e exposeInd is non-empty, an offspring
-	 *  will be available for evaluation in the expression as an variable with
-	 *  name spacied by \e exposeInd. If the condition evaluates to be \c True,
-	 *  or if the function returns \c True, the offspring will be discarded.
-	 *  A constant expression (e.g. \c True) is also acceptable). Because this
-	 *  operator supports parameter \e subPops, only individuals belonging to
-	 *  specified (virtual) subpopulations will be screened.
+	 *  operator \c InfoEval for details). If \e exposeInd is non-empty,
+	 *  individuals will be available for evaluation in the expression as an
+	 *  variable with name spacied by \e exposeInd. If the expression is
+	 *  evaluated to be \c True, individuals (if applied before or after
+	 *  mating) or offspring (if applied during mating) will be removed or
+	 *  discard. If a function is passed to \e cond, it should accept paramters
+	 *  \e ind and \e pop or names of information fields when it is applied to
+	 *  a population (pre or post mating), or parameters \e off, \e dad,
+	 *  \e mom, \e pop (parental population), or names of information fields
+	 *  if the operator is applied during mating. Individuals will be discarded
+	 *  if this function returns \c True. A constant expression (e.g. \c True)
+	 *  is also acceptable). Because this operator supports parameter
+	 *  \e subPops, only individuals belonging to specified (virtual)
+	 *  subpopulations will be screened.
 	 */
 	DiscardIf(PyObject * cond, const string & exposeInd = string(),
 		const stringFunc & output = "", int begin = 0, int end = -1,
@@ -675,6 +682,8 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const;
 
+	/// HIDDEN
+	virtual bool apply(Population & pop) const;
 
 	/// CPPONLY
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
