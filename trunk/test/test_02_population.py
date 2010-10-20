@@ -1663,6 +1663,26 @@ class TestPopulation(unittest.TestCase):
         for file in ['test.ped', 'test1.ped', 'test2.ped']:
             os.remove(file)
 
+    def testDiscardIf(self):
+        'Testing operator DiscardIf'
+        pop = Population(1000, loci=2, infoFields=['a', 'b'])
+        initInfo(pop, [1, 2, 3], infoFields='a')
+        initInfo(pop, [1, 2, 3, 4], infoFields='b')
+        discardIf(pop, 'a==b')
+        for ind in pop.individuals():
+            self.assertNotEqual(ind.a, ind.b)
+        def func(a):
+            return a <= 1
+        discardIf(pop, func)
+        for ind in pop.individuals():
+            self.assertTrue(ind.a > 1)
+        self.assertTrue(pop.popSize() < 1000)
+        # testing virtual subpopulation
+        pop.setVirtualSplitter(InfoSplitter(field='b', values=[3]))
+        discardIf(pop, True, subPops=[(0,0)])
+        for ind in pop.individuals():
+            self.assertTrue(ind.b != 3)
+
 if __name__ == '__main__':
     unittest.main()
 
