@@ -648,7 +648,7 @@ class DiscardIf : public BaseOperator
 public:
 	/** Create an operator that discard individuals according to an expression
 	 *  or the return value of a Python function (parameter \e cond). This
-	 *  operator can be applied to a population before or after mating, or 
+	 *  operator can be applied to a population before or after mating, or
 	 *  to offspring during mating. If an expression is passed to \e cond, it
 	 *  will be evalulated with each individual's information fields (see
 	 *  operator \c InfoEval for details). If \e exposeInd is non-empty,
