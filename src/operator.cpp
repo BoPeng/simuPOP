@@ -653,8 +653,11 @@ bool DiscardIf::apply(Population & pop) const
 						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(it->info(arg)));
 					}
 				}
-				res = m_func(PyObj_As_Bool, args);
+				PyObject * resObj = m_func(args);
+				DBG_FAILIF(resObj != Py_True && resObj != Py_False, RuntimeError,
+					"A callback function for operator DiscardIf has to return either True or False");
 				Py_XDECREF(args);
+				res = resObj == Py_True;
 			} else {
 				if (!m_dict)
 					m_dict = PyDict_New();
@@ -852,24 +855,75 @@ bool PyOperator::apply(Population & pop) const
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
+	bool popMode = true;
 	for (int i = 0; i < m_func.numArgs(); ++i) {
-		const string & arg = m_func.arg(i);
-		if (arg == "pop")
-			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
-		else if (arg == "param") {
-			Py_INCREF(m_param.object());
-			PyTuple_SET_ITEM(args, i, m_param.object());
-		} else {
-			DBG_FAILIF(true, ValueError,
-				"Only parameters 'pop' and 'param' are acceptable in function " + m_func.name());
+		if (m_func.arg(i) == "ind") {
+			popMode = false;
+			break;
 		}
 	}
+	// when the operator is applied to the whole population.
+	if (popMode) {
+		for (int i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else if (arg == "param") {
+				Py_INCREF(m_param.object());
+				PyTuple_SET_ITEM(args, i, m_param.object());
+			} else {
+				DBG_FAILIF(true, ValueError,
+					"Only parameters 'pop' and 'param' are acceptable in function " + m_func.name());
+			}
+		}
 
-	PyObject * res = m_func(args);
-	Py_XDECREF(args);
-	DBG_FAILIF(res != Py_True && res != Py_False, RuntimeError,
-		"A callback function for operator PyOperator has to return either True or False");
-	return res == Py_True;
+		PyObject * res = m_func(args);
+		Py_XDECREF(args);
+		DBG_FAILIF(res != Py_True && res != Py_False, RuntimeError,
+			"A callback function for operator PyOperator has to return either True or False");
+		return res == Py_True;
+	}
+	//
+	// apply to qualified individual
+	pop.markIndividuals(vspID(), false);
+
+	subPopList subPops = applicableSubPops(pop);
+	for (UINT idx = 0; idx < subPops.size(); ++idx) {
+		if (subPops[idx].isVirtual())
+			pop.activateVirtualSubPop(subPops[idx]);
+
+		IndIterator it = pop.indIterator(subPops[idx].subPop());
+		for (; it.valid(); ++it) {
+			PyObject * args = PyTuple_New(m_func.numArgs());
+
+			DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+			for (int i = 0; i < m_func.numArgs(); ++i) {
+				const string & arg = m_func.arg(i);
+				if (arg == "ind")
+					PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
+				else if (arg == "param") {
+					Py_INCREF(m_param.object());
+					PyTuple_SET_ITEM(args, i, m_param.object());
+				} else if (arg == "pop")
+					PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+				else {
+					DBG_FAILIF(true, ValueError,
+						"Only parameters 'ind', 'pop', and 'param' are "
+						"acceptable in function " + m_func.name());
+				}
+			}
+			PyObject * resObj = m_func(args);
+			DBG_FAILIF(resObj != Py_True && resObj != Py_False, RuntimeError,
+				"A callback function for operator DiscardIf has to return either True or False");
+			Py_XDECREF(args);
+			it->setMarked(resObj == Py_True);
+		}
+		if (subPops[idx].isVirtual())
+			pop.deactivateVirtualSubPop(subPops[idx].subPop());
+	}
+	pop.removeMarkedIndividuals();
+	return true;
 }
 
 
@@ -879,6 +933,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
+
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");

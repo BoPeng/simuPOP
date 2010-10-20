@@ -15,6 +15,8 @@ New features:
   - Allow simuOpt.valueNot(value) in addition to simuOpt.valueNot(validator).
   - Add function Trajectory.mutants() in simuPOP.utils.
   - Allow operator SavePopulation to take an empty string.
+  - Allow operator PyOperator to accept a function that is applied to each
+	individual.
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification

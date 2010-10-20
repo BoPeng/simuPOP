@@ -768,20 +768,25 @@ public:
 	/** Create a pure-Python operator that calls a user-defined function when
 	 *  it is applied. If this operator is applied before or after mating,
 	 *  your function should have form <tt>func(pop)</tt> or
-	 *  <tt>func(func, param)</tt> where \c pop is the population to which
+	 *  <tt>func(pop, param)</tt> where \c pop is the population to which
 	 *  the operator is applied, \c param is the value specified in parameter
 	 *  \e param. \c param will be ignored if your function only accepts
-	 *  one parameter.
+	 *  one parameter. Althernatively, the function should have form
+	 *  <tt>func(ind)</tt> with optional parameters \c pop and \c param.
+	 *  In this case, the function will be called for all individuals, or
+	 *  individuals in subpopulations \e subPops. Individuals for which the
+	 *  function returns \c False will be removed from the population. This
+	 *  operator can therefore perform similar functions as operator
+	 *  \c DiscardIf.
 	 *
-	 *  If this operator is applied during mating, your function should be in
-	 *  one of the forms <tt>func(off)</tt>, <tt>func(off, param)</tt>,
-	 *  <tt>func(pop, off, dad, mom)</tt> or
-	 *  <tt>func(pop, off, dad, mom, param</tt> where \c off is the offspring
-	 *  of \c dad and \c mom. This operator will pass appropriate parameters
-	 *  to the user-defined function depending on the number of accepted
-	 *  parameters.
+	 *  If this operator is applied during mating, your function should accept
+	 *  parameters \c pop, \c off, \c dad, \c mom and \c param where \c pop
+	 *  is the parental population, and \c off, \c dad, and \c mom are offspring
+	 *  and their parents for each mating event, and \c param is an optional
+	 *  parameter. If \e subPops are provided, only offspring in specified
+	 *  (virtual) subpopulations are acceptable.
 	 *
-	 *  This operator does not support parameters \e output, \e subPops and
+	 *  This operator does not support parameters \e output, and
 	 *  \e infoFields. If certain output is needed, it should be handled in the
 	 *  user defined function \e func. Because the status of files used by
 	 *  other operators through parameter \e output is undetermined during

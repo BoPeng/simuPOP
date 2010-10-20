@@ -6966,21 +6966,27 @@ Details:
 
     Create a pure-Python operator that calls a user-defined function
     when it is applied. If this operator is applied before or after
-    mating, your function should have form func(pop) or func(func,
+    mating, your function should have form func(pop) or func(pop,
     param) where pop is the population to which the operator is
     applied, param is the value specified in parameter param. param
-    will be ignored if your function only accepts one parameter.  If
-    this operator is applied during mating, your function should be in
-    one of the forms func(off), func(off, param), func(pop, off, dad,
-    mom) or func(pop, off, dad, mom, param where off is the offspring
-    of dad and mom. This operator will pass appropriate parameters to
-    the user-defined function depending on the number of accepted
-    parameters.  This operator does not support parameters output,
-    subPops and infoFields. If certain output is needed, it should be
-    handled in the user defined function func. Because the status of
-    files used by other operators through parameter output is
-    undetermined during evolution, they should not be open or closed
-    in this Python operator.
+    will be ignored if your function only accepts one parameter.
+    Althernatively, the function should have form func(ind) with
+    optional parameters pop and param. In this case, the function will
+    be called for all individuals, or individuals in subpopulations
+    subPops. Individuals for which the function returns False will be
+    removed from the population. This operator can therefore perform
+    similar functions as operator DiscardIf.  If this operator is
+    applied during mating, your function should accept parameters pop,
+    off, dad, mom and param where pop is the parental population, and
+    off, dad, and mom are offspring and their parents for each mating
+    event, and param is an optional parameter. If subPops are
+    provided, only offspring in specified (virtual) subpopulations are
+    acceptable.  This operator does not support parameters output, and
+    infoFields. If certain output is needed, it should be handled in
+    the user defined function func. Because the status of files used
+    by other operators through parameter output is undetermined during
+    evolution, they should not be open or closed in this Python
+    operator.
 
 "; 
 
