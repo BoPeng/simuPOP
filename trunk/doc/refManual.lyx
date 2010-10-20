@@ -1428,6 +1428,20 @@ status open
 
 
 \backslash
+simuPOPacgtMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcontextMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPdiscardIfRef
 \end_layout
 
@@ -1436,27 +1450,6 @@ simuPOPdiscardIfRef
 
 \backslash
 simuPOPdumpRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPinitSexRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPinitInfoRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPinitGenotypeRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1477,49 +1470,21 @@ simuPOPinfoExecRef
 
 
 \backslash
-simuPOPmigrateRef
+simuPOPinitGenotypeRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPresizeSubPopsRef
+simuPOPinitInfoRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPmergeSubPopsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPsplitSubPopsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmatrixMutateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPsnpMutateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPacgtMutateRef
+simuPOPinitSexRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1533,14 +1498,56 @@ simuPOPkAlleleMutateRef
 
 
 \backslash
-simuPOPstepwiseMutateRef
+simuPOPmaPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPpyMutateRef
+simuPOPmapPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmatrixMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmergeSubPopsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmigrateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmixedMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmlPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpointMutateRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1561,56 +1568,7 @@ simuPOPpyExecRef
 
 
 \backslash
-simuPOPmixedMutateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcontextMutateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPpointMutateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPstatRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPtagIDRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmapPenetranceRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmaPenetranceRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmlPenetranceRef
+simuPOPpyMutateRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1625,6 +1583,48 @@ simuPOPpyPenetranceRef
 
 \backslash
 simuPOPpyQuanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPresizeSubPopsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsnpMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsplitSubPopsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPstatRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPstepwiseMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPtagIDRef
 \end_layout
 
 \end_inset
