@@ -620,6 +620,95 @@ string DiscardIf::describe(bool format) const
 }
 
 
+bool DiscardIf::apply(Population & pop) const
+{
+	// mark as not remove for everyone
+	markIndividuals(vspID(), false);
+
+	subPopList subPops = applicableSubPops(pop);
+	for (UINT idx = 0; idx < subPops.size(); ++idx) {
+		if (subPops[idx].isVirtual())
+			activateVirtualSubPop(subPops[idx]);
+
+		IndIterator it = indIterator(subPops[idx].subPop());
+		for (; it.valid(); ++it) {
+			bool res = false;
+			if (m_fixedCond != -1)
+				res = m_fixedCond == 1;
+			else if (m_func.isValid()) {
+				PyObject * args = PyTuple_New(m_func.numArgs());
+
+				DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+				for (int i = 0; i < m_func.numArgs(); ++i) {
+					const string & arg = m_func.arg(i);
+					if (arg == "pop")
+						PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+					else if (arg == "ind")
+						PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
+					else {
+						DBG_FAILIF(!offspring->hasInfoField(arg), ValueError,
+							"Only parameters 'ind', 'pop', and names of information fields are "
+							"acceptable in function " + m_func.name());
+						PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(offspring->info(arg)));
+					}
+				}
+				res = m_func(PyObj_As_Bool, args);
+				Py_XDECREF(args);
+			} else {
+				if (!m_dict)
+					m_dict = PyDict_New();
+
+				vectorstr infos = offspring->infoFields();
+
+				for (UINT idx = 0; idx < infos.size(); ++idx) {
+					string name = infos[idx];
+					double val = offspring->info(idx);
+					// if the value is unchanged, do not set new value
+					if (m_lastValues.size() <= idx || m_lastValues[idx] != val) {
+						if (m_lastValues.size() <= idx)
+							m_lastValues.push_back(val);
+						else
+							m_lastValues[idx] = val;
+						PyObject * obj = PyFloat_FromDouble(val);
+						int err = PyDict_SetItemString(m_dict, name.c_str(), obj);
+						Py_DECREF(obj);
+						if (err != 0) {
+#ifndef OPTIMIZED
+							if (debug(DBG_GENERAL)) {
+								PyErr_Print();
+								PyErr_Clear();
+							}
+#endif
+							throw RuntimeError("Setting information fields as variables failed");
+						}
+					}
+				}
+
+				if (!m_exposeInd.empty()) {
+					PyObject * indObj = pyIndObj(static_cast<void *>(&*it));
+					if (indObj == NULL)
+						throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
+
+					// set dictionary variable pop to this object
+					PyDict_SetItemString(m_dict, m_exposeInd.c_str(), indObj);
+					Py_DECREF(indObj);
+				}
+
+				m_cond.setLocalDict(m_dict);
+				// evaluate
+				res = m_cond.valueAsBool();
+			}
+			it->setMarked(res);
+		}
+		if (subPops[i].isVirtual())
+			deactivateVirtualSubPop(subPops[i].subPop());
+	}
+	pop.removeMarkedIndividuals();
+	return true;
+}
+
+
 bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                   Individual * dad, Individual * mom) const
 {
