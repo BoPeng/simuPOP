@@ -409,7 +409,7 @@ bool InfSitesMutator::apply(Population & pop) const
 						// nothing is found
 						if (out)
 							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
-									<< (newLoc == 0 ? "\t3\n" : "\t2\n");
+							        << (newLoc == 0 ? "\t3\n" : "\t2\n");
 						if (newLoc != 0)
 							mutLoc = newLoc;
 						else {
