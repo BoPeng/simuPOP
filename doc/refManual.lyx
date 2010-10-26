@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2187,6 +2187,20 @@ simuPOPsandboxRef
 
 
 \backslash
+revertFixedSitesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+RevertFixedSitesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 InfSitesMutatorRef
 \end_layout
 
@@ -2195,6 +2209,13 @@ InfSitesMutatorRef
 
 \backslash
 InfSitesSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+InfSitesRecombinatorRef
 \end_layout
 
 \end_inset

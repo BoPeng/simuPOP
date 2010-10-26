@@ -29,6 +29,60 @@
 namespace simuPOP {
 
 
+bool RevertFixedSites::apply(Population & pop) const
+{
+	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
+		return true;
+
+	RawIndIterator it = pop.rawIndBegin();
+	RawIndIterator it_end = pop.rawIndEnd();
+	std::set<ULONG> commonAlleles(it->genoBegin(0), it->genoEnd(0));
+	commonAlleles.erase(0);
+	if (commonAlleles.size() == 0)
+		return true;
+
+	for (; it != it_end; ++it) {
+		// common = commonAlleles & geno0
+		std::set<ULONG> common;
+		std::set<ULONG> alleles1(it->genoBegin(0), it->genoEnd(0));
+		set_intersection(commonAlleles.begin(),
+			commonAlleles.end(), alleles1.begin(), alleles1.end(),
+			std::inserter(common, common.begin()));
+		// commonAlleles = common & geno1
+		commonAlleles.clear();
+		std::set<ULONG> alleles2(it->genoBegin(1), it->genoEnd(1));
+		set_intersection(common.begin(),
+			common.end(), alleles2.begin(), alleles2.end(),
+			std::inserter(commonAlleles, commonAlleles.begin()));
+		if (commonAlleles.size() == 0)
+			return true;
+	}
+	if (!noOutput()) {
+		ostream & out = getOstream(pop.dict());
+		out << pop.gen();
+		std::set<ULONG>::iterator beg = commonAlleles.begin();
+		std::set<ULONG>::iterator end = commonAlleles.end();
+		for (; beg != end ; ++beg)
+			out << '\t' << *beg;
+		out << endl;
+	}
+	it = pop.rawIndBegin();
+	vectora new_alleles(pop.totNumLoci());
+	for (; it != it_end; ++it) {
+		for (UINT p = 0; p < 2; ++p) {
+			std::set<ULONG> old_alleles(it->genoBegin(p), it->genoEnd(p));
+			old_alleles.erase(0);
+			std::fill(new_alleles.begin(), new_alleles.end(), 0);
+			set_difference(old_alleles.begin(), old_alleles.end(),
+				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
+			std::copy(new_alleles.begin(), new_alleles.end(),
+				it->genoBegin(p));
+		}
+	}
+	return true;
+}
+
+
 double InfSitesSelector::indFitness(Population & pop, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
@@ -324,6 +378,7 @@ bool InfSitesMutator::apply(Population & pop) const
 #ifndef BINARYALLELE
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
+	bool saturated = false;
 
 	width[0] = ranges[0][1] - ranges[0][0];
 	for (size_t i = 1; i < width.size(); ++i)
@@ -364,6 +419,12 @@ bool InfSitesMutator::apply(Population & pop) const
 					mutLoc -= width[ch - 1];
 
 				if (m_model == 2) {
+					if (saturated) {
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+							        << "\t3\n";
+						continue;
+					}
 					// under an infinite-site model
 					if (m_mutants.find(mutLoc) != m_mutants.end()) {
 						// there is an existing allele
@@ -374,12 +435,14 @@ bool InfSitesMutator::apply(Population & pop) const
 							// nothing is found
 							if (out)
 								(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
-										<< (newLoc == 0 ? "\t3\n" : "\t2\n");
+								        << (newLoc == 0 ? "\t3\n" : "\t2\n");
 							if (newLoc != 0)
 								mutLoc = newLoc;
-							else
+							else {
 								// ignore this mutation, and subsequent mutations...
-								break;
+								saturated = true;
+								continue;
+							}
 						}
 						// if there is no existing mutant, new mutant is allowed
 					}
@@ -600,7 +663,8 @@ void InfSitesRecombinator::transmitGenotype1(Population & offPop, const Individu
 			it = parent.genoBegin(p, ch);
 			it_end = parent.genoEnd(p, ch);
 			for (; it != it_end; ++it) {
-				if (*it >= beg + ranges[ch][0] && *it < ranges[ch][1])
+				if (*it >= beg + static_cast<ULONG>(ranges[ch][0]) &&
+				    *it < static_cast<ULONG>(ranges[ch][1]))
 					alleles.push_back(*it);
 			}
 		}
