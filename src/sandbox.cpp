@@ -367,20 +367,20 @@ bool InfSitesMutator::apply(Population & pop) const
 					// under an infinite-site model
 					if (m_mutants.find(mutLoc) != m_mutants.end()) {
 						// there is an existing allele
-						if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
-							// hit an exiting locus, find another one
-							DBG_DO(DBG_MUTATOR, cerr << "Relocate locus from " << mutLoc);
-							ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
-							// nothing is found
-							if (out)
-								(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
-								        << (newLoc == 0 ? "\t3\n" : "\t2\n");
-							if (newLoc != 0)
-								mutLoc = newLoc;
-							else
-								// ignore this mutation
-								continue;
-						}
+						//if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
+						// hit an exiting locus, find another one
+						DBG_DO(DBG_MUTATOR, cerr << "Relocate locus from " << mutLoc);
+						ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
+						// nothing is found
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+									<< (newLoc == 0 ? "\t3\n" : "\t2\n");
+						if (newLoc != 0)
+							mutLoc = newLoc;
+						else
+							// ignore this mutation, and subsequent mutations...
+							break;
+						//}
 						// if there is no existing mutant, new mutant is allowed
 					}
 					m_mutants.insert(mutLoc);
