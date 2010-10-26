@@ -44,6 +44,47 @@
 
 namespace simuPOP {
 
+/** This operator looks into a population in mutational space and revert a mutant
+ *  to wildtype allele if it is fixed in the population. If a valid output is
+ *  specifieid, fixed alleles will be outputed with a leading generation number.
+ */
+class RevertFixedSites : public BaseOperator
+{
+public:
+	RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
+	{
+	}
+
+
+	/// destructor
+	virtual ~RevertFixedSites()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a Migrator
+	virtual BaseOperator * clone() const
+	{
+		return new RevertFixedSites(*this);
+	}
+
+
+	/// HIDDEN apply the Migrator to populaiton \e pop.
+	virtual bool apply(Population & pop) const;
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		return "Revert fixed alleles to wildtype allele if it is fixed in the population.";
+	}
+
+
+};
+
 /** This selector assumes that alleles are mutant locations in the mutational
  *  space and assign fitness values to them according to a random distribution.
  *  The overall individual fitness is determined by either an additive, an

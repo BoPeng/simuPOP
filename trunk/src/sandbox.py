@@ -35,6 +35,8 @@ version is no longer available.
 """
 
 __all__ = [
+    'revertFixedSites',
+    'RevertFixedSites',
     'InfSitesMutator',
     'InfSitesSelector',
     'InfSitesRecombinator',
@@ -66,3 +68,7 @@ else:
         from simuPOP_ba import *
     else:
         from simuPOP_std import *
+
+def revertFixedSites(pop):
+    '''Apply operator ``RevertFixedSites`` to ``pop``'''
+    RevertFixedSites().apply(pop)

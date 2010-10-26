@@ -7700,6 +7700,44 @@ Usage:
 
 %feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::RevertFixedSites "
+
+Details:
+
+    This operator looks into a population in mutational space and
+    revert a mutant to wildtype allele if it is fixed in the
+    population. If a valid output is specifieid, fixed alleles will be
+    outputed with a leading generation number.
+
+"; 
+
+%feature("docstring") simuPOP::RevertFixedSites::RevertFixedSites "
+
+Usage:
+
+    RevertFixedSites(output=\"\", begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+"; 
+
+%feature("docstring") simuPOP::RevertFixedSites::~RevertFixedSites "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~RevertFixedSites()
+
+"; 
+
+%feature("docstring") simuPOP::RevertFixedSites::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertFixedSites::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertFixedSites::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::RNG "
 
 Details:
