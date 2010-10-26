@@ -321,52 +321,27 @@ double InfSitesSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end) const
+ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
 {
 	ULONG loc = getRNG().randInt(end - beg) + beg;
 
-	std::set<ULONG>::iterator it = std::find(m_mutants.begin(), m_mutants.end(), loc);
-	if (it == m_mutants.end())
+	std::set<ULONG>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
+	if (it == mutants.end())
 		return loc;
 	// look forward and backward
 	ULONG loc1 = loc + 1;
 	std::set<ULONG>::iterator it1(it);
 	++it1;
-	for (; it1 != m_mutants.end() && loc1 != end; ++it1, ++loc1) {
+	for (; it1 != mutants.end() && loc1 != end; ++it1, ++loc1) {
 		if (*it1 != loc1)
 			return loc1;
 	}
 	ULONG loc2 = loc - 1;
 	std::set<ULONG>::reverse_iterator it2(it);
 	--it2;
-	for (; it2 != m_mutants.rend() && loc2 != beg; --it2, --loc2) {
+	for (; it2 != mutants.rend() && loc2 != beg; --it2, --loc2) {
 		if (*it2 != loc2)
 			return loc2;
-	}
-	// rebuild
-	DBG_DO(DBG_MUTATOR, cerr << "Rebuilding mutation list. " << endl);
-	m_mutants.clear();
-	GenoIterator git = pop.genoBegin(false);
-	GenoIterator git_end = pop.genoEnd(false);
-	for (; git != git_end; ++git) {
-		if (*git == 0)
-			continue;
-		m_mutants.insert(*git);
-	}
-	// try again
-	ULONG loc_1 = loc + 1;
-	std::set<ULONG>::iterator it_1(it);
-	++it_1;
-	for (; it_1 != m_mutants.end() && loc_1 != end; ++it_1, ++loc_1) {
-		if (*it_1 != loc_1)
-			return loc_1;
-	}
-	ULONG loc_2 = loc - 1;
-	std::set<ULONG>::reverse_iterator it_2(it);
-	--it_2;
-	for (; it_2 != m_mutants.rend() && loc_2 != beg; --it_2, --loc_2) {
-		if (*it_2 != loc_2)
-			return loc_2;
 	}
 	// still cannot find
 	return 0;
@@ -378,7 +353,6 @@ bool InfSitesMutator::apply(Population & pop) const
 #ifndef BINARYALLELE
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
-	bool saturated = false;
 
 	width[0] = ranges[0][1] - ranges[0][0];
 	for (size_t i = 1; i < width.size(); ++i)
@@ -390,6 +364,10 @@ bool InfSitesMutator::apply(Population & pop) const
 	ostream * out = NULL;
 	if (!noOutput())
 		out = &getOstream(pop.dict());
+
+	// build a set of existing mutants
+	std::set<ULONG> mutants(pop.genoBegin(false), m_model == 2 ? pop.genoEnd(false) : pop.genoBegin(false));
+	bool saturated = mutants.size() == ploidyWidth;
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -419,34 +397,30 @@ bool InfSitesMutator::apply(Population & pop) const
 					mutLoc -= width[ch - 1];
 
 				if (m_model == 2) {
+					// under an infinite-site model
 					if (saturated) {
 						if (out)
 							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
 							        << "\t3\n";
 						continue;
 					}
-					// under an infinite-site model
-					if (m_mutants.find(mutLoc) != m_mutants.end()) {
-						// there is an existing allele
-						if (find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) != pop.genoEnd(false)) {
-							// hit an exiting locus, find another one
-							DBG_DO(DBG_MUTATOR, cerr << "Relocate locus from " << mutLoc);
-							ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1]);
-							// nothing is found
-							if (out)
-								(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
-								        << (newLoc == 0 ? "\t3\n" : "\t2\n");
-							if (newLoc != 0)
-								mutLoc = newLoc;
-							else {
-								// ignore this mutation, and subsequent mutations...
-								saturated = true;
-								continue;
-							}
+					if (mutants.find(mutLoc) != mutants.end()) {
+						ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
+						// nothing is found
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+									<< (newLoc == 0 ? "\t3\n" : "\t2\n");
+						if (newLoc != 0)
+							mutLoc = newLoc;
+						else {
+							cerr << "Failed to introduce a new mutant at generation " << pop.gen() << " because all loci has existing mutants." << endl;
+							// ignore this mutation, and subsequent mutations...
+							saturated = true;
+							continue;
 						}
 						// if there is no existing mutant, new mutant is allowed
 					}
-					m_mutants.insert(mutLoc);
+					mutants.insert(mutLoc);
 				}
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
