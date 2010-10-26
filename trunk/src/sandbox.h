@@ -233,7 +233,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_rate(rate), m_ranges(ranges), m_model(model), m_mutants()
+		m_rate(rate), m_ranges(ranges), m_model(model) 
 	{
 		const matrixi & rngs = m_ranges.elems();
 
@@ -278,7 +278,7 @@ public:
 
 
 private:
-	ULONG locateVacantLocus(Population & pop, ULONG beg, ULONG end) const;
+	ULONG locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const;
 
 private:
 	const double m_rate;
@@ -286,9 +286,6 @@ private:
 	const intMatrix m_ranges;
 
 	const int m_model;
-
-	/// used to record mutated loci
-	mutable std::set<ULONG> m_mutants;
 };
 
 
