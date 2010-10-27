@@ -7879,8 +7879,8 @@ Usage:
 
 Details:
 
-    Generate a random number following a gamma distribution with
-    parameters a and b.
+    Generate a random number following a gamma distribution with a
+    shape parameters a and scale parameter b.
 
 "; 
 
