@@ -233,7 +233,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_rate(rate), m_ranges(ranges), m_model(model) 
+		m_rate(rate), m_ranges(ranges), m_model(model)
 	{
 		const matrixi & rngs = m_ranges.elems();
 
