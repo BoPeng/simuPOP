@@ -1693,7 +1693,7 @@ public:
 
 
 	/** Generate a random number following a gamma distribution with
-	 *  parameters \e a and \e b.
+	 *  a shape parameters \e a and scale parameter \e b.
 	 *  <group>4-distribution</group>
 	 */
 	double randGamma(double a, double b)
