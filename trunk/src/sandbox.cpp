@@ -367,7 +367,10 @@ bool InfSitesMutator::apply(Population & pop) const
 
 	// build a set of existing mutants
 	std::set<ULONG> mutants(pop.genoBegin(false), m_model == 2 ? pop.genoEnd(false) : pop.genoBegin(false));
+	mutants.erase(0);
 	bool saturated = mutants.size() == ploidyWidth;
+	if (saturated)
+		cerr << "Failed to introduce new mutants at generation " << pop.gen() << " because all loci have existing mutants." << endl;
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -413,7 +416,7 @@ bool InfSitesMutator::apply(Population & pop) const
 						if (newLoc != 0)
 							mutLoc = newLoc;
 						else {
-							cerr << "Failed to introduce a new mutant at generation " << pop.gen() << " because all loci has existing mutants." << endl;
+							cerr << "Failed to introduce a new mutant at generation " << pop.gen() << " because all loci have existing mutants." << endl;
 							// ignore this mutation, and subsequent mutations...
 							saturated = true;
 							continue;
