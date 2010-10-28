@@ -494,7 +494,7 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 			GenoIterator it_end = parent.genoEnd();
 			for (; it != it_end; ++it) {
 				if (*it == 0)
-					break;
+					continue;
 				MutCounter::iterator mit = cnt.find(*it);
 				if (mit == cnt.end())
 					cnt[*it] = 1;
@@ -522,7 +522,7 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 				if (mit == cnt.end())
 					cnt[*it] = 1;
 				else
-					++mit->second;
+					++mit->secondq;
 			}
 		}
 		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
