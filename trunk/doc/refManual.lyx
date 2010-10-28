@@ -2201,21 +2201,21 @@ RevertFixedSitesRef
 
 
 \backslash
-InfSitesMutatorRef
+MutSpaceMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-InfSitesSelectorRef
+MutSpaceSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-InfSitesRecombinatorRef
+MutSpaceRecombinatorRef
 \end_layout
 
 \end_inset
