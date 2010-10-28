@@ -3097,177 +3097,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::InfSitesMutator "
-
-Details:
-
-    This is an infite site mutation model in mutational space. The
-    alleles in the population is assumed to be locations of mutants. A
-    mutation rate is given that mutate alleles in 'regions'. If number
-    of mutants for an individual exceed the number of loci, 10 loci
-    will be added to everyone in the population.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesMutator::InfSitesMutator "
-
-Usage:
-
-    InfSitesMutator(rate, ranges, model=1, output=\"\", begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
-
-Details:
-
-    This operator accepts a list of ranges which is the 'real range'
-    of each chromosome. Mutation happens with muation rate rate and
-    mutants will be recorded to the population (instead of alleles).
-    By default, this mutator assumes an finite-allele model where all
-    mutations are allowed and if a mutant (allele 1) is mutated, it
-    will be mutated to allele 0 (back mutation). Alternatively (model
-    = 2), an infinite-sites mutation model can be used where mutations
-    can happen only at a new locus. Mutations happen at a locus with
-    existing mutants will be moved to a random locus without existing
-    mutant. A warning message will be printed if there is no vacant
-    locus available. If a valid output is given, mutants will be
-    outputted in the format of \"gen mutant ind type\" where type is 0
-    for forward (0->1), 1 for backward (1->0), 2 for relocated
-    mutations, and 3 for ignored mutation because no vacent locus is
-    available. The second mode has the advantage that all mutants in
-    the simulated population can be traced to a single mutation event.
-    If the regions are reasonably wide and mutation rates are low,
-    these two mutation models should yield similar results.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesMutator::~InfSitesMutator "
-
-Description:
-
-    destructor.
-
-Usage:
-
-    x.~InfSitesMutator()
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesMutator::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    Apply an operator to population pop directly, without checking its
-    applicability.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InfSitesMutator::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InfSitesRecombinator "
-
-Details:
-
-    This during mating operator recombine chromosomes, which records
-    mutant locations, using a fixed recombination rate (per base
-    pair).
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesRecombinator::InfSitesRecombinator "
-
-Usage:
-
-    InfSitesRecombinator(rate, ranges, output=\"\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
-
-Details:
-
-    Create a Recombinator (a mendelian genotype transmitter with
-    recombination and gene conversion) that passes genotypes from
-    parents (or a parent in case of self-fertilization) to offspring.
-    A recombination rate in the unit of base pair is needed.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesRecombinator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InfSitesRecombinator::~InfSitesRecombinator "
-
-Usage:
-
-    x.~InfSitesRecombinator()
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesRecombinator::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::InfSitesRecombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
-
-%feature("docstring") simuPOP::InfSitesSelector "
-
-Details:
-
-    This selector assumes that alleles are mutant locations in the
-    mutational space and assign fitness values to them according to a
-    random distribution. The overall individual fitness is determined
-    by either an additive, an multiplicative or an exponential model.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesSelector::InfSitesSelector "
-
-Usage:
-
-    InfSitesSelector(selDist, mode=EXPONENTIAL, output=\"\", begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=ALL_AVAIL)
-
-Details:
-
-    Create a selector that assigns individual fitness values according
-    to random fitness effects. selDist can be
-    *   (CONSTANT, s, h) where s will be used for all mutants. The
-    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
-    If h is unspecified, a default value h=0.5 (additive model) will
-    be used.
-    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
-    distribution with scale parameter theta and shape parameter k.
-    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
-    1-s. A default value h=0.5 will be used if h is unspecified.
-    *   a Python function, which will be called when selection
-    coefficient of a new mutant is needed. This function should return
-    a single value s (with default value h=0.5) or a sequence of (h,
-    s). Mutant location will be passed to this function if it accepts
-    a parameter loc. This allows the definition of site-specific
-    selection coefficients. Individual fitness will be combined in
-    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
-    details). If an output is given, mutants and their fitness values
-    will be written to the output, in the form of 'mutant s h'.
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesSelector::~InfSitesSelector "
-
-Usage:
-
-    x.~InfSitesSelector()
-
-"; 
-
-%feature("docstring") simuPOP::InfSitesSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::InfSitesSelector::indFitness(Population &pop, Individual *ind) const;
-
-%feature("docstring") simuPOP::InfSitesSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::InfSitesSelector::apply(Population &pop) const;
-
 %feature("docstring") simuPOP::InheritTagger "
 
 Details:
@@ -4336,6 +4165,177 @@ Usage:
 %ignore simuPOP::MlSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MutSpaceMutator "
+
+Details:
+
+    This is an infite site mutation model in mutational space. The
+    alleles in the population is assumed to be locations of mutants. A
+    mutation rate is given that mutate alleles in 'regions'. If number
+    of mutants for an individual exceed the number of loci, 10 loci
+    will be added to everyone in the population.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceMutator::MutSpaceMutator "
+
+Usage:
+
+    MutSpaceMutator(rate, ranges, model=1, output=\"\", begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[])
+
+Details:
+
+    This operator accepts a list of ranges which is the 'real range'
+    of each chromosome. Mutation happens with muation rate rate and
+    mutants will be recorded to the population (instead of alleles).
+    By default, this mutator assumes an finite-allele model where all
+    mutations are allowed and if a mutant (allele 1) is mutated, it
+    will be mutated to allele 0 (back mutation). Alternatively (model
+    = 2), an infinite-sites mutation model can be used where mutations
+    can happen only at a new locus. Mutations happen at a locus with
+    existing mutants will be moved to a random locus without existing
+    mutant. A warning message will be printed if there is no vacant
+    locus available. If a valid output is given, mutants will be
+    outputted in the format of \"gen mutant ind type\" where type is 0
+    for forward (0->1), 1 for backward (1->0), 2 for relocated
+    mutations, and 3 for ignored mutation because no vacent locus is
+    available. The second mode has the advantage that all mutants in
+    the simulated population can be traced to a single mutation event.
+    If the regions are reasonably wide and mutation rates are low,
+    these two mutation models should yield similar results.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceMutator::~MutSpaceMutator "
+
+Description:
+
+    destructor.
+
+Usage:
+
+    x.~MutSpaceMutator()
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceMutator::apply "
+
+Usage:
+
+    x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MutSpaceMutator::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MutSpaceRecombinator "
+
+Details:
+
+    This during mating operator recombine chromosomes, which records
+    mutant locations, using a fixed recombination rate (per base
+    pair).
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceRecombinator::MutSpaceRecombinator "
+
+Usage:
+
+    MutSpaceRecombinator(rate, ranges, output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a Recombinator (a mendelian genotype transmitter with
+    recombination and gene conversion) that passes genotypes from
+    parents (or a parent in case of self-fertilization) to offspring.
+    A recombination rate in the unit of base pair is needed.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceRecombinator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MutSpaceRecombinator::~MutSpaceRecombinator "
+
+Usage:
+
+    x.~MutSpaceRecombinator()
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceRecombinator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MutSpaceRecombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+
+%feature("docstring") simuPOP::MutSpaceSelector "
+
+Details:
+
+    This selector assumes that alleles are mutant locations in the
+    mutational space and assign fitness values to them according to a
+    random distribution. The overall individual fitness is determined
+    by either an additive, an multiplicative or an exponential model.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceSelector::MutSpaceSelector "
+
+Usage:
+
+    MutSpaceSelector(selDist, mode=EXPONENTIAL, output=\"\", begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=ALL_AVAIL)
+
+Details:
+
+    Create a selector that assigns individual fitness values according
+    to random fitness effects. selDist can be
+    *   (CONSTANT, s, h) where s will be used for all mutants. The
+    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
+    If h is unspecified, a default value h=0.5 (additive model) will
+    be used.
+    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
+    distribution with scale parameter theta and shape parameter k.
+    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
+    1-s. A default value h=0.5 will be used if h is unspecified.
+    *   a Python function, which will be called when selection
+    coefficient of a new mutant is needed. This function should return
+    a single value s (with default value h=0.5) or a sequence of (h,
+    s). Mutant location will be passed to this function if it accepts
+    a parameter loc. This allows the definition of site-specific
+    selection coefficients. Individual fitness will be combined in
+    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
+    details). If an output is given, mutants and their fitness values
+    will be written to the output, in the form of 'mutant s h'.
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceSelector::~MutSpaceSelector "
+
+Usage:
+
+    x.~MutSpaceSelector()
+
+"; 
+
+%feature("docstring") simuPOP::MutSpaceSelector::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::MutSpaceSelector::indFitness(Population &pop, Individual *ind) const;
+
+%feature("docstring") simuPOP::MutSpaceSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MutSpaceSelector::apply(Population &pop) const;
 
 %feature("docstring") simuPOP::NoneOp "
 

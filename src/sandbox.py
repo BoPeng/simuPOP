@@ -37,9 +37,9 @@ version is no longer available.
 __all__ = [
     'revertFixedSites',
     'RevertFixedSites',
-    'InfSitesMutator',
-    'InfSitesSelector',
-    'InfSitesRecombinator',
+    'MutSpaceMutator',
+    'MutSpaceSelector',
+    'MutSpaceRecombinator',
 ]
 
 # get options

@@ -90,7 +90,7 @@ public:
  *  The overall individual fitness is determined by either an additive, an
  *  multiplicative or an exponential model.
  */
-class InfSitesSelector : public BaseSelector
+class MutSpaceSelector : public BaseSelector
 {
 public:
 	/** Create a selector that assigns individual fitness values according to
@@ -115,7 +115,7 @@ public:
 	 *  If an output is given, mutants and their fitness values will be written
 	 *  to the output, in the form of 'mutant s h'.
 	 */
-	InfSitesSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
+	MutSpaceSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
 		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -134,7 +134,7 @@ public:
 	}
 
 
-	virtual ~InfSitesSelector()
+	virtual ~MutSpaceSelector()
 	{
 	}
 
@@ -142,7 +142,7 @@ public:
 	/// HIDDEN Deep copy of a map selector
 	virtual BaseOperator * clone() const
 	{
-		return new InfSitesSelector(*this);
+		return new MutSpaceSelector(*this);
 	}
 
 
@@ -154,7 +154,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		return "<simuPOP.InfSitesSelector>" ;
+		return "<simuPOP.MutSpaceSelector>" ;
 	}
 
 
@@ -205,7 +205,7 @@ private:
  *  for an individual exceed the number of loci, 10 loci will be added
  *  to everyone in the population.
  */
-class InfSitesMutator : public BaseOperator
+class MutSpaceMutator : public BaseOperator
 {
 public:
 	/** This operator accepts a list of ranges which is the 'real range' of
@@ -227,7 +227,7 @@ public:
 	 *  mutation rates are low, these two mutation models should yield
 	 *  similar results.
 	 */
-	InfSitesMutator(double rate, const intMatrix & ranges, int model = 1,
+	MutSpaceMutator(double rate, const intMatrix & ranges, int model = 1,
 		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -256,24 +256,24 @@ public:
 
 
 	/// destructor.
-	~InfSitesMutator()
+	~MutSpaceMutator()
 	{
 	}
 
 
 	virtual bool apply(Population & pop) const;
 
-	/// HIDDEN Deep copy of a \c InfSitesMutator
+	/// HIDDEN Deep copy of a \c MutSpaceMutator
 	virtual BaseOperator * clone() const
 	{
-		return new InfSitesMutator(*this);
+		return new MutSpaceMutator(*this);
 	}
 
 
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		return "<simuPOP.InfSitesMutator>";
+		return "<simuPOP.MutSpaceMutator>";
 	}
 
 
@@ -292,7 +292,7 @@ private:
 /** This during mating operator recombine chromosomes, which records mutant
  *  locations, using a fixed recombination rate (per base pair).
  */
-class InfSitesRecombinator : public GenoTransmitter
+class MutSpaceRecombinator : public GenoTransmitter
 {
 public:
 	/** Create a Recombinator (a mendelian genotype transmitter with
@@ -300,7 +300,7 @@ public:
 	 *  (or a parent in case of self-fertilization) to offspring. A
 	 *  recombination \e rate in the unit of base pair is needed.
 	 */
-	InfSitesRecombinator(double rate, const intMatrix & ranges,
+	MutSpaceRecombinator(double rate, const intMatrix & ranges,
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -318,11 +318,11 @@ public:
 	/// HIDDEN Deep copy of a Recombinator
 	virtual BaseOperator * clone() const
 	{
-		return new InfSitesRecombinator(*this);
+		return new MutSpaceRecombinator(*this);
 	}
 
 
-	virtual ~InfSitesRecombinator()
+	virtual ~MutSpaceRecombinator()
 	{
 	}
 
@@ -330,7 +330,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		return "<simuPOP.InfSitesRecombinator>";
+		return "<simuPOP.MutSpaceRecombinator>";
 	}
 
 

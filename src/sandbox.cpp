@@ -83,7 +83,7 @@ bool RevertFixedSites::apply(Population & pop) const
 }
 
 
-double InfSitesSelector::indFitness(Population & pop, Individual * ind) const
+double MutSpaceSelector::indFitness(Population & pop, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
@@ -102,7 +102,7 @@ double InfSitesSelector::indFitness(Population & pop, Individual * ind) const
 }
 
 
-bool InfSitesSelector::apply(Population & pop) const
+bool MutSpaceSelector::apply(Population & pop) const
 {
 	m_newMutants.clear();
 	if (!BaseSelector::apply(pop))
@@ -122,7 +122,7 @@ bool InfSitesSelector::apply(Population & pop) const
 }
 
 
-InfSitesSelector::SelCoef InfSitesSelector::getFitnessValue(int mutant) const
+MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(int mutant) const
 {
 	int sz = m_selDist.size();
 	double s = 0;
@@ -179,7 +179,7 @@ InfSitesSelector::SelCoef InfSitesSelector::getFitnessValue(int mutant) const
 }
 
 
-double InfSitesSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
 
@@ -196,7 +196,7 @@ double InfSitesSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_en
 }
 
 
-double InfSitesSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
 
@@ -213,7 +213,7 @@ double InfSitesSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 }
 
 
-double InfSitesSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
 
@@ -249,7 +249,7 @@ double InfSitesSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-double InfSitesSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
 
@@ -285,7 +285,7 @@ double InfSitesSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-double InfSitesSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
 
@@ -321,7 +321,7 @@ double InfSitesSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
+ULONG MutSpaceMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
 {
 	ULONG loc = getRNG().randInt(end - beg) + beg;
 
@@ -348,7 +348,7 @@ ULONG InfSitesMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end,
 }
 
 
-bool InfSitesMutator::apply(Population & pop) const
+bool MutSpaceMutator::apply(Population & pop) const
 {
 #ifndef BINARYALLELE
 	const matrixi & ranges = m_ranges.elems();
@@ -477,7 +477,7 @@ bool InfSitesMutator::apply(Population & pop) const
 }
 
 
-void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
                                              ULONG offIndex, int ploidy) const
 {
 #ifndef BINARYALLELE
@@ -522,7 +522,7 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 				if (mit == cnt.end())
 					cnt[*it] = 1;
 				else
-					++mit->secondq;
+					++mit->second;
 			}
 		}
 		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
@@ -561,7 +561,7 @@ void InfSitesRecombinator::transmitGenotype0(Population & offPop, const Individu
 }
 
 
-void InfSitesRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
                                              ULONG offIndex, int ploidy) const
 {
 #ifndef BINARYALLELE
@@ -669,7 +669,7 @@ void InfSitesRecombinator::transmitGenotype1(Population & offPop, const Individu
 }
 
 
-bool InfSitesRecombinator::applyDuringMating(Population & pop, Population & offPop,
+bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offPop,
                                              RawIndIterator offspring,
                                              Individual * dad, Individual * mom) const
 {
