@@ -525,10 +525,10 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 					++mit->second;
 			}
 		}
-		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
-		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 		// no valid allele
 		if (cnt.empty()) {
+			GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+			GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 			std::fill(it, it_end, 0);
 			continue;
 		}
@@ -551,9 +551,10 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 			offPop.addLoci(addedChrom, added);
 		}
 		//
-		for (size_t i = 0; i < alleles.size(); ++i, ++it) {
+		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		for (size_t i = 0; i < alleles.size(); ++i, ++it)
 			*it = ToAllele(alleles[i]);
-		}
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
