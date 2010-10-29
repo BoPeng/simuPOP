@@ -366,11 +366,8 @@ bool MutSpaceMutator::apply(Population & pop) const
 		out = &getOstream(pop.dict());
 
 	// build a set of existing mutants
-	std::set<ULONG> mutants(pop.genoBegin(false), m_model == 2 ? pop.genoEnd(false) : pop.genoBegin(false));
-	mutants.erase(0);
-	bool saturated = mutants.size() == ploidyWidth;
-	if (saturated)
-		cerr << "Failed to introduce new mutants at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+	std::set<ULONG> mutants;
+	bool saturated = false;
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -407,7 +404,21 @@ bool MutSpaceMutator::apply(Population & pop) const
 							        << "\t3\n";
 						continue;
 					}
-					if (mutants.find(mutLoc) != mutants.end()) {
+					bool ok = false;
+					// if the first time
+					if (mutants.empty()) {
+						// first try our luck...
+						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
+						if (!ok) {
+							std::set<ULONG> existing(pop.genoBegin(false), pop.genoEnd(false));
+							mutants.swap(existing);
+							mutants.erase(0);
+							saturated = mutants.size() == ploidyWidth;
+							if (saturated)
+								cerr << "Failed to introduce new mutants at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+						}
+					}
+					if (!ok && mutants.find(mutLoc) != mutants.end()) {
 						ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
 						// nothing is found
 						if (out)
