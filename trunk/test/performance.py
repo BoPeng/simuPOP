@@ -13,10 +13,10 @@
 #
 # Usage:
 #
-#     performance.py [--alleleType=binary|short|long|all] [testname1] [testname2] ...
+#     performance.py [--alleleType=binary|short|long] [testname1] [testname2] ...
 #
 # where
-#     testname can be any string within a test. If --alleleType=all is specified
+#     testname can be any string within a test. If --alleleType is unspecified
 #     this script will be run for all three allele types.
 #
 # All the test results will be written to a file 'performance.log'
@@ -25,17 +25,18 @@
 import os, sys, time, platform, logging, subprocess
 from itertools import product
 
-alleleType = None
+alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
 if True in [x.startswith('--alleleType=') for x in sys.argv]:
     idx = [x.startswith('--alleleType=') for x in sys.argv].index(True)
     alleleType = sys.argv[idx][13:]
+    if not alleleType in ['short', 'long', 'binary']:
+        raise ValueError('Incorrect allele type. Please use --alleleType=long, short or binary')
     sys.argv.pop(idx)
 
 if alleleType == 'all':
-    subprocess.call(sys.argv + ['--alleleType=short'])
-    subprocess.call(sys.argv + ['--alleleType=long'])
-    subprocess.call(sys.argv + ['--alleleType=binary'])
+    for t in ['short', 'long', 'binary']:
+        subprocess.call(['python', sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
     sys.exit(0)
     
 import simuOpt
