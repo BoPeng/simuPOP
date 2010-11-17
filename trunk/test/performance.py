@@ -103,6 +103,8 @@ class PerformanceTest:
         '''
         results = []
         keys = kwargs.keys()
+        # this is to make sure the results are outputted in the same order for all platofmrs
+        keys.sort()
         for arg in product(*[kwargs[x] for x in keys]):
             kwarg = dict(zip(keys, arg))
             case_desc = ', '.join(['%s=%s' % (x, kwarg[x]) for x in keys])
