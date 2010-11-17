@@ -9763,7 +9763,13 @@ Details:
     execution time of each generation. Similar information can also be
     obtained from turnOnDebug(\"DBG_PROFILE\"), but this operator has
     the advantage of measuring the duration between several
-    generations by setting step parameter.
+    generations by setting step parameter. As an advanced feature that
+    mainly used for performance testing, this operator accepts a
+    parameter stopAfter (seconds), and will stop the evolution of a
+    population if the overall time exceeds stopAfter. Note that
+    elapsed time is only checked when this operator is applied to a
+    population so it might not be able to stop the evolution process
+    right after stopAfter seconds.
 
 "; 
 
@@ -9771,7 +9777,7 @@ Details:
 
 Usage:
 
-    TicToc(output=\">\", begin=0, end=-1, step=1, at=[],
+    TicToc(output=\">\", stopAfter=0, begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:

@@ -711,7 +711,12 @@ private:
  *  each generation. Similar information can also be obtained from
  *  <tt>turnOnDebug("DBG_PROFILE")</tt>, but this operator has the advantage
  *  of measuring the duration between several generations by setting \c step
- *  parameter.
+ *  parameter. As an advanced feature that mainly used for performance testing,
+ *  this operator accepts a parameter \e stopAfter (seconds), and will stop the
+ *  evolution of a population if the overall time exceeds \e stopAfter. Note
+ *  that elapsed time is only checked when this operator is applied to a
+ *  population so it might not be able to stop the evolution process right
+ *  after \e stopAfter seconds.
  */
 class TicToc : public BaseOperator
 {
@@ -720,11 +725,12 @@ public:
 	 *  time it was applied, and the overall time since the first time this
 	 *  operator is applied.
 	 */
-	TicToc(const stringFunc & output = ">",
+	TicToc(const stringFunc & output = ">", const double stopAfter = 0,
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
-		BaseOperator(">", begin, end, step, at, reps, subPops, infoFields), m_startTime(0), m_lastTime(0)
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0)
 	{
 	}
 
@@ -749,6 +755,7 @@ public:
 	string describe(bool format = true) const;
 
 private:
+	const double m_stopAfter;
 	mutable clock_t m_startTime;
 	mutable clock_t m_lastTime;
 };

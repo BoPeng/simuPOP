@@ -810,20 +810,22 @@ bool TicToc::apply(Population & pop) const
 	clock_t lastTime = m_lastTime;
 	m_lastTime = clock();
 
-	// this may not be correct but wrap is a possible problem.
-	if (!this->noOutput()) {
-		ostream & out = this->getOstream(pop.dict());
+	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	if (!noOutput()) {
+		ostream & out = getOstream(pop.dict());
 		if (lastTime == 0)
 			out << "Start stopwatch." << endl;
-		else
+		else {
 			// since last time
 			out << "Elapsed time: " << std::fixed << std::setprecision(2)
 			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
-			    << "s\t Overall time: "
-			    << static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC
-			    << "s" << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
-		this->closeOstream();
+			    << "s\t Overall time: " << overallTime << "s"
+			    << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
+		}
+		closeOstream();
 	}
+	if (m_stopAfter != 0 && overallTime > m_stopAfter)
+		return false;
 	return true;
 }
 
