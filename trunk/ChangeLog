@@ -17,6 +17,8 @@ New features:
   - Allow operator SavePopulation to take an empty string.
   - Allow operator PyOperator to accept a function that is applied to each
 	individual.
+  - Add parameter stopAfter to operator TicToc to stop the evolution after
+	specified time.
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification
