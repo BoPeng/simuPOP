@@ -13,14 +13,16 @@
 #
 # Usage:
 #
-#     performance.py [--alleleType=binary|short|long] [testname1] [testname2] ...
+#     performance.py [--alleleType=binary|short|long|all] [testname1] [testname2] ...
 #
 # where
-#     testname can be any string within a test
+#     testname can be any string within a test. If --alleleType=all is specified
+#     this script will be run for all three allele types.
+#
+# All the test results will be written to a file 'performance.log'
 #
 #
-#
-import os, sys, time
+import os, sys, time, platform, logging, subprocess
 from itertools import product
 
 alleleType = None
@@ -30,27 +32,37 @@ if True in [x.startswith('--alleleType=') for x in sys.argv]:
     alleleType = sys.argv[idx][13:]
     sys.argv.pop(idx)
 
+if alleleType == 'all':
+    subprocess.call(sys.argv + ['--alleleType=short'])
+    subprocess.call(sys.argv + ['--alleleType=long'])
+    subprocess.call(sys.argv + ['--alleleType=binary'])
+    sys.exit(0)
+    
 import simuOpt
 simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True)
 from simuPOP import *
 
 class PerformanceTest:
-    def __init__(self, desc=''):
+    def __init__(self, desc, logger):
         self.description = desc
         self.expected_time = 0
-
-    def describe(self):
+        self.logger = logger
         # machine name, os, time
-        desc = 'HOST: %s (%s)\n' % (os.uname()[1], sys.platform)
-        desc += 'TIME: %s\n' % time.asctime()
+        self.logger.debug('HOST: %s (%s)' % (platform.uname()[1], sys.platform))
+        self.logger.debug('TIME: %s' % time.asctime())
         info = moduleInfo()
         opt = ''
         if info['optimized']:
             opt = ', optimized'
-        desc += 'SIMUPOP: %s (rev %d, module %s%s) on Python %s (%s)\n' % \
-            (info['version'], info['revision'], info['alleleType'], opt, info['python'], info['compiler'])
-        desc += 'TEST: %s' % self.description
+        self.logger.debug('SIMUPOP: %s (rev %d, module %s%s) on Python %s (%s)' % \
+            (info['version'], info['revision'], info['alleleType'], opt, info['python'], info['compiler']))
+        self.logger.debug('TEST: %s' % self.description)
         return desc
+
+    def runTests(self):
+        '''Run all tests and record the result to a log file.'''
+        results = self.run()
+        self.logger.info(', '.join(['%s' % x for x in results]))
 
     def serialRun(self, **kwargs):
         '''
@@ -59,18 +71,23 @@ class PerformanceTest:
         will result in
             self._run(a=v1, b=v1)
             self._run(a=v2, b=v2)
+
+        This function should return the return value of each test
         '''
+        results = []
         keys = kwargs.keys()
         for arg in zip(*[kwargs[x] for x in keys]):
             kwarg = dict(zip(keys, arg))
             case_desc = ', '.join(['%s=%s' % (x, kwarg[x]) for x in keys])
             try:
                 res = self._run(**kwarg)
-                print('%s: %s' % (case_desc, res))
+                self.logger.debug('%s: %s' % (case_desc, res))
+                results.append(res)
             except Exception,e:
-                print e
-                print('%s: failed' % case_desc)
+                self.logger.debug('%s: failed' % case_desc)
+                results.append(0)
                 pass
+        return results
 
     def productRun(self, **kwargs):
         '''
@@ -84,21 +101,25 @@ class PerformanceTest:
             self._run(a=v2, b=v2)
             self._run(a=v2, b=v3)
         '''
+        results = []
         keys = kwargs.keys()
         for arg in product(*[kwargs[x] for x in keys]):
             kwarg = dict(zip(keys, arg))
             case_desc = ', '.join(['%s=%s' % (x, kwarg[x]) for x in keys])
             try:
                 res = self._run(**kwarg)
-                print('%s: %s' % (case_desc, res))
+                self.logger.debug('%s: %s' % (case_desc, res))
+                results.append(res)
             except Exception,e:
-                print e
-                print('%s: failed' % case_desc)
+                self.logger.debug('%s: failed' % case_desc)
+                results.append(0)
                 pass
+        return results
 
     def run(self):
+        '''Run tests and return results'''
         print('Please define your own run function')
-        return 0
+        return []
 
     def _run(self, *args, **kwargs):
         print('Please define your own _run function')
@@ -106,16 +127,15 @@ class PerformanceTest:
 
 
 
-class TestRandomMating(PerformanceTest):
-    def __init__(self, time = 60):
-        PerformanceTest.__init__(self, 'Standard random mating scheme, results are number of generations in %d seconds.' % time)
+class TestBasicRandomMating(PerformanceTest):
+    def __init__(self, logger, time=60):
+        PerformanceTest.__init__(self, 'Standard random mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
         self.time = time
 
     def run(self):
         # overall running case
-        self.productRun(size=[1000, 10000, 100000],
-            loci=[10, 100, 10000, 100000])
-        return True
+        return self.productRun(size=[1000, 10000, 100000], loci=[10, 100, 10000, 100000])
 
     def _run(self, size, loci):
         # single test case
@@ -128,17 +148,15 @@ class TestRandomMating(PerformanceTest):
         return gens
 
 
-
-class TestRandomMatingWithSelecttion(PerformanceTest):
-    def __init__(self, time = 60):
-        PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % time)
+class TestRandomMatingWithSelection(PerformanceTest):
+    def __init__(self, logger, time=60):
+        PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % int(time),
+            logger)
         self.time = time
 
     def run(self):
         # overall running case
-        self.productRun(size=[1000, 10000, 100000],
-            loci=[10, 100, 10000, 100000])
-        return True
+        return self.productRun(size=[1000, 10000, 100000], loci=[10, 100, 10000, 100000])
 
     def _run(self, size, loci):
         # single test case
@@ -157,9 +175,10 @@ class TestRandomMatingWithSelecttion(PerformanceTest):
         return gens
 
 
-
-
 if __name__ == '__main__':
+    # 
+    # Figure out tests to run
+    #
     if len(sys.argv) > 1:
         # selected test to run
         tests = []
@@ -167,8 +186,24 @@ if __name__ == '__main__':
             tests.extend([func for func in dir() if func.startswith('Test') and test in func])
     else:
         tests = [func for func in dir() if func.startswith('Test')]
+    #
+    #
+    logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
     for test in tests:
-        testObj = eval(test + '()')
-        print testObj.describe()
-        testObj.run()
-        print 'End of test %s\n' % test
+        logger = logging.getLogger(test)
+        # A log file with debug information
+        logFile = logging.FileHandler('performance.log')
+        logFile.setLevel(logging.DEBUG)
+        logFile.setFormatter(logging.Formatter('%(name)s : %(message)s'))
+        # A summary file with overall results
+        summaryFile = logging.FileHandler('performance.summary')
+        summaryFile.setLevel(logging.INFO)
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, %%(message)s' % \
+            (platform.uname()[1], moduleInfo()['alleleType'])))
+        #
+        logger.addHandler(logFile)
+        logger.addHandler(summaryFile)
+        #
+        testObj = eval(test + '(logger)')
+        testObj.runTests()
+        logger.debug('End of test %s' % test)
