@@ -616,15 +616,15 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 		UINT step = genoSize();
 		m_popSize = newSize;
 		try {
-            if (m_popSize > MaxIndexSize / step)
-                throw RuntimeError("Population size times number of loci exceed maximum index size.");
+			if (step != 0 && m_popSize > MaxIndexSize / step)
+				throw RuntimeError("Population size times number of loci exceed maximum index size.");
 			m_genotype.resize(m_popSize * step);
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
 			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize)
 				+ ", totNumLoci*ploidy=" + toStr(step) + ", maximum population size for such a long genome=" +
-                toStr(MaxIndexSize / step) + ", requested memory="
+				toStr(MaxIndexSize / step) + ", requested memory="
 #ifdef BINARYALLELE
 				+ toStr((m_popSize * step / 8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #else
