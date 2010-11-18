@@ -205,8 +205,10 @@ if __name__ == '__main__':
         # A summary file with overall results
         summaryFile = logging.FileHandler('performance.summary')
         summaryFile.setLevel(logging.INFO)
-        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, %s, %%(message)s' % \
-            (platform.uname()[1], platform.uname()[4], moduleInfo()['alleleType'])))
+        uname = platform.uname()
+        info = moduleInfo()
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, python%s, simuPOP-%s, %d, %s, %%(message)s' % \
+            (uname[1], uname[4], info['python'], info['version'], info['revision'], info['alleleType'])))
         #
         logger.addHandler(logFile)
         logger.addHandler(summaryFile)
