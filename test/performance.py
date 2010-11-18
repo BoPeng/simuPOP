@@ -207,7 +207,7 @@ if __name__ == '__main__':
         summaryFile.setLevel(logging.INFO)
         uname = platform.uname()
         info = moduleInfo()
-        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, python%s, simuPOP-%s, %d, %s, %%(message)s' % \
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, python%s, simuPOP-%s, rev%d, %s, %%(message)s' % \
             (uname[1], uname[4], info['python'], info['version'], info['revision'], info['alleleType'])))
         #
         logger.addHandler(logFile)
