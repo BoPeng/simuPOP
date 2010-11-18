@@ -52,7 +52,7 @@ class PerformanceTest:
         self.logger = logger
         # machine name, os, CPU, time
         uname = platform.uname()
-        self.logger.debug('Host: %s (%s, %s)' % (uname[1], uname[0], uname[-1]))
+        self.logger.debug('Host: %s (%s, %s)' % (uname[1], uname[0], uname[5]))
         self.logger.debug('Time: %s' % time.asctime())
         info = moduleInfo()
         opt = ''
@@ -206,7 +206,7 @@ if __name__ == '__main__':
         summaryFile = logging.FileHandler('performance.summary')
         summaryFile.setLevel(logging.INFO)
         summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, %s, %%(message)s' % \
-            (platform.uname()[1], platform.uname()[-1], moduleInfo()['alleleType'])))
+            (platform.uname()[1], platform.uname()[4], moduleInfo()['alleleType'])))
         #
         logger.addHandler(logFile)
         logger.addHandler(summaryFile)
