@@ -112,3 +112,16 @@ TestRandomMatingWithSelection : loci=100000, size=10000: 380
 TestRandomMatingWithSelection : loci=100000, size=100000: failed
 TestRandomMatingWithSelection : 137124, 12449, 1071, 161914, 15201, 1197, 46022, 2795, 212, 4331, 380, 0
 TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: dhcpcpb4s-140.mdacc.tmc.edu (Linux, x86_64)
+TestBasicRandomMating : Time: Thu Nov 18 12:53:05 2010
+TestBasicRandomMating : Python: 2.4.3 [GCC 4.1.2 20080704 (Red Hat 4.1.2-48)]
+TestBasicRandomMating : simuPOP: 1.0.5svn (rev 3901, module short, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 189170
+TestBasicRandomMating : loci=10, size=10000: 16745
+TestBasicRandomMating : loci=10, size=100000: 699
+TestBasicRandomMating : loci=100, size=1000: 149382
+TestBasicRandomMating : loci=100, size=10000: 9041
+TestBasicRandomMating : loci=100, size=100000: 503
+TestBasicRandomMating : loci=10000, size=1000: 3616
+TestBasicRandomMating : loci=10000, size=10000: 341

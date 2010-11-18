@@ -23,7 +23,18 @@
 #
 #
 import os, sys, time, platform, logging, subprocess
-from itertools import product
+try:
+    from itertools import product
+except:
+    # python 2.4 does not have this function
+    def product(*args, **kwds):
+        pools = map(tuple, args) * kwds.get('repeat', 1)
+        result = [[]]
+        for pool in pools:
+            result = [x+[y] for x in result for y in pool]
+        for prod in result:
+            yield tuple(prod)
+
 
 alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
