@@ -296,7 +296,7 @@ const signed int InvalidSubPopID = -1;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 typedef unsigned long ULONG;
-const unsigned long MaxIndexSize = std::numeric_limits<ULONG>::max();
+const unsigned long MaxIndexSize = std::numeric_limits<size_t>::max();
 typedef long LONG;
 
 typedef std::vector<long int>              vectori;
