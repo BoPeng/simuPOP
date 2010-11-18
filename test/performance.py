@@ -203,7 +203,7 @@ if __name__ == '__main__':
         logFile.setLevel(logging.DEBUG)
         logFile.setFormatter(logging.Formatter('%(name)s : %(message)s'))
         # A summary file with overall results
-        summaryFile = logging.FileHandler('performance.summary')
+        summaryFile = logging.FileHandler('performance.csv')
         summaryFile.setLevel(logging.INFO)
         uname = platform.uname()
         info = moduleInfo()
