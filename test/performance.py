@@ -36,7 +36,9 @@ if True in [x.startswith('--alleleType=') for x in sys.argv]:
 
 if alleleType == 'all':
     for t in ['short', 'long', 'binary']:
-        subprocess.call(['python', sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
+        ret = subprocess.call(['python', sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
+        if ret != 0:  # if crash or killed
+            sys.exit(ret)
     sys.exit(0)
     
 import simuOpt
@@ -48,16 +50,18 @@ class PerformanceTest:
         self.description = desc
         self.expected_time = 0
         self.logger = logger
-        # machine name, os, time
-        self.logger.debug('HOST: %s (%s)' % (platform.uname()[1], sys.platform))
-        self.logger.debug('TIME: %s' % time.asctime())
+        # machine name, os, CPU, time
+        uname = platform.uname()
+        self.logger.debug('Host: %s (%s, %s)' % (uname[1], uname[0], uname[-1]))
+        self.logger.debug('Time: %s' % time.asctime())
         info = moduleInfo()
         opt = ''
         if info['optimized']:
             opt = ', optimized'
-        self.logger.debug('SIMUPOP: %s (rev %d, module %s%s) on Python %s (%s)' % \
-            (info['version'], info['revision'], info['alleleType'], opt, info['python'], info['compiler']))
-        self.logger.debug('TEST: %s' % self.description)
+        self.logger.debug('Python: %s %s' % (info['python'], info['compiler']))
+        self.logger.debug('simuPOP: %s (rev %d, module %s%s)' % \
+            (info['version'], info['revision'], info['alleleType'], opt))
+        self.logger.debug('Test: %s' % self.description)
         return desc
 
     def runTests(self):
@@ -201,8 +205,8 @@ if __name__ == '__main__':
         # A summary file with overall results
         summaryFile = logging.FileHandler('performance.summary')
         summaryFile.setLevel(logging.INFO)
-        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, %%(message)s' % \
-            (platform.uname()[1], moduleInfo()['alleleType'])))
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, %s, %%(message)s' % \
+            (platform.uname()[1], platform.uname()[-1], moduleInfo()['alleleType'])))
         #
         logger.addHandler(logFile)
         logger.addHandler(summaryFile)
