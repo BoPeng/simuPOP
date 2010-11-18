@@ -804,11 +804,27 @@ string TicToc::describe(bool format) const
 
 bool TicToc::apply(Population & pop) const
 {
-	if (m_startTime == 0)
-		m_startTime = clock();
-
 	clock_t lastTime = m_lastTime;
-	m_lastTime = clock();
+
+	// use counter to reduce clock() function calls
+	if (m_counter > 0) {
+		m_lastTime += m_diff;
+		--m_counter;
+	} else if (m_counter == 0) {
+		m_lastTime = clock();
+		--m_counter;
+	} else if (m_counter < 0) {
+		// two consecutive read
+		m_diff = m_lastTime - lastTime;
+		if (m_diff == 0)
+			m_counter = 10000;
+		else {
+			// to a 1s accuracy
+			m_counter = int(1. / m_diff);
+			if (m_counter > 10000)
+				m_counter = 10000;
+		}
+	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
 	if (!noOutput()) {
@@ -826,6 +842,55 @@ bool TicToc::apply(Population & pop) const
 	}
 	if (m_stopAfter != 0 && overallTime > m_stopAfter)
 		return false;
+	return true;
+}
+
+
+bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+                               Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+	//
+	clock_t lastTime = m_lastTime;
+
+	// use counter
+	if (m_counter > 0) {
+		m_lastTime += m_diff;
+		--m_counter;
+	} else if (m_counter == 0) {
+		m_lastTime = clock();
+		--m_counter;
+	} else if (m_counter < 0) {
+		// two consecutive read
+		m_diff = m_lastTime - lastTime;
+		if (m_diff == 0)
+			m_counter = 10000;
+		else {
+			// to a 1s accuracy
+			m_counter = int(1. / m_diff);
+			if (m_counter > 10000)
+				m_counter = 10000;
+		}
+	}
+
+	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	if (!noOutput()) {
+		ostream & out = getOstream(pop.dict());
+		if (lastTime == 0)
+			out << "Start stopwatch." << endl;
+		else {
+			// since last time
+			out << "Elapsed time: " << std::fixed << std::setprecision(2)
+			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
+			    << "s\t Overall time: " << overallTime << "s"
+			    << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
+		}
+		closeOstream();
+	}
+	if (m_stopAfter != 0 && overallTime > m_stopAfter)
+		throw StopEvolution("TimeOut by operator TicToc");
 	return true;
 }
 

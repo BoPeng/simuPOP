@@ -18,7 +18,7 @@ New features:
   - Allow operator PyOperator to accept a function that is applied to each
 	individual.
   - Add parameter stopAfter to operator TicToc to stop the evolution after
-	specified time.
+	specified time, and allow this operator to be used during-mating.
 
 Bug:
   - Fix a bug in the handling of obsolete key 'arg' in parameter specification

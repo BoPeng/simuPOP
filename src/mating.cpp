@@ -281,17 +281,11 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Population & offPop
 		opList::const_iterator iop = m_transmitters.begin();
 		opList::const_iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {
-			try {
-				if (!(*iop)->isActive(pop.rep(), pop.gen()))
-					continue;
-				if (!(*iop)->applyDuringMating(pop, offPop, it, dad, mom)) {
-					accept = false;
-					break;
-				}
-			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
-				throw e;
+			if (!(*iop)->isActive(pop.rep(), pop.gen()))
+				continue;
+			if (!(*iop)->applyDuringMating(pop, offPop, it, dad, mom)) {
+				accept = false;
+				break;
 			}
 		}
 
@@ -787,7 +781,7 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 		return std::make_pair(dad, mom);
 	}
 
-	// this exception should be raised also in optimized mode because the cause
+	// this exceptio should be raised also in optimized mode because the cause
 	// can be random.
 	if (m_numMale == 0)
 		throw RuntimeError("RandomParentsChooser fails because there is no male individual in a subpopulation.");
@@ -1365,14 +1359,8 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		opList::const_iterator iop = m_transmitters.begin();
 		opList::const_iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {
-			try {
-				if ((*iop)->isActive(pop.rep(), pop.gen()))
-					(*iop)->applyDuringMating(pop, scratch, it, dad, mom);
-			} catch (Exception e) {
-				cerr	<< "One of the transmitters " << (*iop)->describe()
-				        << " throws an exception.\n" << e.message() << "\n" << endl;
-				throw e;
-			}
+			if ((*iop)->isActive(pop.rep(), pop.gen()))
+				(*iop)->applyDuringMating(pop, scratch, it, dad, mom);
 		}
 		// copy individual ID again, just to make sure that even if during mating operators
 		// changes ID, pedigree mating could proceed normally.
@@ -1600,9 +1588,9 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			try {
 				if (!m[idx]->mateSubPop(pop, scratch, sp, ind, ind + *itSize))
 					return false;
-			} catch (...) {
+			} catch (Exception e) {
 				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
-				throw;
+				throw e;
 			}
 			ind += *itSize;
 		}

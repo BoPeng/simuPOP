@@ -9769,7 +9769,9 @@ Details:
     population if the overall time exceeds stopAfter. Note that
     elapsed time is only checked when this operator is applied to a
     population so it might not be able to stop the evolution process
-    right after stopAfter seconds.
+    right after stopAfter seconds. This operator can also be applied
+    during mating. Note that to avoid excessive time checking, this
+    operator does not always check system time accurately.
 
 "; 
 
@@ -9803,6 +9805,8 @@ Usage:
 %feature("docstring") simuPOP::TicToc::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::TicToc::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::TicToc::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::TicToc::describe "Obsolete or undocumented function."
 
