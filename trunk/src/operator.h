@@ -716,7 +716,9 @@ private:
  *  evolution of a population if the overall time exceeds \e stopAfter. Note
  *  that elapsed time is only checked when this operator is applied to a
  *  population so it might not be able to stop the evolution process right
- *  after \e stopAfter seconds.
+ *  after \e stopAfter seconds. This operator can also be applied during
+ *  mating. Note that to avoid excessive time checking, this operator does
+ *  not always check system time accurately.
  */
 class TicToc : public BaseOperator
 {
@@ -730,8 +732,9 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0)
+		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0), m_diff(0), m_counter(0)
 	{
+		m_startTime = clock();
 	}
 
 
@@ -751,6 +754,10 @@ public:
 	/// HIDDEN
 	virtual bool apply(Population & pop) const;
 
+	/// CPPONLY
+	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+		Individual * dad = NULL, Individual * mom = NULL) const;
+
 	/// HIDDEN
 	string describe(bool format = true) const;
 
@@ -758,6 +765,8 @@ private:
 	const double m_stopAfter;
 	mutable clock_t m_startTime;
 	mutable clock_t m_lastTime;
+	mutable double m_diff;
+	mutable int m_counter;
 };
 
 

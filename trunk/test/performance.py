@@ -161,7 +161,11 @@ class TestBasicRandomMating(PerformanceTest):
         gens = pop.evolve(
             initOps=InitSex(),
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme=RandomMating(),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                # in some cases, mating takes so much time so we have to stop in the middle
+                TicToc(output='', stopAfter=self.time)
+            ]),
         )
         return gens
 
@@ -188,7 +192,11 @@ class TestRandomMatingWithSelection(PerformanceTest):
                 TicToc(output='', stopAfter=self.time),
                 MaSelector(loci=0, fitness=[1, 0.999, 0.998]),
             ],
-            matingScheme=RandomMating(),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                # in some cases, mating takes so much time so we have to stop in the middle
+                TicToc(output='', stopAfter=self.time)
+            ]),
         )
         return gens
 
