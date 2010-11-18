@@ -245,7 +245,6 @@ include test/test_15_penetrance.py
 include test/test_16_sampling.py
 include test/test_17_utils.py
 include test/test_18_plotter.py
-include test/test_19_performance.py
 
 # documentations
 include doc/userGuide.pdf
