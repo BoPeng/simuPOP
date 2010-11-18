@@ -1,6 +1,6 @@
-TestBasicRandomMating, 2010-11-18 10:22:33,628, EPIW-072552, x86, short, 242767, 24379, 2143, 86877, 8496, 607, 1200, 119, 0, 121, 0, 0
-TestRandomMatingWithSelection, 2010-11-18 10:31:46,677, EPIW-072552, x86, short, 193646, 18654, 1431, 78891, 7429, 501, 1197, 117, 0, 121, 0, 0
-TestBasicRandomMating, 2010-11-18 10:38:49,164, EPIW-072552, x86, long, 241524, 23490, 1337, 79663, 6291, 463, 939, 0, 0, 0, 0, 0
-TestRandomMatingWithSelection, 2010-11-18 10:46:02,691, EPIW-072552, x86, long, 185579, 17597, 923, 72009, 5168, 382, 928, 0, 0, 0, 0, 0
-TestBasicRandomMating, 2010-11-18 10:57:16,138, EPIW-072552, x86, binary, 188102, 18145, 1750, 206975, 20191, 1728, 48921, 3190, 245, 4219, 380, 0
-TestRandomMatingWithSelection, 2010-11-18 11:11:27,914, EPIW-072552, x86, binary, 142148, 12841, 1062, 163061, 15487, 1159, 46038, 2798, 211, 4283, 373, 0
+TestBasicRandomMating, 2010-11-18 11:51:29,431, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 248083, 24661, 2102, 87087, 8487, 605, 1207, 120, 0, 122, 0, 0
+TestRandomMatingWithSelection, 2010-11-18 12:00:42,443, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 191872, 18777, 1357, 78468, 7406, 491, 1187, 118, 0, 118, 0, 0
+TestBasicRandomMating, 2010-11-18 12:07:43,979, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 234567, 23210, 1294, 77587, 6211, 471, 952, 0, 0, 0, 0, 0
+TestRandomMatingWithSelection, 2010-11-18 12:14:57,361, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 184731, 17596, 910, 70947, 5081, 378, 948, 0, 0, 0, 0, 0
+TestBasicRandomMating, 2010-11-18 12:26:10,680, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 190820, 18402, 1782, 209455, 20223, 1754, 49622, 3243, 249, 4406, 390, 0
+TestRandomMatingWithSelection, 2010-11-18 12:40:23,809, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 137124, 12449, 1071, 161914, 15201, 1197, 46022, 2795, 212, 4331, 380, 0
