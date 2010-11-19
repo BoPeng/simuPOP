@@ -804,31 +804,32 @@ string TicToc::describe(bool format) const
 
 bool TicToc::apply(Population & pop) const
 {
-	clock_t lastTime = m_lastTime;
+	if (m_startTime == 0)
+		m_startTime = clock();
 
-	// use counter
-	if (m_counter < 0) {
-		// two consecutive read
+	m_totalCount++;
+	clock_t lastTime = m_lastTime;
+	if (m_countPerSec == 0) {
 		m_lastTime = clock();
-		m_diff = m_lastTime - lastTime;
-		if (m_diff == 0)
-			-- m_counter;
-		else {
-			m_diff /= -m_counter;
-			// how many counters per second
-			m_counter = int(CLOCKS_PER_SEC / m_diff);
-			if (m_counter > 10000)
-				m_counter = 10000;
+	} else {
+		if (m_counter == m_countPerSec) {
+			m_lastTime = clock();
+			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
+				(double(m_lastTime - m_startTime) / CLOCKS_PER_SEC) << endl);
+			m_counter = 0;
+		} else {
+			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
+			++ m_counter;
 		}
-	} else if (m_counter == 0) {
-		m_lastTime = clock();
-		--m_counter;
-	} else if (m_counter > 0) {
-		m_lastTime += m_diff;
-		--m_counter;
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	if (overallTime > 5 && m_counter == 0) { // over 5s
+		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
+		DBG_DO(DBG_OPERATOR, cerr << m_totalCount << " hits after " << overallTime << " seconds. Using "
+			<< m_countPerSec << " counts per second." << endl);
+	}
+
 	if (!noOutput()) {
 		ostream & out = getOstream(pop.dict());
 		if (lastTime == 0)
@@ -854,33 +855,34 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
+	
+	if (m_startTime == 0)
+		m_startTime = clock();
+
+	m_totalCount++;
 	//
 	clock_t lastTime = m_lastTime;
-
-	// use counter
-	if (m_counter < 0) {
-		// two consecutive read
+	if (m_countPerSec == 0) {
 		m_lastTime = clock();
-		m_diff = m_lastTime - lastTime;
-		if (m_diff == 0)
-			-- m_counter;
-		else {
-			// time per counter...
-			m_diff /= -m_counter;
-			// how many counters per second
-			m_counter = int(CLOCKS_PER_SEC / m_diff);
-			if (m_counter > 10000)
-				m_counter = 10000;
+	} else {
+		if (m_counter == m_countPerSec) {
+			m_lastTime = clock();
+			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
+				(double(m_lastTime - m_startTime) / CLOCKS_PER_SEC) << endl);
+			m_counter = 0;
+		} else {
+			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
+			++ m_counter;
 		}
-	} else if (m_counter == 0) {
-		m_lastTime = clock();
-		--m_counter;
-	} else if (m_counter > 0) {
-		m_lastTime += m_diff;
-		--m_counter;
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	if (overallTime > 5 && m_counter == 0) { // over 5s
+		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
+		DBG_DO(DBG_OPERATOR, cerr << m_totalCount << " hits after " << overallTime << " seconds. Using "
+			<< m_countPerSec << " counts per second." << endl);
+	}
+
 	if (!noOutput()) {
 		ostream & out = getOstream(pop.dict());
 		if (lastTime == 0)
