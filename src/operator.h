@@ -732,9 +732,9 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0), m_diff(0), m_counter(0)
+		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0),
+		m_totalCount(0), m_countPerSec(0), m_counter(0)
 	{
-		m_startTime = clock();
 	}
 
 
@@ -765,8 +765,9 @@ private:
 	const double m_stopAfter;
 	mutable clock_t m_startTime;
 	mutable clock_t m_lastTime;
-	mutable double m_diff;
-	mutable int m_counter;
+	mutable ULONG m_totalCount;
+	mutable ULONG m_countPerSec;
+	mutable ULONG m_counter;
 };
 
 
