@@ -226,3 +226,117 @@ TestRandomMatingWithSelection : loci=100000, size=10000: 546
 TestRandomMatingWithSelection : loci=100000, size=100000: failed
 TestRandomMatingWithSelection : 116237, 10118, 755, 124195, 11302, 893, 28859, 1819, 141, 6339, 546, 0
 TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestBasicRandomMating : Time: Fri Nov 19 08:44:43 2010
+TestBasicRandomMating : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestBasicRandomMating : simuPOP: 1.0.5svn (rev 3819, module short, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 211610
+TestBasicRandomMating : loci=10, size=10000: 21746
+TestBasicRandomMating : loci=10, size=100000: 1911
+TestBasicRandomMating : loci=100, size=1000: 84229
+TestBasicRandomMating : loci=100, size=10000: 7925
+TestBasicRandomMating : loci=100, size=100000: 568
+TestBasicRandomMating : loci=10000, size=1000: 1154
+TestBasicRandomMating : loci=10000, size=10000: 114
+TestBasicRandomMating : loci=10000, size=100000: failed
+TestBasicRandomMating : loci=100000, size=1000: 114
+TestBasicRandomMating : loci=100000, size=10000: failed
+TestBasicRandomMating : loci=100000, size=100000: failed
+TestBasicRandomMating : 211610, 21746, 1911, 84229, 7925, 568, 1154, 114, 0, 114, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestRandomMatingWithSelection : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestRandomMatingWithSelection : Time: Fri Nov 19 08:53:45 2010
+TestRandomMatingWithSelection : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestRandomMatingWithSelection : simuPOP: 1.0.5svn (rev 3819, module short, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 173220
+TestRandomMatingWithSelection : loci=10, size=10000: 16624
+TestRandomMatingWithSelection : loci=10, size=100000: 1247
+TestRandomMatingWithSelection : loci=100, size=1000: 74456
+TestRandomMatingWithSelection : loci=100, size=10000: 6972
+TestRandomMatingWithSelection : loci=100, size=100000: 469
+TestRandomMatingWithSelection : loci=10000, size=1000: 1148
+TestRandomMatingWithSelection : loci=10000, size=10000: 113
+TestRandomMatingWithSelection : loci=10000, size=100000: failed
+TestRandomMatingWithSelection : loci=100000, size=1000: 114
+TestRandomMatingWithSelection : loci=100000, size=10000: failed
+TestRandomMatingWithSelection : loci=100000, size=100000: failed
+TestRandomMatingWithSelection : 173220, 16624, 1247, 74456, 6972, 469, 1148, 113, 0, 114, 0, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestBasicRandomMating : Time: Fri Nov 19 09:03:00 2010
+TestBasicRandomMating : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestBasicRandomMating : simuPOP: 1.0.5svn (rev 3819, module long, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 213231
+TestBasicRandomMating : loci=10, size=10000: 20950
+TestBasicRandomMating : loci=10, size=100000: 1236
+TestBasicRandomMating : loci=100, size=1000: 80767
+TestBasicRandomMating : loci=100, size=10000: 6290
+TestBasicRandomMating : loci=100, size=100000: 466
+TestBasicRandomMating : loci=10000, size=1000: 900
+TestBasicRandomMating : loci=10000, size=10000: failed
+TestBasicRandomMating : loci=10000, size=100000: failed
+TestBasicRandomMating : loci=100000, size=1000: failed
+TestBasicRandomMating : loci=100000, size=10000: failed
+TestBasicRandomMating : loci=100000, size=100000: failed
+TestBasicRandomMating : 213231, 20950, 1236, 80767, 6290, 466, 900, 0, 0, 0, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestRandomMatingWithSelection : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestRandomMatingWithSelection : Time: Fri Nov 19 09:10:03 2010
+TestRandomMatingWithSelection : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestRandomMatingWithSelection : simuPOP: 1.0.5svn (rev 3819, module long, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 159159
+TestRandomMatingWithSelection : loci=10, size=10000: 15737
+TestRandomMatingWithSelection : loci=10, size=100000: 907
+TestRandomMatingWithSelection : loci=100, size=1000: 73170
+TestRandomMatingWithSelection : loci=100, size=10000: 5271
+TestRandomMatingWithSelection : loci=100, size=100000: 380
+TestRandomMatingWithSelection : loci=10000, size=1000: 985
+TestRandomMatingWithSelection : loci=10000, size=10000: failed
+TestRandomMatingWithSelection : loci=10000, size=100000: failed
+TestRandomMatingWithSelection : loci=100000, size=1000: failed
+TestRandomMatingWithSelection : loci=100000, size=10000: failed
+TestRandomMatingWithSelection : loci=100000, size=100000: failed
+TestRandomMatingWithSelection : 159159, 15737, 907, 73170, 5271, 380, 985, 0, 0, 0, 0, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestBasicRandomMating : Time: Fri Nov 19 09:17:18 2010
+TestBasicRandomMating : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestBasicRandomMating : simuPOP: 1.0.5svn (rev 3819, module binary, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 172539
+TestBasicRandomMating : loci=10, size=10000: 16624
+TestBasicRandomMating : loci=10, size=100000: 1595
+TestBasicRandomMating : loci=100, size=1000: 186192
+TestBasicRandomMating : loci=100, size=10000: 17997
+TestBasicRandomMating : loci=100, size=100000: 1593
+TestBasicRandomMating : loci=10000, size=1000: 48242
+TestBasicRandomMating : loci=10000, size=10000: 3209
+TestBasicRandomMating : loci=10000, size=100000: 250
+TestBasicRandomMating : loci=100000, size=1000: 4439
+TestBasicRandomMating : loci=100000, size=10000: 397
+TestBasicRandomMating : loci=100000, size=100000: failed
+TestBasicRandomMating : 172539, 16624, 1595, 186192, 17997, 1593, 48242, 3209, 250, 4439, 397, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestRandomMatingWithSelection : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestRandomMatingWithSelection : Time: Fri Nov 19 09:28:30 2010
+TestRandomMatingWithSelection : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestRandomMatingWithSelection : simuPOP: 1.0.5svn (rev 3819, module binary, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 126550
+TestRandomMatingWithSelection : loci=10, size=10000: 11687
+TestRandomMatingWithSelection : loci=10, size=100000: 996
+TestRandomMatingWithSelection : loci=100, size=1000: 149178
+TestRandomMatingWithSelection : loci=100, size=10000: 14010
+TestRandomMatingWithSelection : loci=100, size=100000: 1111
+TestRandomMatingWithSelection : loci=10000, size=1000: 44914
+TestRandomMatingWithSelection : loci=10000, size=10000: 2771
+TestRandomMatingWithSelection : loci=10000, size=100000: 211
+TestRandomMatingWithSelection : loci=100000, size=1000: 4364
+TestRandomMatingWithSelection : loci=100000, size=10000: 386
+TestRandomMatingWithSelection : loci=100000, size=100000: failed
+TestRandomMatingWithSelection : 126550, 11687, 996, 149178, 14010, 1111, 44914, 2771, 211, 4364, 386, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
