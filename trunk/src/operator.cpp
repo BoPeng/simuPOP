@@ -806,24 +806,26 @@ bool TicToc::apply(Population & pop) const
 {
 	clock_t lastTime = m_lastTime;
 
-	// use counter to reduce clock() function calls
-	if (m_counter > 0) {
-		m_lastTime += m_diff;
-		--m_counter;
-	} else if (m_counter == 0) {
-		m_lastTime = clock();
-		--m_counter;
-	} else if (m_counter < 0) {
+	// use counter
+	if (m_counter < 0) {
 		// two consecutive read
+		m_lastTime = clock();
 		m_diff = m_lastTime - lastTime;
 		if (m_diff == 0)
-			m_counter = 10000;
+			-- m_counter;
 		else {
-			// to a 1s accuracy
-			m_counter = int(1. / m_diff);
+			m_diff /= -m_counter;
+			// how many counters per second
+			m_counter = int(CLOCKS_PER_SEC / m_diff);
 			if (m_counter > 10000)
 				m_counter = 10000;
 		}
+	} else if (m_counter == 0) {
+		m_lastTime = clock();
+		--m_counter;
+	} else if (m_counter > 0) {
+		m_lastTime += m_diff;
+		--m_counter;
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
@@ -856,23 +858,26 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 	clock_t lastTime = m_lastTime;
 
 	// use counter
-	if (m_counter > 0) {
-		m_lastTime += m_diff;
-		--m_counter;
-	} else if (m_counter == 0) {
-		m_lastTime = clock();
-		--m_counter;
-	} else if (m_counter < 0) {
+	if (m_counter < 0) {
 		// two consecutive read
+		m_lastTime = clock();
 		m_diff = m_lastTime - lastTime;
 		if (m_diff == 0)
-			m_counter = 10000;
+			-- m_counter;
 		else {
-			// to a 1s accuracy
-			m_counter = int(1. / m_diff);
+			// time per counter...
+			m_diff /= -m_counter;
+			// how many counters per second
+			m_counter = int(CLOCKS_PER_SEC / m_diff);
 			if (m_counter > 10000)
 				m_counter = 10000;
 		}
+	} else if (m_counter == 0) {
+		m_lastTime = clock();
+		--m_counter;
+	} else if (m_counter > 0) {
+		m_lastTime += m_diff;
+		--m_counter;
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
