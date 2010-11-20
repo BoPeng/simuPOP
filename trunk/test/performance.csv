@@ -16,3 +16,9 @@ TestBasicRandomMating, 2010-11-19 09:10:03,186, EPIW-072552, x86, python2.7, sim
 TestRandomMatingWithSelection, 2010-11-19 09:17:17,194, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 159159, 15737, 907, 73170, 5271, 380, 985, 0, 0, 0, 0, 0
 TestBasicRandomMating, 2010-11-19 09:28:30,361, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 172539, 16624, 1595, 186192, 17997, 1593, 48242, 3209, 250, 4439, 397, 0
 TestRandomMatingWithSelection, 2010-11-19 09:42:40,795, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 126550, 11687, 996, 149178, 14010, 1111, 44914, 2771, 211, 4364, 386, 0
+TestBasicRandomMating, 2010-11-19 20:59:15,177, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, short, 153542, 14334, 1087, 57323, 5131, 435, 914, 91, 0, 92, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 21:08:33,111, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, short, 125591, 11522, 793, 52358, 4557, 360, 920, 91, 0, 92, 0, 0
+TestBasicRandomMating, 2010-11-19 21:15:35,971, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, long, 151324, 13370, 864, 48544, 4426, 372, 802, 0, 0, 0, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 21:22:55,194, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, long, 122157, 10537, 644, 44423, 3766, 303, 799, 0, 0, 0, 0, 0
+TestBasicRandomMating, 2010-11-19 21:34:11,249, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 121370, 11448, 1082, 131283, 12124, 809, 24241, 2148, 174, 2947, 262, 0
+TestRandomMatingWithSelection, 2010-11-19 21:50:01,289, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 88128, 8094, 605, 102077, 9102, 589, 22378, 1882, 150, 2906, 258, 0
