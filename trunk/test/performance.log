@@ -454,3 +454,108 @@ TestRandomMatingWithSelection : loci=100000, size=10000: 258
 TestRandomMatingWithSelection : loci=100000, size=100000: failed
 TestRandomMatingWithSelection : 88128, 8094, 605, 102077, 9102, 589, 22378, 1882, 150, 2906, 258, 0
 TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestDuringMatingPyOperator : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestDuringMatingPyOperator : Time: Mon Nov 22 15:37:09 2010
+TestDuringMatingPyOperator : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestDuringMatingPyOperator : simuPOP: 1.0.5svn (rev 3819, module short, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 99587
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 9876
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 983
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 62881
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 6226
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 620
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 40773
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4058
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 404
+TestDuringMatingPyOperator : 99587, 9876, 983, 62881, 6226, 620, 40773, 4058, 404
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestPyOperatorFuncCall : Time: Mon Nov 22 15:46:10 2010
+TestPyOperatorFuncCall : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestPyOperatorFuncCall : simuPOP: 1.0.5svn (rev 3819, module short, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1607756
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 171974
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 17569
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 69496
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 7068
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 711
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 108742
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 10712
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1069
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 63986
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 6457
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 643
+TestPyOperatorFuncCall : 1607756, 171974, 17569, 69496, 7068, 711, 108742, 10712, 1069, 63986, 6457, 643
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall
+TestDuringMatingPyOperator : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestDuringMatingPyOperator : Time: Mon Nov 22 15:58:12 2010
+TestDuringMatingPyOperator : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestDuringMatingPyOperator : simuPOP: 1.0.5svn (rev 3819, module long, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 99454
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 9907
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 970
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 62520
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 6135
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 625
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 39766
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 3976
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 401
+TestDuringMatingPyOperator : 99454, 9907, 970, 62520, 6135, 625, 39766, 3976, 401
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestPyOperatorFuncCall : Time: Mon Nov 22 16:07:12 2010
+TestPyOperatorFuncCall : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestPyOperatorFuncCall : simuPOP: 1.0.5svn (rev 3819, module long, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1636474
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 173402
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 17866
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 69751
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 7064
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 703
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 108045
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 10846
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1071
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 65887
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 6507
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 655
+TestPyOperatorFuncCall : 1636474, 173402, 17866, 69751, 7064, 703, 108045, 10846, 1071, 65887, 6507, 655
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall
+TestDuringMatingPyOperator : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestDuringMatingPyOperator : Time: Mon Nov 22 16:19:14 2010
+TestDuringMatingPyOperator : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestDuringMatingPyOperator : simuPOP: 1.0.5svn (rev 3819, module binary, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 96354
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 9598
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 961
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 61322
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 6132
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 612
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 39963
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 3962
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 401
+TestDuringMatingPyOperator : 96354, 9598, 961, 61322, 6132, 612, 39963, 3962, 401
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: EPIW-072552 (Windows, x86 Family 6 Model 23 Stepping 10, GenuineIntel)
+TestPyOperatorFuncCall : Time: Mon Nov 22 16:28:15 2010
+TestPyOperatorFuncCall : Python: 2.7 [MSC v.1500 32 bit (Intel)]
+TestPyOperatorFuncCall : simuPOP: 1.0.5svn (rev 3819, module binary, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1501125
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 168158
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 15945
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 71838
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 7226
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 730
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 106338
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 10498
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1053
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 63495
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 6428
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 642
+TestPyOperatorFuncCall : 1501125, 168158, 15945, 71838, 7226, 730, 106338, 10498, 1053, 63495, 6428, 642
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall

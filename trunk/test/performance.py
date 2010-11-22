@@ -93,7 +93,7 @@ class PerformanceTest:
         keys = kwargs.keys()
         for arg in zip(*[kwargs[x] for x in keys]):
             kwarg = dict(zip(keys, arg))
-            case_desc = ', '.join(['%s=%s' % (x, kwarg[x]) for x in keys])
+            case_desc = ', '.join(['%s=%s' % (x, kwarg[x].__name__ if callable(kwarg[x]) else kwarg[x]) for x in keys])
             try:
                 res = self._run(**kwarg)
                 self.logger.debug('%s: %s' % (case_desc, res))
@@ -122,7 +122,7 @@ class PerformanceTest:
         keys.sort()
         for arg in product(*[kwargs[x] for x in keys]):
             kwarg = dict(zip(keys, arg))
-            case_desc = ', '.join(['%s=%s' % (x, kwarg[x]) for x in keys])
+            case_desc = ', '.join(['%s=%s' % (x, kwarg[x].__name__ if callable(kwarg[x]) else kwarg[x]) for x in keys])
             try:
                 res = self._run(**kwarg)
                 self.logger.debug('%s: %s' % (case_desc, res))
@@ -196,6 +196,78 @@ class TestRandomMatingWithSelection(PerformanceTest):
                 # in some cases, mating takes so much time so we have to stop in the middle
                 TicToc(output='', stopAfter=self.time)
             ]),
+        )
+        return gens
+
+
+class TestPyOperatorFuncCall(PerformanceTest):
+    def __init__(self, logger, time=60):
+        PerformanceTest.__init__(self, 'Test the performance of function call for operator PyOperator.'
+            'The results are number of generations in %d seconds' % int(time), logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[1000, 10000, 100000],
+                func=[self._popFunc, self._popFuncIterSex, self._indFunc, self._indFuncCallSex])
+
+    def _popFunc(self, pop):
+        return True
+
+    def _popFuncIterSex(self, pop):
+        for ind in pop.individuals():
+            ind.sex()
+        return True
+
+    def _indFunc(self, ind):
+        return True
+
+    def _indFuncCallSex(self, ind):
+        ind.sex()
+        return True
+
+    def _run(self, size, func):
+        # single test case
+        pop = Population(size=size, loci=1)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=[
+                TicToc(output='', stopAfter=self.time),
+                PyOperator(func=func)
+            ],
+            matingScheme=CloneMating(ops=[]),
+        )
+        return gens
+
+class TestDuringMatingPyOperator(PerformanceTest):
+    def __init__(self, logger, time=60):
+        PerformanceTest.__init__(self, 'Test the performance of during-mating function call for operator PyOperator.'
+            'The results are number of generations in %d seconds' % int(time), logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[1000, 10000, 100000],
+                func=[self._func1Param, self._func1ParamCallSex, self._func4Param])
+
+    def _func1Param(self, ind):
+        return True
+
+    def _func1ParamCallSex(self, ind):
+        ind.sex()
+        return True
+
+    def _func4Param(self, ind, pop, dad, mom):
+        return True
+
+    def _run(self, size, func):
+        # single test case
+        pop = Population(size=size, loci=1)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=CloneMating(ops=[
+                PyOperator(func=func)]),
         )
         return gens
 
