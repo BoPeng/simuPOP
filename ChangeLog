@@ -4,7 +4,9 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-version 1.0.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.5 - Rev 3915 (Nov. 22, 2010)
 New features:
   - Support parameter subPops in during mating operators so that different
 		operators can be applied to offspring with different opportunities.
