@@ -701,6 +701,10 @@ Usage:
 
     x.vspByName(name)
 
+Details:
+
+    Return the index of a virtual subpopulation from its name.
+
 "; 
 
 %feature("docstring") simuPOP::Bernullitrials "
@@ -7717,6 +7721,11 @@ Usage:
 
     RevertFixedSites(output=\"\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create an operator to revert alleles at fixed loci from value 1 to
+    0. Parameter subPops is ignored.
 
 "; 
 

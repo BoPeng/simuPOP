@@ -51,6 +51,9 @@ namespace simuPOP {
 class RevertFixedSites : public BaseOperator
 {
 public:
+	/** Create an operator to revert alleles at fixed loci from value 1 to 0.
+	 *  Parameter \e subPops is ignored.
+	 */
 	RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
