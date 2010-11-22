@@ -5,7 +5,7 @@
 \textclass manual
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
-\setreleaseinfo{Release 1.0.4 (\mbox{Rev: 3819})}
+\setreleaseinfo{Release 1.0.5 (\mbox{Rev: 3914})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -2187,7 +2187,7 @@ simuPOPsandboxRef
 
 
 \backslash
-revertFixedSitesRef
+simuPOPsandboxrevertFixedSitesRef
 \end_layout
 
 \begin_layout Plain Layout
