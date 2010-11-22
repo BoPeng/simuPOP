@@ -22,3 +22,9 @@ TestBasicRandomMating, 2010-11-19 21:15:35,971, BoPeng-PC, x86, python2.7, simuP
 TestRandomMatingWithSelection, 2010-11-19 21:22:55,194, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, long, 122157, 10537, 644, 44423, 3766, 303, 799, 0, 0, 0, 0, 0
 TestBasicRandomMating, 2010-11-19 21:34:11,249, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 121370, 11448, 1082, 131283, 12124, 809, 24241, 2148, 174, 2947, 262, 0
 TestRandomMatingWithSelection, 2010-11-19 21:50:01,289, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 88128, 8094, 605, 102077, 9102, 589, 22378, 1882, 150, 2906, 258, 0
+TestDuringMatingPyOperator, 2010-11-22 15:46:10,328, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 99587, 9876, 983, 62881, 6226, 620, 40773, 4058, 404
+TestPyOperatorFuncCall, 2010-11-22 15:58:11,961, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 1607756, 171974, 17569, 69496, 7068, 711, 108742, 10712, 1069, 63986, 6457, 643
+TestDuringMatingPyOperator, 2010-11-22 16:07:12,930, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 99454, 9907, 970, 62520, 6135, 625, 39766, 3976, 401
+TestPyOperatorFuncCall, 2010-11-22 16:19:14,456, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 1636474, 173402, 17866, 69751, 7064, 703, 108045, 10846, 1071, 65887, 6507, 655
+TestDuringMatingPyOperator, 2010-11-22 16:28:15,986, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 96354, 9598, 961, 61322, 6132, 612, 39963, 3962, 401
+TestPyOperatorFuncCall, 2010-11-22 16:40:17,589, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 1501125, 168158, 15945, 71838, 7226, 730, 106338, 10498, 1053, 63495, 6428, 642
