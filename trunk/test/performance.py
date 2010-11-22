@@ -35,7 +35,6 @@ except:
         for prod in result:
             yield tuple(prod)
 
-
 alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
 if True in [x.startswith('--alleleType=') for x in sys.argv]:
@@ -47,7 +46,7 @@ if True in [x.startswith('--alleleType=') for x in sys.argv]:
 
 if alleleType == 'all':
     for t in ['short', 'long', 'binary']:
-        ret = subprocess.call(['python', sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
+        ret = subprocess.call([sys.executable, sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
         if ret != 0:  # if crash or killed
             sys.exit(ret)
     sys.exit(0)
@@ -99,7 +98,7 @@ class PerformanceTest:
                 res = self._run(**kwarg)
                 self.logger.debug('%s: %s' % (case_desc, res))
                 results.append(res)
-            except Exception,e:
+            except:
                 self.logger.debug('%s: failed' % case_desc)
                 results.append(0)
                 pass
@@ -118,7 +117,7 @@ class PerformanceTest:
             self._run(a=v2, b=v3)
         '''
         results = []
-        keys = kwargs.keys()
+        keys = list(kwargs.keys())
         # this is to make sure the results are outputted in the same order for all platofmrs
         keys.sort()
         for arg in product(*[kwargs[x] for x in keys]):
@@ -128,7 +127,7 @@ class PerformanceTest:
                 res = self._run(**kwarg)
                 self.logger.debug('%s: %s' % (case_desc, res))
                 results.append(res)
-            except Exception,e:
+            except:
                 self.logger.debug('%s: failed' % case_desc)
                 results.append(0)
                 pass
