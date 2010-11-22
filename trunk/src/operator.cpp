@@ -819,15 +819,15 @@ bool TicToc::apply(Population & pop) const
 			m_counter = 0;
 		} else {
 			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
-			++ m_counter;
+			++m_counter;
 		}
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
 	if (overallTime > 5 && m_counter == 0) { // over 5s
 		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
-		DBG_DO(DBG_OPERATOR, cerr << m_totalCount << " hits after " << overallTime << " seconds. Using "
-			<< m_countPerSec << " counts per second." << endl);
+		DBG_DO(DBG_OPERATOR, cerr	<< m_totalCount << " hits after " << overallTime << " seconds. Using "
+			                        << m_countPerSec << " counts per second." << endl);
 	}
 
 	if (!noOutput()) {
@@ -855,7 +855,7 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	
+
 	if (m_startTime == 0)
 		m_startTime = clock();
 
@@ -872,15 +872,15 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 			m_counter = 0;
 		} else {
 			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
-			++ m_counter;
+			++m_counter;
 		}
 	}
 
 	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
 	if (overallTime > 5 && m_counter == 0) { // over 5s
 		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
-		DBG_DO(DBG_OPERATOR, cerr << m_totalCount << " hits after " << overallTime << " seconds. Using "
-			<< m_countPerSec << " counts per second." << endl);
+		DBG_DO(DBG_OPERATOR, cerr	<< m_totalCount << " hits after " << overallTime << " seconds. Using "
+			                        << m_countPerSec << " counts per second." << endl);
 	}
 
 	if (!noOutput()) {
