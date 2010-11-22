@@ -563,13 +563,15 @@ class Doxy2SWIG:
             else:
                 entry['group'] = ''
             #
-            entry['Doc'] = ''
-            if entry.has_key('Description') and entry['Description'] != '':
-                entry['Doc'] += entry['Description']
-            if entry.has_key('Details') and entry['Details'] != '':
-                entry['Doc'] += entry['Details']
+            if not entry.has_key('Doc'):
+                entry['Doc'] = ''
+                if entry.has_key('Description') and entry['Description'] != '':
+                    entry['Doc'] += entry['Description']
+                if entry.has_key('Details') and entry['Details'] != '':
+                    entry['Doc'] += entry['Details']
             #
             if entry['Doc'] == '':
+                print('Warning: No documentation for ', entry['Name'])
                 entry['Doc'] = 'FIXME: No document'
             #
             entry['ignore'] = 'CPPONLY' in entry['Doc']
@@ -886,6 +888,7 @@ class Doxy2SWIG:
             else:
                 print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % funcname
             if entry['Doc'] == '':
+                print('Warning: no documentation for ', entry['Name'])
                 print >> out, r'FIXME: No document.\par'
             else:
                 print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Doc'])
