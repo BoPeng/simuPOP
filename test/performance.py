@@ -37,7 +37,7 @@ except:
 
 if sys.version_info[1] >= 3:
     def callable(obj):
-        hasattr(obj, '__call__')
+        return hasattr(obj, '__call__')
 
 alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
