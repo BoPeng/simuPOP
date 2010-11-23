@@ -35,6 +35,10 @@ except:
         for prod in result:
             yield tuple(prod)
 
+if sys.version_info[1] >= 3:
+    def callable(obj):
+        hasattr(obj, '__call__')
+
 alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
 if True in [x.startswith('--alleleType=') for x in sys.argv]:
