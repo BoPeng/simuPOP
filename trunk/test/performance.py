@@ -35,7 +35,7 @@ except:
         for prod in result:
             yield tuple(prod)
 
-if sys.version_info[1] >= 3:
+if sys.version_info[0] >= 3:
     def callable(obj):
         return hasattr(obj, '__call__')
 
