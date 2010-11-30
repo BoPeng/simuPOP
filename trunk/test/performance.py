@@ -66,7 +66,7 @@ class PerformanceTest:
         self.logger = logger
         # machine name, os, CPU, time
         uname = platform.uname()
-        self.logger.debug('Host: %s (%s, %s)' % (uname[1], uname[0], uname[5]))
+        self.logger.debug('Host: %s (%s, %s, %s)' % (uname[1], uname[0], uname[4], uname[5]))
         self.logger.debug('Time: %s' % time.asctime())
         info = moduleInfo()
         opt = ''
