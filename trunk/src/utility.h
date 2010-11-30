@@ -2052,6 +2052,7 @@ private:
  *  \li \c date: date on which this module is compiled.
  *  \li \c python: version of python.
  *  \li \c platform: platform of the module.
+ *  \li \c wordsize: size of word, can be either 32 or 64.
  *  \li \c maxNumSubPop: maximum number of subpopulations.
  *  \li \c maxIndex: maximum index size (limits population size * total number of marker).
  *  \li \c debug: A dictionary with debugging codes as keys and the status of each

@@ -10277,6 +10277,7 @@ Details:
     *   date: date on which this module is compiled.
     *   python: version of python.
     *   platform: platform of the module.
+    *   wordsize: size of word, can be either 32 or 64.
     *   maxNumSubPop: maximum number of subpopulations.
     *   maxIndex: maximum index size (limits population size * total
     number of marker).

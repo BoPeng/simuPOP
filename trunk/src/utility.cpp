@@ -3953,6 +3953,9 @@ PyObject * moduleInfo()
     // platform
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
+    // 32 or 64 bits
+    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
+
     // maxAllele
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
