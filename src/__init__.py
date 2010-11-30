@@ -321,15 +321,8 @@ if not simuOptions['Quiet']:
     info = moduleInfo()
     print "simuPOP : Copyright (c) 2004-2010 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
-    if info['version'].endswith('svn'):
-        # this is the subversion version of simuPOP
-        print ("Developmental Version %s (Revision %d, %s) for Python %s" % \
-            (info['version'], info['revision'], info['date'], info['python']))
-    else:
-        # this is the released version
-        print ("Version %s (Revision %d, %s) for Python %s" % \
-            (info['version'], info['revision'], info['date'], info['python']))
-    print info['compiler']
+    print ("Version %s (Revision %d, %s) for Python %s (%dbit)" % \
+            (info['version'], info['revision'], info['date'], info['python'], info['wordsize']))
     print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     if info['optimized']:
