@@ -160,6 +160,8 @@ class TestBasicRandomMating(PerformanceTest):
 
     def _run(self, size, loci):
         # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
             initOps=InitSex(),
@@ -185,6 +187,8 @@ class TestRandomMatingWithSelection(PerformanceTest):
 
     def _run(self, size, loci):
         # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
         pop = Population(size=size, loci=loci, infoFields='fitness')
         gens = pop.evolve(
             initOps=[
