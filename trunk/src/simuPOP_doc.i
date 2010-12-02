@@ -10278,6 +10278,7 @@ Details:
     *   python: version of python.
     *   platform: platform of the module.
     *   wordsize: size of word, can be either 32 or 64.
+    *   alleleBits: the number of bits used to store an allele
     *   maxNumSubPop: maximum number of subpopulations.
     *   maxIndex: maximum index size (limits population size * total
     number of marker).

@@ -3956,6 +3956,13 @@ PyObject * moduleInfo()
     // 32 or 64 bits
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
 
+#ifdef BINARYALLELE
+    // bits for each allele
+    PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(1));
+#else
+    PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(sizeof(Allele) * 8));
+#endif
+
     // maxAllele
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
