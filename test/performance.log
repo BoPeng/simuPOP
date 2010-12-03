@@ -783,3 +783,222 @@ TestRandomMatingWithSelection : loci=100000, size=10000: 537
 TestRandomMatingWithSelection : loci=100000, size=100000: failed
 TestRandomMatingWithSelection : 115439, 10129, 748, 122565, 11094, 880, 28424, 1806, 140, 6356, 537, 0
 TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Thu Dec  2 21:32:39 2010
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3929, module short, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 224860
+TestBasicRandomMating : loci=10, size=10000: 20456
+TestBasicRandomMating : loci=10, size=100000: 1637
+TestBasicRandomMating : loci=100, size=1000: 183819
+TestBasicRandomMating : loci=100, size=10000: 17065
+TestBasicRandomMating : loci=100, size=100000: 813
+TestBasicRandomMating : loci=10000, size=1000: 11151
+TestBasicRandomMating : loci=10000, size=10000: 1000
+TestBasicRandomMating : loci=10000, size=100000: 95
+TestBasicRandomMating : loci=100000, size=1000: 1157
+TestBasicRandomMating : loci=100000, size=10000: 113
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 224860, 20456, 1637, 183819, 17065, 813, 11151, 1000, 95, 1157, 113, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestDuringMatingPyOperator : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestDuringMatingPyOperator : Time: Thu Dec  2 21:43:42 2010
+TestDuringMatingPyOperator : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestDuringMatingPyOperator : simuPOP: 1.0.6svn (rev 3929, module short, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 100663
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 10034
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1008
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 54714
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5479
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 548
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 45363
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4566
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 458
+TestDuringMatingPyOperator : 100663, 10034, 1008, 54714, 5479, 548, 45363, 4566, 458
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestPyOperatorFuncCall : Time: Thu Dec  2 21:52:43 2010
+TestPyOperatorFuncCall : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestPyOperatorFuncCall : simuPOP: 1.0.6svn (rev 3929, module short, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1569101
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 170607
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 17308
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 60412
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 6208
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 621
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 114187
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 11545
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1152
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 58546
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 5906
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 590
+TestPyOperatorFuncCall : 1569101, 170607, 17308, 60412, 6208, 621, 114187, 11545, 1152, 58546, 5906, 590
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall
+TestRandomMatingWithSelection : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestRandomMatingWithSelection : Time: Thu Dec  2 22:04:43 2010
+TestRandomMatingWithSelection : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestRandomMatingWithSelection : simuPOP: 1.0.6svn (rev 3929, module short, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 191067
+TestRandomMatingWithSelection : loci=10, size=10000: 17422
+TestRandomMatingWithSelection : loci=10, size=100000: 1271
+TestRandomMatingWithSelection : loci=100, size=1000: 160399
+TestRandomMatingWithSelection : loci=100, size=10000: 15211
+TestRandomMatingWithSelection : loci=100, size=100000: 700
+TestRandomMatingWithSelection : loci=10000, size=1000: 10854
+TestRandomMatingWithSelection : loci=10000, size=10000: 968
+TestRandomMatingWithSelection : loci=10000, size=100000: 93
+TestRandomMatingWithSelection : loci=100000, size=1000: 1149
+TestRandomMatingWithSelection : loci=100000, size=10000: 111
+TestRandomMatingWithSelection : loci=100000, size=100000: 0
+TestRandomMatingWithSelection : 191067, 17422, 1271, 160399, 15211, 700, 10854, 968, 93, 1149, 111, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Thu Dec  2 22:18:44 2010
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3929, module long, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 212939
+TestBasicRandomMating : loci=10, size=10000: 18954
+TestBasicRandomMating : loci=10, size=100000: 1061
+TestBasicRandomMating : loci=100, size=1000: 167290
+TestBasicRandomMating : loci=100, size=10000: 9470
+TestBasicRandomMating : loci=100, size=100000: 626
+TestBasicRandomMating : loci=10000, size=1000: 2838
+TestBasicRandomMating : loci=10000, size=10000: 276
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 288
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 212939, 18954, 1061, 167290, 9470, 626, 2838, 276, 0, 288, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestDuringMatingPyOperator : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestDuringMatingPyOperator : Time: Thu Dec  2 22:27:46 2010
+TestDuringMatingPyOperator : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestDuringMatingPyOperator : simuPOP: 1.0.6svn (rev 3929, module long, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 98605
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 10001
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1003
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 58260
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5853
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 586
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 46671
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4658
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 467
+TestDuringMatingPyOperator : 98605, 10001, 1003, 58260, 5853, 586, 46671, 4658, 467
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestPyOperatorFuncCall : Time: Thu Dec  2 22:36:46 2010
+TestPyOperatorFuncCall : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestPyOperatorFuncCall : simuPOP: 1.0.6svn (rev 3929, module long, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1556909
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 169139
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 17143
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 63011
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 6412
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 641
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 114341
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 11424
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1145
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 62113
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 6236
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 629
+TestPyOperatorFuncCall : 1556909, 169139, 17143, 63011, 6412, 641, 114341, 11424, 1145, 62113, 6236, 629
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall
+TestRandomMatingWithSelection : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestRandomMatingWithSelection : Time: Thu Dec  2 22:48:46 2010
+TestRandomMatingWithSelection : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestRandomMatingWithSelection : simuPOP: 1.0.6svn (rev 3929, module long, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 183204
+TestRandomMatingWithSelection : loci=10, size=10000: 16585
+TestRandomMatingWithSelection : loci=10, size=100000: 902
+TestRandomMatingWithSelection : loci=100, size=1000: 146660
+TestRandomMatingWithSelection : loci=100, size=10000: 8007
+TestRandomMatingWithSelection : loci=100, size=100000: 542
+TestRandomMatingWithSelection : loci=10000, size=1000: 2810
+TestRandomMatingWithSelection : loci=10000, size=10000: 273
+TestRandomMatingWithSelection : loci=10000, size=100000: 0
+TestRandomMatingWithSelection : loci=100000, size=1000: 288
+TestRandomMatingWithSelection : loci=100000, size=10000: 0
+TestRandomMatingWithSelection : loci=100000, size=100000: 0
+TestRandomMatingWithSelection : 183204, 16585, 902, 146660, 8007, 542, 2810, 273, 0, 288, 0, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Thu Dec  2 22:58:06 2010
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3929, module binary, optimized)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 182538
+TestBasicRandomMating : loci=10, size=10000: 17388
+TestBasicRandomMating : loci=10, size=100000: 1604
+TestBasicRandomMating : loci=100, size=1000: 189965
+TestBasicRandomMating : loci=100, size=10000: 17803
+TestBasicRandomMating : loci=100, size=100000: 1455
+TestBasicRandomMating : loci=10000, size=1000: 54482
+TestBasicRandomMating : loci=10000, size=10000: 2399
+TestBasicRandomMating : loci=10000, size=100000: 194
+TestBasicRandomMating : loci=100000, size=1000: 6706
+TestBasicRandomMating : loci=100000, size=10000: 635
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 182538, 17388, 1604, 189965, 17803, 1455, 54482, 2399, 194, 6706, 635, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestDuringMatingPyOperator : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestDuringMatingPyOperator : Time: Thu Dec  2 23:09:06 2010
+TestDuringMatingPyOperator : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestDuringMatingPyOperator : simuPOP: 1.0.6svn (rev 3929, module binary, optimized)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 103787
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 10516
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1072
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 51983
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5237
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 523
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 46577
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4677
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 472
+TestDuringMatingPyOperator : 103787, 10516, 1072, 51983, 5237, 523, 46577, 4677, 472
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestPyOperatorFuncCall : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestPyOperatorFuncCall : Time: Thu Dec  2 23:18:06 2010
+TestPyOperatorFuncCall : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestPyOperatorFuncCall : simuPOP: 1.0.6svn (rev 3929, module binary, optimized)
+TestPyOperatorFuncCall : Test: Test the performance of function call for operator PyOperator.The results are number of generations in 60 seconds
+TestPyOperatorFuncCall : func=_popFunc, size=1000: 1599957
+TestPyOperatorFuncCall : func=_popFunc, size=10000: 174508
+TestPyOperatorFuncCall : func=_popFunc, size=100000: 17734
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=1000: 64290
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=10000: 6540
+TestPyOperatorFuncCall : func=_popFuncIterSex, size=100000: 653
+TestPyOperatorFuncCall : func=_indFunc, size=1000: 115046
+TestPyOperatorFuncCall : func=_indFunc, size=10000: 11566
+TestPyOperatorFuncCall : func=_indFunc, size=100000: 1160
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=1000: 57142
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=10000: 5852
+TestPyOperatorFuncCall : func=_indFuncCallSex, size=100000: 572
+TestPyOperatorFuncCall : 1599957, 174508, 17734, 64290, 6540, 653, 115046, 11566, 1160, 57142, 5852, 572
+TestPyOperatorFuncCall : End of test TestPyOperatorFuncCall
+TestRandomMatingWithSelection : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestRandomMatingWithSelection : Time: Thu Dec  2 23:30:06 2010
+TestRandomMatingWithSelection : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestRandomMatingWithSelection : simuPOP: 1.0.6svn (rev 3929, module binary, optimized)
+TestRandomMatingWithSelection : Test: Random mating with selection, results are number of generations in 60 seconds.
+TestRandomMatingWithSelection : loci=10, size=1000: 158805
+TestRandomMatingWithSelection : loci=10, size=10000: 14739
+TestRandomMatingWithSelection : loci=10, size=100000: 1065
+TestRandomMatingWithSelection : loci=100, size=1000: 163190
+TestRandomMatingWithSelection : loci=100, size=10000: 15567
+TestRandomMatingWithSelection : loci=100, size=100000: 1180
+TestRandomMatingWithSelection : loci=10000, size=1000: 51672
+TestRandomMatingWithSelection : loci=10000, size=10000: 2190
+TestRandomMatingWithSelection : loci=10000, size=100000: 184
+TestRandomMatingWithSelection : loci=100000, size=1000: 6634
+TestRandomMatingWithSelection : loci=100000, size=10000: 622
+TestRandomMatingWithSelection : loci=100000, size=100000: 0
+TestRandomMatingWithSelection : 158805, 14739, 1065, 163190, 15567, 1180, 51672, 2190, 184, 6634, 622, 0
+TestRandomMatingWithSelection : End of test TestRandomMatingWithSelection
