@@ -3954,7 +3954,15 @@ PyObject * moduleInfo()
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
     // 32 or 64 bits
+#ifdef _WIN64
+    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(8));
+#else
+#ifdef _WIN32
+    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(4));
+#else
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
+#endif
+#endif
 
 #ifdef BINARYALLELE
     // bits for each allele
