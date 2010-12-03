@@ -5551,7 +5551,18 @@ Usage:
 
 %ignore simuPOP::Population::hasVirtualSubPop() const;
 
-%ignore simuPOP::Population::virtualSplitter() const;
+%feature("docstring") simuPOP::Population::virtualSplitter "
+
+Usage:
+
+    x.virtualSplitter()
+
+Details:
+
+    Return the virtual splitter associated with the population, None
+    will be returned if there is no splitter.
+
+"; 
 
 %feature("docstring") simuPOP::Population::setVirtualSplitter "
 

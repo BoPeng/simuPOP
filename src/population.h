@@ -331,7 +331,9 @@ public:
 	 */
 	bool hasVirtualSubPop() const;
 
-	/// CPPONLY
+	/** Return the virtual splitter associated with the population,
+	 *  \c None will be returned if there is no splitter.
+	 */
 	BaseVspSplitter * virtualSplitter() const { return m_vspSplitter; }
 
 	/** Set a VSP \e splitter to the population, which defines the same VSPs
