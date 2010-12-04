@@ -3955,10 +3955,10 @@ PyObject * moduleInfo()
 
     // 32 or 64 bits
 #ifdef _WIN64
-    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(8));
+    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
 #else
 #ifdef _WIN32
-    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(4));
+    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(32));
 #else
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
 #endif
