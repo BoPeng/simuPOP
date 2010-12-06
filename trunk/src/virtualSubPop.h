@@ -357,7 +357,8 @@ public:
 	 */
 	virtual string name(SubPopID vsp) const = 0;
 
-	/** Return the index of a virtual subpopulation from its name.
+	/** Return the index of a virtual subpopulation from its name. If multiple
+     *  virtual subpopulations share the same name, the first vsp is returned.
 	 */
 	UINT vspByName(const string & name) const;
 
