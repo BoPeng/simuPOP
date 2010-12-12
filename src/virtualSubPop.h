@@ -672,8 +672,8 @@ public:
 	 *  default set of names are given to each VSP unless a new set of names is
 	 *  given by parameter \e names.
 	 */
-	InfoSplitter(string field, const vectorf & values = vectorf(),
-		const vectorf & cutoff = vectorf(), const floatMatrix & ranges = floatMatrix(),
+	InfoSplitter(string field, const floatList & values = vectorf(),
+		const floatList & cutoff = vectorf(), const floatMatrix & ranges = floatMatrix(),
 		const stringList & names = vectorstr());
 
 	/// HIDDEN

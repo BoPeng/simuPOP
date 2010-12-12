@@ -702,10 +702,10 @@ string AffectionSplitter::name(SubPopID vsp) const
 }
 
 
-InfoSplitter::InfoSplitter(string info, const vectorf & values,
-	const vectorf & cutoff, const floatMatrix & ranges, const stringList & names)
+InfoSplitter::InfoSplitter(string info, const floatList & values,
+	const floatList & cutoff, const floatMatrix & ranges, const stringList & names)
 	: BaseVspSplitter(names),
-	m_info(info), m_values(values), m_cutoff(cutoff), m_ranges(ranges.elems())
+	m_info(info), m_values(values.elems()), m_cutoff(cutoff.elems()), m_ranges(ranges.elems())
 {
 	DBG_FAILIF(m_values.empty() && m_cutoff.empty() && m_ranges.empty(),
 		ValueError, "Please specify either a list of values, a set of cutoff values or ranges");
