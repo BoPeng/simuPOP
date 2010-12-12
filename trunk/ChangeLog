@@ -5,8 +5,9 @@ Known Bugs:
   - BUG: Textbox in Tkinter help dialog does not resize.
 
 version 1.0.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
-New feature:
+New features:
   - Expose function Population::virtualSplitter
+  - Allow single input for parameters cutoff and values of operator InfoSplitter.
 
 version 1.0.5 - Rev 3915 (Nov. 22, 2010)
 New features:
