@@ -703,7 +703,9 @@ Usage:
 
 Details:
 
-    Return the index of a virtual subpopulation from its name.
+    Return the index of a virtual subpopulation from its name. If
+    multiple virtual subpopulations share the same name, the first vsp
+    is returned.
 
 "; 
 

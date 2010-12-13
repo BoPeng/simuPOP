@@ -482,7 +482,7 @@ string CombinedSplitter::name(SubPopID sp) const
 
 
 ProductSplitter::ProductSplitter(const vectorsplitter & splitters, const stringList & names)
-	: BaseVspSplitter(names), m_numVSP(0)
+	: BaseVspSplitter(names), m_numVSP(0), m_subIndexes()
 {
 	for (size_t i = 0; i < splitters.size(); ++i) {
 		if (m_numVSP == 0)
@@ -490,28 +490,22 @@ ProductSplitter::ProductSplitter(const vectorsplitter & splitters, const stringL
 		m_numVSP *= splitters[i]->numVirtualSubPop();
 		m_splitters.push_back(splitters[i]->clone());
 	}
-}
-
-
-vectori ProductSplitter::getVSPs(SubPopID vsp) const
-{
-	DBG_FAILIF(vsp >= m_numVSP, IndexError,
-		"Subpopulation index out of range.");
-
-	vectori res;
-	UINT tmpMod = m_numVSP;
-	UINT tmpIdx = vsp;
-	for (size_t i = 0; i < m_splitters.size(); ++i) {
-		tmpMod /= m_splitters[i]->numVirtualSubPop();
-		res.push_back(tmpIdx / tmpMod);
-		tmpIdx %= tmpMod;
+	for (size_t vsp = 0; vsp < m_numVSP; ++vsp) {
+		vectori res(splitters.size());
+		UINT tmpMod = m_numVSP;
+		UINT tmpIdx = vsp;
+		for (size_t i = 0; i < m_splitters.size(); ++i) {
+			tmpMod /= m_splitters[i]->numVirtualSubPop();
+			res[i] = tmpIdx / tmpMod;
+			tmpIdx %= tmpMod;
+		}
+		m_subIndexes.push_back(res);
 	}
-	return res;
 }
 
 
 ProductSplitter::ProductSplitter(const ProductSplitter & rhs) :
-	BaseVspSplitter(rhs), m_splitters(), m_numVSP(rhs.m_numVSP)
+	BaseVspSplitter(rhs), m_splitters(), m_numVSP(rhs.m_numVSP), m_subIndexes(rhs.m_subIndexes)
 {
 	for (size_t i = 0; i < rhs.m_splitters.size(); ++i)
 		m_splitters.push_back(rhs.m_splitters[i]->clone());
@@ -533,7 +527,9 @@ BaseVspSplitter * ProductSplitter::clone() const
 
 ULONG ProductSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
-	vectori idx = getVSPs(virtualSubPop);
+    DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
+    
+	const vectori & idx = m_subIndexes[virtualSubPop];
 	size_t count = 0;
 
 	for (size_t i = 0; i < pop.subPopSize(subPop); ++i) {
@@ -553,7 +549,8 @@ ULONG ProductSplitter::size(const Population & pop, SubPopID subPop, SubPopID vi
 
 bool ProductSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 {
-	vectori idx = getVSPs(vsp.virtualSubPop());
+    DBG_FAILIF(vsp.virtualSubPop() >= m_numVSP, IndexError, "Subpopulation index out of range.");
+	const vectori & idx = m_subIndexes[vsp.virtualSubPop()];
 
 	for (size_t s = 0; s < m_splitters.size(); ++s)
 		if (!m_splitters[s]->contains(pop, ind, vspID(vsp.subPop(), idx[s])))
@@ -564,7 +561,8 @@ bool ProductSplitter::contains(const Population & pop, ULONG ind, vspID vsp) con
 
 void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
-	vectori idx = getVSPs(virtualSubPop);
+    DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
+	const vectori & idx = m_subIndexes[virtualSubPop];
 
 	for (size_t i = 0; i < pop.subPopSize(subPop); ++i) {
 		bool ok = true;
@@ -591,7 +589,7 @@ string ProductSplitter::name(SubPopID sp) const
 	if (!m_names.empty())
 		return m_names[sp];
 
-	vectori idx = getVSPs(sp);
+	const vectori & idx = m_subIndexes[sp];
 	string name;
 
 	for (size_t i = 0; i < idx.size(); ++i) {

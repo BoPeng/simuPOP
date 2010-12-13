@@ -358,7 +358,7 @@ public:
 	virtual string name(SubPopID vsp) const = 0;
 
 	/** Return the index of a virtual subpopulation from its name. If multiple
-     *  virtual subpopulations share the same name, the first vsp is returned.
+	 *  virtual subpopulations share the same name, the first vsp is returned.
 	 */
 	UINT vspByName(const string & name) const;
 
@@ -531,14 +531,13 @@ public:
 	string name(SubPopID vsp) const;
 
 private:
-	vectori getVSPs(SubPopID vsp) const;
-
-private:
 	/// the splitters
 	vector<BaseVspSplitter *> m_splitters;
 
 	/// total number of vsp
 	int m_numVSP;
+
+	vector<vectori> m_subIndexes;
 };
 
 
