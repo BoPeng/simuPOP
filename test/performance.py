@@ -22,7 +22,8 @@
 # All the test results will be written to a file 'performance.log'
 #
 #
-import os, sys, time, platform, logging, subprocess
+import os, sys, time, platform, logging, subprocess, timeit, random
+
 try:
     from itertools import product
 except:
@@ -52,6 +53,7 @@ if alleleType == 'all':
     for t in ['short', 'long', 'binary']:
         ret = subprocess.call([sys.executable, sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
         if ret != 0:  # if crash or killed
+            print 'Error: A non-zero return value is returned for module %s' % t
             sys.exit(ret)
     sys.exit(0)
     
@@ -102,7 +104,8 @@ class PerformanceTest:
                 res = self._run(**kwarg)
                 self.logger.debug('%s: %s' % (case_desc, res))
                 results.append(res)
-            except:
+            except Exception,e:
+                print e
                 self.logger.debug('%s: failed' % case_desc)
                 results.append(0)
                 pass
@@ -280,6 +283,78 @@ class TestDuringMatingPyOperator(PerformanceTest):
         return gens
 
 
+def getIteratablePop(vsp):
+    pop = Population(size=100000, loci=2, infoFields=['x', 'y'])
+    initSex(pop)
+    initInfo(pop, lambda:random.randint(0, 10), infoFields=['x', 'y'])
+    initGenotype(pop, freq=[0.5, 0.5])
+    maPenetrance(pop, loci=0, penetrance=[0.1, 0.2, 0.3])
+    if vsp == 'all ind':
+        pass
+    elif vsp == 'all males':
+        pop.setVirtualSplitter(SexSplitter())
+    elif vsp == 'all unaffected':
+        pop.setVirtualSplitter(AffectionSplitter())
+    elif vsp == 'first 50%':
+        pop.setVirtualSplitter(ProportionSplitter([0.5, 0.5]))
+    elif vsp == '20000 to 50000':
+        pop.setVirtualSplitter(RangeSplitter([20000, 50000]))
+    elif vsp == 'x < 5':
+        pop.setVirtualSplitter(InfoSplitter(field='x', cutoff=[5]))
+    elif vsp == 'y < 2':
+        pop.setVirtualSplitter(InfoSplitter(field='y', cutoff=[2]))
+    elif vsp == 'y == 5':
+        pop.setVirtualSplitter(InfoSplitter(field='y', values=[5]))
+    elif vsp == 'x in [3, 5]':
+        pop.setVirtualSplitter(CombinedSplitter([
+            InfoSplitter(field='x', values=[3, 5])], vspMap=[(0,1)]))
+    elif vsp == 'x < 5 and y < 5':
+        pop.setVirtualSplitter(ProductSplitter([
+            InfoSplitter(field='x', cutoff=[5]),
+            InfoSplitter(field='y', cutoff=[5])]))
+    elif vsp == 'g1 == [0,0]':
+        pop.setVirtualSplitter(GenotypeSplitter(loci=0, alleles=[0,0]))
+    elif vsp == 'g1 == [0,0], g2 == [0,0]':
+        pop.setVirtualSplitter(GenotypeSplitter(loci=[0,1], alleles=[0,0,0,0]))
+    else:
+        raise ValueError('Incorrect virtual subpopulation name')
+    return pop
+
+
+class TestIteratingVSPs(PerformanceTest):
+    def __init__(self, logger, repeats=500):
+        PerformanceTest.__init__(self, 'Test the performance of iterating through virtual subpopulations. '
+            'The results are time of iterating for %d times' % repeats, logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.serialRun(vsp=[
+            'all ind',
+            'all males',
+            'all unaffected',
+            'first 50%',
+            '20000 to 50000',
+            'x < 5',
+            'y < 2',
+            'y == 5',
+            'x in [3, 5]',
+            'x < 5 and y < 5',
+            'g1 == [0,0]',
+            'g1 == [0,0], g2 == [0,0]',
+        ])
+
+
+    def _run(self, vsp):
+        if vsp == 'all ind':
+            s = 'for ind in pop.individuals():\n    pass\n'
+        else:
+            s = 'for ind in pop.individuals([0,0]):\n    pass\n'
+        t = timeit.Timer(stmt=s, setup='from __main__ import getIteratablePop\n'
+            'pop = getIteratablePop("%s")' % vsp)
+        return t.timeit(number=self.repeats)
+
+      
 if __name__ == '__main__':
     # 
     # Figure out tests to run
