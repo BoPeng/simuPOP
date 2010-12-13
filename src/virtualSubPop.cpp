@@ -527,8 +527,8 @@ BaseVspSplitter * ProductSplitter::clone() const
 
 ULONG ProductSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
-    DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
-    
+	DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
+
 	const vectori & idx = m_subIndexes[virtualSubPop];
 	size_t count = 0;
 
@@ -549,7 +549,7 @@ ULONG ProductSplitter::size(const Population & pop, SubPopID subPop, SubPopID vi
 
 bool ProductSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 {
-    DBG_FAILIF(vsp.virtualSubPop() >= m_numVSP, IndexError, "Subpopulation index out of range.");
+	DBG_FAILIF(vsp.virtualSubPop() >= m_numVSP, IndexError, "Subpopulation index out of range.");
 	const vectori & idx = m_subIndexes[vsp.virtualSubPop()];
 
 	for (size_t s = 0; s < m_splitters.size(); ++s)
@@ -561,7 +561,7 @@ bool ProductSplitter::contains(const Population & pop, ULONG ind, vspID vsp) con
 
 void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
-    DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
+	DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
 	const vectori & idx = m_subIndexes[virtualSubPop];
 
 	for (size_t i = 0; i < pop.subPopSize(subPop); ++i) {
