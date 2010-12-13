@@ -1059,3 +1059,60 @@ TestIteratingVSPs : vsp=g1 == [0,0]: 18.9365000725
 TestIteratingVSPs : vsp=g1 == [0,0], g2 == [0,0]: 13.6037268639
 TestIteratingVSPs : 26.5075230598, 16.6792230606, 24.7255008221, 26.7625498772, 9.17170000076, 16.7181019783, 9.43515896797, 8.89712309837, 19.7716641426, 30.0182719231, 18.9365000725, 13.6037268639
 TestIteratingVSPs : End of test TestIteratingVSPs
+TestIteratingVSPs : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIteratingVSPs : Time: Mon Dec 13 13:02:00 2010
+TestIteratingVSPs : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestIteratingVSPs : simuPOP: 1.0.6svn (rev 3939, module short, optimized)
+TestIteratingVSPs : Test: Test the performance of iterating through virtual subpopulations. The results are time of iterating for 500 times
+TestIteratingVSPs : vsp=all ind: 29.6518850327
+TestIteratingVSPs : vsp=all males: 17.647439003
+TestIteratingVSPs : vsp=all unaffected: 26.4478988647
+TestIteratingVSPs : vsp=first 50%: 28.7404909134
+TestIteratingVSPs : vsp=20000 to 50000: 9.28723907471
+TestIteratingVSPs : vsp=x < 5: 17.8801789284
+TestIteratingVSPs : vsp=y < 2: 9.70996403694
+TestIteratingVSPs : vsp=y == 5: 8.94170308113
+TestIteratingVSPs : vsp=x in [3, 5]: 19.8765981197
+TestIteratingVSPs : vsp=x < 5 and y < 5: 15.3679151535
+TestIteratingVSPs : vsp=g1 == [0,0]: 19.0578670502
+TestIteratingVSPs : vsp=g1 == [0,0], g2 == [0,0]: 13.5040378571
+TestIteratingVSPs : 29.6518850327, 17.647439003, 26.4478988647, 28.7404909134, 9.28723907471, 17.8801789284, 9.70996403694, 8.94170308113, 19.8765981197, 15.3679151535, 19.0578670502, 13.5040378571
+TestIteratingVSPs : End of test TestIteratingVSPs
+TestIteratingVSPs : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIteratingVSPs : Time: Mon Dec 13 13:05:42 2010
+TestIteratingVSPs : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestIteratingVSPs : simuPOP: 1.0.6svn (rev 3939, module long, optimized)
+TestIteratingVSPs : Test: Test the performance of iterating through virtual subpopulations. The results are time of iterating for 500 times
+TestIteratingVSPs : vsp=all ind: 27.6505198479
+TestIteratingVSPs : vsp=all males: 17.1649668217
+TestIteratingVSPs : vsp=all unaffected: 25.318076849
+TestIteratingVSPs : vsp=first 50%: 26.7217750549
+TestIteratingVSPs : vsp=20000 to 50000: 9.43466901779
+TestIteratingVSPs : vsp=x < 5: 17.2338070869
+TestIteratingVSPs : vsp=y < 2: 9.70110607147
+TestIteratingVSPs : vsp=y == 5: 8.66947102547
+TestIteratingVSPs : vsp=x in [3, 5]: 19.3166370392
+TestIteratingVSPs : vsp=x < 5 and y < 5: 14.7996060848
+TestIteratingVSPs : vsp=g1 == [0,0]: 18.5042960644
+TestIteratingVSPs : vsp=g1 == [0,0], g2 == [0,0]: 13.0827598572
+TestIteratingVSPs : 27.6505198479, 17.1649668217, 25.318076849, 26.7217750549, 9.43466901779, 17.2338070869, 9.70110607147, 8.66947102547, 19.3166370392, 14.7996060848, 18.5042960644, 13.0827598572
+TestIteratingVSPs : End of test TestIteratingVSPs
+TestIteratingVSPs : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIteratingVSPs : Time: Mon Dec 13 13:09:16 2010
+TestIteratingVSPs : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestIteratingVSPs : simuPOP: 1.0.6svn (rev 3939, module binary, optimized)
+TestIteratingVSPs : Test: Test the performance of iterating through virtual subpopulations. The results are time of iterating for 500 times
+TestIteratingVSPs : vsp=all ind: 26.9092719555
+TestIteratingVSPs : vsp=all males: 17.0902371407
+TestIteratingVSPs : vsp=all unaffected: 25.6716480255
+TestIteratingVSPs : vsp=first 50%: 27.338504076
+TestIteratingVSPs : vsp=20000 to 50000: 10.2555968761
+TestIteratingVSPs : vsp=x < 5: 17.7135488987
+TestIteratingVSPs : vsp=y < 2: 9.95432901382
+TestIteratingVSPs : vsp=y == 5: 8.88757300377
+TestIteratingVSPs : vsp=x in [3, 5]: 20.0067689419
+TestIteratingVSPs : vsp=x < 5 and y < 5: 15.9673790932
+TestIteratingVSPs : vsp=g1 == [0,0]: 20.0916929245
+TestIteratingVSPs : vsp=g1 == [0,0], g2 == [0,0]: 14.1484260559
+TestIteratingVSPs : 26.9092719555, 17.0902371407, 25.6716480255, 27.338504076, 10.2555968761, 17.7135488987, 9.95432901382, 8.88757300377, 20.0067689419, 15.9673790932, 20.0916929245, 14.1484260559
+TestIteratingVSPs : End of test TestIteratingVSPs
