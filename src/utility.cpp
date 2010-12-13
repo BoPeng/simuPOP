@@ -3957,11 +3957,11 @@ PyObject * moduleInfo()
 #ifdef _WIN64
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
 #else
-#ifdef _WIN32
+#  ifdef _WIN32
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(32));
-#else
+#  else
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
-#endif
+#  endif
 #endif
 
 #ifdef BINARYALLELE
