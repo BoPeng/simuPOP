@@ -564,6 +564,7 @@ if __name__ == '__main__':
             'Operating System :: OS Independent',
             'Programming Language :: C++',
             'Programming Language :: Python',
+            'Programming Language :: Python :: 3',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
         ],
         platforms = ['all'],
