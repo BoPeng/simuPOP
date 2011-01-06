@@ -348,11 +348,9 @@ public:
 
 	/** CPPONLY
 	 *  Remove a list of loci from the current genotypic structure
-	 *  and create a new structure. Use \e kept to return indexes
-	 *  of the remaining loci. However, if a non-empty kept is passed
-	 *  it will be used directly (loci is ignored).
+	 *  and create a new structure. 
 	 */
-	const GenoStructure gsRemoveLoci(const vectoru & loci, vectoru & kept);
+	const GenoStructure gsRemoveLoci(const vectoru & kept);
 
 	/** CPPONLY
 	 *  add a new chromosome to genotype structure and create a new structure.

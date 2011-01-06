@@ -10,6 +10,9 @@ New features:
   - Expose function Population::virtualSplitter
   - Allow single input for parameters cutoff and values of operator InfoSplitter.
 
+BUG:
+  -- Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
+
 version 1.0.5 - Rev 3915 (Nov. 22, 2010)
 New features:
   - Support parameter subPops in during mating operators so that different

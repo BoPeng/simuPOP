@@ -568,23 +568,15 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 }
 
 
-const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & loci,
-                                                vectoru & kept)
+const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & kept)
 {
-	if (kept.empty()) {
-		for (size_t loc = 0; loc < totNumLoci(); ++loc) {
-			if (find(loci.begin(), loci.end(), loc) == loci.end())
-				kept.push_back(loc);
-		}
-	}
-
 	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
 	// loci are now remainining loci
 	vectoru numLoci(numChrom(), 0);
 	vectorf lociPos;
 	vectorstr lociNames;
 	matrixstr alleleNames;
-	vectoru::iterator loc = kept.begin();
+	vectoru::const_iterator loc = kept.begin();
 	for (; loc != kept.end(); ++loc) {
 		UINT ch = chromLocusPair(*loc).first;
 		numLoci[ch]++;
@@ -597,7 +589,7 @@ const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 		}
 	}
 	// for common allele names
-	if (alleleNames.empty())
+	if (alleleNames.empty() && gs.m_alleleNames.size() == 1)
 		alleleNames = gs.m_alleleNames;
 	return GenoStructure(gs.m_ploidy, numLoci, gs.m_chromTypes, isHaplodiploid(),
 		lociPos, gs.m_chromNames, alleleNames, lociNames, gs.m_infoFields);
