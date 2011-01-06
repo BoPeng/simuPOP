@@ -2125,20 +2125,29 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 	DBG_FAILIF(removeList.unspecified() + keepList.unspecified() != 1, ValueError,
 		"Please specify only one of parameters loci and keep");
 
-	vectoru loci = removeList.elems(this);
-	if (removeList.allAvail())
-		for (size_t i = 0; i < totNumLoci(); ++i)
-			loci.push_back(i);
 	vectoru kept = keepList.elems(this);
-	if (keepList.allAvail())
-		for (size_t i = 0; i < totNumLoci(); ++i)
-			kept.push_back(i);
+	if (!keepList.unspecified()) {
+		// use keep list
+		if (keepList.allAvail())
+			for (size_t i = 0; i < totNumLoci(); ++i)
+				kept.push_back(i);
+		// kept must be in order so that genotypes could be copied correctly
+		std::sort(kept.begin(), kept.end());
+	} else {
+		// use remove list
+		if (removeList.allAvail())
+			kept.clear();
+		else {
+			vectoru loci = removeList.elems(this);
+			for (size_t loc = 0; loc < totNumLoci(); ++loc) {
+				if (find(loci.begin(), loci.end(), loc) == loci.end())
+					kept.push_back(loc);
+			}
+		}
+	}
+	setGenoStructure(gsRemoveLoci(kept));
 
-	// kept must be in order so that genotypes could be copied correctly
-	std::sort(kept.begin(), kept.end());
 	UINT oldTotNumLoci = totNumLoci();
-	// new geno structure is in effective now!
-	setGenoStructure(gsRemoveLoci(loci, kept));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
