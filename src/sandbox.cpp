@@ -154,22 +154,19 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(int mutant) const
 			}
 		}
 		Py_DECREF(res);
-		if (m_additive && h != 0.5)
-			m_additive = false;
-		return SelCoef(s, h);
-	}
-
-	int mode = static_cast<int>(m_selDist[0]);
-	if (mode == CONSTANT) {
-		// constant
-		s = m_selDist[1];
-		if (m_selDist.size() > 2)
-			h = m_selDist[2];
 	} else {
-		// a gamma distribution
-		s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
-		if (m_selDist.size() > 3)
-			h = m_selDist[3];
+		int mode = static_cast<int>(m_selDist[0]);
+		if (mode == CONSTANT) {
+			// constant
+			s = m_selDist[1];
+			if (m_selDist.size() > 2)
+				h = m_selDist[2];
+		} else {
+			// a gamma distribution
+			s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
+			if (m_selDist.size() > 3)
+				h = m_selDist[3];
+		}
 	}
 	m_selFactory[mutant] = SelCoef(s, h);
 	m_newMutants.push_back(mutant);
