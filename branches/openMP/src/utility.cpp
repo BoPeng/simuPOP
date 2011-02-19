@@ -35,6 +35,7 @@
 #include <bitset>
 
 #include "gsl/gsl_machine.h"
+#include "omp.h"
 
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -3952,6 +3953,8 @@ PyObject * moduleInfo()
 
     // platform
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
+      
+    PyDict_SetItem(dict, PyString_FromString("cores"), PyLong_FromLong(omp_get_num_procs()));
 
     // 32 or 64 bits
 #ifdef _WIN64
