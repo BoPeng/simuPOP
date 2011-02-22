@@ -222,4 +222,8 @@ for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.
     env.Install(dest_dir, 'src/%s' % pyfile)
     Alias('install', dest_dir)
 
+for datafile in PACKAGE_DATA:
+    env.Install(dest_dir, 'src/%s' % datafile)
+    Alias('install', dest_dir)
+
 Default('install')
