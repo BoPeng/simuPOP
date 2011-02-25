@@ -129,6 +129,7 @@ namespace simuPOP {
 // debug codes in a bitset.
 std::bitset<DBG_CODE_LENGTH> g_dbgCode;
 
+
 #ifndef OPTIMIZED
 #  include <time.h>
 clock_t g_clock;
@@ -377,7 +378,26 @@ int simuPOP_getch(void)
 
 
 #endif
+
+void setOptions(const int numThreads)
+{
+#ifdef _OPENMP
+  if (numThreads != 0)
+		omp_set_num_threads(numThreads);
+#endif
 }
+
+int numThreads()
+{
+#ifdef _OPENMP
+	return omp_get_max_threads();
+#else
+	return 1;
+#endif
+}
+
+}
+
 
 
 namespace std {
@@ -3953,8 +3973,10 @@ PyObject * moduleInfo()
 
     // platform
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
-      
-    PyDict_SetItem(dict, PyString_FromString("cores"), PyLong_FromLong(omp_get_num_procs()));
+
+    // Number of Threads in openMP
+    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
+
 
     // 32 or 64 bits
 #ifdef _WIN64

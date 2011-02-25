@@ -41,6 +41,14 @@ http://simupop.sourceforge.net/main/GetInvolved for details.
 """
 import os, sys, platform, shutil, glob, re, tempfile
 
+# Change this to False if you would like to compile simuPOP without openMP support
+USE_OPENMP = True
+
+if os.name == 'nt':
+    VS9PATH =  os.environ.get('VS90COMNTOOLS')
+    if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
+        USE_OPENMP = False
+
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
@@ -446,8 +454,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
         # /EHsc is for VC exception handling,
-		# /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819']
+        # /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819'] 
+        # Enable openMP if USE_OPENMP = True
+        if USE_OPENMP:
+            res['extra_compile_args'].append('/openmp')   
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
     # if Intel ICC is used, turn off remark 981

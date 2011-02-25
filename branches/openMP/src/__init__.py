@@ -252,6 +252,7 @@ __all__ = [
     'moduleInfo',
     'turnOffDebug',
     'turnOnDebug',
+    'setOptions',
     #
     'maPenetrance',
     'mapPenetrance',
@@ -317,12 +318,16 @@ if simuOptions['Revision'] is not None:
     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
         print >> sys.stderr, 'WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.'
 
+# set number of threads in openMP
+if simuOptions['NumThreads'] is not None:
+    setOptions(numThreads=simuOptions['NumThreads'])
+
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print "simuPOP : Copyright (c) 2004-2010 Bo Peng"
+    print "simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (info['version'])
     # compile date, compiler etc are macros that are replaced during compile time.
-    print ("Version %s (Revision %d, %s) for Python %s (%dbit,%dcores)" % \
-            (info['version'], info['revision'], info['date'], info['python'], info['wordsize'],info['cores']))
+    print "Revision %d (%s) for Python %s (%dbit, %dthreads)" % \
+            (info['revision'], info['date'], info['python'], info['wordsize'],info['threads'])
     print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     if info['optimized']:
