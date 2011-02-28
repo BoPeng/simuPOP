@@ -123,7 +123,6 @@ void checkRefCount();
 #endif
 
 
-
 // ////////////////////////////////////////////////////////////
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
@@ -132,7 +131,7 @@ void checkRefCount();
  *  For example: <tt>setOptions(8);</tt>
  *  Eight threads will be used in simuPOP.
  */
-void setOptions(const int numThreads=0);
+void setOptions(const int numThreads = 0);
 
 /// CPPONLY get number of thread in openMP
 int numThreads();

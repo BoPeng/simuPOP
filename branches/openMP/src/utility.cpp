@@ -382,10 +382,11 @@ int simuPOP_getch(void)
 void setOptions(const int numThreads)
 {
 #ifdef _OPENMP
-  if (numThreads != 0)
+	if (numThreads != 0)
 		omp_set_num_threads(numThreads);
 #endif
 }
+
 
 int numThreads()
 {
@@ -396,8 +397,8 @@ int numThreads()
 #endif
 }
 
-}
 
+}
 
 
 namespace std {
