@@ -1174,14 +1174,15 @@ public:
 		if (m_locals == NULL)
 			m_locals = mainVars().dict();
 
+		/** This is temporarily commented out because simuPOP can be compiled
+		 *  as a single applicaiton for testing purposes, and in which case there is no
+		 *  Python interpreter available.
+		 */
+		/*
 		if (PyDict_GetItemString(m_locals, "__builtins__") == NULL)
 			if (PyDict_SetItemString(m_locals, "__builtins__", PyEval_GetBuiltins()) != 0)
-				/** This is changed from a RuntimeError to cerr because simuPOP can be compiled
-				 *  as a single applicaiton for testing purposes, and in which case there is no
-				 *  Python interpreter available.
-				 */
 				cerr << "Cannot set __builtins__ for a dictionary." << endl;
-
+		*/
 		// empty expression
 		if (expr.empty() && stmts.empty())
 			return;
