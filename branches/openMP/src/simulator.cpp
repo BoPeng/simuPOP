@@ -50,8 +50,12 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating Simulator " << endl);
 	m_pops = vector<Population *>();
+	// create replicates of given Population
+	m_scratchPop = new Population();
 
-	if (PySequence_Check(pops)) {
+	if (pops == NULL) {
+		return;
+	} else if (PySequence_Check(pops)) {
 		UINT size = PySequence_Size(pops);
 		for (size_t i = 0; i < size; ++i) {
 			PyObject * item = PySequence_GetItem(pops, i);
@@ -105,8 +109,6 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 	// set var "rep"
 	for (UINT i = 0; i < m_pops.size(); ++i)
 		m_pops[i]->setRep(i);
-	// create replicates of given Population
-	m_scratchPop = new Population();
 
 	DBG_FAILIF(m_scratchPop == NULL,
 		SystemError, "Fail to create scratch population");
