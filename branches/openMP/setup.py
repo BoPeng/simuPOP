@@ -204,6 +204,7 @@ SOURCE_FILES = [
     'pedigree.cpp',
     'virtualSubPop.cpp',
     'sandbox.cpp',
+    'main.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,

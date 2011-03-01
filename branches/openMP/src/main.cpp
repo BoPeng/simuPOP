@@ -26,11 +26,24 @@
 /**
  * \file main.cpp
  *
- * This file is used for debugging only. Basically, it compiles with
- * the C++ version of simuPOP implement a test script in C/C++. To use this
- * script, please execute 'make test_simuPOP' under linux or create a 
- * VC project file in a similar fashion.
+ * Because it is easier to trace or debug simuPOP as a regular single
+ * executable, simuPOP can be compiled with the main() function provided in
+ * this file. However, because a Python engine is unavailable, not all
+ * features of simuPOP can be used in this way and relevant source code
+ * should be commented out with a
+ *    #ifndef STANDALINE_EXECUTABLE
+ * macro definition.
+ *
+ * To compile single executable, please use
+ *     scons debug
+ * to generate build/MOD/simuPOP_MOD, or
+ *     scons debug MOD
+ * to generate executable for selected module.
+ *
+ * This file is NOT used when simuPOP is compiled as python modules.
  */
+
+#ifdef STANDALONE_EXECUTABLE
 
 #include "config.h"
 #include "simuPOP_cfg.h"
@@ -55,14 +68,36 @@
 #include "selector.h"
 #include "qtrait.h"
 #include "penetrance.h"
-
 #include "sandbox.h"
 
 using namespace simuPOP;
 using namespace std;
 
+void banner()
+{
+	cout	<< "Standalone "
+#ifdef OPTIMIZED
+	        << "optimized "
+#else
+	        << "standard "
+#endif
+	// AlleleType
+#ifdef LONGALLELE
+	<< "long"
+#else
+#  ifdef BINARYALLELE
+	<< "binary"
+#  else
+	<< "short"
+#  endif
+#endif
+	<< " version of simuPOP for debugging purposes" << endl;
+}
+
+
 int main()
 {
+	banner();
 	uintList sz(vectoru(1, 100));
 	Population pop(sz, 2);
 	Simulator sim(NULL);
@@ -79,8 +114,9 @@ int main()
 	floatListFunc sexMode(RANDOM_SEX);
 	OffspringGenerator og(duringOps, numOff, sexMode);
 	MatingScheme ms = HomoMating(pc, og);
-	sim.evolve(initOps, preOps, ms, postOps, finalOps, 1);
+	//sim.evolve(initOps, preOps, ms, postOps, finalOps, 1);
 	return 0;
 }
 
 
+#endif
