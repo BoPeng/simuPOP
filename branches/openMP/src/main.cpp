@@ -95,26 +95,62 @@ void banner()
 }
 
 
-int main()
+// a simple version of random mating
+MatingScheme RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
+                          const vectoru & subPopSize = vectoru())
 {
-	banner();
-	uintList sz(vectoru(1, 100));
+	floatListFunc no(numOffspring);
+	floatListFunc sm(sexMode);
+	BaseOperator * mendelian = new MendelianGenoTransmitter();
+	opList duringOps(vectorop(1, mendelian));
+	RandomParentsChooser pc(true, "fitness");
+	OffspringGenerator og(duringOps, no, sm);
+	uintListFunc sp(subPopSize);
+
+	return HomoMating(pc, og, sp);
+}
+
+
+bool basicRandomMating(UINT size = 1000, UINT loci = 10, UINT gen = 10)
+{
+	/*
+	   pop = Population(1000, loci=10)
+	   pop.evolve(
+	    initOps=InitSex(),
+	    matingScheme=RandomMating(),
+	    gen=10
+	   )
+	 */
+	// create the population and simulator
+	uintList sz(vectoru(1, size));
 	Population pop(sz, 2);
 	Simulator sim(NULL);
+
 	sim.add(pop);
+	// operators
 	BaseOperator * iSex = new InitSex();
-	BaseOperator * mendelian = new MendelianGenoTransmitter();
 	opList initOps(vectorop(1, iSex));
 	opList preOps;
 	opList postOps;
-	opList duringOps(vectorop(1, mendelian));
 	opList finalOps;
-	RandomParentsChooser pc;
-	floatListFunc numOff(1);
-	floatListFunc sexMode(RANDOM_SEX);
-	OffspringGenerator og(duringOps, numOff, sexMode);
-	MatingScheme ms = HomoMating(pc, og);
-	//sim.evolve(initOps, preOps, ms, postOps, finalOps, 1);
+	// mating scheme
+	MatingScheme ms = RandomMating();
+	// evolve
+	cout << "Begin evolving basicRandomMating with size " << size << endl;
+	try {
+		sim.evolve(initOps, preOps, ms, postOps, finalOps, 10);
+	} catch (Exception e) {
+		cerr << e.message() << endl;
+	}
+	cout << "Done" << endl;
+	return true;
+}
+
+
+int main()
+{
+	banner();
+	basicRandomMating(10000, 100, 1000);
 	return 0;
 }
 

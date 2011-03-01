@@ -1764,7 +1764,9 @@ public:
 	void setRep(int rep)
 	{
 		m_rep = rep;
+#ifndef STANDALONE_EXECUTABLE
 		m_vars.setIntVar("rep", rep);
+#endif
 	}
 
 
@@ -1783,7 +1785,9 @@ public:
 	void setGen(ULONG gen)
 	{
 		m_gen = gen;
+#ifndef STANDALONE_EXECUTABLE
 		m_vars.setIntVar("gen", gen);
+#endif
 	}
 
 

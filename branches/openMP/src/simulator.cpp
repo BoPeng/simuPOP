@@ -219,7 +219,6 @@ vectoru Simulator::evolve(
 	if (gens == 0)
 		return evolvedGens;
 
-
 	// make sure rep and gen exists in pop
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		if (!m_pops[curRep]->getVars().hasVar("gen"))
@@ -246,9 +245,13 @@ vectoru Simulator::evolve(
 			Population & curPop = *m_pops[curRep];
 			// sync population variable gen with gen(). This allows
 			// users to set population variable to change generation number.
+#ifndef STANDALONE_EXECUTABLE
 			int curGen = curPop.getVars().getVarAsInt("gen");
 			if (curGen != curPop.gen())
 				curPop.setGen(curGen);
+#else
+			int curGen = curPop.gen();
+#endif
 
 			int end = -1;
 			if (gens > 0)
