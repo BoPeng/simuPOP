@@ -224,6 +224,10 @@ for mod in targets:
         mod_lib[0]))
 
 # module executable, for testing purposes.
+if os.name == 'nt':
+    pylib_name = 'python%d%d' % (sys.version_info[0], sys.version_info[1])
+else:
+    pylib_name = 'python'
 for mod in exe_targets:
     mod_name = mod.split('_')[0]
     exe_env = env.Clone()
@@ -239,7 +243,7 @@ for mod in exe_targets:
     mod_executable = exe_env.Program(
         target = 'build/simuPOP_%s' % mod,
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod_name)],
-        LIBS = info['libraries'] + [common_lib, 'python'],
+        LIBS = info['libraries'] + [common_lib, pylib_name],
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
