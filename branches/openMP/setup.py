@@ -484,25 +484,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 # Build extensions
 #
 ############################################################################
-# checking os type and copy configuration files
 if os.name == 'nt':    # Windows
-    shutil.copy('config_win32.h', 'build/config.h')
     # copy platform dependent dll files
     machine = platform.uname()[4].lower()
     shutil.copy('win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
     shutil.copy('win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
-elif os.name == 'posix':
-    if sys.platform == 'linux2':     # Linux
-        shutil.copy('config_linux.h', 'build/config.h')
-    elif sys.platform == 'sunos5': # Solaris
-        shutil.copy('config_solaris.h', 'build/config.h')
-    elif sys.platform == 'darwin':    # MacOS
-        shutil.copy('config_mac.h', 'build/config.h')
-    else: # HPUX?
-        shutil.copy('config_linux.h', 'build/config.h')
-else:
-    # otherwise, assume a posix system
-    shutil.copy('config_linux.h', 'build/config.h')
 
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
