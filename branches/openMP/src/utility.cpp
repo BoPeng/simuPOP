@@ -317,7 +317,7 @@ void saveRefCount()
 
 void checkRefCount()
 {
-	if (_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
+	if (_Py_RefTotal > g_refTotal && g_refWarningCount-- > 0)
 		cerr	<< "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
 		        << "\nThis may be a sign of memory leak, especially when refCount increase"
 		        << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
