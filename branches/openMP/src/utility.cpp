@@ -35,8 +35,9 @@
 #include <bitset>
 
 #include "gsl/gsl_machine.h"
+#ifdef _OPENMP
 #include "omp.h"
-
+#endif
 
 #if PY_VERSION_HEX >= 0x03000000
 
