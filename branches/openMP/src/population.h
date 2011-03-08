@@ -1432,6 +1432,10 @@ private:
 			data |= (*ptr++) << (i % 32);
 			// end of block of end of data
 			if (i % 32 == 31 || i == size - 1) {
+				// on 64 systems, the upper 32bit of the data might not be 0
+				// so we need to clear the upper 32bit so that the genotype saved
+				// on a 64bit system can be loaded on 32bit systems.
+				data &= 0xFFFFFFFF;
 				ar & data;
 				data = 0;
 			}

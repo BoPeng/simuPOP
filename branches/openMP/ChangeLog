@@ -3,7 +3,6 @@ ChangeLog of simuPOP
 Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
-  - BUG: Populations saved using 64bit simuPOP cannot be loaded in 32bit version of simuPOP.
 
 version 1.0.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 New features:
@@ -12,7 +11,10 @@ New features:
   - Allow the use of vsp name in function Population.individuals().
 
 BUG:
-  -- Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
+  - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
+  - Fix a bug where populations saved in binary module on a 64 bit system cannot be 
+	loaded under 32 bit systems.
+
 
 version 1.0.5 - Rev 3915 (Nov. 22, 2010)
 New features:
