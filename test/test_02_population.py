@@ -1110,6 +1110,28 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop, pop1)
         os.remove('popout')
 
+    def testCrossPlatformLoad(self):
+        'Testing loading populations created from other platform and allele types'
+        # the populations are created by
+        # pop = Population(10000, loci=100, infoFields='a'])
+        # initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
+        # initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
+        # pop.save('testXX_XX.pop') # for different os and module
+        for plat in [64, 32]:
+            for mod in ['std', 'la', 'ba']:
+                popname = 'sample_%d_%s.pop' % (plat, mod)
+                pop = Population()
+                try:
+                    pop = loadPopulation(popname)
+                except:
+                    pass
+                self.assertEqual(pop.popSize(), 10000)
+                self.assertEqual(list(pop.indInfo('a')),
+                    [1, 2, 3, 4, 5] * (10000 / 5))
+                self.assertEqual(pop.genotype(),
+                    ([0, 1, 1, 1, 0, 1, 1] * (10000*100*2/7+1))[:10000*100*2])
+
+
     def testVars(self):
         'Testing Population::vars(), vars(subPop), dvars(), dvars(subPop)'
         pop = self.getPop(size=1000, loci=[2, 4])
