@@ -74,6 +74,8 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName([0, 4]), "x = 14")
         self.assertRaises(IndexError, pop.subPopName, 1)
         self.assertRaises(IndexError, pop.subPopName, [0, 5])
+        # this function accepts vsp name
+        pop.individuals([0, 'x = 10'])
         # with given names
         pop = Population(size=[200, 500], infoFields=['x'], subPopNames=['A', 'B'])
         for ind in pop.individuals():

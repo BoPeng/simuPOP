@@ -392,6 +392,34 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 }
 
 
+pyIndIterator Population::individuals(vspID subPopID)
+{
+	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
+		"Can not call individuals when there is activated virtual subpopulation");
+
+	vspID subPop = subPopID.resolve(*this);
+
+	DBG_FAILIF(subPop.allAvailSP() || subPop.allAvailVSP(), ValueError, "Invalid (virtual) subpopulation ID.")
+	if (!subPop.valid())
+		return pyIndIterator(m_inds.begin(), m_inds.end(), true, vspFunctor());
+
+	SubPopID spID = subPop.subPop();
+
+#ifndef OPTIMIZED
+	CHECKRANGESUBPOP(spID);
+	SubPopID vspID = subPop.virtualSubPop();
+	CHECKRANGEVIRTUALSUBPOP(vspID);
+#endif
+	if (subPop.isVirtual())
+		return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+			m_inds.begin() + subPopEnd(spID), false,
+			vspFunctor(*this, m_vspSplitter, subPop));
+	else
+		return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+			m_inds.begin() + subPopEnd(spID), true, vspFunctor());
+}
+
+
 Individual & Population::ancestor(double fidx, UINT gen, vspID vsp)
 {
 	ULONG idx = toID(fidx);
