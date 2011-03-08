@@ -9,6 +9,7 @@ version 1.0.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 New features:
   - Expose function Population::virtualSplitter
   - Allow single input for parameters cutoff and values of operator InfoSplitter.
+  - Allow the use of vsp name in function Population.individuals().
 
 BUG:
   -- Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
