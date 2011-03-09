@@ -1466,6 +1466,7 @@ private:
 				data |= (*ptr++) << (i % 32);
 				// end of block of end of data
 				if (i % 32 == 31 || i == size - 1) {
+					data &= 0xFFFFFFFF;
 					ar & data;
 					data = 0;
 				}
