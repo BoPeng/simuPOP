@@ -48,6 +48,15 @@ if os.name == 'nt':
     VS9PATH =  os.environ.get('VS90COMNTOOLS')
     if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
         USE_OPENMP = False
+else:
+    fin, fout, ferr = os.popen3('gcc -v')
+    try:
+        version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', ferr.readlines()[-1]).groups()
+    except:
+        print('Can not obtain version of gcc.')
+    if int(version[0]) < 4 or int(version[1]) < 2:
+        print 'Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version
+        USE_OPENMP = False
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
