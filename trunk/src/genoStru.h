@@ -348,7 +348,7 @@ public:
 
 	/** CPPONLY
 	 *  Remove a list of loci from the current genotypic structure
-	 *  and create a new structure. 
+	 *  and create a new structure.
 	 */
 	const GenoStructure gsRemoveLoci(const vectoru & kept);
 
