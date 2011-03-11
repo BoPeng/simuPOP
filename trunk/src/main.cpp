@@ -96,8 +96,8 @@ void banner()
 
 
 // a simple version of random mating
-MatingScheme RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
-                          const vectoru & subPopSize = vectoru())
+MatingScheme * RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
+                            const vectoru & subPopSize = vectoru())
 {
 	floatListFunc no(numOffspring);
 	floatListFunc sm(sexMode);
@@ -107,7 +107,7 @@ MatingScheme RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
 	OffspringGenerator og(duringOps, no, sm);
 	uintListFunc sp(subPopSize);
 
-	return HomoMating(pc, og, sp);
+	return new HomoMating(pc, og, sp);
 }
 
 
@@ -123,7 +123,8 @@ bool basicRandomMating(UINT size = 1000, UINT loci = 10, UINT gen = 10)
 	 */
 	// create the population and simulator
 	uintList sz(vectoru(1, size));
-	Population pop(sz, 2);
+	uintList lo(vectoru(1, loci));
+	Population pop(sz, 2, lo);
 	Simulator sim(NULL);
 
 	sim.add(pop);
@@ -134,11 +135,11 @@ bool basicRandomMating(UINT size = 1000, UINT loci = 10, UINT gen = 10)
 	opList postOps;
 	opList finalOps;
 	// mating scheme
-	MatingScheme ms = RandomMating();
+	MatingScheme * ms = RandomMating();
 	// evolve
 	cout << "Begin evolving basicRandomMating with size " << size << endl;
 	try {
-		sim.evolve(initOps, preOps, ms, postOps, finalOps, 10);
+		sim.evolve(initOps, preOps, *ms, postOps, finalOps, gen);
 	} catch (Exception e) {
 		cerr << e.message() << endl;
 	}
@@ -147,10 +148,24 @@ bool basicRandomMating(UINT size = 1000, UINT loci = 10, UINT gen = 10)
 }
 
 
-int main()
+int main(int argc, char ** argv)
 {
+
+	if (argc != 5) {
+		printf("usage: %s <num_threads> <size> <loci> <gen> \n", argv[0]);
+		exit(0);
+	}
+	int nth = atoi(argv[1]);
+	int size = atoi(argv[2]);
+	int loci = atoi(argv[3]);
+	int gen = atoi(argv[4]);
+
+#ifdef _OPENMP
+	omp_set_num_threads(nth);
+#endif
+
 	banner();
-	basicRandomMating(10000, 100, 1000);
+	basicRandomMating(size, loci, gen);
 	return 0;
 }
 
