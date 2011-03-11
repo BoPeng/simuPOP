@@ -50,8 +50,12 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 
 	DBG_DO(DBG_SIMULATOR, cerr << "Creating Simulator " << endl);
 	m_pops = vector<Population *>();
+	// create replicates of given Population
+	m_scratchPop = new Population();
 
-	if (PySequence_Check(pops)) {
+	if (pops == NULL) {
+		return;
+	} else if (PySequence_Check(pops)) {
 		UINT size = PySequence_Size(pops);
 		for (size_t i = 0; i < size; ++i) {
 			PyObject * item = PySequence_GetItem(pops, i);
@@ -105,8 +109,6 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 	// set var "rep"
 	for (UINT i = 0; i < m_pops.size(); ++i)
 		m_pops[i]->setRep(i);
-	// create replicates of given Population
-	m_scratchPop = new Population();
 
 	DBG_FAILIF(m_scratchPop == NULL,
 		SystemError, "Fail to create scratch population");
@@ -217,7 +219,6 @@ vectoru Simulator::evolve(
 	if (gens == 0)
 		return evolvedGens;
 
-
 	// make sure rep and gen exists in pop
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		if (!m_pops[curRep]->getVars().hasVar("gen"))
@@ -244,9 +245,13 @@ vectoru Simulator::evolve(
 			Population & curPop = *m_pops[curRep];
 			// sync population variable gen with gen(). This allows
 			// users to set population variable to change generation number.
+#ifndef STANDALONE_EXECUTABLE
 			int curGen = curPop.getVars().getVarAsInt("gen");
 			if (curGen != curPop.gen())
 				curPop.setGen(curGen);
+#else
+			int curGen = curPop.gen();
+#endif
 
 			int end = -1;
 			if (gens > 0)

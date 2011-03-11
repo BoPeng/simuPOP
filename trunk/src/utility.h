@@ -122,9 +122,19 @@ void checkRefCount();
 
 #endif
 
+
 // ////////////////////////////////////////////////////////////
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
+
+/** Set number of thread in openMP. The number of threads must be positive integer.
+ *  For example: <tt>setOptions(8);</tt>
+ *  Eight threads will be used in simuPOP.
+ */
+void setOptions(const int numThreads = 0);
+
+/// CPPONLY get number of thread in openMP
+int numThreads();
 
 /// a utility function to check keyboard stroke
 /// CPPONLY
@@ -1164,10 +1174,15 @@ public:
 		if (m_locals == NULL)
 			m_locals = mainVars().dict();
 
+#ifndef STANDALONE_EXECUTABLE
+		/* PyEval_GetBuildtins cannot be executed without a Python interpreter
+		 * so it is commented out when simuPOP is built as a standalone executable.
+		 */
 		if (PyDict_GetItemString(m_locals, "__builtins__") == NULL)
 			if (PyDict_SetItemString(m_locals, "__builtins__", PyEval_GetBuiltins()) != 0)
 				throw RuntimeError("Cannot set __builtins__ for a dictionary.");
 
+#endif
 		// empty expression
 		if (expr.empty() && stmts.empty())
 			return;

@@ -35,7 +35,9 @@
 #include <bitset>
 
 #include "gsl/gsl_machine.h"
-
+#ifdef _OPENMP
+#include "omp.h"
+#endif
 
 #if PY_VERSION_HEX >= 0x03000000
 
@@ -69,7 +71,9 @@ using std::ofstream;
 #include "genoStru.h"
 
 // for PySys_WriteStdout and python expressions
+#ifndef STANDALONE_EXECUTABLE
 #include "swigpyrun.h"
+#endif
 
 // compile and eval enables compiling string to byte code
 #include "compile.h"
@@ -99,6 +103,7 @@ using boost::cmatch;
 #define MacroQuote_(x) # x
 #define MacroQuote(x) MacroQuote_(x)
 
+#ifndef STANDALONE_EXECUTABLE
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
 extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
@@ -108,6 +113,27 @@ extern "C" PyObject * PyDefDict_New();
 extern "C" bool is_defdict(PyTypeObject * type);
 
 extern "C" int initCustomizedTypes(void);
+#else
+PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
+{
+	return NULL;
+}
+
+PyObject * PyDefDict_New()
+{
+	return NULL;
+}
+
+bool is_defdict(PyTypeObject * type)
+{
+	return true;
+}
+
+int initCustomizedTypes(void)
+{
+	return 0;
+}
+#endif
 
 // for streambuf stuff
 #include <streambuf>
@@ -127,6 +153,7 @@ namespace simuPOP {
 
 // debug codes in a bitset.
 std::bitset<DBG_CODE_LENGTH> g_dbgCode;
+
 
 #ifndef OPTIMIZED
 #  include <time.h>
@@ -291,7 +318,7 @@ void saveRefCount()
 
 void checkRefCount()
 {
-	if (_Py_RefTotal > g_refTotal and g_refWarningCount-- > 0)
+	if (_Py_RefTotal > g_refTotal && g_refWarningCount-- > 0)
 		cerr	<< "Warning: Ref count increased from " << g_refTotal << " to " << _Py_RefTotal
 		        << "\nThis may be a sign of memory leak, especially when refCount increase"
 		        << "\nindefinitely in a loop. Please contact simuPOP deceloper and report"
@@ -376,6 +403,26 @@ int simuPOP_getch(void)
 
 
 #endif
+
+void setOptions(const int numThreads)
+{
+#ifdef _OPENMP
+	if (numThreads != 0)
+		omp_set_num_threads(numThreads);
+#endif
+}
+
+
+int numThreads()
+{
+#ifdef _OPENMP
+	return omp_get_max_threads();
+#else
+	return 1;
+#endif
+}
+
+
 }
 
 
@@ -1950,7 +1997,10 @@ void SharedVariables::fromString(const string & vars)
 // will be set by // initialize() function
 // DO NOT OWN the dictionaries
 SharedVariables g_main_vars, g_module_vars;
+
+#ifndef STANDALONE_EXECUTABLE
 swig_type_info * g_swigPopType, * g_swigIndividual;
+#endif
 
 SharedVariables & mainVars()
 {
@@ -1966,13 +2016,21 @@ SharedVariables & moduleVars()
 
 PyObject * pyPopObj(void * p)
 {
+#ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigPopType, 0);
+#else
+	return NULL;
+#endif
 }
 
 
 PyObject * pyIndObj(void * p)
 {
+#ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigIndividual, 0);
+#else
+	return NULL;
+#endif
 }
 
 
@@ -1980,7 +2038,11 @@ void * pyIndPointer(PyObject * obj)
 {
 	void * ptr = 0;
 
+#ifndef STANDALONE_EXECUTABLE
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
+#else
+	return NULL;
+#endif
 	return ptr;
 }
 
@@ -1989,7 +2051,11 @@ void * pyPopPointer(PyObject * obj)
 {
 	void * ptr = 0;
 
+#ifndef STANDALONE_EXECUTABLE
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
+#else
+	return NULL;
+#endif
 	return ptr;
 }
 
@@ -3953,6 +4019,10 @@ PyObject * moduleInfo()
     // platform
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
+    // Number of Threads in openMP
+    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
+
+
     // 32 or 64 bits
 #ifdef _WIN64
     PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
@@ -4286,6 +4356,7 @@ bool initialize()
     mm = PyImport_AddModule("__main__");
     g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
+#ifndef STANDALONE_EXECUTABLE
     // get population and Individual type pointer
     g_swigPopType = SWIG_TypeQuery(PopSWIGType);
     g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
@@ -4293,6 +4364,7 @@ bool initialize()
     // g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
     if (g_swigPopType == NULL || g_swigIndividual == NULL)
 		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
+#endif
 
     // load carray function and type
     if (initCustomizedTypes() < 0)

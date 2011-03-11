@@ -1663,7 +1663,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
 
-%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
+%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &kept);
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
 
@@ -10192,6 +10192,22 @@ Usage:
     elapsedTime(name)
 
 "; 
+
+%feature("docstring") simuPOP::setOptions "
+
+Usage:
+
+    setOptions(numThreads=0)
+
+Details:
+
+    Set number of thread in openMP. The number of threads must be
+    positive integer. For example: setOptions(8); Eight threads will
+    be used in simuPOP.
+
+"; 
+
+%ignore simuPOP::numThreads();
 
 %ignore simuPOP::simuPOPkbhit();
 

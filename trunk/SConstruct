@@ -45,6 +45,8 @@
 #      all = all modules
 #      default to all modules
 #      install: install specified targets
+#      std_exe op_exe ....: individual executable for debugging purposes.
+#      executable: std_exe, op_exe etc
 #
 #
 import os, sys
@@ -85,8 +87,8 @@ opts.AddVariables(
 # common environment
 env = Environment(
     options=opts,
-	# pass all environment variables because MSVC needs INCLUDE and LIB
-	# but they may not exist on other platforms
+    # pass all environment variables because MSVC needs INCLUDE and LIB
+    # but they may not exist on other platforms
     ENV=os.environ,
     tools=['default', 'swig'])
 
@@ -174,12 +176,17 @@ Alias('common', (std_common_lib, op_common_lib))
 # Building modules
 # 
 targets = []
+exe_targets = []
 all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+all_exe = [x + '_exe' for x in all_modu]
 for key in all_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
+for key in all_exe:
+    if key in BUILD_TARGETS:
+        exe_targets.append(key)
 
-if targets == [] and 'gsl' not in BUILD_TARGETS:
+if targets == [] and 'gsl' not in BUILD_TARGETS and len(exe_targets) == 0:
     targets = all_modu
 if 'all' in BUILD_TARGETS:
     targets = all_modu
@@ -214,12 +221,46 @@ for mod in targets:
     Alias('install', env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
         'build/%s/src/simuPOP_%s.py' % (mod, mod)))
     Alias('install', env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
-		mod_lib[0]))
+        mod_lib[0]))
+
+# module executable, for testing purposes.
+if os.name == 'nt':
+    pylib_name = 'python%d%d' % (sys.version_info[0], sys.version_info[1])
+else:
+    pylib_name = 'python'
+for mod in exe_targets:
+    mod_name = mod.split('_')[0]
+    exe_env = env.Clone()
+    exe_env.VariantDir('build/' + mod, '.')
+    exe_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -Isrc'  # -Isrc for %include interface files under src
+    exe_env['SWIGOUTDIR'] = 'build/%s/src' % mod
+    info = ModuInfo(mod_name, SIMUPOP_VER, SIMUPOP_REV)
+    if 'op' in mod:
+        common_lib = op_common_lib
+    else:
+        common_lib = std_common_lib
+    mod_executable = exe_env.Program(
+        target = 'build/simuPOP_%s' % mod,
+        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
+        LIBS = info['libraries'] + [common_lib, pylib_name],
+        LIBPATH = info['library_dirs'] + extra_path,
+        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CPPFLAGS = ' '.join([basicflags, ccshared, opt])
+    )
+    Alias(mod, mod_executable)
+    Alias('debug', mod_executable)
+
 
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)
 for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
     env.Install(dest_dir, 'src/%s' % pyfile)
+    Alias('install', dest_dir)
+
+for datafile in PACKAGE_DATA:
+    env.Install(dest_dir, 'src/%s' % datafile)
     Alias('install', dest_dir)
 
 Default('install')
