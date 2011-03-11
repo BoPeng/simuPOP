@@ -39,7 +39,15 @@ install swig >= 1.3.35 for the generation of Python wrapper files. Please see
 http://simupop.sourceforge.net/main/GetInvolved for details.
 
 """
-import os, sys, shutil, glob, re, tempfile
+import os, sys, platform, shutil, glob, re, tempfile
+
+# Change this to False if you would like to compile simuPOP without openMP support
+USE_OPENMP = True
+
+if os.name == 'nt':
+    VS9PATH =  os.environ.get('VS90COMNTOOLS')
+    if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
+        USE_OPENMP = False
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
@@ -196,6 +204,7 @@ SOURCE_FILES = [
     'pedigree.cpp',
     'virtualSubPop.cpp',
     'sandbox.cpp',
+    'main.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
@@ -388,6 +397,20 @@ WRAP_INFO = {
     'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
 }
 
+if os.name == 'nt':
+    # NOTE:
+    # In theory, we should distribute
+    # 1. 'msvcr80.dll' for simuPOP 1.5.x for python 2.5 and earlier. MS Visual
+    #     studio 2003.net should be used.
+    # 2. 'msvcr90.dll' should be distributed for simuPOP 1.5.x for python 2.6
+    #     and later.
+    # 3. These two files are for simuPOP 1.6.x, for python 2.6 and later.
+    # We do not distribute msvcr80.dll because there is little need to support
+    # python 2.5 under windows.
+    PACKAGE_DATA = ['vcomp90.dll', 'msvcr90.dll']
+else:
+    PACKAGE_DATA = []
+
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
 The core of simuPOP is a scripting language (Python) that provides 
@@ -432,8 +455,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
         # /EHsc is for VC exception handling,
-		# /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819']
+        # /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819'] 
+        # Enable openMP if USE_OPENMP = True
+        if USE_OPENMP:
+            res['extra_compile_args'].append('/openmp')   
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
     # if Intel ICC is used, turn off remark 981
@@ -458,21 +484,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 # Build extensions
 #
 ############################################################################
-# checking os type and copy configuration files
 if os.name == 'nt':    # Windows
-    shutil.copy('config_win32.h', 'build/config.h')
-elif os.name == 'posix':
-    if sys.platform == 'linux2':     # Linux
-        shutil.copy('config_linux.h', 'build/config.h')
-    elif sys.platform == 'sunos5': # Solaris
-        shutil.copy('config_solaris.h', 'build/config.h')
-    elif sys.platform == 'darwin':    # MacOS
-        shutil.copy('config_mac.h', 'build/config.h')
-    else: # HPUX?
-        shutil.copy('config_linux.h', 'build/config.h')
-else:
-    # otherwise, assume a posix system
-    shutil.copy('config_linux.h', 'build/config.h')
+    # copy platform dependent dll files
+    machine = platform.uname()[4].lower()
+    shutil.copy('win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
+    shutil.copy('win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
 
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
@@ -571,6 +587,7 @@ if __name__ == '__main__':
         #
         packages = ['simuPOP'],
         package_dir = {'simuPOP': 'src'}, 
+        package_data = {'simuPOP': PACKAGE_DATA},
         py_modules = [
             'simuOpt', 
             'simuPOP.__init__',

@@ -111,6 +111,7 @@ simuOptions = {
     'Version': None,
     'Revision': None,
     'GUI': True,
+    'NumThreads': None,
 }
 
 # Optimized: command line option --optimized or environmental variable SIMUOPTIMIZED
@@ -149,7 +150,7 @@ elif _gui is not None:
     print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
 
 def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
-        debug=None, version=None, revision=None):
+        debug=None, version=None, revision=None, numThreads=None):
     '''Set options before simuPOP is loaded to control which simuPOP module to
     load, and how the module should be loaded.
 
@@ -203,6 +204,9 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
 
     revision
         Obsolete with the introduction of parameter version.
+        
+    numThreads
+        Number of Threads in openMP. The default number is number of cores.
     '''
     # Optimized
     if optimized in [True, False]:
@@ -244,7 +248,11 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         simuOptions['Revision'] = revision
     elif revision is not None:
         raise TypeError('A revision number is expected for parameter revision.')
-
+    # NumThreads
+    if type(numThreads) == int:
+        simuOptions['NumThreads'] = numThreads
+    elif numThreads is not None:
+        raise TypeError('An integer number is expected for parameter numThreads.')
 
 #
 # define some validataion functions

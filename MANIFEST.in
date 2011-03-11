@@ -13,6 +13,7 @@ include setup.py
 include SConstruct
 
 # source header files
+include config.h
 include config_solaris.h 
 include config_win32.h 
 include config_linux.h 
@@ -61,6 +62,7 @@ include src/tagger.cpp
 include src/pedigree.cpp
 include src/virtualSubPop.cpp
 include src/sandbox.cpp
+include src/main.cpp
 
 # source generated files
 include src/swigpyrun.h 
@@ -259,6 +261,8 @@ include doc/refManual.pdf
 
 # win32 files
 include win32/stdint.h
+recursive-include win32/x86 *.dll
+recursive-include win32/amd64 *.dll
 recursive-include win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.44.0
