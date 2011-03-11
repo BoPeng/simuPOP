@@ -443,6 +443,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['libraries'] = []
     else:
         res['libraries'] = ['stdc++', 'z']
+        if USE_OPENMP:
+            res['libraries'].append('gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
@@ -462,6 +464,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             res['extra_compile_args'].append('/openmp')   
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
+        if USE_OPENMP:
+            res['extra_compile_args'].append('-fopenmp')
     # if Intel ICC is used, turn off remark 981
     if os.getenv('CC', '').endswith('icc') or \
         (get_config_var('CC') is not None and 'icc' in get_config_var('CC')):
