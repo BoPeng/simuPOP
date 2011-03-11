@@ -577,6 +577,7 @@ const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & kept)
 	vectorstr lociNames;
 	matrixstr alleleNames;
 	vectoru::const_iterator loc = kept.begin();
+
 	for (; loc != kept.end(); ++loc) {
 		UINT ch = chromLocusPair(*loc).first;
 		numLoci[ch]++;

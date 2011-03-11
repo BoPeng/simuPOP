@@ -73,7 +73,10 @@ using std::setw;
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
 #include "gsl/gsl_cdf.h"
-
+/// for openMP
+#ifdef _OPENMP
+#  include "omp.h"
+#endif
 /// for bernulli trials.
 // use vector<bool> instead of dynamic_bitset since I can manipulate
 // bits directly in vector<bool>
