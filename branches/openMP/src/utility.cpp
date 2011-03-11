@@ -36,7 +36,7 @@
 
 #include "gsl/gsl_machine.h"
 #ifdef _OPENMP
-#include "omp.h"
+#  include "omp.h"
 #endif
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -72,7 +72,7 @@ using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
 #ifndef STANDALONE_EXECUTABLE
-#include "swigpyrun.h"
+#  include "swigpyrun.h"
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -113,26 +113,32 @@ extern "C" PyObject * PyDefDict_New();
 extern "C" bool is_defdict(PyTypeObject * type);
 
 extern "C" int initCustomizedTypes(void);
+
 #else
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
 	return NULL;
 }
 
+
 PyObject * PyDefDict_New()
 {
 	return NULL;
 }
+
 
 bool is_defdict(PyTypeObject * type)
 {
 	return true;
 }
 
+
 int initCustomizedTypes(void)
 {
 	return 0;
 }
+
+
 #endif
 
 // for streambuf stuff

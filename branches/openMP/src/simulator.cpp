@@ -402,7 +402,6 @@ bool Simulator::apply(const opList & ops)
 	for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
 		Population & curPop = *m_pops[curRep];
 		size_t it;
-
 		// apply pre-mating ops to current gen
 		for (it = 0; it < ops.size(); ++it) {
 			vector<bool> activeReps(m_pops.size());
