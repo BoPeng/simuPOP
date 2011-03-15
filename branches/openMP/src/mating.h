@@ -735,6 +735,13 @@ public:
 
 
 	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
+
+
+	/// CPPONLY
 	bool initialized() const
 	{
 		return m_initialized;
@@ -858,6 +865,16 @@ public:
 
 
 	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
+	}
+
+
+	/// CPPONLY
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
@@ -920,6 +937,16 @@ public:
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
+	}
+
+
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
 	}
 
 

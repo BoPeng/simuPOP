@@ -35,6 +35,9 @@ void GenoTransmitter::initializeIfNeeded(const Individual & ind) const
 	if (m_lastGenoStru != ind.genoStruIdx()) {
 		// this could be the initialize function from a derived class,
 		// which will also call GenoTransmitter::initialize(ind)
+#ifdef _OPENMP
+#  pragma omp single
+#endif
 		initialize(ind);
 		m_lastGenoStru = ind.genoStruIdx();
 	}

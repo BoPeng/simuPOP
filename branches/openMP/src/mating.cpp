@@ -1283,16 +1283,50 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		Individual * dad = NULL;
-		Individual * mom = NULL;
-		ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
-		dad = parents.first;
-		mom = parents.second;
+	// If the parent chooser is not parallelizable, or if openMP is not supported
+	// or if number of thread is set to 1, use the sequential method.
+	if (!m_ParentChooser->parallelizable() || numThreads() == 1 ) {
+		while (it != offEnd) {
+			Individual * dad = NULL;
+			Individual * mom = NULL;
+			ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+			dad = parents.first;
+			mom = parents.second;
 
-		//
-		UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
-		(void)numOff;             // silent warning about unused variable.
+			//
+			UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
+			(void)numOff;                 // silent warning about unused variable.
+		}
+	} else {
+		// in this case, openMP must have been supported with numThreads() > 1
+#ifdef _OPENMP
+		int tid = 0, offPopSize = 0;
+		RawIndIterator local_it, local_offEnd ;
+		offPopSize = offEnd - offBegin;
+		int	nThreads = numThreads();
+
+#  pragma omp parallel private(tid, local_it, local_offEnd)
+		{
+			tid = omp_get_thread_num();
+
+			local_it = offBegin + tid * (offPopSize / nThreads);
+			if (tid == nThreads - 1)
+				local_offEnd = offEnd;
+			else
+				local_offEnd = local_it + offPopSize / nThreads;
+
+			while (local_it != local_offEnd) {
+
+				Individual * dad = NULL;
+				Individual * mom = NULL;
+				ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+				dad = parents.first;
+				mom = parents.second;
+				UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
+				(void)numOff;     // silent warning about unused variable.
+			}
+		}
+#endif
 	}
 	m_ParentChooser->finalize(pop, subPop);
 	m_OffspringGenerator->finalize(pop);
