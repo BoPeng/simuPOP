@@ -763,8 +763,8 @@ public:
 
 private:
 	const double m_stopAfter;
-	mutable clock_t m_startTime;
-	mutable clock_t m_lastTime;
+	mutable time_t m_startTime;
+	mutable time_t m_lastTime;
 	mutable ULONG m_totalCount;
 	mutable ULONG m_countPerSec;
 	mutable ULONG m_counter;

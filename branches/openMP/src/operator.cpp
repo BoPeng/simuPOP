@@ -804,26 +804,31 @@ string TicToc::describe(bool format) const
 
 bool TicToc::apply(Population & pop) const
 {
+#ifdef _OPENMP
+	if (omp_get_thread_num() != 0)
+		return true;
+#endif
+
 	if (m_startTime == 0)
-		m_startTime = clock();
+		m_startTime = time(NULL);
 
 	m_totalCount++;
-	clock_t lastTime = m_lastTime;
+	time_t lastTime = m_lastTime;
 	if (m_countPerSec == 0) {
-		m_lastTime = clock();
+		m_lastTime = time(NULL);
 	} else {
 		if (m_counter == m_countPerSec) {
-			m_lastTime = clock();
+			m_lastTime = time(NULL);
 			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
-				(double(m_lastTime - m_startTime) / CLOCKS_PER_SEC) << endl);
+				difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
-			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
+			m_lastTime += 1. / m_countPerSec;
 			++m_counter;
 		}
 	}
 
-	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	double overallTime = difftime(m_lastTime, m_startTime);
 	if (overallTime > 5 && m_counter == 0) { // over 5s
 		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
 		DBG_DO(DBG_OPERATOR, cerr	<< m_totalCount << " hits after " << overallTime << " seconds. Using "
@@ -837,7 +842,7 @@ bool TicToc::apply(Population & pop) const
 		else {
 			// since last time
 			out << "Elapsed time: " << std::fixed << std::setprecision(2)
-			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
+			    << difftime(m_lastTime, lastTime)
 			    << "s\t Overall time: " << overallTime << "s"
 			    << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
 		}
@@ -852,31 +857,35 @@ bool TicToc::apply(Population & pop) const
 bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
                                Individual * dad, Individual * mom) const
 {
+#ifdef _OPENMP
+	if (omp_get_thread_num() != 0)
+		return true;
+#endif
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 
 	if (m_startTime == 0)
-		m_startTime = clock();
+		m_startTime = time(NULL);
 
 	m_totalCount++;
 	//
-	clock_t lastTime = m_lastTime;
+	time_t lastTime = m_lastTime;
 	if (m_countPerSec == 0) {
-		m_lastTime = clock();
+		m_lastTime = time(NULL);
 	} else {
 		if (m_counter == m_countPerSec) {
-			m_lastTime = clock();
+			m_lastTime = time(NULL);
 			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
-				(double(m_lastTime - m_startTime) / CLOCKS_PER_SEC) << endl);
+				difftime(m_lastTime - m_startTime) << endl);
 			m_counter = 0;
 		} else {
-			m_lastTime += static_cast<double>(CLOCKS_PER_SEC) / m_countPerSec;
+			m_lastTime += 1. / m_countPerSec;
 			++m_counter;
 		}
 	}
 
-	double overallTime = static_cast<double>(m_lastTime - m_startTime) / CLOCKS_PER_SEC;
+	double overallTime = difftime(m_lastTime, m_startTime);
 	if (overallTime > 5 && m_counter == 0) { // over 5s
 		m_countPerSec = static_cast<ULONG>(m_totalCount / overallTime);
 		DBG_DO(DBG_OPERATOR, cerr	<< m_totalCount << " hits after " << overallTime << " seconds. Using "
@@ -890,7 +899,7 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 		else {
 			// since last time
 			out << "Elapsed time: " << std::fixed << std::setprecision(2)
-			    << static_cast<double>(m_lastTime - lastTime) / CLOCKS_PER_SEC
+			    << difftime(m_lastTime, lastTime)
 			    << "s\t Overall time: " << overallTime << "s"
 			    << std::resetiosflags(std::ios::fixed) << std::setprecision(-1) << endl;
 		}
