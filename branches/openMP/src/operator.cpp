@@ -877,7 +877,7 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 		if (m_counter == m_countPerSec) {
 			m_lastTime = time(NULL);
 			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
-				difftime(m_lastTime - m_startTime) << endl);
+				difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
 			m_lastTime += 1. / m_countPerSec;
