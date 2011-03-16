@@ -1303,28 +1303,27 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		Exception * except = NULL;
 #  pragma omp parallel
 		{
-		  
-		 try {
-			int tid = omp_get_thread_num();
-			RawIndIterator local_it = offBegin + tid * (offPopSize / nThreads);
-			RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + offPopSize / nThreads;
-			while (local_it != local_offEnd) {
-			 if(!except){
-				Individual * dad = NULL;
-				Individual * mom = NULL;
-				ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
-				dad = parents.first;
-				mom = parents.second;
-				m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
-			 }else 
-				 break;
+			try {
+				int tid = omp_get_thread_num();
+				RawIndIterator local_it = offBegin + tid * (offPopSize / nThreads);
+				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + offPopSize / nThreads;
+				while (local_it != local_offEnd) {
+					if (except)
+						break;
+					Individual * dad = NULL;
+					Individual * mom = NULL;
+					ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+					dad = parents.first;
+					mom = parents.second;
+					m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
+				}
+			} catch (Exception e) {
+				if (!except)
+					except = new Exception(e);
 			}
-		 } catch (Exception e) {
-			except = new Exception(e); 	 
-		 }
-		 
 		}
-		if(except) throw *except;
+		if (except)
+			throw * except;
 #endif
 	}
 
