@@ -219,6 +219,21 @@ class TestOperator(unittest.TestCase):
         # usePopVars is needed
         infoEval(pop, 'c+4', output='')
 
+    def testIdTagger(self):
+        '''Testing operator IdTagger'''
+        pop = Population(10000, infoFields='ind_id', ancGen=-1)
+        pop.evolve(
+            initOps=[
+                InitSex(),
+                IdTagger(),
+            ],
+            matingScheme=RandomMating(
+                ops=IdTagger()
+            ),
+            gen=10
+        )
+        IDs = [ind.ind_id for ind in pop.allIndividuals()]
+        self.assertEqual(len(set(IDs)), 11*10000)
 
     def testInfoExec(self):
         '''Testing operator InfoExec'''
