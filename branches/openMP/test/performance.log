@@ -1116,3 +1116,44 @@ TestIteratingVSPs : vsp=g1 == [0,0]: 20.0916929245
 TestIteratingVSPs : vsp=g1 == [0,0], g2 == [0,0]: 14.1484260559
 TestIteratingVSPs : 26.9092719555, 17.0902371407, 25.6716480255, 27.338504076, 10.2555968761, 17.7135488987, 9.95432901382, 8.88757300377, 20.0067689419, 15.9673790932, 20.0916929245, 14.1484260559
 TestIteratingVSPs : End of test TestIteratingVSPs
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Wed Mar 16 15:27:45 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3991, module short, optimized, 16 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 146520
+TestBasicRandomMating : loci=10, size=10000: failed
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Wed Mar 16 15:29:53 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3991, module short, optimized, 16 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: failed
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Wed Mar 16 15:30:35 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3991, module short, optimized, 16 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: failed
+TestBasicRandomMating : loci=10, size=100000: 2385
+TestBasicRandomMating : loci=10, size=10000: 10139
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Wed Mar 16 15:31:21 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3991, module short, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 282428
+TestBasicRandomMating : loci=10, size=10000: failed
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Wed Mar 16 15:33:21 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5664)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 3991, module short, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 165876
+TestBasicRandomMating : loci=10, size=10000: failed
+TestBasicRandomMating : loci=10, size=100000: failed
+TestBasicRandomMating : loci=100, size=1000: failed
+TestBasicRandomMating : loci=100, size=10000: failed
+TestBasicRandomMating : loci=100, size=100000: failed
+TestBasicRandomMating : loci=10000, size=1000: failed
+TestBasicRandomMating : loci=10000, size=10000: failed

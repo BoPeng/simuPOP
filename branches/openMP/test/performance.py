@@ -53,6 +53,14 @@ elif '-l' in sys.argv:
     alleleType = 'long'
     sys.argv.remove('-s')
 
+if alleleType == 'all':
+    for t in ['s', 'l', 'b']:
+        ret = subprocess.call([sys.executable, sys.argv[0], '-%s' % t] + sys.argv[1:])
+        if ret != 0:  # if crash or killed
+            print 'Error: A non-zero return value is returned for module %s' % t
+            sys.exit(ret)
+    sys.exit(0)
+    
 numThreads = None
 if '-j' in sys.argv:
     idx = sys.argv.index('-j')
@@ -64,14 +72,6 @@ elif True in [x.startswith('-j') for x in sys.argv]:
     numThreads = int(sys.argv[idx][2:])
     sys.argv.pop(idx)
 
-if alleleType == 'all':
-    for t in ['s', 'l', 'b']:
-        ret = subprocess.call([sys.executable, sys.argv[0], '-%s' % t] + sys.argv[1:])
-        if ret != 0:  # if crash or killed
-            print 'Error: A non-zero return value is returned for module %s' % t
-            sys.exit(ret)
-    sys.exit(0)
-    
 import simuOpt
 simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
 from simuPOP import *
