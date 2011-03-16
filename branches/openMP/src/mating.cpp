@@ -1319,7 +1319,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 				}
 			} catch (Exception e) {
 				if (!except)
-					except = new Exception(e);
+					except = &e;
 			}
 		}
 		if (except)
