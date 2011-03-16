@@ -1300,23 +1300,34 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 #ifdef _OPENMP
 		int offPopSize = offEnd - offBegin;
 		int nThreads = numThreads();
-
+		Exception * except = NULL;
 #  pragma omp parallel
 		{
+		  
+		 try {
 			int tid = omp_get_thread_num();
 			RawIndIterator local_it = offBegin + tid * (offPopSize / nThreads);
 			RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + offPopSize / nThreads;
 			while (local_it != local_offEnd) {
+			 if(!except){
 				Individual * dad = NULL;
 				Individual * mom = NULL;
 				ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
 				dad = parents.first;
 				mom = parents.second;
 				m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
+			 }else 
+				 break;
 			}
+		 } catch (Exception e) {
+			except = new Exception(e); 	 
+		 }
+		 
 		}
+		if(except) throw *except;
 #endif
 	}
+
 	m_ParentChooser->finalize(pop, subPop);
 	m_OffspringGenerator->finalize(pop);
 	return true;
