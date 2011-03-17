@@ -187,7 +187,7 @@ class TestBasicRandomMating(PerformanceTest):
             matingScheme=RandomMating(ops=[
                 MendelianGenoTransmitter(),
                 # in some cases, mating takes so much time so we have to stop in the middle
-                #TicToc(output='', stopAfter=self.time)
+                TicToc(output='', stopAfter=self.time)
             ]),
         )
         return gens
