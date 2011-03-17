@@ -234,6 +234,29 @@ class TestOperator(unittest.TestCase):
         )
         IDs = [ind.ind_id for ind in pop.allIndividuals()]
         self.assertEqual(len(set(IDs)), 11*10000)
+    
+    def testTicToc(self):
+        '''Testing operator TicToc'''
+        pop = Population(10000)
+        gen = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(stopAfter=0.5, output=''),
+            matingScheme=RandomMating(),
+            gen=10000
+        )
+        self.assertLess(gen, 10000)
+        gen = pop.evolve(
+            initOps=InitSex(),
+            matingScheme=RandomMating(
+                ops=[
+                    MendelianGenoTransmitter(),
+                    TicToc(stopAfter=1, output='')
+                ],
+            ),
+            gen=10000
+        )
+        self.assertLess(gen, 20000)
+    
 
     def testInfoExec(self):
         '''Testing operator InfoExec'''
