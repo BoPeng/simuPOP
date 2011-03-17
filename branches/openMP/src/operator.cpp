@@ -1049,13 +1049,16 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               Population * pop, Population * offPop, int dad, int mom, ULONG off)
+                               Population * pop, Population * offPop, int dad, int mom,
+                               const pairu & off)
 {
 	BaseOperator * opPtr = op.clone();
 
-	opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + off,
-		dad < 0 ? NULL : &pop->individual(dad),
-		mom < 0 ? NULL : &pop->individual(mom));
+#pragma omp parallel for
+	for (size_t i = off.first; i < off.second; ++i)
+		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i,
+			dad < 0 ? NULL : &pop->individual(dad),
+			mom < 0 ? NULL : &pop->individual(mom));
 }
 
 

@@ -845,11 +845,11 @@ private:
 
 /** HIDDEN
  *  This function is used to test during mating operators. It simply apply
- *  operator \e op to \e dad, \e mom and \e off of population \e pop.
- *  If index of dad or mom is negative, NULL will be passed.
+ *  operator \e op to \e dad, \e mom to offspring \e off through \e off1
+ *  of population \e pop. If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	Population * pop, Population * offPop, int dad, int mom, ULONG off);
+	Population * pop, Population * offPop, int dad, int mom, const pairu & off);
 
 }
 #endif
