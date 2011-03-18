@@ -733,6 +733,12 @@ public:
 		return "<simuPOP.ParentChooser> (base class)";
 	}
 
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		return false;
+	
+	}
 
 	/// CPPONLY
 	bool initialized() const
@@ -856,6 +862,14 @@ public:
 		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
 	}
 
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
+	}
 
 	/// CPPONLY
 	void initialize(Population & pop, SubPopID sp);
@@ -922,6 +936,14 @@ public:
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
 	}
 
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
+	}
 
 	/// CPPONLY
 	void initialize(Population & pop, SubPopID sp);
