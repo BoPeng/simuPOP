@@ -1,0 +1,60 @@
+TestBasicRandomMating, 2010-11-19 00:48:50,354, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, short, 121085, 11465, 605, 109617, 7146, 490, 3570, 350, 32, 378, 34, 0
+TestRandomMatingWithSelection, 2010-11-19 01:07:44,456, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, short, 97895, 9758, 529, 88894, 5953, 421, 3493, 347, 31, 375, 34, 0
+TestBasicRandomMating, 2010-11-19 03:48:52,273, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, long, 117516, 9375, 580, 61811, 4360, 366, 939, 91, 0, 94, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 08:02:06,744, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, long, 104595, 8274, 518, 56572, 3976, 327, 937, 92, 0, 93, 0, 0
+TestBasicRandomMating, 2010-11-19 08:16:13,211, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, binary, 105032, 10627, 652, 115569, 10480, 571, 22633, 1892, 157, 2820, 246, 1
+TestRandomMatingWithSelection, 2010-11-19 09:11:37,389, cn283, x86_64, python2.6.1, simuPOP-1.0.5svn, rev3909, binary, 86782, 8574, 515, 99707, 9387, 498, 21294, 1769, 143, 2739, 240, 1
+TestBasicRandomMating, 2010-11-18 23:44:24,219, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, short, 196317, 17964, 1558, 163671, 15371, 823, 11084, 985, 0, 1141, 0, 0
+TestRandomMatingWithSelection, 2010-11-18 23:55:04,712, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, short, 153905, 14044, 1068, 134249, 12094, 639, 10665, 928, 0, 1129, 0, 0
+TestBasicRandomMating, 2010-11-19 00:04:09,565, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, long, 184215, 17016, 1090, 152104, 8822, 619, 2823, 273, 0, 287, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 00:13:32,820, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, long, 148274, 13179, 812, 123223, 6902, 465, 2791, 268, 0, 286, 0, 0
+TestBasicRandomMating, 2010-11-19 00:24:48,127, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, binary, 135229, 13745, 1243, 152524, 14353, 1252, 30345, 2060, 157, 6516, 568, 0
+TestRandomMatingWithSelection, 2010-11-19 00:39:54,003, bp8.mdacc.tmc.edu, i386, python2.6.4, simuPOP-1.0.5svn, rev3909, binary, 116237, 10118, 755, 124195, 11302, 893, 28859, 1819, 141, 6339, 546, 0
+TestBasicRandomMating, 2010-11-19 08:53:45,476, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 211610, 21746, 1911, 84229, 7925, 568, 1154, 114, 0, 114, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 09:03:00,003, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 173220, 16624, 1247, 74456, 6972, 469, 1148, 113, 0, 114, 0, 0
+TestBasicRandomMating, 2010-11-19 09:10:03,186, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 213231, 20950, 1236, 80767, 6290, 466, 900, 0, 0, 0, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 09:17:17,194, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 159159, 15737, 907, 73170, 5271, 380, 985, 0, 0, 0, 0, 0
+TestBasicRandomMating, 2010-11-19 09:28:30,361, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 172539, 16624, 1595, 186192, 17997, 1593, 48242, 3209, 250, 4439, 397, 0
+TestRandomMatingWithSelection, 2010-11-19 09:42:40,795, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 126550, 11687, 996, 149178, 14010, 1111, 44914, 2771, 211, 4364, 386, 0
+TestBasicRandomMating, 2010-11-19 20:59:15,177, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, short, 153542, 14334, 1087, 57323, 5131, 435, 914, 91, 0, 92, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 21:08:33,111, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, short, 125591, 11522, 793, 52358, 4557, 360, 920, 91, 0, 92, 0, 0
+TestBasicRandomMating, 2010-11-19 21:15:35,971, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, long, 151324, 13370, 864, 48544, 4426, 372, 802, 0, 0, 0, 0, 0
+TestRandomMatingWithSelection, 2010-11-19 21:22:55,194, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, long, 122157, 10537, 644, 44423, 3766, 303, 799, 0, 0, 0, 0, 0
+TestBasicRandomMating, 2010-11-19 21:34:11,249, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 121370, 11448, 1082, 131283, 12124, 809, 24241, 2148, 174, 2947, 262, 0
+TestRandomMatingWithSelection, 2010-11-19 21:50:01,289, BoPeng-PC, x86, python2.7, simuPOP-1.0.5svn, rev3908, binary, 88128, 8094, 605, 102077, 9102, 589, 22378, 1882, 150, 2906, 258, 0
+TestDuringMatingPyOperator, 2010-11-22 15:46:10,328, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 99587, 9876, 983, 62881, 6226, 620, 40773, 4058, 404
+TestPyOperatorFuncCall, 2010-11-22 15:58:11,961, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, short, 1607756, 171974, 17569, 69496, 7068, 711, 108742, 10712, 1069, 63986, 6457, 643
+TestDuringMatingPyOperator, 2010-11-22 16:07:12,930, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 99454, 9907, 970, 62520, 6135, 625, 39766, 3976, 401
+TestPyOperatorFuncCall, 2010-11-22 16:19:14,456, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, long, 1636474, 173402, 17866, 69751, 7064, 703, 108045, 10846, 1071, 65887, 6507, 655
+TestDuringMatingPyOperator, 2010-11-22 16:28:15,986, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 96354, 9598, 961, 61322, 6132, 612, 39963, 3962, 401
+TestPyOperatorFuncCall, 2010-11-22 16:40:17,589, EPIW-072552, x86, python2.7, simuPOP-1.0.5svn, rev3819, binary, 1501125, 168158, 15945, 71838, 7226, 730, 106338, 10498, 1053, 63495, 6428, 642
+TestBasicRandomMating, 2010-11-22 19:29:42,409, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, short, 190572, 17918, 1498, 163089, 15152, 798, 10810, 969, 0, 1117, 0, 0
+TestDuringMatingPyOperator, 2010-11-22 19:38:44,712, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, short, 30512, 3131, 314, 22890, 2266, 225, 14558, 1468, 147
+TestPyOperatorFuncCall, 2010-11-22 19:50:48,725, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, short, 1283561, 144727, 14490, 26755, 2670, 267, 34675, 3564, 353, 24918, 2503, 249
+TestRandomMatingWithSelection, 2010-11-22 20:03:05,569, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, short, 152719, 13968, 1047, 135254, 12131, 625, 10536, 926, 0, 1115, 0, 0
+TestBasicRandomMating, 2010-11-22 20:12:10,195, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, long, 181013, 16580, 1047, 149803, 8727, 612, 2795, 270, 0, 283, 0, 0
+TestDuringMatingPyOperator, 2010-11-22 20:21:11,622, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, long, 32281, 3269, 326, 23878, 2408, 242, 15015, 1498, 150
+TestPyOperatorFuncCall, 2010-11-22 20:33:15,242, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, long, 1304499, 145874, 14638, 26609, 2712, 271, 35249, 3536, 355, 25902, 2600, 257
+TestRandomMatingWithSelection, 2010-11-22 20:42:37,712, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, long, 145680, 13074, 796, 122134, 6793, 461, 2763, 267, 0, 284, 0, 0
+TestBasicRandomMating, 2010-11-22 20:53:52,230, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, binary, 138656, 13601, 1230, 151639, 14171, 1209, 29639, 2035, 156, 6450, 563, 0
+TestDuringMatingPyOperator, 2010-11-22 21:02:54,148, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, binary, 33298, 3306, 332, 24189, 2403, 240, 14700, 1478, 147
+TestPyOperatorFuncCall, 2010-11-22 21:14:58,239, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, binary, 1270969, 141657, 14227, 27741, 2750, 276, 34135, 3445, 340, 24877, 2476, 248
+TestRandomMatingWithSelection, 2010-11-22 21:30:04,789, bp8.mdacc.tmc.edu, i386, python3.1.2, simuPOP-1.0.5, rev3916, binary, 115439, 10129, 748, 122565, 11094, 880, 28424, 1806, 140, 6356, 537, 0
+TestBasicRandomMating, 2010-12-02 21:43:42,948, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, short, 224860, 20456, 1637, 183819, 17065, 813, 11151, 1000, 95, 1157, 113, 0
+TestDuringMatingPyOperator, 2010-12-02 21:52:43,104, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, short, 100663, 10034, 1008, 54714, 5479, 548, 45363, 4566, 458
+TestPyOperatorFuncCall, 2010-12-02 22:04:43,149, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, short, 1569101, 170607, 17308, 60412, 6208, 621, 114187, 11545, 1152, 58546, 5906, 590
+TestRandomMatingWithSelection, 2010-12-02 22:18:44,101, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, short, 191067, 17422, 1271, 160399, 15211, 700, 10854, 968, 93, 1149, 111, 0
+TestBasicRandomMating, 2010-12-02 22:27:46,004, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, long, 212939, 18954, 1061, 167290, 9470, 626, 2838, 276, 0, 288, 0, 0
+TestDuringMatingPyOperator, 2010-12-02 22:36:46,037, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, long, 98605, 10001, 1003, 58260, 5853, 586, 46671, 4658, 467
+TestPyOperatorFuncCall, 2010-12-02 22:48:46,277, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, long, 1556909, 169139, 17143, 63011, 6412, 641, 114341, 11424, 1145, 62113, 6236, 629
+TestRandomMatingWithSelection, 2010-12-02 22:58:05,984, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, long, 183204, 16585, 902, 146660, 8007, 542, 2810, 273, 0, 288, 0, 0
+TestBasicRandomMating, 2010-12-02 23:09:06,516, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, binary, 182538, 17388, 1604, 189965, 17803, 1455, 54482, 2399, 194, 6706, 635, 0
+TestDuringMatingPyOperator, 2010-12-02 23:18:06,678, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, binary, 103787, 10516, 1072, 51983, 5237, 523, 46577, 4677, 472
+TestPyOperatorFuncCall, 2010-12-02 23:30:06,880, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, binary, 1599957, 174508, 17734, 64290, 6540, 653, 115046, 11566, 1160, 57142, 5852, 572
+TestRandomMatingWithSelection, 2010-12-02 23:44:50,530, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3929, binary, 158805, 14739, 1065, 163190, 15567, 1180, 51672, 2190, 184, 6634, 622, 0
+TestIteratingVSPs, 2010-12-13 11:25:42,202, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3935, short, 27.8534560204, 17.2787618637, 24.92126894, 25.7446579933, 9.21888995171, 17.1462759972, 9.84812307358, 8.65429806709, 19.5635111332, 30.8949940205, 19.0502281189, 13.4970650673
+TestIteratingVSPs, 2010-12-13 11:29:44,258, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3935, long, 33.5653069019, 17.6443378925, 29.3945989609, 26.7288861275, 12.0771510601, 17.3996639252, 9.64560508728, 8.80723905563, 19.773900032, 31.0596740246, 17.8909180164, 12.2274801731
+TestIteratingVSPs, 2010-12-13 11:33:31,478, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3935, binary, 26.5075230598, 16.6792230606, 24.7255008221, 26.7625498772, 9.17170000076, 16.7181019783, 9.43515896797, 8.89712309837, 19.7716641426, 30.0182719231, 18.9365000725, 13.6037268639
+TestIteratingVSPs, 2010-12-13 13:05:42,822, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3939, short, 29.6518850327, 17.647439003, 26.4478988647, 28.7404909134, 9.28723907471, 17.8801789284, 9.70996403694, 8.94170308113, 19.8765981197, 15.3679151535, 19.0578670502, 13.5040378571
+TestIteratingVSPs, 2010-12-13 13:09:16,445, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3939, long, 27.6505198479, 17.1649668217, 25.318076849, 26.7217750549, 9.43466901779, 17.2338070869, 9.70110607147, 8.66947102547, 19.3166370392, 14.7996060848, 18.5042960644, 13.0827598572
+TestIteratingVSPs, 2010-12-13 13:12:56,564, bp8.mdacc.tmc.edu, x86_64, python2.7, simuPOP-1.0.6svn, rev3939, binary, 26.9092719555, 17.0902371407, 25.6716480255, 27.338504076, 10.2555968761, 17.7135488987, 9.95432901382, 8.88757300377, 20.0067689419, 15.9673790932, 20.0916929245, 14.1484260559
