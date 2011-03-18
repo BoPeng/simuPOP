@@ -283,6 +283,25 @@ public:
 	/// CPPONLY
 	bool applicableToOffspring(const Population & pop, RawIndIterator offspring) const;
 
+
+	/// CPPONLY
+	virtual bool parallelizable()
+	{
+		return false;
+	}
+
+
+	/// CPPONLY
+	virtual void initialize(const Individual & ind) const
+	{
+	}
+
+	/// CPPONLY
+	virtual void initializeIfNeeded(const Individual & ind) const
+	{
+	}
+
+
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
 	void setFlags();

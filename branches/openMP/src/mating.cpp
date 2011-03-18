@@ -239,6 +239,11 @@ Sex OffspringGenerator::getSex(UINT count)
 
 void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop) {
+		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
+	}	
 	m_initialized = true;
 }
 
@@ -1285,7 +1290,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 	RawIndIterator it = offBegin;
 	// If the parent chooser is not parallelizable, or if openMP is not supported
 	// or if number of thread is set to 1, use the sequential method.
-	if (!m_ParentChooser->parallelizable() || numThreads() == 1) {
+	if (!m_ParentChooser->parallelizable() || numThreads() == 1 || !m_OffspringGenerator->parallelizable()) {
 		while (it != offEnd) {
 			Individual * dad = NULL;
 			Individual * mom = NULL;
@@ -1300,7 +1305,8 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 #ifdef _OPENMP
 		int offPopSize = offEnd - offBegin;
 		int nThreads = numThreads();
-		Exception * except = NULL;
+		int except = 0;
+		string msg;
 #  pragma omp parallel
 		{
 			try {
@@ -1317,13 +1323,43 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 					mom = parents.second;
 					m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
 				}
-			} catch (Exception e) {
+			} catch (StopEvolution e) {
+				if (!except){
+				  except = 1;
+				  msg = e.message();
+				}
+			} catch (ValueError e) { 
+				if (!except){
+				  except = 2;
+				  msg = e.message();
+				}
+			} catch (RuntimeError e){
+				if (!except){
+				  except = 3;
+				  msg = e.message();
+				}
+			} catch (Exception e){
+				if (!except){
+				  except = 4;
+				  msg = e.message();
+				}			
+			} catch (...) {
 				if (!except)
-					except = &e;
+				  except = -1;  
 			}
+
 		}
-		if (except)
-			throw * except;
+
+		if (except == 1)
+			throw  StopEvolution(msg);
+		else if(except == 2)
+			throw ValueError(msg);
+		else if(except == 3)
+			throw RuntimeError(msg);
+		else if(except == 4)
+			throw Exception(msg);
+		else if (except == -1)
+			throw Exception("Unexpected error from openMP parallel region");
 #endif
 	}
 

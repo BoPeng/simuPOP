@@ -589,6 +589,19 @@ public:
 	 */
 	Sex getSex(UINT count);
 
+
+	/// CPPONLY
+	bool parallelizable()
+	{
+		opList::const_iterator iop = m_transmitters.begin();
+		opList::const_iterator iopEnd = m_transmitters.end();
+		for (; iop != iopEnd; ++iop) {
+			if(!(*iop)->parallelizable())
+				return false;
+		}
+		return true;
+	}
+
 protected:
 	/// number of offspring
 	NumOffModel * m_numOffModel;
