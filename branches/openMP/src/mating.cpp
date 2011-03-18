@@ -1283,17 +1283,50 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		Individual * dad = NULL;
-		Individual * mom = NULL;
-		ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
-		dad = parents.first;
-		mom = parents.second;
+	// If the parent chooser is not parallelizable, or if openMP is not supported
+	// or if number of thread is set to 1, use the sequential method.
+	if (!m_ParentChooser->parallelizable() || numThreads() == 1) {
+		while (it != offEnd) {
+			Individual * dad = NULL;
+			Individual * mom = NULL;
+			ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+			dad = parents.first;
+			mom = parents.second;
 
-		//
-		UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
-		(void)numOff;             // silent warning about unused variable.
+			m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
+		}
+	} else {
+		// in this case, openMP must have been supported with numThreads() > 1
+#ifdef _OPENMP
+		int offPopSize = offEnd - offBegin;
+		int nThreads = numThreads();
+		Exception * except = NULL;
+#  pragma omp parallel
+		{
+			try {
+				int tid = omp_get_thread_num();
+				RawIndIterator local_it = offBegin + tid * (offPopSize / nThreads);
+				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + offPopSize / nThreads;
+				while (local_it != local_offEnd) {
+					if (except)
+						break;
+					Individual * dad = NULL;
+					Individual * mom = NULL;
+					ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+					dad = parents.first;
+					mom = parents.second;
+					m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
+				}
+			} catch (Exception e) {
+				if (!except)
+					except = &e;
+			}
+		}
+		if (except)
+			throw * except;
+#endif
 	}
+
 	m_ParentChooser->finalize(pop, subPop);
 	m_OffspringGenerator->finalize(pop);
 	return true;
