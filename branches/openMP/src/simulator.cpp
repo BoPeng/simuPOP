@@ -323,8 +323,6 @@ vectoru Simulator::evolve(
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
 					                        << "During-mating Operator at replicate " + toStr(curRep) << endl);
-				if (e.message()[0] != '\0')
-				    cerr << e.message() << endl;
 				
 				fill(activeReps.begin(), activeReps.end(), false);
 				numStopped = activeReps.size();
