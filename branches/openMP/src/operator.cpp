@@ -1054,6 +1054,7 @@ void applyDuringMatingOperator(const BaseOperator & op,
 {
 	BaseOperator * opPtr = op.clone();
 
+	opPtr->initializeIfNeeded(*pop->rawIndBegin());
 #pragma omp parallel for
 	for (int i = off.first; i < off.second; ++i)
 		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i,
