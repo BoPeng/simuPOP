@@ -9,6 +9,7 @@ New features:
   - Expose function Population::virtualSplitter
   - Allow single input for parameters cutoff and values of operator InfoSplitter.
   - Allow the use of vsp name in function Population.individuals().
+  - Support boost 1.45.0, 1.46.0. and 1.46.1.
 
 BUG:
   - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
