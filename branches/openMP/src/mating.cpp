@@ -1291,6 +1291,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 	// If the parent chooser is not parallelizable, or if openMP is not supported
 	// or if number of thread is set to 1, use the sequential method.
 	if (!m_ParentChooser->parallelizable() || numThreads() == 1 || !m_OffspringGenerator->parallelizable()) {
+		DBG_DO(DBG_MATING, cerr << "Mating is done in single-thread mode" << endl);
 		while (it != offEnd) {
 			Individual * dad = NULL;
 			Individual * mom = NULL;
@@ -1301,6 +1302,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 			m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
 		}
 	} else {
+		DBG_DO(DBG_MATING, cerr << "Mating is done in " << numThreads() << " threads" << endl);
 		// in this case, openMP must have been supported with numThreads() > 1
 #ifdef _OPENMP
 		int offPopSize = offEnd - offBegin;
