@@ -51,7 +51,7 @@ elif '-s' in sys.argv:
     sys.argv.remove('-s')
 elif '-l' in sys.argv:
     alleleType = 'long'
-    sys.argv.remove('-s')
+    sys.argv.remove('-l')
 
 if alleleType == 'all':
     for t in ['s', 'l', 'b']:
