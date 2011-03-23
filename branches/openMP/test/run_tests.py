@@ -33,17 +33,17 @@
 #       Run tests for 'short', 'long', and 'binary' modules and summarize
 #       outputs
 #
-#   run_tests.py [ short | long | binary ]
-#       Run the tests for specified modules.
+#   run_tests.py [ short | long | binary ] [-j#]
+#       Run the tests for specified modules, or with specified number of threads
 #
 import re, unittest, sys, os
 
 from simuOpt import setOptions
-if len(sys.argv) > 1:
-    setOptions(alleleType = sys.argv[1])
-
-if len(sys.argv) > 2:
-    setOptions(numThreads = int(sys.argv[2]))
+for arg in sys.argv:
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    if arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
 
 def importTests():
     tests = unittest.TestSuite()
@@ -64,8 +64,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         for allele in ['binary', 'short', 'long']:
             for numThreads in [1, 4]:
-                print('\n\n===== Testing %s module (%d threads) =====\n\n' % (allele, numThreads))
-                os.system('%s %s %s' % (sys.argv[0], allele, numThreads))
+                os.system('%s %s -j%d' % (sys.argv[0], allele, numThreads))
     else:
+        from simuPOP import moduleInfo
+        print('\n\n===== Testing %s module (%d threads) =====\n\n' % (moduleInfo()['alleleType'],
+                moduleInfo()['threads']))
         test_runner = unittest.TextTestRunner(verbosity=2)
         test_runner.run(importTests())
