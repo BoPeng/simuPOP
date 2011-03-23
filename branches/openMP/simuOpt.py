@@ -208,7 +208,8 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     numThreads
         Number of Threads that will be used to execute a simuPOP script. The
         values can be a positive number (number of threads) or 0 (all available
-        cores of the computer). The default number is 1.
+        cores of the computer, or whatever number set by environmental variable
+        ``OMP_NUM_THREADS``). The default number is 1.
     '''
     # Optimized
     if optimized in [True, False]:

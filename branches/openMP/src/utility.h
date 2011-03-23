@@ -131,7 +131,8 @@ void checkRefCount();
 // ////////////////////////////////////////////////////////////
 
 /** Set number of thread in openMP. The number of threads can be be positive,
- *  integer (number of threads) or 0, which implies all available cores.
+ *  integer (number of threads) or 0, which implies all available cores, or
+ *  a number set by environmental variable \c OMP_NUM_THREADS.
  */
 void setOptions(const int numThreads = -1);
 
