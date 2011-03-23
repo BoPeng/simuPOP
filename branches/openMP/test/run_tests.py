@@ -42,6 +42,9 @@ from simuOpt import setOptions
 if len(sys.argv) > 1:
     setOptions(alleleType = sys.argv[1])
 
+if len(sys.argv) > 2:
+    setOptions(numThreads = int(sys.argv[2]))
+
 def importTests():
     tests = unittest.TestSuite()
 
@@ -60,8 +63,9 @@ def importTests():
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         for allele in ['binary', 'short', 'long']:
-            print('\n\n===== Testing %s module =====\n\n' % allele)
-            os.system('%s %s' % (sys.argv[0], allele))
+            for numThreads in [1, 4]:
+                print('\n\n===== Testing %s module (%d threads) =====\n\n' % (allele, numThreads))
+                os.system('%s %s %s' % (sys.argv[0], allele, numThreads))
     else:
         test_runner = unittest.TextTestRunner(verbosity=2)
         test_runner.run(importTests())
