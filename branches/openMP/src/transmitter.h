@@ -235,7 +235,7 @@ public:
 
 
 	/// CPPONLY
-	bool parallelizable()
+	bool parallelizable() const
 	{
 		return true;
 	}

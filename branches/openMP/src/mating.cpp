@@ -230,6 +230,12 @@ ULONG OffspringGenerator::numOffspring(int gen)
 
 }
 
+ULONG OffspringGenerator::granuity()
+{
+	return m_numOffModel->granuity();
+
+}
+
 
 Sex OffspringGenerator::getSex(UINT count)
 {
@@ -1306,6 +1312,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		// in this case, openMP must have been supported with numThreads() > 1
 #ifdef _OPENMP
 		int offPopSize = offEnd - offBegin;
+		int numOffspring = m_OffspringGenerator->granuity();
 		int nThreads = numThreads();
 		int except = 0;
 		string msg;
@@ -1313,8 +1320,8 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		{
 			try {
 				int tid = omp_get_thread_num();
-				RawIndIterator local_it = offBegin + tid * (offPopSize / nThreads);
-				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + offPopSize / nThreads;
+				RawIndIterator local_it = offBegin + tid * (numOffspring*((offPopSize / nThreads)/numOffspring));
+				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + (numOffspring*((offPopSize / nThreads)/numOffspring));
 				while (local_it != local_offEnd) {
 					if (except)
 						break;
@@ -1364,7 +1371,6 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 			throw Exception("Unexpected error from openMP parallel region");
 #endif
 	}
-
 	m_ParentChooser->finalize(pop, subPop);
 	m_OffspringGenerator->finalize(pop);
 	return true;

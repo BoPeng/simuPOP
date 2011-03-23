@@ -57,6 +57,10 @@ public:
 
 	virtual void reset() {}
 	virtual SexModel * clone() = 0;
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
 
 };
 
@@ -77,6 +81,11 @@ public:
 		return MALE;
 	}
 
+	bool parallelizable() const
+	{
+		return true;
+	}
+
 
 };
 
@@ -95,6 +104,11 @@ public:
 	Sex getSex(UINT)
 	{
 		return getRNG().randBit() ? MALE : FEMALE;
+	}
+
+	bool parallelizable() const
+	{
+		return true;
 	}
 
 
@@ -121,6 +135,10 @@ public:
 		return getRNG().randUniform() < m_probOfMales ? MALE : FEMALE;
 	}
 
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	double m_probOfMales;
@@ -147,6 +165,10 @@ public:
 		return count < m_numOfMales ? MALE : FEMALE;
 	}
 
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	UINT m_numOfMales;
@@ -172,6 +194,10 @@ public:
 		return count < m_numOfFemales ? FEMALE : MALE;
 	}
 
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	UINT m_numOfFemales;
@@ -195,6 +221,10 @@ public:
 		return m_sex[count % m_sex.size()];
 	}
 
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	vector<Sex> m_sex;
@@ -224,7 +254,10 @@ public:
 		m_index = 0;
 	}
 
-
+	bool parallelizable() const
+	{
+		return false;
+	}
 private:
 	vector<Sex> m_sex;
 	int m_index;
@@ -254,6 +287,10 @@ public:
 		m_generator.set(NULL);
 	}
 
+	bool parallelizable() const
+	{
+		return false;
+	}
 
 private:
 	pyFunc m_func;
@@ -270,7 +307,10 @@ public:
 
 	virtual void reset() {}
 	virtual NumOffModel * clone() = 0;
-
+	virtual int granuity()
+	{
+		return 0;
+	}
 };
 
 /// CPPONLY
@@ -293,6 +333,10 @@ public:
 		return m_numOff;
 	}
 
+	int granuity()
+	{
+		return m_numOff;
+	}
 
 private:
 	UINT m_numOff;
@@ -583,6 +627,14 @@ public:
 	 */
 	ULONG numOffspring(int gen);
 
+
+	/** CPPONLY
+	 *	Return the number of  offspring, if the model is ConstNumOffModel
+	 *	Return 0, if use others model
+	 */
+	ULONG granuity();
+
+
 	/** CPPONLY
 	 *  return sex according to m_sexParam, m_sexMode and
 	 *  \e count, which is the index of offspring
@@ -593,6 +645,10 @@ public:
 	/// CPPONLY
 	bool parallelizable()
 	{
+		if (!m_sexModel->parallelizable())
+			return false;
+		if (m_numOffModel->granuity() <= 0)
+			return false;
 		opList::const_iterator iop = m_transmitters.begin();
 		opList::const_iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {

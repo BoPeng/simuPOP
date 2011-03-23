@@ -285,7 +285,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool parallelizable()
+	virtual bool parallelizable() const
 	{
 		return false;
 	}
@@ -779,6 +779,13 @@ public:
 
 	/// HIDDEN
 	string describe(bool format = true) const;
+
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	const double m_stopAfter;
