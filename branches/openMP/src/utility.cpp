@@ -413,7 +413,8 @@ int simuPOP_getch(void)
 void setOptions(const int numThreads)
 {
 #ifdef _OPENMP
-	if (numThreads != 0)
+    // if numThreads is zero, all all threads will be used.
+	if (numThreads > 0)
 		omp_set_num_threads(numThreads);
 #endif
 }

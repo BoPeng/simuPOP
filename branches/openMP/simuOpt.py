@@ -111,7 +111,7 @@ simuOptions = {
     'Version': None,
     'Revision': None,
     'GUI': True,
-    'NumThreads': None,
+    'NumThreads': 1,
 }
 
 # Optimized: command line option --optimized or environmental variable SIMUOPTIMIZED
@@ -206,7 +206,9 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         Obsolete with the introduction of parameter version.
         
     numThreads
-        Number of Threads in openMP. The default number is number of cores.
+        Number of Threads that will be used to execute a simuPOP script. The
+        values can be a positive number (number of threads) or 0 (all available
+        cores of the computer). The default number is 1.
     '''
     # Optimized
     if optimized in [True, False]:

@@ -130,11 +130,10 @@ void checkRefCount();
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
 
-/** Set number of thread in openMP. The number of threads must be positive integer.
- *  For example: <tt>setOptions(8);</tt>
- *  Eight threads will be used in simuPOP.
+/** Set number of thread in openMP. The number of threads can be be positive,
+ *  integer (number of threads) or 0, which implies all available cores.
  */
-void setOptions(const int numThreads = 0);
+void setOptions(const int numThreads = -1);
 
 /// CPPONLY get number of thread in openMP
 int numThreads();
