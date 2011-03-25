@@ -130,11 +130,11 @@ void checkRefCount();
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
 
-/** Set number of thread in openMP. The number of threads must be positive integer.
- *  For example: <tt>setOptions(8);</tt>
- *  Eight threads will be used in simuPOP.
+/** Set number of thread in openMP. The number of threads can be be positive,
+ *  integer (number of threads) or 0, which implies all available cores, or
+ *  a number set by environmental variable \c OMP_NUM_THREADS.
  */
-void setOptions(const int numThreads = 0);
+void setOptions(const int numThreads = -1);
 
 /// CPPONLY get number of thread in openMP
 int numThreads();
@@ -1633,6 +1633,9 @@ public:
 	 */
 	RNG(const char * name = NULL, unsigned long seed = 0);
 
+	/// CPPONLY Copy contructor, needed because of m_RNG
+	RNG(const RNG &);
+
 	///
 	~RNG();
 
@@ -1647,7 +1650,7 @@ public:
 	/** Return the name of the current random number generator.
 	 *  <group>2-info</group>
 	 */
-	const char * name()
+	const char * name() const
 	{
 		return gsl_rng_name(m_RNG);
 	}
@@ -1657,7 +1660,7 @@ public:
 	 *  repeat a previous session.
 	 *  <group>2-info</group>
 	 */
-	unsigned long seed()
+	unsigned long seed() const
 	{
 		return m_seed;
 	}
@@ -1823,6 +1826,12 @@ private:
 
 /// return the currently used random number generator
 RNG & getRNG();
+
+/** Set the type or seed of existing random number generator using RNG \e name
+ *  with \e seed. If using openMP, it sets the type or seed of random number
+ *  generator of each thread.
+ */
+void setRNG(const char * name = NULL, unsigned long seed = 0);
 
 /// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);

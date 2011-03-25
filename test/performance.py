@@ -13,11 +13,12 @@
 #
 # Usage:
 #
-#     performance.py [--alleleType=binary|short|long] [testname1] [testname2] ...
+#     performance.py [-b|s|l] [-j #] [testname1] [testname2] ...
 #
 # where
-#     testname can be any string within a test. If --alleleType is unspecified
-#     this script will be run for all three allele types.
+#     testname can be any string within a test. If -b (binary) -s (short) or -l (long)
+#     allele type is unspecified this script will be run for all three allele types.
+#     -j # specifies number of threads, all threads will be used by default.
 #
 # All the test results will be written to a file 'performance.log'
 #
@@ -42,23 +43,37 @@ if sys.version_info[0] >= 3:
 
 alleleType = 'all'
 # allele type can be specified by --alleleType=long/short/binary
-if True in [x.startswith('--alleleType=') for x in sys.argv]:
-    idx = [x.startswith('--alleleType=') for x in sys.argv].index(True)
-    alleleType = sys.argv[idx][13:]
-    if not alleleType in ['short', 'long', 'binary']:
-        raise ValueError('Incorrect allele type. Please use --alleleType=long, short or binary')
-    sys.argv.pop(idx)
+if '-b' in sys.argv:
+    alleleType = 'binary'
+    sys.argv.remove('-b')
+elif '-s' in sys.argv:
+    alleleType = 'short'
+    sys.argv.remove('-s')
+elif '-l' in sys.argv:
+    alleleType = 'long'
+    sys.argv.remove('-l')
 
 if alleleType == 'all':
-    for t in ['short', 'long', 'binary']:
-        ret = subprocess.call([sys.executable, sys.argv[0], '--alleleType=%s' % t] + sys.argv[1:])
+    for t in ['s', 'l', 'b']:
+        ret = subprocess.call([sys.executable, sys.argv[0], '-%s' % t] + sys.argv[1:])
         if ret != 0:  # if crash or killed
             print 'Error: A non-zero return value is returned for module %s' % t
             sys.exit(ret)
     sys.exit(0)
     
+numThreads = None
+if '-j' in sys.argv:
+    idx = sys.argv.index('-j')
+    numThreads = int(sys.argv[idx + 1])
+    sys.argv.pop(idx+1)
+    sys.argv.pop(idx)
+elif True in [x.startswith('-j') for x in sys.argv]:
+    idx = [x.startswith('-j') for x in sys.argv].index(True)
+    numThreads = int(sys.argv[idx][2:])
+    sys.argv.pop(idx)
+
 import simuOpt
-simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True)
+simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
 from simuPOP import *
 
 class PerformanceTest:
@@ -75,8 +90,8 @@ class PerformanceTest:
         if info['optimized']:
             opt = ', optimized'
         self.logger.debug('Python: %s %s' % (info['python'], info['compiler']))
-        self.logger.debug('simuPOP: %s (rev %d, module %s%s)' % \
-            (info['version'], info['revision'], info['alleleType'], opt))
+        self.logger.debug('simuPOP: %s (rev %d, module %s%s, %d threads)' % \
+            (info['version'], info['revision'], info['alleleType'], opt, info['threads']))
         self.logger.debug('Test: %s' % self.description)
         return desc
 
@@ -380,8 +395,8 @@ if __name__ == '__main__':
         summaryFile.setLevel(logging.INFO)
         uname = platform.uname()
         info = moduleInfo()
-        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s, python%s, simuPOP-%s, rev%d, %s, %%(message)s' % \
-            (uname[1], uname[4], info['python'], info['version'], info['revision'], info['alleleType'])))
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s-%dthreads, python%s, simuPOP-%s, rev%d, %s, %%(message)s' % \
+            (uname[1], uname[4], info['threads'], info['python'], info['version'], info['revision'], info['alleleType'])))
         #
         logger.addHandler(logFile)
         logger.addHandler(summaryFile)

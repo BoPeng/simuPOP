@@ -326,14 +326,13 @@ if not simuOptions['Quiet']:
     info = moduleInfo()
     print "simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (info['version'])
     # compile date, compiler etc are macros that are replaced during compile time.
-    print "Revision %d (%s) for Python %s (%dbit, %dthreads)" % \
-            (info['revision'], info['date'], info['python'], info['wordsize'],info['threads'])
+    print "Revision %d (%s) for Python %s (%dbit, %d%s)" % \
+            (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],
+                    'thread' if info['threads'] == 1 else 'threads')
     print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
-    if info['optimized']:
-        print "This is the optimized %s allele version with %d maximum allelic states." % (info['alleleType'], info['maxAllele']+1)
-    else:
-        print "This is the standard %s allele version with %d maximum allelic states." % (info['alleleType'], info['maxAllele']+1)
+    print "This is the %s %s allele version with %d maximum allelic states." % \
+            ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
     # Turn on general debug information when not in 'quiet' mode
