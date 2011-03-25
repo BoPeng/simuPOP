@@ -1824,6 +1824,12 @@ private:
 /// return the currently used random number generator
 RNG & getRNG();
 
+/** Set the type or seed of existing random number generator using RNG \e name 
+ *  with \e seed. If using openMP, it sets the type or seed of random number 
+ *  generator of each thread.
+ */ 
+void setRNG(const char * name = NULL, unsigned long seed = 0);
+
 /// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 

@@ -3829,16 +3829,39 @@ double Bernullitrials::probSuccRate() const
 #undef unsetBit
 #undef getBit
 
+#ifdef _OPENMP
+// random number generators for each thread
+vector<RNG *> g_RNGs;
+#else
 // random number generator. a global variable.
-// there might be multiple RNG later.
 RNG g_RNG;
+#endif
+
 
 // return the global RNG
 RNG & getRNG()
 {
-    return g_RNG;
+#ifdef _OPENMP
+    return *g_RNGs[omp_get_thread_num()];   
+#else
+	return g_RNG;
+#endif
 }
 
+void setRNG(const char * name, unsigned long seed){
+#ifdef _OPENMP
+	
+	for(int i = 0;i < g_RNGs.size();i++)
+	{
+		if(seed==0)
+			g_RNGs[i]->set(name,seed);
+		else
+			g_RNGs[i]->set(name,seed+i);
+	}
+#else
+	g_RNG.set(name,seed);
+#endif
+}
 
 // Global debug and initialization related functions
 
@@ -4321,6 +4344,18 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
+#if defined _OPENMP
+	
+	for(int i = 0; i < numThreads();i++)
+	{
+		if(i==0)
+		  g_RNGs.push_back(new RNG());
+		else
+		  g_RNGs.push_back(new RNG(NULL,g_RNGs[0]->seed()+i));
+	}
+#endif
+
+#ifndef STANDALONE_EXECUTABLE
     // tie python stdout to cerr
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);
@@ -4386,6 +4421,7 @@ bool initialize()
     // fail on some systems. Such a test will make sure the binary
     testCopyGenotype();
 #  endif
+#endif
 #endif
     return true;
 }
