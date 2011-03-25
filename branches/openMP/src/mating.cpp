@@ -230,6 +230,7 @@ ULONG OffspringGenerator::numOffspring(int gen)
 
 }
 
+
 ULONG OffspringGenerator::granuity()
 {
 	return m_numOffModel->granuity();
@@ -247,9 +248,10 @@ void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
+
 	for (; iop != iopEnd; ++iop) {
 		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
-	}	
+	}
 	m_initialized = true;
 }
 
@@ -1320,8 +1322,8 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		{
 			try {
 				int tid = omp_get_thread_num();
-				RawIndIterator local_it = offBegin + tid * (numOffspring*((offPopSize / nThreads)/numOffspring));
-				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + (numOffspring*((offPopSize / nThreads)/numOffspring));
+				RawIndIterator local_it = offBegin + tid * (numOffspring * ((offPopSize / nThreads) / numOffspring));
+				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + (numOffspring * ((offPopSize / nThreads) / numOffspring));
 				while (local_it != local_offEnd) {
 					if (except)
 						break;
@@ -1333,39 +1335,39 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 					m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
 				}
 			} catch (StopEvolution e) {
-				if (!except){
-				  except = 1;
-				  msg = e.message();
+				if (!except) {
+					except = 1;
+					msg = e.message();
 				}
-			} catch (ValueError e) { 
-				if (!except){
-				  except = 2;
-				  msg = e.message();
+			} catch (ValueError e) {
+				if (!except) {
+					except = 2;
+					msg = e.message();
 				}
-			} catch (RuntimeError e){
-				if (!except){
-				  except = 3;
-				  msg = e.message();
+			} catch (RuntimeError e) {
+				if (!except) {
+					except = 3;
+					msg = e.message();
 				}
-			} catch (Exception e){
-				if (!except){
-				  except = 4;
-				  msg = e.message();
-				}			
+			} catch (Exception e) {
+				if (!except) {
+					except = 4;
+					msg = e.message();
+				}
 			} catch (...) {
 				if (!except)
-				  except = -1;  
+					except = -1;
 			}
 
 		}
 
 		if (except == 1)
 			throw  StopEvolution(msg);
-		else if(except == 2)
+		else if (except == 2)
 			throw ValueError(msg);
-		else if(except == 3)
+		else if (except == 3)
 			throw RuntimeError(msg);
-		else if(except == 4)
+		else if (except == 4)
 			throw Exception(msg);
 		else if (except == -1)
 			throw Exception("Unexpected error from openMP parallel region");

@@ -240,6 +240,7 @@ public:
 		return true;
 	}
 
+
 protected:
 	// cache chromBegin, chromEnd for better performance.
 	mutable vectoru m_chIdx;

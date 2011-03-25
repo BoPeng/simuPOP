@@ -296,6 +296,7 @@ public:
 	{
 	}
 
+
 	/// CPPONLY
 	virtual void initializeIfNeeded(const Individual & ind) const
 	{
@@ -786,6 +787,7 @@ public:
 	{
 		return true;
 	}
+
 
 private:
 	const double m_stopAfter;
