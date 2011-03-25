@@ -233,6 +233,14 @@ public:
 	void transmitGenotype(const Individual & parent,
 		Individual & offspring, int ploidy) const;
 
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 protected:
 	// cache chromBegin, chromEnd for better performance.
 	mutable vectoru m_chIdx;

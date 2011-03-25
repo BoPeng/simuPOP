@@ -413,7 +413,8 @@ int simuPOP_getch(void)
 void setOptions(const int numThreads)
 {
 #ifdef _OPENMP
-	if (numThreads != 0)
+	// if numThreads is zero, all all threads will be used.
+	if (numThreads > 0)
 		omp_set_num_threads(numThreads);
 #endif
 }
@@ -2737,6 +2738,13 @@ RNG::RNG(const char * rng, unsigned long seed) : m_RNG(NULL)
 }
 
 
+RNG::RNG(const RNG & rhs) : m_RNG(NULL)
+{
+	// this will create a new instance of m_RNG.
+	set(rhs.name(), rhs.seed());
+}
+
+
 RNG::~RNG()
 {
 	// free current RNG
@@ -3828,14 +3836,36 @@ double Bernullitrials::probSuccRate() const
 #undef unsetBit
 #undef getBit
 
+#ifdef _OPENMP
+// random number generators for each thread
+vector<RNG> g_RNGs;
+#else
 // random number generator. a global variable.
-// there might be multiple RNG later.
 RNG g_RNG;
+#endif
+
 
 // return the global RNG
 RNG & getRNG()
 {
+#ifdef _OPENMP
+    return g_RNGs[omp_get_thread_num()];
+#else
     return g_RNG;
+#endif
+}
+
+
+void setRNG(const char * name, unsigned long seed)
+{
+#ifdef _OPENMP
+    g_RNGs.resize(numThreads());
+    g_RNGs[0].set(name, seed);
+    for (int i = 1; i < g_RNGs.size(); i++)
+		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
+#else
+    g_RNG.set(name, seed);
+#endif
 }
 
 
@@ -4320,6 +4350,9 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
+    setRNG();
+
+#ifndef STANDALONE_EXECUTABLE
     // tie python stdout to cerr
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);
@@ -4330,11 +4363,11 @@ bool initialize()
 	        cerr << "Warning: Unable to install keyboard interruption handler" << endl;
 	 #endif
 	 */
-#if __WORDSIZE == 32
+#  if __WORDSIZE == 32
     DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
 		"Please report this problem to the simuPOP mailinglist.");
-#endif
+#  endif
     // for example, if WORDBIT is 8 (most likely 32), we define
     // 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
     for (size_t i = 0; i < WORDBIT; ++i) {
@@ -4344,15 +4377,15 @@ bool initialize()
 	}
 
     // give at most 100 ref count warnings.
-#ifdef Py_REF_DEBUG
+#  ifdef Py_REF_DEBUG
     g_refWarningCount = 100;
-#endif
+#  endif
 
     // SIMUPOP_MODULE is passed as name, but we need it to be quoted.
     // Note that under gcc, I could pass the macro from command line
     // using \" \" but this trick does not work under VC.
     // the following process is safer.
-#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
+#  define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
     // set global dictionary/variable
     PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
@@ -4362,7 +4395,7 @@ bool initialize()
     mm = PyImport_AddModule("__main__");
     g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-#ifndef STANDALONE_EXECUTABLE
+#  ifndef STANDALONE_EXECUTABLE
     // get population and Individual type pointer
     g_swigPopType = SWIG_TypeQuery(PopSWIGType);
     g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
@@ -4370,7 +4403,7 @@ bool initialize()
     // g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
     if (g_swigPopType == NULL || g_swigIndividual == NULL)
 		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
-#endif
+#  endif
 
     // load carray function and type
     if (initCustomizedTypes() < 0)
@@ -4379,11 +4412,12 @@ bool initialize()
     // set gsl error handler
     gsl_set_error_handler(&gsl_error_handler);
 
-#ifndef OPTIMIZED
-#  ifdef BINARYALLELE
+#  ifndef OPTIMIZED
+#    ifdef BINARYALLELE
     // binary level genotype copy is compiler dependent and may
     // fail on some systems. Such a test will make sure the binary
     testCopyGenotype();
+#    endif
 #  endif
 #endif
     return true;

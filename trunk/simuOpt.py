@@ -111,7 +111,7 @@ simuOptions = {
     'Version': None,
     'Revision': None,
     'GUI': True,
-    'NumThreads': None,
+    'NumThreads': 1,
 }
 
 # Optimized: command line option --optimized or environmental variable SIMUOPTIMIZED
@@ -127,6 +127,13 @@ elif os.getenv('SIMUALLELETYPE') is not None:
 # Debug: from environmental variable SIMUDEBUG
 if os.getenv('SIMUDEBUG') is not None:
     simuOptions['Debug'].extend(os.getenv('SIMUDEBUG').split(','))
+
+# openMP number of threads
+if os.getenv('OMP_NUM_THREADS') is not None:
+    try:
+        simuOptions['NumThreads'] = int(os.getenv('OMP_NUM_THREADS'))
+    except:
+        print 'Ignoring invalid value for environmental variable OMP_NUM_THREADS'
 
 # GUI: from environmental variable SIMUGUI
 if os.getenv('SIMUGUI') is not None:
@@ -206,7 +213,12 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         Obsolete with the introduction of parameter version.
         
     numThreads
-        Number of Threads in openMP. The default number is number of cores.
+        Number of Threads that will be used to execute a simuPOP script. The
+        values can be a positive number (number of threads) or 0 (all available
+        cores of the computer, or whatever number set by environmental variable
+        ``OMP_NUM_THREADS``). If this parameter is not set, the number of
+        threads will be set to 1, or a value set by environmental variable
+        ``OMP_NUM_THREADS'.
     '''
     # Optimized
     if optimized in [True, False]:

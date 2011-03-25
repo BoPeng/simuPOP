@@ -227,7 +227,22 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 ULONG OffspringGenerator::numOffspring(int gen)
 {
 	return m_numOffModel->getNumOff(gen);
+}
 
+
+bool OffspringGenerator::parallelizable() const
+{
+	if (!m_sexModel->parallelizable())
+		return false;
+	if (!m_numOffModel->parallelizable())
+		return false;
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop) {
+		if (!(*iop)->parallelizable())
+			return false;
+	}
+	return true;
 }
 
 
@@ -239,6 +254,11 @@ Sex OffspringGenerator::getSex(UINT count)
 
 void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop)
+		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
+
 	m_initialized = true;
 }
 
@@ -1283,16 +1303,82 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		Individual * dad = NULL;
-		Individual * mom = NULL;
-		ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
-		dad = parents.first;
-		mom = parents.second;
+	// If the parent chooser is not parallelizable, or if openMP is not supported
+	// or if number of thread is set to 1, use the sequential method.
+	if (!m_ParentChooser->parallelizable() || numThreads() == 1 || !m_OffspringGenerator->parallelizable()) {
+		DBG_DO(DBG_MATING, cerr << "Mating is done in single-thread mode" << endl);
+		while (it != offEnd) {
+			Individual * dad = NULL;
+			Individual * mom = NULL;
+			ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+			dad = parents.first;
+			mom = parents.second;
 
-		//
-		UINT numOff = m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
-		(void)numOff;             // silent warning about unused variable.
+			m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, it, offEnd);
+		}
+	} else {
+		DBG_DO(DBG_MATING, cerr << "Mating is done in " << numThreads() << " threads" << endl);
+		// in this case, openMP must have been supported with numThreads() > 1
+#ifdef _OPENMP
+		int offPopSize = offEnd - offBegin;
+		int numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
+		int nThreads = numThreads();
+		int except = 0;
+		string msg;
+#  pragma omp parallel
+		{
+			try {
+				int tid = omp_get_thread_num();
+				RawIndIterator local_it = offBegin + tid * (numOffspring * ((offPopSize / nThreads) / numOffspring));
+				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + (numOffspring * ((offPopSize / nThreads) / numOffspring));
+				while (local_it != local_offEnd) {
+					if (except)
+						break;
+					Individual * dad = NULL;
+					Individual * mom = NULL;
+					ParentChooser::IndividualPair const parents = m_ParentChooser->chooseParents(pop.rawIndBegin());
+					dad = parents.first;
+					mom = parents.second;
+					m_OffspringGenerator->generateOffspring(pop, offPop, dad, mom, local_it, local_offEnd);
+				}
+			} catch (StopEvolution e) {
+				if (!except) {
+					except = 1;
+					msg = e.message();
+				}
+			} catch (ValueError e) {
+				if (!except) {
+					except = 2;
+					msg = e.message();
+				}
+			} catch (RuntimeError e) {
+				if (!except) {
+					except = 3;
+					msg = e.message();
+				}
+			} catch (Exception e) {
+				if (!except) {
+					except = 4;
+					msg = e.message();
+				}
+			} catch (...) {
+				if (!except)
+					except = -1;
+			}
+
+		}
+
+		if (except == 1)
+			throw  StopEvolution(msg);
+		else if (except == 2)
+			throw ValueError(msg);
+		else if (except == 3)
+			throw RuntimeError(msg);
+		else if (except == 4)
+			throw Exception(msg);
+		else if (except == -1)
+			throw Exception("Unexpected error from openMP parallel region");
+#endif
 	}
 	m_ParentChooser->finalize(pop, subPop);
 	m_OffspringGenerator->finalize(pop);

@@ -58,6 +58,12 @@ public:
 	virtual void reset() {}
 	virtual SexModel * clone() = 0;
 
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
+
+
 };
 
 /// CPPONLY
@@ -78,6 +84,12 @@ public:
 	}
 
 
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 };
 
 /// CPPONLY
@@ -95,6 +107,12 @@ public:
 	Sex getSex(UINT)
 	{
 		return getRNG().randBit() ? MALE : FEMALE;
+	}
+
+
+	bool parallelizable() const
+	{
+		return true;
 	}
 
 
@@ -119,6 +137,12 @@ public:
 	Sex getSex(UINT)
 	{
 		return getRNG().randUniform() < m_probOfMales ? MALE : FEMALE;
+	}
+
+
+	bool parallelizable() const
+	{
+		return true;
 	}
 
 
@@ -148,6 +172,12 @@ public:
 	}
 
 
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	UINT m_numOfMales;
 };
@@ -173,6 +203,12 @@ public:
 	}
 
 
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	UINT m_numOfFemales;
 };
@@ -193,6 +229,12 @@ public:
 	Sex getSex(UINT count)
 	{
 		return m_sex[count % m_sex.size()];
+	}
+
+
+	bool parallelizable() const
+	{
+		return true;
 	}
 
 
@@ -222,6 +264,12 @@ public:
 	void reset()
 	{
 		m_index = 0;
+	}
+
+
+	bool parallelizable() const
+	{
+		return false;
 	}
 
 
@@ -255,6 +303,12 @@ public:
 	}
 
 
+	bool parallelizable() const
+	{
+		return false;
+	}
+
+
 private:
 	pyFunc m_func;
 	pyGenerator m_generator;
@@ -271,6 +325,10 @@ public:
 	virtual void reset() {}
 	virtual NumOffModel * clone() = 0;
 
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
 };
 
 /// CPPONLY
@@ -293,6 +351,11 @@ public:
 		return m_numOff;
 	}
 
+
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 private:
 	UINT m_numOff;
@@ -583,11 +646,16 @@ public:
 	 */
 	ULONG numOffspring(int gen);
 
+
 	/** CPPONLY
 	 *  return sex according to m_sexParam, m_sexMode and
 	 *  \e count, which is the index of offspring
 	 */
 	Sex getSex(UINT count);
+
+
+	/// CPPONLY
+	bool parallelizable() const;
 
 protected:
 	/// number of offspring
@@ -735,6 +803,13 @@ public:
 
 
 	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
+
+
+	/// CPPONLY
 	bool initialized() const
 	{
 		return m_initialized;
@@ -858,6 +933,16 @@ public:
 
 
 	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
+	}
+
+
+	/// CPPONLY
 	void initialize(Population & pop, SubPopID sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
@@ -920,6 +1005,16 @@ public:
 	virtual string describe(bool format = true) const
 	{
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
+	}
+
+
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		// if we choose parents with replacment, we can do that
+		// in parallel. Otherwise, because a parent can only be
+		// chosen once, we can not allow independent selection of parents.
+		return m_replacement;
 	}
 
 
