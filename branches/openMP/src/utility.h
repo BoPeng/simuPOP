@@ -1633,6 +1633,9 @@ public:
 	 */
 	RNG(const char * name = NULL, unsigned long seed = 0);
 
+	/// CPPONLY Copy contructor, needed because of m_RNG
+	RNG(const RNG &);
+
 	///
 	~RNG();
 
@@ -1647,7 +1650,7 @@ public:
 	/** Return the name of the current random number generator.
 	 *  <group>2-info</group>
 	 */
-	const char * name()
+	const char * name() const
 	{
 		return gsl_rng_name(m_RNG);
 	}
@@ -1657,7 +1660,7 @@ public:
 	 *  repeat a previous session.
 	 *  <group>2-info</group>
 	 */
-	unsigned long seed()
+	unsigned long seed() const
 	{
 		return m_seed;
 	}

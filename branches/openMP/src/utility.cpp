@@ -2738,6 +2738,13 @@ RNG::RNG(const char * rng, unsigned long seed) : m_RNG(NULL)
 }
 
 
+RNG::RNG(const RNG & rhs) : m_RNG(NULL)
+{
+	// this will create a new instance of m_RNG.
+	set(rhs.name(), rhs.seed());
+}
+
+
 RNG::~RNG()
 {
 	// free current RNG
@@ -3831,7 +3838,7 @@ double Bernullitrials::probSuccRate() const
 
 #ifdef _OPENMP
 // random number generators for each thread
-vector<RNG *> g_RNGs;
+vector<RNG> g_RNGs;
 #else
 // random number generator. a global variable.
 RNG g_RNG;
@@ -3842,7 +3849,7 @@ RNG g_RNG;
 RNG & getRNG()
 {
 #ifdef _OPENMP
-    return *g_RNGs[omp_get_thread_num()];   
+    return g_RNGs[omp_get_thread_num()];   
 #else
 	return g_RNG;
 #endif
@@ -3850,14 +3857,10 @@ RNG & getRNG()
 
 void setRNG(const char * name, unsigned long seed){
 #ifdef _OPENMP
-	
-	for(int i = 0;i < g_RNGs.size();i++)
-	{
-		if(seed==0)
-			g_RNGs[i]->set(name,seed);
-		else
-			g_RNGs[i]->set(name,seed+i);
-	}
+	g_RNGs.resize(numThreads());
+	g_RNGs[0].set(name, seed);
+	for(int i = 1; i < g_RNGs.size(); i++)
+			g_RNGs[i].set(name, g_RNGs[0].seed() + i);
 #else
 	g_RNG.set(name,seed);
 #endif
@@ -4344,16 +4347,7 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-#if defined _OPENMP
-	
-	for(int i = 0; i < numThreads();i++)
-	{
-		if(i==0)
-		  g_RNGs.push_back(new RNG());
-		else
-		  g_RNGs.push_back(new RNG(NULL,g_RNGs[0]->seed()+i));
-	}
-#endif
+	setRNG();
 
 #ifndef STANDALONE_EXECUTABLE
     // tie python stdout to cerr
