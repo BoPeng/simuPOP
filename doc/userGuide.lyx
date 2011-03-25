@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -24171,47 +24171,44 @@ RNG
 \family typewriter
 mt19937
 \family default
- using a random seed from a system random number generator that guarantees
+ for each thread.
+ It uses a random seed for the first RNG and uses seeds derived from the
+ first seed to initialize RNGs for other threads.
+ The seed is drawn from a system random number generator that guarantees
  random seeds for all instances of simuPOP even if they are initialized
  at the same time.
  After simuPOP is loaded, you can reset this system RNG with a different
  random number generator (c.f.
  
 \family typewriter
-AvailableRNGs()
+moduleInfo()['availableRNGs']
 \family default
 
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
-AvailableRNG
+moduleInfo
 \end_layout
 
 \end_inset
 
-, 
+) or use a specified seed using function , 
 \family typewriter
-getRNG.set(name, seed)
+setRNG(name, seed)
 \family default
-)
+
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
-getRNG
+setRNG
 \end_layout
 
 \end_inset
 
 .
- It is also possible to save the random seed of a simuPOP session (c.f.
- 
-\family typewriter
-getRNG().seed()
-\family default
-) and use it to replay the session later.
- 
+  
 \end_layout
 
 \begin_layout Standard
@@ -24242,6 +24239,13 @@ reference "randomSeed"
 \end_inset
 
  demonstrates how to use these functions to replay an evolutionary process.
+ simuPOP uses a single seed to initialize multiple random number generators
+ used for different threads (seeds for other threads are determined from
+ the first seed) so you only need to save the head seed (
+\family typewriter
+getRNG().seed()
+\family default
+)
 \end_layout
 
 \begin_layout Standard
