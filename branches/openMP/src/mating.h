@@ -325,12 +325,10 @@ public:
 	virtual void reset() {}
 	virtual NumOffModel * clone() = 0;
 
-	virtual int granuity()
+	virtual bool parallelizable() const
 	{
-		return 0;
+		return false;
 	}
-
-
 };
 
 /// CPPONLY
@@ -354,11 +352,10 @@ public:
 	}
 
 
-	int granuity()
+	bool parallelizable() const
 	{
-		return m_numOff;
+		return true;
 	}
-
 
 private:
 	UINT m_numOff;
@@ -651,13 +648,6 @@ public:
 
 
 	/** CPPONLY
-	 *	Return the number of  offspring, if the model is ConstNumOffModel
-	 *	Return 0, if use others model
-	 */
-	ULONG granuity();
-
-
-	/** CPPONLY
 	 *  return sex according to m_sexParam, m_sexMode and
 	 *  \e count, which is the index of offspring
 	 */
@@ -665,21 +655,7 @@ public:
 
 
 	/// CPPONLY
-	bool parallelizable()
-	{
-		if (!m_sexModel->parallelizable())
-			return false;
-		if (m_numOffModel->granuity() <= 0)
-			return false;
-		opList::const_iterator iop = m_transmitters.begin();
-		opList::const_iterator iopEnd = m_transmitters.end();
-		for (; iop != iopEnd; ++iop) {
-			if (!(*iop)->parallelizable())
-				return false;
-		}
-		return true;
-	}
-
+	bool parallelizable() const;
 
 protected:
 	/// number of offspring
@@ -830,7 +806,6 @@ public:
 	virtual bool parallelizable() const
 	{
 		return false;
-
 	}
 
 

@@ -227,14 +227,22 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 ULONG OffspringGenerator::numOffspring(int gen)
 {
 	return m_numOffModel->getNumOff(gen);
-
 }
 
 
-ULONG OffspringGenerator::granuity()
+bool OffspringGenerator::parallelizable() const
 {
-	return m_numOffModel->granuity();
-
+	if (!m_sexModel->parallelizable())
+		return false;
+	if (!m_numOffModel->parallelizable())
+		return false;
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop) {
+		if (!(*iop)->parallelizable())
+			return false;
+	}
+	return true;
 }
 
 
@@ -248,10 +256,9 @@ void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
-
-	for (; iop != iopEnd; ++iop) {
+	for (; iop != iopEnd; ++iop)
 		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
-	}
+
 	m_initialized = true;
 }
 
@@ -1314,7 +1321,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		// in this case, openMP must have been supported with numThreads() > 1
 #ifdef _OPENMP
 		int offPopSize = offEnd - offBegin;
-		int numOffspring = m_OffspringGenerator->granuity();
+		int numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
 		int nThreads = numThreads();
 		int except = 0;
 		string msg;
