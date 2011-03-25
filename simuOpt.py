@@ -218,7 +218,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         cores of the computer, or whatever number set by environmental variable
         ``OMP_NUM_THREADS``). If this parameter is not set, the number of
         threads will be set to 1, or a value set by environmental variable
-        ``OMP_NUM_THREADS'.
+        ``OMP_NUM_THREADS``.
     '''
     # Optimized
     if optimized in [True, False]:

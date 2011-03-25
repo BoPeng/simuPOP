@@ -256,6 +256,7 @@ void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
+
 	for (; iop != iopEnd; ++iop)
 		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
 
