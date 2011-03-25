@@ -329,6 +329,8 @@ public:
 	{
 		return false;
 	}
+
+
 };
 
 /// CPPONLY
@@ -356,6 +358,7 @@ public:
 	{
 		return true;
 	}
+
 
 private:
 	UINT m_numOff;

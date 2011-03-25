@@ -40,7 +40,7 @@ checkout:
 	fi
 	@if [ ! -d tools/jinja2 ]; then \
 	  echo "Checking out Jinja2..."; \
-	  hg  clone http://dev.pocoo.org/hg/jinja2-main tools/jinja2; \
+	  git clone http://github.com/mitsuhiko/jinja2.git tools/jinja2; \
 	fi
 	@if [ ! -d tools/pygments ]; then \
 	  echo "Checking out Pygments..."; \
@@ -54,7 +54,7 @@ checkout:
 update: checkout
 	svn update tools/sphinx
 	svn update tools/docutils
-	cd tools/jinja2; hg update; cd ../..
+	cd tools/jinja2; git pull; cd ../..
 	svn update tools/pygments
 	svn update tools/converter
 
