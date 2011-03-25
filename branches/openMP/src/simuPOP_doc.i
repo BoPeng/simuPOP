@@ -329,6 +329,12 @@ Details:
 
 %ignore simuPOP::BaseOperator::applicableToOffspring(const Population &pop, RawIndIterator offspring) const;
 
+%ignore simuPOP::BaseOperator::parallelizable() const;
+
+%ignore simuPOP::BaseOperator::initialize(const Individual &ind) const;
+
+%ignore simuPOP::BaseOperator::initializeIfNeeded(const Individual &ind) const;
+
 %feature("docstring") simuPOP::BasePenetrance "
 
 Details:
@@ -1139,6 +1145,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::ConstNumOffModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
 %feature("docstring") simuPOP::ContextMutator "
 
 Details:
@@ -1565,6 +1579,14 @@ Usage:
 Usage:
 
     x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::FuncSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -2262,6 +2284,14 @@ Usage:
 Usage:
 
     x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -3839,6 +3869,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::MendelianGenoTransmitter::parallelizable() const;
+
 %feature("docstring") simuPOP::MergeSubPops "
 
 Details:
@@ -4412,6 +4444,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::NoSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
 %ignore simuPOP::NumOfFemalesSexModel;
 
 %feature("docstring") simuPOP::NumOfFemalesSexModel::NumOfFemalesSexModel "
@@ -4435,6 +4475,14 @@ Usage:
 Usage:
 
     x.getSex(count)
+
+"; 
+
+%feature("docstring") simuPOP::NumOfFemalesSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -4480,6 +4528,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::NumOffModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
 %ignore simuPOP::NumOfMalesSexModel;
 
 %feature("docstring") simuPOP::NumOfMalesSexModel::NumOfMalesSexModel "
@@ -4503,6 +4559,14 @@ Usage:
 Usage:
 
     x.getSex(count)
+
+"; 
+
+%feature("docstring") simuPOP::NumOfMalesSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -4617,6 +4681,8 @@ Usage:
 
 %ignore simuPOP::OffspringGenerator::getSex(UINT count);
 
+%ignore simuPOP::OffspringGenerator::parallelizable() const;
+
 %feature("docstring") simuPOP::opList "
 
 "; 
@@ -4698,6 +4764,8 @@ Usage:
 %ignore simuPOP::ParentChooser::finalize(Population &pop, SubPopID subPop);
 
 %feature("docstring") simuPOP::ParentChooser::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ParentChooser::parallelizable() const;
 
 %ignore simuPOP::ParentChooser::initialized() const;
 
@@ -6498,6 +6566,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::ProbOfMalesSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
 %feature("docstring") simuPOP::ProductSplitter "
 
 Details:
@@ -7376,6 +7452,8 @@ Details:
 
 %feature("docstring") simuPOP::RandomParentChooser::describe "Obsolete or undocumented function."
 
+%ignore simuPOP::RandomParentChooser::parallelizable() const;
+
 %ignore simuPOP::RandomParentChooser::initialize(Population &pop, SubPopID sp);
 
 %ignore simuPOP::RandomParentChooser::chooseParents(RawIndIterator basePtr);
@@ -7419,6 +7497,8 @@ Details:
 
 %feature("docstring") simuPOP::RandomParentsChooser::describe "Obsolete or undocumented function."
 
+%ignore simuPOP::RandomParentsChooser::parallelizable() const;
+
 %ignore simuPOP::RandomParentsChooser::initialize(Population &pop, SubPopID sp);
 
 %ignore simuPOP::RandomParentsChooser::chooseParents(RawIndIterator basePtr);
@@ -7446,6 +7526,14 @@ Usage:
 Usage:
 
     x.getSex(UINT)
+
+"; 
+
+%feature("docstring") simuPOP::RandomSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -7791,6 +7879,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::RNG::RNG(const RNG &);
+
 %feature("docstring") simuPOP::RNG::~RNG "
 
 Usage:
@@ -8131,6 +8221,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::SeqSexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
 %feature("docstring") simuPOP::SequentialParentChooser "
 
 Details:
@@ -8206,6 +8304,14 @@ Usage:
 Usage:
 
     x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
 
 "; 
 
@@ -9832,6 +9938,8 @@ Usage:
 
 %feature("docstring") simuPOP::TicToc::describe "Obsolete or undocumented function."
 
+%ignore simuPOP::TicToc::parallelizable() const;
+
 %feature("docstring") simuPOP::uintList "
 
 "; 
@@ -10197,13 +10305,14 @@ Usage:
 
 Usage:
 
-    setOptions(numThreads=0)
+    setOptions(numThreads=-1)
 
 Details:
 
-    Set number of thread in openMP. The number of threads must be
-    positive integer. For example: setOptions(8); Eight threads will
-    be used in simuPOP.
+    Set number of thread in openMP. The number of threads can be be
+    positive, integer (number of threads) or 0, which implies all
+    available cores, or a number set by environmental variable
+    OMP_NUM_THREADS.
 
 "; 
 
@@ -10273,6 +10382,20 @@ Description:
 Usage:
 
     getRNG()
+
+"; 
+
+%feature("docstring") simuPOP::setRNG "
+
+Usage:
+
+    setRNG(name=None, seed=0)
+
+Details:
+
+    Set the type or seed of existing random number generator using
+    RNGname with seed. If using openMP, it sets the type or seed of
+    random number generator of each thread.
 
 "; 
 
