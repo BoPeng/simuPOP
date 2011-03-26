@@ -23,7 +23,7 @@
 # All the test results will be written to a file 'performance.log'
 #
 #
-import os, sys, time, platform, logging, subprocess, timeit, random
+import os, sys, time, platform, logging, subprocess, timeit, random, csv
 
 try:
     from itertools import product
@@ -369,6 +369,15 @@ class TestIteratingVSPs(PerformanceTest):
             'pop = getIteratablePop("%s")' % vsp)
         return t.timeit(number=self.repeats)
 
+def analyze(test):
+    '''Output performance statistics for a test
+    '''
+    records = csv.reader(open('performance.csv', 'r'), delimiter=',',
+        skipinitialspace=True)
+    for rec in records:
+        if rec[0] == test:
+            print rec
+
       
 if __name__ == '__main__':
     # 
@@ -382,6 +391,11 @@ if __name__ == '__main__':
     else:
         tests = [func for func in dir() if func.startswith('Test')]
     #
+    # if in analysis mode
+    if '-a' in sys.argv:
+        for test in tests:
+            analyze(test)
+        sys.exit(0)
     #
     logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
     for test in tests:
