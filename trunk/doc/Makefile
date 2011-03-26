@@ -142,9 +142,9 @@ dist_svn: clean_extra_files html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
-	cp build/*.py build/html/build
-	cp build/*.h build/html/build
-	cp build/*.i build/html/build
+	cp log/*.py build/html/build
+	cp log/*.h build/html/build
+	cp log/*.i build/html/build
 	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn/build
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_svn \
 		--exclude 'jinja2/docs' --exclude 'jinja2/examples' --exclude 'newfiles/doc_*' --exclude '.svn' --exclude '.hg'
@@ -155,9 +155,9 @@ dist_release: clean_extra_files html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
-	cp build/*.py build/html/build
-	cp build/*.i build/html/build
-	cp build/*.h build/html/build
+	cp log/*.py build/html/build
+	cp log/*.i build/html/build
+	cp log/*.h build/html/build
 	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual_release/
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual_release \
 		--exclude 'jinja2/docs' --exclude 'jinja2/examples' --exclude 'newfiles/doc_*' --exclude '.svn' --exclude '.hg'
