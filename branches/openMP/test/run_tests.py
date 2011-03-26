@@ -61,7 +61,7 @@ def importTests():
     return tests
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
+    if True not in [arg in ['short', 'long', 'binary'] for arg in sys.argv]:
         for allele in ['binary', 'short', 'long']:
             for numThreads in [1, 4]:
                 os.system('%s %s -j%d' % (sys.argv[0], allele, numThreads))
