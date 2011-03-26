@@ -75,7 +75,7 @@ elif True in [x.startswith('-j') for x in sys.argv]:
     sys.argv.pop(idx)
 
 import simuOpt
-#simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
+simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
 from simuPOP import *
 
 class PerformanceTest:
