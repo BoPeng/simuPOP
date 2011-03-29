@@ -669,7 +669,7 @@ def _getParamValue(p, val, options):
             raise ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif list in p['allowedTypes'] or tuple in p['allowedTypes']:
-        if not _validate(val, p, options):
+        if not _validate([val], p, options):
             raise ValueError("Value "+str([val])+' does not pass validation')
         return [val]
     elif type(val) == bool and int in p['allowedTypes']: # compatibility problem
@@ -870,6 +870,9 @@ class _tkParamDialog(_paramDialog):
         ''' get result and convert values '''
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
+                # for the case of non-GUI default parameter that do not pass validation (e.g. 5 for [5])
+                if self.options[g].has_key('value'):
+                    self.options[g]['value'] = _getParamValue(self.options[g], self.options[g]['value'], self.options)
                 continue
             try:
                 if self.options[g]['gui_type'] == 'boolean':
@@ -1041,6 +1044,9 @@ class _wxParamDialog(_paramDialog):
         ''' get result and convert values '''
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
+                # for the case of non-GUI default parameter that do not pass validation (e.g. 5 for [5])
+                if self.options[g].has_key('value'):
+                    self.options[g]['value'] = _getParamValue(self.options[g], self.options[g]['value'], self.options)
                 continue
             try:
                 if self.options[g]['gui_type'] == 'chooseOneOf':
@@ -1474,6 +1480,7 @@ class Params:
         #
         #if not _validate(opt['value'], opt, self.options):
         #    raise ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
+        opt['value'] = opt['default']
         opt['processed'] = False
         #
         if self.dict.has_key(opt['name']):
@@ -1592,7 +1599,6 @@ class Params:
                 opt['default'] = (opt['default'],)
             else:
                 raise ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
-        opt['value'] = opt['default']
         self.dict[opt['name']] = opt
 
 
