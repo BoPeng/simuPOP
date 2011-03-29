@@ -1474,7 +1474,6 @@ class Params:
         #
         #if not _validate(opt['value'], opt, self.options):
         #    raise ValueError("Default value '%s' for option '%s' does not pass validation." % (str(opt['default']), opt['name']))
-        opt['value'] = opt['default']
         opt['processed'] = False
         #
         if self.dict.has_key(opt['name']):
@@ -1593,6 +1592,7 @@ class Params:
                 opt['default'] = (opt['default'],)
             else:
                 raise ValueError('Default value "%s" is not of one of the allowed types.' % str(opt['default']))
+        opt['value'] = opt['default']
         self.dict[opt['name']] = opt
 
 
