@@ -379,7 +379,8 @@ def analyze(test):
         skipinitialspace=True) 
     # record for specified test
     # name, date, sec, machine, platform-threads, python, ver, rev, type, rec...
-    records = [rec for rec in reader if rec[0] == test]
+    uname = platform.uname()
+    records = [rec for rec in reader if rec[0] == test and rec[3] == uname[1]]
     # get different platforms and number of threads
     pfs = set([(rec[3], rec[4]) for rec in records])
     pfs = list(pfs)
