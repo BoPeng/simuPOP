@@ -140,7 +140,7 @@ void checkRefCount();
 void setOptions(const int numThreads = -1, const char * name = NULL, unsigned long seed = 0);
 
 /// CPPONLY get number of thread in openMP
-int numThreads();
+UINT numThreads();
 
 /// a utility function to check keyboard stroke
 /// CPPONLY

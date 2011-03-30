@@ -412,7 +412,7 @@ int simuPOP_getch(void)
 
 
 //thread number, global variable
-int g_numThreads;
+UINT g_numThreads;
 
 #ifdef _OPENMP
 // random number generators for each thread
@@ -426,26 +426,24 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 {
 #ifdef _OPENMP
 	// if numThreads is zero, all threads will be used.
-	if (numThreads == 0){
+	if (numThreads == 0) {
 		g_numThreads = omp_get_max_threads();
-	}
-	else if (numThreads > 0){
+	} else if (numThreads > 0) {
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
 	// Initialize g_RNGs
-    g_RNGs.resize(g_numThreads);
-    g_RNGs[0].set(name, seed);
-    for (int i = 1; i < g_RNGs.size(); i++)
+	g_RNGs.resize(g_numThreads);
+	g_RNGs[0].set(name, seed);
+	for (size_t i = 1; i < g_RNGs.size(); i++)
 		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
 #else
-    g_RNG.set(name, seed);
+	g_RNG.set(name, seed);
 #endif
 }
 
 
-
-int numThreads()
+UINT numThreads()
 {
 #ifdef _OPENMP
 	return g_numThreads;
@@ -454,15 +452,17 @@ int numThreads()
 #endif
 }
 
+
 // return the global RNG
 RNG & getRNG()
 {
 #ifdef _OPENMP
-    return g_RNGs[omp_get_thread_num()];
+	return g_RNGs[omp_get_thread_num()];
 #else
-    return g_RNG;
+	return g_RNG;
 #endif
 }
+
 
 }
 
@@ -4351,11 +4351,11 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-	
+
 #ifdef STANDALONE_EXECUTABLE
-	setOptions(0);
+    setOptions(0);
 #else
-	setOptions(1);
+    setOptions(1);
     // tie python stdout to cerr
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);

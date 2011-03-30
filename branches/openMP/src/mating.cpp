@@ -721,7 +721,7 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
-	
+
 #ifdef _OPENMP
 	int numthreads = numThreads();
 	vectori index_numMale(numthreads + 1, 0);
@@ -783,13 +783,13 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 #  pragma omp parallel
 	{
 		int tid = omp_get_thread_num();
- 
+
 		vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin() + index_numMale[tid];
 		vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin() + index_numFemale[tid];
-		vectorf::iterator maleFitness,femaleFitness; 
+		vectorf::iterator maleFitness, femaleFitness;
 		if (m_selection) {
-		maleFitness = m_maleFitness.begin() + index_numMale[tid];
-		femaleFitness = m_femaleFitness.begin() + index_numFemale[tid];
+			maleFitness = m_maleFitness.begin() + index_numMale[tid];
+			femaleFitness = m_femaleFitness.begin() + index_numFemale[tid];
 		}
 		IndIterator local_it = pop.indIterator(subPop, tid);
 		for (; local_it.valid(); local_it++) {
@@ -807,10 +807,10 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 #else
 	vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin();
 	vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin();
-	vectorf::iterator maleFitness,femaleFitness; 
+	vectorf::iterator maleFitness, femaleFitness;
 	if (m_selection) {
-	maleFitness = m_maleFitness.begin();
-	femaleFitness = m_femaleFitness.begin();
+		maleFitness = m_maleFitness.begin();
+		femaleFitness = m_femaleFitness.begin();
 	}
 	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {

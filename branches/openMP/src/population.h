@@ -644,7 +644,7 @@ public:
 	IndIterator indIterator(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
-		
+
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
@@ -657,13 +657,16 @@ public:
 	IndIterator indIterator(UINT subPop, UINT threadID)
 	{
 		CHECKRANGESUBPOP(subPop);
-		UINT blockSize =  m_subPopSize[subPop] / numThreads();
-		if(threadID != numThreads() -1)
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize*threadID,
-							   m_inds.begin() + m_subPopIndex[subPop] + blockSize * (threadID + 1), !hasActivatedVirtualSubPop(subPop));
+		DBG_FAILIF(threadID >= numThreads(), RuntimeError,
+			"Thread ID " + toStr(threadID) + " execeed total number of threads " + toStr(numThreads()));
+		UINT blockSize = m_subPopSize[subPop] / numThreads();
+		if (threadID + 1 != numThreads())
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
+				m_inds.begin() + m_subPopIndex[subPop] + blockSize * (threadID + 1),
+				!hasActivatedVirtualSubPop(subPop));
 		else
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize*threadID,
-							   m_inds.begin() + m_subPopIndex[subPop+1], !hasActivatedVirtualSubPop(subPop));			
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
+				m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
 #endif
 
