@@ -1982,6 +1982,10 @@ class Params:
         elif self.gui == 'batch':
             # valid values because some default values can be false
             for opt in self.options:
+                if opt.has_key('separator'):
+                    continue
+                # default value might not have the required type (e.g. 9 for [9])
+                opt['value'] = _getParamValue(opt, opt['value'], self.options)
                 if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
                     raise ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
                         (str(opt['value']), opt['name']))
