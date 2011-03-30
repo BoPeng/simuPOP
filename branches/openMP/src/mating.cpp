@@ -721,7 +721,42 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
+	
+#ifdef _OPENMP
+	int numthreads = numThreads();
+	vectori index_numMale(numthreads + 1, 0);
+	vectori index_numFemale(numthreads + 1, 0);
 
+	// just m_numMale but member variable cannot be used in parallel clause
+	int tmpNumMale = 0;
+	int tmpNumFemale = 0;
+#  pragma omp parallel reduction(+: tmpNumMale, tmpNumFemale)
+	{
+		int tid = omp_get_thread_num();
+		int local_numMale = 0;
+		int local_numFemale = 0;
+		IndIterator local_it = pop.indIterator(subPop, tid);
+		for (; local_it.valid(); ++local_it) {
+			if (local_it->sex() == MALE)
+				local_numMale++;
+			else
+				local_numFemale++;
+		}
+		index_numMale[tid + 1] = local_numMale;
+		index_numFemale[tid + 1] = local_numFemale;
+		tmpNumMale += local_numMale;
+		tmpNumFemale += local_numFemale;
+	}
+
+	m_numMale = tmpNumMale;
+	m_numFemale = tmpNumFemale;
+
+	for (int i = 1; i < numthreads; i++) {
+		index_numMale[i] += index_numMale[i - 1];
+		index_numFemale[i] += index_numFemale[i - 1];
+	}
+
+#else
 	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
 		if (it->sex() == MALE)
@@ -729,6 +764,7 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 		else
 			m_numFemale++;
 	}
+#endif
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
@@ -742,24 +778,53 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 		m_femaleFitness.resize(m_numFemale);
 	}
 
-	m_numMale = 0;
-	m_numFemale = 0;
 
+#ifdef _OPENMP
+#  pragma omp parallel
+	{
+		int tid = omp_get_thread_num();
+ 
+		vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin() + index_numMale[tid];
+		vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin() + index_numFemale[tid];
+		vectorf::iterator maleFitness,femaleFitness; 
+		if (m_selection) {
+		maleFitness = m_maleFitness.begin() + index_numMale[tid];
+		femaleFitness = m_femaleFitness.begin() + index_numFemale[tid];
+		}
+		IndIterator local_it = pop.indIterator(subPop, tid);
+		for (; local_it.valid(); local_it++) {
+			if (local_it->sex() == MALE) {
+				*maleIndex++ = local_it.rawIter();
+				if (m_selection)
+					*maleFitness++ = local_it->info(fit_id);
+			} else {
+				*femaleIndex++ = local_it.rawIter();
+				if (m_selection)
+					*femaleFitness++ = local_it->info(fit_id);
+			}
+		}
+	}
+#else
+	vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin();
+	vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin();
+	vectorf::iterator maleFitness,femaleFitness; 
+	if (m_selection) {
+	maleFitness = m_maleFitness.begin();
+	femaleFitness = m_femaleFitness.begin();
+	}
 	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
 		if (it->sex() == MALE) {
-			m_maleIndex[m_numMale] = it.rawIter();
+			*maleIndex++ = it.rawIter();
 			if (m_selection)
-				m_maleFitness[m_numMale] = it->info(fit_id);
-			m_numMale++;
+				*maleFitness++ = it->info(fit_id);
 		} else {
-			m_femaleIndex[m_numFemale] = it.rawIter();
+			*femaleIndex++ = it.rawIter();
 			if (m_selection)
-				m_femaleFitness[m_numFemale] = it->info(fit_id);
-			m_numFemale++;
+				*femaleFitness++ = it->info(fit_id);
 		}
 	}
-
+#endif
 	if (!m_replacement) {
 		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
 		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");

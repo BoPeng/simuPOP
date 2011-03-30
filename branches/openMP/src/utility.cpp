@@ -410,28 +410,61 @@ int simuPOP_getch(void)
 
 #endif
 
-void setOptions(const int numThreads)
+
+//thread number, global variable
+int g_numThreads;
+
+#ifdef _OPENMP
+// random number generators for each thread
+vector<RNG> g_RNGs;
+#else
+// random number generator. a global variable.
+RNG g_RNG;
+#endif
+
+void setOptions(const int numThreads, const char * name, unsigned long seed)
 {
 #ifdef _OPENMP
-	// if numThreads is zero, all all threads will be used.
-	if (numThreads > 0)
+	// if numThreads is zero, all threads will be used.
+	if (numThreads == 0){
+		g_numThreads = omp_get_max_threads();
+	}
+	else if (numThreads > 0){
 		omp_set_num_threads(numThreads);
+		g_numThreads = numThreads;
+	}
+	// Initialize g_RNGs
+    g_RNGs.resize(g_numThreads);
+    g_RNGs[0].set(name, seed);
+    for (int i = 1; i < g_RNGs.size(); i++)
+		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
+#else
+    g_RNG.set(name, seed);
 #endif
 }
+
 
 
 int numThreads()
 {
 #ifdef _OPENMP
-	return omp_get_max_threads();
+	return g_numThreads;
 #else
 	return 1;
 #endif
 }
 
-
+// return the global RNG
+RNG & getRNG()
+{
+#ifdef _OPENMP
+    return g_RNGs[omp_get_thread_num()];
+#else
+    return g_RNG;
+#endif
 }
 
+}
 
 namespace std {
 // how to output a dictionary
@@ -3836,38 +3869,6 @@ double Bernullitrials::probSuccRate() const
 #undef unsetBit
 #undef getBit
 
-#ifdef _OPENMP
-// random number generators for each thread
-vector<RNG> g_RNGs;
-#else
-// random number generator. a global variable.
-RNG g_RNG;
-#endif
-
-
-// return the global RNG
-RNG & getRNG()
-{
-#ifdef _OPENMP
-    return g_RNGs[omp_get_thread_num()];
-#else
-    return g_RNG;
-#endif
-}
-
-
-void setRNG(const char * name, unsigned long seed)
-{
-#ifdef _OPENMP
-    g_RNGs.resize(numThreads());
-    g_RNGs[0].set(name, seed);
-    for (int i = 1; i < g_RNGs.size(); i++)
-		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
-#else
-    g_RNG.set(name, seed);
-#endif
-}
-
 
 // Global debug and initialization related functions
 
@@ -4350,9 +4351,11 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-    setRNG();
-
-#ifndef STANDALONE_EXECUTABLE
+	
+#ifdef STANDALONE_EXECUTABLE
+	setOptions(0);
+#else
+	setOptions(1);
     // tie python stdout to cerr
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);

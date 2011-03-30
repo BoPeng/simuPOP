@@ -644,11 +644,28 @@ public:
 	IndIterator indIterator(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
-
+		
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
 
+
+#ifdef _OPENMP
+	/** CPPONLY Individual iterator: with subPop info and Thread ID.
+	 *  The iterator will skip invisible Individuals
+	 */
+	IndIterator indIterator(UINT subPop, UINT threadID)
+	{
+		CHECKRANGESUBPOP(subPop);
+		UINT blockSize =  m_subPopSize[subPop] / numThreads();
+		if(threadID != numThreads() -1)
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize*threadID,
+							   m_inds.begin() + m_subPopIndex[subPop] + blockSize * (threadID + 1), !hasActivatedVirtualSubPop(subPop));
+		else
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize*threadID,
+							   m_inds.begin() + m_subPopIndex[subPop+1], !hasActivatedVirtualSubPop(subPop));			
+	}
+#endif
 
 	/** CPPONLY Individual iterator: without subPop info
 	 *  The iterator will skip invisible Individuals

@@ -130,11 +130,14 @@ void checkRefCount();
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
 
-/** Set number of thread in openMP. The number of threads can be be positive,
+/** First argument is to set number of thread in openMP. The number of threads can be be positive,
  *  integer (number of threads) or 0, which implies all available cores, or
  *  a number set by environmental variable \c OMP_NUM_THREADS.
+ *  Second and third argument is to set the type or seed of existing random number generator using RNG \e name
+ *  with \e seed. If using openMP, it sets the type or seed of random number
+ *  generator of each thread.
  */
-void setOptions(const int numThreads = -1);
+void setOptions(const int numThreads = -1, const char * name = NULL, unsigned long seed = 0);
 
 /// CPPONLY get number of thread in openMP
 int numThreads();
@@ -1826,12 +1829,6 @@ private:
 
 /// return the currently used random number generator
 RNG & getRNG();
-
-/** Set the type or seed of existing random number generator using RNG \e name
- *  with \e seed. If using openMP, it sets the type or seed of random number
- *  generator of each thread.
- */
-void setRNG(const char * name = NULL, unsigned long seed = 0);
 
 /// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
