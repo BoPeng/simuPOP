@@ -99,3 +99,6 @@ TestBasicRandomMating, 2011-03-30 19:48:13,694, BoPeng-PC, x86-4threads, python2
 TestBasicRandomMating, 2011-03-30 20:10:01,354, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4044, short, 265982, 32570, 3104, 137030, 14430, 1060, 2179, 227, 0, 236, 0, 0
 TestBasicRandomMating, 2011-03-30 20:17:10,658, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4044, long, 256813, 30783, 2120, 117688, 10107, 777, 1404, 0, 0, 0, 0, 0
 TestBasicRandomMating, 2011-03-30 20:28:36,878, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4044, binary, 222227, 25437, 2550, 234853, 27694, 2664, 79006, 3894, 354, 4642, 416, 0
+TestBasicRandomMating, 2011-03-31 10:17:43,095, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, short, 282140, 30151, 3000, 139390, 14087, 1058, 2372, 238, 0, 241, 0, 0
+TestBasicRandomMating, 2011-03-31 10:24:54,838, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, long, 297599, 32147, 2089, 134944, 10365, 795, 1409, 0, 0, 0, 0, 0
+TestBasicRandomMating, 2011-03-31 10:36:18,651, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, binary, 240898, 25910, 2604, 259306, 28017, 2524, 87973, 3899, 339, 4422, 393, 0
