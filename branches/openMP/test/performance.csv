@@ -102,3 +102,9 @@ TestBasicRandomMating, 2011-03-30 20:28:36,878, EPIW-072552, x86-4threads, pytho
 TestBasicRandomMating, 2011-03-31 10:17:43,095, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, short, 282140, 30151, 3000, 139390, 14087, 1058, 2372, 238, 0, 241, 0, 0
 TestBasicRandomMating, 2011-03-31 10:24:54,838, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, long, 297599, 32147, 2089, 134944, 10365, 795, 1409, 0, 0, 0, 0, 0
 TestBasicRandomMating, 2011-03-31 10:36:18,651, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4040, binary, 240898, 25910, 2604, 259306, 28017, 2524, 87973, 3899, 339, 4422, 393, 0
+TestBasicRandomMating, 2011-03-31 10:55:25,573, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4037, short, 234156, 25740, 2718, 202016, 23434, 2071, 22010, 2107, 227, 2460, 238, 0
+TestBasicRandomMating, 2011-03-31 11:04:35,658, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4037, long, 215801, 23619, 2327, 187429, 19597, 1744, 5708, 569, 0, 593, 0, 0
+TestBasicRandomMating, 2011-03-31 11:15:48,288, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4037, binary, 212688, 22948, 2337, 219198, 22955, 2421, 110464, 7935, 684, 16522, 1457, 0
+TestBasicRandomMating, 2011-03-31 11:33:42,028, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4037, short, 255478, 33589, 3471, 233160, 31010, 2978, 23680, 2290, 230, 2372, 237, 0
+TestBasicRandomMating, 2011-03-31 11:42:53,925, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4037, long, 246766, 33274, 3279, 224372, 27071, 2514, 5806, 585, 0, 594, 0, 0
+TestBasicRandomMating, 2011-03-31 11:54:05,103, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4037, binary, 237032, 30415, 3116, 234865, 30008, 3032, 143347, 11869, 1083, 18474, 1811, 0
