@@ -4057,8 +4057,11 @@ PyObject * moduleInfo()
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
     // Number of Threads in openMP
+#ifdef _OPENMP
     PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
-
+#else
+    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(0));
+#endif
 
     // 32 or 64 bits
 #ifdef _WIN64

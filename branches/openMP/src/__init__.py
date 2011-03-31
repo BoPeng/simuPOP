@@ -328,7 +328,7 @@ if not simuOptions['Quiet']:
     # compile date, compiler etc are macros that are replaced during compile time.
     print "Revision %d (%s) for Python %s (%dbit, %d%s)" % \
             (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],
-                    'thread' if info['threads'] == 1 else 'threads')
+                    'thread' if info['threads'] <= 1 else 'threads')
     print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     print "This is the %s %s allele version with %d maximum allelic states." % \
