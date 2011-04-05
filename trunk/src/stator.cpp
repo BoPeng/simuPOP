@@ -325,6 +325,8 @@ Stat::Stat(
 	const lociList & genoFreq,
 	//
 	const intMatrix & haploFreq,
+	const intMatrix & haploHeteroFreq,
+	const intMatrix & haploHomoFreq,
 	//
 	const stringList & sumOfInfo,
 	const stringList & meanOfInfo,
@@ -357,6 +359,7 @@ Stat::Stat(
 	m_heteroFreq(heteroFreq, homoFreq, subPops, vars, suffix),
 	m_genoFreq(genoFreq, subPops, vars, suffix),
 	m_haploFreq(haploFreq, subPops, vars, suffix),
+	m_haploHomoFreq(haploHeteroFreq, haploHomoFreq, subPops, vars, suffix),
 	m_info(sumOfInfo.elems(), meanOfInfo.elems(), varOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars, suffix),
 	m_LD(LD, subPops, vars, suffix),
 	m_association(association, subPops, vars, suffix),
@@ -403,6 +406,7 @@ bool Stat::apply(Population & pop) const
 	       m_heteroFreq.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
 	       m_haploFreq.apply(pop) &&
+	       m_haploHomoFreq.apply(pop) &&
 	       m_info.apply(pop) &&
 	       m_LD.apply(pop) &&
 	       m_association.apply(pop) &&
@@ -1054,8 +1058,10 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 	: m_loci(haploFreq.elems()), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		HaplotypeNum_String,	HaplotypeFreq_String,
-		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
+		HaplotypeNum_String,		 HaplotypeFreq_String,
+		HaploHomozygosity_String,
+		HaplotypeNum_sp_String,		 HaplotypeFreq_sp_String,
+		HaploHomozygosity_sp_String, ""
 	};
 	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
@@ -1157,15 +1163,22 @@ bool statHaploFreq::apply(Population & pop) const
 				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			// note that genotyeps is changed in place.
-			if (m_vars.contains(HaplotypeFreq_sp_String)) {
+			if (m_vars.contains(HaplotypeFreq_sp_String) || m_vars.contains(HaploHomozygosity_sp_String)) {
+				double hh = 0;
 				if (allHaplotypes != 0) {
 					tupleDict::iterator dct = haplotypes.begin();
 					tupleDict::iterator dctEnd = haplotypes.end();
-					for (; dct != dctEnd; ++dct)
+					for (; dct != dctEnd; ++dct) {
 						dct->second /= allHaplotypes;
+						hh += dct->second * dct->second;
+					}
 				}
-				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
-					+ key + "}", haplotypes);
+				if (m_vars.contains(HaplotypeFreq_sp_String))
+					pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
+						+ key + "}", haplotypes);
+				if (m_vars.contains(HaploHomozygosity_sp_String))
+					pop.getVars().setDoubleVar(subPopVar_String(*it, HaploHomozygosity_String) + m_suffix + "{"
+						+ key + "}", hh);
 			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
@@ -1180,21 +1193,192 @@ bool statHaploFreq::apply(Population & pop) const
 		}
 	}
 	// note that genotyeCnt[idx] is changed in place.
-	if (m_vars.contains(HaplotypeFreq_String)) {
+	if (m_vars.contains(HaplotypeFreq_String) || m_vars.contains(HaploHomozygosity_String)) {
 		pop.getVars().removeVar(HaplotypeFreq_String + m_suffix);
+		vectorf hh(m_loci.size(), 0);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			string key = dictKey(m_loci[idx]);
 			if (allHaplotypeCnt[idx] != 0) {
 				tupleDict::iterator dct = haplotypeCnt[idx].begin();
 				tupleDict::iterator dctEnd = haplotypeCnt[idx].end();
-				for (; dct != dctEnd; ++dct)
+				for (; dct != dctEnd; ++dct) {
 					dct->second /= allHaplotypeCnt[idx];
+					hh[idx] += dct->second * dct->second;
+				}
 			}
-			pop.getVars().setTupleDefDictVar(string(HaplotypeFreq_String) + m_suffix + "{" + key + "}",
-				haplotypeCnt[idx]);
+			if (m_vars.contains(HaplotypeFreq_String))
+				pop.getVars().setTupleDefDictVar(string(HaplotypeFreq_String) + m_suffix + "{" + key + "}",
+					haplotypeCnt[idx]);
+			if (m_vars.contains(HaploHomozygosity_String))
+				pop.getVars().setDoubleVar(string(HaploHomozygosity_String) + m_suffix + "{" + key + "}",
+					hh[idx]);
 		}
 	}
+	return true;
+}
 
+
+statHaploHomoFreq::statHaploHomoFreq(const intMatrix & haploHeteroFreq,
+	const intMatrix & haploHomoFreq, const subPopList & subPops,
+	const stringList & vars, const string & suffix)
+	: m_loci(haploHeteroFreq.elems()), m_subPops(subPops), m_vars(), m_suffix(suffix)
+{
+	// add homofreq to m_loci
+	for (size_t i = 0; i < haploHomoFreq.elems().size(); ++i)
+		if (find(m_loci.begin(), m_loci.end(), haploHomoFreq.elems()[i]) == m_loci.end())
+			m_loci.push_back(haploHomoFreq.elems()[i]);
+
+	const char * allowedVars[] = {
+		HaploHeteroNum_String,	  HaploHeteroFreq_String,
+		HaploHomoNum_String,	  HaploHomoFreq_String,
+		HaploHeteroNum_sp_String, HaploHeteroFreq_sp_String,
+		HaploHomoNum_sp_String,	  HaploHomoFreq_sp_String,
+		""
+	};
+	const char * defaultVars[] = { "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	// add default variables
+	if (m_vars.empty()) {
+		if (!haploHeteroFreq.empty()) {
+			m_vars.push_back(HaploHeteroFreq_String);
+			m_vars.push_back(HaploHeteroNum_String);
+		}
+		if (!haploHomoFreq.empty()) {
+			m_vars.push_back(HaploHomoFreq_String);
+			m_vars.push_back(HaploHomoNum_String);
+		}
+	}
+}
+
+
+string statHaploHomoFreq::describe(bool format) const
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "calculate haplotype homozygote/heterozygote frequency";
+	return desc;
+}
+
+
+bool statHaploHomoFreq::apply(Population & pop) const
+{
+	if (m_loci.empty())
+		return true;
+
+	DBG_DO(DBG_STATOR, cerr << "Calculated haplotype homozygosity frequency for loci " << m_loci << endl);
+
+	DBG_FAILIF(pop.ploidy() != 2, ValueError,
+		"Haplotype heterozygote frequency can only be calculated for diploid populations.");
+
+	// count for all specified subpopulations
+	tupleDict allHeteroCnt;
+	tupleDict allHomoCnt;
+
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		pop.activateVirtualSubPop(*it);
+
+		tupleDict heteroCnt;
+		tupleDict homoCnt;
+
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			const vectori & loci = m_loci[idx];
+			UINT nLoci = loci.size();
+			if (nLoci == 0)
+				continue;
+
+			int chromType = pop.chromType(pop.chromLocusPair(loci[0]).first);
+#ifndef OPTIMIZED
+			for (size_t i = 1; i < nLoci; ++i) {
+				DBG_FAILIF(pop.chromType(pop.chromLocusPair(loci[i]).first) != chromType, ValueError,
+					"Haplotype must be on the chromosomes of the same type");
+				DBG_FAILIF(pop.chromType(pop.chromLocusPair(loci[i]).first) != AUTOSOME, ValueError,
+					"Haplotype homozygosity count current only support autosome.");
+			}
+#endif
+			size_t hetero = 0;
+			size_t homo = 0;
+			// go through all individual
+			IndIterator ind = pop.indIterator(it->subPop());
+			for (; ind.valid(); ++ind) {
+				// FIXME: does not consider sex chromosomes
+				bool h = false;
+				for (size_t idx = 0; idx < nLoci; ++idx)
+					if (ind->allele(loci[idx], 0) != ind->allele(loci[idx], 1)) {
+						h = true;
+						break;
+					}
+				if (h)
+					++hetero;
+				else
+					++homo;
+			}
+			heteroCnt[loci] = hetero;
+			homoCnt[loci] = homo;
+
+			allHeteroCnt[loci] += hetero;
+			allHomoCnt[loci] += homo;
+		}
+		pop.deactivateVirtualSubPop(it->subPop());
+		// output subpopulation variable?
+		if (m_vars.contains(HaploHeteroNum_sp_String))
+			pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaploHeteroNum_String) + m_suffix, heteroCnt);
+		if (m_vars.contains(HaploHomoNum_sp_String))
+			pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaploHomoNum_String) + m_suffix, homoCnt);
+		if (m_vars.contains(HaploHeteroFreq_sp_String)) {
+			tupleDict freq;
+			tupleDict::iterator hit = heteroCnt.begin();
+			tupleDict::iterator hit_end = heteroCnt.end();
+			for (; hit != hit_end; ++hit) {
+				const vectori & key = hit->first;
+				double all = hit->second + homoCnt[key];
+				freq[key] = all == 0. ? 0 : hit->second / all;
+			}
+			pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaploHeteroFreq_String) + m_suffix, freq);
+		}
+		if (m_vars.contains(HaploHomoFreq_sp_String)) {
+			tupleDict freq;
+			tupleDict::iterator hit = homoCnt.begin();
+			tupleDict::iterator hit_end = homoCnt.end();
+			for (; hit != hit_end; ++hit) {
+				const vectori & key = hit->first;
+				double all = hit->second + heteroCnt[key];
+				freq[key] = all == 0. ? 0 : hit->second / all;
+			}
+			pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaploHomoFreq_String) + m_suffix, freq);
+		}
+	}
+	if (m_vars.contains(HaploHeteroNum_String))
+		pop.getVars().setTupleDefDictVar(HaploHeteroNum_String + m_suffix, allHeteroCnt);
+	if (m_vars.contains(HaploHomoNum_String))
+		pop.getVars().setTupleDefDictVar(HaploHomoNum_String + m_suffix, allHomoCnt);
+	if (m_vars.contains(HaploHeteroFreq_String)) {
+		tupleDict freq;
+		tupleDict::iterator hit = allHeteroCnt.begin();
+		tupleDict::iterator hit_end = allHeteroCnt.end();
+		for (; hit != hit_end; ++hit) {
+			const vectori & key = hit->first;
+			double all = hit->second + allHomoCnt[key];
+			freq[key] = all == 0. ? 0 : hit->second / all;
+		}
+		pop.getVars().setTupleDefDictVar(HaploHeteroFreq_String + m_suffix, freq);
+	}
+	if (m_vars.contains(HaploHomoFreq_String)) {
+		tupleDict freq;
+		tupleDict::iterator hit = allHomoCnt.begin();
+		tupleDict::iterator hit_end = allHomoCnt.end();
+		for (; hit != hit_end; ++hit) {
+			const vectori & key = hit->first;
+			double all = hit->second + allHeteroCnt[key];
+			freq[key] = all == 0. ? 0 : hit->second / all;
+		}
+		pop.getVars().setTupleDefDictVar(HaploHomoFreq_String + m_suffix, freq);
+	}
 	return true;
 }
 
@@ -1659,8 +1843,8 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 					if (nAllele1 <= 2 && nAllele2 <= 2)
 						break;
 				}
-			}       // with/without primary alleles
-		}           // LD measures
+			}                           // with/without primary alleles
+		}                               // LD measures
 		if (!ChiSq.empty()) {
 			// if ChiSq is empty, do not calculate any association stuff.
 			if (m_LD[idx].size() == 4) {
@@ -1697,9 +1881,9 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				// calculate statistics
 				chisqTest(cont_table, ChiSq[idx], ChiSq_p[idx]);
 				CramerV[idx] = sqrt(ChiSq[idx] / (allHaplo * std::min(nAllele1 - 1, nAllele2 - 1)));
-			}   // with/without primary alleles
-		}       // association
-	}           // for all m_LD
+			}                           // with/without primary alleles
+		}                               // association
+	}                                   // for all m_LD
 }
 
 

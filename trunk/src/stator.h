@@ -489,10 +489,12 @@ private:
 class statHaploFreq
 {
 private:
-#define  HaplotypeNum_String       "haploNum"
-#define  HaplotypeFreq_String      "haploFreq"
-#define  HaplotypeNum_sp_String    "haploNum_sp"
-#define  HaplotypeFreq_sp_String   "haploFreq_sp"
+#define HaplotypeNum_String         "haploNum"
+#define HaplotypeFreq_String        "haploFreq"
+#define HaplotypeNum_sp_String      "haploNum_sp"
+#define HaplotypeFreq_sp_String     "haploFreq_sp"
+#define HaploHomozygosity_String    "HH"
+#define HaploHomozygosity_sp_String "HH_sp"
 
 public:
 	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops,
@@ -513,6 +515,42 @@ private:
 
 private:
 	/// haplotype at which loci
+	matrixi m_loci;
+
+	subPopList m_subPops;
+	stringList m_vars;
+	string m_suffix;
+};
+
+
+
+/// CPPONLY
+class statHaploHomoFreq 
+{
+private:
+#define HaploHeteroNum_String        "haploHeteroNum"
+#define HaploHeteroFreq_String       "haploHeteroFreq"
+#define HaploHomoNum_String          "haploHomoNum"
+#define HaploHomoFreq_String         "haploHomoFreq"
+#define HaploHeteroNum_sp_String     "haploHeteroNum_sp"
+#define HaploHeteroFreq_sp_String    "haploHeteroFreq_sp"
+#define HaploHomoNum_sp_String       "haploHomoNum_sp"
+#define HaploHomoFreq_sp_String      "haploHomoFreq_sp"
+
+public:
+	statHaploHomoFreq(const intMatrix & haploHeteroFreq, const intMatrix & haploHomoFreq,
+		const subPopList & subPops, const stringList & vars, const string & suffix);
+
+	~ statHaploHomoFreq()
+	{
+	}
+
+	string describe(bool format = true) const;
+
+	bool apply(Population & pop) const;
+
+private:
+	/// heteroFreq
 	matrixi m_loci;
 
 	subPopList m_subPops;
@@ -963,8 +1001,10 @@ public:
 	 *  all population types. Number of haplotypes for each individual equals
 	 *  to his/her ploidy number. Haplodiploid populations are supported in
 	 *  the sense that the second homologous copy of the haplotype is not
-	 *  counted for male individuals. This statistic outputs the following
-	 *  variables:
+	 *  counted for male individuals. If variables \c HH or \c HH_sp are 
+	 *  specified, the haplotype homozygosity, calcualted as sum of squire of
+	 *  haplotype frequencies, will be outputed. This statistic outputs the
+	 *  following variables:
 	 *  \li \c haploFreq (default): A dictionary (with tuples of loci indexes
 	 *       as keys) of default dictionaries of haplotype frequencies. For
 	 *       example, <tt>haploFreq[(0, 1)][(1,1)]</tt> records the frequency
@@ -972,9 +1012,41 @@ public:
 	 *       specified (virtual) subpopulations.
 	 *  \li \c haploNum (default): A dictionary of default dictionaries of
 	 *       haplotype counts in all or specified (virtual) subpopulations.
+	 *  \li \c HH: A dictionary of haplotype homozygosity calculated by
+	 *       sum h_i^2.
 	 *  \li \c haploFreq_sp: Halptype frequencies in each (virtual)
 	 *       subpopulation.
 	 *  \li \c haploNum_sp: Halptype count in each (virtual) subpopulation.
+	 *  \li \c HH_sp: A dictionary of haplotype homozygosity in each (virtual)
+	 *       subpopulation.
+	 *
+	 *  <b>haploHeteroFreq</b> and <b>haploHomoFreq</b>: These parameters accept
+	 *  a list of haplotypes (list of loci), at which the number and frequency of
+	 *  haplotype homozygotes and/or heterozygotes will be calculated. Note that
+	 *  these statistics are \b observed count of haplotype heterozygote. If you
+	 *  need to calculate haplotype homozygosity, which is defined as 
+	 *  sum h_i^2 where h_i is the haplotype frequencies of all haplotypes, you
+	 *  should output variable \c HH from statistic \e haploFreq. The following
+	 *  variables will be outputted:
+	 *  \li \c haploHeteroFreq (default for parameter \e haploHeteroFreq): A
+	 *       dictionary of proportion of haplotype heterozygotes in all or
+	 *       specified (virtual) subpopulations, with haplotype indexes as
+	 *       dictionary keys.
+	 *  \li \c haploHomoFreq (default for parameter \e haploHomoFreq): A
+	 *       dictionary of proportion of homozygotes in all or specified
+	 *       (virtual) subpopulations.
+	 *  \li \c haploHeteroNum: A dictionary of number of heterozygotes in all
+	 *       or specified (virtual) subpopulations.
+	 *  \li \c haploHomoNum: A dictionary of number of homozygotes in all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c haploHeteroFreq_sp: A dictionary of proportion of heterozygotes
+	 *       in each (virtual) subpopulation.
+	 *  \li \c haploHomoFreq_sp: A dictionary of proportion of homozygotes in
+	 *       each (virtual) subpopulation.
+	 *  \li \c haploHeteroNum_sp: A dictionary of number of heterozygotes in
+	 *       each (virtual) subpopulation.
+	 *  \li \c haploHomoNum_sp: A dictionary of number of homozygotes in each
+	 *       (virtual) subpopulation.
 	 *
 	 *  <b>sumOfinfo</b>, <b>meanOfInfo</b>, <b>varOfInfo</b>, <b>maxOfInfo</b>
 	 *  and <b>minOfInfo</b>: Each of these five parameters accepts a list of
@@ -1145,6 +1217,8 @@ public:
 		const lociList & genoFreq = vectoru(),
 		//
 		const intMatrix & haploFreq = intMatrix(),
+		const intMatrix & haploHeteroFreq = intMatrix(),
+		const intMatrix & haploHomoFreq = intMatrix(),
 		//
 		const stringList & sumOfInfo = vectorstr(),
 		const stringList & meanOfInfo = vectorstr(),
@@ -1200,6 +1274,7 @@ private:
 	const statHeteroFreq m_heteroFreq;
 	const statGenoFreq m_genoFreq;
 	const statHaploFreq m_haploFreq;
+	const statHaploHomoFreq m_haploHomoFreq;
 	const statInfo m_info;
 	const statLD m_LD;
 	const statAssociation m_association;
