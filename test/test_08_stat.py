@@ -316,32 +316,60 @@ class Teststat(unittest.TestCase):
             initGenotype(pop, genotype=[0]*10, subPops=[(0,0)])
             initGenotype(pop, genotype=[1]*10, subPops=[(0,1)])
             stat(pop, haploFreq=[[0,1,5],[2,5]])
-            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7)))
+            self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)], 0.3)
+            self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)], 0.7)
+            self.assertEqual(pop.dvars().haploFreq[(2, 5)][(0, 0)], 0.3)
+            self.assertEqual(pop.dvars().haploFreq[(2, 5)][(1, 1)], 0.7)
         else:
             pop.setVirtualSplitter(ProportionSplitter([.2, .3, .5]))
             initGenotype(pop, genotype=[1]*10, subPops=[(1,0), (0,0)])
             initGenotype(pop, genotype=[2]*10, subPops=[(1,1), (0,1)])
             initGenotype(pop, genotype=[3]*10, subPops=[(1,2), (0,2)])
             stat(pop, haploFreq=[[0,1,5], [2,5]])
-            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3)))
-            self.assertTrue(abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) < 0.05, 
-            "Expression abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) (test value %f) be less than 0.05. This test may occasionally fail due to the randomness of outcome." % (abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5)))
+            self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)], 0.2)
+            self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)], 0.3)
+            self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)], 0.5)
+            self.assertEqual(pop.dvars().haploFreq[(2, 5)][(1, 1)], 0.2)
+            self.assertEqual(pop.dvars().haploFreq[(2, 5)][(2, 2)], 0.3)
+            self.assertEqual(pop.dvars().haploFreq[(2, 5)][(3, 3)], 0.5) 
+            stat(pop, haploFreq=[[0,1,5], [2,5]], vars='HH')
+            self.assertEqual(pop.dvars().HH[(2, 5)], 0.2**2 + 0.3**2 + 0.5**2)
+        initGenotype(pop, freq=[0.2, 0.3, 0.5])
+        stat(pop, haploFreq=[(0,1,4), (2,5)], vars=['haploFreq', 'HH'])
+        self.assertAlmostEqual(pop.dvars().HH[(0,1,4)],
+            sum([x*x for x in pop.dvars().haploFreq[(0,1,4)].values()]))
+        self.assertAlmostEqual(pop.dvars().HH[(2,5)],
+            sum([x*x for x in pop.dvars().haploFreq[(2,5)].values()]))
+
+
+    def testHaploHomoFreq(self):
+        'Testing calculation of haplotype homozygote frequency'
+        # test haplotype frequency
+        pop = Population(size=[5000,1000], ploidy=2, loci = [10])
+        initSex(pop)
+        initGenotype(pop, freq=[0.2, 0.3, 0.5])
+        stat(pop, haploHomoFreq=[(0,1,4), (2,5)])
+        for hap in [(0,1,4), (2,5)]:
+            homo = sum([ [ind.allele(x, 0) for x in hap] == [ind.allele(x, 1) for x in hap] for ind in pop.individuals()])
+            self.assertEqual(pop.dvars().haploHomoNum[hap], homo)
+            self.assertEqual(pop.dvars().haploHomoFreq[hap], homo / 6000.)
+        stat(pop, haploHeteroFreq=[(0,1,4), (2,5)])
+        for hap in [(0,1,4), (2,5)]:
+            homo = sum([[ind.allele(x, 0) for x in hap] == [ind.allele(x, 1) for x in hap] for ind in pop.individuals()])
+            self.assertEqual(pop.dvars().haploHeteroNum[hap], 6000 - homo)
+            self.assertEqual(pop.dvars().haploHeteroFreq[hap], 1 - homo / 6000.)
+        pop.setVirtualSplitter(SexSplitter())
+        stat(pop, haploHomoFreq=[(0,1,4), (2,5)], subPops=[(0,0)])
+        for hap in [(0,1,4), (2,5)]:
+            homo = sum([[ind.allele(x, 0) for x in hap] == [ind.allele(x, 1) for x in hap] for ind in pop.individuals([0,0])])
+            self.assertEqual(pop.dvars().haploHomoNum[hap], homo)
+            self.assertEqual(pop.dvars().haploHomoFreq[hap], float(homo) / pop.subPopSize([0,0]))
+        # subpop ...
+        stat(pop, haploHomoFreq=[(0,1,4), (2,5)], subPops=[(0,0)], vars=['haploHomoNum_sp'])
+        for hap in [(0,1,4), (2,5)]:
+            homo = sum([[ind.allele(x, 0) for x in hap] == [ind.allele(x, 1) for x in hap] for ind in pop.individuals([0,0])])
+            self.assertEqual(pop.dvars([0,0]).haploHomoNum[hap], homo)
+
 
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
