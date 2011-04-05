@@ -10,6 +10,9 @@ New features:
   - Allow single input for parameters cutoff and values of operator InfoSplitter.
   - Allow the use of vsp name in function Population.individuals().
   - Support boost 1.45.0, 1.46.0. and 1.46.1.
+  - Add variable HH (haplotype homozygosity) to Stat(haploFreq) as sum(H_i*H_i)
+  - Add option haploHomoFreq and haploHeteroFreq to calculate observed haplotype
+	homozygosity and heterozygosity.
 
 BUG:
   - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
