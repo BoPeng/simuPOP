@@ -1058,10 +1058,8 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 	: m_loci(haploFreq.elems()), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		HaplotypeNum_String,		 HaplotypeFreq_String,
-		HaploHomozygosity_String,
-		HaplotypeNum_sp_String,		 HaplotypeFreq_sp_String,
-		HaploHomozygosity_sp_String, ""
+		HaplotypeNum_String,	HaplotypeFreq_String,
+		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,	 ""
 	};
 	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
@@ -1163,22 +1161,15 @@ bool statHaploFreq::apply(Population & pop) const
 				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			// note that genotyeps is changed in place.
-			if (m_vars.contains(HaplotypeFreq_sp_String) || m_vars.contains(HaploHomozygosity_sp_String)) {
-				double hh = 0;
+			if (m_vars.contains(HaplotypeFreq_sp_String)) {
 				if (allHaplotypes != 0) {
 					tupleDict::iterator dct = haplotypes.begin();
 					tupleDict::iterator dctEnd = haplotypes.end();
-					for (; dct != dctEnd; ++dct) {
+					for (; dct != dctEnd; ++dct)
 						dct->second /= allHaplotypes;
-						hh += dct->second * dct->second;
-					}
 				}
-				if (m_vars.contains(HaplotypeFreq_sp_String))
-					pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
-						+ key + "}", haplotypes);
-				if (m_vars.contains(HaploHomozygosity_sp_String))
-					pop.getVars().setDoubleVar(subPopVar_String(*it, HaploHomozygosity_String) + m_suffix + "{"
-						+ key + "}", hh);
+				pop.getVars().setTupleDefDictVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
+					+ key + "}", haplotypes);
 			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
@@ -1193,25 +1184,18 @@ bool statHaploFreq::apply(Population & pop) const
 		}
 	}
 	// note that genotyeCnt[idx] is changed in place.
-	if (m_vars.contains(HaplotypeFreq_String) || m_vars.contains(HaploHomozygosity_String)) {
+	if (m_vars.contains(HaplotypeFreq_String)) {
 		pop.getVars().removeVar(HaplotypeFreq_String + m_suffix);
-		vectorf hh(m_loci.size(), 0);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			string key = dictKey(m_loci[idx]);
 			if (allHaplotypeCnt[idx] != 0) {
 				tupleDict::iterator dct = haplotypeCnt[idx].begin();
 				tupleDict::iterator dctEnd = haplotypeCnt[idx].end();
-				for (; dct != dctEnd; ++dct) {
+				for (; dct != dctEnd; ++dct)
 					dct->second /= allHaplotypeCnt[idx];
-					hh[idx] += dct->second * dct->second;
-				}
 			}
-			if (m_vars.contains(HaplotypeFreq_String))
-				pop.getVars().setTupleDefDictVar(string(HaplotypeFreq_String) + m_suffix + "{" + key + "}",
-					haplotypeCnt[idx]);
-			if (m_vars.contains(HaploHomozygosity_String))
-				pop.getVars().setDoubleVar(string(HaploHomozygosity_String) + m_suffix + "{" + key + "}",
-					hh[idx]);
+			pop.getVars().setTupleDefDictVar(string(HaplotypeFreq_String) + m_suffix + "{" + key + "}",
+				haplotypeCnt[idx]);
 		}
 	}
 	return true;

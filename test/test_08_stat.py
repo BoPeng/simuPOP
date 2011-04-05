@@ -332,14 +332,6 @@ class Teststat(unittest.TestCase):
             self.assertEqual(pop.dvars().haploFreq[(2, 5)][(1, 1)], 0.2)
             self.assertEqual(pop.dvars().haploFreq[(2, 5)][(2, 2)], 0.3)
             self.assertEqual(pop.dvars().haploFreq[(2, 5)][(3, 3)], 0.5) 
-            stat(pop, haploFreq=[[0,1,5], [2,5]], vars='HH')
-            self.assertEqual(pop.dvars().HH[(2, 5)], 0.2**2 + 0.3**2 + 0.5**2)
-        initGenotype(pop, freq=[0.2, 0.3, 0.5])
-        stat(pop, haploFreq=[(0,1,4), (2,5)], vars=['haploFreq', 'HH'])
-        self.assertAlmostEqual(pop.dvars().HH[(0,1,4)],
-            sum([x*x for x in pop.dvars().haploFreq[(0,1,4)].values()]))
-        self.assertAlmostEqual(pop.dvars().HH[(2,5)],
-            sum([x*x for x in pop.dvars().haploFreq[(2,5)].values()]))
 
 
     def testHaploHomoFreq(self):
