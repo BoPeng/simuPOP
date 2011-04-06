@@ -970,7 +970,7 @@ bool ProportionSplitter::contains(const Population & pop, ULONG ind, vspID vsp) 
 
 	ULONG size = pop.subPopSize(vsp.subPop());
 	vectoru count(m_proportions.size());
-	propToCount(m_proportions, size, count);
+	propToCount(m_proportions.begin(),m_proportions.end(), size, count);
 
 	ULONG lower = 0;
 	ULONG higher = 0;
@@ -991,7 +991,7 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
 
 	ULONG size = pop.subPopSize(subPop);
 	vectoru count(m_proportions.size());
-	propToCount(m_proportions, size, count);
+	propToCount(m_proportions.begin(),m_proportions.end(), size, count);
 	// determine range
 	ULONG lower = std::accumulate(count.begin(), count.begin() + virtualSubPop, 0L);
 	ULONG higher = lower + count[virtualSubPop];

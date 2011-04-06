@@ -1840,7 +1840,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 double hweTest(const vectoru & cnt);
 
 /// CPPONLY
-void propToCount(const vectorf & prop, ULONG N, vectoru & count);
+void propToCount(vectorf::const_iterator itbegin, vectorf::const_iterator itend, ULONG N, vectoru & count);
 
 /// CPPONLY
 string formatDescription(const string & text);
@@ -1864,10 +1864,11 @@ public:
 	 *  numbers will be returned in \e N returned numbers.
 	 */
 	WeightedSampler(const vectorf & weights = vectorf(), ULONG N = 0)
-		: m_RNG(&getRNG()), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+		: m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
-		set(weights, N);
+		
+		set(weights.begin(),weights.end(), N);
 	}
 
 
@@ -1876,11 +1877,13 @@ public:
 	{
 	}
 
-
+	
 	/** CPPONLY
 	 *  Set parameters for the weighted sampler.
 	 */
 	void set(const vectorf & weights, ULONG N = 0);
+	
+	void set(vectorf::const_iterator itbegin, vectorf::const_iterator itend, ULONG N = 0);
 
 	/** Returns a random number between \c 0 and \c k-1 with probabilities that
 	 *  are proportional to specified weights.
@@ -1892,9 +1895,6 @@ public:
 	vectoru drawSamples(ULONG n = 1);
 
 private:
-	/// pointer to a RNG
-	RNG * m_RNG;
-
 	/// which algorithm to use
 	int m_algorithm;
 

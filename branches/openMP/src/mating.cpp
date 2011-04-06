@@ -673,7 +673,7 @@ void RandomParentChooser::initialize(Population & pop, SubPopID sp)
 	}
 
 	if (m_selection)
-		m_sampler.set(fitness);
+		m_sampler.set(fitness.begin(),fitness.end());
 	else {
 		m_size = m_index.size();
 		if (m_size == 0)         // if m_index is not used (no VSP)
@@ -716,103 +716,33 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 	return IndividualPair(ind, NULL);
 }
 
-
 void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
-
-#ifdef _OPENMP
-	int numthreads = numThreads();
-	vectori index_numMale(numthreads + 1, 0);
-	vectori index_numFemale(numthreads + 1, 0);
-
-	// just m_numMale but member variable cannot be used in parallel clause
-	int tmpNumMale = 0;
-	int tmpNumFemale = 0;
-#  pragma omp parallel reduction(+: tmpNumMale, tmpNumFemale)
-	{
-		int tid = omp_get_thread_num();
-		int local_numMale = 0;
-		int local_numFemale = 0;
-		IndIterator local_it = pop.indIterator(subPop, tid);
-		for (; local_it.valid(); ++local_it) {
-			if (local_it->sex() == MALE)
-				local_numMale++;
-			else
-				local_numFemale++;
-		}
-		index_numMale[tid + 1] = local_numMale;
-		index_numFemale[tid + 1] = local_numFemale;
-		tmpNumMale += local_numMale;
-		tmpNumFemale += local_numFemale;
-	}
-
-	m_numMale = tmpNumMale;
-	m_numFemale = tmpNumFemale;
-
-	for (int i = 1; i < numthreads; i++) {
-		index_numMale[i] += index_numMale[i - 1];
-		index_numFemale[i] += index_numFemale[i - 1];
-	}
-
-#else
-	IndIterator it = pop.indIterator(subPop);
-	for (; it.valid(); ++it) {
-		if (it->sex() == MALE)
-			m_numMale++;
-		else
-			m_numFemale++;
-	}
-#endif
-
+	m_maleIndex = 0 ; 
+	m_femaleIndex = pop.subPopSize(subPop);
 	// allocate memory at first for performance reasons
-	m_maleIndex.resize(m_numMale);
-	m_femaleIndex.resize(m_numFemale);
+	m_sexIndex.resize(pop.subPopSize(subPop));
+
 
 	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
 	UINT fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
-		m_maleFitness.resize(m_numMale);
-		m_femaleFitness.resize(m_numFemale);
+		m_sexFitness.resize(pop.subPopSize(subPop));
 	}
 
 
-#ifdef _OPENMP
-#  pragma omp parallel
-	{
-		int tid = omp_get_thread_num();
-
-		vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin() + index_numMale[tid];
-		vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin() + index_numFemale[tid];
-		vectorf::iterator maleFitness, femaleFitness;
-		if (m_selection) {
-			maleFitness = m_maleFitness.begin() + index_numMale[tid];
-			femaleFitness = m_femaleFitness.begin() + index_numFemale[tid];
-		}
-		IndIterator local_it = pop.indIterator(subPop, tid);
-		for (; local_it.valid(); local_it++) {
-			if (local_it->sex() == MALE) {
-				*maleIndex++ = local_it.rawIter();
-				if (m_selection)
-					*maleFitness++ = local_it->info(fit_id);
-			} else {
-				*femaleIndex++ = local_it.rawIter();
-				if (m_selection)
-					*femaleFitness++ = local_it->info(fit_id);
-			}
-		}
-	}
-#else
-	vector<RawIndIterator>::iterator maleIndex = m_maleIndex.begin();
-	vector<RawIndIterator>::iterator femaleIndex = m_femaleIndex.begin();
-	vectorf::iterator maleFitness, femaleFitness;
+	vector<RawIndIterator>::iterator maleIndex = m_sexIndex.begin();
+	vector<RawIndIterator>::reverse_iterator femaleIndex = m_sexIndex.rbegin();
+	vectorf::iterator maleFitness;
+	vectorf::reverse_iterator femaleFitness;
 	if (m_selection) {
-		maleFitness = m_maleFitness.begin();
-		femaleFitness = m_femaleFitness.begin();
+		maleFitness = m_sexFitness.begin();
+		femaleFitness = m_sexFitness.rbegin();
 	}
-	it = pop.indIterator(subPop);
+	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
 		if (it->sex() == MALE) {
 			*maleIndex++ = it.rawIter();
@@ -824,19 +754,20 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 				*femaleFitness++ = it->info(fit_id);
 		}
 	}
-#endif
+	m_numMale   = maleIndex   - m_sexIndex.begin();
+	m_numFemale = pop.subPopSize(subPop) - m_numMale;
+
 	if (!m_replacement) {
-		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
-		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
-		getRNG().randomShuffle(m_maleIndex.begin(), m_maleIndex.end());
-		getRNG().randomShuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+		DBG_FAILIF(m_numMale == 0, IndexError, "No male individual in this population");
+		DBG_FAILIF(m_numFemale == 0, IndexError, "No female individual in this population");
+		getRNG().randomShuffle(m_sexIndex.begin(), m_sexIndex.begin() + m_numMale);
+		getRNG().randomShuffle(m_sexIndex.begin() + m_numMale, m_sexIndex.end());
 	}
 
 	if (m_selection) {
-		m_malesampler.set(m_maleFitness);
-		m_femalesampler.set(m_femaleFitness);
-		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
-		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
+		m_malesampler.set(m_sexFitness.begin(), m_sexFitness.begin() + m_numMale);
+		m_femalesampler.set(m_sexFitness.begin() + m_numMale, m_sexFitness.end());
+		DBG_DO(DBG_DEVEL, cerr << "Male and Female fitness " << m_sexFitness << endl);
 	}
 
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
@@ -844,7 +775,6 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 
 	m_initialized = true;
 }
-
 
 ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator)
 {
@@ -855,15 +785,13 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 	Individual * mom = NULL;
 
 	if (!m_replacement) {
-		if (m_femaleIndex.empty())
+		if (m_femaleIndex < m_numMale)
 			throw ValueError("All females have been chosen.");
-		mom = &*m_femaleIndex.back();
-		m_femaleIndex.pop_back();
+		mom = &*m_sexIndex[--m_femaleIndex];
 
-		if (m_maleIndex.empty())
+		if (m_maleIndex >= m_numMale)
 			throw ValueError("All males have been chosen.");
-		dad = &*m_maleIndex.back();
-		m_maleIndex.pop_back();
+		dad = &*m_sexIndex[m_maleIndex++];
 		return std::make_pair(dad, mom);
 	}
 
@@ -876,11 +804,11 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 
 	if (m_selection) {
 		// using weighted sampler.
-		dad = &*(m_maleIndex[m_malesampler.draw()]);
-		mom = &*(m_femaleIndex[m_femalesampler.draw()]);
+		dad = &*(m_sexIndex[m_malesampler.draw()]);
+		mom = &*(m_sexIndex[m_numMale + m_femalesampler.draw()]);
 	} else {
-		dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
-		mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
+		dad = &*(m_sexIndex[getRNG().randInt(m_numMale)]);
+		mom = &*(m_sexIndex[m_numMale + getRNG().randInt(m_numFemale)]);
 	}
 	return std::make_pair(dad, mom);
 }
@@ -932,8 +860,8 @@ void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
 	}
 
 	if (m_selection) {
-		m_malesampler.set(m_maleFitness);
-		m_femalesampler.set(m_femaleFitness);
+		m_malesampler.set(m_maleFitness.begin(),m_maleFitness.end());
+		m_femalesampler.set(m_femaleFitness.begin(),m_femaleFitness.end());
 		DBG_DO(DBG_DEVEL, cerr << "Male fitness " << m_maleFitness << endl);
 		DBG_DO(DBG_DEVEL, cerr << "Female fitness " << m_femaleFitness << endl);
 	}
