@@ -3259,17 +3259,19 @@ double hweTest(const vectoru & cnt)
 	return 1.0;
 }
 
-void propToCount(vectorf::const_iterator itbegin, vectorf::const_iterator itend, ULONG N, vectoru & count)
+
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count)
 {
-	count.resize(itend - itbegin);
+	UINT sz = last - first;
+
+	count.resize(sz);
 	size_t tot = 0;
-	vectorf::const_iterator it = itbegin;
-	for (size_t i = 0; it != itend; ++it, ++i) {
-		count[i] = static_cast<ULONG>(N *(*it) + 0.5);
+	for (size_t i = 0; i < sz; ++i) {
+		count[i] = static_cast<ULONG>(N * *(first + i) + 0.5);
 		tot += count[i];
 		if (tot > N) {
 			count[i] -= tot - N;
-			for (size_t j = i + 1; j < itend - itbegin; ++j)
+			for (size_t j = i + 1; j < sz; ++j)
 				count[j] = 0;
 			return;
 		}
@@ -3277,9 +3279,8 @@ void propToCount(vectorf::const_iterator itbegin, vectorf::const_iterator itend,
 	if (N == tot)
 		return;
 	// if tot < N, spead the round offs to the first several counts
-	it = itbegin;
-	for (size_t i = 0;tot < N && it != itend; ++it, ++i) {
-		if (count[i] < *it * N) {
+	for (size_t i = 0; tot < N && i < sz; ++i) {
+		if (count[i] < *(first + i) * N) {
 			count[i] += 1;
 			++tot;
 		}
@@ -3287,6 +3288,7 @@ void propToCount(vectorf::const_iterator itbegin, vectorf::const_iterator itend,
 	if (N != tot)
 		count.back() += N - tot;
 }
+
 
 string formatDescription(const string & text)
 {
@@ -3353,12 +3355,14 @@ string formatDescription(const string & text)
 	return output;
 }
 
-void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterator itend, ULONG N)
+
+void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N)
 {
-	vectorf::const_iterator it;
+	UINT sz = last - first;
+
 	// this is the case with unknown number of outputs
 	if (N == 0) {
-		m_N = itend - itbegin;
+		m_N = sz;
 		// no weight (wrong case)
 		if (m_N == 0) {
 			// invalid
@@ -3375,8 +3379,8 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		// fixed value
 		bool allEqual = true;
 
-		for (it = itbegin+1; it != itend; ++it) {
-			if (*it != *(it-1)) {
+		for (size_t i = 1; i < sz; ++i) {
+			if (*(first + i) != *(first + i - 1)) {
 				allEqual = false;
 				break;
 			}
@@ -3390,9 +3394,8 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		// only one value
 		bool fixed = true;
 		int prevIndex = -1;
-		it = itbegin;
-		for (size_t i = 0; it != itend; ++it, ++i) {
-			if (*it != 0) {
+		for (size_t i = 0; i < sz; ++i) {
+			if (*(first + i) != 0) {
 				if (prevIndex == -1) {
 					m_param = i;
 					prevIndex = i;
@@ -3409,8 +3412,7 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		// the mos difficult case
 		m_algorithm = 3;
 		// sum of weight
-		it = itbegin;
-		double w = accumulate(it, itend, 0.0);
+		double w = accumulate(first, last, 0.0);
 
 		DBG_FAILIF(fcmp_le(w, 0), ValueError, "Sum of weight is <= 0.");
 
@@ -3419,9 +3421,8 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		// initialize p with N*p0,...N*p_k-1
 		m_q.resize(m_N);
 
-		it = itbegin;
-		for (size_t i = 0; it != itend; ++it, ++i)
-			m_q[i] = *it * w;
+		for (size_t i = 0; i < m_N; ++i)
+			m_q[i] = *(first + i) * w;
 
 		// initialize Y with values
 		m_a.resize(m_N);
@@ -3457,23 +3458,22 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		delete[] HL;
 	} else {
 		m_algorithm = 4;
-		for (it = itbegin; it != itend; ++it){
-			DBG_FAILIF(*it < 0 || *it > 1, ValueError,
+		for (size_t i = 0; i < sz; ++i) {
+			DBG_FAILIF(*(first + i) < 0 || *(first + i) > 1, ValueError,
 				"Proportions should be between 0 and 1");
 		}
 		// sum of weight
-		it = itbegin;
-		double w = accumulate(it, itend, 0.0);
+		double w = accumulate(first, last, 0.0);
 		(void)w;  // fix compiler warning.
 
 		DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
 
 		vectoru count(N);
-		propToCount(itbegin,itend, N, count);
+		propToCount(first, last, N, count);
 
 		m_sequence.resize(N);
 		// turn weight into percentage
-		for (size_t i = 0, j = 0; i < itend - itbegin; ++i)
+		for (size_t i = 0, j = 0; i < sz; ++i)
 			for (size_t k = 0; k < count[i]; ++k, ++j)
 				m_sequence[j] = i;
 
@@ -3482,6 +3482,7 @@ void WeightedSampler::set(vectorf::const_iterator itbegin,vectorf::const_iterato
 		m_index = 0;
 	}
 }
+
 
 ULONG WeightedSampler::draw()
 {

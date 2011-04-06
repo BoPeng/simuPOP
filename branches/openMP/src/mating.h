@@ -991,7 +991,7 @@ public:
 	 */
 	RandomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
 		ParentChooser(selectionField), m_replacement(replacement),
-		m_sexIndex(0), m_sexFitness(0), m_malesampler(), m_femalesampler()
+		m_index(0), m_fitness(0), m_malesampler(), m_femalesampler()
 	{
 	}
 
@@ -1037,13 +1037,12 @@ private:
 	ULONG m_numFemale;
 
 	/// internal index to female/males.
-	vector<RawIndIterator> m_sexIndex;
+	vector<RawIndIterator> m_index;
 
 	size_t m_femaleIndex;
+	size_t m_maleIndex;
 
-	size_t m_maleIndex; 
-
-	vectorf m_sexFitness;
+	vectorf m_fitness;
 
 	// weighted sampler
 	WeightedSampler m_malesampler;

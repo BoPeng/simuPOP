@@ -668,6 +668,8 @@ public:
 			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
 				m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
 	}
+
+
 #endif
 
 	/** CPPONLY Individual iterator: without subPop info

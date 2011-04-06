@@ -1059,7 +1059,7 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 {
 	const char * allowedVars[] = {
 		HaplotypeNum_String,	HaplotypeFreq_String,
-		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,	 ""
+		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
 	};
 	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
