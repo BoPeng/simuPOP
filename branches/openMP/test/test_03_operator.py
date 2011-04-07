@@ -258,6 +258,21 @@ class TestOperator(unittest.TestCase):
         self.assertLess(gen, 20000)
     
 
+    def testPyEval(self):
+        '''Testing operator PyEval'''
+        pop = Population([100,2000])
+        stat(pop, popSize=True)
+        self.assertEqual(pyEval(pop, 'popSize'), '2100')
+        stat(pop, popSize=True, vars=['popSize_sp'])
+        self.assertEqual(pyEval(pop, 'popSize', subPops=ALL_AVAIL), '1002000')
+        self.assertEqual(pyEval(pop, r'"%d\t" % popSize', subPops=ALL_AVAIL),
+            '100\t2000\t')
+        pyExec(pop, 'p=popSize+200')
+        self.assertRaises(RuntimeError, pyEval, pop, 'p', subPops=ALL_AVAIL)
+        pyExec(pop, 'q=popSize+200', subPops=ALL_AVAIL)
+        self.assertEqual(pyEval(pop, r'"%d\t" % q', subPops=ALL_AVAIL),
+            '300\t2200\t')
+
     def testInfoExec(self):
         '''Testing operator InfoExec'''
         pop = Population(10, infoFields=['a', 'b'])

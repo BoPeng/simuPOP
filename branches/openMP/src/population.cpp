@@ -2765,32 +2765,39 @@ PyObject * Population::vars(vspID vsp)
 		throw ValueError("Statistics for specified (virtual) subpopulation does not exist.");
 
 	Py_INCREF(spObj);
-	Py_INCREF(key);
 	return spObj;
 }
 
 
 // The same as vars(), but without increasing
 // reference count.
-PyObject * Population::dict(int subPop)
+PyObject * Population::dict(vspID vsp)
 {
-	if (subPop < 0)
+	if (!vsp.valid())
 		return m_vars.dict();
-	else {
-		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
-			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
 
-		DBG_ASSERT(m_vars.hasVar("subPop"), ValueError,
-			"subPop statistics does not exist yet.");
+	DBG_ASSERT(static_cast<UINT>(vsp.subPop()) < numSubPop(),
+		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
 
-		PyObject * spObj = m_vars.getVar("subPop");
-		spObj = PyList_GetItem(spObj, subPop);
+	if (!m_vars.hasVar("subPop"))
+		throw ValueError("Population local namespace does not have key 'subPop'. "
+			             "You may forgot to call the Stat operator, or use the 'vars' parameter "
+			             "to generate subpopulation-specific statistics.");
 
-		DBG_ASSERT(spObj != NULL, SystemError,
-			"Something is wrong about the length of subPop list. ");
+	PyObject * spObj = m_vars.getVar("subPop");
+	// vsp? A tube with (sp, vsp)
+	PyObject * key = NULL;
+	if (vsp.isVirtual())
+		key = Py_BuildValue("(ii)", vsp.subPop(), vsp.virtualSubPop());
+	else
+		key = PyInt_FromLong(vsp.subPop());
 
-		return spObj;
-	}
+	spObj = PyDict_GetItem(spObj, key);
+
+	if (spObj == NULL)
+		throw ValueError("Statistics for specified (virtual) subpopulation does not exist.");
+
+	return spObj;
 }
 
 

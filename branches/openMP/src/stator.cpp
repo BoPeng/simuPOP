@@ -42,20 +42,32 @@ string PyEval::describe(bool format) const
 
 string PyEval::evaluate(Population & pop) const
 {
-	if (!m_exposePop.empty()) {
-		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-		if (popObj == NULL)
-			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+	subPopList subPops = applicableSubPops(pop);
 
-		// set dictionary variable pop to this object
-		pop.getVars().setVar(m_exposePop, popObj);
+	if (subPops.empty()) {
+		if (!m_exposePop.empty()) {
+			PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+			if (popObj == NULL)
+				throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+			// set dictionary variable pop to this object
+			pop.getVars().setVar(m_exposePop, popObj);
+		}
+		m_expr.setLocalDict(pop.dict());
+		string res = m_expr.valueAsString();
+		if (!m_exposePop.empty())
+			pop.getVars().removeVar(m_exposePop);
+		return res;
+	} else {
+		DBG_FAILIF(!m_exposePop.empty(), RuntimeError,
+			"Parameter exposePop is not supported when subPops is specified.");
+		string res;
+		for (size_t idx = 0; idx < subPops.size(); ++idx) {
+			vspID sp = subPops[idx];
+			m_expr.setLocalDict(pop.dict(sp));
+			res += m_expr.valueAsString();
+		}
+		return res;
 	}
-
-	m_expr.setLocalDict(pop.dict());
-	string res = m_expr.valueAsString();
-	if (!m_exposePop.empty())
-		pop.getVars().removeVar(m_exposePop);
-	return res;
 }
 
 
@@ -1059,7 +1071,8 @@ statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & sub
 {
 	const char * allowedVars[] = {
 		HaplotypeNum_String,	HaplotypeFreq_String,
-		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
+		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,
+		""
 	};
 	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 

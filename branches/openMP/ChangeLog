@@ -12,6 +12,8 @@ New features:
   - Support boost 1.45.0, 1.46.0. and 1.46.1.
   - Add option haploHomoFreq and haploHeteroFreq to calculate observed haplotype
 	homozygosity and heterozygosity.
+  - Let operator PyEval and PyExec support parameter subPops, which evaluates
+	expressions in each subpopulation's local namespace.
 
 BUG:
   - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
