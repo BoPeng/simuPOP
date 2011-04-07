@@ -57,7 +57,10 @@ class PyEval : public BaseOperator
 {
 public:
 	/** Create a \c PyEval operator that evaluates a Python expression \e expr
-	 *  in a population's local namespace when it is applied to this population.
+	 *  in a population's local namespaces when it is applied to this
+	 *  population. This namespace can either be the population's local
+	 *  namespace (<tt>pop.vars()</tt>), or namespaces <tt>subPop[sp]</tt> for
+	 *  (virtual) subpop (<tt>pop.vars(subpop)</tt>) in specified \e subPops.
 	 *  If Python statements \e stmts is given (a single or multi-line string),
 	 *  the statement will be executed before \e expr. If \e exposePop is set
 	 *  to an non-empty string, the current population will be exposed in its
@@ -78,7 +81,8 @@ public:
 	PyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const intList & reps = intList(), const subPopList & subPops = Py_False,
+		const stringList & infoFields = vectorstr())
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
@@ -125,6 +129,9 @@ class PyExec : public PyEval
 public:
 	/** Create a \c PyExec operator that executes statements \e stmts in a
 	 *  population's local namespace when it is applied to this population.
+	 *  This namespace can either be the population's local namespace
+	 *  (<tt>pop.vars()</tt>), or namespaces <tt>subPop[sp]</tt> for each
+	 *  (virtual) subpop (<tt>pop.vars(subpop)</tt>) in specified \e subPops.
 	 *  If \e exposePop is given, current population will be exposed in
 	 *  its local namespace as a variable named by \e exposePop. Although
 	 *  multiple statements can be executed, it is recommended that you use
@@ -135,7 +142,8 @@ public:
 	PyExec(const string & stmts = string(), const string & exposePop = string(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const intList & reps = intList(), const subPopList & subPops = Py_False,
+		const stringList & infoFields = vectorstr())
 		: PyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
