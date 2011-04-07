@@ -1353,7 +1353,7 @@ public:
 
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
-	PyObject * dict(int subPop = -1);
+	PyObject * dict(vspID subPop = vspID());
 
 	/// CPPONLY
 	SharedVariables & getVars() const
