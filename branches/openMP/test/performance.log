@@ -2477,3 +2477,42 @@ TestIdTagger : loci=10000, size=10000: 16249
 TestIdTagger : loci=10000, size=100000: 1544
 TestIdTagger : 16409, 1575, 16182, 1556, 16249, 1544
 TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 17:47:38 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4065, module short, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 766
+TestIdTagger : loci=10, size=100000: 69
+TestIdTagger : loci=100, size=10000: 732
+TestIdTagger : loci=100, size=100000: 70
+TestIdTagger : loci=10000, size=10000: 766
+TestIdTagger : loci=10000, size=100000: 72
+TestIdTagger : 766, 69, 732, 70, 766, 72
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 17:50:46 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4065, module long, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 778
+TestIdTagger : loci=10, size=100000: 71
+TestIdTagger : loci=100, size=10000: 820
+TestIdTagger : loci=100, size=100000: 71
+TestIdTagger : loci=10000, size=10000: 739
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 778, 71, 820, 71, 739, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 17:53:23 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4065, module binary, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 731
+TestIdTagger : loci=10, size=100000: 72
+TestIdTagger : loci=100, size=10000: 745
+TestIdTagger : loci=100, size=100000: 69
+TestIdTagger : loci=10000, size=10000: 711
+TestIdTagger : loci=10000, size=100000: 69
+TestIdTagger : 731, 72, 745, 69, 711, 69
+TestIdTagger : End of test TestIdTagger
