@@ -160,7 +160,7 @@ class TestBasicRandomMating(PerformanceTest):
         return gens
 
 class TestIdTagger(PerformanceTest):
-    def __init__(self, logger, time=60):
+    def __init__(self, logger, time=30):
         PerformanceTest.__init__(self, 'Test idTagger, results are number of generations in %d seconds.' % int(time),
             logger)
         self.time = time

@@ -129,3 +129,9 @@ TestBasicRandomMating, 2011-04-07 21:07:39,042, EPIW-072552, x86-2threads, pytho
 TestBasicRandomMating, 2011-04-07 21:20:33,546, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4061, short, 298840, 33206, 3104, 136512, 14239, 1074, 2396, 236, 0, 237, 0, 0
 TestBasicRandomMating, 2011-04-07 21:27:41,703, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4061, long, 296456, 33159, 2195, 135220, 10710, 817, 1460, 0, 0, 0, 0, 0
 TestBasicRandomMating, 2011-04-07 21:39:03,140, EPIW-072552, x86-4threads, python2.7, simuPOP-1.0.6svn, rev4061, binary, 247296, 26654, 2570, 263041, 28665, 2623, 82247, 4305, 356, 4682, 429, 0
+TestIdTagger, 2011-04-08 16:46:57,642, bp8.mdacc.tmc.edu, x86_64-1threads, python2.7, simuPOP-1.0.6svn, rev4059, short, 16495, 1608, 16402, 1606, 16759, 1514
+TestIdTagger, 2011-04-08 16:49:37,156, bp8.mdacc.tmc.edu, x86_64-1threads, python2.7, simuPOP-1.0.6svn, rev4059, long, 16870, 1637, 16885, 1639, 16885, 0
+TestIdTagger, 2011-04-08 16:52:43,113, bp8.mdacc.tmc.edu, x86_64-1threads, python2.7, simuPOP-1.0.6svn, rev4059, binary, 16001, 1576, 16120, 1577, 16143, 1536
+TestIdTagger, 2011-04-08 17:00:09,924, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4059, short, 16437, 1608, 16958, 1606, 16821, 1541
+TestIdTagger, 2011-04-08 17:02:45,582, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4059, long, 16857, 1591, 16762, 1595, 16239, 0
+TestIdTagger, 2011-04-08 17:05:52,070, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4059, binary, 16409, 1575, 16182, 1556, 16249, 1544

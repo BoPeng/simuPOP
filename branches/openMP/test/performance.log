@@ -2399,3 +2399,81 @@ TestBasicRandomMating : loci=100000, size=10000: 429
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 247296, 26654, 2570, 263041, 28665, 2623, 82247, 4305, 356, 4682, 429, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 16:43:49 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module short, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16495
+TestIdTagger : loci=10, size=100000: 1608
+TestIdTagger : loci=100, size=10000: 16402
+TestIdTagger : loci=100, size=100000: 1606
+TestIdTagger : loci=10000, size=10000: 16759
+TestIdTagger : loci=10000, size=100000: 1514
+TestIdTagger : 16495, 1608, 16402, 1606, 16759, 1514
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 16:46:58 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module long, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16870
+TestIdTagger : loci=10, size=100000: 1637
+TestIdTagger : loci=100, size=10000: 16885
+TestIdTagger : loci=100, size=100000: 1639
+TestIdTagger : loci=10000, size=10000: 16885
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 16870, 1637, 16885, 1639, 16885, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 16:49:37 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module binary, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16001
+TestIdTagger : loci=10, size=100000: 1576
+TestIdTagger : loci=100, size=10000: 16120
+TestIdTagger : loci=100, size=100000: 1577
+TestIdTagger : loci=10000, size=10000: 16143
+TestIdTagger : loci=10000, size=100000: 1536
+TestIdTagger : 16001, 1576, 16120, 1577, 16143, 1536
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 16:57:00 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module short, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16437
+TestIdTagger : loci=10, size=100000: 1608
+TestIdTagger : loci=100, size=10000: 16958
+TestIdTagger : loci=100, size=100000: 1606
+TestIdTagger : loci=10000, size=10000: 16821
+TestIdTagger : loci=10000, size=100000: 1541
+TestIdTagger : 16437, 1608, 16958, 1606, 16821, 1541
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 17:00:10 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module long, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16857
+TestIdTagger : loci=10, size=100000: 1591
+TestIdTagger : loci=100, size=10000: 16762
+TestIdTagger : loci=100, size=100000: 1595
+TestIdTagger : loci=10000, size=10000: 16239
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 16857, 1591, 16762, 1595, 16239, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestIdTagger : Time: Fri Apr  8 17:02:45 2011
+TestIdTagger : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4059, module binary, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 16409
+TestIdTagger : loci=10, size=100000: 1575
+TestIdTagger : loci=100, size=10000: 16182
+TestIdTagger : loci=100, size=100000: 1556
+TestIdTagger : loci=10000, size=10000: 16249
+TestIdTagger : loci=10000, size=100000: 1544
+TestIdTagger : 16409, 1575, 16182, 1556, 16249, 1544
+TestIdTagger : End of test TestIdTagger
