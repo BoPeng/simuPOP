@@ -79,7 +79,7 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		"Matental ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
 		"Parental IDs are not unique (forgot InitInfo?)");
-
+#pragma omp critical
 	offspring->setInfo(g_indID++, idx);
 	return true;
 }
