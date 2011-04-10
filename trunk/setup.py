@@ -41,6 +41,10 @@ http://simupop.sourceforge.net/main/GetInvolved for details.
 """
 import os, sys, platform, shutil, glob, re, tempfile
 
+if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
+    print "simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again."
+    sys.exit(1)
+
 # Change this to False if you would like to compile simuPOP without openMP support
 USE_OPENMP = True
 
