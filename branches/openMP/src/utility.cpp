@@ -465,7 +465,7 @@ long fetch_and_increment(long * val)
 	//
 	// for gcc, see
 	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
-	return __sync_fecth_and_add(val, 1);
+	return __sync_fetch_and_add(val, 1);
 #endif
 }
 
