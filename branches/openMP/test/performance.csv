@@ -138,3 +138,9 @@ TestIdTagger, 2011-04-08 17:05:52,070, bp8.mdacc.tmc.edu, x86_64-4threads, pytho
 TestIdTagger, 2011-04-08 17:50:46,534, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4065, short, 766, 69, 732, 70, 766, 72
 TestIdTagger, 2011-04-08 17:53:23,276, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4065, long, 778, 71, 820, 71, 739, 0
 TestIdTagger, 2011-04-08 17:56:31,436, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4065, binary, 731, 72, 745, 69, 711, 69
+TestIdTagger, 2011-04-11 20:27:38,420, BoPeng-PC, x86-4threads, python2.7.1, simuPOP-1.0.6svn, rev4068, short, 20146, 2016, 20394, 2010, 19544, 0
+TestIdTagger, 2011-04-11 20:29:43,923, BoPeng-PC, x86-4threads, python2.7.1, simuPOP-1.0.6svn, rev4068, long, 18498, 1826, 19080, 1951, 0, 0
+TestIdTagger, 2011-04-11 20:32:58,102, BoPeng-PC, x86-4threads, python2.7.1, simuPOP-1.0.6svn, rev4068, binary, 20945, 2037, 20543, 2061, 21578, 1618
+TestIdTagger, 2011-04-11 20:35:39,911, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, short, 9945, 987, 9765, 984, 9878, 0
+TestIdTagger, 2011-04-11 20:37:46,658, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, long, 9924, 957, 9987, 956, 0, 0
+TestIdTagger, 2011-04-11 20:40:58,055, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, binary, 9840, 934, 9976, 943, 9756, 731

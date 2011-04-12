@@ -2516,3 +2516,81 @@ TestIdTagger : loci=10000, size=10000: 711
 TestIdTagger : loci=10000, size=100000: 69
 TestIdTagger : 731, 72, 745, 69, 711, 69
 TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:25:00 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module short, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 20146
+TestIdTagger : loci=10, size=100000: 2016
+TestIdTagger : loci=100, size=10000: 20394
+TestIdTagger : loci=100, size=100000: 2010
+TestIdTagger : loci=10000, size=10000: 19544
+TestIdTagger : loci=10000, size=100000: failed
+TestIdTagger : 20146, 2016, 20394, 2010, 19544, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:27:38 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module long, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 18498
+TestIdTagger : loci=10, size=100000: 1826
+TestIdTagger : loci=100, size=10000: 19080
+TestIdTagger : loci=100, size=100000: 1951
+TestIdTagger : loci=10000, size=10000: failed
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 18498, 1826, 19080, 1951, 0, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:29:44 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module binary, optimized, 4 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 20945
+TestIdTagger : loci=10, size=100000: 2037
+TestIdTagger : loci=100, size=10000: 20543
+TestIdTagger : loci=100, size=100000: 2061
+TestIdTagger : loci=10000, size=10000: 21578
+TestIdTagger : loci=10000, size=100000: 1618
+TestIdTagger : 20945, 2037, 20543, 2061, 21578, 1618
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:33:04 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module short, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 9945
+TestIdTagger : loci=10, size=100000: 987
+TestIdTagger : loci=100, size=10000: 9765
+TestIdTagger : loci=100, size=100000: 984
+TestIdTagger : loci=10000, size=10000: 9878
+TestIdTagger : loci=10000, size=100000: failed
+TestIdTagger : 9945, 987, 9765, 984, 9878, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:35:40 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module long, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 9924
+TestIdTagger : loci=10, size=100000: 957
+TestIdTagger : loci=100, size=10000: 9987
+TestIdTagger : loci=100, size=100000: 956
+TestIdTagger : loci=10000, size=10000: failed
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 9924, 957, 9987, 956, 0, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: BoPeng-PC (Windows, x86, x86 Family 6 Model 15 Stepping 11, GenuineIntel)
+TestIdTagger : Time: Mon Apr 11 20:37:46 2011
+TestIdTagger : Python: 2.7.1 [MSC v.1500 32 bit (Intel)]
+TestIdTagger : simuPOP: 1.0.6svn (rev 4068, module binary, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 9840
+TestIdTagger : loci=10, size=100000: 934
+TestIdTagger : loci=100, size=10000: 9976
+TestIdTagger : loci=100, size=100000: 943
+TestIdTagger : loci=10000, size=10000: 9756
+TestIdTagger : loci=10000, size=100000: 731
+TestIdTagger : 9840, 934, 9976, 943, 9756, 731
+TestIdTagger : End of test TestIdTagger
