@@ -144,3 +144,6 @@ TestIdTagger, 2011-04-11 20:32:58,102, BoPeng-PC, x86-4threads, python2.7.1, sim
 TestIdTagger, 2011-04-11 20:35:39,911, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, short, 9945, 987, 9765, 984, 9878, 0
 TestIdTagger, 2011-04-11 20:37:46,658, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, long, 9924, 957, 9987, 956, 0, 0
 TestIdTagger, 2011-04-11 20:40:58,055, BoPeng-PC, x86-1threads, python2.7.1, simuPOP-1.0.6svn, rev4068, binary, 9840, 934, 9976, 943, 9756, 731
+TestIdTagger, 2011-04-11 20:57:32,539, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4070, short, 17324, 1842, 14404, 1481, 13969, 1323
+TestIdTagger, 2011-04-11 21:00:09,306, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4070, long, 16823, 1606, 12161, 1484, 14656, 0
+TestIdTagger, 2011-04-11 21:03:15,077, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4070, binary, 15149, 1431, 14902, 1515, 13881, 1173
