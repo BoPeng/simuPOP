@@ -40,6 +40,7 @@ http://simupop.sourceforge.net/main/GetInvolved for details.
 
 """
 import os, sys, platform, shutil, glob, re, tempfile
+import distutils.sysconfig
 
 if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     print "simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again."
@@ -61,6 +62,8 @@ else:
     if int(version[0]) < 4 or int(version[1]) < 2:
         print 'Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version
         USE_OPENMP = False
+
+USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
@@ -457,7 +460,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['libraries'] = ['stdc++', 'z']
         if USE_OPENMP:
-            res['libraries'].append('gomp')
+            res['libraries'].append('iomp5' if USE_ICC else 'gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
@@ -474,11 +477,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819'] 
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
-            res['extra_compile_args'].append('/openmp')   
+            res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
         if USE_OPENMP:
-            res['extra_compile_args'].append('-fopenmp')
+            res['extra_compile_args'].append('-openmp' if USE_ICC else '-fopenmp')
     # if Intel ICC is used, turn off remark 981
     if os.getenv('CC', '').endswith('icc') or \
         (get_config_var('CC') is not None and 'icc' in get_config_var('CC')):
