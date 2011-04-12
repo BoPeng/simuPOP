@@ -453,6 +453,23 @@ UINT numThreads()
 }
 
 
+long fetch_and_increment(long * val)
+{
+#ifdef _WIN64
+	return InterlockedIncrement64(val) - 1;
+#elif defined(_WIN32)
+	return InterlockedIncrement(val) - 1;
+#else
+	// for Intel C++, see page 164 of 
+	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
+	//
+	// for gcc, see
+	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
+	return __sync_fecth_and_add(val, 1);
+#endif
+}
+
+
 // return the global RNG
 RNG & getRNG()
 {

@@ -142,6 +142,9 @@ void setOptions(const int numThreads = -1, const char * name = NULL, unsigned lo
 /// CPPONLY get number of thread in openMP
 UINT numThreads();
 
+/// CPPONLY return val and increase val by 1, ensuring thread safety
+long fetch_and_increment(long * val);
+
 /// a utility function to check keyboard stroke
 /// CPPONLY
 int simuPOP_kbhit();
