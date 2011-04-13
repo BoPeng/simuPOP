@@ -410,28 +410,78 @@ int simuPOP_getch(void)
 
 #endif
 
-void setOptions(const int numThreads)
+
+//thread number, global variable
+UINT g_numThreads;
+
+#ifdef _OPENMP
+// random number generators for each thread
+vector<RNG> g_RNGs;
+#else
+// random number generator. a global variable.
+RNG g_RNG;
+#endif
+
+void setOptions(const int numThreads, const char * name, unsigned long seed)
 {
 #ifdef _OPENMP
-	// if numThreads is zero, all all threads will be used.
-	if (numThreads > 0)
+	// if numThreads is zero, all threads will be used.
+	if (numThreads == 0) {
+		g_numThreads = omp_get_max_threads();
+	} else if (numThreads > 0) {
 		omp_set_num_threads(numThreads);
+		g_numThreads = numThreads;
+	}
+	// Initialize g_RNGs
+	g_RNGs.resize(g_numThreads);
+	g_RNGs[0].set(name, seed);
+	for (size_t i = 1; i < g_RNGs.size(); i++)
+		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
+#else
+	g_RNG.set(name, seed);
 #endif
 }
 
 
-int numThreads()
+UINT numThreads()
 {
 #ifdef _OPENMP
-	return omp_get_max_threads();
+	return g_numThreads;
 #else
 	return 1;
 #endif
 }
 
 
+long fetch_and_increment(long * val)
+{
+#ifdef _WIN64
+	return InterlockedIncrement64(val) - 1;
+#elif defined(_WIN32)
+	return InterlockedIncrement(val) - 1;
+#else
+	// for Intel C++, see page 164 of 
+	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
+	//
+	// for gcc, see
+	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
+	return __sync_fetch_and_add(val, 1);
+#endif
 }
 
+
+// return the global RNG
+RNG & getRNG()
+{
+#ifdef _OPENMP
+	return g_RNGs[omp_get_thread_num()];
+#else
+	return g_RNG;
+#endif
+}
+
+
+}
 
 namespace std {
 // how to output a dictionary
@@ -3227,16 +3277,18 @@ double hweTest(const vectoru & cnt)
 }
 
 
-void propToCount(const vectorf & prop, ULONG N, vectoru & count)
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count)
 {
-	count.resize(prop.size());
+	UINT sz = last - first;
+
+	count.resize(sz);
 	size_t tot = 0;
-	for (size_t i = 0; i < prop.size(); ++i) {
-		count[i] = static_cast<ULONG>(N * prop[i] + 0.5);
+	for (size_t i = 0; i < sz; ++i) {
+		count[i] = static_cast<ULONG>(N * *(first + i) + 0.5);
 		tot += count[i];
 		if (tot > N) {
 			count[i] -= tot - N;
-			for (size_t j = i + 1; j < prop.size(); ++j)
+			for (size_t j = i + 1; j < sz; ++j)
 				count[j] = 0;
 			return;
 		}
@@ -3244,8 +3296,8 @@ void propToCount(const vectorf & prop, ULONG N, vectoru & count)
 	if (N == tot)
 		return;
 	// if tot < N, spead the round offs to the first several counts
-	for (size_t i = 0; tot < N && i < prop.size(); ++i) {
-		if (count[i] < prop[i] * N) {
+	for (size_t i = 0; tot < N && i < sz; ++i) {
+		if (count[i] < *(first + i) * N) {
 			count[i] += 1;
 			++tot;
 		}
@@ -3321,11 +3373,13 @@ string formatDescription(const string & text)
 }
 
 
-void WeightedSampler::set(const vectorf & weight, ULONG N)
+void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N)
 {
+	UINT sz = last - first;
+
 	// this is the case with unknown number of outputs
 	if (N == 0) {
-		m_N = weight.size();
+		m_N = sz;
 		// no weight (wrong case)
 		if (m_N == 0) {
 			// invalid
@@ -3341,8 +3395,9 @@ void WeightedSampler::set(const vectorf & weight, ULONG N)
 		}
 		// fixed value
 		bool allEqual = true;
-		for (size_t i = 1; i < weight.size(); ++i) {
-			if (weight[i] != weight[i - 1]) {
+
+		for (size_t i = 1; i < sz; ++i) {
+			if (*(first + i) != *(first + i - 1)) {
 				allEqual = false;
 				break;
 			}
@@ -3356,8 +3411,8 @@ void WeightedSampler::set(const vectorf & weight, ULONG N)
 		// only one value
 		bool fixed = true;
 		int prevIndex = -1;
-		for (size_t i = 0; i < weight.size(); ++i) {
-			if (weight[i] != 0) {
+		for (size_t i = 0; i < sz; ++i) {
+			if (*(first + i) != 0) {
 				if (prevIndex == -1) {
 					m_param = i;
 					prevIndex = i;
@@ -3374,7 +3429,7 @@ void WeightedSampler::set(const vectorf & weight, ULONG N)
 		// the mos difficult case
 		m_algorithm = 3;
 		// sum of weight
-		double w = accumulate(weight.begin(), weight.end(), 0.0);
+		double w = accumulate(first, last, 0.0);
 
 		DBG_FAILIF(fcmp_le(w, 0), ValueError, "Sum of weight is <= 0.");
 
@@ -3382,8 +3437,10 @@ void WeightedSampler::set(const vectorf & weight, ULONG N)
 
 		// initialize p with N*p0,...N*p_k-1
 		m_q.resize(m_N);
+
 		for (size_t i = 0; i < m_N; ++i)
-			m_q[i] = weight[i] * w;
+			m_q[i] = *(first + i) * w;
+
 		// initialize Y with values
 		m_a.resize(m_N);
 		for (size_t i = 0; i < m_N; ++i)
@@ -3418,28 +3475,27 @@ void WeightedSampler::set(const vectorf & weight, ULONG N)
 		delete[] HL;
 	} else {
 		m_algorithm = 4;
-
-		for (size_t i = 0; i < weight.size(); ++i) {
-			DBG_FAILIF(weight[i] < 0 || weight[i] > 1, ValueError,
+		for (size_t i = 0; i < sz; ++i) {
+			DBG_FAILIF(*(first + i) < 0 || *(first + i) > 1, ValueError,
 				"Proportions should be between 0 and 1");
 		}
 		// sum of weight
-		double w = accumulate(weight.begin(), weight.end(), 0.0);
+		double w = accumulate(first, last, 0.0);
 		(void)w;  // fix compiler warning.
 
 		DBG_FAILIF(fcmp_eq(w, 0), ValueError, "Proportions sum up to 0");
 
 		vectoru count(N);
-		propToCount(weight, N, count);
+		propToCount(first, last, N, count);
 
 		m_sequence.resize(N);
 		// turn weight into percentage
-		for (size_t i = 0, j = 0; i < weight.size(); ++i)
+		for (size_t i = 0, j = 0; i < sz; ++i)
 			for (size_t k = 0; k < count[i]; ++k, ++j)
 				m_sequence[j] = i;
 
 		// random shuffle
-		m_RNG->randomShuffle(m_sequence.begin(), m_sequence.end());
+		getRNG().randomShuffle(m_sequence.begin(), m_sequence.end());
 		m_index = 0;
 	}
 }
@@ -3456,9 +3512,9 @@ ULONG WeightedSampler::draw()
 		return m_param;
 	case 2:
 		// all weights are the same
-		return m_RNG->randInt(m_param);
+		return getRNG().randInt(m_param);
 	case 3: {
-		double rN = m_RNG->randUniform() * m_N;
+		double rN = getRNG().randUniform() * m_N;
 
 		size_t K = static_cast<size_t>(rN);
 
@@ -3836,38 +3892,6 @@ double Bernullitrials::probSuccRate() const
 #undef unsetBit
 #undef getBit
 
-#ifdef _OPENMP
-// random number generators for each thread
-vector<RNG> g_RNGs;
-#else
-// random number generator. a global variable.
-RNG g_RNG;
-#endif
-
-
-// return the global RNG
-RNG & getRNG()
-{
-#ifdef _OPENMP
-    return g_RNGs[omp_get_thread_num()];
-#else
-    return g_RNG;
-#endif
-}
-
-
-void setRNG(const char * name, unsigned long seed)
-{
-#ifdef _OPENMP
-    g_RNGs.resize(numThreads());
-    g_RNGs[0].set(name, seed);
-    for (int i = 1; i < g_RNGs.size(); i++)
-		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
-#else
-    g_RNG.set(name, seed);
-#endif
-}
-
 
 // Global debug and initialization related functions
 
@@ -4056,8 +4080,11 @@ PyObject * moduleInfo()
     PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
     // Number of Threads in openMP
+#ifdef _OPENMP
     PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
-
+#else
+    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(0));
+#endif
 
     // 32 or 64 bits
 #ifdef _WIN64
@@ -4350,9 +4377,11 @@ void clearGenotype(GenoIterator to, size_t n)
    include this file. */
 bool initialize()
 {
-    setRNG();
 
-#ifndef STANDALONE_EXECUTABLE
+#ifdef STANDALONE_EXECUTABLE
+    setOptions(0);
+#else
+    setOptions(1);
     // tie python stdout to cerr
     std::cout.rdbuf(&g_pythonStdoutBuf);
     std::cerr.rdbuf(&g_pythonStderrBuf);

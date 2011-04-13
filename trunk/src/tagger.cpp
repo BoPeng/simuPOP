@@ -32,7 +32,7 @@ namespace simuPOP {
 
 // ID starts from 0 to avoid trouble with other programs that
 // treats 0 as missing.
-ULONG g_indID = 1;
+long g_indID = 1;
 
 
 void IdTagger::reset(ULONG startID)
@@ -79,8 +79,12 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		"Matental ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
 		"Parental IDs are not unique (forgot InitInfo?)");
-
+#ifdef _OPENMP
+	ULONG id = fetch_and_increment(&g_indID);
+	offspring->setInfo(id, idx);
+#else
 	offspring->setInfo(g_indID++, idx);
+#endif
 	return true;
 }
 

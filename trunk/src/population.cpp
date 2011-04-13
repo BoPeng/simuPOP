@@ -881,7 +881,7 @@ vectoru Population::splitSubPop(UINT subPop, const vectorf & sizes, const vector
 
 	if (fcmp_eq(s, 1.)) {
 		// proportions
-		propToCount(sizes, subPopSize(subPop), count);
+		propToCount(sizes.begin(), sizes.end(), subPopSize(subPop), count);
 	} else if (fcmp_eq(s, subPopSize(subPop))) {
 		for (size_t i = 0; i < sizes.size(); ++i) {
 			count[i] = static_cast<ULONG>(sizes[i] + 0.5);

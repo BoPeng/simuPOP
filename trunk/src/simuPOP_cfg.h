@@ -65,7 +65,12 @@
 #  endif
 #  if GCC_VERSION > 40000
 //   unordered_map in 'tr1/'
-#    define TR1_SUPPORT 2
+#    if defined(__INTEL_COMPILER)
+//     intel c++ does not yet support tr1 because it cannot handle gcc tr1 headers such as type_traits
+#      define TR1_SUPPORT 0
+#    else
+#      define TR1_SUPPORT 1
+#    endif
 #  else
 #    define TR1_SUPPORT 0
 #  endif
