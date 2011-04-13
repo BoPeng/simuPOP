@@ -79,6 +79,14 @@
 #  define BITOFF(ref) ref._M_offset
 #endif
 
+#ifdef _WIN64
+#  define ATOMICLONG LONGLONG
+#elif defined(_WIN32)
+#  define ATOMICLONG LONG
+#else
+#  define ATOMICLONG unsigned long
+#endif
+
 #include <string>
 using std::string;
 

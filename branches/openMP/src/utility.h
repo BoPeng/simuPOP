@@ -143,7 +143,7 @@ void setOptions(const int numThreads = -1, const char * name = NULL, unsigned lo
 UINT numThreads();
 
 /// CPPONLY return val and increase val by 1, ensuring thread safety
-long fetch_and_increment(long * val);
+ATOMICLONG fetchAndIncrement(ATOMICLONG * val);
 
 /// a utility function to check keyboard stroke
 /// CPPONLY
