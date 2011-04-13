@@ -63,7 +63,9 @@ else:
         print 'Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version
         USE_OPENMP = False
 
-USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
+USE_ICC = False
+if distutils.sysconfig.get_config_var('CC') is not None:
+	USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
