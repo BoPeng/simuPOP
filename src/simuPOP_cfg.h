@@ -69,7 +69,7 @@
 //     intel c++ does not yet support tr1 because it cannot handle gcc tr1 headers such as type_traits
 #      define TR1_SUPPORT 0
 #    else
-#      define TR1_SUPPORT 1
+#      define TR1_SUPPORT 2
 #    endif
 #  else
 #    define TR1_SUPPORT 0
