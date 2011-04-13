@@ -669,7 +669,7 @@ def _getParamValue(p, val, options):
             raise ValueError("Default value '" + str(val) + "' for option '" + p['name'] + "' does not pass validation.")
         return val
     elif list in p['allowedTypes'] or tuple in p['allowedTypes']:
-        if not _validate(val, p, options):
+        if not _validate([val], p, options):
             raise ValueError("Value "+str([val])+' does not pass validation')
         return [val]
     elif type(val) == bool and int in p['allowedTypes']: # compatibility problem
@@ -870,6 +870,9 @@ class _tkParamDialog(_paramDialog):
         ''' get result and convert values '''
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
+                # for the case of non-GUI default parameter that do not pass validation (e.g. 5 for [5])
+                if self.options[g].has_key('value'):
+                    self.options[g]['value'] = _getParamValue(self.options[g], self.options[g]['value'], self.options)
                 continue
             try:
                 if self.options[g]['gui_type'] == 'boolean':
@@ -1041,6 +1044,9 @@ class _wxParamDialog(_paramDialog):
         ''' get result and convert values '''
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
+                # for the case of non-GUI default parameter that do not pass validation (e.g. 5 for [5])
+                if self.options[g].has_key('value'):
+                    self.options[g]['value'] = _getParamValue(self.options[g], self.options[g]['value'], self.options)
                 continue
             try:
                 if self.options[g]['gui_type'] == 'chooseOneOf':
@@ -1976,6 +1982,10 @@ class Params:
         elif self.gui == 'batch':
             # valid values because some default values can be false
             for opt in self.options:
+                if opt.has_key('separator'):
+                    continue
+                # default value might not have the required type (e.g. 9 for [9])
+                opt['value'] = _getParamValue(opt, opt['value'], self.options)
                 if opt.has_key('allowedTypes') and type(opt['value']) not in opt['allowedTypes']:
                     raise ValueError("Value '%s' is not of allowed type for parameter '%s'." % \
                         (str(opt['value']), opt['name']))

@@ -130,14 +130,20 @@ void checkRefCount();
 // / Some common functions/templates
 // ////////////////////////////////////////////////////////////
 
-/** Set number of thread in openMP. The number of threads can be be positive,
+/** First argument is to set number of thread in openMP. The number of threads can be be positive,
  *  integer (number of threads) or 0, which implies all available cores, or
  *  a number set by environmental variable \c OMP_NUM_THREADS.
+ *  Second and third argument is to set the type or seed of existing random number generator using RNG \e name
+ *  with \e seed. If using openMP, it sets the type or seed of random number
+ *  generator of each thread.
  */
-void setOptions(const int numThreads = -1);
+void setOptions(const int numThreads = -1, const char * name = NULL, unsigned long seed = 0);
 
 /// CPPONLY get number of thread in openMP
-int numThreads();
+UINT numThreads();
+
+/// CPPONLY return val and increase val by 1, ensuring thread safety
+long fetch_and_increment(long * val);
 
 /// a utility function to check keyboard stroke
 /// CPPONLY
@@ -1827,12 +1833,6 @@ private:
 /// return the currently used random number generator
 RNG & getRNG();
 
-/** Set the type or seed of existing random number generator using RNG \e name
- *  with \e seed. If using openMP, it sets the type or seed of random number
- *  generator of each thread.
- */
-void setRNG(const char * name = NULL, unsigned long seed = 0);
-
 /// CPPONLY
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p);
 
@@ -1843,7 +1843,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 double hweTest(const vectoru & cnt);
 
 /// CPPONLY
-void propToCount(const vectorf & prop, ULONG N, vectoru & count);
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count);
 
 /// CPPONLY
 string formatDescription(const string & text);
@@ -1867,10 +1867,11 @@ public:
 	 *  numbers will be returned in \e N returned numbers.
 	 */
 	WeightedSampler(const vectorf & weights = vectorf(), ULONG N = 0)
-		: m_RNG(&getRNG()), m_algorithm(0), m_q(0), m_a(0), m_param(0),
+		: m_algorithm(0), m_q(0), m_a(0), m_param(0),
 		m_sequence(0), m_index(0)
 	{
-		set(weights, N);
+
+		set(weights.begin(), weights.end(), N);
 	}
 
 
@@ -1883,7 +1884,7 @@ public:
 	/** CPPONLY
 	 *  Set parameters for the weighted sampler.
 	 */
-	void set(const vectorf & weights, ULONG N = 0);
+	void set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N = 0);
 
 	/** Returns a random number between \c 0 and \c k-1 with probabilities that
 	 *  are proportional to specified weights.
@@ -1895,9 +1896,6 @@ public:
 	vectoru drawSamples(ULONG n = 1);
 
 private:
-	/// pointer to a RNG
-	RNG * m_RNG;
-
 	/// which algorithm to use
 	int m_algorithm;
 

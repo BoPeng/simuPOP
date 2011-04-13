@@ -56,11 +56,11 @@ bool InitSex::apply(Population & pop) const
 		if (m_maleProp >= 0) {
 			vectorf prop(2, m_maleProp);
 			prop[1] = 1 - prop[0];
-			ws.set(prop, pop.subPopSize(*sp));
+			ws.set(prop.begin(), prop.end(), pop.subPopSize(*sp));
 		} else if (m_sex.empty()) {
 			vectorf prop(2, m_maleFreq);
 			prop[1] = 1 - prop[0];
-			ws.set(prop);
+			ws.set(prop.begin(), prop.end());
 		}
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
@@ -216,14 +216,14 @@ bool InitGenotype::apply(Population & pop) const
 			if (m_haplotypes.empty()) {
 				// initialize by allele. Gurantee proportion at each locus.
 				for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
-					ws.set(m_prop, sz * ploidy.size());
+					ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
 					IndIterator it = pop.indIterator(sp->subPop());
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 							it->setAllele(ToAllele(ws.draw()), *loc, *p);
 				}
 			} else {
-				ws.set(m_prop, sz * ploidy.size());
+				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
 				IndIterator it = pop.indIterator(sp->subPop());
 				for (; it.valid(); ++it)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {

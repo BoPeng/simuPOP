@@ -475,7 +475,7 @@ public:
 		DBG_ASSERT(fcmp_eq(std::accumulate(prob.begin(), prob.end(), 0.), 1.), ValueError,
 			"Passed probabilities should add up to 1.");
 
-		m_sampler.set(prob);
+		m_sampler.set(prob.begin(), prob.end());
 	}
 
 

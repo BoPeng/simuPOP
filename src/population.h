@@ -650,6 +650,28 @@ public:
 	}
 
 
+#ifdef _OPENMP
+	/** CPPONLY Individual iterator: with subPop info and Thread ID.
+	 *  The iterator will skip invisible Individuals
+	 */
+	IndIterator indIterator(UINT subPop, UINT threadID)
+	{
+		CHECKRANGESUBPOP(subPop);
+		DBG_FAILIF(threadID >= numThreads(), RuntimeError,
+			"Thread ID " + toStr(threadID) + " execeed total number of threads " + toStr(numThreads()));
+		UINT blockSize = m_subPopSize[subPop] / numThreads();
+		if (threadID + 1 != numThreads())
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
+				m_inds.begin() + m_subPopIndex[subPop] + blockSize * (threadID + 1),
+				!hasActivatedVirtualSubPop(subPop));
+		else
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
+				m_inds.begin() + m_subPopIndex[subPop + 1], !hasActivatedVirtualSubPop(subPop));
+	}
+
+
+#endif
+
 	/** CPPONLY Individual iterator: without subPop info
 	 *  The iterator will skip invisible Individuals
 	 */

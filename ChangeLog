@@ -19,6 +19,8 @@ BUG:
   - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
   - Fix a bug where populations saved in binary module on a 64 bit system cannot be 
 	loaded under 32 bit systems.
+  - Fix a bug in the handling of single input for list type when the parameter
+	is not processed using GUI.
 
 
 version 1.0.5 - Rev 3915 (Nov. 22, 2010)

@@ -1,4 +1,4 @@
-#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -670,6 +670,14 @@ simuPOP provides three types of modules that use 1, 8 or 32/64 bits to store
  SNP markers, and the long module (32 or 64 bits depending on platform)
  is suitable for simulating some population genetics models such as the
  infinite allele mutation model.
+\end_layout
+
+\begin_layout Enumerate
+The core of simuPOP is implemented in C++ which is heavily optimized for
+ large-scale simulations.
+ simuPOP can be executed in multiple threads with boosted performance on
+ modern multi-core CPUs.
+ 
 \end_layout
 
 \begin_layout Enumerate
@@ -1629,6 +1637,72 @@ Segmentation fault
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Execution in multiple threads
+\end_layout
+
+\begin_layout Standard
+simuPOP is capable of executing in multiple threads but it by default only
+ makes use of one thread.
+ If you have a multi-core CPU, it is often beneficial to set the number
+ of threads to 2 or more to take advantage of this feature.
+ The recommended number of threads is usually the number of cores of your
+ CPU but you might want to set it to a lower number to leave room for the
+ execution of other applications.
+ The number of threads used in simuPOP can be controlled in the following
+ ways:
+\end_layout
+
+\begin_layout Itemize
+If an environmental variable 
+\family typewriter
+OMP_NUM_THREADS
+\family default
+ is set to a positive number, simuPOP will be started with specified number
+ of threads.
+\end_layout
+
+\begin_layout Itemize
+Before simuPOP is imported, you can set the number of threads using function
+ 
+\family typewriter
+simuOpt.setOptions(numThreads=x)
+\family default
+ where 
+\family typewriter
+x
+\family default
+ can be a positive number (number of threads) or 
+\family typewriter
+0
+\family default
+, which is intepreted as the number of cores available for your computer.
+\end_layout
+
+\begin_layout Standard
+The number of threads a simuPOP session is used will be displayed in the
+ banner message when simuPOP is imported, and can be retrieved through 
+\family typewriter
+moduleInfo()['threads']
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Although simuPOP can usually benefit from the use of multiple cores, certain
+ features of your script might prevent the execution of simuPOP in multiple
+ threads.
+ For example, if your script uses a sex mode of 
+\family typewriter
+GLOBAL_SEX_SEQUENCE
+\family default
+ to set the sex of offspring according to the global sequence of sexes (e.g.
+ male, male, female), simuPOP will only use on thread to generate offspring
+ because it is not feasible to assign individual sex from a single source
+ of list across multiple threads.
+ 
 \end_layout
 
 \begin_layout Subsection

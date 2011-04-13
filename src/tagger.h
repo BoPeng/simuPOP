@@ -100,6 +100,11 @@ public:
 		return new IdTagger(*this);
 	}
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
 
 };
 
