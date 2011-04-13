@@ -80,8 +80,18 @@
 #endif
 
 #ifdef _WIN64
+/* Inclusion of windows.h is needed because InterlockedIncrement only accept LONGLONG
+ * under windows 64 bit, which is only defined in this header file.
+ * windows.h has its own definition of min and max, inclusion of windows.h will
+ * cause problem with the use of std::min and std::max in the source code.
+ * Definition of NOMINMAX before the inclusion of windows.h addresses this problem.
+ */
+#define NOMINMAX
+#  include <windows.h>
 #  define ATOMICLONG LONGLONG
 #elif defined(_WIN32)
+#  define NOMINMAX
+#  include <windows.h>
 #  define ATOMICLONG LONG
 #else
 #  define ATOMICLONG unsigned long
