@@ -112,8 +112,10 @@ else:
 
 if os.name == 'nt':
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
+    extra_flags = []
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
+    extra_flags = ['-g']
 
 #
 def convert_def(defines):
@@ -212,7 +214,7 @@ for mod in targets:
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
-        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     env.Depends('build/%s/src/swigpyrun.h' % mod, 'build/%s/src/utility.cpp' % mod)
@@ -246,7 +248,7 @@ for mod in exe_targets:
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
-        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     Alias(mod, mod_executable)
