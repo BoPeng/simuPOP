@@ -318,7 +318,8 @@ typedef signed int SubPopID;
 const signed int InvalidSubPopID = -1;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
-typedef unsigned long ULONG;
+// this type will be 32 or 64 bit long depending on platform
+typedef size_t ULONG;
 const unsigned long MaxIndexSize = std::numeric_limits<size_t>::max();
 typedef long LONG;
 
