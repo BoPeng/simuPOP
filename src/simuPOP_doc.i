@@ -2533,6 +2533,8 @@ Details:
 
 %feature("docstring") simuPOP::IdTagger::clone "Obsolete or undocumented function."
 
+%ignore simuPOP::IdTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::IfElse "
 
 Details:
@@ -6518,7 +6520,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::dict(int subPop=-1);
+%ignore simuPOP::Population::dict(vspID subPop=vspID());
 
 %ignore simuPOP::Population::getVars() const;
 
@@ -6721,22 +6723,25 @@ Details:
 Usage:
 
     PyEval(expr=\"\", stmts=\"\", exposePop=\"\", output=\">\", begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=Py_False,
       infoFields=[])
 
 Details:
 
     Create a PyEval operator that evaluates a Python expression expr
-    in a population's local namespace when it is applied to this
-    population. If Python statements stmts is given (a single or
-    multi-line string), the statement will be executed before expr. If
-    exposePop is set to an non-empty string, the current population
-    will be exposed in its own local namespace as a variable with this
-    name. This allows the execution of expressions such as
-    'pop.individual(0).allele(0)'. The result of expr will be sent to
-    an output stream specified by parameter output. The exposed
-    population variable will be removed after expr is evaluated.
-    Please refer to class BaseOperator for other parameters.
+    in a population's local namespaces when it is applied to this
+    population. This namespace can either be the population's local
+    namespace (pop.vars()), or namespaces subPop[sp] for (virtual)
+    subpop (pop.vars(subpop)) in specified subPops. If Python
+    statements stmts is given (a single or multi-line string), the
+    statement will be executed before expr. If exposePop is set to an
+    non-empty string, the current population will be exposed in its
+    own local namespace as a variable with this name. This allows the
+    execution of expressions such as 'pop.individual(0).allele(0)'.
+    The result of expr will be sent to an output stream specified by
+    parameter output. The exposed population variable will be removed
+    after expr is evaluated. Please refer to class BaseOperator for
+    other parameters.
 
 Note:
 
@@ -6779,18 +6784,21 @@ Details:
 Usage:
 
     PyExec(stmts=\"\", exposePop=\"\", output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=Py_False, infoFields=[])
 
 Details:
 
     Create a PyExec operator that executes statements stmts in a
     population's local namespace when it is applied to this
-    population. If exposePop is given, current population will be
-    exposed in its local namespace as a variable named by exposePop.
-    Although multiple statements can be executed, it is recommended
-    that you use this operator to execute short statements and use
-    PyOperator for more complex once. Note that exposed population
-    variables will be removed after the statements are executed.
+    population. This namespace can either be the population's local
+    namespace (pop.vars()), or namespaces subPop[sp] for each
+    (virtual) subpop (pop.vars(subpop)) in specified subPops. If
+    exposePop is given, current population will be exposed in its
+    local namespace as a variable named by exposePop. Although
+    multiple statements can be executed, it is recommended that you
+    use this operator to execute short statements and use PyOperator
+    for more complex once. Note that exposed population variables will
+    be removed after the statements are executed.
 
 "; 
 
@@ -8807,10 +8815,11 @@ Usage:
 
     Stat(popSize=False, numOfMales=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
-      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\",
-      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      haploFreq=[], haploHeteroFreq=[], haploHomoFreq=[],
+      sumOfInfo=[], meanOfInfo=[], varOfInfo=[], maxOfInfo=[],
+      minOfInfo=[], LD=[], association=[], neutrality=[],
+      structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\", output=\"\",
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -8980,10 +8989,33 @@ Details:
     *   haploFreq_sp: Halptype frequencies in each (virtual)
     subpopulation.
     *   haploNum_sp: Halptype count in each (virtual)
-    subpopulation.sumOfinfo, meanOfInfo, varOfInfo, maxOfInfo and
-    minOfInfo: Each of these five parameters accepts a list of
-    information fields. For each information field, the sum, mean,
-    variance, maximum or minimal (depending on the specified
+    subpopulation.haploHeteroFreq and haploHomoFreq: These parameters
+    accept a list of haplotypes (list of loci), at which the number
+    and frequency of haplotype homozygotes and/or heterozygotes will
+    be calculated. Note that these statistics are observed count of
+    haplotype heterozygote. The following variables will be outputted:
+    *   haploHeteroFreq (default for parameter haploHeteroFreq): A
+    dictionary of proportion of haplotype heterozygotes in all or
+    specified (virtual) subpopulations, with haplotype indexes as
+    dictionary keys.
+    *   haploHomoFreq (default for parameter haploHomoFreq): A
+    dictionary of proportion of homozygotes in all or specified
+    (virtual) subpopulations.
+    *   haploHeteroNum: A dictionary of number of heterozygotes in all
+    or specified (virtual) subpopulations.
+    *   haploHomoNum: A dictionary of number of homozygotes in all or
+    specified (virtual) subpopulations.
+    *   haploHeteroFreq_sp: A dictionary of proportion of
+    heterozygotes in each (virtual) subpopulation.
+    *   haploHomoFreq_sp: A dictionary of proportion of homozygotes in
+    each (virtual) subpopulation.
+    *   haploHeteroNum_sp: A dictionary of number of heterozygotes in
+    each (virtual) subpopulation.
+    *   haploHomoNum_sp: A dictionary of number of homozygotes in each
+    (virtual) subpopulation.sumOfinfo, meanOfInfo, varOfInfo,
+    maxOfInfo and minOfInfo: Each of these five parameters accepts a
+    list of information fields. For each information field, the sum,
+    mean, variance, maximum or minimal (depending on the specified
     parameter(s)) of this information field at iddividuals in all or
     specified (virtual) subpopulations will be calculated. The results
     will be put into the following population variables:
@@ -9262,6 +9294,41 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statHaploHomoFreq;
+
+%feature("docstring") simuPOP::statHaploHomoFreq::statHaploHomoFreq "
+
+Usage:
+
+    statHaploHomoFreq(haploHeteroFreq, haploHomoFreq, subPops, vars,
+      suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::~statHaploHomoFreq "
+
+Usage:
+
+    x.~statHaploHomoFreq()
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::apply "
 
 Usage:
 
@@ -10150,7 +10217,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::WeightedSampler::set(const vectorf &weights, ULONG N=0);
+%ignore simuPOP::WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N=0);
 
 %feature("docstring") simuPOP::WeightedSampler::draw "
 
@@ -10305,18 +10372,23 @@ Usage:
 
 Usage:
 
-    setOptions(numThreads=-1)
+    setOptions(numThreads=-1, name=None, seed=0)
 
 Details:
 
-    Set number of thread in openMP. The number of threads can be be
-    positive, integer (number of threads) or 0, which implies all
-    available cores, or a number set by environmental variable
-    OMP_NUM_THREADS.
+    First argument is to set number of thread in openMP. The number of
+    threads can be be positive, integer (number of threads) or 0,
+    which implies all available cores, or a number set by
+    environmental variable OMP_NUM_THREADS. Second and third argument
+    is to set the type or seed of existing random number generator
+    using RNGname with seed. If using openMP, it sets the type or seed
+    of random number generator of each thread.
 
 "; 
 
 %ignore simuPOP::numThreads();
+
+%ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
 
 %ignore simuPOP::simuPOPkbhit();
 
@@ -10385,27 +10457,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setRNG "
-
-Usage:
-
-    setRNG(name=None, seed=0)
-
-Details:
-
-    Set the type or seed of existing random number generator using
-    RNGname with seed. If using openMP, it sets the type or seed of
-    random number generator of each thread.
-
-"; 
-
 %ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
 
 %ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
 
 %ignore simuPOP::hweTest(const vectoru &cnt);
 
-%ignore simuPOP::propToCount(const vectorf &prop, ULONG N, vectoru &count);
+%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru &count);
 
 %ignore simuPOP::formatDescription(const string &text);
 
