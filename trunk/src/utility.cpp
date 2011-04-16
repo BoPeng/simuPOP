@@ -453,14 +453,14 @@ UINT numThreads()
 }
 
 
-long fetch_and_increment(long * val)
+ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 {
 #ifdef _WIN64
 	return InterlockedIncrement64(val) - 1;
 #elif defined(_WIN32)
 	return InterlockedIncrement(val) - 1;
 #else
-	// for Intel C++, see page 164 of 
+	// for Intel C++, see page 164 of
 	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
 	//
 	// for gcc, see

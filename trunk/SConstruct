@@ -112,8 +112,10 @@ else:
 
 if os.name == 'nt':
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
+    extra_flags = []
 else:
-    extra_path = []
+    extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
+    extra_flags = ['-g']
 
 #
 def convert_def(defines):
@@ -212,7 +214,7 @@ for mod in targets:
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
-        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     env.Depends('build/%s/src/swigpyrun.h' % mod, 'build/%s/src/utility.cpp' % mod)
@@ -227,7 +229,7 @@ for mod in targets:
 if os.name == 'nt':
     pylib_name = 'python%d%d' % (sys.version_info[0], sys.version_info[1])
 else:
-    pylib_name = 'python'
+    pylib_name = 'python%d.%d' % (sys.version_info[0], sys.version_info[1])
 for mod in exe_targets:
     mod_name = mod.split('_')[0]
     exe_env = env.Clone()
@@ -242,11 +244,11 @@ for mod in exe_targets:
     mod_executable = exe_env.Program(
         target = 'build/simuPOP_%s' % mod,
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
-        LIBS = info['libraries'] + [common_lib, pylib_name],
+        LIBS = info['libraries'] + [common_lib, pylib_name, 'util'],
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
-        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
     Alias(mod, mod_executable)
