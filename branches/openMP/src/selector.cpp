@@ -53,7 +53,7 @@ bool BaseSelector::apply(Population & pop) const
 }
 
 
-double MapSelector::indFitness(Population & pop, Individual * ind) const
+double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
 	vectoru chromTypes;
 	const vectoru & loci = m_loci.elems(ind);
@@ -145,7 +145,7 @@ double MapSelector::indFitness(Population & pop, Individual * ind) const
 
 
 // currently assuming diploid
-double MaSelector::indFitness(Population & pop, Individual * ind) const
+double MaSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;

@@ -83,7 +83,7 @@ bool RevertFixedSites::apply(Population & pop) const
 }
 
 
-double MutSpaceSelector::indFitness(Population & pop, Individual * ind) const
+double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
@@ -318,7 +318,7 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-ULONG MutSpaceMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
+ULONG MutSpaceMutator::locateVacantLocus(Population & /* pop */, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
 {
 	ULONG loc = getRNG().randInt(end - beg) + beg;
 
@@ -345,9 +345,11 @@ ULONG MutSpaceMutator::locateVacantLocus(Population & pop, ULONG beg, ULONG end,
 }
 
 
-bool MutSpaceMutator::apply(Population & pop) const
+bool MutSpaceMutator::apply(Population &  pop ) const
 {
-#ifndef BINARYALLELE
+#ifdef BINARYALLELE
+		(void) pop; /* avoid warning about unused parameter */
+#else
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
 
@@ -488,7 +490,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
                                              ULONG offIndex, int ploidy) const
 {
-#ifndef BINARYALLELE
+#ifdef BINARYALLELE
+	(void) offPop; /* avoid warning about unused parameter */
+	(void) parent; /* avoid warning about unused parameter */
+	(void) offIndex; /* avoid warning about unused parameter */
+	(void) ploidy; /* avoid warning about unused parameter */
+#else
 	UINT nCh = parent.numChrom();
 
 	// count duplicates...
@@ -573,7 +580,12 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
                                              ULONG offIndex, int ploidy) const
 {
-#ifndef BINARYALLELE
+#ifdef BINARYALLELE
+	(void) offPop; /* avoid warning about unused parameter */
+	(void) parent; /* avoid warning about unused parameter */
+	(void) offIndex; /* avoid warning about unused parameter */
+	(void) ploidy; /* avoid warning about unused parameter */
+#else
 	const matrixi & ranges = m_ranges.elems();
 
 	for (UINT ch = 0; ch < parent.numChrom(); ++ch) {

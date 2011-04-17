@@ -42,7 +42,7 @@ Migrator::Migrator(const floatMatrix & rate, int mode, const uintList & toSubPop
 }
 
 
-string Migrator::describe(bool format) const
+string Migrator::describe(bool /* format */) const
 {
 	return "<simuPOP.Migrator>";
 }

@@ -95,7 +95,7 @@ bool BasePenetrance::applyToIndividual(Individual * ind, Population * pop)
 
 
 bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                       Individual * dad, Individual * mom) const
+                                       Individual * /* dad */, Individual * /* mom */) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
@@ -110,7 +110,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, Ra
 
 
 // this function is the same as MapSelector.
-double MapPenetrance::penet(Population * pop, Individual * ind) const
+double MapPenetrance::penet(Population * /* pop */, Individual * ind) const
 {
 	vectoru chromTypes;
 
@@ -202,14 +202,14 @@ double MapPenetrance::penet(Population * pop, Individual * ind) const
 }
 
 
-string MaPenetrance::describe(bool format) const
+string MaPenetrance::describe(bool /* format */) const
 {
 	return "<simuPOP.MaPenetrance> multiple-alleles penetrance" ;
 }
 
 
 // this function is the same as MaSelector.
-double MaPenetrance::penet(Population * pop, Individual * ind) const
+double MaPenetrance::penet(Population * /* pop */, Individual * ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;

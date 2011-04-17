@@ -2366,7 +2366,7 @@ void Population::push(Population & rhs)
 		"genotypic structure.\n");
 
 	DBG_FAILIF(!m_genotype.empty() && !rhs.m_genotype.empty() &&
-		(&*m_genotype.begin() == &*rhs.m_genotype.begin()), ValueError,
+		(&m_genotype[0] == &rhs.m_genotype[0]), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
 
 	// front -1 pop, -2 pop, .... end

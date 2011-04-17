@@ -146,6 +146,7 @@ public:
 		const stringList & infoFields = vectorstr())
 		: PyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
 	{
+		(void) output; /* avoid warning about unused parameter */
 	}
 
 

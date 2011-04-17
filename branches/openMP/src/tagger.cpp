@@ -42,7 +42,7 @@ void IdTagger::reset(ULONG startID)
 }
 
 
-string IdTagger::describe(bool format) const
+string IdTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.IdTagger> assign an unique ID to individuals" ;
 }
@@ -139,7 +139,7 @@ bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-string InheritTagger::describe(bool format) const
+string InheritTagger::describe(bool /* format */) const
 {
 	ostringstream desc;
 
@@ -162,7 +162,7 @@ string InheritTagger::describe(bool format) const
 }
 
 
-bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool SummaryTagger::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -243,7 +243,7 @@ bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-string ParentsTagger::describe(bool format) const
+string ParentsTagger::describe(bool /* format */) const
 {
 	if (infoSize() == 1)
 		return "<simuPOP.ParentsTagger> record index of parent in the parental generation "
@@ -280,7 +280,7 @@ bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-string PedigreeTagger::describe(bool format) const
+string PedigreeTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.PedigreeTagger> record parental IDs (" + infoField(0) + " and "
 	       + infoField(1) + ") to field " + m_idField + " of each offspring.";
@@ -402,7 +402,7 @@ bool PedigreeTagger::applyDuringMating(Population & pop, Population & offPop, Ra
 }
 
 
-bool PyTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool PyTagger::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.

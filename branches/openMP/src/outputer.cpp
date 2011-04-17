@@ -36,7 +36,7 @@ bool PyOutput::apply(Population & pop) const
 }
 
 
-string PyOutput::describe(bool format) const
+string PyOutput::describe(bool /* format */) const
 {
 	return "<simuPOP.PyOutput> write '" + \
 	       (m_string.size() > 40 ? m_string.substr(0, 40) + "... " : m_string) + \
@@ -159,7 +159,7 @@ bool Dumper::apply(Population & pop) const
 }
 
 
-string SavePopulation::describe(bool format) const
+string SavePopulation::describe(bool /* format */) const
 {
 	return "<simuPOP.SavePopulation> save population to file " + m_filename;
 }

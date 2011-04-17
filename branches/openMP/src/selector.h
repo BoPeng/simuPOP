@@ -128,7 +128,7 @@ public:
 
 
 	/// CPPONLY
-	virtual double indFitness(Population & pop, Individual *) const
+	virtual double indFitness(Population & /* pop */, Individual *) const
 	{
 		///
 		throw ValueError("This selector is not supposed to be called directly");
@@ -143,6 +143,8 @@ public:
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
+		(void) dad; /* avoid warning about unused parameter */
+		(void) mom; /* avoid warning about unused parameter */
 		// if offspring does not belong to subPops, do nothing, but does not fail.
 		if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 			return true;
@@ -159,6 +161,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.selector>" ;
 	}
 
@@ -217,6 +220,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MapSelector>" ;
 	}
 
@@ -288,6 +292,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MaSelector>" ;
 	}
 
@@ -356,6 +361,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MlSelector>" ;
 	}
 
@@ -414,6 +420,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PySelector>" ;
 	}
 
