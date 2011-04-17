@@ -139,7 +139,7 @@ public:
 	 *  \c simulator.extract() to remove the population from the simulator.
 	 *  <group>3-pop</group>
 	 */
-	Population & population(UINT rep) const;
+	Population & population(size_t rep) const;
 
 	/** Add a population \e pop to the end of an existing simulator. This
 	 *  function by default moves \e pop to the simulator, leaving an empty
