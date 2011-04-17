@@ -383,7 +383,7 @@ public:
 	 *  is no subpopulation structure.
 	 *  <group>2-subpop</group>
 	 */
-	UINT numSubPop() const
+	size_t numSubPop() const
 	{
 		return m_subPopSize.size();
 	}
@@ -1167,7 +1167,7 @@ public:
 	 *  \c setAncestralDepth().
 	 *  <group>6-ancestral</group>
 	 */
-	UINT ancestralGens() const
+	size_t ancestralGens() const
 	{
 		return m_ancestralPops.size();
 	}

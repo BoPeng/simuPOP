@@ -543,7 +543,7 @@ floatList::floatList(PyObject * obj) : m_elems()
 	if (PyNumber_Check(obj))
 		m_elems.push_back(PyFloat_AsDouble(obj));
 	else if (PySequence_Check(obj)) {
-		int n = PySequence_Size(obj);
+		size_t n = PySequence_Size(obj);
 		for (int j = 0; j < n; ++j) {
 			PyObject * val = PySequence_GetItem(obj, j);
 			DBG_ASSERT(PyNumber_Check(val), ValueError,
@@ -576,7 +576,7 @@ stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 #endif
 	else if (PySequence_Check(obj)) {
 		// assign values
-		UINT numStr = PySequence_Size(obj);
+		size_t numStr = PySequence_Size(obj);
 		for (size_t i = 0; i < numStr; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			if (PyString_Check(item)) {
@@ -644,7 +644,7 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 			"A list or a nested list of intgers is expected");
 	}
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	bool oneDim = true;
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
@@ -664,7 +664,7 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 				m_elems.push_back(vectori(1, PyInt_AsLong(item)));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectori());
-			int n = PySequence_Size(item);
+			size_t n = PySequence_Size(item);
 			for (int j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
@@ -695,7 +695,7 @@ floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 			"A list or a nested list of numbers is expected");
 	}
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyNumber_Check(item)) {
@@ -709,7 +709,7 @@ floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 			m_elems[0].push_back(PyFloat_AsDouble(item));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorf());
-			int n = PySequence_Size(item);
+			size_t n = PySequence_Size(item);
 			for (int j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
@@ -736,7 +736,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 	DBG_ASSERT(PySequence_Check(obj), ValueError,
 		"A list or a nested list of strings is expected");
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyString_Check(item)) {
@@ -763,7 +763,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 #endif
 		else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
-			int numStrs = PySequence_Size(item);
+			size_t numStrs = PySequence_Size(item);
 			for (int j = 0; j < numStrs; ++j) {
 				PyObject * str = PySequence_GetItem(item, j);
 				if (PyString_Check(str)) {
@@ -1895,7 +1895,7 @@ PyObject * load_defdict(const string & vars, size_t & offset)
 void save_list(string & str, PyObject * args)
 {
 	str += 'L';                                                                       // dictionary
-	int len = PyList_Size(args);
+	size_t len = PyList_Size(args);
 	for (int i = 0; i < len; i++) {
 		PyObject * elem = PyList_GET_ITEM((PyListObject *)args, i);
 		saveObj(str, elem);
@@ -1923,7 +1923,7 @@ PyObject * load_list(const string & vars, size_t & offset)
 void save_tuple(string & str, PyObject * args)
 {
 	str += 't';                                                                       // dictionary
-	int len = PyTuple_Size(args);
+	size_t len = PyTuple_Size(args);
 	// save length
 	str += toStr(len) + ' ';
 	// save items

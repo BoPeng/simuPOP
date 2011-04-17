@@ -192,7 +192,7 @@ public:
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
-	UINT infoSize() const
+	size_t infoSize() const
 	{
 		return m_infoFields.elems().size();
 	}
@@ -200,7 +200,7 @@ public:
 
 	/// get the information field specified by user (or by default)
 	/// CPPONLY
-	string infoField(UINT idx) const
+	string infoField(size_t idx) const
 	{
 		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError, "Given info index " + toStr(idx) +
 			" is out of range of 0 ~ " + toStr(m_infoFields.elems().size()));

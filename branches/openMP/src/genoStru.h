@@ -541,7 +541,7 @@ public:
 	/** return the number of chromosomes.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT numChrom() const
+	size_t numChrom() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -656,7 +656,7 @@ public:
 	/** return the index of a chromosome by its \e name.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT chromByName(const string name) const
+	size_t chromByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_chromNames;
 		vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
@@ -757,7 +757,7 @@ public:
 
 
 	/// HIDDEN obtain the number of information fields
-	UINT infoSize() const
+	size_t infoSize() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 	}
@@ -775,7 +775,7 @@ public:
 	/** return the name of information field \e idx.
 	 *  <group>5-info</group>
 	 */
-	string infoField(UINT idx) const
+	string infoField(size_t idx) const
 	{
 		CHECKRANGEINFO(idx);
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
@@ -786,7 +786,7 @@ public:
 	 * if \e name is not one of the information fields.
 	 *  <group>5-info</group>
 	 */
-	UINT infoIdx(const string & name) const;
+	size_t infoIdx(const string & name) const;
 
 	/// CPPONLY add a new information field
 	/**

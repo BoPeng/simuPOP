@@ -877,11 +877,11 @@ vectorstr GenoStruTrait::alleleNames(const UINT locus) const
 }
 
 
-UINT GenoStruTrait::infoIdx(const string & name) const
+size_t GenoStruTrait::infoIdx(const string & name) const
 {
 	vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
 
-	for (UINT i = 0; i < names.size(); ++i)
+	for (size_t i = 0; i < names.size(); ++i)
 		if (names[i] == name)
 			return i;
 	throw IndexError("Info field '" + name + "' is not found. Plese use infoFields=['"

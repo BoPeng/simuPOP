@@ -844,7 +844,7 @@ bool InfoSplitter::contains(const Population & pop, ULONG ind, vspID vsp) const
 
 void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
 {
-	UINT idx = pop.infoIdx(m_info);
+	size_t idx = pop.infoIdx(m_info);
 
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);
@@ -1198,9 +1198,9 @@ string GenotypeSplitter::name(SubPopID subPop) const
 bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
-	int numLoci = m_loci.allAvail() ? m_loci.elems(NULL).size() : m_loci.size();
+	size_t numLoci = m_loci.allAvail() ? m_loci.elems(NULL).size() : m_loci.size();
 
-	unsigned choices = alleles.size() / ploidy / numLoci;
+	size_t choices = alleles.size() / ploidy / numLoci;
 
 	DBG_FAILIF(alleles.size() != choices * ploidy * numLoci,
 		ValueError, "Given genotype does not match population ploidy.");
@@ -1231,10 +1231,10 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 					return false;
 		return true;
 	} else if (ploidy == 2) {
-		UINT idx = 0;
+		size_t idx = 0;
 		uintList::const_iterator loc = loci.begin();
 		uintList::const_iterator loc_end = loci.end();
-		UINT numLoci = loci.size();
+		size-t numLoci = loci.size();
 		for (; loc != loc_end; ++loc, ++idx) {
 			int a1 = it->allele(*loc, 0);
 			int a2 = it->allele(*loc, 1);
@@ -1248,7 +1248,7 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 		UINT idx = 0;
 		uintList::const_iterator loc = loci.begin();
 		uintList::const_iterator loc_end = loci.end();
-		UINT numLoci = loci.size();
+		size_t numLoci = loci.size();
 		vectori v1(ploidy);
 		vectori v2(ploidy);
 		for (; loc != loc_end; ++loc, ++idx) {

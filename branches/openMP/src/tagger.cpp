@@ -101,7 +101,7 @@ bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 		return true;
 
 	for (size_t i = 0; i < sz; ++i) {
-		UINT idx = pop.infoIdx(infoField(i));
+		size_t idx = pop.infoIdx(infoField(i));
 
 		if (m_mode == PATERNAL) {
 			DBG_FAILIF(dad == NULL, RuntimeError,

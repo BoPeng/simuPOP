@@ -316,7 +316,7 @@ public:
 	 */
 	double info(const uintString & field) const
 	{
-		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
 
 		CHECKRANGEINFO(idx);
 		return m_infoPtr[idx];
