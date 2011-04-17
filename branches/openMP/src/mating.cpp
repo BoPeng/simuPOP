@@ -1635,7 +1635,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		// individuals left by floating point calculation is added to
 		// the last non-zero, positive weight virtual subpopulation.
 		if (all > 0) {
-			for (size_t i = m.size() - 1; i >= 0; --i)
+			for (ssize_t i = m.size() - 1; i >= 0; --i)
 				if (vspSize[i] != 0 && w_pos[i] > 0) {
 					vspSize[i] += all;
 					break;

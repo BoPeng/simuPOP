@@ -1234,7 +1234,7 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 		size_t idx = 0;
 		uintList::const_iterator loc = loci.begin();
 		uintList::const_iterator loc_end = loci.end();
-		size-t numLoci = loci.size();
+		size_t numLoci = loci.size();
 		for (; loc != loc_end; ++loc, ++idx) {
 			int a1 = it->allele(*loc, 0);
 			int a2 = it->allele(*loc, 1);

@@ -120,7 +120,7 @@ public:
 
 	/// CPPONLY
 	// Population::mergePopulationByLoci needs to hanle this
-	const size_t chromIndex(UINT ch) const
+	size_t chromIndex(UINT ch) const
 	{
 		return m_chromIndex[ch];
 	}

@@ -2669,7 +2669,7 @@ void Population::useAncestralGen(UINT idx)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError, "Can not switch ancestral generation with an activated virtual subpopulation");
 
-	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
+	if (idx == m_curAncestralGen)
 		return;
 
 	DBG_DO(DBG_POPULATION, cerr << "Use ancestral generation: " << idx <<

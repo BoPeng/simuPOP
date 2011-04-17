@@ -3321,7 +3321,7 @@ string formatDescription(const string & text)
 	lines.push_back(text.substr(pos));
 	// newtext
 	string output;
-	size_t indent = 0;
+	int indent = 0;
 	for (size_t it = 0; it < lines.size(); ++it) {
 		string line = lines[it];
 		// remove leading blanks
