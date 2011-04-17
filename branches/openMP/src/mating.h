@@ -348,7 +348,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	ULONG getNumOff(int /* gen */)
 	{
 		return m_numOff;
 	}
@@ -380,7 +380,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	ULONG getNumOff(int /* gen */)
 	{
 		return getRNG().randGeometric(m_p);
 	}
@@ -406,7 +406,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	ULONG getNumOff(int /* gen */)
 	{
 		return getRNG().randTruncatedPoisson(m_mu);
 	}
@@ -432,7 +432,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	ULONG getNumOff(int /* gen */)
 	{
 		return getRNG().randTruncatedBinomial(m_N, m_mu);
 	}
@@ -459,7 +459,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	ULONG getNumOff(int /* gen */)
 	{
 		// max: 5
 		// num: 2
@@ -624,7 +624,7 @@ public:
 		RawIndIterator & offBegin, RawIndIterator & offEnd);
 
 	/// CPPONLY
-	virtual void finalize(const Population & pop)
+	virtual void finalize(const Population & /* pop */)
 	{
 		m_numOffModel->reset();
 		m_sexModel->reset();
@@ -789,10 +789,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void initialize(Population & pop, SubPopID subPop) { }
+	virtual void initialize(Population & /* pop */, SubPopID /* subPop */)
+	{
+	}
 
 	/// CPPONLY
-	virtual void finalize(Population & pop, SubPopID subPop)
+	virtual void finalize(Population & /* pop */, SubPopID /* subPop */)
 	{
 		m_initialized = false;
 	}
@@ -801,6 +803,7 @@ public:
 	/// HIDDEN describe a general parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.ParentChooser> (base class)";
 	}
 
@@ -820,7 +823,7 @@ public:
 
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	virtual IndividualPair chooseParents(RawIndIterator basePtr)
+	virtual IndividualPair chooseParents(RawIndIterator /* basePtr */)
 	{
 		return IndividualPair(NULL, NULL);
 	}
@@ -868,6 +871,7 @@ public:
 	/// HIDDEN describe a sequential parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.SequentialParentChooser> chooses a parent sequentially";
 	}
 
@@ -931,6 +935,7 @@ public:
 	/// HIDDEN describe a random parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
 	}
 
@@ -1006,6 +1011,7 @@ public:
 	/// HIDDEN describe a random parents chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
 	}
 
@@ -1090,6 +1096,7 @@ public:
 	/// HIDDEN describe a polygenic parents chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PolyParentsChooser> chooses parents with several spouses";
 	}
 
@@ -1233,7 +1240,7 @@ public:
 
 	/// CPPONLY
 	CombinedParentsChooser(const CombinedParentsChooser & rhs)
-		: m_fatherChooser(rhs.m_fatherChooser->clone()),
+		: ParentChooser("fitness"), m_fatherChooser(rhs.m_fatherChooser->clone()),
 		m_motherChooser(rhs.m_motherChooser->clone())
 	{
 		m_initialized = false;
@@ -1257,6 +1264,7 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.CombinedParentsChooser> chooses parents using two parent choosers";
 	}
 
@@ -1318,6 +1326,7 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
@@ -1395,6 +1404,7 @@ public:
 	/// HIDDEN describe a general mating scheme.
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.mating> A mating scheme";
 	}
 
@@ -1406,8 +1416,9 @@ public:
 	/** CPPONLY
 	 *  mate a subpopulation, called by mate().
 	 */
-	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd)
+	virtual bool mateSubPop(Population & /* pop */, Population & /* offPop */,
+				SubPopID /* subPop */,
+	                        RawIndIterator /* offBegin */, RawIndIterator /* offEnd */)
 	{
 		return true;
 	}

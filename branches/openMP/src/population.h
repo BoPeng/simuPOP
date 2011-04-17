@@ -827,7 +827,7 @@ public:
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 
-		syncIndPointers();
+		syncIndPointers(order);
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
@@ -1431,7 +1431,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void save(Archive & ar, const UINT version) const
+	void save(Archive & ar, const UINT /* version */) const
 	{
 		// deep adjustment: everyone in order
 		const_cast<Population *>(this)->syncIndPointers();
@@ -1510,7 +1510,7 @@ private:
 
 
 	template<class Archive>
-	void load(Archive & ar, const UINT version)
+	void load(Archive & ar, const UINT /* version */)
 	{
 		ULONG ma;
 		ar & ma;

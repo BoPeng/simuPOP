@@ -108,7 +108,7 @@ bool Individual::validIndex(UINT idx, UINT p) const
 }
 
 
-bool Individual::validIndex(UINT idx, UINT p, UINT ch) const
+bool Individual::validIndex(UINT /* idx */, UINT p, UINT ch) const
 {
 	// well, this might change later.
 	if (ploidy() != 2)

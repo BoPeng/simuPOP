@@ -469,7 +469,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void save(Archive & ar, const UINT version) const
+	void save(Archive & ar, const UINT /* version */) const
 	{
 		//  boost::serialization::base_object<GenoStruTrait>(*this));
 		bool b;
@@ -483,7 +483,7 @@ private:
 
 
 	template<class Archive>
-	void load(Archive & ar, const UINT version)
+	void load(Archive & ar, const UINT /* version */)
 	{
 		bool b;
 

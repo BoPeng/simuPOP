@@ -133,7 +133,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void save(Archive & ar, const UINT version) const
+	void save(Archive & ar, const UINT /* version */) const
 	{
 		ar & m_ploidy;
 		ar & m_numLoci;
@@ -149,7 +149,7 @@ private:
 
 
 	template<class Archive>
-	void load(Archive & ar, const UINT version)
+	void load(Archive & ar, const UINT /* version */)
 	{
 
 		ar & m_ploidy;

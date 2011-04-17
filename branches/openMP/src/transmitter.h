@@ -88,6 +88,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.GenoTransmitter>" ;
 	}
 
@@ -103,6 +104,11 @@ public:
 	                       Individual * dad = NULL,
 	                       Individual * mom = NULL) const
 	{
+		(void) pop; /* avoid warning about unused parameter */
+		(void) offPop; /* avoid warning about unused parameter */
+		(void) offspring; /* avoid warning about unused parameter */
+		(void) dad; /* avoid warning about unused parameter */
+		(void) mom; /* avoid warning about unused parameter */
 		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
 	}
 
@@ -210,6 +216,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MendelianGenoTransmitter>" ;
 	}
 
@@ -284,6 +291,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.SelfingGenoTransmitter>" ;
 	}
 
@@ -332,6 +340,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.HaplodiploidGenoTransmitter>" ;
 	}
 
@@ -387,6 +396,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MitochondrialGenoTransmitter>" ;
 	}
 

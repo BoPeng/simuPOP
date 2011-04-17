@@ -186,9 +186,10 @@ void Simulator::add(const Population & pop, bool steal)
 }
 
 
-string Simulator::describe(bool format) const
+string Simulator::describe(bool /* format */) const
 {
-	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size()) + " Population" + (m_pops.size() == 1 ? "." : "s.");
+	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size())
+		 + " Population" + (m_pops.size() == 1 ? "." : "s.");
 }
 
 
