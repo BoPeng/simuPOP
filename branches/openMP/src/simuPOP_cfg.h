@@ -320,7 +320,7 @@ const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
 typedef unsigned long ULONG;
-const unsigned long MaxIndexSize = std::numeric_limits<size_t>::max();
+const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
 typedef long LONG;
 
 typedef std::vector<long int>              vectori;

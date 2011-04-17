@@ -201,7 +201,7 @@ public:
 	}
 
 
-	int __len__() const
+	size_t __len__() const
 	{
 		return m_subPops.size();
 	}
@@ -331,7 +331,7 @@ public:
 
 	/** Return the number of VSPs defined by this splitter.
 	 */
-	virtual UINT numVirtualSubPop() const = 0;
+	virtual size_t numVirtualSubPop() const = 0;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -441,7 +441,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
 	 */
-	UINT numVirtualSubPop() const
+	size_t numVirtualSubPop() const
 	{
 		return m_vspMap.size();
 	}
@@ -507,7 +507,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the sum of
 	 *  the number of VSPs of all combined splitters.
 	 */
-	UINT numVirtualSubPop() const
+	size_t numVirtualSubPop() const
 	{
 		return m_numVSP;
 	}
@@ -569,7 +569,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return \c 2.
-	UINT numVirtualSubPop() const
+	size_t numVirtualSubPop() const
 	{
 		return 2;
 	}
@@ -623,7 +623,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// Return 2.
-	UINT numVirtualSubPop() const
+	size_t numVirtualSubPop() const
 	{
 		return 2;
 	}
@@ -690,7 +690,7 @@ public:
 	 *  parameter \e values or the length of \e cutoff plus one, depending on
 	 *  which parameter is specified.
 	 */
-	UINT numVirtualSubPop() const;
+	size_t numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -749,7 +749,7 @@ public:
 	/** Return the number of VSPs defined by this splitter, which is the length
 	 *  of parameter \e proportions.
 	 */
-	UINT numVirtualSubPop() const;
+	size_t numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -803,7 +803,7 @@ public:
 	/** Return the number of VSPs, which is the number of ranges defined in
 	 *  parameter \e ranges.
 	 */
-	UINT numVirtualSubPop() const;
+	size_t numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
@@ -880,7 +880,7 @@ public:
 	ULONG size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
-	UINT numVirtualSubPop() const;
+	size_t numVirtualSubPop() const;
 
 	/** Return \c True if individual \e ind (an index relative to specified
 	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.

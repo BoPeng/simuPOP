@@ -793,7 +793,7 @@ ULONG InfoSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtu
 }
 
 
-UINT InfoSplitter::numVirtualSubPop() const
+size_t InfoSplitter::numVirtualSubPop() const
 {
 	if (!m_cutoff.empty())
 		return m_cutoff.size() + 1;
@@ -894,7 +894,7 @@ void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vi
 
 string InfoSplitter::name(SubPopID sp) const
 {
-	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
+	DBG_FAILIF(static_cast<size_t>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
 
 	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
@@ -957,7 +957,7 @@ ULONG ProportionSplitter::size(const Population & pop, SubPopID subPop, SubPopID
 }
 
 
-UINT ProportionSplitter::numVirtualSubPop() const
+size_t ProportionSplitter::numVirtualSubPop() const
 {
 	return m_proportions.size();
 }
@@ -1006,7 +1006,7 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
 
 string ProportionSplitter::name(SubPopID subPop) const
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
+	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
 
 	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
@@ -1046,7 +1046,7 @@ ULONG RangeSplitter::size(const Population & pop, SubPopID subPop, SubPopID virt
 }
 
 
-UINT RangeSplitter::numVirtualSubPop() const
+size_t RangeSplitter::numVirtualSubPop() const
 {
 	return m_ranges.size();
 }
@@ -1080,7 +1080,7 @@ void RangeSplitter::activate(const Population & pop, SubPopID subPop, SubPopID v
 
 string RangeSplitter::name(SubPopID subPop) const
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
+	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
 
 	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
@@ -1119,7 +1119,7 @@ ULONG GenotypeSplitter::size(const Population & pop, SubPopID subPop, SubPopID v
 }
 
 
-UINT GenotypeSplitter::numVirtualSubPop() const
+size_t GenotypeSplitter::numVirtualSubPop() const
 {
 	return m_alleles.size();
 }
@@ -1162,7 +1162,7 @@ void GenotypeSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 // 1, 2: 0 1 1 0 1 1 1 1
 string GenotypeSplitter::name(SubPopID subPop) const
 {
-	DBG_FAILIF(static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError,
+	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
 
 	DBG_ASSERT(m_names.empty() || m_names.size() == numVirtualSubPop(), ValueError,
