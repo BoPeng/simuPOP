@@ -95,7 +95,7 @@ bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	UINT sz = infoSize();
+	size_t sz = infoSize();
 
 	if (sz == 0)
 		return true;

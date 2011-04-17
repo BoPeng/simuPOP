@@ -769,7 +769,7 @@ protected:
 class uintString
 {
 public:
-	uintString(UINT value) : m_string(), m_int(value)
+	uintString(size_t value) : m_string(), m_int(value)
 	{
 	}
 
@@ -794,7 +794,7 @@ public:
 
 
 	/// CPPONLY
-	UINT value() const
+	size_t value() const
 	{
 		return m_int;
 	}
@@ -802,7 +802,7 @@ public:
 
 private:
 	string m_string;
-	UINT m_int;
+	size_t m_int;
 };
 
 
@@ -1989,7 +1989,7 @@ public:
 	void doTrial();
 
 	/// CPPONLY
-	UINT curTrial();
+	size_t curTrial();
 
 	/// if necessary, do trail again.
 	void trial();

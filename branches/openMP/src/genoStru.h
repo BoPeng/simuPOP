@@ -380,9 +380,9 @@ public:
 
 
 	/// CPPONLY return the GenoStructure index
-	size_t genoStruIdx() const
+	TraitIndexType genoStruIdx() const
 	{
-		return static_cast<size_t>(m_genoStruIdx);
+		return m_genoStruIdx;
 	}
 
 

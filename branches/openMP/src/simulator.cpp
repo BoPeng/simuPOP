@@ -56,7 +56,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 	if (pops == NULL) {
 		return;
 	} else if (PySequence_Check(pops)) {
-		UINT size = PySequence_Size(pops);
+		size_t size = PySequence_Size(pops);
 		for (size_t i = 0; i < size; ++i) {
 			PyObject * item = PySequence_GetItem(pops, i);
 			void * pop = pyPopPointer(item);
@@ -147,7 +147,7 @@ Simulator * Simulator::clone() const
 }
 
 
-Population & Simulator::population(UINT rep) const
+Population & Simulator::population(size_t rep) const
 {
 	DBG_WARNIF(true, "The returned object of function Simulator.population is a temporary reference "
 		             "to a population inside a Simulator. It will become invalid once the simulator "
@@ -210,7 +210,7 @@ vectoru Simulator::evolve(
 
 	vector<bool> activeReps(m_pops.size());
 	fill(activeReps.begin(), activeReps.end(), true);
-	UINT numStopped = 0;
+	size_t numStopped = 0;
 
 	// evolved generations, which will be returned.
 	vectoru evolvedGens(m_pops.size(), 0U);

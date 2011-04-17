@@ -3117,8 +3117,8 @@ double pvalChiSq(double chisq, unsigned int df)
 
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
-	UINT m = table.size();
-	UINT n = table[0].size();
+	size_t m = table.size();
+	size_t n = table[0].size();
 	vectoru rowSum(m, 0);
 	vectoru colSum(n, 0);
 	double N = 0;
@@ -3149,7 +3149,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 	DBG_FAILIF(table.size() != 2 || table[0].size() != 3, ValueError,
 		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
 
-	UINT n = table[0].size();
+	size_t n = table[0].size();
 
 	DBG_FAILIF(s.size() != n, ValueError,
 		"Weight for Cochran-Armitage test should have length 3");
@@ -3279,7 +3279,7 @@ double hweTest(const vectoru & cnt)
 
 void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count)
 {
-	UINT sz = last - first;
+	size_t sz = last - first;
 
 	count.resize(sz);
 	size_t tot = 0;
@@ -3732,7 +3732,7 @@ void Bernullitrials::doTrial()
 }
 
 
-UINT Bernullitrials::curTrial()
+size_t Bernullitrials::curTrial()
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return m_cur;
@@ -4478,7 +4478,7 @@ bool intList::match(UINT rep, const vector<bool> * activeRep) const
 			return true;
         // find what exactly an negative index refer to
         int cnt = -*it;
-        int curRep = activeRep->size() - 1;
+        ssize_t curRep = activeRep->size() - 1;
         for (; curRep >= 0; --curRep) {
             if ((*activeRep)[curRep])
 				--cnt;

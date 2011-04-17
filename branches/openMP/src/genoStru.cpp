@@ -70,7 +70,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		m_lociPos.resize(m_totNumLoci);
 		for (size_t i = 0; i < m_numLoci.size(); ++i)
 			for (size_t j = 0; j < m_numLoci[i]; j++)
-				m_lociPos[m_chromIndex[i] + j] = j + 1;
+				m_lociPos[m_chromIndex[i] + j] = static_cast<double>(j + 1);
 	} else {                                                                            // check loci distance
 		// loci distance, if specified, chould have length of chromosome.
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
@@ -98,7 +98,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 			vectorf lociPos(m_lociPos.begin() + begin, m_lociPos.begin() + end);
 
 			// rank
-			vectoru rank(m_numLoci[ch]);
+			vector<size_t> rank(m_numLoci[ch]);
 			for (size_t i = 0; i < rank.size(); ++i)
 				rank[i] = i;
 			// sort according to value of pos
@@ -234,7 +234,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 			ValueError, "Chromsome type can only be one of AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y and CUSTOMIZED.");
 	}
 #endif
-	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(m_chromTypes.size()); ++i) {
 		if (m_chromTypes[i] == CHROMOSOME_X) {
 			DBG_ASSERT(m_chromX == -1, ValueError,
 				"Only one chromosome X can be specified");
@@ -244,7 +244,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		}
 	}
 	m_chromY = -1;
-	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(m_chromTypes.size()); ++i) {
 		if (m_chromTypes[i] == CHROMOSOME_Y) {
 			DBG_ASSERT(m_chromY == -1, ValueError,
 				"Only one chromosome Y can be specified");

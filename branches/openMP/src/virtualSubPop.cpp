@@ -858,7 +858,7 @@ void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vi
 		if (virtualSubPop == 0) {
 			for (; it != it_end; ++it)
 				it->setVisible(it->info(idx) < m_cutoff[0]);
-		} else if (static_cast<UINT>(virtualSubPop) == m_cutoff.size()) {
+		} else if (static_cast<size_t>(virtualSubPop) == m_cutoff.size()) {
 			double v = m_cutoff.back();
 			for (; it != it_end; ++it)
 				it->setVisible(it->info(idx) >= v);
@@ -878,7 +878,7 @@ void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vi
 		for (; it != it_end; ++it)
 			it->setVisible(fcmp_eq(it->info(idx), v));
 	} else {
-		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
+		DBG_FAILIF(static_cast<size_t>(virtualSubPop) >= m_ranges.size(), IndexError,
 			"Virtual Subpoplation index out of range of 0 ~ "
 			+ toStr(m_ranges.size() - 1));
 		double v1 = m_ranges[virtualSubPop][0];

@@ -1595,7 +1595,7 @@ private:
 
 	const string m_idField;
 
-	mutable int m_gen;
+	mutable size_t m_gen;
 };
 
 

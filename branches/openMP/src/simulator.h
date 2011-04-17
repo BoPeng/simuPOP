@@ -126,7 +126,7 @@ public:
 	/** Return the number of replicates.
 	 *  <group>3-pop</group>
 	 */
-	UINT numRep() const
+	size_t numRep() const
 	{
 		return m_pops.size();
 	}
