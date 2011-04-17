@@ -1202,7 +1202,7 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx)
+	IndInfoIterator infoBegin(size_t idx)
 	{
 		CHECKRANGEINFO(idx);
 
@@ -1219,7 +1219,7 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx)
+	IndInfoIterator infoEnd(size_t idx)
 	{
 		CHECKRANGEINFO(idx);
 		if (hasActivatedVirtualSubPop() || !indOrdered())
@@ -1230,7 +1230,7 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, vspID vsp)
+	IndInfoIterator infoBegin(size_t idx, vspID vsp)
 	{
 		SubPopID subPop = vsp.subPop();
 
@@ -1252,7 +1252,7 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, vspID vsp)
+	IndInfoIterator infoEnd(size_t idx, vspID vsp)
 	{
 		SubPopID subPop = vsp.subPop();
 
@@ -1277,7 +1277,7 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This operation is not allowed when there is an activated virtual subpopulation");
-		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
 		if (subPop.valid()) {
 			activateVirtualSubPop(subPop);
 			vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));

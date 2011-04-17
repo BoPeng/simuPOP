@@ -329,7 +329,7 @@ public:
 	 */
 	int intInfo(const uintString & field) const
 	{
-		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
 
 		CHECKRANGEINFO(idx);
 		return static_cast<int>(m_infoPtr[idx]);
@@ -344,7 +344,7 @@ public:
 	 */
 	void setInfo(double value, const uintString & field)
 	{
-		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
 
 		CHECKRANGEINFO(idx);
 		m_infoPtr[idx] = value;
@@ -800,14 +800,14 @@ public:
 	}
 
 
-	InformationIterator(UINT info, InfoIterator ptr, UINT size)
+	InformationIterator(size_t info, InfoIterator ptr, size_t size)
 		: m_info(info), m_useGappedIterator(true),
 		m_it(), m_ptr(ptr), m_step(size)
 	{
 	}
 
 
-	InformationIterator(UINT info, IndividualIterator<T> it)
+	InformationIterator(size_t info, IndividualIterator<T> it)
 		: m_info(info), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_step()
 	{
@@ -877,7 +877,7 @@ public:
 
 private:
 	// idx of the information field
-	UINT m_info;
+	size_t m_info;
 	///
 	bool m_useGappedIterator;
 	// Individual iterator
@@ -885,7 +885,7 @@ private:
 	//
 	InfoIterator m_ptr;
 	//
-	UINT m_step;
+	size_t m_step;
 };
 
 
