@@ -115,6 +115,7 @@ if os.name == 'nt':
     extra_flags = []
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
+    # during development, output symbols (for profiling and debugging)
     extra_flags = ['-g']
 
 #

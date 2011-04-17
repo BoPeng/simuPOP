@@ -72,6 +72,8 @@ using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
 #ifndef STANDALONE_EXECUTABLE
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #  include "swigpyrun.h"
 #endif
 
@@ -544,7 +546,7 @@ floatList::floatList(PyObject * obj) : m_elems()
 		m_elems.push_back(PyFloat_AsDouble(obj));
 	else if (PySequence_Check(obj)) {
 		size_t n = PySequence_Size(obj);
-		for (int j = 0; j < n; ++j) {
+		for (size_t j = 0; j < n; ++j) {
 			PyObject * val = PySequence_GetItem(obj, j);
 			DBG_ASSERT(PyNumber_Check(val), ValueError,
 				"A list of numbers is expected");
@@ -665,7 +667,7 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectori());
 			size_t n = PySequence_Size(item);
-			for (int j = 0; j < n; ++j) {
+			for (size_t j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
 					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
@@ -710,7 +712,7 @@ floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorf());
 			size_t n = PySequence_Size(item);
-			for (int j = 0; j < n; ++j) {
+			for (size_t j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
 					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
@@ -764,7 +766,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 		else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
 			size_t numStrs = PySequence_Size(item);
-			for (int j = 0; j < numStrs; ++j) {
+			for (size_t j = 0; j < numStrs; ++j) {
 				PyObject * str = PySequence_GetItem(item, j);
 				if (PyString_Check(str)) {
 					string value = PyObj_AsString(str);
@@ -1896,7 +1898,7 @@ void save_list(string & str, PyObject * args)
 {
 	str += 'L';                                                                       // dictionary
 	size_t len = PyList_Size(args);
-	for (int i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyList_GET_ITEM((PyListObject *)args, i);
 		saveObj(str, elem);
 	}
@@ -1927,7 +1929,7 @@ void save_tuple(string & str, PyObject * args)
 	// save length
 	str += toStr(len) + ' ';
 	// save items
-	for (int i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyTuple_GET_ITEM((PyTupleObject *)args, i);
 		saveObj(str, elem);
 	}
@@ -3341,9 +3343,9 @@ string formatDescription(const string & text)
 		} else if (start == "<li>") {
 			string indent_char("*#-.");
 			string leading;
-			if (indent >= 1 && indent <= indent_char.size())
+			if (indent >= 1 && static_cast<unsigned>(indent) <= indent_char.size())
 				leading = string(1, indent_char[indent - 1]) + " ";
-			else if (indent > indent_char.size())
+			else if (static_cast<unsigned>(indent) > indent_char.size())
 				leading = ". ";
 			line = leading + line.substr(4);
 		} else if (start == "<ind") {
