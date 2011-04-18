@@ -888,7 +888,7 @@ private:
  *  of population \e pop. If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	Population * pop, Population * offPop, int dad, int mom, const pairu & off);
+	Population * pop, Population * offPop, size_t dad, size_t mom, const pairu & off);
 
 }
 #endif
