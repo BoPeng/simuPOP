@@ -116,7 +116,7 @@ if os.name == 'nt':
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
-    extra_flags = ['-g']
+    extra_flags = ['-g', '-Wconversion']
 
 #
 def convert_def(defines):
@@ -162,7 +162,7 @@ std_common_lib = std_common_env.StaticLibrary(
     target = 'build/std_common/common',
     source = ['build/std_common/' + x for x in LIB_FILES],
     CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] +\
-        comp.compile_options + (['-wd1125'] if USE_ICC else []),
+        comp.compile_options + (['-wd1125', '-wd2259'] if USE_ICC else []),
     CPPPATH = ['.', 'gsl', 'build', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
     CPPDEFINES = convert_def(ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
