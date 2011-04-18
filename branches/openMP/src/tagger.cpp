@@ -66,7 +66,7 @@ bool IdTagger::apply(Population & pop) const
 
 
 bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                 Individual * dad, Individual * mom) const
+                                 Individual * /* dad */, Individual * /* mom */) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))

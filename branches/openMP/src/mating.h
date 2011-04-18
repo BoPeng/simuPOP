@@ -1606,7 +1606,7 @@ private:
 
 	const string m_idField;
 
-	mutable size_t m_gen;
+	mutable ssize_t m_gen;
 };
 
 

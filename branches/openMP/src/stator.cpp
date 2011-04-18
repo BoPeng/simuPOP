@@ -1291,7 +1291,9 @@ bool statHaploHomoFreq::apply(Population & pop) const
 				continue;
 
 			int chromType = pop.chromType(pop.chromLocusPair(loci[0]).first);
-#ifndef OPTIMIZED
+#ifdef OPTIMIZED
+			(void) chromType; /* avoid a warning message of unused variable */
+#else
 			for (size_t i = 1; i < nLoci; ++i) {
 				DBG_FAILIF(pop.chromType(pop.chromLocusPair(loci[i]).first) != chromType, ValueError,
 					"Haplotype must be on the chromosomes of the same type");

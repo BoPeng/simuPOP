@@ -118,7 +118,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 }
 
 
-string CloneGenoTransmitter::describe(bool format) const
+string CloneGenoTransmitter::describe(bool /* format */) const
 {
 	return "<simuPOP.CloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
 }
@@ -284,7 +284,8 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 }
 
 
-bool MendelianGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
+		Population & offPop, RawIndIterator offspring,
                                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -301,7 +302,7 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop, Population & 
 }
 
 
-bool SelfingGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool SelfingGenoTransmitter::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                                Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -330,7 +331,8 @@ void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 }
 
 
-bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool HaplodiploidGenoTransmitter::applyDuringMating(Population & /* pop */,
+		Population & offPop, RawIndIterator offspring,
                                                     Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -374,13 +376,14 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                                     Individual * dad, Individual * mom) const
+                                                     Individual * /* dad */, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	initializeIfNeeded(*offspring);
 
+	(void) mom; /* avoid a warning message of unused varible in optimized modules */
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
 
@@ -433,7 +436,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 };
 
 
-string Recombinator::describe(bool format) const
+string Recombinator::describe(bool /* format */) const
 {
 	string desc = "<simuPOP.Recombinator> genetic recombination.";
 

@@ -206,6 +206,7 @@ public:
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposeInd(exposeInd), m_lastValues()
 	{
+		(void) usePopVars; /* this parameter is obsolete, use (void) to avoid a warning message */
 		DBG_WARNIF(debug(DBG_COMPATIBILITY) && usePopVars, "WARNING: parameter usePopVars is obsolete.");
 	}
 

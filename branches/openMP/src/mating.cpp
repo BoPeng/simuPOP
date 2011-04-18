@@ -252,7 +252,7 @@ Sex OffspringGenerator::getSex(UINT count)
 }
 
 
-void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
+void OffspringGenerator::initialize(const Population & pop, SubPopID /* subPop */)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
@@ -1178,7 +1178,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void PyParentsChooser::finalize(Population & pop, SubPopID sp)
+void PyParentsChooser::finalize(Population & /* pop */, SubPopID /* sp */)
 {
 	DBG_FAILIF(m_popObj == NULL, SystemError, "Python generator is not properly initialized.");
 	Py_DECREF(m_popObj);

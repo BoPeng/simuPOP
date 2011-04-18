@@ -23,7 +23,6 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "simuPOP_cfg.h"
 #include "virtualSubPop.h"
 #include "population.h"
 
@@ -233,7 +232,7 @@ subPopList subPopList::expandFrom(const Population & pop) const
 		"This is likely caused by the use of persistent subPops for different populations.");
 	vectorvsp vsps;
 	if (allAvail()) {
-		for (int sp = 0; sp < pop.numSubPop(); ++sp)
+		for (int sp = 0; sp < static_cast<int>(pop.numSubPop()); ++sp)
 			vsps.push_back(vspID(sp));
 	} else {
 		// otherwise, handle vsps such as (ALL_AVAIL, vsp)
@@ -241,7 +240,7 @@ subPopList subPopList::expandFrom(const Population & pop) const
 		vectorvsp::const_iterator it_end = m_subPops.end();
 		for (; it != it_end; ++it) {
 			if (it->allAvailSP()) {
-				for (int sp = 0; sp < pop.numSubPop(); ++sp) {
+				for (int sp = 0; sp < static_cast<int>(pop.numSubPop()); ++sp) {
 					if (it->allAvailVSP()) {
 						if (pop.numVirtualSubPop() == 0)
 							vsps.push_back(vspID(sp));
@@ -339,8 +338,8 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 	const matrixi & vspMap = vspMatrix.elems();
 	if (vspMap.empty()) {
 		size_t idx = 0;
-		for (SubPopID i = 0; i < splitters.size(); ++i)
-			for (SubPopID j = 0; j < splitters[i]->numVirtualSubPop(); ++j, ++idx)
+		for (SubPopID i = 0; i < static_cast<int>(splitters.size()); ++i)
+			for (SubPopID j = 0; j < static_cast<int>(splitters[i]->numVirtualSubPop()); ++j, ++idx)
 				m_vspMap.push_back(vspList(1, vspPair(i, j)));
 	} else {
 		for (size_t i = 0; i < vspMap.size(); ++i) {
@@ -490,7 +489,7 @@ ProductSplitter::ProductSplitter(const vectorsplitter & splitters, const stringL
 		m_numVSP *= splitters[i]->numVirtualSubPop();
 		m_splitters.push_back(splitters[i]->clone());
 	}
-	for (size_t vsp = 0; vsp < m_numVSP; ++vsp) {
+	for (SubPopID vsp = 0; vsp < m_numVSP; ++vsp) {
 		vectori res(splitters.size());
 		UINT tmpMod = m_numVSP;
 		UINT tmpIdx = vsp;
@@ -1052,7 +1051,7 @@ size_t RangeSplitter::numVirtualSubPop() const
 }
 
 
-bool RangeSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
+bool RangeSplitter::contains(const Population & /* pop */, size_t ind, vspID vsp) const
 {
 	SubPopID virtualSubPop = vsp.virtualSubPop();
 

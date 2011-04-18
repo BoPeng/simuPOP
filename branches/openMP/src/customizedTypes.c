@@ -96,7 +96,7 @@ setarrayitem(arrayobject * ap, int i, PyObject * v)
 
 /// CPPONLY
 static PyObject *
-carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
+carray_new(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not create carray object from python.");
@@ -106,7 +106,7 @@ carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
 
 /// CPPONLY
 static PyObject *
-carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
+carray_init(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not create carray object from python.");
@@ -321,7 +321,7 @@ static Py_ssize_t array_length(arrayobject * a)
 
 
 /// CPPONLY
-static PyObject * array_concat(arrayobject * a, PyObject * bb)
+static PyObject * array_concat(arrayobject * , PyObject * )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not concat carray object.");
@@ -330,7 +330,7 @@ static PyObject * array_concat(arrayobject * a, PyObject * bb)
 
 
 /// CPPONLY
-static PyObject * array_repeat(arrayobject * a, Py_ssize_t n)
+static PyObject * array_repeat(arrayobject * , Py_ssize_t )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not repeat carray object.");
@@ -532,6 +532,7 @@ static char tolist_doc [] =
 \n\
 Convert array to an ordinary list with the same items."                                                          ;
 
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyMethodDef array_methods[] =
 {
 	{
@@ -563,7 +564,7 @@ static PyObject * array_getattr(arrayobject * a, char * name)
 
 
 /// CPPONLY
-static int array_print(arrayobject * a, FILE * fp, int flags)
+static int array_print(arrayobject * a, FILE * fp, int /* flags */)
 {
 	int ok = 0;
 	int i, len;
@@ -770,7 +771,7 @@ static PyMemberDef defdict_members[] = {
 };
 
 static int
-defdict_print(defdictobject * dd, FILE * fp, int flags)
+defdict_print(defdictobject * dd, FILE * fp, int /* flags */)
 {
 	int sts;
 

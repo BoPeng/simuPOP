@@ -605,7 +605,9 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 
 void Population::validate(const string & msg) const
 {
-#ifndef OPTIMIZED
+#ifdef OPTIMIZED
+	(void) msg; /* avoid a warning message of unused parameter in optmized module */
+#else
 	DBG_ASSERT(m_info.size() == m_popSize * infoSize(), SystemError,
 		msg + "Wrong information size");
 	DBG_ASSERT(m_genotype.size() == m_popSize * genoSize(), SystemError,
@@ -2365,9 +2367,8 @@ void Population::push(Population & rhs)
 		"Evolution can not continue because the new generation has different \n"
 		"genotypic structure.\n");
 
-	DBG_FAILIF(!m_genotype.empty() && !rhs.m_genotype.empty() &&
-		(&m_genotype[0] == &rhs.m_genotype[0]), ValueError,
-		"Passed population is a reference of current population, swapPop failed.");
+	DBG_FAILIF(this == &rhs, ValueError,
+		"Passed population is a reference of current population, population.push failed.");
 
 	// front -1 pop, -2 pop, .... end
 	//
