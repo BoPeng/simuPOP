@@ -89,7 +89,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		}
 	}
 	// parameter rep
-	UINT numRep = m_pops.size();
+	size_t numRep = m_pops.size();
 	for (UINT i = 1; i < rep; ++i) {
 		for (UINT j = 0; j < numRep; ++j) {
 			try {
@@ -246,10 +246,10 @@ vectoru Simulator::evolve(
 			if (curGen != curPop.gen())
 				curPop.setGen(curGen);
 #else
-			int curGen = curPop.gen();
+			ssize_t curGen = curPop.gen();
 #endif
 
-			int end = -1;
+			ssize_t end = -1;
 			if (gens > 0)
 				end = curGen + gens - 1;
 			PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
@@ -430,7 +430,7 @@ string describeEvolProcess(const opList & initOps,
                            const MatingScheme & matingScheme,
                            const opList & postOps,
                            const opList & finalOps,
-                           int gen, UINT numRep)
+                           int gen, size_t numRep)
 {
 	vectorstr allDesc(numRep, "");
 

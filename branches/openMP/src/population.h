@@ -462,7 +462,7 @@ public:
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 			+ toStr(ancestralGens()));
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
-		return accumulate(sizes.begin(), sizes.end(), 0L);
+		return accumulate(sizes.begin(), sizes.end(), size_t(0));
 	}
 
 
@@ -528,6 +528,41 @@ public:
 	/** @name itertors and accessers, ways to access information, mainly various iterators.
 	 */
 	//@{
+
+
+	/** CPPONLY
+	 */
+	Individual & individual(size_t idx, vspID subPop = vspID())
+	{
+#ifndef OPTIMIZED
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function Individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid()) {
+			CHECKRANGEIND(idx);
+		} else {
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
+#endif
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+	}
+
+	/** CPPONLY
+	 */
+	const Individual & individual(size_t idx, vspID subPop = vspID()) const
+	{
+#ifndef OPTIMIZED
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function Individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid()) {
+			CHECKRANGEIND(idx);
+		} else {
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
+#endif
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+	}
 
 	/** Return a refernce to individual \e idx in the population
 	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
@@ -1581,7 +1616,7 @@ private:
 		// we can not use setGenoStruIdx since stru may be new.
 		this->setGenoStructure(stru);
 
-		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
+		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), size_t(0));
 
 		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
 
@@ -1749,22 +1784,22 @@ private:
 	/// within a population.
 	mutable bool m_indOrdered;
 
-	mutable ssize_t m_gen;
-	mutable ssize_t m_rep;
+	mutable size_t m_gen;
+	mutable size_t m_rep;
 
 public:
 	/** CPPONLY
 	 *  current replicate in a simulator which is not meaningful for a stand-alone population
 	 *	<group>evolve</group>
 	 */
-	ssize_t rep()
+	size_t rep()
 	{
 		return m_rep;
 	}
 
 
 	/// CPPONLY  set rep number
-	void setRep(ssize_t rep)
+	void setRep(size_t rep)
 	{
 		m_rep = rep;
 #ifndef STANDALONE_EXECUTABLE
@@ -1778,14 +1813,14 @@ public:
 	 *  faster than getting generation number from population variable.
 	 *  <group>evolve</group>
 	 */
-	ssize_t gen() const
+	size_t gen() const
 	{
 		return m_gen;
 	}
 
 
 	/// CPPONLY
-	void setGen(ssize_t gen)
+	void setGen(size_t gen)
 	{
 		m_gen = gen;
 #ifndef STANDALONE_EXECUTABLE

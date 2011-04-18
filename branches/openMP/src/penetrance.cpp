@@ -36,19 +36,19 @@ namespace simuPOP {
 bool BasePenetrance::apply(Population & pop) const
 {
 	bool savePene = infoSize() > 0;
-	UINT infoIdx = 0;
+	size_t infoIdx = 0;
 
 	if (savePene)
 		infoIdx = pop.infoIdx(infoField(0));
 
 	vectoru gens = m_ancGens.elems();
 	if (m_ancGens.allAvail())
-		for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= pop.ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (m_ancGens.unspecified())
 		gens.push_back(pop.curAncestralGen());
 
-	UINT oldGen = pop.curAncestralGen();
+	size_t oldGen = pop.curAncestralGen();
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		pop.useAncestralGen(gens[genIdx]);
 
@@ -149,8 +149,8 @@ double MapPenetrance::penet(Population * /* pop */, Individual * ind) const
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
-			UINT begin_idx = 0;
-			UINT end_idx = 0;
+			size_t begin_idx = 0;
+			size_t end_idx = 0;
 			for (size_t i = 0; i < loci.size(); ++i) {
 				if (chromTypes[i] == CHROMOSOME_Y) {
 					if (ind->sex() == FEMALE)
@@ -298,7 +298,7 @@ double PyPenetrance::penet(Population * pop, Individual * ind) const
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen") {
 			DBG_FAILIF(pop == NULL, ValueError, "No valid population reference is passed.");
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop->gen()));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(pop->gen())));
 		} else if (arg == "pop") {
 			DBG_FAILIF(pop == NULL, ValueError, "No valid population reference is passed.");
 			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(pop)));

@@ -86,7 +86,7 @@ void Dumper::displayStructure(const Population & pop, ostream & out) const
 	}
 	out << "population size: " << pop.popSize();
 	out << " (" << pop.numSubPop() << " subpopulations with ";
-	for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd; ++i) {
+	for (size_t i = 0, iEnd = pop.numSubPop(); i < iEnd; ++i) {
 		out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
 		if (pop.subPopName(i) != UnnamedSubPop)
 			out << " (" << pop.subPopName(i) << ")";
@@ -103,7 +103,7 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 	subPopList::const_iterator spEnd = subPops.end();
 
 	for ( ; sp != spEnd; ++sp) {
-		ULONG spSize = pop.subPopSize(*sp);
+		size_t spSize = pop.subPopSize(*sp);
 		out << "SubPopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
 		    << toStr(spSize) << " Individuals:" << endl;
 
@@ -130,11 +130,11 @@ bool Dumper::apply(Population & pop) const
 	if (m_showStructure)
 		displayStructure(pop, out);
 
-	UINT oldGen = pop.curAncestralGen();
+	size_t oldGen = pop.curAncestralGen();
 	if (m_showGenotype) {
 		vectoru gens = m_ancGens.elems();
 		if (m_ancGens.allAvail())
-			for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+			for (int gen = 0; gen <= pop.ancestralGens(); ++gen)
 				gens.push_back(gen);
 		else if (m_ancGens.unspecified())
 			gens.push_back(pop.curAncestralGen());

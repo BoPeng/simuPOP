@@ -1,7 +1,7 @@
 /**
  *  $File: sandbox.h $
- *  $LastChangedDate: 2010-06-04 13:29:09 -0700 (Fri, 04 Jun 2010) $
- *  $Rev: 3579 $
+ *  $LastChangedDate$
+ *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
  *  simulation environment. Please visit http://simupop.sourceforge.net
@@ -169,7 +169,7 @@ public:
 	typedef std::pair<double, double> SelCoef;
 
 private:
-	SelCoef getFitnessValue(int mutant) const;
+	SelCoef getFitnessValue(size_t mutant) const;
 
 
 	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
@@ -194,8 +194,8 @@ private:
 	typedef std::map<unsigned int, int> MutCounter;
 #else
 	// this is faster than std::map
-	typedef std::tr1::unordered_map<unsigned int, SelCoef> SelMap;
-	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
+	typedef std::tr1::unordered_map<size_t, SelCoef> SelMap;
+	typedef std::tr1::unordered_map<size_t, size_t> MutCounter;
 #endif
 	mutable SelMap m_selFactory;
 	mutable vectoru m_newMutants;
@@ -284,7 +284,7 @@ public:
 
 
 private:
-	ULONG locateVacantLocus(Population & pop, ULONG beg, ULONG end, std::set<ULONG> & mutants) const;
+	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
 
 private:
 	const double m_rate;
@@ -357,11 +357,11 @@ private:
 #endif
 	// use when m_rate = 0.5
 	void transmitGenotype0(Population & offPop, const Individual & parent,
-		ULONG offIndex, int ploidy) const;
+		size_t offIndex, int ploidy) const;
 
 	// use when m_rate < 1e-4
 	void transmitGenotype1(Population & offPop, const Individual & parent,
-		ULONG offIndex, int ploidy) const;
+		size_t offIndex, int ploidy) const;
 
 private:
 	/// recombination rate

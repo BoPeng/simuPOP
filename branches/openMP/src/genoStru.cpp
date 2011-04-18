@@ -272,7 +272,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
 
 
-double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
+double GenoStruTrait::lociDist(size_t loc1, size_t loc2) const
 {
 	// right now, it is assumed that locus is not the first
 	// on a chromosome
@@ -282,7 +282,7 @@ double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
 }
 
 
-size_t GenoStruTrait::lociLeft(UINT loc) const
+size_t GenoStruTrait::lociLeft(size_t loc) const
 {
 	CHECKRANGEABSLOCUS(loc);
 

@@ -32,7 +32,7 @@
 namespace simuPOP {
 bool BaseSelector::apply(Population & pop) const
 {
-	UINT fit_id = pop.infoIdx(this->infoField(0));
+	size_t fit_id = pop.infoIdx(this->infoField(0));
 
 	subPopList subPops = applicableSubPops(pop);
 
@@ -91,8 +91,8 @@ double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
 		for (; it != itEnd; ++it) {
 			bool ok = true;
 			const tupleDict::key_type & key = it->first;
-			UINT begin_idx = 0;
-			UINT end_idx = 0;
+			size_t begin_idx = 0;
+			size_t end_idx = 0;
 			for (size_t i = 0; i < loci.size(); ++i) {
 				if (chromTypes[i] == CHROMOSOME_Y) {
 					if (ind->sex() == FEMALE)
@@ -235,7 +235,7 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop.gen()));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(pop.gen())));
 		else if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
 		else {

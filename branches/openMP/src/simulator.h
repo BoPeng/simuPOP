@@ -276,7 +276,7 @@ string describeEvolProcess(
 	const opList & postOps = opList(),
 	const opList & finalOps = opList(),
 	int gen = -1,
-	UINT numRep = 1);
+	size_t numRep = 1);
 
 }
 

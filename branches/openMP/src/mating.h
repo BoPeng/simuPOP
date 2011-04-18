@@ -320,7 +320,7 @@ class NumOffModel
 public:
 	NumOffModel() {}
 	virtual ~NumOffModel() {}
-	virtual ULONG getNumOff(int gen) = 0;
+	virtual UINT getNumOff(ssize_t gen) = 0;
 
 	virtual void reset() {}
 	virtual NumOffModel * clone() = 0;
@@ -348,7 +348,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int /* gen */)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return m_numOff;
 	}
@@ -380,7 +380,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int /* gen */)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return getRNG().randGeometric(m_p);
 	}
@@ -406,7 +406,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int /* gen */)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return getRNG().randTruncatedPoisson(m_mu);
 	}
@@ -432,14 +432,14 @@ public:
 	}
 
 
-	ULONG getNumOff(int /* gen */)
+	UINT getNumOff(ssize_t /* gen */)
 	{
-		return getRNG().randTruncatedBinomial(m_N, m_mu);
+		return static_cast<UINT>(getRNG().randTruncatedBinomial(static_cast<ULONG>(m_N), m_mu));
 	}
 
 
 private:
-	ULONG m_N;
+	size_t m_N;
 	double m_mu;
 };
 
@@ -459,7 +459,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int /* gen */)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		// max: 5
 		// num: 2
@@ -494,7 +494,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen);
+	UINT getNumOff(ssize_t gen);
 
 	void reset()
 	{
@@ -647,7 +647,7 @@ public:
 	 *  This is called whenever a family size is needed.
 	 *  Its actual meaning depending on \c mode.
 	 */
-	ULONG numOffspring(int gen);
+	UINT numOffspring(ssize_t gen);
 
 
 	/** CPPONLY
@@ -891,7 +891,7 @@ private:
 	IndIterator m_ind;
 	/// for sexual selection of parents
 	vector<RawIndIterator> m_index;
-	ULONG m_curInd;
+	size_t m_curInd;
 };
 
 
@@ -1039,8 +1039,8 @@ private:
 
 	bool m_selection;
 
-	ULONG m_numMale;
-	ULONG m_numFemale;
+	size_t m_numMale;
+	size_t m_numFemale;
 
 	/// internal index to female/males.
 	vector<RawIndIterator> m_index;
@@ -1117,8 +1117,8 @@ private:
 
 	bool m_selection;
 
-	ULONG m_numMale;
-	ULONG m_numFemale;
+	size_t m_numMale;
+	size_t m_numFemale;
 
 	/// internal index to female/males.
 	vector<RawIndIterator> m_maleIndex;
@@ -1351,7 +1351,7 @@ public:
 
 private:
 #ifndef OPTIMIZED
-	ULONG m_size;
+	size_t m_size;
 #endif
 	IndIterator m_begin;
 

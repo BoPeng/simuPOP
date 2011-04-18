@@ -1,8 +1,8 @@
 
 /**
  *  $File: sandbox.cpp $
- *  $LastChangedDate: 2010-06-04 13:29:09 -0700 (Fri, 04 Jun 2010) $
- *  $Rev: 3579 $
+ *  $LastChangedDate$
+ *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
  *  simulation environment. Please visit http://simupop.sourceforge.net
@@ -36,21 +36,21 @@ bool RevertFixedSites::apply(Population & pop) const
 
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
-	std::set<ULONG> commonAlleles(it->genoBegin(0), it->genoEnd(0));
+	std::set<size_t> commonAlleles(it->genoBegin(0), it->genoEnd(0));
 	commonAlleles.erase(0);
 	if (commonAlleles.size() == 0)
 		return true;
 
 	for (; it != it_end; ++it) {
 		// common = commonAlleles & geno0
-		std::set<ULONG> common;
-		std::set<ULONG> alleles1(it->genoBegin(0), it->genoEnd(0));
+		std::set<size_t> common;
+		std::set<size_t> alleles1(it->genoBegin(0), it->genoEnd(0));
 		set_intersection(commonAlleles.begin(),
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
 		commonAlleles.clear();
-		std::set<ULONG> alleles2(it->genoBegin(1), it->genoEnd(1));
+		std::set<size_t> alleles2(it->genoBegin(1), it->genoEnd(1));
 		set_intersection(common.begin(),
 			common.end(), alleles2.begin(), alleles2.end(),
 			std::inserter(commonAlleles, commonAlleles.begin()));
@@ -60,8 +60,8 @@ bool RevertFixedSites::apply(Population & pop) const
 	if (!noOutput()) {
 		ostream & out = getOstream(pop.dict());
 		out << pop.gen();
-		std::set<ULONG>::iterator beg = commonAlleles.begin();
-		std::set<ULONG>::iterator end = commonAlleles.end();
+		std::set<size_t>::iterator beg = commonAlleles.begin();
+		std::set<size_t>::iterator end = commonAlleles.end();
 		for (; beg != end ; ++beg)
 			out << '\t' << *beg;
 		out << endl;
@@ -69,8 +69,8 @@ bool RevertFixedSites::apply(Population & pop) const
 	it = pop.rawIndBegin();
 	vectora new_alleles(pop.totNumLoci());
 	for (; it != it_end; ++it) {
-		for (UINT p = 0; p < 2; ++p) {
-			std::set<ULONG> old_alleles(it->genoBegin(p), it->genoEnd(p));
+		for (size_t p = 0; p < 2; ++p) {
+			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
 			old_alleles.erase(0);
 			std::fill(new_alleles.begin(), new_alleles.end(), 0);
 			set_difference(old_alleles.begin(), old_alleles.end(),
@@ -122,9 +122,9 @@ bool MutSpaceSelector::apply(Population & pop) const
 }
 
 
-MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(int mutant) const
+MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 {
-	int sz = m_selDist.size();
+	size_t sz = m_selDist.size();
 	double s = 0;
 	double h = 0.5;
 
@@ -142,7 +142,7 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(int mutant) const
 		if (PyNumber_Check(res)) {
 			s = PyFloat_AsDouble(res);
 		} else if (PySequence_Check(res)) {
-			int sz = PySequence_Size(res);
+			size_t sz = PySequence_Size(res);
 			DBG_FAILIF(sz == 0, RuntimeError, "Function return an empty list.");
 			PyObject * item = PySequence_GetItem(res, 0);
 			s = PyFloat_AsDouble(item);
@@ -318,23 +318,23 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-ULONG MutSpaceMutator::locateVacantLocus(Population & /* pop */, ULONG beg, ULONG end, std::set<ULONG> & mutants) const
+size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
 {
-	ULONG loc = getRNG().randInt(end - beg) + beg;
+	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
 
-	std::set<ULONG>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
+	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
 	if (it == mutants.end())
 		return loc;
 	// look forward and backward
-	ULONG loc1 = loc + 1;
-	std::set<ULONG>::iterator it1(it);
+	size_t loc1 = loc + 1;
+	std::set<size_t>::iterator it1(it);
 	++it1;
 	for (; it1 != mutants.end() && loc1 != end; ++it1, ++loc1) {
 		if (*it1 != loc1)
 			return loc1;
 	}
-	ULONG loc2 = loc - 1;
-	std::set<ULONG>::reverse_iterator it2(it);
+	size_t loc2 = loc - 1;
+	std::set<size_t>::reverse_iterator it2(it);
 	--it2;
 	for (; it2 != mutants.rend() && loc2 != beg; --it2, --loc2) {
 		if (*it2 != loc2)
@@ -357,15 +357,15 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 	for (size_t i = 1; i < width.size(); ++i)
 		width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
 
-	ULONG ploidyWidth = width.back();
-	ULONG indWidth = pop.ploidy() * ploidyWidth;
+	size_t ploidyWidth = width.back();
+	size_t indWidth = pop.ploidy() * ploidyWidth;
 
 	ostream * out = NULL;
 	if (!noOutput())
 		out = &getOstream(pop.dict());
 
 	// build a set of existing mutants
-	std::set<ULONG> mutants;
+	std::set<size_t> mutants;
 	bool saturated = false;
 
 	subPopList subPops = applicableSubPops(pop);
@@ -374,16 +374,16 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 	for (; sp != spEnd; ++sp) {
 		DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
 		for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
-			ULONG loc = 0;
+			size_t loc = 0;
 			while (true) {
 				// using a geometric distribution to determine mutants
 				loc += getRNG().randGeometric(m_rate);
 				if (loc > indWidth)
 					break;
 				Individual & ind = pop.individual(indIndex);
-				int p = (loc - 1) / ploidyWidth;
+				size_t p = (loc - 1) / ploidyWidth;
 				// chromosome and position on chromosome?
-				ULONG mutLoc = (loc - 1) - p * ploidyWidth;
+				size_t mutLoc = (loc - 1) - p * ploidyWidth;
 				size_t ch = 0;
 				for (size_t reg = 0; reg < width.size(); ++reg) {
 					if (mutLoc < width[reg]) {
@@ -409,7 +409,7 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 						// first try our luck...
 						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
 						if (!ok) {
-							std::set<ULONG> existing(pop.genoBegin(false), pop.genoEnd(false));
+							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
 							mutants.swap(existing);
 							mutants.erase(0);
 							saturated = mutants.size() == ploidyWidth;
@@ -418,7 +418,7 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 						}
 					}
 					if (!ok && mutants.find(mutLoc) != mutants.end()) {
-						ULONG newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
+						size_t newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
 						// nothing is found
 						if (out)
 							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
@@ -442,7 +442,7 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 					DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
 					vectorf added(10);
 					for (size_t j = 0; j < 10; ++j)
-						added[j] = nLoci + j + 1;
+						added[j] = static_cast<double>(nLoci + j + 1);
 					vectoru addedChrom(10, ch);
 					pop.addLoci(addedChrom, added);
 					// individual might be shifted...
@@ -460,7 +460,7 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 						if (out)
 							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
 						break;
-					} else if (static_cast<ULONG>(*(geno + j)) == mutLoc) {
+					} else if (static_cast<size_t>(*(geno + j)) == mutLoc) {
 						// back mutation
 						//  from A b c d 0
 						//  to   d b c d 0
@@ -488,7 +488,7 @@ bool MutSpaceMutator::apply(Population &  pop ) const
 
 
 void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
-                                             ULONG offIndex, int ploidy) const
+                                             size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
 	(void) offPop; /* avoid warning about unused parameter */
@@ -496,10 +496,10 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 	(void) offIndex; /* avoid warning about unused parameter */
 	(void) ploidy; /* avoid warning about unused parameter */
 #else
-	UINT nCh = parent.numChrom();
+	size_t nCh = parent.numChrom();
 
 	// count duplicates...
-	for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
+	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
 		MutCounter cnt;
 		vectoru alleles;
 		alleles.reserve(parent.numLoci(ch));
@@ -558,10 +558,10 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
 				" to " << alleles.size() + 2 << endl);
-			UINT sz = alleles.size() - offPop.numLoci(ch) + 2;
+			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)
-				added[j] = offPop.numLoci(ch) + j + 1;
+				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
 			vectoru addedChrom(sz, ch);
 			offPop.addLoci(addedChrom, added);
 		}
@@ -578,7 +578,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 
 
 void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
-                                             ULONG offIndex, int ploidy) const
+                                             size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
 	(void) offPop; /* avoid warning about unused parameter */
@@ -588,10 +588,10 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 #else
 	const matrixi & ranges = m_ranges.elems();
 
-	for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
-		ULONG width = ranges[ch][1] - ranges[ch][0];
-		ULONG beg = 0;
-		ULONG end = getRNG().randGeometric(m_rate);
+	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
+		size_t width = ranges[ch][1] - ranges[ch][0];
+		size_t beg = 0;
+		size_t end = getRNG().randGeometric(m_rate);
 		int p = getRNG().randBit() ? 0 : 1;
 		// no recombination
 		if (end >= width) {
@@ -600,9 +600,9 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 		}
 		// we are in trouble... get some properties of alleles to reduce comparison
 		vectoru alleles;
-		ULONG minAllele[2];
-		ULONG maxAllele[2];
-		ULONG cnt[2];
+		size_t minAllele[2];
+		size_t maxAllele[2];
+		size_t cnt[2];
 		cnt[0] = 0;
 		cnt[1] = 0;
 		minAllele[0] = ranges[ch][1];
@@ -661,8 +661,8 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 			it = parent.genoBegin(p, ch);
 			it_end = parent.genoEnd(p, ch);
 			for (; it != it_end; ++it) {
-				if (*it >= beg + static_cast<ULONG>(ranges[ch][0]) &&
-				    *it < static_cast<ULONG>(ranges[ch][1]))
+				if (*it >= beg + static_cast<size_t>(ranges[ch][0]) &&
+				    *it < static_cast<size_t>(ranges[ch][1]))
 					alleles.push_back(*it);
 			}
 		}
@@ -671,10 +671,10 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
 				" to " << alleles.size() + 2 << endl);
-			UINT sz = alleles.size() - offPop.numLoci(ch) + 2;
+			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)
-				added[j] = offPop.numLoci(ch) + j + 1;
+				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
 			vectoru addedChrom(sz, ch);
 			offPop.addLoci(addedChrom, added);
 		}
@@ -682,7 +682,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
 		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 		for (size_t i = 0; i < alleles.size(); ++i, ++it)
-			*it = alleles[i];
+			*it = ToAllele(alleles[i]);
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
@@ -702,7 +702,7 @@ bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offP
 
 	// standard genotype transmitter
 	if (m_rate == 0) {
-		for (int ch = 0; static_cast<UINT>(ch) < pop.numChrom(); ++ch) {
+		for (int ch = 0; static_cast<size_t>(ch) < pop.numChrom(); ++ch) {
 			copyChromosome(*mom, getRNG().randBit(), *offspring, 0, ch);
 			copyChromosome(*dad, getRNG().randBit(), *offspring, 1, ch);
 		}

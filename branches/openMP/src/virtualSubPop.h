@@ -364,7 +364,7 @@ public:
 	size_t vspByName(const string & name) const;
 
 protected:
-	ULONG countVisibleInds(const Population & pop, size_t sp) const;
+	size_t countVisibleInds(const Population & pop, size_t sp) const;
 
 	vectorstr m_names;
 
@@ -536,9 +536,9 @@ private:
 	vector<BaseVspSplitter *> m_splitters;
 
 	/// total number of vsp
-	int m_numVSP;
+	size_t m_numVSP;
 
-	vector<vectori> m_subIndexes;
+	vector<vectoru> m_subIndexes;
 };
 
 

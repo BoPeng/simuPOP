@@ -101,7 +101,7 @@ void Pedigree::buildIDMap()
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
-			ULONG id = toID(it->info(m_idIdx));
+			size_t id = toID(it->info(m_idIdx));
 			DBG_WARNIF(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
 				"Different individuals share the same ID " + toStr(id) +
 				" so only the latest Individual will be used. If this is an "
@@ -136,19 +136,19 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 	// three numbers (maximum 20 charameters) + M F, the buffer should be long enough
 	char buffer[96];
 
-	UINT ply = ploidy();
+	size_t ply = ploidy();
 	const vectoru & loci = lociList.elems(this);
 
-	UINT nParents = numParents();
-	UINT curGen = curAncestralGen();
+	size_t nParents = numParents();
+	size_t curGen = curAncestralGen();
 	for (int gen = ancestralGens(); gen >= 0; --gen) {
 		const_cast<Pedigree *>(this)->useAncestralGen(gen);
 		ConstRawIndIterator it = rawIndBegin();
 		ConstRawIndIterator it_end = rawIndEnd();
 		for (; it != it_end; ++it) {
-			ULONG myID = toID(it->info(m_idIdx));
-			ULONG fatherID = 0;
-			ULONG motherID = 0;
+			size_t myID = toID(it->info(m_idIdx));
+			size_t fatherID = 0;
+			size_t motherID = 0;
 			if (m_fatherIdx != -1) {
 				fatherID = toID(it->info(m_fatherIdx));
 				if (fatherID && m_idMap.find(fatherID) == m_idMap.end())
@@ -183,9 +183,9 @@ void Pedigree::save(const string & filename, const stringList & fieldList,
 }
 
 
-UINT Pedigree::numParents() const
+size_t Pedigree::numParents() const
 {
-	return static_cast<UINT>(m_fatherIdx != -1) + static_cast<UINT>(m_motherIdx != -1);
+	return static_cast<size_t>(m_fatherIdx != -1) + static_cast<size_t>(m_motherIdx != -1);
 }
 
 
@@ -193,7 +193,7 @@ Individual & Pedigree::indByID(double fid) const
 {
 	// essentially m_idMap(toID(fid))
 	//
-	ULONG id = toID(fid);
+	size_t id = toID(fid);
 
 	DBG_FAILIF(fabs(fid - id) > 1e-8, ValueError,
 		"individual ID has to be integer (or a double round to full iteger).");
@@ -237,10 +237,10 @@ void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 		|| affectionChoice == ANY_AFFECTION_STATUS, ValueError,
 		"Relative affection status can only be one of AFFECTED, UNAFFECTED and ANY_AFFECTION_STATUS.");
 
-	UINT oldGen = curAncestralGen();
+	size_t oldGen = curAncestralGen();
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
@@ -286,9 +286,9 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 	// overlapping generations.
 	//
 	// What we essentially do is getting all the couples and assign them...
-	UINT maxSpouse = resultFields.size();
+	size_t maxSpouse = resultFields.size();
 
-	vectori spouseIdx(maxSpouse);
+	vectoru spouseIdx(maxSpouse);
 
 	// clear all fields
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
@@ -299,7 +299,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 			IndInfoIterator ptr = infoBegin(spouseIdx[i]);
 			IndInfoIterator ptrEnd = infoEnd(spouseIdx[i]);
 			for ( ; ptr != ptrEnd; ++ptr)
-				*ptr = static_cast<double>(-1);
+				*ptr = -1;
 		}
 	}
 	// find all the couples
@@ -330,11 +330,11 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 		}
 	}
 	// now, look for each pair and assign spouse
-	std::map<ULONG, UINT> numSpouse;
+	std::map<size_t, size_t> numSpouse;
 	for (size_t i = 0; i < couples.size(); ++i) {
 		// now p and m are spouse
-		ULONG p = couples[i].first;
-		ULONG m = couples[i].second;
+		size_t p = couples[i].first;
+		size_t m = couples[i].second;
 		try {
 			// but these guys might not be in the population...
 			Individual & fa = indByID(p);
@@ -351,7 +351,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 						break;
 					}
 				if (valid) {
-					fa.setInfo(m, spouseIdx[numSpouse[p]]);
+					fa.setInfo(static_cast<double>(m), spouseIdx[numSpouse[p]]);
 					++numSpouse[p];
 				}
 			}
@@ -365,7 +365,7 @@ void Pedigree::locateSpouse(SexChoice sexChoice, AffectionStatus affectionChoice
 						break;
 					}
 				if (valid) {
-					ma.setInfo(p, spouseIdx[numSpouse[m]]);
+					ma.setInfo(static_cast<double>(p), spouseIdx[numSpouse[m]]);
 					++numSpouse[m];
 				}
 			}                                                                                               // idx
@@ -381,9 +381,9 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
 
-	UINT maxOffspring = resultFields.size();
+	size_t maxOffspring = resultFields.size();
 
-	vectori offspringIdx(maxOffspring);
+	vectoru offspringIdx(maxOffspring);
 
 	// clear offspring fields
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
@@ -398,7 +398,7 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 	}
 
 	// use individual ID
-	std::map<ULONG, UINT> numOffspring;
+	std::map<size_t, size_t> numOffspring;
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
 		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
@@ -409,8 +409,8 @@ void Pedigree::locateOffspring(SexChoice sexChoice, AffectionStatus affectionCho
 				continue;
 			try {
 				// but the parents might not exist
-				ULONG pp = toID(p);
-				ULONG mm = toID(m);
+				size_t pp = toID(p);
+				size_t mm = toID(m);
 				Individual & fa = indByID(pp);
 				Individual & ma = indByID(mm);
 				// add child as father's offspring
@@ -441,8 +441,8 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 	DBG_ASSERT(resultFields.size() >= 1, ValueError,
 		"Please provide at least one information field to store offspring");
 
-	UINT maxSibling = resultFields.size();
-	vectori siblingIdx(maxSibling);
+	size_t maxSibling = resultFields.size();
+	vectoru siblingIdx(maxSibling);
 
 	for (size_t i = 0; i < maxSibling; ++i)
 		siblingIdx[i] = infoIdx(resultFields[i]);
@@ -456,7 +456,7 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 	}
 
 	// find all single families
-	map<ULONG, vectoru> families;
+	map<size_t, vectoru> families;
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
 		useAncestralGen(ancGens[genIdx]);
 		for (size_t i = 0; i < popSize(); ++i) {
@@ -469,9 +469,9 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 		}
 	}
 	// look in each single-parent family
-	std::map<ULONG, UINT> numSibling;
-	map<ULONG, vectoru>::iterator it = families.begin();
-	map<ULONG, vectoru>::iterator itEnd = families.end();
+	std::map<size_t, size_t> numSibling;
+	map<size_t, vectoru>::iterator it = families.begin();
+	map<size_t, vectoru>::iterator itEnd = families.end();
 	for (; it != itEnd; ++it) {
 		// these guys share at least one parent!
 		const vectoru & sibs = it->second;
@@ -497,7 +497,7 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 									break;
 								}
 							if (valid) {
-								child.setInfo(sibs[j], siblingIdx[numSibling[sibs[i]]]);
+								child.setInfo(static_cast<double>(sibs[j]), siblingIdx[numSibling[sibs[i]]]);
 								++numSibling[sibs[i]];
 							}
 						}
@@ -512,7 +512,7 @@ void Pedigree::locateSibling(SexChoice sexChoice, AffectionStatus affectionChoic
 									break;
 								}
 							if (valid) {
-								sibling.setInfo(sibs[i], siblingIdx[numSibling[sibs[j]]]);
+								sibling.setInfo(static_cast<double>(sibs[i]), siblingIdx[numSibling[sibs[j]]]);
 								++numSibling[sibs[j]];
 							}
 						}
@@ -537,8 +537,8 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 	DBG_FAILIF(numParents() != 2, ValueError,
 		"Please provide two parental information fields");
 
-	UINT maxSibling = resultFields.size();
-	vectori siblingIdx(maxSibling);
+	size_t maxSibling = resultFields.size();
+	vectoru siblingIdx(maxSibling);
 
 	for (size_t i = 0; i < maxSibling; ++i)
 		siblingIdx[i] = infoIdx(resultFields[i]);
@@ -564,7 +564,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 		}
 	}
 	// look in each single-parent family
-	std::map<ULONG, UINT> numSibling;
+	std::map<size_t, size_t> numSibling;
 	map<couple, vectoru>::iterator it = families.begin();
 	map<couple, vectoru>::iterator itEnd = families.end();
 	for (; it != itEnd; ++it) {
@@ -591,7 +591,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 								break;
 							}
 						if (valid) {
-							child.setInfo(sibs[j], siblingIdx[numSibling[sibs[i]]]);
+							child.setInfo(static_cast<double>(sibs[j]), siblingIdx[numSibling[sibs[i]]]);
 							++numSibling[sibs[i]];
 						}
 					}
@@ -606,7 +606,7 @@ void Pedigree::locateFullSibling(SexChoice sexChoice, AffectionStatus affectionC
 								break;
 							}
 						if (valid) {
-							sibling.setInfo(sibs[i], siblingIdx[numSibling[sibs[j]]]);
+							sibling.setInfo(static_cast<double>(sibs[i]), siblingIdx[numSibling[sibs[j]]]);
 							++numSibling[sibs[j]];
 						}
 					}                                                                                       // idx
@@ -628,10 +628,10 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	DBG_ASSERT(resultFields.size() >= 2, ValueError,
 		"Please provide at least one information field for spouse and one for offspring.");
 
-	UINT maxOffspring = resultFields.size() - 1;
+	size_t maxOffspring = resultFields.size() - 1;
 
-	vectori offspringIdx(maxOffspring);
-	int spouseIdx = infoIdx(resultFields[0]);
+	vectoru offspringIdx(maxOffspring);
+	size_t spouseIdx = infoIdx(resultFields[0]);
 
 	// clear all fields
 	for (unsigned genIdx = 0; genIdx < ancGens.size(); ++genIdx) {
@@ -661,10 +661,10 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 	// look in each family
 	map<couple, vectoru>::iterator it = families.begin();
 	map<couple, vectoru>::iterator itEnd = families.end();
-	std::map<ULONG, UINT> numOffspring;
+	std::map<size_t, size_t> numOffspring;
 	for (; it != itEnd; ++it) {
-		ULONG p = it->first.first;
-		ULONG m = it->first.second;
+		size_t p = it->first.first;
+		size_t m = it->first.second;
 		// these guys share two parents
 		const vectoru & offspring = it->second;
 		try {
@@ -693,11 +693,11 @@ void Pedigree::locateCommonOffspring(SexChoice sexChoice, AffectionStatus affect
 					}
 					if (valid) {
 						if (valid_fa && numOffspring[p] < maxOffspring) {
-							fa.setInfo(offspring[j], offspringIdx[numOffspring[p]]);
+							fa.setInfo(static_cast<double>(offspring[j]), offspringIdx[numOffspring[p]]);
 							++numOffspring[p];
 						}
 						if (valid_ma && numOffspring[m] < maxOffspring) {
-							ma.setInfo(offspring[j], offspringIdx[numOffspring[m]]);
+							ma.setInfo(static_cast<double>(offspring[j]), offspringIdx[numOffspring[m]]);
 							++numOffspring[m];
 						}
 					}
@@ -729,20 +729,20 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 		ValueError,
 		"Parameter affectionChoice, if given, should have the same length of pathFields");
 
-	UINT oldGen = curAncestralGen();
+	size_t oldGen = curAncestralGen();
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
-	vectori resultIdx(resultFields.size());
+	vectoru resultIdx(resultFields.size());
 	for (size_t i = 0; i < resultIdx.size(); ++i)
 		resultIdx[i] = infoIdx(resultFields[i]);
 	vectoru numResult(popSize(), 0);
-	UINT maxResult = resultIdx.size();
+	size_t maxResult = resultIdx.size();
 	// clear values
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		useAncestralGen(gens[genIdx]);
@@ -755,7 +755,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 	for (size_t i = 0; i < pathFields.size(); ++i) {
 		pathIdx[i] = vectori(pathFields[i].size());
 		for (size_t j = 0; j < pathFields[i].size(); ++j)
-			pathIdx[i][j] = infoIdx(pathFields[i][j]);
+			pathIdx[i][j] = static_cast<int>(infoIdx(pathFields[i][j]));
 	}
 	// convert sexChoice to type SexChoices
 	vector<SexChoice> sexes(pathIdx.size(), ANY_SEX);
@@ -774,7 +774,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 		affections[i] = static_cast<AffectionStatus>(affectionChoice[i]);
 	}
 
-	ULONG idx = 0;
+	size_t idx = 0;
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		useAncestralGen(gens[genIdx]);
 		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
@@ -812,7 +812,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 			// ind has the results
 			for (size_t i = 0; i < maxResult; ++i)
 				if (i < inds.size())
-					ind->setInfo(inds[i], resultIdx[i]);
+					ind->setInfo(static_cast<double>(inds[i]), resultIdx[i]);
 		}
 	}
 	useAncestralGen(oldGen);
@@ -860,14 +860,14 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
-	UINT oldGen = curAncestralGen();
+	size_t oldGen = curAncestralGen();
 	// mark eligible Individuals
-	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
+	for (int ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
 		if (std::find(gens.begin(), gens.end(), ans) == gens.end()) {
 			markIndividuals(vspID(), false);
@@ -885,7 +885,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 	}
 
 	vectoru IDs;
-	for (unsigned ans = 0; ans <= ancestralGens(); ++ans) {
+	for (int ans = 0; ans <= ancestralGens(); ++ans) {
 		if (std::find(gens.begin(), gens.end(), ans) == gens.end())
 			continue;
 		useAncestralGen(ans);
@@ -926,20 +926,20 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
                                    const uintList & ancGens)
 {
 	// step 1: Mark eligible individuals and collect IDs
-	std::map<ULONG, int> famID;
+	std::map<size_t, ssize_t> famID;
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
-	UINT oldGen = curAncestralGen();
+	size_t oldGen = curAncestralGen();
 	// mark eligible Individuals
-	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
-		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
 			continue;
 		}
@@ -960,10 +960,10 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 				famID[toID(it->info(m_idIdx))] = -1;
 	}
 	// step 2: decide family ID
-	UINT famCount = 0;
+	size_t famCount = 0;
 	//
-	std::map<ULONG, int>::iterator it = famID.begin();
-	std::map<ULONG, int>::iterator it_end = famID.end();
+	std::map<size_t, ssize_t>::iterator it = famID.begin();
+	std::map<size_t, ssize_t>::iterator it_end = famID.end();
 	for (; it != it_end; ++it) {
 		// CASE ONE: if this guy is someone's parent, and has already been processed
 		if (it->second >= 0)
@@ -972,13 +972,13 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 		Individual * ind = m_idMap[it->first];
 		Individual * dad = NULL;
 		Individual * mom = NULL;
-		int dadFam = -2;
-		int momFam = -2;
+		ssize_t dadFam = -2;
+		ssize_t momFam = -2;
 		// try to identify father and mother....
 		if (m_fatherIdx != -1) {
-			ULONG dad_id = toID(ind->info(m_fatherIdx));
+			size_t dad_id = toID(ind->info(m_fatherIdx));
 			// ok father
-			std::map<ULONG, int>::iterator dad_fam = famID.find(dad_id);
+			std::map<size_t, ssize_t>::iterator dad_fam = famID.find(dad_id);
 			// because father exists in famID
 			if (dad_fam != famID.end()) {
 				dadFam = dad_fam->second;
@@ -986,9 +986,9 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 			}
 		}
 		if (m_motherIdx != -1) {
-			ULONG mom_id = toID(ind->info(m_motherIdx));
+			size_t mom_id = toID(ind->info(m_motherIdx));
 			// ok mother
-			std::map<ULONG, int>::iterator mom_fam = famID.find(mom_id);
+			std::map<size_t, ssize_t>::iterator mom_fam = famID.find(mom_id);
 			// because father exists in famID
 			if (mom_fam != famID.end()) {
 				momFam = mom_fam->second;
@@ -1037,12 +1037,12 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 			it->second = momFam;
 		} else {
 			// CASE NINE: we have a conflict.
-			int oldID = std::max(dadFam, momFam);
-			int newID = std::min(dadFam, momFam);
+			ssize_t oldID = std::max(dadFam, momFam);
+			ssize_t newID = std::min(dadFam, momFam);
 			// everyone with the large ID need to be converted to small ID.
 			it->second = newID;
-			std::map<ULONG, int>::iterator iit = famID.begin();
-			std::map<ULONG, int>::iterator iit_end = famID.end();
+			std::map<size_t, ssize_t>::iterator iit = famID.begin();
+			std::map<size_t, ssize_t>::iterator iit_end = famID.end();
 			for (; iit != iit_end; ++iit) {
 				if (iit->second == oldID)
 					iit->second = newID;
@@ -1057,10 +1057,10 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 	vectoru famSize(famCount, 0);
 	it = famID.begin();
 	for (; it != it_end; ++it) {
-		int famID = it->second;
+		ssize_t famID = it->second;
 		++famSize[famID];
 		if (pedIdx >= 0)
-			m_idMap[it->first]->setInfo(famID, static_cast<UINT>(pedIdx));
+			m_idMap[it->first]->setInfo(static_cast<double>(famID), static_cast<size_t>(pedIdx));
 	}
 	useAncestralGen(oldGen);
 	return famSize;
@@ -1074,16 +1074,16 @@ vectoru Pedigree::identifyAncestors(const uintList & IDs,
 	vectoru gens = ancGens.elems();
 
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
-	UINT oldGen = curAncestralGen();
+	size_t oldGen = curAncestralGen();
 	// mark eligible Individuals
-	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
-		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
 			continue;
 		}
@@ -1121,10 +1121,10 @@ vectoru Pedigree::identifyAncestors(const uintList & IDs,
 		if (start == end)
 			break;
 		for (size_t i = start; i < end; ++i) {
-			ULONG ID = res[i];
+			size_t ID = res[i];
 			// true ID starts from 1
-			ULONG father_ID = 0;
-			ULONG mother_ID = 0;
+			size_t father_ID = 0;
+			size_t mother_ID = 0;
 			try {
 				// if this ID exists
 				Individual & ind = indByID(ID);
@@ -1173,19 +1173,19 @@ vectoru Pedigree::identifyOffspring(const uintList & IDs,
                                     const uintList & ancGens)
 {
 	// record offspring of everyone
-	std::map<ULONG, vectoru> offspringMap;
+	std::map<size_t, vectoru> offspringMap;
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (UINT gen = 0; gen <= ancestralGens(); ++gen)
+		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
 	// mark eligible Individuals
-	UINT oldGen = curAncestralGen();
-	for (UINT ans = 0; ans <= ancestralGens(); ++ans) {
+	size_t oldGen = curAncestralGen();
+	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
-		if (std::find(gens.begin(), gens.end(), static_cast<UINT>(ans)) == gens.end()) {
+		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
 			continue;
 		}
@@ -1204,9 +1204,9 @@ vectoru Pedigree::identifyOffspring(const uintList & IDs,
 		for (; it != itEnd; ++it) {
 			// I am a valid offspring
 			if (it->marked()) {
-				ULONG myID = toID(it->info(m_idIdx));
-				ULONG fatherID = m_fatherIdx == -1 ? 0 : toID(it->info(m_fatherIdx));
-				ULONG motherID = m_motherIdx == -1 ? 0 : toID(it->info(m_motherIdx));
+				size_t myID = toID(it->info(m_idIdx));
+				size_t fatherID = m_fatherIdx == -1 ? 0 : toID(it->info(m_fatherIdx));
+				size_t motherID = m_motherIdx == -1 ? 0 : toID(it->info(m_motherIdx));
 				// we do not care if father or mother is valid.
 				if (fatherID) {
 					if (offspringMap.find(fatherID) == offspringMap.end())
@@ -1238,7 +1238,7 @@ vectoru Pedigree::identifyOffspring(const uintList & IDs,
 		if (start == end)
 			break;
 		for (size_t i = start; i < end; ++i) {
-			ULONG ID = res[i];
+			size_t ID = res[i];
 			if (offspringMap.find(ID) == offspringMap.end())
 				continue;
 			res.insert(res.end(), offspringMap[ID].begin(), offspringMap[ID].end());
@@ -1279,7 +1279,7 @@ void Pedigree::push(Population & pop)
 
 void Pedigree::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
                         const string & chromName, const stringMatrix & alleleNames,
-                        UINT chromType)
+                        size_t chromType)
 {
 	Population::addChrom(lociPos, lociNames, chromName, alleleNames, chromType);
 	buildIDMap();
@@ -1300,9 +1300,9 @@ void Pedigree::addIndFrom(const Population & pop)
 }
 
 
-UINT Pedigree::mergeSubPops(const uintList & subPops, const string & name)
+size_t Pedigree::mergeSubPops(const uintList & subPops, const string & name)
 {
-	UINT res = Population::mergeSubPops(subPops, name);
+	size_t res = Population::mergeSubPops(subPops, name);
 
 	buildIDMap();
 	return res;
@@ -1332,7 +1332,7 @@ struct IndInfo
 	vectorf fields;
 	vectora genotype;
 	IndInfo() : sex(MALE), parents(), offspring(), affectionStatus(false), fields(), genotype() {}
-	IndInfo(ULONG off) : sex(MALE), parents(), offspring(1, off), affectionStatus(false), fields(), genotype() {}
+	IndInfo(size_t off) : sex(MALE), parents(), offspring(1, off), affectionStatus(false), fields(), genotype() {}
 };
 
 
@@ -1342,7 +1342,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
                       const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
 {
 	initClock();
-	UINT pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<UINT>(ploidy);
+	size_t pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<size_t>(ploidy);
 	//
 	const vectorstr & infoFields = fieldList.elems();
 
@@ -1351,19 +1351,19 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			ValueError, "Parameter infoFields can only specify additional fields other than idField, fatherField and motherField.");
 	}
 	vectoru loci = _lociList.elems();
-	UINT genoCols = accumulate(loci.begin(), loci.end(), 0U) * pldy;
+	size_t genoCols = accumulate(loci.begin(), loci.end(), size_t(0)) * pldy;
 
 	ifstream input(file.c_str());
 	if (!input)
 		throw RuntimeError("Cannot open specified pedigree file " + file);
 	//
-	UINT max_parents = 0;
+	size_t max_parents = 0;
 	string line;
 	// individual and their parents
 #if TR1_SUPPORT == 0
-	typedef std::map<ULONG, IndInfo *> IdMap;
+	typedef std::map<size_t, IndInfo *> IdMap;
 #else
-	typedef std::tr1::unordered_map<ULONG, IndInfo *> IdMap;
+	typedef std::tr1::unordered_map<size_t, IndInfo *> IdMap;
 #endif
 	IdMap individuals;
 	while (getline(input, line)) {
@@ -1371,7 +1371,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			continue;
 		//
 		IndInfo * info = NULL;
-		ULONG myID = 0;
+		size_t myID = 0;
 		int part = 0;
 		char * p = strtok(const_cast<char *>(line.c_str()), " ");
 		// boost::tokenizer is proven to be too slow..... (5.5s vs. 1.5s)
@@ -1397,7 +1397,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 					++part;
 					continue;
 				} else {
-					ULONG id = atoi(q);
+					size_t id = atoi(q);
 					if (id) {
 						info->parents.push_back(id);
 						IdMap::iterator it = individuals.find(id);
@@ -1461,7 +1461,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	if (!motherField.empty() && fields.size() < max_parents + 1)
 		fields.push_back(motherField);
 	// this is the end of parental IDs and start of additional fields
-	UINT fieldIndex = fields.size();
+	size_t fieldIndex = fields.size();
 	// additional information fields
 	fields.insert(fields.end(), infoFields.begin(), infoFields.end());
 	DBG_DO(DBG_POPULATION, cerr << "Using information fields " << fields << endl);
@@ -1471,7 +1471,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			-1, chromNames, alleleNames, lociNames, subPopNames, fields);
 	}
 	//
-	typedef std::set<ULONG> IdSet;
+	typedef std::set<size_t> IdSet;
 	IdSet parents;
 	IdMap::iterator it = individuals.begin();
 	IdMap::iterator it_end = individuals.end();
@@ -1488,14 +1488,14 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	RawIndIterator ind_end = pop.rawIndEnd();
 	IdSet::iterator pit = parents.begin();
 	for (; ind != ind_end; ++ind, ++pit) {
-		ind->setInfo(*pit, 0);
+		ind->setInfo(static_cast<double>(*pit), 0);
 		const IndInfo * info = individuals.find(*pit)->second;
 		ind->setSex(info->sex);
 		ind->setAffected(info->affectionStatus);
 		for (size_t i = 0; i < infoFields.size() && i < info->fields.size(); ++i)
 			ind->setInfo(info->fields[i], i + fieldIndex);
 		for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
-			for (size_t j = 0; j < pldy; ++j, ++k)
+			for (int j = 0; j < pldy; ++j, ++k)
 				ind->setAllele(info->genotype[k], i, j);
 	}
 	DBG_DO(DBG_POPULATION, cerr << parents.size() << " individuals are located for the top-most ancestral generation" << endl);
@@ -1526,16 +1526,16 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 		ind_end = off_pop.rawIndEnd();
 		pit = offspring.begin();
 		for (; ind != ind_end; ++ind, ++pit) {
-			ind->setInfo(*pit, 0);
+			ind->setInfo(static_cast<double>(*pit), 0);
 			const IndInfo * info = individuals.find(*pit)->second;
 			for (size_t i = 0; i < info->parents.size(); ++i)
-				ind->setInfo(info->parents[i], 1 + i);
+				ind->setInfo(static_cast<double>(info->parents[i]), 1 + i);
 			ind->setSex(info->sex);
 			ind->setAffected(info->affectionStatus);
 			for (size_t i = 0; i < infoFields.size() && i < info->fields.size(); ++i)
 				ind->setInfo(info->fields[i], i + fieldIndex);
 			for (size_t i = 0, k = 0; i < genoCols / pldy; ++i)
-				for (size_t j = 0; j < pldy; ++j, ++k)
+				for (int j = 0; j < pldy; ++j, ++k)
 					ind->setAllele(info->genotype[k], i, j);
 		}
 		//

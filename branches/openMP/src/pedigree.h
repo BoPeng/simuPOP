@@ -88,7 +88,7 @@ public:
 	Pedigree(const Pedigree & rhs);
 
 	/// CPPONLY
-	ULONG idIdx() const
+	size_t idIdx() const
 	{
 		return m_idIdx;
 	}
@@ -96,7 +96,7 @@ public:
 
 	/// CPPONLY Return the ID of the father of individual id.
 	/// return 0 if id is zero or invalid, or father_idx is -1.
-	ULONG fatherOf(ULONG id) const
+	size_t fatherOf(size_t id) const
 	{
 		if (id == 0 || m_fatherIdx == -1)
 			return 0;
@@ -109,7 +109,7 @@ public:
 
 	/// CPPONLY Return the ID of the mother of individual id.
 	/// return 0 if id is zero or invalid, or mother_idx is -1.
-	ULONG motherOf(ULONG id) const
+	size_t motherOf(size_t id) const
 	{
 		if (id == 0 || m_motherIdx == -1)
 			return 0;
@@ -152,6 +152,15 @@ public:
 	 */
 	Individual & indByID(double id) const;
 
+	/** CPPONLY */
+	Individual & indByID(size_t id) const
+	{
+		IdMap::iterator it = m_idMap.find(id);
+		// if still cannot be found, raise an IndexError.
+		if (it == m_idMap.end())
+			throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+		return *it->second;
+	}
 
 	/** Return the number of parents each individual has. This function returns
 	 *  the number of information fields used to store parental indexes, even
@@ -159,7 +168,7 @@ public:
 	 *  HIDDEN
 	 *  <group>2-info</group>
 	 */
-	UINT numParents() const;
+	size_t numParents() const;
 
 	/** This function locates relatives (of type \e relType) of each individual
 	 *  and store their IDs in information fields \e relFields. The length of
@@ -320,7 +329,7 @@ public:
 	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
 		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
-		UINT chromType = AUTOSOME);
+		size_t chromType = AUTOSOME);
 
 	/** HIDDEN This function has the potential to change individuals in a
 	 *  population so the ID map needs to be rebuilt.
@@ -335,7 +344,7 @@ public:
 	/** HIDDEN This function has the potential to change individuals in a
 	 *  population so the ID map needs to be rebuilt.
 	 */
-	UINT mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
 
 	/** HIDDEN This function has the potential to change individuals in a
 	 *  population so the ID map needs to be rebuilt.
@@ -386,9 +395,9 @@ private:
 	int m_motherIdx;
 
 #if TR1_SUPPORT == 0
-	typedef std::map<ULONG, Individual *> IdMap;
+	typedef std::map<size_t, Individual *> IdMap;
 #else
-	typedef std::tr1::unordered_map<ULONG, Individual *> IdMap;
+	typedef std::tr1::unordered_map<size_t, Individual *> IdMap;
 #endif
 	mutable IdMap m_idMap;
 };

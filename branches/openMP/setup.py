@@ -476,7 +476,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         # msvc does not have O3 option, /GR is to fix a C4541 warning
         # /EHsc is for VC exception handling,
         # /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819'] 
+        # /wd4996 is used to disable warning messages of unsafe function call in boost/serialization
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996'] 
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
             res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   

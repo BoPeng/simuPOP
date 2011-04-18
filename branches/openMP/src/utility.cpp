@@ -438,7 +438,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	g_RNGs.resize(g_numThreads);
 	g_RNGs[0].set(name, seed);
 	for (size_t i = 1; i < g_RNGs.size(); i++)
-		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
+		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
 #else
 	g_RNG.set(name, seed);
 #endif
@@ -1238,10 +1238,10 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 
 	// we need to keep current parent, key/index, type (0 for array, 1 for dict)
 	// keytype (if curType = 1) (0 for string, 1 for num)
-	int curType = 1;
+	size_t curType = 1;
 	PyObject * curParent = m_dict;                            // should be always valid
 	PyObject * curKey = PyString_FromString(const_cast<char *>(name.substr(0, i).c_str()));
-	int curIdx = 0;
+	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
 	next :
@@ -1607,6 +1607,12 @@ PyObject * SharedVariables::setIntVar(const string & name, const int val)
 }
 
 
+PyObject * SharedVariables::setIntVar(const string & name, const size_t val)
+{
+	return setVar(name, PyInt_FromLong(static_cast<long>(val)));
+}
+
+
 PyObject * SharedVariables::setDoubleVar(const string & name, const double val)
 {
 	return setVar(name, PyFloat_FromDouble(val));
@@ -1633,6 +1639,19 @@ PyObject * SharedVariables::setIntVectorVar(const string & name, const vectori &
 	return setVar(name, obj);
 }
 
+PyObject * SharedVariables::setIntVectorVar(const string & name, const vectoru & val)
+{
+	PyObject * obj = PyList_New(0);
+	PyObject * item;
+
+	for (vectoru::const_iterator it = val.begin();
+	     it < val.end(); ++it) {
+		item = PyInt_FromLong(static_cast<long>(*it));
+		PyList_Append(obj, item);
+		Py_XDECREF(item);
+	}
+	return setVar(name, obj);
+}
 
 //CPPONLY
 PyObject * SharedVariables::setDoubleVectorVar(const string & name, const vectorf & val)
@@ -1680,6 +1699,22 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 }
 
 
+PyObject * SharedVariables::setIntDictVar(const string & name, const uintDict & val)
+{
+	PyObject * obj = PyDict_New();
+	PyObject * u, * v;
+
+	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
+		PyDict_SetItem(obj,
+			u = PyInt_FromLong(static_cast<long>(i->first)),
+			v = PyFloat_FromDouble(i->second));
+		Py_XDECREF(u);
+		Py_XDECREF(v);
+	}
+	return setVar(name, obj);
+}
+
+
 PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict & val)
 {
 	PyObject * obj = PyDefDict_New();
@@ -1696,6 +1731,20 @@ PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict 
 }
 
 
+PyObject * SharedVariables::setIntDefDictVar(const string & name, const uintDict & val)
+{
+	PyObject * obj = PyDefDict_New();
+	PyObject * u, * v;
+
+	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
+		PyObject_SetItem(obj,
+			u = PyInt_FromLong(static_cast<long>(i->first)),
+			v = PyFloat_FromDouble(i->second));
+		Py_XDECREF(u);
+		Py_XDECREF(v);
+	}
+	return setVar(name, obj);
+}
 PyObject * SharedVariables::setTupleDefDictVar(const string & name, const tupleDict & val)
 {
 	PyObject * obj = PyDefDict_New();
@@ -2725,7 +2774,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 	} else
 		RESETFLAG(m_flags, m_flagNoOutput);
 
-	int i;
+	ssize_t i;
 	for (i = output.size() - 1; i >= 0; --i)
 		if (output[i] == '>' || output[i] == '|')
 			break;
@@ -3142,7 +3191,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 			if (rowSum[i] > 0 && colSum[j] > 0)
 				chisq += pow(table[i][j] - rowSum[i] * colSum[j] / N, 2)
 				         / (rowSum[i] * colSum[j] / N);
-	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m - 1) * (n - 1));
+	chisq_p = 1 - gsl_cdf_chisq_P(chisq, static_cast<double>((m - 1) * (n - 1)));
 }
 
 
@@ -3201,13 +3250,13 @@ double hweTest(const vectoru & cnt)
 	// number of heterozygotes observed.
 	//
 	// (c) 2003 Jan Wigginton, Goncalo Abecasis
-	int obsAA = cnt[2];                                             // in this algorithm, AA is rare.
-	int obsAB = cnt[1];
-	int obsBB = cnt[0];
+	size_t obsAA = cnt[2];                                             // in this algorithm, AA is rare.
+	size_t obsAB = cnt[1];
+	size_t obsBB = cnt[0];
 
-	int diplotypes = obsAA + obsAB + obsBB;
-	int rare = (obsAA * 2) + obsAB;
-	int hets = obsAB;
+	size_t diplotypes = obsAA + obsAB + obsBB;
+	size_t rare = (obsAA * 2) + obsAB;
+	size_t hets = obsAB;
 
 
 	//make sure "rare" allele is really the rare allele
@@ -3222,15 +3271,15 @@ double hweTest(const vectoru & cnt)
 
 	//start at midpoint
 	//all the casting is to make sure we don't overflow ints if there are 10's of 1000's of inds
-	int mid = (int)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
+	size_t mid = (size_t)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
 
 	//check to ensure that midpoint and rare alleles have same parity
 	if (((rare & 1) ^ (mid & 1)) != 0) {
 		mid++;
 	}
-	int het = mid;
-	int hom_r = (rare - mid) / 2;
-	int hom_c = diplotypes - het - hom_r;
+	size_t het = mid;
+	size_t hom_r = (rare - mid) / 2;
+	size_t hom_c = diplotypes - het - hom_r;
 
 	//Calculate probability for each possible observed heterozygote
 	//count up to a scaling constant, to avoid underflow and overflow
@@ -3259,11 +3308,11 @@ double hweTest(const vectoru & cnt)
 		tailProbs[z] /= sum;
 
 	double top = tailProbs[hets];
-	for (int i = hets + 1; i <= rare; i++)
+	for (size_t i = hets + 1; i <= rare; i++)
 		top += tailProbs[i];
 
 	double otherSide = tailProbs[hets];
-	for (int i = hets - 1; i >= 0; i--)
+	for (ssize_t i = hets - 1; i >= 0; i--)
 		otherSide += tailProbs[i];
 
 	if (top > 0.5 && otherSide > 0.5) {
@@ -3355,7 +3404,7 @@ string formatDescription(const string & text)
 		line = string(indent * 3, ' ') + line;
 		// break lines
 		if (line.size() > 78) {
-			int lastblank = 0;
+			size_t lastblank = 0;
 			pos = 0;
 			for (size_t i = 0; i < line.size(); ++i) {
 				if (line[i] == ' ')
@@ -3375,9 +3424,9 @@ string formatDescription(const string & text)
 }
 
 
-void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N)
+void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N)
 {
-	UINT sz = last - first;
+	size_t sz = last - first;
 
 	// this is the case with unknown number of outputs
 	if (N == 0) {
@@ -3412,7 +3461,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 		}
 		// only one value
 		bool fixed = true;
-		int prevIndex = -1;
+		ssize_t prevIndex = -1;
 		for (size_t i = 0; i < sz; ++i) {
 			if (*(first + i) != 0) {
 				if (prevIndex == -1) {
@@ -3449,9 +3498,9 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 			m_a[i] = i;
 		// use two sets H and L
 		// for efficiency purpose, use a single vector.
-		ULONG * HL = new ULONG[m_N];
-		ULONG * L = HL;
-		ULONG * H = HL + m_N - 1;                                     // point to the end.
+		size_t * HL = new size_t[m_N];
+		size_t * L = HL;
+		size_t * H = HL + m_N - 1;                                     // point to the end.
 
 		for (size_t i = 0; i < m_N; ++i) {
 			if (m_q[i] > 1)
@@ -3461,7 +3510,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 		}
 
 		//
-		ULONG j, k;
+		size_t j, k;
 		while (L != HL && H != HL + m_N - 1) {
 			j = *(L - 1);
 			k = *(H + 1);
@@ -3503,7 +3552,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 }
 
 
-ULONG WeightedSampler::draw()
+size_t WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
@@ -3514,7 +3563,7 @@ ULONG WeightedSampler::draw()
 		return m_param;
 	case 2:
 		// all weights are the same
-		return getRNG().randInt(m_param);
+		return getRNG().randInt(static_cast<ULONG>(m_param));
 	case 3: {
 		double rN = getRNG().randUniform() * m_N;
 
@@ -3584,7 +3633,7 @@ Bernullitrials::~Bernullitrials()
 }
 
 
-void Bernullitrials::setParameter(const vectorf & prob, ULONG trials)
+void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 {
 	m_N = trials;
 	m_prob = prob;
@@ -3825,7 +3874,7 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
     // first block
     BitSet::const_iterator it = bs.begin() + pos;
     WORDTYPE * ptr = BITPTR(it);
-    int offset = BITOFF(it);
+    size_t offset = BITOFF(it);
     size_t i = ptr - BITPTR(bs.begin());
 
     // mask out bits before pos
@@ -4110,7 +4159,7 @@ PyObject * moduleInfo()
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
     // limits
-    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));
+    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
 
     // debug (code)
     PyObject * codes = PyDict_New();
@@ -4455,7 +4504,7 @@ bool initialize()
 }
 
 
-bool intList::match(UINT rep, const vector<bool> * activeRep) const
+bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
 {
     if (m_elems.empty())
 		return m_allAvail;

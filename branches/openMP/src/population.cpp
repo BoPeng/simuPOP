@@ -634,7 +634,7 @@ void Population::validate(const string & msg) const
 void Population::fitSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
 {
-	size_t newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
+	size_t newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), size_t(0));
 
 	bool needsResize = m_popSize != newSize;
 
@@ -719,7 +719,7 @@ void Population::setSubPopStru(const vectoru & newSubPopSizes,
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
+	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), size_t(0)) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru.");
 
 	DBG_ASSERT(newSubPopNames.empty() || newSubPopNames.size() == newSubPopSizes.size(), SystemError,
@@ -886,7 +886,7 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 			count[i] = static_cast<size_t>(sizes[i] + 0.5);
 		}
 	}
-	DBG_FAILIF(accumulate(count.begin(), count.end(), 0LU) != subPopSize(subPop), ValueError,
+	DBG_FAILIF(accumulate(count.begin(), count.end(), size_t(0)) != subPopSize(subPop), ValueError,
 		"Sum of parameter sizes should be 1 or the size of subpopulation " + toStr(subPop));
 
 	DBG_ASSERT(names.empty() || sizes.size() == names.size(), ValueError,
@@ -1007,7 +1007,7 @@ void Population::removeSubPops(const subPopList & subPops)
 	m_inds.erase(newInd, m_inds.end());
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
-	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, new_spNames);
 	//
 	GenoIterator ptr = m_genotype.begin();
@@ -1059,7 +1059,7 @@ void Population::removeMarkedIndividuals()
 	m_inds.erase(newInd, m_inds.end());
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
-	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, m_subPopNames);
 	//
 	GenoIterator ptr = m_genotype.begin();
@@ -1527,7 +1527,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
 		"Resize should give subpopulation size for each subpopulation");
 
-	size_t newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
+	size_t newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), size_t(0));
 
 	// prepare new Population
 	vector<Individual> newInds(newPopSize);
@@ -1707,7 +1707,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 			}
 		}
 	}
-	size_t sz = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	size_t sz = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	new_inds.resize(sz);
 	new_genotype.resize(sz * step);
 	new_info.resize(sz * infoStep);
@@ -1785,7 +1785,7 @@ Population & Population::extractMarkedIndividuals() const
 	pop.m_inds.swap(new_inds);
 	pop.m_genotype.swap(new_genotype);
 	pop.m_info.swap(new_info);
-	pop.m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	pop.m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	pop.setSubPopStru(new_size, m_subPopNames);
 	//
 	GenoIterator ptr = pop.m_genotype.begin();
@@ -2027,7 +2027,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 					indIdx[sp].push_back(spBegin + i);
 				}
 			}
-			size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
+			size = accumulate(spSizes.begin(), spSizes.end(), size_t(0));
 			DBG_DO(DBG_POPULATION, cerr << "New subpopulation size " << spSizes << endl);
 		}
 

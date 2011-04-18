@@ -92,7 +92,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return quantitative trait etc.
 	 */
-	virtual void qtrait(Individual *, ULONG /* gen */, vectorf & /* traits */) const
+	virtual void qtrait(Individual *, size_t /* gen */, vectorf & /* traits */) const
 	{
 		///
 		throw ValueError("This quantitative trait calculator is not supposed to be called directly");
@@ -164,7 +164,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual void qtrait(Individual * ind, ULONG gen, vectorf & traits) const;
+	virtual void qtrait(Individual * ind, size_t gen, vectorf & traits) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const

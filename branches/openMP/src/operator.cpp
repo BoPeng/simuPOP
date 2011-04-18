@@ -31,7 +31,7 @@
 
 namespace simuPOP {
 
-bool BaseOperator::isActive(UINT rep, long gen) const
+bool BaseOperator::isActive(ssize_t rep, ssize_t gen) const
 {
 	if (!m_reps.match(rep))
 		return false;
@@ -72,7 +72,7 @@ bool BaseOperator::isActive(UINT rep, long gen) const
 }
 
 
-bool BaseOperator::isActive(UINT rep, long gen, long end,
+bool BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end,
                             const vector<bool> & activeRep, bool repOnly) const
 {
 	// rep does not match
@@ -136,8 +136,8 @@ bool BaseOperator::isActive(UINT rep, long gen, long end,
 			return false;
 	}                                                                                         // know ending generation
 	else {
-		int realStartGen = m_beginGen >= 0 ? m_beginGen : m_beginGen + end + 1;
-		int realEndGen = m_endGen >= 0 ? m_endGen : m_endGen + end + 1;
+		ssize_t realStartGen = m_beginGen >= 0 ? m_beginGen : m_beginGen + end + 1;
+		ssize_t realEndGen = m_endGen >= 0 ? m_endGen : m_endGen + end + 1;
 
 		if (realStartGen > realEndGen)
 			return false;
@@ -826,7 +826,7 @@ bool TicToc::apply(Population & pop) const
 				difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
-			m_lastTime += 1. / m_countPerSec;
+			m_lastTime += static_cast<time_t>(1. / m_countPerSec);
 			++m_counter;
 		}
 	}
@@ -883,7 +883,7 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 				difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
-			m_lastTime += 1. / m_countPerSec;
+			m_lastTime += static_cast<time_t>(1. / m_countPerSec);
 			++m_counter;
 		}
 	}
@@ -1052,7 +1052,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               Population * pop, Population * offPop, int dad, int mom,
+                               Population * pop, Population * offPop, size_t dad, size_t mom,
                                const pairu & off)
 {
 	BaseOperator * opPtr = op.clone();
@@ -1060,7 +1060,7 @@ void applyDuringMatingOperator(const BaseOperator & op,
 	opPtr->initializeIfNeeded(*pop->rawIndBegin());
 #pragma omp parallel for
 	// i needs to be int since some openMP implementation does not handle unsigned index
-	for (int i = off.first; i < static_cast<int>(off.second); ++i)
+	for (int i = static_cast<int>(off.first); i < static_cast<int>(off.second); ++i)
 		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i,
 			dad < 0 ? NULL : &pop->individual(dad),
 			mom < 0 ? NULL : &pop->individual(mom));

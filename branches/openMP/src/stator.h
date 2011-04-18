@@ -410,7 +410,7 @@ private:
 #define  AlleleFreq_sp_String    "alleleFreq_sp"
 
 private:
-	typedef intDict ALLELECNT;
+	typedef uintDict ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
@@ -648,9 +648,9 @@ public:
 	bool apply(Population & pop) const;
 
 private:
-	typedef map<UINT, UINT> ALLELECNT;
+	typedef map<size_t, size_t> ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
-	typedef map<pairu, UINT> HAPLOCNT;
+	typedef map<pairu, size_t> HAPLOCNT;
 	typedef vector<HAPLOCNT> HAPLOCNTLIST;
 
 	// calculate single allele LD values
@@ -687,9 +687,9 @@ private:
 #define Armitage_p_sp_String     "Armitage_p_sp"
 
 private:
-	typedef map<Allele, ULONG>  ALLELECNT;
+	typedef map<Allele, size_t>  ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
-	typedef map<std::pair<Allele, Allele>, ULONG>  GENOCNT;
+	typedef map<std::pair<Allele, Allele>, size_t>  GENOCNT;
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:
@@ -776,18 +776,18 @@ public:
 	bool apply(Population & pop) const;
 
 private:
-	typedef map<UINT, float> FREQ;
-	typedef map<UINT, FREQ> LOCIFREQ;
+	typedef map<size_t, float> FREQ;
+	typedef map<size_t, FREQ> LOCIFREQ;
 	typedef vector<LOCIFREQ> LOCIFREQLIST;
 	typedef map<Allele, bool> ALLELES;
 	typedef vector<ALLELES> ALLELELIST;
 
 	void calcGst_Nei73(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq,
-		const ALLELELIST & alleles, double & Gst, intDict & gst) const;
+		const ALLELELIST & alleles, double & Gst, uintDict & gst) const;
 
 	void calcFst_WC84(const vectoru & loci, const vectoru & n_i, LOCIFREQLIST & alleleFreq, LOCIFREQLIST & heteroFreq,
 		const ALLELELIST & alleles, double & Fst, double & Fis, double & Fit,
-		intDict & fst, intDict & fis, intDict & fit) const;
+		uintDict & fst, uintDict & fis, uintDict & fit) const;
 
 private:
 	/// Fst
@@ -807,7 +807,7 @@ private:
 #define  HWE_sp_String  "HWE_sp"
 
 private:
-	typedef map<pairu, ULONG>  GENOCNT;
+	typedef map<pairu, size_t>  GENOCNT;
 	typedef vector<GENOCNT> GENOCNTLIST;
 
 public:

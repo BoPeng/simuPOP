@@ -40,12 +40,12 @@ bool BaseQuanTrait::apply(Population & pop) const
 
 	vectoru gens = m_ancGens.elems();
 	if (m_ancGens.allAvail())
-		for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+		for (int gen = 0; gen <= pop.ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (m_ancGens.unspecified())
 		gens.push_back(pop.curAncestralGen());
 
-	UINT oldGen = pop.curAncestralGen();
+	size_t oldGen = pop.curAncestralGen();
 	vectorf traits(infoSize());
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		pop.useAncestralGen(gens[genIdx]);
@@ -90,7 +90,7 @@ bool BaseQuanTrait::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits) const
+void PyQuanTrait::qtrait(Individual * ind, size_t gen, vectorf & traits) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -103,7 +103,7 @@ void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits) const
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(gen)));
 		else {
 			DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
 				"Only parameters 'ind', 'geno', 'gen', and names of information fields are "

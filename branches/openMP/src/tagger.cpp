@@ -52,13 +52,13 @@ bool IdTagger::apply(Population & pop) const
 {
 	DBG_DO(DBG_TAGGER, cerr << "Applying IdTagger with current ID " << g_indID << endl);
 
-	UINT idx = pop.infoIdx(infoField(0));
+	size_t idx = pop.infoIdx(infoField(0));
 
-	int curGen = pop.curAncestralGen();
+	size_t curGen = pop.curAncestralGen();
 	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
 		pop.useAncestralGen(depth);
-		for (ULONG i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
-			pop.individual(i).setInfo(g_indID++, idx);
+		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
+			pop.individual(i).setInfo(static_cast<double>(g_indID++), idx);
 	}
 	pop.useAncestralGen(curGen);
 	return true;
@@ -71,7 +71,7 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	UINT idx = pop.infoIdx(infoField(0));
+	size_t idx = pop.infoIdx(infoField(0));
 
 	(void) dad; /* avoid a warning message in optimized modules */
 	(void) mom; /* avoid a warning message in optimized modules */
@@ -83,9 +83,9 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		"Parental IDs are not unique (forgot InitInfo?)");
 #ifdef _OPENMP
 	ATOMICLONG id = fetchAndIncrement(&g_indID);
-	offspring->setInfo(id, idx);
+	offspring->setInfo(static_cast<long>(id), idx);
 #else
-	offspring->setInfo(g_indID++, idx);
+	offspring->setInfo(static_cast<long>(g_indID++), idx);
 #endif
 	return true;
 }
@@ -173,11 +173,11 @@ bool SummaryTagger::applyDuringMating(Population & /* pop */, Population & offPo
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
 		"Invalid father and mother for SummaryTagger.");
 
-	UINT sz = infoSize();
+	size_t sz = infoSize();
 
 	if (m_mode == MEAN) {
 		double all = 0;
-		UINT cnt = 0;
+		size_t cnt = 0;
 		for (size_t i = 0; i < sz - 1; ++i) {
 			if (dad != 0) {
 				all += dad->info(infoField(i));
@@ -271,12 +271,12 @@ bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 	size_t is = infoSize();
 	if (is == 1) {
 		if (dad != NULL)
-			offspring->setInfo(dad - &*pop.indIterator(), infoField(0));
+			offspring->setInfo(static_cast<double>(dad - &*pop.indIterator()), infoField(0));
 		else if (mom != NULL)
-			offspring->setInfo(mom - &*pop.indIterator(), infoField(0));
+			offspring->setInfo(static_cast<double>(mom - &*pop.indIterator()), infoField(0));
 	} else if (is == 2) {
-		offspring->setInfo(dad == NULL ? -1 : dad - &*pop.indIterator(), infoField(0));
-		offspring->setInfo(mom == NULL ? -1 : mom - &*pop.indIterator(), infoField(1));
+		offspring->setInfo(static_cast<double>(dad == NULL ? -1 : dad - &*pop.indIterator()), infoField(0));
+		offspring->setInfo(static_cast<double>(mom == NULL ? -1 : mom - &*pop.indIterator()), infoField(1));
 	}
 	return true;
 }
@@ -317,12 +317,12 @@ void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
 			out << ' ' << ind->info(fields[i]);
 	}
 	if (m_outputLoci.allAvail()) {
-		UINT pldy = ind->ploidy();
+		size_t pldy = ind->ploidy();
 		for (size_t i = 0; i < ind->totNumLoci(); ++i)
 			for (size_t p = 0; p < pldy; ++p)
 				out << ' ' << ind->allele(i, p);
 	} else if (!m_outputLoci.elems().empty()) {
-		UINT pldy = ind->ploidy();
+		size_t pldy = ind->ploidy();
 		const vectoru & loci = m_outputLoci.elems();
 		for (size_t i = 0; i < loci.size(); ++i)
 			for (size_t p = 0; p < pldy; ++p)
@@ -338,7 +338,7 @@ bool PedigreeTagger::apply(Population & pop) const
 		return true;
 
 	//an ID map
-	std::map<ULONG, int> idMap;
+	std::map<size_t, int> idMap;
 
 	ostream & out = getOstream(pop.dict());
 	size_t is = infoSize();
@@ -347,14 +347,14 @@ bool PedigreeTagger::apply(Population & pop) const
 	for (size_t i = 0; i < infoSize(); ++i)
 		idx[i] = pop.infoIdx(infoField(i));
 
-	UINT idIdx = pop.infoIdx(m_idField);
-	int curGen = pop.curAncestralGen();
+	size_t idIdx = pop.infoIdx(m_idField);
+	size_t curGen = pop.curAncestralGen();
 	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
 		pop.useAncestralGen(depth);
 		ConstRawIndIterator it = pop.rawIndBegin();
 		ConstRawIndIterator it_end = pop.rawIndEnd();
 		for (; it != it_end; ++it) {
-			ULONG myID = toID(it->info(idIdx));
+			size_t myID = toID(it->info(idIdx));
 			idMap[myID] = 1;
 			for (size_t i = 0; i < is; ++i) {
 				IDs[i] = it->info(idx[i]);
@@ -378,7 +378,7 @@ bool PedigreeTagger::applyDuringMating(Population & pop, Population & offPop, Ra
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
 
-	UINT idIdx = pop.infoIdx(m_idField);
+	size_t idIdx = pop.infoIdx(m_idField);
 	// record to one or two information fields
 	size_t is = infoSize();
 	vectorf IDs(is);

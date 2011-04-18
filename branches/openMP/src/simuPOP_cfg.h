@@ -103,7 +103,7 @@ using std::string;
 /// This is not the most effecient method, but it is convenient to use.
 #include "boost/lexical_cast.hpp"
 #define toStr(val) (boost::lexical_cast < string > (val))
-#define toID(val)  (static_cast<ULONG>((val) + 0.5))
+#define toID(val)  (static_cast<size_t>((val) + 0.5))
 
 /// needed by the following typedefs
 #include <vector>
@@ -327,7 +327,7 @@ typedef std::vector<Allele>                vectora;
 typedef std::vector<size_t>                vectoru;
 typedef std::vector<std::string>           vectorstr;
 typedef std::pair<size_t, size_t>            pairu;
-typedef std::vector<std::vector<int > >    matrixi;
+typedef std::vector<std::vector<int > >     matrixi;
 typedef std::vector<std::vector<std::string > >    matrixstr;
 typedef std::vector<std::vector<double > > matrixf;
 
@@ -336,6 +336,7 @@ using std::map;
 typedef std::map<string, double>           strDict;
 // indDict is currently not defined in simuPOP_common.i
 typedef std::map<int, double>              intDict;
+typedef std::map<size_t, double>           uintDict;
 typedef std::map<vectori, double>          tupleDict;
 
 #define ValidPyObject(obj)   (obj != NULL && obj != Py_None)

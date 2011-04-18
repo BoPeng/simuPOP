@@ -311,13 +311,13 @@ public:
 	 *  after \e locus2.
 	 *  <group>3-locus</group>
 	 */
-	double lociDist(UINT locus1, UINT locus2) const;
+	double lociDist(size_t locus1, size_t locus2) const;
 
 	/** HIDDEN
 	 * return the number of loci left on that chromosome, including locus \c loc
 	 *  <group>3-locus</group>
 	 */
-	size_t lociLeft(UINT locus) const;
+	size_t lociLeft(size_t locus) const;
 
 	/** HIDDEN
 	 *  Distance between locus \c locus and the last locus that is on the same

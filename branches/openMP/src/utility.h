@@ -261,7 +261,7 @@ public:
 
 	/// return number of arguments this function accepts.
 	/// This function does not count tuple parameters.
-	int numArgs() const
+	size_t numArgs() const
 	{
 		return m_numArgs;
 	}
@@ -273,7 +273,7 @@ public:
 	}
 
 
-	string arg(int arg) const
+	string arg(size_t arg) const
 	{
 		return m_args[arg];
 	}
@@ -369,7 +369,7 @@ private:
 
 	string m_name;
 
-	long int m_numArgs;
+	size_t m_numArgs;
 
 	vectorstr m_args;
 
@@ -439,7 +439,7 @@ public:
 
 
 	/// CPPONLY
-	bool match(UINT rep, const vector<bool> * activeRep = NULL) const;
+	bool match(ssize_t rep, const vector<bool> * activeRep = NULL) const;
 
 private:
 	vectori m_elems;
@@ -1051,6 +1051,9 @@ public:
 	PyObject * setIntVar(const string & name, const int val);
 
 	///CPPONLY
+	PyObject * setIntVar(const string & name, const size_t val);
+
+	///CPPONLY
 	PyObject * setDoubleVar(const string & name, const double val);
 
 	///CPPONLY
@@ -1058,6 +1061,9 @@ public:
 
 	///CPPONLY
 	PyObject * setIntVectorVar(const string & name, const vectori & val);
+
+	///CPPONLY
+	PyObject * setIntVectorVar(const string & name, const vectoru & val);
 
 	///CPPONLY
 	PyObject * setDoubleVectorVar(const string & name, const vectorf & val);
@@ -1069,7 +1075,13 @@ public:
 	PyObject * setIntDictVar(const string & name, const intDict & val);
 
 	///CPPONLY
+	PyObject * setIntDictVar(const string & name, const uintDict & val);
+
+	///CPPONLY
 	PyObject * setIntDefDictVar(const string & name, const intDict & val);
+
+	///CPPONLY
+	PyObject * setIntDefDictVar(const string & name, const uintDict & val);
 
 	///CPPONLY
 	PyObject * setTupleDefDictVar(const string & name, const tupleDict & val);
@@ -1884,12 +1896,12 @@ public:
 	/** CPPONLY
 	 *  Set parameters for the weighted sampler.
 	 */
-	void set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N = 0);
+	void set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N = 0);
 
 	/** Returns a random number between \c 0 and \c k-1 with probabilities that
 	 *  are proportional to specified weights.
 	 */
-	ULONG draw();
+	size_t draw();
 
 	/** Returns a list of \e n random numbers
 	 */
@@ -1909,7 +1921,7 @@ private:
 	vectoru m_a;
 
 	///
-	ULONG m_param;
+	size_t m_param;
 
 	///
 	vectoru m_sequence;
@@ -1970,7 +1982,7 @@ public:
 	/** CPPONLY
 	 * return size of trial
 	 */
-	ULONG trialSize() const
+	size_t trialSize() const
 	{
 		return m_N;
 	}
@@ -1983,7 +1995,7 @@ public:
 
 
 	/// CPPONLY
-	void setParameter(const vectorf & prob, ULONG trials);
+	void setParameter(const vectorf & prob, size_t trials);
 
 	/// generate the trial table, reset m_cur
 	void doTrial();
@@ -2035,7 +2047,7 @@ private:
 	RNG * m_RNG;
 
 	/// number of trials.
-	ULONG m_N;
+	size_t m_N;
 
 	/// vector of probabilities
 	vectorf m_prob;

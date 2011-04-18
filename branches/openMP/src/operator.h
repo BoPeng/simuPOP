@@ -178,11 +178,11 @@ public:
 	   replicate, current generation, ending generation etc.
 	   \note This function will be called by Simulators before applying.
 	 */
-	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false) const;
+	bool isActive(size_t rep, ssize_t gen, ssize_t end, const vector<bool> & activeRep, bool repOnly = false) const;
 
 	/** CPPONLY Another version of isActive when negative gen is not considered.
 	 */
-	bool isActive(UINT rep, long gen) const;
+	bool isActive(ssize_t rep, ssize_t gen) const;
 
 	//@}
 
