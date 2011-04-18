@@ -461,9 +461,6 @@ private:
 
 	friend class boost::serialization::access;
 
-// used to reduce warning message from
-// boost/archive/text_oarchive.hpp(64): warning #191: type qualifier is meaningless on cast type
-#pragma warning (disable:191)
 	template<class Archive>
 	void save(Archive & ar, const UINT /* version */) const
 	{

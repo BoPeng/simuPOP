@@ -487,9 +487,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         if USE_OPENMP:
             res['extra_compile_args'].append('-openmp' if USE_ICC else '-fopenmp')
     # if Intel ICC is used, turn off remark 981
-    if os.getenv('CC', '').endswith('icc') or \
-        (get_config_var('CC') is not None and 'icc' in get_config_var('CC')):
-        res['extra_compile_args'].append('-wd981')
+    if USE_ICC:
+        res['extra_compile_args'].extend(['-wd981', '-wd191'])
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])

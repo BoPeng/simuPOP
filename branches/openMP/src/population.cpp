@@ -2712,9 +2712,6 @@ void Population::save(const string & filename) const
 	if (!ofs)
 		throw ValueError("Can not open file " + filename);
 
-// used to reduce warning message from
-// boost/archive/text_oarchive.hpp(64): warning #191: type qualifier is meaningless on cast type
-#pragma warning (disable:191)
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
 }
