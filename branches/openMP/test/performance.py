@@ -159,6 +159,29 @@ class TestBasicRandomMating(PerformanceTest):
         )
         return gens
 
+class TestRandomSelection(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Random selection scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomSelection(ops=CloneGenoTransmitter()),
+        )
+        return gens
+
+
 class TestIdTagger(PerformanceTest):
     def __init__(self, logger, time=30):
         PerformanceTest.__init__(self, 'Test idTagger, results are number of generations in %d seconds.' % int(time),
