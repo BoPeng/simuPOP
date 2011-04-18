@@ -66,13 +66,15 @@ bool IdTagger::apply(Population & pop) const
 
 
 bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                 Individual * /* dad */, Individual * /* mom */) const
+                                 Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	UINT idx = pop.infoIdx(infoField(0));
 
+	(void) dad; /* avoid a warning message in optimized modules */
+	(void) mom; /* avoid a warning message in optimized modules */
 	DBG_FAILIF(dad != NULL && dad->info(idx) >= g_indID, RuntimeError,
 		"Paternal ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,
