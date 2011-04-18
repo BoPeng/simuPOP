@@ -25,11 +25,6 @@
 
 #include "simulator.h"
 
-// for file compression
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/device/file.hpp>
-
 using std::ostringstream;
 
 namespace simuPOP {

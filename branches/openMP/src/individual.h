@@ -35,13 +35,6 @@
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/tracking.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-
 #include <iterator>
 using std::ostream;
 using std::ostream_iterator;
@@ -468,6 +461,9 @@ private:
 
 	friend class boost::serialization::access;
 
+// used to reduce warning message from
+// boost/archive/text_oarchive.hpp(64): warning #191: type qualifier is meaningless on cast type
+#pragma warning (disable:191)
 	template<class Archive>
 	void save(Archive & ar, const UINT /* version */) const
 	{

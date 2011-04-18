@@ -481,7 +481,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         if USE_OPENMP:
             res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   
     else:
-        res['extra_compile_args'] = ['-O3', '-Wall', '-Wextra']
+        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas']
+        if not USE_ICC:   # for gcc, turn on extra warning message
+            res['extra_compile_args'].append('-Wextra')
         if USE_OPENMP:
             res['extra_compile_args'].append('-openmp' if USE_ICC else '-fopenmp')
     # if Intel ICC is used, turn off remark 981

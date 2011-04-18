@@ -1052,7 +1052,7 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 			--famCount;
 		}
 	}
-	int pedIdx = pedField.empty() ? -1 : infoIdx(pedField);
+	int pedIdx = pedField.empty() ? -1 : static_cast<int>(infoIdx(pedField));
 	// return result
 	vectoru famSize(famCount, 0);
 	it = famID.begin();
