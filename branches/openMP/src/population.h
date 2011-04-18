@@ -437,7 +437,7 @@ public:
 	{
 		if (ancGen < 0 || static_cast<size_t>(ancGen) == m_curAncestralGen)
 			return m_subPopSize;
-		DBG_FAILIF(static_cast<size_t>(ancGen) > ancestralGens(),
+		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 			+ toStr(ancestralGens()));
 		return m_ancestralPops[ancGen - 1].m_subPopSize;
@@ -458,7 +458,7 @@ public:
 	{
 		if (ancGen < 0 || static_cast<size_t>(ancGen) == m_curAncestralGen)
 			return m_popSize;
-		DBG_FAILIF(static_cast<size_t>(ancGen) > ancestralGens(),
+		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 			+ toStr(ancestralGens()));
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;

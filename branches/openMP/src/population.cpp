@@ -356,7 +356,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
@@ -447,7 +447,7 @@ Individual & Population::ancestor(double fidx, size_t gen, vspID vsp)
 			IndexError, "individual index out of range");
 		size_t shift = 0;
 		if (subPop > 0) {
-			for (int i = 0; i < subPop; ++i)
+			for (size_t i = 0; i < subPop; ++i)
 				shift += m_ancestralPops[genIdx].m_subPopSize[i];
 		}
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
@@ -484,7 +484,7 @@ const Individual & Population::ancestor(double fidx, size_t gen, vspID vsp) cons
 			IndexError, "individual index out of range");
 		size_t shift = 0;
 		if (subPop > 0) {
-			for (int i = 0; i < subPop; ++i)
+			for (size_t i = 0; i < subPop; ++i)
 				shift += m_ancestralPops[genIdx].m_subPopSize[i];
 		}
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
@@ -746,7 +746,7 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 	if (!subPop.valid())
 		return popSize(ancGen);
 
-	DBG_FAILIF(ancGen > 0 && static_cast<size_t>(ancGen) > ancestralGens(),
+	DBG_FAILIF(ancGen > ancestralGens(),
 		IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 		+ toStr(ancestralGens()));
 
@@ -1120,7 +1120,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 		PyObject * args = PyTuple_New(func.numArgs());
 		//
 		vectoru pars(func.numArgs());
-		for (int i = 0; i < func.numArgs(); ++i) {
+		for (size_t i = 0; i < func.numArgs(); ++i) {
 			const string & arg = func.arg(i);
 			if (arg == "ind")
 				pars[i] = -1;
@@ -1138,7 +1138,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 			RawIndIterator it = rawIndBegin();
 			RawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				for (int i = 0; i < func.numArgs(); ++i) {
+				for (size_t i = 0; i < func.numArgs(); ++i) {
 					if (pars[i] < 0)
 						PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
 					else
@@ -1852,7 +1852,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		pyFunc func(filter);
 		PyObject * args = PyTuple_New(func.numArgs());
 		vectori pars(func.numArgs());
-		for (int i = 0; i < func.numArgs(); ++i) {
+		for (size_t i = 0; i < func.numArgs(); ++i) {
 			const string & arg = func.arg(i);
 			if (arg == "ind")
 				pars[i] = -1;
@@ -1870,7 +1870,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 			ConstRawIndIterator it = rawIndBegin();
 			ConstRawIndIterator itEnd = rawIndEnd();
 			for (; it != itEnd; ++it) {
-				for (int i = 0; i < func.numArgs(); ++i) {
+				for (size_t i = 0; i < func.numArgs(); ++i) {
 					if (pars[i] < 0)
 						PyTuple_SET_ITEM(args, i, pyIndObj(
 								static_cast<void *>(const_cast<Individual *>(&*it))));
@@ -1992,7 +1992,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 	//
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);
@@ -2282,7 +2282,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 			PyObject * args = PyTuple_New(func.numArgs());
 			int alleleIndex = -1;
 			int locusIndex = -1;
-			for (int i = 0; i < func.numArgs(); ++i) {
+			for (size_t i = 0; i < func.numArgs(); ++i) {
 				const string & arg = func.arg(i);
 				if (arg == "allele")
 					alleleIndex = i;
@@ -2540,7 +2540,7 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 	vectoru gens = ancGens.elems();
 
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(m_curAncestralGen);

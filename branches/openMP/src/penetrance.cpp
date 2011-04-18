@@ -43,7 +43,7 @@ bool BasePenetrance::apply(Population & pop) const
 
 	vectoru gens = m_ancGens.elems();
 	if (m_ancGens.allAvail())
-		for (size_t gen = 0; gen <= pop.ancestralGens(); ++gen)
+		for (int gen = 0; gen <= pop.ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (m_ancGens.unspecified())
 		gens.push_back(pop.curAncestralGen());
@@ -290,7 +290,7 @@ double PyPenetrance::penet(Population * pop, Individual * ind) const
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "ind")
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));

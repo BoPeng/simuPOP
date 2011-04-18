@@ -342,7 +342,7 @@ void PyMutator::mutate(AlleleRef allele, size_t) const
 
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "allele")
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));

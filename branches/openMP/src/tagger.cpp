@@ -414,7 +414,7 @@ bool PyTagger::applyDuringMating(Population & /* pop */, Population & offPop, Ra
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 
 		PyObject * item = PyTuple_New((dad != NULL) + (mom != NULL));

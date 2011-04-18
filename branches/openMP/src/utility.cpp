@@ -807,7 +807,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 			// in this case, a WithArgs object must have been passed.
 			PyObject * args = PyObject_GetAttrString(obj, "__args__");
 			m_numArgs = PySequence_Size(args);
-			for (int i = 0; i < m_numArgs; ++i) {
+			for (size_t i = 0; i < m_numArgs; ++i) {
 				PyObject * item = PySequence_GetItem(args, i);
 				DBG_ASSERT(PyString_Check(item), ValueError,
 					"Attribute args in a simuPOP WithArgs object should be a list of strings");
@@ -885,7 +885,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
 	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
 	DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
-	for (int i = 0; i < m_numArgs; ++i) {
+	for (size_t i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(PyObj_AsString(item));
 	}

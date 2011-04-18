@@ -950,7 +950,7 @@ size_t ProportionSplitter::size(const Population & pop, size_t subPop, size_t vi
 	size_t size = pop.subPopSize(subPop);
 	size_t spSize = size;
 	// virtualSubPop == m_proportions.size() - 1
-	for (int i = 0; i < virtualSubPop; ++i)
+	for (size_t i = 0; i < virtualSubPop; ++i)
 		spSize -= static_cast<size_t>(size * m_proportions[i]);
 	return spSize;
 }

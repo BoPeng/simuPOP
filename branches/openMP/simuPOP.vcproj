@@ -188,10 +188,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/wd4996"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".;gsl;boost_1_45_0;win32;&quot;win32\zlib-1.2.3&quot;;C:\Python27\include"
-				PreprocessorDefinitions="BOOST_ALL_NO_LIB;STANDALONE_EXECUTABLE;SIMUPOP_MODULE=simuPOP_std;_SECURE_SCL=1;_HAS_ITERATOR_DEBUGGING=2;SIMUPOP_VER=1.0.6;SIMUPOP_REV=9999"
+				PreprocessorDefinitions="BOOST_ALL_NO_LIB;STANDALONE_EXECUTABLE;SIMUPOP_MODULE=simuPOP_std;_SECURE_SCL=1;SIMUPOP_VER=1.0.6;SIMUPOP_REV=9999"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				OpenMP="true"

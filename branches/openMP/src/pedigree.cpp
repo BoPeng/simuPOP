@@ -240,7 +240,7 @@ void Pedigree::locateRelatives(RelativeType relType, const vectorstr & resultFie
 	size_t oldGen = curAncestralGen();
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
@@ -733,7 +733,7 @@ bool Pedigree::traceRelatives(const stringMatrix & fieldPath,
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
@@ -860,7 +860,7 @@ vectoru Pedigree::individualsWithRelatives(const stringList & infoFieldList, con
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
@@ -930,14 +930,14 @@ vectoru Pedigree::identifyFamilies(const string & pedField, const subPopList & s
 
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
 	size_t oldGen = curAncestralGen();
 	// mark eligible Individuals
-	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
+	for (int ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
 		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
@@ -1074,14 +1074,14 @@ vectoru Pedigree::identifyAncestors(const uintList & IDs,
 	vectoru gens = ancGens.elems();
 
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
 	size_t oldGen = curAncestralGen();
 	// mark eligible Individuals
-	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
+	for (int ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
 		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
@@ -1176,14 +1176,14 @@ vectoru Pedigree::identifyOffspring(const uintList & IDs,
 	std::map<size_t, vectoru> offspringMap;
 	vectoru gens = ancGens.elems();
 	if (ancGens.allAvail())
-		for (size_t gen = 0; gen <= ancestralGens(); ++gen)
+		for (int gen = 0; gen <= ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (ancGens.unspecified())
 		gens.push_back(curAncestralGen());
 
 	// mark eligible Individuals
 	size_t oldGen = curAncestralGen();
-	for (size_t ans = 0; ans <= ancestralGens(); ++ans) {
+	for (int ans = 0; ans <= ancestralGens(); ++ans) {
 		useAncestralGen(ans);
 		if (std::find(gens.begin(), gens.end(), static_cast<size_t>(ans)) == gens.end()) {
 			markIndividuals(vspID(), false);
@@ -1342,7 +1342,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
                       const stringList & lociNames, const stringList & subPopNames, const stringList & fieldList)
 {
 	initClock();
-	size_t pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<size_t>(ploidy);
+	int pldy = ploidy == HAPLODIPLOID ? 2 : static_cast<int>(ploidy);
 	//
 	const vectorstr & infoFields = fieldList.elems();
 

@@ -1098,7 +1098,7 @@ void PyParentsChooser::initialize(Population & pop, size_t sp)
 
 	PyObject * args = PyTuple_New(m_func.numArgs());
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, m_popObj);
@@ -1209,7 +1209,7 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 		PyObject * args = PyTuple_New(func.numArgs());
 		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-		for (int i = 0; i < func.numArgs(); ++i) {
+		for (size_t i = 0; i < func.numArgs(); ++i) {
 			const string & arg = func.arg(i);
 			if (arg == "gen")
 				PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(pop.gen())));

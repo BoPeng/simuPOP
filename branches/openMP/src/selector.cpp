@@ -228,7 +228,7 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "ind")
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));

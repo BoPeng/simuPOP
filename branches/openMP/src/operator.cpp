@@ -454,7 +454,7 @@ bool IfElse::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 
 		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-		for (int i = 0; i < m_func.numArgs(); ++i) {
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
 			const string & arg = m_func.arg(i);
 			if (arg == "pop")
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
@@ -514,7 +514,7 @@ bool IfElse::apply(Population & pop) const
 
 		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-		for (int i = 0; i < m_func.numArgs(); ++i) {
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
 			const string & arg = m_func.arg(i);
 			if (arg == "pop")
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
@@ -643,7 +643,7 @@ bool DiscardIf::apply(Population & pop) const
 
 				DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-				for (int i = 0; i < m_func.numArgs(); ++i) {
+				for (size_t i = 0; i < m_func.numArgs(); ++i) {
 					const string & arg = m_func.arg(i);
 					if (arg == "pop")
 						PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
@@ -731,7 +731,7 @@ bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndI
 
 		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-		for (int i = 0; i < m_func.numArgs(); ++i) {
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
 			const string & arg = m_func.arg(i);
 			if (arg == "pop")
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
@@ -942,7 +942,7 @@ bool PyOperator::apply(Population & pop) const
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
 	bool popMode = true;
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		if (m_func.arg(i) == "ind") {
 			popMode = false;
 			break;
@@ -950,7 +950,7 @@ bool PyOperator::apply(Population & pop) const
 	}
 	// when the operator is applied to the whole population.
 	if (popMode) {
-		for (int i = 0; i < m_func.numArgs(); ++i) {
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
 			const string & arg = m_func.arg(i);
 			if (arg == "pop")
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
@@ -984,7 +984,7 @@ bool PyOperator::apply(Population & pop) const
 
 			DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-			for (int i = 0; i < m_func.numArgs(); ++i) {
+			for (size_t i = 0; i < m_func.numArgs(); ++i) {
 				const string & arg = m_func.arg(i);
 				if (arg == "ind")
 					PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*it)));
@@ -1024,7 +1024,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
