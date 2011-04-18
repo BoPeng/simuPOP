@@ -617,7 +617,7 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	virtual void initialize(const Population & pop, SubPopID subPop);
+	virtual void initialize(const Population & pop, size_t subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
@@ -722,7 +722,7 @@ public:
 	ControlledOffspringGenerator(const ControlledOffspringGenerator & rhs);
 
 	/// CPPONLY
-	void initialize(const Population & pop, SubPopID subPop);
+	void initialize(const Population & pop, size_t subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
@@ -789,12 +789,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void initialize(Population & /* pop */, SubPopID /* subPop */)
+	virtual void initialize(Population & /* pop */, size_t /* subPop */)
 	{
 	}
 
 	/// CPPONLY
-	virtual void finalize(Population & /* pop */, SubPopID /* subPop */)
+	virtual void finalize(Population & /* pop */, size_t /* subPop */)
 	{
 		m_initialized = false;
 	}
@@ -877,7 +877,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -951,7 +951,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1027,7 +1027,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1102,7 +1102,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1197,7 +1197,7 @@ private:
 
 
    /// CPPONLY
-   void initialize(Population & pop, SubPopID sp);
+   void initialize(Population & pop, size_t sp);
 
    /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
    IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1270,10 +1270,10 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, SubPopID sp);
+	void finalize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1332,10 +1332,10 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, SubPopID sp);
+	void finalize(Population & pop, size_t sp);
 
 	/// destructor
 	~PyParentsChooser()
@@ -1417,7 +1417,7 @@ public:
 	 *  mate a subpopulation, called by mate().
 	 */
 	virtual bool mateSubPop(Population & /* pop */, Population & /* offPop */,
-				SubPopID /* subPop */,
+				size_t /* subPop */,
 	                        RawIndIterator /* offBegin */, RawIndIterator /* offEnd */)
 	{
 		return true;
@@ -1528,7 +1528,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, Population & offPop, size_t subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:

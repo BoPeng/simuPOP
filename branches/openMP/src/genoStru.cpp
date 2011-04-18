@@ -229,7 +229,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	// check if the type is valid.
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		UINT type = m_chromTypes[i];
+		size_t type = m_chromTypes[i];
 		DBG_ASSERT(type == AUTOSOME || type == CHROMOSOME_X || type == CHROMOSOME_Y || type == CUSTOMIZED,
 			ValueError, "Chromsome type can only be one of AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y and CUSTOMIZED.");
 	}
@@ -262,7 +262,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 			DBG_FAILIF(!m_customized.empty() && m_customized.back() != i - 1,
 				ValueError,
 				"There can be several customized chromosmes, but they need to be adjacent to each other.");
-			m_customized.push_back(i);
+			m_customized.push_back(static_cast<ULONG>(i));
 		}
 	}
 }
@@ -282,11 +282,11 @@ double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
 }
 
 
-UINT GenoStruTrait::lociLeft(UINT loc) const
+size_t GenoStruTrait::lociLeft(UINT loc) const
 {
 	CHECKRANGEABSLOCUS(loc);
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i)
+	for (size_t i = 1, iEnd = numChrom(); i <= iEnd; ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
 			return s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - loc;
 	DBG_ASSERT(false, SystemError, "This should not be reached.");
@@ -294,11 +294,11 @@ UINT GenoStruTrait::lociLeft(UINT loc) const
 }
 
 
-double GenoStruTrait::distLeft(UINT loc) const
+double GenoStruTrait::distLeft(size_t loc) const
 {
 	CHECKRANGEABSLOCUS(loc);
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i)
+	for (size_t i = 1, iEnd = numChrom(); i <= iEnd; ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
 			return locusPos(s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - 1) - locusPos(loc);
 	DBG_ASSERT(false, SystemError, "This should not be reached.");
@@ -306,15 +306,15 @@ double GenoStruTrait::distLeft(UINT loc) const
 }
 
 
-UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
+size_t GenoStruTrait::lociCovered(size_t loc, double dist) const
 {
 	DBG_FAILIF(fcmp_lt(dist, 0.), ValueError,
 		"Distance has to be positive in function lociCovered");
 
 	const vectorf & lociPos = s_genoStruRepository[m_genoStruIdx].m_lociPos;
 
-	int chrom = chromLocusPair(loc).first;
-	UINT endLoc = chromEnd(chrom);
+	size_t chrom = chromLocusPair(loc).first;
+	size_t endLoc = chromEnd(chrom);
 	double beginPos = lociPos[loc];
 
 	for (size_t i = loc + 1; i < endLoc; ++i)
@@ -375,7 +375,7 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	DBG_DO(DBG_POPULATION, cerr << "Adding an geno structure. (tot size: "
 		                        << s_genoStruRepository.size() << ")" << endl);
 	// the last one.
-	m_genoStruIdx = s_genoStruRepository.size() - 1;
+	m_genoStruIdx = static_cast<TraitIndexType>(s_genoStruRepository.size() - 1);
 	// increase reference count
 	incGenoStruRef();
 }
@@ -579,7 +579,7 @@ const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & kept)
 	vectoru::const_iterator loc = kept.begin();
 
 	for (; loc != kept.end(); ++loc) {
-		UINT ch = chromLocusPair(*loc).first;
+		size_t ch = chromLocusPair(*loc).first;
 		numLoci[ch]++;
 		lociPos.push_back(locusPos(*loc));
 		if (!gs.m_lociNames.empty()) {
@@ -598,7 +598,7 @@ const GenoStructure GenoStruTrait::gsRemoveLoci(const vectoru & kept)
 
 
 const GenoStructure GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectorstr & lociNames,
-                                              const string & chromName, const matrixstr & alleleNames, UINT chromType) const
+                                              const string & chromName, const matrixstr & alleleNames, size_t chromType) const
 {
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
 		"Please specify locus name for all inserted loci.");
@@ -735,7 +735,7 @@ const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vector
 	vectoru newLoci = gs.m_numLoci;
 	vectorf newLociPos = gs.m_lociPos;
 	for (size_t i = 0; i < lociPos.size(); ++i) {
-		ULONG ch = chrom[i];
+		size_t ch = chrom[i];
 		double pos = lociPos[i];
 		string name = lociNames.empty() ? string() : lociNames[i];
 		vectorstr alleleName = alleleNames.size() > 1 ? alleleNames[i] : (alleleNames.size() == 1 ? alleleNames[0] : vectorstr());
@@ -783,7 +783,7 @@ const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vector
 		newLociPos, gs.m_chromNames, newAlleleNames, newLociNames, gs.m_infoFields);
 	newIndex.clear();
 	for (size_t i = 0; i < lociPos.size(); ++i) {
-		ULONG ch = chrom[i];
+		size_t ch = chrom[i];
 		double pos = lociPos[i];
 		newIndex.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
 				ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
@@ -813,13 +813,13 @@ string GenoStruTrait::ploidyName() const
 }
 
 
-pairu GenoStruTrait::chromLocusPair(UINT locus) const
+pairu GenoStruTrait::chromLocusPair(size_t locus) const
 {
 	CHECKRANGEABSLOCUS(locus);
 
 	pairu loc;
 
-	for (UINT i = 1, iEnd = numChrom(); i <= iEnd; ++i) {
+	for (size_t i = 1, iEnd = numChrom(); i <= iEnd; ++i) {
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > locus) {
 			loc.first = i - 1;
 			loc.second = locus - s_genoStruRepository[m_genoStruIdx].m_chromIndex[i - 1];
@@ -830,7 +830,7 @@ pairu GenoStruTrait::chromLocusPair(UINT locus) const
 }
 
 
-string GenoStruTrait::alleleName(const UINT allele, const UINT locus) const
+string GenoStruTrait::alleleName(const UINT allele, const size_t locus) const
 {
 	DBG_FAILIF(allele > ModuleMaxAllele,
 		IndexError, "Allele " + toStr(allele) + " out of range of 0 ~ " +
@@ -850,12 +850,12 @@ vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
 {
 	vectoru indexes(names.size());
 
-	const map<string, UINT> & nameMap = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
+	const map<string, size_t> & nameMap = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
 
 	vectorstr::const_iterator name = names.begin();
 	vectorstr::const_iterator nameEnd = names.end();
 	for (size_t i = 0; name != nameEnd; ++name, ++i) {
-		map<string, UINT>::const_iterator it = nameMap.find(*name);
+		map<string, size_t>::const_iterator it = nameMap.find(*name);
 
 		if (it == nameMap.end())
 			throw ValueError("Failed to find locus with name " + *name);
@@ -867,7 +867,7 @@ vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
 }
 
 
-vectorstr GenoStruTrait::alleleNames(const UINT locus) const
+vectorstr GenoStruTrait::alleleNames(const size_t locus) const
 {
 	const matrixstr & names = s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 

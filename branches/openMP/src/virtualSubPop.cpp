@@ -1,7 +1,7 @@
 /**
  *  $File: virtualSubPop.cpp $
- *  $LastChangedDate: 2010-01-14 21:43:45 -0600 (Wed, 14 Jan 2010) $
- *  $Rev: 2335 $
+ *  $LastChangedDate$
+ *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
  *  simulation environment. Please visit http://simupop.sourceforge.net
@@ -95,8 +95,8 @@ vspID::vspID(PyObject * obj) : m_subPop(InvalidSubPopID), m_virtualSubPop(Invali
 
 vspID vspID::resolve(const Population & pop) const
 {
-	SubPopID sp = m_subPop;
-	SubPopID vsp = m_virtualSubPop;
+	size_t sp = m_subPop;
+	size_t vsp = m_virtualSubPop;
 
 	if (!m_spName.empty())
 		sp = pop.subPopByName(m_spName);
@@ -162,7 +162,7 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 					throw ValueError("Invalid subpopulation ID");
 				}
 				PyObject * sp = PySequence_GetItem(item, 0);
-				SubPopID sp_id(InvalidSubPopID);
+				size_t sp_id(InvalidSubPopID);
 				string sp_name;
 				if (PyNumber_Check(sp))
 					sp_id = PyInt_AsLong(sp);
@@ -183,7 +183,7 @@ subPopList::subPopList(PyObject * obj) : m_subPops(), m_allAvail(false)
 					m_subPops[i] = vspID(sp_id, InvalidSubPopID, sp == Py_True, false, sp_name);
 				} else {
 					PyObject * vsp = PySequence_GetItem(item, 1);
-					SubPopID vsp_id(InvalidSubPopID);
+					size_t vsp_id(InvalidSubPopID);
 					string vsp_name;
 					if (PyNumber_Check(vsp))
 						vsp_id = PyInt_AsLong(vsp);
@@ -258,7 +258,7 @@ subPopList subPopList::expandFrom(const Population & pop) const
 					}
 				}
 			} else {
-				SubPopID sp = InvalidSubPopID;
+				size_t sp = InvalidSubPopID;
 				if (it->spName().empty())
 					sp = it->subPop();
 				else
@@ -293,7 +293,7 @@ ostream & operator<<(ostream & out, const vspID & vsp)
 }
 
 
-ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop) const
+ULONG BaseVspSplitter::countVisibleInds(const Population & pop, size_t subPop) const
 {
 	if (activatedSubPop() != subPop)
 		return pop.subPopSize(subPop);
@@ -307,20 +307,20 @@ ULONG BaseVspSplitter::countVisibleInds(const Population & pop, SubPopID subPop)
 }
 
 
-SubPopID BaseVspSplitter::vspByName(const string & vspName) const
+size_t BaseVspSplitter::vspByName(const string & vspName) const
 {
 	if (!m_names.empty()) {
 		vectorstr::const_iterator it = std::find(m_names.begin(), m_names.end(), vspName);
 		DBG_FAILIF(it == m_names.end(), ValueError, "An invalid virtual subpopulation name is given: "
 			+ vspName + ". Available names are: " + toStr(m_names));
-		return static_cast<SubPopID>(it - m_names.begin());
+		return static_cast<size_t>(it - m_names.begin());
 	}
-	for (SubPopID i = 0; i < static_cast<SubPopID>(numVirtualSubPop()); ++i) {
+	for (size_t i = 0; i < static_cast<size_t>(numVirtualSubPop()); ++i) {
 		if (vspName == name(i))
 			return i;
 	}
 	string allNames;
-	for (SubPopID i = 0; i < static_cast<SubPopID>(numVirtualSubPop()); ++i)
+	for (size_t i = 0; i < static_cast<size_t>(numVirtualSubPop()); ++i)
 		allNames += name(i) + ", ";
 	DBG_FAILIF(true, ValueError, "An invalid virtual subpopulation name is given: "
 		+ vspName + ". Available names are: " + allNames);
@@ -338,8 +338,8 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 	const matrixi & vspMap = vspMatrix.elems();
 	if (vspMap.empty()) {
 		size_t idx = 0;
-		for (SubPopID i = 0; i < static_cast<int>(splitters.size()); ++i)
-			for (SubPopID j = 0; j < static_cast<int>(splitters[i]->numVirtualSubPop()); ++j, ++idx)
+		for (size_t i = 0; i < static_cast<int>(splitters.size()); ++i)
+			for (size_t j = 0; j < static_cast<int>(splitters[i]->numVirtualSubPop()); ++j, ++idx)
 				m_vspMap.push_back(vspList(1, vspPair(i, j)));
 	} else {
 		for (size_t i = 0; i < vspMap.size(); ++i) {
@@ -388,7 +388,7 @@ BaseVspSplitter * CombinedSplitter::clone() const
 }
 
 
-size_t CombinedSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t CombinedSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_vspMap.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -418,7 +418,7 @@ size_t CombinedSplitter::size(const Population & pop, SubPopID subPop, SubPopID 
 
 bool CombinedSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 {
-	SubPopID virtualSubPop = vsp.virtualSubPop();
+	size_t virtualSubPop = vsp.virtualSubPop();
 
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_vspMap.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -431,7 +431,7 @@ bool CombinedSplitter::contains(const Population & pop, size_t ind, vspID vsp) c
 }
 
 
-void CombinedSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void CombinedSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	const vspList & list = m_vspMap[virtualSubPop];
 
@@ -457,7 +457,7 @@ void CombinedSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 }
 
 
-string CombinedSplitter::name(SubPopID sp) const
+string CombinedSplitter::name(size_t sp) const
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -489,7 +489,7 @@ ProductSplitter::ProductSplitter(const vectorsplitter & splitters, const stringL
 		m_numVSP *= splitters[i]->numVirtualSubPop();
 		m_splitters.push_back(splitters[i]->clone());
 	}
-	for (SubPopID vsp = 0; vsp < m_numVSP; ++vsp) {
+	for (size_t vsp = 0; vsp < m_numVSP; ++vsp) {
 		vectori res(splitters.size());
 		UINT tmpMod = m_numVSP;
 		UINT tmpIdx = vsp;
@@ -524,7 +524,7 @@ BaseVspSplitter * ProductSplitter::clone() const
 }
 
 
-size_t ProductSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t ProductSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
 
@@ -558,7 +558,7 @@ bool ProductSplitter::contains(const Population & pop, size_t ind, vspID vsp) co
 }
 
 
-void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void ProductSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	DBG_FAILIF(virtualSubPop >= m_numVSP, IndexError, "Subpopulation index out of range.");
 	const vectori & idx = m_subIndexes[virtualSubPop];
@@ -577,7 +577,7 @@ void ProductSplitter::activate(const Population & pop, SubPopID subPop, SubPopID
 }
 
 
-string ProductSplitter::name(SubPopID sp) const
+string ProductSplitter::name(size_t sp) const
 {
 	DBG_FAILIF(static_cast<UINT>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -600,7 +600,7 @@ string ProductSplitter::name(SubPopID sp) const
 }
 
 
-size_t SexSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t SexSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -622,7 +622,7 @@ bool SexSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 }
 
 
-void SexSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void SexSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	Sex s = virtualSubPop == 0 ? MALE : FEMALE;
 
@@ -635,7 +635,7 @@ void SexSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vir
 }
 
 
-string SexSplitter::name(SubPopID vsp) const
+string SexSplitter::name(size_t vsp) const
 {
 	DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
 
@@ -649,7 +649,7 @@ string SexSplitter::name(SubPopID vsp) const
 }
 
 
-size_t AffectionSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t AffectionSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -672,7 +672,7 @@ bool AffectionSplitter::contains(const Population & pop, size_t ind, vspID vsp) 
 }
 
 
-void AffectionSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void AffectionSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	bool aff = virtualSubPop == 0 ? false : true;
 
@@ -685,7 +685,7 @@ void AffectionSplitter::activate(const Population & pop, SubPopID subPop, SubPop
 }
 
 
-string AffectionSplitter::name(SubPopID vsp) const
+string AffectionSplitter::name(size_t vsp) const
 {
 	DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
 
@@ -727,7 +727,7 @@ InfoSplitter::InfoSplitter(string info, const floatList & values,
 }
 
 
-size_t InfoSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t InfoSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -805,7 +805,7 @@ size_t InfoSplitter::numVirtualSubPop() const
 
 bool InfoSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 {
-	SubPopID virtualSubPop = vsp.virtualSubPop();
+	size_t virtualSubPop = vsp.virtualSubPop();
 	UINT idx = pop.infoIdx(m_info);
 
 	if (!m_cutoff.empty()) {
@@ -841,7 +841,7 @@ bool InfoSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 }
 
 
-void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void InfoSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	size_t idx = pop.infoIdx(m_info);
 
@@ -891,7 +891,7 @@ void InfoSplitter::activate(const Population & pop, SubPopID subPop, SubPopID vi
 }
 
 
-string InfoSplitter::name(SubPopID sp) const
+string InfoSplitter::name(size_t sp) const
 {
 	DBG_FAILIF(static_cast<size_t>(sp) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -937,7 +937,7 @@ ProportionSplitter::ProportionSplitter(vectorf const & proportions, const string
 }
 
 
-size_t ProportionSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t ProportionSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -983,7 +983,7 @@ bool ProportionSplitter::contains(const Population & pop, size_t ind, vspID vsp)
 }
 
 
-void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void ProportionSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -1003,7 +1003,7 @@ void ProportionSplitter::activate(const Population & pop, SubPopID subPop, SubPo
 }
 
 
-string ProportionSplitter::name(SubPopID subPop) const
+string ProportionSplitter::name(size_t subPop) const
 {
 	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -1031,7 +1031,7 @@ RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
 }
 
 
-size_t RangeSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t RangeSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -1053,14 +1053,14 @@ size_t RangeSplitter::numVirtualSubPop() const
 
 bool RangeSplitter::contains(const Population & /* pop */, size_t ind, vspID vsp) const
 {
-	SubPopID virtualSubPop = vsp.virtualSubPop();
+	size_t virtualSubPop = vsp.virtualSubPop();
 
 	return ind >= static_cast<ULONG>(m_ranges[virtualSubPop][0]) &&
 	       ind < static_cast<ULONG>(m_ranges[virtualSubPop][1]);
 }
 
 
-void RangeSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void RangeSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -1077,7 +1077,7 @@ void RangeSplitter::activate(const Population & pop, SubPopID subPop, SubPopID v
 }
 
 
-string RangeSplitter::name(SubPopID subPop) const
+string RangeSplitter::name(size_t subPop) const
 {
 	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -1101,7 +1101,7 @@ GenotypeSplitter::GenotypeSplitter(const lociList & loci,
 }
 
 
-size_t GenotypeSplitter::size(const Population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+size_t GenotypeSplitter::size(const Population & pop, size_t subPop, size_t virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
 		return countVisibleInds(pop, subPop);
@@ -1126,7 +1126,7 @@ size_t GenotypeSplitter::numVirtualSubPop() const
 
 bool GenotypeSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 {
-	SubPopID virtualSubPop = vsp.virtualSubPop();
+	size_t virtualSubPop = vsp.virtualSubPop();
 
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
@@ -1139,7 +1139,7 @@ bool GenotypeSplitter::contains(const Population & pop, size_t ind, vspID vsp) c
 }
 
 
-void GenotypeSplitter::activate(const Population & pop, SubPopID subPop, SubPopID virtualSubPop)
+void GenotypeSplitter::activate(const Population & pop, size_t subPop, size_t virtualSubPop)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
@@ -1159,7 +1159,7 @@ void GenotypeSplitter::activate(const Population & pop, SubPopID subPop, SubPopI
 // 1: 0 1 1 1
 // Two possibilities (depending on ploidy)
 // 1, 2: 0 1 1 0 1 1 1 1
-string GenotypeSplitter::name(SubPopID subPop) const
+string GenotypeSplitter::name(size_t subPop) const
 {
 	DBG_FAILIF(static_cast<size_t>(subPop) >= numVirtualSubPop(), IndexError,
 		"Virtual subpopulation index out of range");

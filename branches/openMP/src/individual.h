@@ -170,14 +170,14 @@ public:
 	 *
 	 * <group>1-allele</group>
 	 */
-	UINT allele(UINT idx, int ploidy = -1, int chrom = -1) const;
+	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
 	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
 	 */
-	string alleleChar(UINT idx, int ploidy = -1, int chrom = -1) const;
+	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
@@ -186,7 +186,7 @@ public:
 	 *  specified chromosome (if \e chrom >= 0).
 	 *  <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, UINT idx, int ploidy = -1, int chrom = -1);
+	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
@@ -359,7 +359,7 @@ public:
 
 
 	/// CPPONLY start of allele of the pth set of chromosome
-	GenoIterator genoBegin(UINT p) const
+	GenoIterator genoBegin(size_t p) const
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + p * totNumLoci();
@@ -368,7 +368,7 @@ public:
 
 
 	/// CPPONLY end of allele of the pth set of chromosome
-	GenoIterator genoEnd(UINT p) const
+	GenoIterator genoEnd(size_t p) const
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + (p + 1) * totNumLoci();
@@ -376,17 +376,16 @@ public:
 
 
 	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
-	GenoIterator genoBegin(UINT p, UINT chrom) const
+	GenoIterator genoBegin(size_t p, size_t chrom) const
 	{
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(chrom);
 		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
 	}
 
 
 	/// CPPONLY end of allele of the pth set of chromosome
-	GenoIterator genoEnd(UINT p, UINT chrom) const
+	GenoIterator genoEnd(size_t p, size_t chrom) const
 	{
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(chrom);
@@ -453,16 +452,16 @@ public:
 	//@}
 
 private:
-	bool validIndex(UINT idx) const;
+	bool validIndex(size_t idx) const;
 
-	bool validIndex(UINT idx, UINT p) const;
+	bool validIndex(size_t idx, size_t p) const;
 
-	bool validIndex(UINT idx, UINT p, UINT ch) const;
+	bool validIndex(size_t idx, size_t p, size_t ch) const;
 
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void save(Archive & ar, const UINT /* version */) const
+	void save(Archive & ar, const size_t /* version */) const
 	{
 		//  boost::serialization::base_object<GenoStruTrait>(*this));
 		bool b;
@@ -476,7 +475,7 @@ private:
 
 
 	template<class Archive>
-	void load(Archive & ar, const UINT /* version */)
+	void load(Archive & ar, const size_t /* version */)
 	{
 		bool b;
 
@@ -511,7 +510,7 @@ class indCompare
 {
 public:
 	// accept the index to an information field
-	indCompare(UINT idx) : m_fields(1, idx) {}
+	indCompare(size_t idx) : m_fields(1, idx) {}
 
 	indCompare(const vectoru & idx) : m_fields(idx) {}
 
@@ -910,7 +909,7 @@ public:
 	}
 
 
-	CombinedAlleleIterator(UINT shift, GenoIterator ptr, GenoIterator ptrEnd, UINT size)
+	CombinedAlleleIterator(size_t shift, GenoIterator ptr, GenoIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
 		// ignored
@@ -921,7 +920,7 @@ public:
 	}
 
 
-	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it)
+	CombinedAlleleIterator(size_t idx, IndividualIterator<T> it)
 		: m_useGappedIterator(false), m_valid(true), m_shift(),
 		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
@@ -980,7 +979,7 @@ public:
 	}
 
 
-	void advance(IndividualIterator<T> & it, UINT & p, bool & valid)
+	void advance(IndividualIterator<T> & it, size_t & p, bool & valid)
 	{
 		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
 		if (m_chromType == AUTOSOME) {
@@ -1116,27 +1115,27 @@ private:
 	///
 	bool m_valid;
 	//
-	UINT m_shift;
+	size_t m_shift;
 	//
 	GenoIterator m_ptr;
 	//
 	GenoIterator m_ptrEnd;
 	// genosize
-	UINT m_size;
+	size_t m_size;
 	//
 	// The second iteration method
 	// Individual iterator
 	IndividualIterator<T> m_it;
 	// index of the locus
-	UINT m_index;
+	size_t m_index;
 	// overall ploidy
-	UINT m_ploidy;
+	size_t m_ploidy;
 	// chromosome type
-	int m_chromType;
+	size_t m_chromType;
 	//
 	bool m_haplodiploid;
 	// current ploidy, used in individualiterator
-	UINT m_p;
+	size_t m_p;
 };
 
 

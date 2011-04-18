@@ -243,7 +243,7 @@ bool SplitSubPops::apply(Population & pop) const
 	std::sort(subPops.begin(), subPops.end(), compareVSP());
 
 	for (size_t i = 0; i < subPops.size(); ++i) {
-		SubPopID sp = subPops[i].subPop();
+		size_t sp = subPops[i].subPop();
 		if (pop.subPopSize(sp) == 0)
 			continue;
 

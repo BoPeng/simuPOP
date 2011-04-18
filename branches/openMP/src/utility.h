@@ -946,7 +946,7 @@ private:
 void PyObj_As_Bool(PyObject * obj, bool & val);
 
 /// CPPONLY
-void PyObj_As_Int(PyObject * obj, long int & val);
+void PyObj_As_Int(PyObject * obj, int & val);
 
 /// CPPONLY
 void PyObj_As_Double(PyObject * obj, double & val);
@@ -1087,7 +1087,7 @@ public:
 	/// CPPONLY
 	long int getVarAsInt(const string & name, bool nameError = true) const
 	{
-		long int val;
+		int val;
 
 		PyObj_As_Int(getVar(name, nameError), val);
 		return val;
@@ -1843,7 +1843,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 double hweTest(const vectoru & cnt);
 
 /// CPPONLY
-void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count);
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru & count);
 
 /// CPPONLY
 string formatDescription(const string & text);

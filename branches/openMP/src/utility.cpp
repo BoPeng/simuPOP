@@ -1076,7 +1076,7 @@ void PyObj_As_Bool(PyObject * obj, bool & val)
 }
 
 
-void PyObj_As_Int(PyObject * obj, long int & val)
+void PyObj_As_Int(PyObject * obj, int & val)
 {
 	if (obj == NULL) {
 		val = 0;
@@ -2250,7 +2250,7 @@ long int Expression::valueAsInt() const
 
 	if (res == NULL)
 		return 0;
-	long int val;
+	int val;
 	PyObj_As_Int(res, val);
 	Py_XDECREF(res);
 	return val;
@@ -3279,7 +3279,7 @@ double hweTest(const vectoru & cnt)
 }
 
 
-void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count)
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru & count)
 {
 	size_t sz = last - first;
 

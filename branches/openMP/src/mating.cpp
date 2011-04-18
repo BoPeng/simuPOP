@@ -71,7 +71,7 @@ GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 Sex FuncSexModel::getSex(UINT count)
 {
 	if (m_generator.isValid()) {
-		long int val;
+		int val;
 		PyObject * obj = m_generator.next();
 		PyObj_As_Int(obj, val);
 		Py_DECREF(obj);
@@ -80,7 +80,7 @@ Sex FuncSexModel::getSex(UINT count)
 		PyObject * obj = NULL;
 		try {
 			obj = m_func("()");
-			long int val;
+			int val;
 			PyObj_As_Int(obj, val);
 			Py_DECREF(obj);
 			return static_cast<Sex>(val);
@@ -103,7 +103,7 @@ ULONG FuncNumOffModel::getNumOff(int gen)
 {
 	if (m_generator.isValid()) {
 		int attempts = 0;
-		long int numOff = 0;
+		int numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = m_generator.next();
 			PyObj_As_Int(obj, numOff);
@@ -118,7 +118,7 @@ ULONG FuncNumOffModel::getNumOff(int gen)
 		DBG_FAILIF(m_func.numArgs() > 1 || (m_func.numArgs() == 1 && m_func.arg(0) != "gen"),
 			ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
 		int attempts = 0;
-		long int numOff = 0;
+		int numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = NULL;
 			try {
@@ -252,7 +252,7 @@ Sex OffspringGenerator::getSex(UINT count)
 }
 
 
-void OffspringGenerator::initialize(const Population & pop, SubPopID /* subPop */)
+void OffspringGenerator::initialize(const Population & pop, size_t /* subPop */)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
@@ -446,7 +446,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 }
 
 
-void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID subPop)
+void ControlledOffspringGenerator::initialize(const Population & pop, size_t subPop)
 {
 	OffspringGenerator::initialize(pop, subPop);
 
@@ -595,7 +595,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 }
 
 
-void SequentialParentChooser::initialize(Population & pop, SubPopID sp)
+void SequentialParentChooser::initialize(Population & pop, size_t sp)
 {
 	//
 	m_curInd = 0;
@@ -636,7 +636,7 @@ ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndItera
 }
 
 
-void RandomParentChooser::initialize(Population & pop, SubPopID sp)
+void RandomParentChooser::initialize(Population & pop, size_t sp)
 {
 	m_index.clear();
 
@@ -717,7 +717,7 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 }
 
 
-void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
+void RandomParentsChooser::initialize(Population & pop, size_t subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -817,7 +817,7 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 }
 
 
-void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
+void PolyParentsChooser::initialize(Population & pop, size_t subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -924,7 +924,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-   void infoParentsChooser::initialize(Population & pop, SubPopID sp)
+   void infoParentsChooser::initialize(Population & pop, size_t sp)
    {
     if (m_func.isValid()) {
         PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -1047,7 +1047,7 @@ CombinedParentsChooser::CombinedParentsChooser(const ParentChooser & fatherChoos
 }
 
 
-void CombinedParentsChooser::initialize(Population & pop, SubPopID sp)
+void CombinedParentsChooser::initialize(Population & pop, size_t sp)
 {
 	m_fatherChooser->initialize(pop, sp);
 	m_motherChooser->initialize(pop, sp);
@@ -1065,7 +1065,7 @@ ParentChooser::IndividualPair CombinedParentsChooser::chooseParents(RawIndIterat
 }
 
 
-void CombinedParentsChooser::finalize(Population & pop, SubPopID sp)
+void CombinedParentsChooser::finalize(Population & pop, size_t sp)
 {
 	m_fatherChooser->finalize(pop, sp);
 	m_motherChooser->finalize(pop, sp);
@@ -1079,7 +1079,7 @@ PyParentsChooser::PyParentsChooser(PyObject * pc)
 }
 
 
-void PyParentsChooser::initialize(Population & pop, SubPopID sp)
+void PyParentsChooser::initialize(Population & pop, size_t sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
@@ -1133,7 +1133,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 
 
 	if (PyInt_Check(item) || PyLong_Check(item)) {
-		long int parent;
+		int parent;
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
@@ -1178,7 +1178,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void PyParentsChooser::finalize(Population & /* pop */, SubPopID /* sp */)
+void PyParentsChooser::finalize(Population & /* pop */, size_t /* sp */)
 {
 	DBG_FAILIF(m_popObj == NULL, SystemError, "Python generator is not properly initialized.");
 	Py_DECREF(m_popObj);
@@ -1248,7 +1248,7 @@ bool MatingScheme::mate(Population & pop, Population & scratch)
 	if (!prepareScratchPop(pop, scratch))
 		return false;
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
+	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, scratch, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
 			return false;
 	submitScratch(pop, scratch);
@@ -1285,7 +1285,7 @@ string HomoMating::describe(bool format) const
 }
 
 
-bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
+bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
@@ -1549,7 +1549,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp) {
+	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp) {
 		vectormating m;
 		vectorf w_pos;                          // positive weights
 		vectorf w_neg;                          // negative weights

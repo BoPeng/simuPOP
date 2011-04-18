@@ -314,22 +314,20 @@ const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
-typedef signed int SubPopID;
-const signed int InvalidSubPopID = -1;
-const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
+const size_t InvalidSubPopID = !size_t(0);
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
 typedef unsigned long ULONG;
 const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
 typedef long LONG;
 
-typedef std::vector<long int>              vectori;
+typedef std::vector<int>                   vectori;
 typedef std::vector<double>                vectorf;
 typedef std::vector<Allele>                vectora;
-typedef std::vector<ULONG>                 vectoru;
+typedef std::vector<size_t>                vectoru;
 typedef std::vector<std::string>           vectorstr;
-typedef std::pair<ULONG, ULONG>            pairu;
-typedef std::vector<std::vector<long int > >    matrixi;
+typedef std::pair<size_t, size_t>            pairu;
+typedef std::vector<std::vector<int > >    matrixi;
 typedef std::vector<std::vector<std::string > >    matrixstr;
 typedef std::vector<std::vector<double > > matrixf;
 
