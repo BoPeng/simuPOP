@@ -39,7 +39,7 @@ install swig >= 1.3.35 for the generation of Python wrapper files. Please see
 http://simupop.sourceforge.net/main/GetInvolved for details.
 
 """
-import os, sys, platform, shutil, glob, re, tempfile
+import os, sys, platform, shutil, glob, re, tempfile, subprocess
 import distutils.sysconfig
 
 if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
@@ -54,7 +54,10 @@ if os.name == 'nt':
     if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
         USE_OPENMP = False
 else:
-    fin, fout, ferr = os.popen3('gcc -v')
+    p = subprocess.Popen('gcc -v', shell=True,
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        close_fds=True)
+    fin, fout, ferr = (p.stdin, p.stdout, p.stderr)
     try:
         version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', ferr.readlines()[-1]).groups()
     except:
@@ -119,7 +122,7 @@ except ImportError:
 
 def swig_version():
     ''' get the version of swig '''
-    fout = os.popen(SWIG + ' -version')
+    fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
     #
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
@@ -136,7 +139,8 @@ def simuPOP_version():
     if SIMUPOP_VER.endswith('svn'):
         rev = SIMUPOP_REV
         try:
-            rev = os.popen('svnversion .').readline().strip()
+            fout = subprocess.Popen('svnversion .', shell=True, stdout=subprocess.PIPE).stdout
+            rev = fout.readline().strip()
             if ':' in rev:
                 rev = rev.split(':')[1]
             rev = rev.rstrip('M')
