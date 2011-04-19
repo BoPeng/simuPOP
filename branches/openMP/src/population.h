@@ -46,6 +46,7 @@ using std::equal_to;
 #include <deque>
 using std::deque;
 
+#pragma GCC diagnostic ignored "-Wconversion"
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/utility.hpp>
@@ -53,6 +54,7 @@ using std::deque;
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/version.hpp>
+#pragma GCC diagnostic warning "-Wconversion"
 
 #include "individual.h"
 #include "virtualSubPop.h"
@@ -435,7 +437,7 @@ public:
 	 */
 	vectoru subPopSizes(int ancGen = -1) const
 	{
-		if (ancGen < 0 || static_cast<size_t>(ancGen) == m_curAncestralGen)
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_subPopSize;
 		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
@@ -456,7 +458,7 @@ public:
 	 */
 	size_t popSize(int ancGen = -1) const
 	{
-		if (ancGen < 0 || static_cast<size_t>(ancGen) == m_curAncestralGen)
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_popSize;
 		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
@@ -574,7 +576,7 @@ public:
 	{
 		size_t intIdx = toID(idx);
 
-		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+		DBG_FAILIF(fabs(idx - double(intIdx)) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
@@ -612,7 +614,7 @@ public:
 	{
 		size_t intIdx = toID(idx);
 
-		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+		DBG_FAILIF(fabs(idx - double(intIdx)) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,

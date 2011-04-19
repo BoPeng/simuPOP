@@ -71,7 +71,7 @@ Population::Population(const uintList & size,
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-	PARAM_FAILIF(static_cast<size_t>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, HAPLODIPLOID),
+	PARAM_FAILIF(static_cast<size_t>(ploidy) * 1.0 != double(ploidy) && fcmp_ne(ploidy, HAPLODIPLOID),
 		ValueError, "Only integer ploidy number or HAPLODIPLOID can be specified");
 
 	setGenoStructure(fcmp_eq(ploidy, HAPLODIPLOID) ? 2 : static_cast<size_t>(ploidy),
@@ -362,7 +362,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 		gens.push_back(m_curAncestralGen);
 
 	for (size_t genIdx = 0; genIdx < gens.size(); ++genIdx) {
-		size_t gen = gens[genIdx];
+		ssize_t gen = gens[genIdx];
 		vector<Individual> * inds = NULL;
 		// search in current, not necessarily the present generation
 		if (gen == m_curAncestralGen)

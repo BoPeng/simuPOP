@@ -69,10 +69,6 @@ public:
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop),
 		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
-		if (m_subPop < 0)
-			m_subPop = InvalidValue;
-		if (m_virtualSubPop < 0)
-			m_virtualSubPop = InvalidValue;
 	}
 
 

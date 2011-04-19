@@ -78,18 +78,18 @@ class Individual : public GenoStruTrait
 
 protected:
 	/// 0: male, 1: female regardless of outside coding
-	static const size_t m_flagFemale = 1;
+	static const unsigned char m_flagFemale = 1;
 
 	/// if this individual is affect
-	static const size_t m_flagAffected = 2;
+	static const unsigned char m_flagAffected = 2;
 
 	/// if this individual is visible. This is used
 	/// to implement virtual subpopulations
-	static const size_t m_flagVisible = 4;
+	static const unsigned char m_flagVisible = 4;
 
 	/// a temporary mark to mark individuals for deletion
 	/// or extraction.
-	static const size_t m_flagMarked = 8;
+	static const unsigned char m_flagMarked = 8;
 
 public:
 	///  @name constructor, destructor etc
