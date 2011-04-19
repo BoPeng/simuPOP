@@ -64,17 +64,17 @@ void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, siz
 		if (locus >= beg + i)
 			m_context[i] = *(ptr.ptr() - (cnt - i));
 		else
-			m_context[i] = -1;
+			m_context[i] = InvalidValue;
 	}
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus + i < end)
 			m_context[cnt + i] = *(ptr.ptr() + i + 1);
 		else
-			m_context[cnt + i] = -1;
+			m_context[cnt + i] = InvalidValue;
 	}
 	if (!m_mapIn.empty() || m_mapIn.func().isValid()) {
 		for (size_t i = 0; i < m_context.size(); ++i) {
-			if (m_context[i] == -1)
+			if (m_context[i] == InvalidValue)
 				continue;
 			vectoru const & mapInList = m_mapIn.elems();
 			if (mapInList.size() > 0) {
@@ -390,7 +390,7 @@ void ContextMutator::mutate(AlleleRef allele, size_t locus) const
 	for (size_t i = 0; i < m_contexts.size(); ++i) {
 		bool match = true;
 		for (size_t j = 0; j < alleles.size(); ++j) {
-			if (m_contexts[i][j] != alleles[j]) {
+			if (ToAllele(m_contexts[i][j]) != alleles[j]) {
 				match = false;
 				break;
 			}

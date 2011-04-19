@@ -237,13 +237,13 @@ vectoru Simulator::evolve(
 		saveRefCount();
 #endif
 
-		for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+		for (size_t curRep = 0; curRep < m_pops.size(); curRep++) {
 			Population & curPop = *m_pops[curRep];
 			// sync population variable gen with gen(). This allows
 			// users to set population variable to change generation number.
 #ifndef STANDALONE_EXECUTABLE
-			int curGen = curPop.getVars().getVarAsInt("gen");
-			if (curGen != curPop.gen())
+			long curGen = curPop.getVars().getVarAsInt("gen");
+			if (curGen != static_cast<long>(curPop.gen()))
 				curPop.setGen(curGen);
 #else
 			ssize_t curGen = curPop.gen();
@@ -255,7 +255,7 @@ vectoru Simulator::evolve(
 			PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
 				"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
-			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
+			DBG_ASSERT(curRep == curPop.rep(), SystemError,
 				"Replicate number does not match");
 
 			if (!activeReps[curRep])

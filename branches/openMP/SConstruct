@@ -118,7 +118,17 @@ if os.name == 'nt':
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
-    extra_flags = ['-g', '-Wconversion', '-Werror']
+    extra_flags = ['-g']
+    # treat warning as error...
+    extra_flags.append('-Werror')
+    # -Wconversion will produce a lot of warnings about type conversion. It is
+    # useful but I cannot always turn it on because many warnings from boost will
+    # overwhelm the output, and stop compiling if '-Werror' is defined. Because
+    # MSVC does a reasonable job in detecting conversion problems and we have /WX
+    # turned on for MSVC, we can turn on this option (and disable Werror) from
+    # time to time to pick out warnings not detected by MSVC.
+    #
+    #extra_flags.append('-Wconversion')
 
 #
 def convert_def(defines):
@@ -212,10 +222,24 @@ for mod in targets:
         common_lib = op_common_lib
     else:
         common_lib = std_common_lib
+	mod_wrapper = mod_env.StaticLibrary(
+        target = 'build/%s/_simuPOP_wrap_%s' % (mod, mod),
+        source = ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
+        SHLIBPREFIX = "",
+        SHLIBSUFFIX = so_ext,
+        SHLINKFLAGS = comp.ldflags_shared,
+        LIBPATH = info['library_dirs'] + extra_path,
+        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPDEFINES = convert_def(info['define_macros']),
+		# No extra-flags because it can have -Werror and we cannot guarantee that there is
+		# no warning coming out of the wrapper code.
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CPPFLAGS = ' '.join([basicflags, ccshared, opt])
+	)
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
-        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
-        LIBS = info['libraries'] + [common_lib],
+        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
+        LIBS = info['libraries'] + [common_lib, mod_wrapper],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,

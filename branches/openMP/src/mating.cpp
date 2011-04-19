@@ -71,7 +71,7 @@ GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 Sex FuncSexModel::getSex(UINT count)
 {
 	if (m_generator.isValid()) {
-		int val;
+		long val;
 		PyObject * obj = m_generator.next();
 		PyObj_As_Int(obj, val);
 		Py_DECREF(obj);
@@ -80,7 +80,7 @@ Sex FuncSexModel::getSex(UINT count)
 		PyObject * obj = NULL;
 		try {
 			obj = m_func("()");
-			int val;
+			long val;
 			PyObj_As_Int(obj, val);
 			Py_DECREF(obj);
 			return static_cast<Sex>(val);
@@ -103,7 +103,7 @@ UINT FuncNumOffModel::getNumOff(ssize_t gen)
 {
 	if (m_generator.isValid()) {
 		int attempts = 0;
-		int numOff = 0;
+		long numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = m_generator.next();
 			PyObj_As_Int(obj, numOff);
@@ -118,7 +118,7 @@ UINT FuncNumOffModel::getNumOff(ssize_t gen)
 		DBG_FAILIF(m_func.numArgs() > 1 || (m_func.numArgs() == 1 && m_func.arg(0) != "gen"),
 			ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
 		int attempts = 0;
-		int numOff = 0;
+		long numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = NULL;
 			try {
@@ -1133,7 +1133,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 
 
 	if (PyInt_Check(item) || PyLong_Check(item)) {
-		int parent;
+		long parent;
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
@@ -1156,10 +1156,8 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 				parents[i] = &*(m_begin + idx);
 			} else {
 				void * ind = pyIndPointer(v);
-				if (ind)
-					parents[i] = reinterpret_cast<Individual *>(ind);
-				else
-					DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+				DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
+				parents[i] = reinterpret_cast<Individual *>(ind);
 			}
 			Py_DECREF(v);
 		}
@@ -1168,10 +1166,8 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 	} else {
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
-		if (ind)
-			return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(pyIndPointer(item)), NULL);
-		else
-			DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+		DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
+		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), NULL);
 	}
 	// this should not be reached
 	return ParentChooser::IndividualPair(NULL, NULL);

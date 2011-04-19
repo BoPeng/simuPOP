@@ -313,10 +313,10 @@ protected:
 private:
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagAtAllGen = 1;
-	static const size_t m_flagOnlyAtBegin = 2;
-	static const size_t m_flagOnlyAtEnd = 4;
-	static const size_t m_flagAllSubPops = 8;
+	static const unsigned char m_flagAtAllGen = 1;
+	static const unsigned char m_flagOnlyAtBegin = 2;
+	static const unsigned char m_flagOnlyAtEnd = 4;
+	static const unsigned char m_flagAllSubPops = 8;
 
 private:
 	/// starting generation, default to 0
@@ -888,7 +888,7 @@ private:
  *  of population \e pop. If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	Population * pop, Population * offPop, size_t dad, size_t mom, const pairu & off);
+	Population * pop, Population * offPop, ssize_t dad, ssize_t mom, const pairu & off);
 
 }
 #endif

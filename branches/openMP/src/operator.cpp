@@ -1052,7 +1052,7 @@ bool PyOperator::applyDuringMating(Population & pop, Population & offPop, RawInd
 
 
 void applyDuringMatingOperator(const BaseOperator & op,
-                               Population * pop, Population * offPop, size_t dad, size_t mom,
+                               Population * pop, Population * offPop, ssize_t dad, ssize_t mom,
                                const pairu & off)
 {
 	BaseOperator * opPtr = op.clone();
@@ -1062,8 +1062,8 @@ void applyDuringMatingOperator(const BaseOperator & op,
 	// i needs to be int since some openMP implementation does not handle unsigned index
 	for (int i = static_cast<int>(off.first); i < static_cast<int>(off.second); ++i)
 		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i,
-			dad < 0 ? NULL : &pop->individual(dad),
-			mom < 0 ? NULL : &pop->individual(mom));
+			dad < 0 ? NULL : &pop->individual(static_cast<size_t>(dad)),
+			mom < 0 ? NULL : &pop->individual(static_cast<size_t>(mom)));
 }
 
 

@@ -338,8 +338,8 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 	const matrixi & vspMap = vspMatrix.elems();
 	if (vspMap.empty()) {
 		size_t idx = 0;
-		for (size_t i = 0; i < static_cast<int>(splitters.size()); ++i)
-			for (size_t j = 0; j < static_cast<int>(splitters[i]->numVirtualSubPop()); ++j, ++idx)
+		for (size_t i = 0; i < splitters.size(); ++i)
+			for (size_t j = 0; j < splitters[i]->numVirtualSubPop(); ++j, ++idx)
 				m_vspMap.push_back(vspList(1, vspPair(i, j)));
 	} else {
 		for (size_t i = 0; i < vspMap.size(); ++i) {
@@ -973,10 +973,10 @@ bool ProportionSplitter::contains(const Population & pop, size_t ind, vspID vsp)
 
 	size_t lower = 0;
 	size_t higher = 0;
-	for (UINT sp = 0; sp < m_proportions.size(); ++sp) {
+	for (size_t sp = 0; sp < m_proportions.size(); ++sp) {
 		higher += count[sp];
 		if (ind >= lower && ind < higher)
-			return vsp.virtualSubPop() == static_cast<int>(sp);
+			return vsp.virtualSubPop() == sp;
 		lower = higher;
 	}
 	return false;
