@@ -321,15 +321,15 @@ typedef unsigned long ULONG;
 const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
 typedef long LONG;
 
-typedef std::vector<int>                   vectori;
-typedef std::vector<double>                vectorf;
-typedef std::vector<Allele>                vectora;
-typedef std::vector<size_t>                vectoru;
-typedef std::vector<std::string>           vectorstr;
-typedef std::pair<size_t, size_t>          pairu;
-typedef std::vector<std::vector<int > >    matrixi;
-typedef std::vector<std::vector<std::string > >    matrixstr;
-typedef std::vector<std::vector<double > > matrixf;
+typedef std::vector<long>                        vectori;
+typedef std::vector<double>                      vectorf;
+typedef std::vector<Allele>                      vectora;
+typedef std::vector<size_t>                      vectoru;
+typedef std::vector<std::string>                 vectorstr;
+typedef std::pair<size_t, size_t>                pairu;
+typedef std::vector<std::vector<long> >          matrixi;
+typedef std::vector<std::vector<std::string > >  matrixstr;
+typedef std::vector<std::vector<double > >       matrixf;
 
 #include <map>
 using std::map;

@@ -946,7 +946,7 @@ private:
 void PyObj_As_Bool(PyObject * obj, bool & val);
 
 /// CPPONLY
-void PyObj_As_Int(PyObject * obj, int & val);
+void PyObj_As_Int(PyObject * obj, long & val);
 
 /// CPPONLY
 void PyObj_As_Double(PyObject * obj, double & val);
@@ -1097,9 +1097,9 @@ public:
 
 
 	/// CPPONLY
-	long int getVarAsInt(const string & name, bool nameError = true) const
+	long getVarAsInt(const string & name, bool nameError = true) const
 	{
-		int val;
+		long val;
 
 		PyObj_As_Int(getVar(name, nameError), val);
 		return val;
@@ -1577,14 +1577,14 @@ private:
 
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagNoOutput = 1;
-	static const size_t m_flagUseDefault = 2;
-	static const size_t m_flagAppend = 4;
-	static const size_t m_flagRealAppend = 8;
-	static const size_t m_flagCloseAfterUse = 16;
-	static const size_t m_flagUseString = 32;
-	static const size_t m_flagReadable = 64;
-	static const size_t m_flagUseFunc = 128;
+	static const unsigned char m_flagNoOutput = 1;
+	static const unsigned char m_flagUseDefault = 2;
+	static const unsigned char m_flagAppend = 4;
+	static const unsigned char m_flagRealAppend = 8;
+	static const unsigned char m_flagCloseAfterUse = 16;
+	static const unsigned char m_flagUseString = 32;
+	static const unsigned char m_flagReadable = 64;
+	static const unsigned char m_flagUseFunc = 128;
 
 	/// m_flags
 	unsigned char m_flags;
@@ -1755,7 +1755,7 @@ public:
 	 *  parameter \e p.
 	 *  <group>4-distribution</group>
 	 */
-	int randGeometric(double p)
+	long randGeometric(double p)
 	{
 		return gsl_ran_geometric(m_RNG, p);
 	}
@@ -1765,7 +1765,7 @@ public:
 	 *  parameters \e n and \e p.
 	 *  <group>4-distribution</group>
 	 */
-	UINT randBinomial(UINT n, double p)
+	ULONG randBinomial(UINT n, double p)
 	{
 		DBG_FAILIF(n <= 0, ValueError, "RandBinomial: n should be positive.");
 
@@ -1777,7 +1777,7 @@ public:
 	 *  parameter \e mu.
 	 *  <group>4-distribution</group>
 	 */
-	UINT randPoisson(double mu)
+	ULONG randPoisson(double mu)
 	{
 		return gsl_ran_poisson(m_RNG, mu);
 	}
@@ -1786,12 +1786,12 @@ public:
 	/** Generate a positive random number following a zero-truncated Poisson
 	 *  distribution with parameter \e mu.
 	 */
-	UINT randTruncatedPoisson(double mu);
+	ULONG randTruncatedPoisson(double mu);
 
 	/** Generate a positive random number following a zero-truncated binomial
 	 *  distribution with parameters \e n and \e p.
 	 */
-	UINT randTruncatedBinomial(UINT n, double p);
+	ULONG randTruncatedBinomial(UINT n, double p);
 
 	/** Generate a random number following a multinomial distribution with
 	 *  parameters \e N and \e p (a list of probabilities).
@@ -1825,9 +1825,9 @@ public:
 
 
 private:
-	UINT search_poisson(UINT y, double * z, double p, double lambda);
+	ULONG search_poisson(UINT y, double * z, double p, double lambda);
 
-	UINT search_binomial(UINT y, double * z, double p, UINT n, double pr);
+	ULONG search_binomial(UINT y, double * z, double p, UINT n, double pr);
 
 private:
 	/// global random number generator

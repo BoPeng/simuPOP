@@ -34,10 +34,12 @@
 #include "utility.h"
 #include "simuPOP_cfg.h"
 
+#pragma GCC diagnostic ignored "-Wconversion"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
+#pragma GCC diagnostic warning "-Wconversion"
 
 #include <iterator>
 using std::ostream;

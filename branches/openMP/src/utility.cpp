@@ -74,7 +74,11 @@ using std::ofstream;
 #ifndef STANDALONE_EXECUTABLE
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wconversion"
 #  include "swigpyrun.h"
+#pragma GCC diagnostic warning "-Wunused-parameter"
+#pragma GCC diagnostic warning "-Wmissing-field-initializers"
+#pragma GCC diagnostic warning "-Wconversion"
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -792,7 +796,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
-pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 {
 	if (!m_func.isValid())
 		return;
@@ -884,7 +888,6 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// probe parameter names
 	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
 	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
-	DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
 	for (size_t i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(PyObj_AsString(item));
@@ -893,7 +896,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// accepting arbitrary number of parameters?
 	PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
 	DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
-	m_flags = PyInt_AsLong(co_flag);
+	m_flags = static_cast<unsigned char>(PyInt_AsLong(co_flag));
 	Py_DECREF(co_flag);
 	Py_DECREF(code);
 }
@@ -1076,7 +1079,7 @@ void PyObj_As_Bool(PyObject * obj, bool & val)
 }
 
 
-void PyObj_As_Int(PyObject * obj, int & val)
+void PyObj_As_Int(PyObject * obj, long & val)
 {
 	if (obj == NULL) {
 		val = 0;
@@ -1087,7 +1090,7 @@ void PyObj_As_Int(PyObject * obj, int & val)
 	if (res == NULL)
 		throw ValueError("Can not convert object to an integer");
 
-	val = static_cast<int>(PyInt_AsLong(res));
+	val = PyInt_AsLong(res);
 	Py_DECREF(res);
 }
 
@@ -1621,7 +1624,7 @@ PyObject * SharedVariables::setDoubleVar(const string & name, const double val)
 
 PyObject * SharedVariables::setStringVar(const string & name, const string & val)
 {
-	return setVar(name, Py_BuildValue("s", name.c_str()));
+	return setVar(name, Py_BuildValue("s", val.c_str()));
 }
 
 
@@ -1773,7 +1776,7 @@ void save_none(string & str)
 }
 
 
-PyObject * load_none(const string & str, size_t & offset)
+PyObject * load_none(const string & /* str */, size_t & offset)
 {
 	offset++;
 	Py_INCREF(Py_None);
@@ -2293,13 +2296,13 @@ bool Expression::valueAsBool() const
 }
 
 
-long int Expression::valueAsInt() const
+long Expression::valueAsInt() const
 {
 	PyObject * res = evaluate();
 
 	if (res == NULL)
 		return 0;
-	int val;
+	long val;
 	PyObj_As_Int(res, val);
 	Py_XDECREF(res);
 	return val;
@@ -2922,13 +2925,13 @@ unsigned long RNG::generateRandomSeed()
 	FILE * devrandom;
 
 	if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
-		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		size_t sz = fread(&seed, sizeof(seed), 1, devrandom);
 		(void)sz; // suppress a warning.
 		DBG_FAILIF(sz != 1, RuntimeError,
 			"Incorrect bits of random digits are read from /dev/urandom");
 		fclose(devrandom);
 	} else if ((devrandom = fopen("/dev/random", "r")) != NULL) {
-		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		size_t sz = fread(&seed, sizeof(seed), 1, devrandom);
 		(void)sz; // suppress a warning.
 		DBG_FAILIF(sz != 1, RuntimeError,
 			"Incorrect bits of random digits are read from /dev/urandom");
@@ -3011,7 +3014,7 @@ bool RNG::randBit()
 }
 
 
-UINT RNG::search_poisson(UINT y, double * z, double p, double lambda)
+ULONG RNG::search_poisson(UINT y, double * z, double p, double lambda)
 {
 	if (*z >= p) { /* search to the left */
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
@@ -3032,7 +3035,7 @@ UINT RNG::search_poisson(UINT y, double * z, double p, double lambda)
 }
 
 
-UINT RNG::randTruncatedPoisson(double lambda)
+ULONG RNG::randTruncatedPoisson(double lambda)
 {
 	DBG_FAILIF(lambda == 0, ValueError, "Zero mu is not allowed for a truncated poisson distribution");
 
@@ -3080,7 +3083,7 @@ UINT RNG::randTruncatedPoisson(double lambda)
 }
 
 
-UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
+ULONG RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 {
 	if (*z >= p) {
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
@@ -3105,7 +3108,7 @@ UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 }
 
 
-UINT RNG::randTruncatedBinomial(UINT n, double pr)
+ULONG RNG::randTruncatedBinomial(UINT n, double pr)
 {
 	// only try once. whatever the probability is, only the successed one will be returned.
 	if (n == 1)
@@ -3357,6 +3360,7 @@ void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, si
 		count.back() += N - tot;
 }
 
+#pragma GCC diagnostic ignored "-Wconversion"
 
 string formatDescription(const string & text)
 {
@@ -3552,6 +3556,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 }
 
 
+
 size_t WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
@@ -3587,6 +3592,7 @@ size_t WeightedSampler::draw()
 	// should never be reached
 	return 0;
 }
+#pragma GCC diagnostic warning "-Wconversion"
 
 
 vectoru WeightedSampler::drawSamples(ULONG num)
@@ -3742,7 +3748,7 @@ void Bernullitrials::doTrial()
             // set all to 0, then set some to 1
             setAll(cl, false);
             // it may make sense to limit the use of this method to low p,
-            UINT i = 0;
+            size_t i = 0;
             while (true) {
                 // i moves at least one. (# trails until the first success)
                 // 6,3 means (0 0 0 0 0 1) (0 0 1)
@@ -3764,7 +3770,7 @@ void Bernullitrials::doTrial()
             // set all to 1, and then unset some.
             setAll(cl, true);
             // it may make sense to limit the use of this method to low p,
-            UINT i = 0;
+            size_t i = 0;
             prob = 1. - prob;
             while (true) {
                 ULONG step = m_RNG->randGeometric(prob);
@@ -4002,7 +4008,7 @@ protected:
                 else
 					PySys_WriteStderr("%c", c);
 			} else
-				sputc(c);
+				sputc(static_cast<char>(c));
 		}
         return 0;
 	}
@@ -4525,10 +4531,10 @@ bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
         DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
 			"Check is avtive should only be done for active replicates");
         // check the simple and most used case
-        if (*it == -1 && activeRep->back() && rep + 1 == activeRep->size())
+        if (*it == -1 && activeRep->back() && static_cast<size_t>(rep + 1) == activeRep->size())
 			return true;
         // find what exactly an negative index refer to
-        int cnt = -*it;
+        long cnt = -*it;
         ssize_t curRep = activeRep->size() - 1;
         for (; curRep >= 0; --curRep) {
             if ((*activeRep)[curRep])
