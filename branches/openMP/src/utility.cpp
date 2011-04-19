@@ -74,11 +74,9 @@ using std::ofstream;
 #ifndef STANDALONE_EXECUTABLE
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wconversion"
 #  include "swigpyrun.h"
 #pragma GCC diagnostic warning "-Wunused-parameter"
 #pragma GCC diagnostic warning "-Wmissing-field-initializers"
-#pragma GCC diagnostic warning "-Wconversion"
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -160,6 +158,14 @@ using std::max_element;
 using std::find;
 using std::sort;
 using std::greater;
+
+// global constant variables
+const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+const size_t InvalidValue = !size_t(0);
+const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
+
 
 namespace simuPOP {
 
@@ -2947,6 +2953,7 @@ unsigned long RNG::generateRandomSeed()
 
 #endif
 
+
 // choose an random number generator.
 void RNG::set(const char * rng, unsigned long seed)
 {
@@ -3169,7 +3176,6 @@ double pvalChiSq(double chisq, unsigned int df)
 }
 
 
-#pragma GCC diagnostic ignored "-Wconversion"
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
 	size_t m = table.size();
@@ -3592,7 +3598,6 @@ size_t WeightedSampler::draw()
 	// should never be reached
 	return 0;
 }
-#pragma GCC diagnostic warning "-Wconversion"
 
 
 vectoru WeightedSampler::drawSamples(ULONG num)

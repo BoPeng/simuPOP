@@ -172,8 +172,8 @@ typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
 
 // max allowed allele state
-const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
-// const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+extern const unsigned long ModuleMaxAllele;
+extern const unsigned long MaxRandomNumber;
 
 #define PopSWIGType "simuPOP::Population *"
 #define IndSWIGType "simuPOP::Individual *"
@@ -304,18 +304,18 @@ enum DBG_CODE {
 };
 
 typedef unsigned char TraitIndexType;
-const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+extern const unsigned char MaxTraitIndex;
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
-const size_t InvalidValue = !size_t(0);
+extern const size_t InvalidValue;
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
 typedef unsigned long ULONG;
-const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
+extern const size_t MaxIndexSize;
 typedef long LONG;
 
 typedef std::vector<long>                        vectori;

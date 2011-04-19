@@ -46,7 +46,6 @@ using std::equal_to;
 #include <deque>
 using std::deque;
 
-#pragma GCC diagnostic ignored "-Wconversion"
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/utility.hpp>
@@ -54,7 +53,6 @@ using std::deque;
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/version.hpp>
-#pragma GCC diagnostic warning "-Wconversion"
 
 #include "individual.h"
 #include "virtualSubPop.h"
@@ -549,6 +547,7 @@ public:
 		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
+
 	/** CPPONLY
 	 */
 	const Individual & individual(size_t idx, vspID subPop = vspID()) const
@@ -565,6 +564,7 @@ public:
 #endif
 		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
+
 
 	/** Return a refernce to individual \e idx in the population
 	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
@@ -638,12 +638,12 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-	Individual & ancestor(double idx, size_t gen, vspID subPop = vspID());
+	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-	const Individual & ancestor(double idx, size_t gen, vspID subPop = vspID()) const;
+	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
@@ -1375,7 +1375,7 @@ public:
 	 *  ancestral generations.
 	 *  <group>6-ancestral</group>
 	 */
-	void useAncestralGen(size_t idx);
+	void useAncestralGen(ssize_t idx);
 
 	//@}
 
@@ -1467,265 +1467,9 @@ public:
 private:
 	friend class boost::serialization::access;
 
-	template<class Archive>
-	void save(Archive & ar, const size_t /* version */) const
-	{
-		// deep adjustment: everyone in order
-		const_cast<Population *>(this)->syncIndPointers();
+	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
 
-		ar & ModuleMaxAllele;
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
-		// GenoStructure genoStru = this->genoStru();
-		ar & genoStru();
-
-		ar & m_subPopSize;
-		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
-#ifdef BINARYALLELE
-		size_t size = m_genotype.size();
-		ar & size;
-		ConstGenoIterator ptr = m_genotype.begin();
-		WORDTYPE data = 0;
-		for (size_t i = 0; i < size; ++i) {
-			data |= (*ptr++) << (i % 32);
-			// end of block of end of data
-			if (i % 32 == 31 || i == size - 1) {
-				// on 64 systems, the upper 32bit of the data might not be 0
-				// so we need to clear the upper 32bit so that the genotype saved
-				// on a 64bit system can be loaded on 32bit systems.
-				data &= 0xFFFFFFFF;
-				ar & data;
-				data = 0;
-			}
-		}
-#else
-		ar & m_genotype;
-#endif
-		DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
-		ar & m_info;
-		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
-		ar & m_inds;
-		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
-		ar & m_ancestralGens;
-		size_t sz = m_ancestralPops.size();
-		ar & sz;
-		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
-			const_cast<Population *>(this)->useAncestralGen(i + 1);
-			// need to make sure ancestral pop also in order
-			const_cast<Population *>(this)->syncIndPointers();
-			ar & m_subPopSize;
-			ar & m_subPopNames;
-#ifdef BINARYALLELE
-			size_t size = m_genotype.size();
-			ar & size;
-			ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				data |= (*ptr++) << (i % 32);
-				// end of block of end of data
-				if (i % 32 == 31 || i == size - 1) {
-					data &= 0xFFFFFFFF;
-					ar & data;
-					data = 0;
-				}
-			}
-#else
-			ar & m_genotype;
-#endif
-			ar & m_info;
-			ar & m_inds;
-		}
-		const_cast<Population *>(this)->useAncestralGen(0);
-
-		// save shared variables as string.
-		// note that many format are not supported.
-		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
-		string vars = varsAsString();
-		ar & vars;
-	}
-
-
-	template<class Archive>
-	void load(Archive & ar, const size_t /* version */)
-	{
-		size_t ma;
-		ar & ma;
-
-		DBG_WARNIF(ma > ModuleMaxAllele, "Warning: The population is saved in library with more allele states. \n"
-			                             "Unless all alleles are less than " + toStr(ModuleMaxAllele) +
-			", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n");
-
-		GenoStructure stru;
-		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
-		ar & stru;
-		ar & m_subPopSize;
-		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
-
-#ifdef BINARYALLELE
-		// binary from binary
-		if (ma == 1) {
-			size_t size;
-			ar & size;
-			m_genotype.resize(size);
-			GenoIterator ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << (i % 32))) != 0;
-			}
-		}
-		// binary from others (long types)
-		else {
-			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-			vectoru tmpgeno;
-			ar & tmpgeno;
-			m_genotype.resize(tmpgeno.size());
-			for (size_t i = 0; i < tmpgeno.size(); ++i)
-				m_genotype[i] = ToAllele(tmpgeno[i]);
-		}
-#else
-		// long from binary
-		if (ma == 1) {
-			// for version 2 and higher, archive in 32bit blocks.
-			size_t size;
-			ar & size;
-			m_genotype.resize(size);
-			GenoIterator ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << (i % 32))) != 0;
-			}
-		}                                                                               // if ma == 1
-		else {                                                                          // for non-binary types, ...
-			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
-			// long from long
-			ar & m_genotype;
-		}
-#endif
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
-		ar & m_info;
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
-		ar & m_inds;
-
-		// set genostructure, check duplication
-		// we can not use setGenoStruIdx since stru may be new.
-		this->setGenoStructure(stru);
-
-		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), size_t(0));
-
-		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
-
-		if (m_popSize != m_inds.size()) {
-			throw ValueError("Number of individuals does not match population size.\n"
-				             "Please use the same (binary, short or long) module to save and load files.");
-		}
-
-		DBG_DO(DBG_POPULATION, cerr << "Reconstruct individual genotype" << endl);
-		m_subPopIndex.resize(m_subPopSize.size() + 1);
-		size_t i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_subPopSize.size(); ++i)
-			m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
-
-		// assign genotype location and set structure information for individuals
-		GenoIterator ptr = m_genotype.begin();
-		size_t step = genoSize();
-		InfoIterator infoPtr = m_info.begin();
-		size_t infoStep = infoSize();
-		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			m_inds[i].setGenoPtr(ptr);
-			m_inds[i].setInfoPtr(infoPtr);
-		}
-		m_ancestralGens = 0;
-		m_ancestralPops.clear();
-
-		// ancestry populations
-		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
-		ar & m_ancestralGens;
-		size_t na;
-		ar & na;
-		for (size_t ap = 0; ap < na; ++ap) {
-			popData pd;
-			ar & pd.m_subPopSize;
-			ar & pd.m_subPopNames;
-#ifdef BINARYALLELE
-			// binary from binary
-			if (ma == 1) {
-				DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
-				size_t size;
-				ar & size;
-				pd.m_genotype.resize(size);
-				ptr = pd.m_genotype.begin();
-				WORDTYPE data = 0;
-				for (size_t i = 0; i < size; ++i) {
-					if (i % 32 == 0)
-						ar & data;
-					*ptr++ = (data & (1UL << i % 32)) != 0;
-				}
-			} else {
-				DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-				// binary from long types
-				vector<unsigned char> tmpgeno;
-				ar & tmpgeno;
-				pd.m_genotype.resize(tmpgeno.size());
-				for (size_t i = 0; i < tmpgeno.size(); ++i)
-					pd.m_genotype[i] = ToAllele(tmpgeno[i]);
-			}
-#else
-			if (ma == 1) {
-				// long type from binary
-				size_t size;
-				ar & size;
-				pd.m_genotype.resize(size);
-				ptr = pd.m_genotype.begin();
-				WORDTYPE data = 0;
-				for (size_t i = 0; i < size; ++i) {
-					if (i % 32 == 0)
-						ar & data;
-					*ptr++ = (data & (1UL << i % 32)) != 0;
-				}
-			} else {
-				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
-				// long type from long type.
-				ar & pd.m_genotype;
-			}
-#endif
-			ar & pd.m_info;
-			ar & pd.m_inds;
-			// set pointer after copy this thing again (push_back)
-			m_ancestralPops.push_back(pd);
-			// now set pointers
-			popData & p = m_ancestralPops.back();
-			// set pointers
-			vector<Individual> & inds = p.m_inds;
-			size_t ps = inds.size();
-			ptr = p.m_genotype.begin();
-			infoPtr = p.m_info.begin();
-
-			for (size_t i = 0; i < ps; ++i, ptr += step, infoPtr += infoStep) {
-				inds[i].setGenoPtr(ptr);
-				inds[i].setInfoPtr(infoPtr);
-				// set new genoStructure
-				inds[i].setGenoStruIdx(genoStruIdx());
-			}
-		}
-
-		// load vars from string
-		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
-		string vars;
-		ar & vars;
-		varsFromString(vars);
-
-		setIndOrdered(true);
-	}
-
+	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
