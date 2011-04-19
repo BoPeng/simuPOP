@@ -393,15 +393,15 @@ if not os.path.isdir('build'):
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std'), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
 }
@@ -475,9 +475,10 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
         # /EHsc is for VC exception handling,
-        # /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
-        # /wd4996 is used to disable warning messages of unsafe function call in boost/serialization
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996'] 
+        # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
+        # /wd4996 disables warning messages for unsafe function call in boost/serialization
+        # /wd4068 disables warning messages for unknown pragma set by gcc 
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] 
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
             res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   

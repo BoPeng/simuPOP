@@ -4204,8 +4204,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 
     WORDTYPE * fr_p = BITPTR(fr);
     WORDTYPE * to_p = BITPTR(to);
-    unsigned int fr_off = BITOFF(fr);
-    unsigned int to_off = BITOFF(to);
+    size_t fr_off = BITOFF(fr);
+    size_t to_off = BITOFF(to);
 
     // if offset is different, can not copy in block.
     if (n < WORDBIT) {
@@ -4403,7 +4403,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 void clearGenotype(GenoIterator to, size_t n)
 {
     WORDTYPE * to_p = BITPTR(to);
-    unsigned int to_off = BITOFF(to);
+    size_t to_off = BITOFF(to);
 
     // This can be made more efficient.
     for (size_t i = 0; i < n; ++i) {

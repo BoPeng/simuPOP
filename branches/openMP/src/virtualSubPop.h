@@ -57,22 +57,22 @@ public:
 	{
 		DBG_FAILIF(subPop.size() > 2, ValueError,
 			"VSP should be specified as a subPop and virtualSubPop ID pair");
-		m_subPop = subPop.size() > 0 && subPop[0] >= 0 ? subPop[0] : InvalidSubPopID;
-		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
+		m_subPop = subPop.size() > 0 && subPop[0] >= 0 ? subPop[0] : InvalidValue;
+		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidValue;
 	}
 
 
 	/// CPPONLY
-	vspID(size_t subPop = InvalidSubPopID, size_t virtualSubPop = InvalidSubPopID,
+	vspID(size_t subPop = InvalidValue, size_t virtualSubPop = InvalidValue,
 		bool allAvailSP = false, bool allAvailVSP = false,
 		const string & spName = string(), const string & vspName = string())
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop),
 		m_spName(spName), m_vspName(vspName), m_allAvailSP(allAvailSP), m_allAvailVSP(allAvailVSP)
 	{
 		if (m_subPop < 0)
-			m_subPop = InvalidSubPopID;
+			m_subPop = InvalidValue;
 		if (m_virtualSubPop < 0)
-			m_virtualSubPop = InvalidSubPopID;
+			m_virtualSubPop = InvalidValue;
 	}
 
 
@@ -107,14 +107,14 @@ public:
 	/// CPPONLY
 	bool valid() const
 	{
-		return m_subPop != InvalidSubPopID;
+		return m_subPop != InvalidValue;
 	}
 
 
 	/// CPPONLY
 	bool isVirtual() const
 	{
-		return m_virtualSubPop != InvalidSubPopID;
+		return m_virtualSubPop != InvalidValue;
 	}
 
 
@@ -302,7 +302,7 @@ public:
 	/** This is a virtual class that cannot be instantiated.
 	 */
 	BaseVspSplitter(const stringList & names = vectorstr()) :
-		m_names(names.elems()), m_activated(InvalidSubPopID)
+		m_names(names.elems()), m_activated(InvalidValue)
 	{
 	}
 
@@ -349,7 +349,7 @@ public:
 	{
 		(void) subPop; /* avoid a warning message in optimized modules */
 		DBG_FAILIF(subPop != m_activated, RuntimeError, "Deactivate non-activated virtual subpopulation.");
-		m_activated = InvalidSubPopID;
+		m_activated = InvalidValue;
 	}
 
 

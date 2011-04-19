@@ -254,7 +254,7 @@ void Population::setSubPopName(const string & name, size_t subPop)
 
 bool Population::hasActivatedVirtualSubPop() const
 {
-	return m_vspSplitter != NULL && m_vspSplitter->activatedSubPop() != InvalidSubPopID;
+	return m_vspSplitter != NULL && m_vspSplitter->activatedSubPop() != InvalidValue;
 }
 
 
@@ -2280,8 +2280,8 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 		} else {
 			pyFunc func = newAlleles.func();
 			PyObject * args = PyTuple_New(func.numArgs());
-			int alleleIndex = -1;
-			int locusIndex = -1;
+			size_t alleleIndex = InvalidValue;
+			size_t locusIndex = InvalidValue;
 			for (size_t i = 0; i < func.numArgs(); ++i) {
 				const string & arg = func.arg(i);
 				if (arg == "allele")
@@ -2298,11 +2298,11 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 			for (; ptr != ptrEnd; ptr += numLoci) {
 				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
-						if (alleleIndex != -1)
+						if (alleleIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + i))));
-						if (locusIndex != -1)
+						if (locusIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(static_cast<int>(i)));
-						if (locusIndex != -1) {
+						if (locusIndex != InvalidValue) {
 							std::pair<Allele, size_t> key(*(ptr + i), i);
 							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
 							if (it != alleleLocusMap.end())

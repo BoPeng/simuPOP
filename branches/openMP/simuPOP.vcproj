@@ -275,7 +275,7 @@
 				EnableFunctionLevelLinking="true"
 				OpenMP="true"
 				WarningLevel="3"
-				WarnAsError="false"
+				WarnAsError="true"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>

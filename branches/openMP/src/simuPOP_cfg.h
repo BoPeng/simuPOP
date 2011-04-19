@@ -314,7 +314,7 @@ const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
-const size_t InvalidSubPopID = !size_t(0);
+const size_t InvalidValue = !size_t(0);
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
 typedef unsigned long ULONG;
@@ -326,8 +326,8 @@ typedef std::vector<double>                vectorf;
 typedef std::vector<Allele>                vectora;
 typedef std::vector<size_t>                vectoru;
 typedef std::vector<std::string>           vectorstr;
-typedef std::pair<size_t, size_t>            pairu;
-typedef std::vector<std::vector<int > >     matrixi;
+typedef std::pair<size_t, size_t>          pairu;
+typedef std::vector<std::vector<int > >    matrixi;
 typedef std::vector<std::vector<std::string > >    matrixstr;
 typedef std::vector<std::vector<double > > matrixf;
 
@@ -508,7 +508,7 @@ public:
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
 #define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, "Wrong sex info. Only MALE or FEMALE is allowed.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numSubPop() - 1))
-#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidSubPopID && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
+#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidValue && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 ~ " + toStr(numChrom() - 1))
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(numLoci(chrom) - 1))
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(totNumLoci() - 1))

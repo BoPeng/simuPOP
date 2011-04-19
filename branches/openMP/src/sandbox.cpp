@@ -36,21 +36,21 @@ bool RevertFixedSites::apply(Population & pop) const
 
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
-	std::set<size_t> commonAlleles(it->genoBegin(0), it->genoEnd(0));
+	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
 	commonAlleles.erase(0);
 	if (commonAlleles.size() == 0)
 		return true;
 
 	for (; it != it_end; ++it) {
 		// common = commonAlleles & geno0
-		std::set<size_t> common;
-		std::set<size_t> alleles1(it->genoBegin(0), it->genoEnd(0));
+		std::set<Allele> common;
+		std::set<Allele> alleles1(it->genoBegin(0), it->genoEnd(0));
 		set_intersection(commonAlleles.begin(),
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
 		commonAlleles.clear();
-		std::set<size_t> alleles2(it->genoBegin(1), it->genoEnd(1));
+		std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
 		set_intersection(common.begin(),
 			common.end(), alleles2.begin(), alleles2.end(),
 			std::inserter(commonAlleles, commonAlleles.begin()));
@@ -60,8 +60,8 @@ bool RevertFixedSites::apply(Population & pop) const
 	if (!noOutput()) {
 		ostream & out = getOstream(pop.dict());
 		out << pop.gen();
-		std::set<size_t>::iterator beg = commonAlleles.begin();
-		std::set<size_t>::iterator end = commonAlleles.end();
+		std::set<Allele>::iterator beg = commonAlleles.begin();
+		std::set<Allele>::iterator end = commonAlleles.end();
 		for (; beg != end ; ++beg)
 			out << '\t' << *beg;
 		out << endl;
@@ -72,7 +72,7 @@ bool RevertFixedSites::apply(Population & pop) const
 		for (size_t p = 0; p < 2; ++p) {
 			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
 			old_alleles.erase(0);
-			std::fill(new_alleles.begin(), new_alleles.end(), 0);
+			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
 			set_difference(old_alleles.begin(), old_alleles.end(),
 				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
 			std::copy(new_alleles.begin(), new_alleles.end(),

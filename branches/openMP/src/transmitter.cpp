@@ -800,7 +800,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = m_bt.probFirstSucc();
 		// if there is some recombination
-		int convCount = -1;
+		ssize_t convCount = -1;
 		size_t convEnd;
 		if (pos != Bernullitrials::npos) {
 			// first piece

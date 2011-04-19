@@ -112,7 +112,9 @@ else:
 
 if os.name == 'nt':
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
-    extra_flags = []
+    # treat warning as error. This is only set for development builds (scons)
+    # because setup.py builds might be built by imcompatible version of compilers
+    extra_flags = ['/WX']
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
@@ -233,9 +235,10 @@ for mod in targets:
 
 # module executable, for testing purposes.
 if os.name == 'nt':
-    pylib_name = 'python%d%d' % (sys.version_info[0], sys.version_info[1])
+    pylibs = ['python%d%d' % (sys.version_info[0], sys.version_info[1])]
 else:
-    pylib_name = 'python%d.%d' % (sys.version_info[0], sys.version_info[1])
+    pylibs = ['python%d.%d' % (sys.version_info[0], sys.version_info[1]), util]
+
 for mod in exe_targets:
     mod_name = mod.split('_')[0]
     exe_env = env.Clone()
@@ -250,7 +253,7 @@ for mod in exe_targets:
     mod_executable = exe_env.Program(
         target = 'build/simuPOP_%s' % mod,
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
-        LIBS = info['libraries'] + [common_lib, pylib_name, 'util'],
+        LIBS = info['libraries'] + [common_lib] + pylibs,
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
