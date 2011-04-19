@@ -118,7 +118,7 @@ if os.name == 'nt':
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
-    extra_flags = ['-g', '-Wconversion']
+    extra_flags = ['-g', '-Wconversion', '-Werror']
 
 #
 def convert_def(defines):
@@ -237,7 +237,7 @@ for mod in targets:
 if os.name == 'nt':
     pylibs = ['python%d%d' % (sys.version_info[0], sys.version_info[1])]
 else:
-    pylibs = ['python%d.%d' % (sys.version_info[0], sys.version_info[1]), util]
+    pylibs = ['python%d.%d' % (sys.version_info[0], sys.version_info[1]), 'util']
 
 for mod in exe_targets:
     mod_name = mod.split('_')[0]
