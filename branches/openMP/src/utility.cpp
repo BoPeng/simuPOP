@@ -3169,6 +3169,7 @@ double pvalChiSq(double chisq, unsigned int df)
 }
 
 
+#pragma GCC diagnostic ignored "-Wconversion"
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
 	size_t m = table.size();
@@ -3360,7 +3361,6 @@ void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, si
 		count.back() += N - tot;
 }
 
-#pragma GCC diagnostic ignored "-Wconversion"
 
 string formatDescription(const string & text)
 {
@@ -3931,7 +3931,7 @@ double Bernullitrials::trialSuccRate(UINT index) const
     for (size_t i = 0; i < trialSize(); ++i)
 		if (getBit(m_pointer[index], i))
 			count++;
-    return count / static_cast<double>(m_table[index].size());
+    return double(count) / static_cast<double>(m_table[index].size());
 }
 
 

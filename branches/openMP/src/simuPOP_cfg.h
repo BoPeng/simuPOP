@@ -100,9 +100,6 @@
 #include <string>
 using std::string;
 
-/// This is not the most effecient method, but it is convenient to use.
-#include "boost/lexical_cast.hpp"
-#define toStr(val) (boost::lexical_cast < string > (val))
 #define toID(val)  (static_cast<size_t>((val) + 0.5))
 
 /// needed by the following typedefs
@@ -428,6 +425,17 @@ public:
 
 
 #define UnnamedSubPop        ""
+}
+
+/// This is not the most effecient method, but it is convenient to use.
+// the pragma will suppress a lot of warnings when using toStr, generated
+// from -Wconversion
+// warning: conversion to ‘char’ from ‘int’ may alter its value
+#pragma GCC system_header
+#include "boost/lexical_cast.hpp"
+#define toStr(val) (boost::lexical_cast < string > (val))
+
+namespace simuPOP {
 
 // standard library
 #ifndef OPTIMIZED
@@ -501,7 +509,16 @@ public:
 
 #define CLEARFLAG(var) (var = 0)
 #define SETFLAG(var, flag) (var |= flag)
+/*
 #define RESETFLAG(var, flag) (var &= ~flag)
+*/
+template<typename T>
+void RESETFLAG(T var, T flag)
+{
+	// This code will not produce warning:
+	// conversion to ‘unsigned char’ from ‘int’ may alter its value
+	var &= T(~flag);
+}
 #define ISSETFLAG(var, flag) (!!(var & flag))
 
 // check range.
