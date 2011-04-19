@@ -2689,7 +2689,7 @@ void Population::useAncestralGen(ssize_t idx)
 		ValueError, "Ancestry generation " + toStr(idx) + " does not exist.");
 
 	// now idx should be at least 1
-	m_curAncestralGen = idx;
+	m_curAncestralGen = static_cast<int>(idx);
 	// swap  1 ==> 0, 2 ==> 1
 
 	popData & pd = m_ancestralPops[m_curAncestralGen - 1];
