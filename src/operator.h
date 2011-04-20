@@ -253,7 +253,7 @@ public:
 	/// HIDDEN
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.operator> a based operator that should not be used directly." ;
 	}
 
@@ -295,14 +295,14 @@ public:
 	/// CPPONLY
 	virtual void initialize(const Individual & ind) const
 	{
-		(void) ind; /* avoid warning about unused parameter */
+		(void)ind;  // avoid warning about unused parameter
 	}
 
 
 	/// CPPONLY
 	virtual void initializeIfNeeded(const Individual & ind) const
 	{
-		(void) ind; /* avoid warning about unused parameter */
+		(void)ind;  // avoid warning about unused parameter
 	}
 
 
@@ -450,7 +450,7 @@ public:
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
-		(void) output; /* avoid warning about unused parameter */
+		(void)output;  // avoid warning about unused parameter
 	}
 
 
@@ -495,7 +495,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
-		(void) output; /* avoid warning about unused parameter */
+		(void)output;  // avoid warning about unused parameter
 	}
 
 
@@ -516,11 +516,11 @@ public:
 	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                               Individual * dad = NULL, Individual * mom = NULL) const
 	{
-		(void) pop; /* avoid warning about unused parameter */
-		(void) offPop; /* avoid warning about unused parameter */
-		(void) offspring; /* avoid warning about unused parameter */
-		(void) dad; /* avoid warning about unused parameter */
-		(void) mom; /* avoid warning about unused parameter */
+		(void)pop;          // avoid warning about unused parameter
+		(void)offPop;       // avoid warning about unused parameter
+		(void)offspring;    // avoid warning about unused parameter
+		(void)dad;          // avoid warning about unused parameter
+		(void)mom;          // avoid warning about unused parameter
 		return true;
 	}
 
@@ -535,7 +535,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.None> an operator that does nothing" ;
 	}
 

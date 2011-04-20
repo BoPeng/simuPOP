@@ -156,11 +156,13 @@ public:
 	Individual & indByID(size_t id) const
 	{
 		IdMap::iterator it = m_idMap.find(id);
+
 		// if still cannot be found, raise an IndexError.
 		if (it == m_idMap.end())
 			throw IndexError("No individual with ID " + toStr(id) + " could be found.");
 		return *it->second;
 	}
+
 
 	/** Return the number of parents each individual has. This function returns
 	 *  the number of information fields used to store parental indexes, even

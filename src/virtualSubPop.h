@@ -343,7 +343,7 @@ public:
 	/// CPPONLY
 	void deactivate(size_t subPop)
 	{
-		(void) subPop; /* avoid a warning message in optimized modules */
+		(void)subPop;  // avoid a warning message in optimized modules
 		DBG_FAILIF(subPop != m_activated, RuntimeError, "Deactivate non-activated virtual subpopulation.");
 		m_activated = InvalidValue;
 	}

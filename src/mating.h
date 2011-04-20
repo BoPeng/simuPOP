@@ -793,6 +793,7 @@ public:
 	{
 	}
 
+
 	/// CPPONLY
 	virtual void finalize(Population & /* pop */, size_t /* subPop */)
 	{
@@ -803,7 +804,7 @@ public:
 	/// HIDDEN describe a general parent chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.ParentChooser> (base class)";
 	}
 
@@ -871,7 +872,7 @@ public:
 	/// HIDDEN describe a sequential parent chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.SequentialParentChooser> chooses a parent sequentially";
 	}
 
@@ -935,7 +936,7 @@ public:
 	/// HIDDEN describe a random parent chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
 	}
 
@@ -1011,7 +1012,7 @@ public:
 	/// HIDDEN describe a random parents chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
 	}
 
@@ -1096,7 +1097,7 @@ public:
 	/// HIDDEN describe a polygenic parents chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PolyParentsChooser> chooses parents with several spouses";
 	}
 
@@ -1264,7 +1265,7 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.CombinedParentsChooser> chooses parents using two parent choosers";
 	}
 
@@ -1326,7 +1327,7 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
@@ -1404,7 +1405,7 @@ public:
 	/// HIDDEN describe a general mating scheme.
 	virtual string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.mating> A mating scheme";
 	}
 
@@ -1417,7 +1418,7 @@ public:
 	 *  mate a subpopulation, called by mate().
 	 */
 	virtual bool mateSubPop(Population & /* pop */, Population & /* offPop */,
-				size_t /* subPop */,
+	                        size_t /* subPop */,
 	                        RawIndIterator /* offBegin */, RawIndIterator /* offEnd */)
 	{
 		return true;

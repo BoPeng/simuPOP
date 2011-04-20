@@ -381,6 +381,7 @@ public:
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(chrom);
 		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
 	}
 
 

@@ -100,11 +100,13 @@ public:
 		return new IdTagger(*this);
 	}
 
+
 	/// CPPONLY
 	bool parallelizable() const
 	{
 		return true;
 	}
+
 
 };
 
@@ -208,7 +210,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.SummaryTagger>" ;
 	}
 
@@ -420,7 +422,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyTagger>" ;
 	}
 
