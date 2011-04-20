@@ -25,11 +25,6 @@
 
 #include "simulator.h"
 
-// for file compression
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/device/file.hpp>
-
 using std::ostringstream;
 
 namespace simuPOP {
@@ -56,7 +51,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 	if (pops == NULL) {
 		return;
 	} else if (PySequence_Check(pops)) {
-		UINT size = PySequence_Size(pops);
+		size_t size = PySequence_Size(pops);
 		for (size_t i = 0; i < size; ++i) {
 			PyObject * item = PySequence_GetItem(pops, i);
 			void * pop = pyPopPointer(item);
@@ -94,7 +89,7 @@ Simulator::Simulator(PyObject * pops, UINT rep, bool steal)
 		}
 	}
 	// parameter rep
-	UINT numRep = m_pops.size();
+	size_t numRep = m_pops.size();
 	for (UINT i = 1; i < rep; ++i) {
 		for (UINT j = 0; j < numRep; ++j) {
 			try {
@@ -147,7 +142,7 @@ Simulator * Simulator::clone() const
 }
 
 
-Population & Simulator::population(UINT rep) const
+Population & Simulator::population(size_t rep) const
 {
 	DBG_WARNIF(true, "The returned object of function Simulator.population is a temporary reference "
 		             "to a population inside a Simulator. It will become invalid once the simulator "
@@ -186,9 +181,10 @@ void Simulator::add(const Population & pop, bool steal)
 }
 
 
-string Simulator::describe(bool format) const
+string Simulator::describe(bool /* format */) const
 {
-	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size()) + " Population" + (m_pops.size() == 1 ? "." : "s.");
+	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size())
+		 + " Population" + (m_pops.size() == 1 ? "." : "s.");
 }
 
 
@@ -210,7 +206,7 @@ vectoru Simulator::evolve(
 
 	vector<bool> activeReps(m_pops.size());
 	fill(activeReps.begin(), activeReps.end(), true);
-	UINT numStopped = 0;
+	size_t numStopped = 0;
 
 	// evolved generations, which will be returned.
 	vectoru evolvedGens(m_pops.size(), 0U);
@@ -233,7 +229,7 @@ vectoru Simulator::evolve(
 	if (!initOps.empty())
 		apply(initOps);
 
-	elapsedTime("PreopDone");
+	elapsedTime("Start evolution.");
 
 	while (1) {
 		// save refcount at the beginning
@@ -241,25 +237,25 @@ vectoru Simulator::evolve(
 		saveRefCount();
 #endif
 
-		for (UINT curRep = 0; curRep < m_pops.size(); curRep++) {
+		for (size_t curRep = 0; curRep < m_pops.size(); curRep++) {
 			Population & curPop = *m_pops[curRep];
 			// sync population variable gen with gen(). This allows
 			// users to set population variable to change generation number.
 #ifndef STANDALONE_EXECUTABLE
-			int curGen = curPop.getVars().getVarAsInt("gen");
-			if (curGen != curPop.gen())
+			long curGen = curPop.getVars().getVarAsInt("gen");
+			if (curGen != static_cast<long>(curPop.gen()))
 				curPop.setGen(curGen);
 #else
-			int curGen = curPop.gen();
+			ssize_t curGen = curPop.gen();
 #endif
 
-			int end = -1;
+			ssize_t end = -1;
 			if (gens > 0)
 				end = curGen + gens - 1;
 			PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
 				"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
-			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
+			DBG_ASSERT(curRep == curPop.rep(), SystemError,
 				"Replicate number does not match");
 
 			if (!activeReps[curRep])
@@ -301,13 +297,13 @@ vectoru Simulator::evolve(
 						numStopped = activeReps.size();
 						break;
 					}
-					elapsedTime("PreMatingOp: " + preOps[it]->describe());
+					elapsedTime("Applied " + preOps[it]->describe());
 				}
 			}
 
 			if (!activeReps[curRep])
 				continue;
-			elapsedTime("matingBegin");
+			elapsedTime("Start mating at generation " + toStr(curGen));
 			// start mating:
 			try {
 				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
@@ -330,7 +326,7 @@ vectoru Simulator::evolve(
 				break;
 			}
 
-			elapsedTime("matingDone");
+			elapsedTime("Mating finished.");
 
 			// apply post-mating ops to next gen()
 			if (!postOps.empty()) {
@@ -360,7 +356,7 @@ vectoru Simulator::evolve(
 						// does not run the rest of the post-mating operators.
 						break;
 					}
-					elapsedTime("PostMatingOp: " + postOps[it]->describe());
+					elapsedTime("Applied " + postOps[it]->describe());
 				}
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
@@ -409,7 +405,7 @@ bool Simulator::apply(const opList & ops)
 
 			ops[it]->apply(curPop);
 
-			elapsedTime("PrePost-preMatingop" + toStr(it));
+			elapsedTime("Applied " + ops[it]->describe());
 		}
 	}
 	return true;
@@ -434,7 +430,7 @@ string describeEvolProcess(const opList & initOps,
                            const MatingScheme & matingScheme,
                            const opList & postOps,
                            const opList & finalOps,
-                           int gen, UINT numRep)
+                           int gen, size_t numRep)
 {
 	vectorstr allDesc(numRep, "");
 

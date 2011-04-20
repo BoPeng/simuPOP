@@ -100,10 +100,7 @@
 #include <string>
 using std::string;
 
-/// This is not the most effecient method, but it is convenient to use.
-#include "boost/lexical_cast.hpp"
-#define toStr(val) (boost::lexical_cast < string > (val))
-#define toID(val)  (static_cast<ULONG>((val) + 0.5))
+#define toID(val)  (static_cast<size_t>((val) + 0.5))
 
 /// needed by the following typedefs
 #include <vector>
@@ -175,8 +172,8 @@ typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
 
 // max allowed allele state
-const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
-const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+extern const unsigned long ModuleMaxAllele;
+extern const unsigned long MaxRandomNumber;
 
 #define PopSWIGType "simuPOP::Population *"
 #define IndSWIGType "simuPOP::Individual *"
@@ -307,37 +304,36 @@ enum DBG_CODE {
 };
 
 typedef unsigned char TraitIndexType;
-const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+extern const unsigned char MaxTraitIndex;
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
-typedef signed int SubPopID;
-const signed int InvalidSubPopID = -1;
-const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
+extern const size_t InvalidValue;
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
 typedef unsigned long ULONG;
-const unsigned long MaxIndexSize = std::numeric_limits<size_t>::max();
+extern const size_t MaxIndexSize;
 typedef long LONG;
 
-typedef std::vector<long int>              vectori;
-typedef std::vector<double>                vectorf;
-typedef std::vector<Allele>                vectora;
-typedef std::vector<ULONG>                 vectoru;
-typedef std::vector<std::string>           vectorstr;
-typedef std::pair<ULONG, ULONG>            pairu;
-typedef std::vector<std::vector<long int > >    matrixi;
-typedef std::vector<std::vector<std::string > >    matrixstr;
-typedef std::vector<std::vector<double > > matrixf;
+typedef std::vector<long>                        vectori;
+typedef std::vector<double>                      vectorf;
+typedef std::vector<Allele>                      vectora;
+typedef std::vector<size_t>                      vectoru;
+typedef std::vector<std::string>                 vectorstr;
+typedef std::pair<size_t, size_t>                pairu;
+typedef std::vector<std::vector<long> >          matrixi;
+typedef std::vector<std::vector<std::string > >  matrixstr;
+typedef std::vector<std::vector<double > >       matrixf;
 
 #include <map>
 using std::map;
 typedef std::map<string, double>           strDict;
 // indDict is currently not defined in simuPOP_common.i
 typedef std::map<int, double>              intDict;
+typedef std::map<size_t, double>           uintDict;
 typedef std::map<vectori, double>          tupleDict;
 
 #define ValidPyObject(obj)   (obj != NULL && obj != Py_None)
@@ -429,6 +425,17 @@ public:
 
 
 #define UnnamedSubPop        ""
+}
+
+/// This is not the most effecient method, but it is convenient to use.
+// the pragma will suppress a lot of warnings when using toStr, generated
+// from -Wconversion
+// warning: conversion to ‘char’ from ‘int’ may alter its value
+#pragma GCC system_header
+#include "boost/lexical_cast.hpp"
+#define toStr(val) (boost::lexical_cast < string > (val))
+
+namespace simuPOP {
 
 // standard library
 #ifndef OPTIMIZED
@@ -509,7 +516,7 @@ public:
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
 #define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, "Wrong sex info. Only MALE or FEMALE is allowed.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numSubPop() - 1))
-#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidSubPopID && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
+#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidValue && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 ~ " + toStr(numChrom() - 1))
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(numLoci(chrom) - 1))
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(totNumLoci() - 1))

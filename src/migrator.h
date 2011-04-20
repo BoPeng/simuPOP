@@ -250,6 +250,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.split subpopulation>" ;
 	}
 
@@ -317,6 +318,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.merge subpopulations>" ;
 	}
 
@@ -389,6 +391,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.resize subpopulations>" ;
 	}
 

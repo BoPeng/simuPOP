@@ -61,7 +61,7 @@ bool is_carrayobject(PyObject * op);
 
 /// CPPONLY
 static PyObject *
-getarrayitem(arrayobject * op, int i)
+getarrayitem(arrayobject * op, Py_ssize_t i)
 {
 	register arrayobject * ap;
 
@@ -74,7 +74,7 @@ getarrayitem(arrayobject * op, int i)
 
 /// CPPONLY
 static int
-setarrayitem(arrayobject * ap, int i, PyObject * v)
+setarrayitem(arrayobject * ap, Py_ssize_t i, PyObject * v)
 {
 	// right now, the longest allele is uint16_t, but we need to be careful.
 	int x;
@@ -96,7 +96,7 @@ setarrayitem(arrayobject * ap, int i, PyObject * v)
 
 /// CPPONLY
 static PyObject *
-carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
+carray_new(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not create carray object from python.");
@@ -106,7 +106,7 @@ carray_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
 
 /// CPPONLY
 static PyObject *
-carray_init(PyTypeObject * type, PyObject * args, PyObject * kwds)
+carray_init(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not create carray object from python.");
@@ -177,8 +177,8 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 
 		if (k) {
 			/* No more items to compare -- compare sizes */
-			int vs = Py_SIZE(va);
-			int ws = Py_SIZE(wa);
+			Py_ssize_t vs = Py_SIZE(va);
+			Py_ssize_t ws = Py_SIZE(wa);
 			int cmp;
 			switch (op) {
 			case Py_LT: cmp = vs < ws; break;
@@ -214,7 +214,7 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 		arrayobject * va;
 		PyObject * wa, * res;
 		bool dir;
-		int vs, ws;                                                                     // direction
+		Py_ssize_t vs, ws;                                                                     // direction
 
 		// one of them is not array
 		if (is_carrayobject(v) ) {
@@ -321,7 +321,7 @@ static Py_ssize_t array_length(arrayobject * a)
 
 
 /// CPPONLY
-static PyObject * array_concat(arrayobject * a, PyObject * bb)
+static PyObject * array_concat(arrayobject * , PyObject * )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not concat carray object.");
@@ -330,7 +330,7 @@ static PyObject * array_concat(arrayobject * a, PyObject * bb)
 
 
 /// CPPONLY
-static PyObject * array_repeat(arrayobject * a, Py_ssize_t n)
+static PyObject * array_repeat(arrayobject * , Py_ssize_t )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not repeat carray object.");
@@ -392,31 +392,31 @@ static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, P
 
 	// use a single number to propagate v
 	if (PyNumber_Check(v) ) {
-		for (int i = ilow; i < ihigh; ++i)
+		for (Py_ssize_t i = ilow; i < ihigh; ++i)
 			setarrayitem(a, i, v);
 		return 0;
 	}
 #  define b ((arrayobject *)v)
 	if (is_carrayobject(v)) {                                                  /* v is of array type */
-		int n = Py_SIZE(b);
+		Py_ssize_t n = Py_SIZE(b);
 		if (n != ihigh - ilow) {
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
 		}
-		for (int i = 0; i < n; ++i)
+		for (Py_ssize_t i = 0; i < n; ++i)
 			setarrayitem(a, i + ilow, getarrayitem(b, i) );
 		return 0;
 	}
 #  undef b
 	/* a general sequence */
 	if (PySequence_Check(v) ) {
-		int n = PySequence_Size(v);
+		Py_ssize_t n = PySequence_Size(v);
 		if (n != ihigh - ilow) {
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
 		}
 		// iterator sequence
-		for (int i = 0; i < n; ++i) {
+		for (Py_ssize_t i = 0; i < n; ++i) {
 			PyObject * item = PySequence_GetItem(v, i);
 			setarrayitem(a, i + ilow, item);
 			Py_DECREF(item);
@@ -473,7 +473,7 @@ Return number of occurences of x in the array."                                 
 /// CPPONLY
 static PyObject * array_index(arrayobject * self, PyObject * args)
 {
-	int i;
+	Py_ssize_t i;
 	PyObject * v;
 	Py_ssize_t start = 0, stop = Py_SIZE(self);
 
@@ -532,6 +532,7 @@ static char tolist_doc [] =
 \n\
 Convert array to an ordinary list with the same items."                                                          ;
 
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyMethodDef array_methods[] =
 {
 	{
@@ -563,10 +564,10 @@ static PyObject * array_getattr(arrayobject * a, char * name)
 
 
 /// CPPONLY
-static int array_print(arrayobject * a, FILE * fp, int flags)
+static int array_print(arrayobject * a, FILE * fp, int /* flags */)
 {
 	int ok = 0;
-	int i, len;
+	Py_ssize_t i, len;
 	PyObject * v;
 
 	len = Py_SIZE(a);
@@ -593,7 +594,7 @@ array_repr(arrayobject * a)
 {
 	char buf[256];
 	PyObject * s, * t, * comma, * v;
-	int i, len;
+	Py_ssize_t i, len;
 
 	len = Py_SIZE(a);
 	if (len == 0) {
@@ -770,7 +771,7 @@ static PyMemberDef defdict_members[] = {
 };
 
 static int
-defdict_print(defdictobject * dd, FILE * fp, int flags)
+defdict_print(defdictobject * dd, FILE * fp, int /* flags */)
 {
 	int sts;
 

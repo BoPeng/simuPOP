@@ -67,7 +67,7 @@ public:
 	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
 	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
 	 */
-	void clearChromosome(const Individual & ind, int ploidy, int chrom) const;
+	void clearChromosome(const Individual & ind, int ploidy, size_t chrom) const;
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
@@ -75,7 +75,7 @@ public:
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
 	 */
 	void copyChromosome(const Individual & parent, int parPloidy,
-		Individual & offspring, int ploidy, int chrom) const;
+		Individual & offspring, int ploidy, size_t chrom) const;
 
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
@@ -88,6 +88,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void)format;  /* avoid warning about unused parameter */
 		return "<simuPOP.GenoTransmitter>" ;
 	}
 
@@ -103,6 +104,11 @@ public:
 	                       Individual * dad = NULL,
 	                       Individual * mom = NULL) const
 	{
+		(void)pop;          /* avoid warning about unused parameter */
+		(void)offPop;       /* avoid warning about unused parameter */
+		(void)offspring;    /* avoid warning about unused parameter */
+		(void)dad;          /* avoid warning about unused parameter */
+		(void)mom;          /* avoid warning about unused parameter */
 		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
 	}
 
@@ -171,6 +177,14 @@ public:
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
 
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	// this is user input.
 	const uintList m_chroms;
@@ -210,6 +224,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void)format;  /* avoid warning about unused parameter */
 		return "<simuPOP.MendelianGenoTransmitter>" ;
 	}
 
@@ -249,7 +264,7 @@ protected:
 
 	mutable int m_chromY;
 
-	mutable UINT m_numChrom;
+	mutable size_t m_numChrom;
 };
 
 
@@ -284,6 +299,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void)format;  /* avoid warning about unused parameter */
 		return "<simuPOP.SelfingGenoTransmitter>" ;
 	}
 
@@ -332,6 +348,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void)format;  /* avoid warning about unused parameter */
 		return "<simuPOP.HaplodiploidGenoTransmitter>" ;
 	}
 
@@ -387,6 +404,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void)format;  /* avoid warning about unused parameter */
 		return "<simuPOP.MitochondrialGenoTransmitter>" ;
 	}
 
@@ -408,7 +426,7 @@ private:
 	mutable vectoru m_mitoChroms;
 
 	//
-	mutable UINT m_numLoci;
+	mutable size_t m_numLoci;
 };
 
 
@@ -574,7 +592,7 @@ public:
 
 private:
 	/// determine number of markers to convert
-	int markersConverted(size_t index, const Individual & ind) const;
+	size_t markersConverted(size_t index, const Individual & ind) const;
 
 private:
 	/// intensity
@@ -606,7 +624,7 @@ private:
 
 	mutable ostream * m_debugOutput;
 
-	mutable ULONG m_intendedSize;
+	mutable size_t m_intendedSize;
 
 };
 

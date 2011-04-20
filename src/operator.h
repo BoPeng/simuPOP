@@ -178,11 +178,11 @@ public:
 	   replicate, current generation, ending generation etc.
 	   \note This function will be called by Simulators before applying.
 	 */
-	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false) const;
+	bool isActive(size_t rep, ssize_t gen, ssize_t end, const vector<bool> & activeRep, bool repOnly = false) const;
 
 	/** CPPONLY Another version of isActive when negative gen is not considered.
 	 */
-	bool isActive(UINT rep, long gen) const;
+	bool isActive(ssize_t rep, ssize_t gen) const;
 
 	//@}
 
@@ -192,7 +192,7 @@ public:
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
-	UINT infoSize() const
+	size_t infoSize() const
 	{
 		return m_infoFields.elems().size();
 	}
@@ -200,7 +200,7 @@ public:
 
 	/// get the information field specified by user (or by default)
 	/// CPPONLY
-	string infoField(UINT idx) const
+	string infoField(size_t idx) const
 	{
 		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError, "Given info index " + toStr(idx) +
 			" is out of range of 0 ~ " + toStr(m_infoFields.elems().size()));
@@ -253,6 +253,7 @@ public:
 	/// HIDDEN
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.operator> a based operator that should not be used directly." ;
 	}
 
@@ -294,12 +295,14 @@ public:
 	/// CPPONLY
 	virtual void initialize(const Individual & ind) const
 	{
+		(void) ind; /* avoid warning about unused parameter */
 	}
 
 
 	/// CPPONLY
 	virtual void initializeIfNeeded(const Individual & ind) const
 	{
+		(void) ind; /* avoid warning about unused parameter */
 	}
 
 
@@ -310,10 +313,10 @@ protected:
 private:
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagAtAllGen = 1;
-	static const size_t m_flagOnlyAtBegin = 2;
-	static const size_t m_flagOnlyAtEnd = 4;
-	static const size_t m_flagAllSubPops = 8;
+	static const unsigned char m_flagAtAllGen = 1;
+	static const unsigned char m_flagOnlyAtBegin = 2;
+	static const unsigned char m_flagOnlyAtEnd = 4;
+	static const unsigned char m_flagAllSubPops = 8;
 
 private:
 	/// starting generation, default to 0
@@ -447,6 +450,7 @@ public:
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
+		(void) output; /* avoid warning about unused parameter */
 	}
 
 
@@ -491,6 +495,7 @@ public:
 		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
+		(void) output; /* avoid warning about unused parameter */
 	}
 
 
@@ -511,12 +516,17 @@ public:
 	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                               Individual * dad = NULL, Individual * mom = NULL) const
 	{
+		(void) pop; /* avoid warning about unused parameter */
+		(void) offPop; /* avoid warning about unused parameter */
+		(void) offspring; /* avoid warning about unused parameter */
+		(void) dad; /* avoid warning about unused parameter */
+		(void) mom; /* avoid warning about unused parameter */
 		return true;
 	}
 
 
 	/// HIDDEN apply the \c NoneOp operator to one population
-	virtual bool apply(Population & pop) const
+	virtual bool apply(Population & /* pop */) const
 	{
 		return true;
 	}
@@ -525,6 +535,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.None> an operator that does nothing" ;
 	}
 
@@ -877,7 +888,7 @@ private:
  *  of population \e pop. If index of dad or mom is negative, NULL will be passed.
  */
 void applyDuringMatingOperator(const BaseOperator & op,
-	Population * pop, Population * offPop, int dad, int mom, const pairu & off);
+	Population * pop, Population * offPop, ssize_t dad, ssize_t mom, const pairu & off);
 
 }
 #endif

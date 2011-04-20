@@ -40,12 +40,12 @@ bool BaseQuanTrait::apply(Population & pop) const
 
 	vectoru gens = m_ancGens.elems();
 	if (m_ancGens.allAvail())
-		for (UINT gen = 0; gen <= pop.ancestralGens(); ++gen)
+		for (int gen = 0; gen <= pop.ancestralGens(); ++gen)
 			gens.push_back(gen);
 	else if (m_ancGens.unspecified())
 		gens.push_back(pop.curAncestralGen());
 
-	UINT oldGen = pop.curAncestralGen();
+	size_t oldGen = pop.curAncestralGen();
 	vectorf traits(infoSize());
 	for (unsigned genIdx = 0; genIdx < gens.size(); ++genIdx) {
 		pop.useAncestralGen(gens[genIdx]);
@@ -75,7 +75,7 @@ bool BaseQuanTrait::apply(Population & pop) const
 
 
 bool BaseQuanTrait::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom) const
+                                      Individual * /* dad */, Individual * /* mom */) const
 
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -90,20 +90,20 @@ bool BaseQuanTrait::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-void PyQuanTrait::qtrait(Individual * ind, ULONG gen, vectorf & traits) const
+void PyQuanTrait::qtrait(Individual * ind, size_t gen, vectorf & traits) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "ind")
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(gen));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(gen)));
 		else {
 			DBG_FAILIF(!ind->hasInfoField(arg), ValueError,
 				"Only parameters 'ind', 'geno', 'gen', and names of information fields are "

@@ -320,7 +320,7 @@ class NumOffModel
 public:
 	NumOffModel() {}
 	virtual ~NumOffModel() {}
-	virtual ULONG getNumOff(int gen) = 0;
+	virtual UINT getNumOff(ssize_t gen) = 0;
 
 	virtual void reset() {}
 	virtual NumOffModel * clone() = 0;
@@ -348,7 +348,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return m_numOff;
 	}
@@ -380,7 +380,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return getRNG().randGeometric(m_p);
 	}
@@ -406,7 +406,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		return getRNG().randTruncatedPoisson(m_mu);
 	}
@@ -432,14 +432,14 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	UINT getNumOff(ssize_t /* gen */)
 	{
-		return getRNG().randTruncatedBinomial(m_N, m_mu);
+		return static_cast<UINT>(getRNG().randTruncatedBinomial(static_cast<ULONG>(m_N), m_mu));
 	}
 
 
 private:
-	ULONG m_N;
+	size_t m_N;
 	double m_mu;
 };
 
@@ -459,7 +459,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen)
+	UINT getNumOff(ssize_t /* gen */)
 	{
 		// max: 5
 		// num: 2
@@ -494,7 +494,7 @@ public:
 	}
 
 
-	ULONG getNumOff(int gen);
+	UINT getNumOff(ssize_t gen);
 
 	void reset()
 	{
@@ -617,14 +617,14 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	virtual void initialize(const Population & pop, SubPopID subPop);
+	virtual void initialize(const Population & pop, size_t subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
 		RawIndIterator & offBegin, RawIndIterator & offEnd);
 
 	/// CPPONLY
-	virtual void finalize(const Population & pop)
+	virtual void finalize(const Population & /* pop */)
 	{
 		m_numOffModel->reset();
 		m_sexModel->reset();
@@ -647,7 +647,7 @@ public:
 	 *  This is called whenever a family size is needed.
 	 *  Its actual meaning depending on \c mode.
 	 */
-	ULONG numOffspring(int gen);
+	UINT numOffspring(ssize_t gen);
 
 
 	/** CPPONLY
@@ -722,7 +722,7 @@ public:
 	ControlledOffspringGenerator(const ControlledOffspringGenerator & rhs);
 
 	/// CPPONLY
-	void initialize(const Population & pop, SubPopID subPop);
+	void initialize(const Population & pop, size_t subPop);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(Population & pop, Population & offPop, Individual * dad, Individual * mom,
@@ -789,10 +789,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void initialize(Population & pop, SubPopID subPop) { }
+	virtual void initialize(Population & /* pop */, size_t /* subPop */)
+	{
+	}
 
 	/// CPPONLY
-	virtual void finalize(Population & pop, SubPopID subPop)
+	virtual void finalize(Population & /* pop */, size_t /* subPop */)
 	{
 		m_initialized = false;
 	}
@@ -801,6 +803,7 @@ public:
 	/// HIDDEN describe a general parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.ParentChooser> (base class)";
 	}
 
@@ -820,7 +823,7 @@ public:
 
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	virtual IndividualPair chooseParents(RawIndIterator basePtr)
+	virtual IndividualPair chooseParents(RawIndIterator /* basePtr */)
 	{
 		return IndividualPair(NULL, NULL);
 	}
@@ -868,12 +871,13 @@ public:
 	/// HIDDEN describe a sequential parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.SequentialParentChooser> chooses a parent sequentially";
 	}
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -887,7 +891,7 @@ private:
 	IndIterator m_ind;
 	/// for sexual selection of parents
 	vector<RawIndIterator> m_index;
-	ULONG m_curInd;
+	size_t m_curInd;
 };
 
 
@@ -931,6 +935,7 @@ public:
 	/// HIDDEN describe a random parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.RandomParentChooser> chooses one parent randomly";
 	}
 
@@ -946,7 +951,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1006,6 +1011,7 @@ public:
 	/// HIDDEN describe a random parents chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.RandomParentsChooser> chooses two parents randomly";
 	}
 
@@ -1021,7 +1027,7 @@ public:
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1033,8 +1039,8 @@ private:
 
 	bool m_selection;
 
-	ULONG m_numMale;
-	ULONG m_numFemale;
+	size_t m_numMale;
+	size_t m_numFemale;
 
 	/// internal index to female/males.
 	vector<RawIndIterator> m_index;
@@ -1090,12 +1096,13 @@ public:
 	/// HIDDEN describe a polygenic parents chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PolyParentsChooser> chooses parents with several spouses";
 	}
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1110,8 +1117,8 @@ private:
 
 	bool m_selection;
 
-	ULONG m_numMale;
-	ULONG m_numFemale;
+	size_t m_numMale;
+	size_t m_numFemale;
 
 	/// internal index to female/males.
 	vector<RawIndIterator> m_maleIndex;
@@ -1190,7 +1197,7 @@ private:
 
 
    /// CPPONLY
-   void initialize(Population & pop, SubPopID sp);
+   void initialize(Population & pop, size_t sp);
 
    /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
    IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1233,7 +1240,7 @@ public:
 
 	/// CPPONLY
 	CombinedParentsChooser(const CombinedParentsChooser & rhs)
-		: m_fatherChooser(rhs.m_fatherChooser->clone()),
+		: ParentChooser("fitness"), m_fatherChooser(rhs.m_fatherChooser->clone()),
 		m_motherChooser(rhs.m_motherChooser->clone())
 	{
 		m_initialized = false;
@@ -1257,15 +1264,16 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.CombinedParentsChooser> chooses parents using two parent choosers";
 	}
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, SubPopID sp);
+	void finalize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1318,15 +1326,16 @@ public:
 	/// HIDDEN describe a hybrid parent chooser
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
 
 	/// CPPONLY
-	void initialize(Population & pop, SubPopID sp);
+	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, SubPopID sp);
+	void finalize(Population & pop, size_t sp);
 
 	/// destructor
 	~PyParentsChooser()
@@ -1342,7 +1351,7 @@ public:
 
 private:
 #ifndef OPTIMIZED
-	ULONG m_size;
+	size_t m_size;
 #endif
 	IndIterator m_begin;
 
@@ -1395,6 +1404,7 @@ public:
 	/// HIDDEN describe a general mating scheme.
 	virtual string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.mating> A mating scheme";
 	}
 
@@ -1406,8 +1416,9 @@ public:
 	/** CPPONLY
 	 *  mate a subpopulation, called by mate().
 	 */
-	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd)
+	virtual bool mateSubPop(Population & /* pop */, Population & /* offPop */,
+				size_t /* subPop */,
+	                        RawIndIterator /* offBegin */, RawIndIterator /* offEnd */)
 	{
 		return true;
 	}
@@ -1517,7 +1528,7 @@ public:
 
 
 	/// CPPONLY
-	virtual bool mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
+	virtual bool mateSubPop(Population & pop, Population & offPop, size_t subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd);
 
 private:
@@ -1595,7 +1606,7 @@ private:
 
 	const string m_idField;
 
-	mutable int m_gen;
+	mutable ssize_t m_gen;
 };
 
 

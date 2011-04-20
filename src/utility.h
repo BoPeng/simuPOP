@@ -261,7 +261,7 @@ public:
 
 	/// return number of arguments this function accepts.
 	/// This function does not count tuple parameters.
-	int numArgs() const
+	size_t numArgs() const
 	{
 		return m_numArgs;
 	}
@@ -273,7 +273,7 @@ public:
 	}
 
 
-	string arg(int arg) const
+	string arg(size_t arg) const
 	{
 		return m_args[arg];
 	}
@@ -369,7 +369,7 @@ private:
 
 	string m_name;
 
-	long int m_numArgs;
+	size_t m_numArgs;
 
 	vectorstr m_args;
 
@@ -439,7 +439,7 @@ public:
 
 
 	/// CPPONLY
-	bool match(UINT rep, const vector<bool> * activeRep = NULL) const;
+	bool match(ssize_t rep, const vector<bool> * activeRep = NULL) const;
 
 private:
 	vectori m_elems;
@@ -769,7 +769,7 @@ protected:
 class uintString
 {
 public:
-	uintString(UINT value) : m_string(), m_int(value)
+	uintString(size_t value) : m_string(), m_int(value)
 	{
 	}
 
@@ -794,7 +794,7 @@ public:
 
 
 	/// CPPONLY
-	UINT value() const
+	size_t value() const
 	{
 		return m_int;
 	}
@@ -802,7 +802,7 @@ public:
 
 private:
 	string m_string;
-	UINT m_int;
+	size_t m_int;
 };
 
 
@@ -946,7 +946,7 @@ private:
 void PyObj_As_Bool(PyObject * obj, bool & val);
 
 /// CPPONLY
-void PyObj_As_Int(PyObject * obj, long int & val);
+void PyObj_As_Int(PyObject * obj, long & val);
 
 /// CPPONLY
 void PyObj_As_Double(PyObject * obj, double & val);
@@ -1045,34 +1045,40 @@ public:
 	void removeVar(const string & name);
 
 	///CPPONLY
-	PyObject * setBoolVar(const string & name, const bool val);
+	PyObject * setVar(const string & name, const bool val);
 
 	///CPPONLY
-	PyObject * setIntVar(const string & name, const int val);
+	PyObject * setVar(const string & name, const long val);
 
 	///CPPONLY
-	PyObject * setDoubleVar(const string & name, const double val);
+	PyObject * setVar(const string & name, const size_t val);
 
 	///CPPONLY
-	PyObject * setStringVar(const string & name, const string & val);
+	PyObject * setVar(const string & name, const double val);
 
 	///CPPONLY
-	PyObject * setIntVectorVar(const string & name, const vectori & val);
+	PyObject * setVar(const string & name, const string & val);
 
 	///CPPONLY
-	PyObject * setDoubleVectorVar(const string & name, const vectorf & val);
+	PyObject * setVar(const string & name, const vectori & val);
 
 	///CPPONLY
-	PyObject * setStrDictVar(const string & name, const strDict & val);
+	PyObject * setVar(const string & name, const vectoru & val);
 
 	///CPPONLY
-	PyObject * setIntDictVar(const string & name, const intDict & val);
+	PyObject * setVar(const string & name, const vectorf & val);
 
 	///CPPONLY
-	PyObject * setIntDefDictVar(const string & name, const intDict & val);
+	PyObject * setVar(const string & name, const strDict & val);
 
 	///CPPONLY
-	PyObject * setTupleDefDictVar(const string & name, const tupleDict & val);
+	PyObject * setVar(const string & name, const intDict & val);
+
+///CPPONLY
+	PyObject * setVar(const string & name, const uintDict & val);
+
+	///CPPONLY
+	PyObject * setVar(const string & name, const tupleDict & val);
 
 	/// CPPONLY
 	bool getVarAsBool(const string & name, bool nameError = true) const
@@ -1085,9 +1091,9 @@ public:
 
 
 	/// CPPONLY
-	long int getVarAsInt(const string & name, bool nameError = true) const
+	long getVarAsInt(const string & name, bool nameError = true) const
 	{
-		long int val;
+		long val;
 
 		PyObj_As_Int(getVar(name, nameError), val);
 		return val;
@@ -1565,14 +1571,14 @@ private:
 
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
-	static const size_t m_flagNoOutput = 1;
-	static const size_t m_flagUseDefault = 2;
-	static const size_t m_flagAppend = 4;
-	static const size_t m_flagRealAppend = 8;
-	static const size_t m_flagCloseAfterUse = 16;
-	static const size_t m_flagUseString = 32;
-	static const size_t m_flagReadable = 64;
-	static const size_t m_flagUseFunc = 128;
+	static const unsigned char m_flagNoOutput = 1;
+	static const unsigned char m_flagUseDefault = 2;
+	static const unsigned char m_flagAppend = 4;
+	static const unsigned char m_flagRealAppend = 8;
+	static const unsigned char m_flagCloseAfterUse = 16;
+	static const unsigned char m_flagUseString = 32;
+	static const unsigned char m_flagReadable = 64;
+	static const unsigned char m_flagUseFunc = 128;
 
 	/// m_flags
 	unsigned char m_flags;
@@ -1743,7 +1749,7 @@ public:
 	 *  parameter \e p.
 	 *  <group>4-distribution</group>
 	 */
-	int randGeometric(double p)
+	long randGeometric(double p)
 	{
 		return gsl_ran_geometric(m_RNG, p);
 	}
@@ -1753,7 +1759,7 @@ public:
 	 *  parameters \e n and \e p.
 	 *  <group>4-distribution</group>
 	 */
-	UINT randBinomial(UINT n, double p)
+	ULONG randBinomial(UINT n, double p)
 	{
 		DBG_FAILIF(n <= 0, ValueError, "RandBinomial: n should be positive.");
 
@@ -1765,7 +1771,7 @@ public:
 	 *  parameter \e mu.
 	 *  <group>4-distribution</group>
 	 */
-	UINT randPoisson(double mu)
+	ULONG randPoisson(double mu)
 	{
 		return gsl_ran_poisson(m_RNG, mu);
 	}
@@ -1774,12 +1780,12 @@ public:
 	/** Generate a positive random number following a zero-truncated Poisson
 	 *  distribution with parameter \e mu.
 	 */
-	UINT randTruncatedPoisson(double mu);
+	ULONG randTruncatedPoisson(double mu);
 
 	/** Generate a positive random number following a zero-truncated binomial
 	 *  distribution with parameters \e n and \e p.
 	 */
-	UINT randTruncatedBinomial(UINT n, double p);
+	ULONG randTruncatedBinomial(UINT n, double p);
 
 	/** Generate a random number following a multinomial distribution with
 	 *  parameters \e N and \e p (a list of probabilities).
@@ -1813,9 +1819,9 @@ public:
 
 
 private:
-	UINT search_poisson(UINT y, double * z, double p, double lambda);
+	ULONG search_poisson(UINT y, double * z, double p, double lambda);
 
-	UINT search_binomial(UINT y, double * z, double p, UINT n, double pr);
+	ULONG search_binomial(UINT y, double * z, double p, UINT n, double pr);
 
 private:
 	/// global random number generator
@@ -1843,7 +1849,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & weight);
 double hweTest(const vectoru & cnt);
 
 /// CPPONLY
-void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count);
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru & count);
 
 /// CPPONLY
 string formatDescription(const string & text);
@@ -1884,12 +1890,12 @@ public:
 	/** CPPONLY
 	 *  Set parameters for the weighted sampler.
 	 */
-	void set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N = 0);
+	void set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N = 0);
 
 	/** Returns a random number between \c 0 and \c k-1 with probabilities that
 	 *  are proportional to specified weights.
 	 */
-	ULONG draw();
+	size_t draw();
 
 	/** Returns a list of \e n random numbers
 	 */
@@ -1909,7 +1915,7 @@ private:
 	vectoru m_a;
 
 	///
-	ULONG m_param;
+	size_t m_param;
 
 	///
 	vectoru m_sequence;
@@ -1970,7 +1976,7 @@ public:
 	/** CPPONLY
 	 * return size of trial
 	 */
-	ULONG trialSize() const
+	size_t trialSize() const
 	{
 		return m_N;
 	}
@@ -1983,13 +1989,13 @@ public:
 
 
 	/// CPPONLY
-	void setParameter(const vectorf & prob, ULONG trials);
+	void setParameter(const vectorf & prob, size_t trials);
 
 	/// generate the trial table, reset m_cur
 	void doTrial();
 
 	/// CPPONLY
-	UINT curTrial();
+	size_t curTrial();
 
 	/// if necessary, do trail again.
 	void trial();
@@ -2035,7 +2041,7 @@ private:
 	RNG * m_RNG;
 
 	/// number of trials.
-	ULONG m_N;
+	size_t m_N;
 
 	/// vector of probabilities
 	vectorf m_prob;

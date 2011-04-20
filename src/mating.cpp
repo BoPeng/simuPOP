@@ -36,10 +36,10 @@
 typedef std::map<ULONG, simuPOP::Individual *> IdMap;
 #elif TR1_SUPPORT == 1
 #  include <unordered_map>
-typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
+typedef std::tr1::unordered_map<size_t, simuPOP::Individual *> IdMap;
 #else
 #  include <tr1/unordered_map>
-typedef std::tr1::unordered_map<ULONG, simuPOP::Individual *> IdMap;
+typedef std::tr1::unordered_map<size_t, simuPOP::Individual *> IdMap;
 #endif
 
 namespace simuPOP {
@@ -71,7 +71,7 @@ GlobalSeqSexModel::GlobalSeqSexModel(const vectorf & sex) : m_sex(), m_index(0)
 Sex FuncSexModel::getSex(UINT count)
 {
 	if (m_generator.isValid()) {
-		long int val;
+		long val;
 		PyObject * obj = m_generator.next();
 		PyObj_As_Int(obj, val);
 		Py_DECREF(obj);
@@ -80,7 +80,7 @@ Sex FuncSexModel::getSex(UINT count)
 		PyObject * obj = NULL;
 		try {
 			obj = m_func("()");
-			long int val;
+			long val;
 			PyObj_As_Int(obj, val);
 			Py_DECREF(obj);
 			return static_cast<Sex>(val);
@@ -99,11 +99,11 @@ Sex FuncSexModel::getSex(UINT count)
 }
 
 
-ULONG FuncNumOffModel::getNumOff(int gen)
+UINT FuncNumOffModel::getNumOff(ssize_t gen)
 {
 	if (m_generator.isValid()) {
 		int attempts = 0;
-		long int numOff = 0;
+		long numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = m_generator.next();
 			PyObj_As_Int(obj, numOff);
@@ -118,7 +118,7 @@ ULONG FuncNumOffModel::getNumOff(int gen)
 		DBG_FAILIF(m_func.numArgs() > 1 || (m_func.numArgs() == 1 && m_func.arg(0) != "gen"),
 			ValueError, "Function passed to parameter numOffspring should have no parameter or a parameter named gen");
 		int attempts = 0;
-		long int numOff = 0;
+		long numOff = 0;
 		while (++attempts < 50) {
 			PyObject * obj = NULL;
 			try {
@@ -224,7 +224,7 @@ OffspringGenerator::OffspringGenerator(const opList & ops,
 }
 
 
-ULONG OffspringGenerator::numOffspring(int gen)
+UINT OffspringGenerator::numOffspring(ssize_t gen)
 {
 	return m_numOffModel->getNumOff(gen);
 }
@@ -252,7 +252,7 @@ Sex OffspringGenerator::getSex(UINT count)
 }
 
 
-void OffspringGenerator::initialize(const Population & pop, SubPopID subPop)
+void OffspringGenerator::initialize(const Population & pop, size_t /* subPop */)
 {
 	opList::const_iterator iop = m_transmitters.begin();
 	opList::const_iterator iopEnd = m_transmitters.end();
@@ -361,8 +361,8 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 	// determine expected number of alleles of each allele
 	// at each subpopulation.
 	const vectoru & loci = m_loci.elems(&pop);
-	UINT nLoci = loci.size();
-	UINT numSP = pop.numSubPop();
+	size_t nLoci = loci.size();
+	size_t numSP = pop.numSubPop();
 
 	DBG_ASSERT(expFreq.size() == nLoci || expFreq.size() == nLoci * numSP, SystemError,
 		"Expect expected frequency for all loci (or all loci in all subpopulation)");
@@ -379,7 +379,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 		// I need to find the current allele frequencies
 		// and use them as proportions for the next generation.
 		for (size_t i = 0; i < nLoci; ++i) {
-			UINT locus = loci[i];
+			size_t locus = loci[i];
 			Allele allele = ToAllele(m_alleles[i]);
 
 			// determine the number alleles at each subpopulation.
@@ -421,7 +421,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 		for (size_t i = 0; i < nLoci; ++i) {
 			for (size_t sp = 0; sp < numSP; ++sp) {
 #ifndef OPTIMIZED
-				UINT locus = loci[i];
+				size_t locus = loci[i];
 				Allele allele = ToAllele(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
@@ -446,7 +446,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 }
 
 
-void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID subPop)
+void ControlledOffspringGenerator::initialize(const Population & pop, size_t subPop)
 {
 	OffspringGenerator::initialize(pop, subPop);
 
@@ -476,7 +476,7 @@ void ControlledOffspringGenerator::initialize(const Population & pop, SubPopID s
 
 	// We control allele 1 if expected allele frequency is less than 0.5
 	for (size_t i = 0; i < m_loci.size(); ++i) {
-		UINT maxCount = pop.subPopSize(subPop) * pop.ploidy();
+		size_t maxCount = pop.subPopSize(subPop) * pop.ploidy();
 		m_totAllele[i] = m_expAlleles[subPop + pop.numSubPop() * i];
 		if (m_totAllele[i] > maxCount) {
 			cerr << "Warning: number of planned affected alleles exceed population size.";
@@ -512,7 +512,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
                                                      RawIndIterator & offEnd)
 {
 	const vectoru & loci = m_loci.elems(&pop);
-	UINT nLoci = loci.size();
+	size_t nLoci = loci.size();
 	//
 	// generate m_numOffspring offspring per mating
 	// record family size (this may be wrong for the last family)
@@ -528,7 +528,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 	// count number of alleles in the family.
 	vectori na(nLoci, 0);
 	bool hasAff = false;
-	UINT totNumLoci = pop.totNumLoci();
+	size_t totNumLoci = pop.totNumLoci();
 	// we know that scratch population has ordered linear genotype
 	for (size_t i = 0; i < nLoci; ++i) {
 		GenoIterator ptr = itBegin->genoBegin();
@@ -595,7 +595,7 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 }
 
 
-void SequentialParentChooser::initialize(Population & pop, SubPopID sp)
+void SequentialParentChooser::initialize(Population & pop, size_t sp)
 {
 	//
 	m_curInd = 0;
@@ -636,12 +636,12 @@ ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndItera
 }
 
 
-void RandomParentChooser::initialize(Population & pop, SubPopID sp)
+void RandomParentChooser::initialize(Population & pop, size_t sp)
 {
 	m_index.clear();
 
 	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
-	UINT fit_id = m_selection ? pop.infoIdx(m_selectionField) : 0;
+	size_t fit_id = m_selection ? pop.infoIdx(m_selectionField) : 0;
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
@@ -706,18 +706,18 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 			// basePtr points to the beginning of the population, not subpopulation
 			ind = &*(basePtr + m_shift + m_sampler.draw());
 		else
-			ind = &*(basePtr + m_shift + getRNG().randInt(m_size));
+			ind = &*(basePtr + m_shift + getRNG().randInt(static_cast<ULONG>(m_size)));
 	} else {
 		if (m_selection)
 			ind = &*(m_index[m_sampler.draw()]);
 		else
-			ind = &*(m_index[getRNG().randInt(m_size)]);
+			ind = &*(m_index[getRNG().randInt(static_cast<ULONG>(m_size))]);
 	}
 	return IndividualPair(ind, NULL);
 }
 
 
-void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
+void RandomParentsChooser::initialize(Population & pop, size_t subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -729,7 +729,7 @@ void RandomParentsChooser::initialize(Population & pop, SubPopID subPop)
 	m_index.resize(pop.subPopSize(subPop));
 
 	m_selection = m_replacement && pop.hasInfoField(m_selectionField);
-	UINT fit_id = 0;
+	size_t fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
 		m_fitness.resize(pop.subPopSize(subPop));
@@ -810,14 +810,14 @@ ParentChooser::IndividualPair RandomParentsChooser::chooseParents(RawIndIterator
 		dad = &**(m_index.begin() + m_malesampler.draw());
 		mom = &**(m_index.rbegin() + m_femalesampler.draw());
 	} else {
-		dad = &**(m_index.begin() + getRNG().randInt(m_numMale));
-		mom = &**(m_index.rbegin() + getRNG().randInt(m_numFemale));
+		dad = &**(m_index.begin() + getRNG().randInt(static_cast<ULONG>(m_numMale)));
+		mom = &**(m_index.rbegin() + getRNG().randInt(static_cast<ULONG>(m_numFemale)));
 	}
 	return std::make_pair(dad, mom);
 }
 
 
-void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
+void PolyParentsChooser::initialize(Population & pop, size_t subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -837,7 +837,7 @@ void PolyParentsChooser::initialize(Population & pop, SubPopID subPop)
 
 	m_selection = pop.hasInfoField(m_selectionField);
 
-	UINT fit_id = 0;
+	size_t fit_id = 0;
 	if (m_selection) {
 		fit_id = pop.infoIdx(m_selectionField);
 		m_maleFitness.resize(m_numMale);
@@ -897,7 +897,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 		if (m_selection)
 			dad = &*(m_maleIndex[m_malesampler.draw()]);
 		else
-			dad = &*(m_maleIndex[getRNG().randInt(m_numMale)]);
+			dad = &*(m_maleIndex[getRNG().randInt(static_cast<ULONG>(m_numMale))]);
 
 		if (m_polySex == MALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -912,7 +912,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 		if (m_selection)
 			mom = &*(m_femaleIndex[m_femalesampler.draw()]);
 		else
-			mom = &*(m_femaleIndex[getRNG().randInt(m_numFemale)]);
+			mom = &*(m_femaleIndex[getRNG().randInt(static_cast<ULONG>(m_numFemale))]);
 
 		if (m_polySex == FEMALE && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
@@ -924,7 +924,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 
 
 /*
-   void infoParentsChooser::initialize(Population & pop, SubPopID sp)
+   void infoParentsChooser::initialize(Population & pop, size_t sp)
    {
     if (m_func.isValid()) {
         PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -1047,7 +1047,7 @@ CombinedParentsChooser::CombinedParentsChooser(const ParentChooser & fatherChoos
 }
 
 
-void CombinedParentsChooser::initialize(Population & pop, SubPopID sp)
+void CombinedParentsChooser::initialize(Population & pop, size_t sp)
 {
 	m_fatherChooser->initialize(pop, sp);
 	m_motherChooser->initialize(pop, sp);
@@ -1065,7 +1065,7 @@ ParentChooser::IndividualPair CombinedParentsChooser::chooseParents(RawIndIterat
 }
 
 
-void CombinedParentsChooser::finalize(Population & pop, SubPopID sp)
+void CombinedParentsChooser::finalize(Population & pop, size_t sp)
 {
 	m_fatherChooser->finalize(pop, sp);
 	m_motherChooser->finalize(pop, sp);
@@ -1079,7 +1079,7 @@ PyParentsChooser::PyParentsChooser(PyObject * pc)
 }
 
 
-void PyParentsChooser::initialize(Population & pop, SubPopID sp)
+void PyParentsChooser::initialize(Population & pop, size_t sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
@@ -1098,12 +1098,12 @@ void PyParentsChooser::initialize(Population & pop, SubPopID sp)
 
 	PyObject * args = PyTuple_New(m_func.numArgs());
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "pop")
 			PyTuple_SET_ITEM(args, i, m_popObj);
 		else if (arg == "subPop")
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(sp));
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(sp)));
 		else {
 			DBG_FAILIF(true, ValueError,
 				"Only parameters 'pop' and 'subPop' are acceptable in a generator function.");
@@ -1133,7 +1133,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 
 
 	if (PyInt_Check(item) || PyLong_Check(item)) {
-		long int parent;
+		long parent;
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
@@ -1156,10 +1156,8 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 				parents[i] = &*(m_begin + idx);
 			} else {
 				void * ind = pyIndPointer(v);
-				if (ind)
-					parents[i] = reinterpret_cast<Individual *>(ind);
-				else
-					DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+				DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
+				parents[i] = reinterpret_cast<Individual *>(ind);
 			}
 			Py_DECREF(v);
 		}
@@ -1168,17 +1166,15 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 	} else {
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
-		if (ind)
-			return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(pyIndPointer(item)), NULL);
-		else
-			DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+		DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
+		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), NULL);
 	}
 	// this should not be reached
 	return ParentChooser::IndividualPair(NULL, NULL);
 }
 
 
-void PyParentsChooser::finalize(Population & pop, SubPopID sp)
+void PyParentsChooser::finalize(Population & /* pop */, size_t /* sp */)
 {
 	DBG_FAILIF(m_popObj == NULL, SystemError, "Python generator is not properly initialized.");
 	Py_DECREF(m_popObj);
@@ -1209,10 +1205,10 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 		PyObject * args = PyTuple_New(func.numArgs());
 		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-		for (int i = 0; i < func.numArgs(); ++i) {
+		for (size_t i = 0; i < func.numArgs(); ++i) {
 			const string & arg = func.arg(i);
 			if (arg == "gen")
-				PyTuple_SET_ITEM(args, i, PyInt_FromLong(pop.gen()));
+				PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(pop.gen())));
 			else if (arg == "pop")
 				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
 			else {
@@ -1248,7 +1244,7 @@ bool MatingScheme::mate(Population & pop, Population & scratch)
 	if (!prepareScratchPop(pop, scratch))
 		return false;
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
+	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, scratch, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
 			return false;
 	submitScratch(pop, scratch);
@@ -1285,7 +1281,7 @@ string HomoMating::describe(bool format) const
 }
 
 
-bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subPop,
+bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop,
                             RawIndIterator offBegin, RawIndIterator offEnd)
 {
 	// nothing to do.
@@ -1317,8 +1313,8 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, SubPopID subP
 		DBG_DO(DBG_MATING, cerr << "Mating is done in " << numThreads() << " threads" << endl);
 		// in this case, openMP must have been supported with numThreads() > 1
 #ifdef _OPENMP
-		int offPopSize = offEnd - offBegin;
-		int numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
+		size_t offPopSize = offEnd - offBegin;
+		UINT numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
 		int nThreads = numThreads();
 		int except = 0;
 		string msg;
@@ -1392,7 +1388,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	if (scratch.genoStruIdx() != pop.genoStruIdx())
 		scratch.fitGenoStru(pop.genoStruIdx());
 	//
-	UINT oldGen = m_ped.curAncestralGen();
+	size_t oldGen = m_ped.curAncestralGen();
 	const_cast<Pedigree &>(m_ped).useAncestralGen(m_gen);
 	DBG_DO(DBG_MATING, cerr << "Producing offspring generation of size " << m_ped.subPopSizes() <<
 		" using generation " << m_gen << " of the pedigree." << endl);
@@ -1402,7 +1398,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 
 	// build an index for parents
 	IdMap idMap;
-	UINT idIdx = pop.infoIdx(m_idField);
+	size_t idIdx = pop.infoIdx(m_idField);
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
 	for (; it != it_end; ++it)
@@ -1411,11 +1407,11 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	it = scratch.rawIndBegin();
 	it_end = scratch.rawIndEnd();
 	for (size_t i = 0; it != it_end; ++it, ++i) {
-		const Individual & pedInd = m_ped.individual(i);
+		const Individual & pedInd = m_ped.individual(static_cast<double>(i));
 
-		ULONG my_id = toID(pedInd.info(m_ped.idIdx()));
-		ULONG father_id = m_ped.fatherOf(my_id);
-		ULONG mother_id = m_ped.motherOf(my_id);
+		size_t my_id = toID(pedInd.info(m_ped.idIdx()));
+		size_t father_id = m_ped.fatherOf(my_id);
+		size_t mother_id = m_ped.motherOf(my_id);
 		Individual * dad = NULL;
 		Individual * mom = NULL;
 
@@ -1437,7 +1433,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		// copy sex
 		it->setSex(pedInd.sex());
 		// copy id
-		it->setInfo(my_id, m_idField);
+		it->setInfo(static_cast<double>(my_id), m_idField);
 		//
 		opList::const_iterator iop = m_transmitters.begin();
 		opList::const_iterator iopEnd = m_transmitters.end();
@@ -1447,7 +1443,7 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 		}
 		// copy individual ID again, just to make sure that even if during mating operators
 		// changes ID, pedigree mating could proceed normally.
-		it->setInfo(my_id, m_idField);
+		it->setInfo(static_cast<double>(my_id), m_idField);
 	}
 	const_cast<Pedigree &>(m_ped).useAncestralGen(oldGen);
 	submitScratch(pop, scratch);
@@ -1549,7 +1545,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp) {
+	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp) {
 		vectormating m;
 		vectorf w_pos;                          // positive weights
 		vectorf w_neg;                          // negative weights
@@ -1592,7 +1588,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			for (size_t i = 0; i < m.size(); ++i)
 				// if there is no negative weight...
 				if (w_neg[i] == 0)
-					w_pos[i] = pop.subPopSize(sps[i]);
+					w_pos[i] = static_cast<double>(pop.subPopSize(sps[i]));
 		}
 		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
 			                    << "Negative mating scheme weights: " << w_neg << endl);
@@ -1605,7 +1601,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			"Overall weight is zero");
 		//
 		vectoru vspSize(m.size());
-		ULONG all = scratch.subPopSize(sp);
+		size_t all = scratch.subPopSize(sp);
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
@@ -1618,7 +1614,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			}
 		}
 		// then count positive ones
-		ULONG all_pos = all;
+		size_t all_pos = all;
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (all > 0 && fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
@@ -1635,7 +1631,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		// individuals left by floating point calculation is added to
 		// the last non-zero, positive weight virtual subpopulation.
 		if (all > 0) {
-			for (size_t i = m.size() - 1; i >= 0; --i)
+			for (ssize_t i = m.size() - 1; i >= 0; --i)
 				if (vspSize[i] != 0 && w_pos[i] > 0) {
 					vspSize[i] += all;
 					break;

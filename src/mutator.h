@@ -141,10 +141,10 @@ public:
 
 
 	/// CPPONLY
-	double mutRate(UINT loc) const;
+	double mutRate(size_t loc) const;
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const
+	virtual void mutate(AlleleRef /* allele */, size_t /* locus */) const
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
@@ -155,17 +155,17 @@ public:
 	/// These is certainly more efficient if it is squeezed in the apply function,
 	/// with a number of flags defined in the initialization stage. However, for
 	/// a rarely used feature, performance should be a secondary consideration.
-	void fillContext(const Population & pop, IndAlleleIterator ptr, UINT locus) const;
+	void fillContext(const Population & pop, IndAlleleIterator ptr, size_t locus) const;
 
 	/// CPPONLY
-	void setContext(int context)
+	void setContext(size_t context)
 	{
 		m_context.resize(context * 2);
 	}
 
 
 	/// CPPONLY
-	vectori & context() const
+	vectoru & context() const
 	{
 		return m_context;
 	}
@@ -189,7 +189,7 @@ protected:
 	const uintListFunc m_mapOut;
 
 	// Be careful about this variable, which is not constant.
-	mutable vectori m_context;
+	mutable vectoru m_context;
 };
 
 /** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
@@ -229,7 +229,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c MatrixMutator
 	virtual BaseOperator * clone() const
@@ -241,6 +241,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MatrixMutator>";
 	}
 
@@ -289,7 +290,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
@@ -301,6 +302,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.KAlleleMutator> A k-allele mutation model with K=" +
 		       toStr(m_k);
 	}
@@ -361,7 +363,7 @@ public:
 
 	/// mutate according to the SMM model
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
@@ -373,6 +375,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.StepwiseMutator> a step-wise mutation model mutator";
 	}
 
@@ -429,11 +432,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PyMutator>" ;
 	}
 
@@ -487,11 +491,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.MixedMutator>" ;
 	}
 
@@ -561,11 +566,12 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, UINT locus) const;
+	virtual void mutate(AlleleRef allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.ContextMutator> context-dependent mutator>" ;
 	}
 
@@ -625,6 +631,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
+		(void) format; /* avoid warning about unused parameter */
 		return "<simuPOP.PointMutator>" ;
 	}
 

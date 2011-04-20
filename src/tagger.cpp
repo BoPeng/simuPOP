@@ -42,7 +42,7 @@ void IdTagger::reset(ULONG startID)
 }
 
 
-string IdTagger::describe(bool format) const
+string IdTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.IdTagger> assign an unique ID to individuals" ;
 }
@@ -52,13 +52,13 @@ bool IdTagger::apply(Population & pop) const
 {
 	DBG_DO(DBG_TAGGER, cerr << "Applying IdTagger with current ID " << g_indID << endl);
 
-	UINT idx = pop.infoIdx(infoField(0));
+	size_t idx = pop.infoIdx(infoField(0));
 
-	int curGen = pop.curAncestralGen();
+	size_t curGen = pop.curAncestralGen();
 	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
 		pop.useAncestralGen(depth);
-		for (ULONG i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
-			pop.individual(i).setInfo(g_indID++, idx);
+		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
+			pop.individual(i).setInfo(static_cast<double>(g_indID++), idx);
 	}
 	pop.useAncestralGen(curGen);
 	return true;
@@ -71,8 +71,10 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	UINT idx = pop.infoIdx(infoField(0));
+	size_t idx = pop.infoIdx(infoField(0));
 
+	(void) dad; /* avoid a warning message in optimized modules */
+	(void) mom; /* avoid a warning message in optimized modules */
 	DBG_FAILIF(dad != NULL && dad->info(idx) >= g_indID, RuntimeError,
 		"Paternal ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,
@@ -81,9 +83,9 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		"Parental IDs are not unique (forgot InitInfo?)");
 #ifdef _OPENMP
 	ATOMICLONG id = fetchAndIncrement(&g_indID);
-	offspring->setInfo(id, idx);
+	offspring->setInfo(static_cast<long>(id), idx);
 #else
-	offspring->setInfo(g_indID++, idx);
+	offspring->setInfo(static_cast<long>(g_indID++), idx);
 #endif
 	return true;
 }
@@ -95,13 +97,13 @@ bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	UINT sz = infoSize();
+	size_t sz = infoSize();
 
 	if (sz == 0)
 		return true;
 
 	for (size_t i = 0; i < sz; ++i) {
-		UINT idx = pop.infoIdx(infoField(i));
+		size_t idx = pop.infoIdx(infoField(i));
 
 		if (m_mode == PATERNAL) {
 			DBG_FAILIF(dad == NULL, RuntimeError,
@@ -139,7 +141,7 @@ bool InheritTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-string InheritTagger::describe(bool format) const
+string InheritTagger::describe(bool /* format */) const
 {
 	ostringstream desc;
 
@@ -162,7 +164,7 @@ string InheritTagger::describe(bool format) const
 }
 
 
-bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool SummaryTagger::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                       Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -171,11 +173,11 @@ bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 	DBG_FAILIF(mom == NULL && dad == NULL, RuntimeError,
 		"Invalid father and mother for SummaryTagger.");
 
-	UINT sz = infoSize();
+	size_t sz = infoSize();
 
 	if (m_mode == MEAN) {
 		double all = 0;
-		UINT cnt = 0;
+		size_t cnt = 0;
 		for (size_t i = 0; i < sz - 1; ++i) {
 			if (dad != 0) {
 				all += dad->info(infoField(i));
@@ -243,7 +245,7 @@ bool SummaryTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
-string ParentsTagger::describe(bool format) const
+string ParentsTagger::describe(bool /* format */) const
 {
 	if (infoSize() == 1)
 		return "<simuPOP.ParentsTagger> record index of parent in the parental generation "
@@ -269,18 +271,18 @@ bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 	size_t is = infoSize();
 	if (is == 1) {
 		if (dad != NULL)
-			offspring->setInfo(dad - &*pop.indIterator(), infoField(0));
+			offspring->setInfo(static_cast<double>(dad - &*pop.indIterator()), infoField(0));
 		else if (mom != NULL)
-			offspring->setInfo(mom - &*pop.indIterator(), infoField(0));
+			offspring->setInfo(static_cast<double>(mom - &*pop.indIterator()), infoField(0));
 	} else if (is == 2) {
-		offspring->setInfo(dad == NULL ? -1 : dad - &*pop.indIterator(), infoField(0));
-		offspring->setInfo(mom == NULL ? -1 : mom - &*pop.indIterator(), infoField(1));
+		offspring->setInfo(static_cast<double>(dad == NULL ? -1 : dad - &*pop.indIterator()), infoField(0));
+		offspring->setInfo(static_cast<double>(mom == NULL ? -1 : mom - &*pop.indIterator()), infoField(1));
 	}
 	return true;
 }
 
 
-string PedigreeTagger::describe(bool format) const
+string PedigreeTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.PedigreeTagger> record parental IDs (" + infoField(0) + " and "
 	       + infoField(1) + ") to field " + m_idField + " of each offspring.";
@@ -298,11 +300,11 @@ void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
 	char affChar = ind->affected() ? 'A' : 'U';
 
 	if (IDs.empty())
-		sprintf(buffer, "%lu %c %c", toID(ind->info(m_idField)), sexChar, affChar);
+		sprintf(buffer, "%zu %c %c", toID(ind->info(m_idField)), sexChar, affChar);
 	else if (IDs.size() == 1)
-		sprintf(buffer, "%lu %lu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), sexChar, affChar);
+		sprintf(buffer, "%zu %zu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), sexChar, affChar);
 	else
-		sprintf(buffer, "%lu %lu %lu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), toID(IDs[1]), sexChar, affChar);
+		sprintf(buffer, "%zu %zu %zu %c %c", toID(ind->info(m_idField)), toID(IDs[0]), toID(IDs[1]), sexChar, affChar);
 	out << buffer;
 	// it is difficult to create buffers for the following, but we do not really care
 	// because writing information fields and genotype is rare.
@@ -315,12 +317,12 @@ void PedigreeTagger::outputIndividual(ostream & out, const Individual * ind,
 			out << ' ' << ind->info(fields[i]);
 	}
 	if (m_outputLoci.allAvail()) {
-		UINT pldy = ind->ploidy();
+		size_t pldy = ind->ploidy();
 		for (size_t i = 0; i < ind->totNumLoci(); ++i)
 			for (size_t p = 0; p < pldy; ++p)
 				out << ' ' << ind->allele(i, p);
 	} else if (!m_outputLoci.elems().empty()) {
-		UINT pldy = ind->ploidy();
+		size_t pldy = ind->ploidy();
 		const vectoru & loci = m_outputLoci.elems();
 		for (size_t i = 0; i < loci.size(); ++i)
 			for (size_t p = 0; p < pldy; ++p)
@@ -336,7 +338,7 @@ bool PedigreeTagger::apply(Population & pop) const
 		return true;
 
 	//an ID map
-	std::map<ULONG, int> idMap;
+	std::map<size_t, int> idMap;
 
 	ostream & out = getOstream(pop.dict());
 	size_t is = infoSize();
@@ -345,14 +347,14 @@ bool PedigreeTagger::apply(Population & pop) const
 	for (size_t i = 0; i < infoSize(); ++i)
 		idx[i] = pop.infoIdx(infoField(i));
 
-	UINT idIdx = pop.infoIdx(m_idField);
-	int curGen = pop.curAncestralGen();
+	size_t idIdx = pop.infoIdx(m_idField);
+	size_t curGen = pop.curAncestralGen();
 	for (int depth = pop.ancestralGens(); depth >= 0; --depth) {
 		pop.useAncestralGen(depth);
 		ConstRawIndIterator it = pop.rawIndBegin();
 		ConstRawIndIterator it_end = pop.rawIndEnd();
 		for (; it != it_end; ++it) {
-			ULONG myID = toID(it->info(idIdx));
+			size_t myID = toID(it->info(idIdx));
 			idMap[myID] = 1;
 			for (size_t i = 0; i < is; ++i) {
 				IDs[i] = it->info(idx[i]);
@@ -376,7 +378,7 @@ bool PedigreeTagger::applyDuringMating(Population & pop, Population & offPop, Ra
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Both parents are invalid");
 
-	UINT idIdx = pop.infoIdx(m_idField);
+	size_t idIdx = pop.infoIdx(m_idField);
 	// record to one or two information fields
 	size_t is = infoSize();
 	vectorf IDs(is);
@@ -402,7 +404,7 @@ bool PedigreeTagger::applyDuringMating(Population & pop, Population & offPop, Ra
 }
 
 
-bool PyTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool PyTagger::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -412,7 +414,7 @@ bool PyTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 
 	DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
-	for (int i = 0; i < m_func.numArgs(); ++i) {
+	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 
 		PyObject * item = PyTuple_New((dad != NULL) + (mom != NULL));

@@ -120,7 +120,7 @@ public:
 
 	/// CPPONLY
 	// Population::mergePopulationByLoci needs to hanle this
-	const size_t chromIndex(UINT ch) const
+	size_t chromIndex(UINT ch) const
 	{
 		return m_chromIndex[ch];
 	}
@@ -133,7 +133,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void save(Archive & ar, const UINT version) const
+	void save(Archive & ar, const UINT /* version */) const
 	{
 		ar & m_ploidy;
 		ar & m_numLoci;
@@ -149,7 +149,7 @@ private:
 
 
 	template<class Archive>
-	void load(Archive & ar, const UINT version)
+	void load(Archive & ar, const UINT /* version */)
 	{
 
 		ar & m_ploidy;
@@ -193,7 +193,7 @@ private:
 	UINT m_ploidy;
 
 	/// total number of loci
-	UINT m_totNumLoci;
+	size_t m_totNumLoci;
 
 	/// number of loci
 	vectoru m_numLoci;
@@ -229,7 +229,7 @@ private:
 	vectorstr m_lociNames;
 
 	/// map of locinames
-	map<string, UINT> m_lociNameMap;
+	map<string, size_t> m_lociNameMap;
 
 	/// name of the information field
 	vectorstr m_infoFields;
@@ -311,27 +311,27 @@ public:
 	 *  after \e locus2.
 	 *  <group>3-locus</group>
 	 */
-	double lociDist(UINT locus1, UINT locus2) const;
+	double lociDist(size_t locus1, size_t locus2) const;
 
 	/** HIDDEN
 	 * return the number of loci left on that chromosome, including locus \c loc
 	 *  <group>3-locus</group>
 	 */
-	UINT lociLeft(UINT locus) const;
+	size_t lociLeft(size_t locus) const;
 
 	/** HIDDEN
 	 *  Distance between locus \c locus and the last locus that is on the same
 	 *  chromsome as \c locus.
 	 *  <group>3-locus</group>
 	 */
-	double distLeft(UINT locus) const;
+	double distLeft(size_t locus) const;
 
 	/** HIDDEN
 	 *  starting from \c locus, how many markers are covered by distance \c dist (>=0)
 	 *  the result will be at least 1, even if dist = 0.
 	 *  <group>3-locus</group>
 	 */
-	UINT lociCovered(UINT locus, double dist) const;
+	size_t lociCovered(size_t locus, double dist) const;
 
 	/** CPPONLY
 	 *  Add chromosomes from another genotypic structure and
@@ -357,7 +357,7 @@ public:
 	 */
 	const GenoStructure gsAddChrom(const vectorf & lociPos,
 		const vectorstr & lociNames, const string & chromName,
-		const matrixstr & alleleNames, UINT chromType) const;
+		const matrixstr & alleleNames, size_t chromType) const;
 
 	/** CPPONLY
 	 *  Create a geno structure using new allele names.
@@ -380,9 +380,9 @@ public:
 
 
 	/// CPPONLY return the GenoStructure index
-	size_t genoStruIdx() const
+	TraitIndexType genoStruIdx() const
 	{
-		return static_cast<size_t>(m_genoStruIdx);
+		return m_genoStruIdx;
 	}
 
 
@@ -412,7 +412,7 @@ public:
 	/** return the number of loci on chromosome \e chrom.
 	 *  <group>3-locus</group>
 	 */
-	UINT numLoci(UINT chrom) const
+	size_t numLoci(size_t chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"numLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -490,7 +490,7 @@ public:
 	/** return the total number of loci on all chromosomes.
 	 *  <group>3-locus</group>
 	 */
-	UINT totNumLoci() const
+	size_t totNumLoci() const
 	{
 
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
@@ -504,7 +504,7 @@ public:
 	 *  return the total number of loci on all homologous chromosomes, which
 	 *  is <tt>totNumLoci()*ploidy()</tt>.
 	 */
-	UINT genoSize() const
+	size_t genoSize() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -517,7 +517,7 @@ public:
 	 *  parameter of the \c Population function.
 	 *  <group>3-locus</group>
 	 */
-	double locusPos(UINT locus) const
+	double locusPos(size_t locus) const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -541,7 +541,7 @@ public:
 	/** return the number of chromosomes.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT numChrom() const
+	size_t numChrom() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -560,7 +560,7 @@ public:
 	/** return the index of the first locus on chromosome \e chrom.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT chromBegin(UINT chrom) const
+	size_t chromBegin(size_t chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"chromBegin: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -574,7 +574,7 @@ public:
 	/** return the index of the last locus on chromosome \e chrom plus 1.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT chromEnd(UINT chrom) const
+	size_t chromEnd(size_t chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"chromEnd: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -589,7 +589,7 @@ public:
 	 *  c.f. \c chromLocusPair.
 	 *  <group>3-locus</group>
 	 */
-	UINT absLocusIndex(UINT chrom, UINT locus) const
+	size_t absLocusIndex(UINT chrom, UINT locus) const
 	{
 		CHECKRANGECHROM(chrom);
 		CHECKRANGELOCUS(chrom, locus);
@@ -603,14 +603,14 @@ public:
 	 * index \e locus. c.f. \c absLocusIndex.
 	 *  <group>3-locus</group>
 	 */
-	pairu chromLocusPair(UINT locus) const;
+	pairu chromLocusPair(size_t locus) const;
 
 
 	/**
 	 * return the name of a chromosome \e chrom.
 	 *  <group>2-chromosome</group>
 	 */
-	string chromName(const UINT chrom) const
+	string chromName(const size_t chrom) const
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
@@ -633,7 +633,7 @@ public:
 	 *  \c CHROMOSOME_X, or \c CHROMOSOME_Y).
 	 *  <group>2-chromosome</group>
 	 */
-	int chromType(const UINT chrom) const
+	size_t chromType(const size_t chrom) const
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
@@ -656,7 +656,7 @@ public:
 	/** return the index of a chromosome by its \e name.
 	 *  <group>2-chromosome</group>
 	 */
-	UINT chromByName(const string name) const
+	size_t chromByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_chromNames;
 		vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
@@ -674,7 +674,7 @@ public:
 	 *  returned.
 	 *  <group>4-allele</group>
 	 */
-	string alleleName(const UINT allele, const UINT locus = 0) const;
+	string alleleName(const UINT allele, const size_t locus = 0) const;
 
 	/** CPPONLY
 	 *  Return all allele names
@@ -693,14 +693,14 @@ public:
 	 *  (use <tt>alleleNames(</tt><em>allele</em><tt>)</tt> instead).
 	 *  <group>4-allele</group>
 	 */
-	vectorstr alleleNames(const UINT locus = 0) const;
+	vectorstr alleleNames(const size_t locus = 0) const;
 
 	/** return the name of locus \e locus specified by the \e lociNames parameter of
 	 *  the \c Population function. An empty string will be returned if no name
 	 *  has been given to locus \e locus.
 	 *  <group>3-locus</group>
 	 */
-	string locusName(const UINT locus) const
+	string locusName(const size_t locus) const
 	{
 		DBG_FAILIF(locus >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
 			"Locus index " + toStr(locus) + " out of range of 0 ~ " +
@@ -727,11 +727,11 @@ public:
 	 *  name but you cannot lookup such loci using this function.
 	 *  <group>3-locus</group>
 	 */
-	UINT locusByName(const string name) const
+	size_t locusByName(const string name) const
 	{
-		const map<string, UINT> & names = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
+		const map<string, size_t> & names = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
 
-		map<string, UINT>::const_iterator it = names.find(name);
+		map<string, size_t>::const_iterator it = names.find(name);
 
 		if (it == names.end())
 			throw ValueError("Failed to find locus with name " + name);
@@ -757,7 +757,7 @@ public:
 
 
 	/// HIDDEN obtain the number of information fields
-	UINT infoSize() const
+	size_t infoSize() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 	}
@@ -775,7 +775,7 @@ public:
 	/** return the name of information field \e idx.
 	 *  <group>5-info</group>
 	 */
-	string infoField(UINT idx) const
+	string infoField(size_t idx) const
 	{
 		CHECKRANGEINFO(idx);
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
@@ -786,7 +786,7 @@ public:
 	 * if \e name is not one of the information fields.
 	 *  <group>5-info</group>
 	 */
-	UINT infoIdx(const string & name) const;
+	size_t infoIdx(const string & name) const;
 
 	/// CPPONLY add a new information field
 	/**

@@ -24,7 +24,7 @@ Details:
 
 %feature("docstring") simuPOP::AffectionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::AffectionSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::AffectionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::AffectionSplitter::numVirtualSubPop "
 
@@ -38,9 +38,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::AffectionSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::AffectionSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::AffectionSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::AffectionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::AffectionSplitter::name "
 
@@ -142,13 +142,13 @@ Usage:
 
 %ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const lociList &loci);
 
-%ignore simuPOP::BaseMutator::mutRate(UINT loc) const;
+%ignore simuPOP::BaseMutator::mutRate(size_t loc) const;
 
-%ignore simuPOP::BaseMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::BaseMutator::mutate(AlleleRef, size_t) const;
 
-%ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, UINT locus) const;
+%ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, size_t locus) const;
 
-%ignore simuPOP::BaseMutator::setContext(int context);
+%ignore simuPOP::BaseMutator::setContext(size_t context);
 
 %ignore simuPOP::BaseMutator::context() const;
 
@@ -288,13 +288,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false) const;
+%ignore simuPOP::BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end, const vector< bool > &activeRep, bool repOnly=false) const;
 
-%ignore simuPOP::BaseOperator::isActive(UINT rep, long gen) const;
+%ignore simuPOP::BaseOperator::isActive(ssize_t rep, ssize_t gen) const;
 
 %ignore simuPOP::BaseOperator::infoSize() const;
 
-%ignore simuPOP::BaseOperator::infoField(UINT idx) const;
+%ignore simuPOP::BaseOperator::infoField(size_t idx) const;
 
 %ignore simuPOP::BaseOperator::infoFields() const;
 
@@ -400,7 +400,7 @@ Usage:
 
 %feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BasePenetrance::penet(Population *pop, Individual *) const;
+%ignore simuPOP::BasePenetrance::penet(Population *, Individual *) const;
 
 %feature("docstring") simuPOP::BasePenetrance::apply "
 
@@ -488,7 +488,7 @@ Usage:
 
 %feature("docstring") simuPOP::BaseQuanTrait::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseQuanTrait::qtrait(Individual *, ULONG gen, vectorf &traits) const;
+%ignore simuPOP::BaseQuanTrait::qtrait(Individual *, size_t, vectorf &) const;
 
 %feature("docstring") simuPOP::BaseQuanTrait::apply "
 
@@ -604,7 +604,7 @@ Usage:
 
 %feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseSelector::indFitness(Population &pop, Individual *) const;
+%ignore simuPOP::BaseSelector::indFitness(Population &, Individual *) const;
 
 %feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
 
@@ -668,7 +668,7 @@ Usage:
 
 %ignore simuPOP::BaseVspSplitter::activatedSubPop() const;
 
-%ignore simuPOP::BaseVspSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::BaseVspSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::BaseVspSplitter::numVirtualSubPop "
 
@@ -682,11 +682,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::BaseVspSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::BaseVspSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::BaseVspSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::BaseVspSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
-%ignore simuPOP::BaseVspSplitter::deactivate(SubPopID subPop);
+%ignore simuPOP::BaseVspSplitter::deactivate(size_t subPop);
 
 %feature("docstring") simuPOP::BaseVspSplitter::name "
 
@@ -768,7 +768,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, ULONG trials);
+%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, size_t trials);
 
 %feature("docstring") simuPOP::Bernullitrials::doTrial "
 
@@ -893,7 +893,7 @@ Usage:
 
 Usage:
 
-    x.getNumOff(gen)
+    x.getNumOff(ssize_t)
 
 "; 
 
@@ -939,6 +939,8 @@ Details:
 %feature("docstring") simuPOP::CloneGenoTransmitter::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::CloneGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%ignore simuPOP::CloneGenoTransmitter::parallelizable() const;
 
 %feature("docstring") simuPOP::CombinedAlleleIterator "
 
@@ -1030,9 +1032,9 @@ Usage:
 
 %feature("docstring") simuPOP::CombinedParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::CombinedParentsChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::CombinedParentsChooser::initialize(Population &pop, size_t sp);
 
-%ignore simuPOP::CombinedParentsChooser::finalize(Population &pop, SubPopID sp);
+%ignore simuPOP::CombinedParentsChooser::finalize(Population &pop, size_t sp);
 
 %ignore simuPOP::CombinedParentsChooser::chooseParents(RawIndIterator basePtr);
 
@@ -1085,7 +1087,7 @@ Usage:
 
 %feature("docstring") simuPOP::CombinedSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::CombinedSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::CombinedSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::CombinedSplitter::numVirtualSubPop "
 
@@ -1100,9 +1102,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::CombinedSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::CombinedSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::CombinedSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::CombinedSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::CombinedSplitter::name "
 
@@ -1141,7 +1143,7 @@ Usage:
 
 Usage:
 
-    x.getNumOff(gen)
+    x.getNumOff(ssize_t)
 
 "; 
 
@@ -1197,7 +1199,7 @@ Details:
 
 %feature("docstring") simuPOP::ContextMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ContextMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::ContextMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::ContextMutator::describe "Obsolete or undocumented function."
 
@@ -1255,7 +1257,7 @@ Details:
 
 %ignore simuPOP::ControlledOffspringGenerator::ControlledOffspringGenerator(const ControlledOffspringGenerator &rhs);
 
-%ignore simuPOP::ControlledOffspringGenerator::initialize(const Population &pop, SubPopID subPop);
+%ignore simuPOP::ControlledOffspringGenerator::initialize(const Population &pop, size_t subPop);
 
 %ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
@@ -1687,7 +1689,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &kept);
 
-%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, UINT chromType) const;
+%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, size_t chromType) const;
 
 %ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
 
@@ -2195,7 +2197,7 @@ Details:
 
 %feature("docstring") simuPOP::GenotypeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::GenotypeSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::GenotypeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::GenotypeSplitter::numVirtualSubPop "
 
@@ -2209,9 +2211,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenotypeSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::GenotypeSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::GenotypeSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::GenotypeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::GenotypeSplitter::name "
 
@@ -2249,7 +2251,7 @@ Usage:
 
 Usage:
 
-    x.getNumOff(gen)
+    x.getNumOff(ssize_t)
 
 "; 
 
@@ -2463,7 +2465,7 @@ Usage:
 
 %ignore simuPOP::HomoMating::weight() const;
 
-%ignore simuPOP::HomoMating::mateSubPop(Population &pop, Population &offPop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
+%ignore simuPOP::HomoMating::mateSubPop(Population &pop, Population &offPop, size_t subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
 %feature("docstring") simuPOP::IdTagger "
 
@@ -2854,11 +2856,11 @@ Details:
 
 %ignore simuPOP::Individual::genoEnd() const;
 
-%ignore simuPOP::Individual::genoBegin(UINT p) const;
+%ignore simuPOP::Individual::genoBegin(size_t p) const;
 
-%ignore simuPOP::Individual::genoEnd(UINT p) const;
+%ignore simuPOP::Individual::genoEnd(size_t p) const;
 
-%ignore simuPOP::Individual::genoBegin(UINT p, UINT chrom) const;
+%ignore simuPOP::Individual::genoBegin(size_t p, size_t chrom) const;
 
 %ignore simuPOP::Individual::infoBegin() const;
 
@@ -3099,7 +3101,7 @@ Details:
 
 %feature("docstring") simuPOP::InfoSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::InfoSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::InfoSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::InfoSplitter::numVirtualSubPop "
 
@@ -3115,9 +3117,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::InfoSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::InfoSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::InfoSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::InfoSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::InfoSplitter::name "
 
@@ -3374,7 +3376,7 @@ Usage:
 
 %ignore simuPOP::intList::allAvail();
 
-%ignore simuPOP::intList::match(UINT rep, const vector< bool > *activeRep=NULL) const;
+%ignore simuPOP::intList::match(ssize_t rep, const vector< bool > *activeRep=NULL) const;
 
 %feature("docstring") simuPOP::intMatrix "
 
@@ -3434,7 +3436,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::KAlleleMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::KAlleleMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::KAlleleMutator::clone "Obsolete or undocumented function."
 
@@ -3755,7 +3757,7 @@ Usage:
 
 %ignore simuPOP::MatingScheme::submitScratch(Population &pop, Population &scratch);
 
-%ignore simuPOP::MatingScheme::mateSubPop(Population &pop, Population &offPop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd);
+%ignore simuPOP::MatingScheme::mateSubPop(Population &, Population &, size_t, RawIndIterator, RawIndIterator);
 
 %ignore simuPOP::MatingScheme::mate(Population &pop, Population &scratch);
 
@@ -3813,7 +3815,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MatrixMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::MatrixMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::MatrixMutator::clone "Obsolete or undocumented function."
 
@@ -4097,7 +4099,7 @@ Details:
 
 %feature("docstring") simuPOP::MixedMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MixedMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::MixedMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::MixedMutator::describe "Obsolete or undocumented function."
 
@@ -4669,17 +4671,17 @@ Usage:
 
 %feature("docstring") simuPOP::OffspringGenerator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::OffspringGenerator::initialize(const Population &pop, SubPopID subPop);
+%ignore simuPOP::OffspringGenerator::initialize(const Population &pop, size_t subPop);
 
 %ignore simuPOP::OffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
 
-%ignore simuPOP::OffspringGenerator::finalize(const Population &pop);
+%ignore simuPOP::OffspringGenerator::finalize(const Population &);
 
 %feature("docstring") simuPOP::OffspringGenerator::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::OffspringGenerator::initialized();
 
-%ignore simuPOP::OffspringGenerator::numOffspring(int gen);
+%ignore simuPOP::OffspringGenerator::numOffspring(ssize_t gen);
 
 %ignore simuPOP::OffspringGenerator::getSex(UINT count);
 
@@ -4761,9 +4763,9 @@ Usage:
 
 %feature("docstring") simuPOP::ParentChooser::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ParentChooser::initialize(Population &pop, SubPopID subPop);
+%ignore simuPOP::ParentChooser::initialize(Population &, size_t);
 
-%ignore simuPOP::ParentChooser::finalize(Population &pop, SubPopID subPop);
+%ignore simuPOP::ParentChooser::finalize(Population &, size_t);
 
 %feature("docstring") simuPOP::ParentChooser::describe "Obsolete or undocumented function."
 
@@ -4771,7 +4773,7 @@ Usage:
 
 %ignore simuPOP::ParentChooser::initialized() const;
 
-%ignore simuPOP::ParentChooser::chooseParents(RawIndIterator basePtr);
+%ignore simuPOP::ParentChooser::chooseParents(RawIndIterator);
 
 %feature("docstring") simuPOP::ParentChooser::~ParentChooser "
 
@@ -4955,9 +4957,9 @@ Details:
 
 %ignore simuPOP::Pedigree::idIdx() const;
 
-%ignore simuPOP::Pedigree::fatherOf(ULONG id) const;
+%ignore simuPOP::Pedigree::fatherOf(size_t id) const;
 
-%ignore simuPOP::Pedigree::motherOf(ULONG id) const;
+%ignore simuPOP::Pedigree::motherOf(size_t id) const;
 
 %feature("docstring") simuPOP::Pedigree::clone "
 
@@ -5011,6 +5013,8 @@ Details:
     acceptable as long as it rounds closely to an integer.
 
 "; 
+
+%ignore simuPOP::Pedigree::indByID(size_t id) const;
 
 %feature("docstring") simuPOP::Pedigree::numParents "Obsolete or undocumented function."
 
@@ -5401,7 +5405,7 @@ Usage:
 
 Usage:
 
-    x.getNumOff(gen)
+    x.getNumOff(ssize_t)
 
 "; 
 
@@ -5441,7 +5445,7 @@ Details:
 
 %feature("docstring") simuPOP::PolyParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PolyParentsChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::PolyParentsChooser::initialize(Population &pop, size_t sp);
 
 %ignore simuPOP::PolyParentsChooser::chooseParents(RawIndIterator basePtr);
 
@@ -5619,7 +5623,7 @@ Usage:
 
 %ignore simuPOP::Population::hasActivatedVirtualSubPop() const;
 
-%ignore simuPOP::Population::hasActivatedVirtualSubPop(SubPopID subPop) const;
+%ignore simuPOP::Population::hasActivatedVirtualSubPop(size_t subPop) const;
 
 %ignore simuPOP::Population::hasVirtualSubPop() const;
 
@@ -5852,6 +5856,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::Population::individual(size_t idx, vspID subPop=vspID());
+
 %feature("docstring") simuPOP::Population::individual "
 
 Usage:
@@ -5909,7 +5915,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::ancestor(double idx, UINT gen, vspID subPop=vspID()) const;
+%ignore simuPOP::Population::ancestor(double idx, size_t gen, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::Population::individuals "
 
@@ -5934,7 +5940,7 @@ Details:
 
 %ignore simuPOP::Population::indIterator();
 
-%ignore simuPOP::Population::indIterator(UINT subPop);
+%ignore simuPOP::Population::indIterator(size_t subPop);
 
 %ignore simuPOP::Population::indIterator() const;
 
@@ -5942,27 +5948,27 @@ Details:
 
 %ignore simuPOP::Population::rawIndEnd();
 
-%ignore simuPOP::Population::rawIndBegin(UINT subPop);
+%ignore simuPOP::Population::rawIndBegin(size_t subPop);
 
-%ignore simuPOP::Population::rawIndEnd(UINT subPop);
+%ignore simuPOP::Population::rawIndEnd(size_t subPop);
 
 %ignore simuPOP::Population::rawIndBegin() const;
 
-%ignore simuPOP::Population::alleleIterator(UINT locus);
+%ignore simuPOP::Population::alleleIterator(size_t locus);
 
-%ignore simuPOP::Population::alleleIterator(UINT locus, UINT subPop);
+%ignore simuPOP::Population::alleleIterator(size_t locus, size_t subPop);
 
 %ignore simuPOP::Population::genoBegin(bool order);
 
 %ignore simuPOP::Population::genoEnd(bool order);
 
-%ignore simuPOP::Population::genoBegin(UINT subPop, bool order);
+%ignore simuPOP::Population::genoBegin(size_t subPop, bool order);
 
-%ignore simuPOP::Population::genoEnd(UINT subPop, bool order);
+%ignore simuPOP::Population::genoEnd(size_t subPop, bool order);
 
-%ignore simuPOP::Population::indGenoBegin(ULONG ind) const;
+%ignore simuPOP::Population::indGenoBegin(size_t ind) const;
 
-%ignore simuPOP::Population::indGenoEnd(ULONG ind) const;
+%ignore simuPOP::Population::indGenoEnd(size_t ind) const;
 
 %feature("docstring") simuPOP::Population::genotype "
 
@@ -6376,9 +6382,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::infoBegin(UINT idx);
+%ignore simuPOP::Population::infoBegin(size_t idx);
 
-%ignore simuPOP::Population::infoEnd(UINT idx);
+%ignore simuPOP::Population::infoEnd(size_t idx);
 
 %feature("docstring") simuPOP::Population::indInfo "
 
@@ -6536,11 +6542,11 @@ Details:
 
 %ignore simuPOP::Population::rep();
 
-%ignore simuPOP::Population::setRep(int rep);
+%ignore simuPOP::Population::setRep(size_t rep);
 
 %ignore simuPOP::Population::gen() const;
 
-%ignore simuPOP::Population::setGen(ULONG gen);
+%ignore simuPOP::Population::setGen(size_t gen);
 
 %ignore simuPOP::ProbOfMalesSexModel;
 
@@ -6616,7 +6622,7 @@ Usage:
 
 %feature("docstring") simuPOP::ProductSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ProductSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::ProductSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::ProductSplitter::numVirtualSubPop "
 
@@ -6631,9 +6637,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::ProductSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::ProductSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::ProductSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::ProductSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::ProductSplitter::name "
 
@@ -6675,7 +6681,7 @@ Details:
 
 %feature("docstring") simuPOP::ProportionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ProportionSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::ProportionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::ProportionSplitter::numVirtualSubPop "
 
@@ -6690,9 +6696,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::ProportionSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::ProportionSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::ProportionSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::ProportionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::ProportionSplitter::name "
 
@@ -7003,7 +7009,7 @@ Details:
 
 %feature("docstring") simuPOP::PyMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::PyMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::PyMutator::describe "Obsolete or undocumented function."
 
@@ -7184,9 +7190,9 @@ Details:
 
 %feature("docstring") simuPOP::PyParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PyParentsChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::PyParentsChooser::initialize(Population &pop, size_t sp);
 
-%ignore simuPOP::PyParentsChooser::finalize(Population &pop, SubPopID sp);
+%ignore simuPOP::PyParentsChooser::finalize(Population &pop, size_t sp);
 
 %feature("docstring") simuPOP::PyParentsChooser::~PyParentsChooser "
 
@@ -7333,7 +7339,7 @@ Details:
 
 %feature("docstring") simuPOP::PyQuanTrait::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, ULONG gen, vectorf &traits) const;
+%ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, size_t gen, vectorf &traits) const;
 
 %feature("docstring") simuPOP::PyQuanTrait::describe "Obsolete or undocumented function."
 
@@ -7462,7 +7468,7 @@ Details:
 
 %ignore simuPOP::RandomParentChooser::parallelizable() const;
 
-%ignore simuPOP::RandomParentChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::RandomParentChooser::initialize(Population &pop, size_t sp);
 
 %ignore simuPOP::RandomParentChooser::chooseParents(RawIndIterator basePtr);
 
@@ -7507,7 +7513,7 @@ Details:
 
 %ignore simuPOP::RandomParentsChooser::parallelizable() const;
 
-%ignore simuPOP::RandomParentsChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::RandomParentsChooser::initialize(Population &pop, size_t sp);
 
 %ignore simuPOP::RandomParentsChooser::chooseParents(RawIndIterator basePtr);
 
@@ -7574,7 +7580,7 @@ Details:
 
 %feature("docstring") simuPOP::RangeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::RangeSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::RangeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::RangeSplitter::numVirtualSubPop "
 
@@ -7589,9 +7595,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::RangeSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::RangeSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::RangeSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::RangeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::RangeSplitter::name "
 
@@ -8269,7 +8275,7 @@ Details:
 
 %feature("docstring") simuPOP::SequentialParentChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::SequentialParentChooser::initialize(Population &pop, SubPopID sp);
+%ignore simuPOP::SequentialParentChooser::initialize(Population &pop, size_t sp);
 
 %ignore simuPOP::SequentialParentChooser::chooseParents(RawIndIterator basePtr);
 
@@ -8349,7 +8355,7 @@ Details:
 
 %feature("docstring") simuPOP::SexSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::SexSplitter::size(const Population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
+%ignore simuPOP::SexSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::SexSplitter::numVirtualSubPop "
 
@@ -8363,9 +8369,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::SexSplitter::contains(const Population &pop, ULONG ind, vspID vsp) const;
+%ignore simuPOP::SexSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
 
-%ignore simuPOP::SexSplitter::activate(const Population &pop, SubPopID subPop, SubPopID virtualSubPop);
+%ignore simuPOP::SexSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::SexSplitter::name "
 
@@ -9635,7 +9641,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::StepwiseMutator::mutate(AlleleRef allele, UINT locus) const;
+%ignore simuPOP::StepwiseMutator::mutate(AlleleRef allele, size_t locus) const;
 
 %feature("docstring") simuPOP::StepwiseMutator::clone "Obsolete or undocumented function."
 
@@ -9819,7 +9825,7 @@ Usage:
 
 %ignore simuPOP::subPopList::contains(const vspID subPop) const;
 
-%ignore simuPOP::subPopList::overlap(const SubPopID subPop) const;
+%ignore simuPOP::subPopList::overlap(const size_t subPop) const;
 
 %ignore simuPOP::subPopList::begin() const;
 
@@ -10089,7 +10095,7 @@ Usage:
 
 Usage:
 
-    x.getNumOff(gen)
+    x.getNumOff(ssize_t)
 
 "; 
 
@@ -10217,7 +10223,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N=0);
+%ignore simuPOP::WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N=0);
 
 %feature("docstring") simuPOP::WeightedSampler::draw "
 
@@ -10396,7 +10402,7 @@ Details:
 
 %ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
-%ignore simuPOP::PyObjAsInt(PyObject *obj, long int &val);
+%ignore simuPOP::PyObjAsInt(PyObject *obj, int &val);
 
 %ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 
@@ -10463,7 +10469,7 @@ Usage:
 
 %ignore simuPOP::hweTest(const vectoru &cnt);
 
-%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru &count);
+%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
 
 %ignore simuPOP::formatDescription(const string &text);
 
