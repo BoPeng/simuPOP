@@ -1318,12 +1318,14 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop
 		int nThreads = numThreads();
 		int except = 0;
 		string msg;
-#  pragma omp parallel
+#  pragma omp parallel for
+
+		for(int i=0; i <= static_cast<int>(offPopSize/numOffspring); i++)
 		{
-			try {
-				int tid = omp_get_thread_num();
-				RawIndIterator local_it = offBegin + tid * (numOffspring * ((offPopSize / nThreads) / numOffspring));
-				RawIndIterator local_offEnd = tid == nThreads - 1 ? offEnd : local_it + (numOffspring * ((offPopSize / nThreads) / numOffspring));
+		  try {
+				RawIndIterator local_it = offBegin + i*numOffspring;
+				RawIndIterator local_offEnd = offEnd - local_it > numOffspring ? local_it + numOffspring : offEnd;
+
 				while (local_it != local_offEnd) {
 					if (except)
 						break;
