@@ -225,7 +225,9 @@ const char * g_debugCodes[] = {
 // set debug area, default to turn all code on
 void turnOnDebug(const string & codeString)
 {
-#ifndef OPTIMIZED
+#ifdef OPTIMIZED
+	(void) codeString; /* avoid a warning about unused variable */
+#else
 	if (codeString == "DBG_ALL")
 		// set all
 		g_dbgCode.set();
@@ -262,7 +264,9 @@ void turnOnDebug(const string & codeString)
 // turn off debug, default to turn all code off
 void turnOffDebug(const string & codeString)
 {
-#ifndef OPTIMIZED
+#ifdef OPTIMIZED
+	(void) codeString; /* avoid a warning about unused variable */
+#else
 	if (codeString == "DBG_ALL")
 		g_dbgCode.reset();
 	else {
