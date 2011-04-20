@@ -509,16 +509,7 @@ namespace simuPOP {
 
 #define CLEARFLAG(var) (var = 0)
 #define SETFLAG(var, flag) (var |= flag)
-/*
 #define RESETFLAG(var, flag) (var &= ~flag)
-*/
-template<typename T>
-void RESETFLAG(T var, T flag)
-{
-	// This code will not produce warning:
-	// conversion to ‘unsigned char’ from ‘int’ may alter its value
-	var &= T(~flag);
-}
 #define ISSETFLAG(var, flag) (!!(var & flag))
 
 // check range.
