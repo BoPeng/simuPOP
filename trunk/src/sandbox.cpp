@@ -345,10 +345,10 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 }
 
 
-bool MutSpaceMutator::apply(Population &  pop ) const
+bool MutSpaceMutator::apply(Population & pop) const
 {
 #ifdef BINARYALLELE
-		(void) pop; /* avoid warning about unused parameter */
+	(void)pop;      // avoid warning about unused parameter
 #else
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
@@ -491,10 +491,10 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
                                              size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
-	(void) offPop; /* avoid warning about unused parameter */
-	(void) parent; /* avoid warning about unused parameter */
-	(void) offIndex; /* avoid warning about unused parameter */
-	(void) ploidy; /* avoid warning about unused parameter */
+	(void)offPop;       // avoid warning about unused parameter
+	(void)parent;       // avoid warning about unused parameter
+	(void)offIndex;     // avoid warning about unused parameter
+	(void)ploidy;       // avoid warning about unused parameter
 #else
 	size_t nCh = parent.numChrom();
 
@@ -581,10 +581,10 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
                                              size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
-	(void) offPop; /* avoid warning about unused parameter */
-	(void) parent; /* avoid warning about unused parameter */
-	(void) offIndex; /* avoid warning about unused parameter */
-	(void) ploidy; /* avoid warning about unused parameter */
+	(void)offPop;       // avoid warning about unused parameter
+	(void)parent;       // avoid warning about unused parameter
+	(void)offIndex;     // avoid warning about unused parameter
+	(void)ploidy;       // avoid warning about unused parameter
 #else
 	const matrixi & ranges = m_ranges.elems();
 

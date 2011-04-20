@@ -146,7 +146,7 @@ public:
 		const stringList & infoFields = vectorstr())
 		: PyEval("", stmts, exposePop, "", begin, end, step, at, reps, subPops, infoFields)
 	{
-		(void) output; /* avoid warning about unused parameter */
+		(void)output;  // avoid warning about unused parameter
 	}
 
 
@@ -206,7 +206,7 @@ public:
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(expr, stmts), m_exposeInd(exposeInd), m_lastValues()
 	{
-		(void) usePopVars; /* this parameter is obsolete, use (void) to avoid a warning message */
+		(void)usePopVars;  // this parameter is obsolete, use (void) to avoid a warning message
 		DBG_WARNIF(debug(DBG_COMPATIBILITY) && usePopVars, "WARNING: parameter usePopVars is obsolete.");
 	}
 

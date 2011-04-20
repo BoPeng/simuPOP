@@ -111,11 +111,13 @@ else:
     prefix = sys.prefix
 
 if os.name == 'nt':
+    wrapper_flags = []
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
     # treat warning as error. This is only set for development builds (scons)
     # because setup.py builds might be built by imcompatible version of compilers
     extra_flags = ['/WX']
 else:
+    wrapper_flags = ['-Wno-unused-parameter', '-Wno-missing-field-initializers']
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
     extra_flags = ['-g']
@@ -245,8 +247,8 @@ for mod in targets:
         CPPDEFINES = convert_def(info['define_macros']),
         # No extra-flags because it can have -Werror and we cannot guarantee that there is
         # no warning coming out of the wrapper code.
-        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
-        CPPFLAGS = ' '.join([basicflags, ccshared, opt])
+        CCFLAGS = opt.split() + info['extra_compile_args'] + comp.compile_options + wrapper_flags,
+        CPPFLAGS = ' '.join([basicflags, ccshared])
     )
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),

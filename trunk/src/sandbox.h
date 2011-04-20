@@ -82,7 +82,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "Revert fixed alleles to wildtype allele if it is fixed in the population.";
 	}
 
@@ -158,7 +158,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MutSpaceSelector>" ;
 	}
 
@@ -278,7 +278,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MutSpaceMutator>";
 	}
 
@@ -336,7 +336,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MutSpaceRecombinator>";
 	}
 

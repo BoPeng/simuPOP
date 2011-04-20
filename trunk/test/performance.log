@@ -2672,3 +2672,120 @@ TestRandomSelection : loci=10000, size=10000: 3881
 TestRandomSelection : loci=10000, size=100000: 357
 TestRandomSelection : 18774, 1579, 23949, 1791, 3881, 357
 TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:30:15 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module short, optimized, 2 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 38176
+TestRandomSelection : loci=10, size=100000: 3311
+TestRandomSelection : loci=100, size=10000: 32917
+TestRandomSelection : loci=100, size=100000: 2254
+TestRandomSelection : loci=10000, size=10000: 715
+TestRandomSelection : loci=10000, size=100000: 65
+TestRandomSelection : 38176, 3311, 32917, 2254, 715, 65
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:33:25 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module long, optimized, 2 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 36172
+TestRandomSelection : loci=10, size=100000: 2595
+TestRandomSelection : loci=100, size=10000: 16105
+TestRandomSelection : loci=100, size=100000: 1297
+TestRandomSelection : loci=10000, size=10000: 191
+TestRandomSelection : loci=10000, size=100000: 0
+TestRandomSelection : 36172, 2595, 16105, 1297, 191, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:36:01 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module binary, optimized, 2 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 29033
+TestRandomSelection : loci=10, size=100000: 2721
+TestRandomSelection : loci=100, size=10000: 35408
+TestRandomSelection : loci=100, size=100000: 2877
+TestRandomSelection : loci=10000, size=10000: 5223
+TestRandomSelection : loci=10000, size=100000: 492
+TestRandomSelection : 29033, 2721, 35408, 2877, 5223, 492
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:45:52 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module short, optimized, 4 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 61838
+TestRandomSelection : loci=10, size=100000: 5759
+TestRandomSelection : loci=100, size=10000: 55355
+TestRandomSelection : loci=100, size=100000: 3836
+TestRandomSelection : loci=10000, size=10000: 731
+TestRandomSelection : loci=10000, size=100000: 64
+TestRandomSelection : 61838, 5759, 55355, 3836, 731, 64
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:49:03 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module long, optimized, 4 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 58587
+TestRandomSelection : loci=10, size=100000: 4480
+TestRandomSelection : loci=100, size=10000: 19245
+TestRandomSelection : loci=100, size=100000: 1544
+TestRandomSelection : loci=10000, size=10000: 184
+TestRandomSelection : loci=10000, size=100000: 0
+TestRandomSelection : 58587, 4480, 19245, 1544, 184, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:51:40 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module binary, optimized, 4 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 50380
+TestRandomSelection : loci=10, size=100000: 4890
+TestRandomSelection : loci=100, size=10000: 57714
+TestRandomSelection : loci=100, size=100000: 5229
+TestRandomSelection : loci=10000, size=10000: 5501
+TestRandomSelection : loci=10000, size=100000: 533
+TestRandomSelection : 50380, 4890, 57714, 5229, 5501, 533
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 12:57:54 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module short, optimized, 8 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 70608
+TestRandomSelection : loci=10, size=100000: 6861
+TestRandomSelection : loci=100, size=10000: 68224
+TestRandomSelection : loci=100, size=100000: 4607
+TestRandomSelection : loci=10000, size=10000: 735
+TestRandomSelection : loci=10000, size=100000: 66
+TestRandomSelection : 70608, 6861, 68224, 4607, 735, 66
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 13:01:06 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module long, optimized, 8 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 77867
+TestRandomSelection : loci=10, size=100000: 6012
+TestRandomSelection : loci=100, size=10000: 18566
+TestRandomSelection : loci=100, size=100000: 1601
+TestRandomSelection : loci=10000, size=10000: 189
+TestRandomSelection : loci=10000, size=100000: 0
+TestRandomSelection : 77867, 6012, 18566, 1601, 189, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 13:03:43 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4107, module binary, optimized, 8 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 62479
+TestRandomSelection : loci=10, size=100000: 6190
+TestRandomSelection : loci=100, size=10000: 76233
+TestRandomSelection : loci=100, size=100000: 7308
+TestRandomSelection : loci=10000, size=10000: 5726
+TestRandomSelection : loci=10000, size=100000: 555
+TestRandomSelection : 62479, 6190, 76233, 7308, 5726, 555
+TestRandomSelection : End of test TestRandomSelection

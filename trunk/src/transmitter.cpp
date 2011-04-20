@@ -285,7 +285,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 
 
 bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
-		Population & offPop, RawIndIterator offspring,
+                                                 Population & offPop, RawIndIterator offspring,
                                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -332,7 +332,7 @@ void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool HaplodiploidGenoTransmitter::applyDuringMating(Population & /* pop */,
-		Population & offPop, RawIndIterator offspring,
+                                                    Population & offPop, RawIndIterator offspring,
                                                     Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -383,7 +383,7 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		return true;
 	initializeIfNeeded(*offspring);
 
-	(void) mom; /* avoid a warning message of unused varible in optimized modules */
+	(void)mom;  // avoid a warning message of unused varible in optimized modules
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
 
