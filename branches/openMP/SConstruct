@@ -251,7 +251,7 @@ for mod in targets:
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
-        LIBS = info['libraries'] + [common_lib, mod_wrapper],
+        LIBS = info['libraries'] + [mod_wrapper, common_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
