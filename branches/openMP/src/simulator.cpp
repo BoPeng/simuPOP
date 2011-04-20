@@ -229,7 +229,7 @@ vectoru Simulator::evolve(
 	if (!initOps.empty())
 		apply(initOps);
 
-	elapsedTime("PreopDone");
+	elapsedTime("Start evolution.");
 
 	while (1) {
 		// save refcount at the beginning
@@ -297,13 +297,13 @@ vectoru Simulator::evolve(
 						numStopped = activeReps.size();
 						break;
 					}
-					elapsedTime("PreMatingOp: " + preOps[it]->describe());
+					elapsedTime("Applied " + preOps[it]->describe());
 				}
 			}
 
 			if (!activeReps[curRep])
 				continue;
-			elapsedTime("matingBegin");
+			elapsedTime("Start mating at generation " + toStr(curGen));
 			// start mating:
 			try {
 				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
@@ -326,7 +326,7 @@ vectoru Simulator::evolve(
 				break;
 			}
 
-			elapsedTime("matingDone");
+			elapsedTime("Mating finished.");
 
 			// apply post-mating ops to next gen()
 			if (!postOps.empty()) {
@@ -356,7 +356,7 @@ vectoru Simulator::evolve(
 						// does not run the rest of the post-mating operators.
 						break;
 					}
-					elapsedTime("PostMatingOp: " + postOps[it]->describe());
+					elapsedTime("Applied " + postOps[it]->describe());
 				}
 			}
 			// if a replicate stops at a post mating operator, consider one evolved generation.
@@ -405,7 +405,7 @@ bool Simulator::apply(const opList & ops)
 
 			ops[it]->apply(curPop);
 
-			elapsedTime("PrePost-preMatingop" + toStr(it));
+			elapsedTime("Applied " + ops[it]->describe());
 		}
 	}
 	return true;
