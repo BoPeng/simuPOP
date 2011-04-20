@@ -45,8 +45,8 @@
 
 #ifdef STANDALONE_EXECUTABLE
 
-#include "config.h"
-#include "simuPOP_cfg.h"
+//#include "config.h"
+//#include "simuPOP_cfg.h"
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"

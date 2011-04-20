@@ -1317,10 +1317,10 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop
 		UINT numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
 		int nThreads = numThreads();
 		int except = 0;
+		int block  = offPopSize/numOffspring/(nThreads*2);
 		string msg;
-#  pragma omp parallel for
-
-		for(int i=0; i <= static_cast<int>(offPopSize/numOffspring); i++)
+#  pragma omp parallel for 
+		for(int i=0; i <= static_cast<int>(offPopSize/numOffspring/block); i++)
 		{
 		  try {
 				RawIndIterator local_it = offBegin + i*numOffspring;
