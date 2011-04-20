@@ -159,11 +159,13 @@ def _swig_repr(self):
 %include "config.h"
 %include "simuPOP_cfg.h"
 
+typedef long ssize_t;
+
 namespace std
 {
-    %template()         pair<ULONG, ULONG>; /* e.g. chromLocusPair */
+    %template()         pair<size_t, size_t>; /* e.g. chromLocusPair */
     %template()         vector<string>;     /* e.g. infoFields */
-    %template()         vector<ULONG>;      /* e.g. subPopSizes */
+    %template()         vector<size_t>;      /* e.g. subPopSizes */
     %template()         vector<double>;     /* e.g. lociPos */
     %template()         vector<long>;       /* e.g. vspID(vectori) */
     %template()         map<vector<long>, double>; /* e.g. MapSelector */
