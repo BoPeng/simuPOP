@@ -4524,7 +4524,7 @@ bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
     for (; it != it_end; ++it) {
         // positive index is easy
         if (*it >= 0) {
-            if (static_cast<UINT>(*it) == rep)
+            if (*it == rep)
 				return true;
             else
 				continue;
