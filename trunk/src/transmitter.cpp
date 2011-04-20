@@ -45,7 +45,7 @@ void GenoTransmitter::initialize(const Individual & ind) const
 {
 	m_hasCustomizedChroms = !ind.customizedChroms().empty();
 	m_lociToCopy.clear();
-	for (UINT ch = 0; ch < ind.numChrom(); ++ch)
+	for (size_t ch = 0; ch < ind.numChrom(); ++ch)
 		if (ind.chromType(ch) == CUSTOMIZED)
 			m_lociToCopy.push_back(0);
 		else
@@ -55,7 +55,7 @@ void GenoTransmitter::initialize(const Individual & ind) const
 }
 
 
-void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int chrom) const
+void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t chrom) const
 {
 	initializeIfNeeded(ind);
 
@@ -70,7 +70,7 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, int ch
 
 
 void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
-                                     Individual & offspring, int ploidy, int chrom) const
+                                     Individual & offspring, int ploidy, size_t chrom) const
 {
 	initializeIfNeeded(offspring);
 
@@ -95,7 +95,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 
 	// troublesome ...
 	if (m_hasCustomizedChroms) {
-		for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
+		for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
 			if (m_lociToCopy[ch] == 0)
 				continue;
 			GenoIterator par = parent.genoBegin(parPloidy, ch);
@@ -118,7 +118,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 }
 
 
-string CloneGenoTransmitter::describe(bool format) const
+string CloneGenoTransmitter::describe(bool /* format */) const
 {
 	return "<simuPOP.CloneGenoTransmitter> clone genotype, sex and information fields of parent to offspring" ;
 }
@@ -141,9 +141,9 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 	// troublesome ...
 	if (!m_chroms.allAvail()) {
 		const vectoru chroms = m_chroms.elems();
-		for (UINT p = 0; p != m_ploidy; ++p) {
-			for (UINT i = 0; i < chroms.size(); ++i) {
-				UINT ch = chroms[i];
+		for (size_t p = 0; p != m_ploidy; ++p) {
+			for (size_t i = 0; i < chroms.size(); ++i) {
+				size_t ch = chroms[i];
 				GenoIterator par = parent->genoBegin(p, ch);
 				GenoIterator off = offspring->genoBegin(p, ch);
 #ifdef BINARYALLELE
@@ -155,8 +155,8 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 			}
 		}
 	} else if (m_hasCustomizedChroms) {
-		for (UINT p = 0; p != m_ploidy; ++p) {
-			for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
+		for (size_t p = 0; p != m_ploidy; ++p) {
+			for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
 				if (m_lociToCopy[ch] == 0)
 					continue;
 				GenoIterator par = parent->genoBegin(p, ch);
@@ -184,7 +184,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 			offspring->setInfo(parent->info(i), i);
 	} else {
 		for (size_t i = 0; i < infoSize(); ++i) {
-			UINT idx = parent->infoIdx(infoField(i));
+			size_t idx = parent->infoIdx(infoField(i));
 			offspring->setInfo(parent->info(idx), idx);
 		}
 	}
@@ -233,7 +233,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 		//
 		int nextParPloidy = 0;
 		bool copyPar;
-		for (UINT ch = 0; ch < m_numChrom; ++ch) {
+		for (size_t ch = 0; ch < m_numChrom; ++ch) {
 			// if it is the last chromosome, copy anyway
 			if (ch == m_numChrom - 1)
 				copyPar = true;
@@ -261,7 +261,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 	}
 #endif
 	//
-	for (int ch = 0; static_cast<UINT>(ch) < m_numChrom; ++ch) {
+	for (int ch = 0; static_cast<size_t>(ch) < m_numChrom; ++ch) {
 		// customized chromosome?
 		if (m_lociToCopy[ch] == 0)
 			continue;
@@ -284,7 +284,8 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 }
 
 
-bool MendelianGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
+		Population & offPop, RawIndIterator offspring,
                                                  Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -301,7 +302,7 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & pop, Population & 
 }
 
 
-bool SelfingGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool SelfingGenoTransmitter::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                                Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -330,7 +331,8 @@ void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
 }
 
 
-bool HaplodiploidGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool HaplodiploidGenoTransmitter::applyDuringMating(Population & /* pop */,
+		Population & offPop, RawIndIterator offspring,
                                                     Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -353,7 +355,7 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 {
 	GenoTransmitter::initialize(ind);
 	if (m_chroms.allAvail()) {
-		for (UINT ch = 0; ch < ind.numChrom(); ++ch)
+		for (size_t ch = 0; ch < ind.numChrom(); ++ch)
 			if (ind.chromType(ch) == CUSTOMIZED)
 				m_mitoChroms.push_back(ch);
 	} else
@@ -365,7 +367,7 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 	m_numLoci = ind.numLoci(m_mitoChroms[0]);
 
 #ifndef OPTIMIZED
-	for (UINT ch = 1; ch < m_mitoChroms.size(); ++ch) {
+	for (size_t ch = 1; ch < m_mitoChroms.size(); ++ch) {
 		DBG_FAILIF(ind.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
 			"All mitochondrial chromosomes should have the same number of loci");
 	}
@@ -374,25 +376,26 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                                     Individual * dad, Individual * mom) const
+                                                     Individual * /* dad */, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	initializeIfNeeded(*offspring);
 
+	(void) mom; /* avoid a warning message of unused varible in optimized modules */
 	DBG_FAILIF(mom == NULL, ValueError,
 		"MitochondrialGenoTransmitter requires valid female parent.");
 
 	if (m_numLoci == 0)
 		return true;
 
-	UINT pldy = pop.ploidy();
+	size_t pldy = pop.ploidy();
 	//
 	vectoru::iterator it = m_mitoChroms.begin();
 	vectoru::iterator it_end = m_mitoChroms.end();
 	for (; it != it_end; ++it) {
-		UINT src = getRNG().randInt(m_mitoChroms.size());
+		size_t src = getRNG().randInt(static_cast<ULONG>(m_mitoChroms.size()));
 		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef BINARYALLELE
@@ -401,8 +404,8 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
 		copy(par, par_end, off);
 #endif
-		for (UINT p = 1; p < pldy; ++p)
-			clearChromosome(*offspring, 1, *it);
+		for (size_t p = 1; p < pldy; ++p)
+			clearChromosome(*offspring, 1, static_cast<int>(*it));
 	}
 
 	return true;
@@ -433,7 +436,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 };
 
 
-string Recombinator::describe(bool format) const
+string Recombinator::describe(bool /* format */) const
 {
 	string desc = "<simuPOP.Recombinator> genetic recombination.";
 
@@ -441,7 +444,7 @@ string Recombinator::describe(bool format) const
 }
 
 
-int Recombinator::markersConverted(size_t index, const Individual & ind) const
+size_t Recombinator::markersConverted(size_t index, const Individual & ind) const
 {
 	int mode = static_cast<int>(m_convMode[0]);
 
@@ -449,7 +452,7 @@ int Recombinator::markersConverted(size_t index, const Individual & ind) const
 	// this is an recombination! Otherwise, conversion will
 	// interfere with free crossover between chromosomes
 	if (mode == NUM_MARKERS || mode == GEOMETRIC_DISTRIBUTION) {
-		UINT num = 0;
+		size_t num = 0;
 		if (mode == NUM_MARKERS)
 			num = static_cast<int>(m_convMode[2]);
 		else
@@ -486,8 +489,8 @@ void Recombinator::initialize(const Individual & ind) const
 	m_chromX = ind.chromX();
 	m_chromY = ind.chromY();
 	if (!ind.customizedChroms().empty()) {
-		m_customizedBegin = ind.chromBegin(ind.customizedChroms()[0]);
-		m_customizedEnd = ind.chromEnd(ind.customizedChroms().back());
+		m_customizedBegin = static_cast<int>(ind.chromBegin(ind.customizedChroms()[0]));
+		m_customizedEnd = static_cast<int>(ind.chromEnd(ind.customizedChroms().back()));
 	}
 	// prepare m_bt
 	vectorf vecP;
@@ -510,9 +513,9 @@ void Recombinator::initialize(const Individual & ind) const
 
 	m_recBeforeLoci.clear();
 	vecP.clear();
-	for (UINT ch = 0; ch < ind.numChrom(); ++ch) {
-		UINT chBegin = ind.chromBegin(ch);
-		UINT chEnd = ind.chromEnd(ch);
+	for (size_t ch = 0; ch < ind.numChrom(); ++ch) {
+		size_t chBegin = ind.chromBegin(ch);
+		size_t chEnd = ind.chromEnd(ch);
 
 		if (chBegin == chEnd)
 			continue;
@@ -528,7 +531,7 @@ void Recombinator::initialize(const Individual & ind) const
 
 		if (m_loci.allAvail()) {
 			// get loci distance * m_rates and then recombinant points
-			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
+			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
 				m_recBeforeLoci.push_back(loc + 1);
 				double r = useLociDist ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : m_rates[0];
 
@@ -544,7 +547,7 @@ void Recombinator::initialize(const Individual & ind) const
 				"If an array is given, rates and loci should have the same length");
 
 			// get loci distance * m_rates and then recombinant points
-			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
+			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
 				// if this locus will be recombined.
 				vectoru::const_iterator pos = find(loci.begin(), loci.end(), loc);
 				if (pos != loci.end()) {
@@ -624,19 +627,19 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	int forceSecondEnd = -1;
 	// from maternal, ignore chromosome Y
 	if (ploidy == 0 && m_chromY > 0) {
-		ignoreBegin = parent.chromBegin(m_chromY);
-		ignoreEnd = parent.chromEnd(m_chromY);
+		ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
+		ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
 	} else if (ploidy == 1 && m_chromX > 0) {
 		if (offspring.sex() == MALE) {
-			ignoreBegin = parent.chromBegin(m_chromX);
-			ignoreEnd = parent.chromEnd(m_chromX);
-			forceSecondBegin = parent.chromBegin(m_chromY);
-			forceSecondEnd = parent.chromEnd(m_chromY);
+			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromX));
+			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromX));
+			forceSecondBegin = static_cast<int>(parent.chromBegin(m_chromY));
+			forceSecondEnd = static_cast<int>(parent.chromEnd(m_chromY));
 		} else {
-			ignoreBegin = parent.chromBegin(m_chromY);
-			ignoreEnd = parent.chromEnd(m_chromY);
-			forceFirstBegin = parent.chromBegin(m_chromX);
-			forceFirstEnd = parent.chromEnd(m_chromX);
+			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
+			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			forceFirstBegin = static_cast<int>(parent.chromBegin(m_chromX));
+			forceFirstEnd = static_cast<int>(parent.chromEnd(m_chromX));
 		}
 	}
 	// get a new set of values.
@@ -663,7 +666,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	                      && m_convMode[1] > 0.;
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
-		int convCount = -1;
+		ssize_t convCount = -1;
 		size_t gtEnd = m_recBeforeLoci.back();
 		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
 			// do not copy genotype in the ignored region.
@@ -730,7 +733,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = m_bt.probFirstSucc();
 		// if there is some recombination
-		int convCount = -1;
+		ssize_t convCount = -1;
 		size_t convEnd;
 		if (pos != Bernullitrials::npos) {
 			// first piece
@@ -797,7 +800,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = m_bt.probFirstSucc();
 		// if there is some recombination
-		int convCount = -1;
+		ssize_t convCount = -1;
 		size_t convEnd;
 		if (pos != Bernullitrials::npos) {
 			// first piece

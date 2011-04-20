@@ -323,7 +323,7 @@ public:
 	/** if a subpopulation has any activated virtual subpopulation
 	 *  CPPONLY
 	 */
-	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
+	bool hasActivatedVirtualSubPop(size_t subPop) const;
 
 	/** CPPONLY because this is simply numVirtualSubPop() != 0.
 	 *  Return True if virtual subpopulations are defined for this population.
@@ -348,7 +348,7 @@ public:
 	 *  splitter. Return \c 0 if no VSP is defined.
 	 *  <group>3-VSP</group>
 	 */
-	UINT numVirtualSubPop() const;
+	size_t numVirtualSubPop() const;
 
 	/// HIDDEN activate a virtual subpopulation.
 	void activateVirtualSubPop(vspID subPop) const;
@@ -358,7 +358,7 @@ public:
 	 *  subpopulation. In another word, all individuals
 	 *  will become visible.
 	 */
-	void deactivateVirtualSubPop(SubPopID subPop) const;
+	void deactivateVirtualSubPop(size_t subPop) const;
 
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
@@ -383,9 +383,9 @@ public:
 	 *  is no subpopulation structure.
 	 *  <group>2-subpop</group>
 	 */
-	UINT numSubPop() const
+	size_t numSubPop() const
 	{
-		return m_subPopSize.size();
+		return static_cast<size_t>(m_subPopSize.size());
 	}
 
 
@@ -396,7 +396,7 @@ public:
 	 *  Population and virtual subpopulation names can be used.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG subPopSize(vspID subPop = vspID(), int ancGen = -1) const;
+	size_t subPopSize(vspID subPop = vspID(), int ancGen = -1) const;
 
 
 	/** Return the index of the first subpopulation with name \e name. An
@@ -405,7 +405,7 @@ public:
 	 *  name is not supported.
 	 *  <group>2-subpopname</group>
 	 */
-	UINT subPopByName(const string & name) const;
+	size_t subPopByName(const string & name) const;
 
 	/** Return the "spName - vspName" (virtual named subpopulation), "" (unnamed
 	 *  non-virtual subpopulation), "spName" (named subpopulation) or "vspName"
@@ -426,7 +426,7 @@ public:
 	 *  subpopulation names do not have to be unique.
 	 *  <group>2-subpopname</group>
 	 */
-	void setSubPopName(const string & name, SubPopID subPop);
+	void setSubPopName(const string & name, size_t subPop);
 
 	/** Return the sizes of all subpopulations at the current generation
 	 *  (default) or specified ancestral generation \e ancGen. Virtual
@@ -435,9 +435,9 @@ public:
 	 */
 	vectoru subPopSizes(int ancGen = -1) const
 	{
-		if (ancGen < 0 || static_cast<UINT>(ancGen) == m_curAncestralGen)
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_subPopSize;
-		DBG_FAILIF(static_cast<UINT>(ancGen) > ancestralGens(),
+		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 			+ toStr(ancestralGens()));
 		return m_ancestralPops[ancGen - 1].m_subPopSize;
@@ -454,22 +454,22 @@ public:
 	 *  current generation (default) or the an ancestral generation \e ancGen.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG popSize(int ancGen = -1) const
+	size_t popSize(int ancGen = -1) const
 	{
-		if (ancGen < 0 || static_cast<UINT>(ancGen) == m_curAncestralGen)
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_popSize;
-		DBG_FAILIF(static_cast<UINT>(ancGen) > ancestralGens(),
+		DBG_FAILIF(ancGen > ancestralGens(),
 			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
 			+ toStr(ancestralGens()));
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
-		return accumulate(sizes.begin(), sizes.end(), 0L);
+		return accumulate(sizes.begin(), sizes.end(), size_t(0));
 	}
 
 
 	/** return the absolute index of an individual \e idx in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
-	ULONG absIndIndex(ULONG idx, UINT subPop) const
+	size_t absIndIndex(size_t idx, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGESUBPOPMEMBER(idx, subPop);
@@ -482,13 +482,13 @@ public:
 	 *  its absolute index \c idx.
 	 *  <group>2-subpop</group>
 	 */
-	pairu subPopIndPair(ULONG idx) const
+	pairu subPopIndPair(size_t idx) const
 	{
 		CHECKRANGEIND(idx);
 
 		pairu loc;
 
-		for (UINT i = 1; i <= m_subPopSize.size(); ++i) {
+		for (size_t i = 1; i <= m_subPopSize.size(); ++i) {
 			if (m_subPopIndex[i] > idx) {
 				loc.first = i - 1;
 				loc.second = idx - m_subPopIndex[i - 1];
@@ -502,7 +502,7 @@ public:
 	/** Return the index of the first individual in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
-	ULONG subPopBegin(UINT subPop) const
+	size_t subPopBegin(size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -516,7 +516,7 @@ public:
 	 *  individuals in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
-	ULONG subPopEnd(UINT subPop) const
+	size_t subPopEnd(size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -529,6 +529,43 @@ public:
 	 */
 	//@{
 
+
+	/** CPPONLY
+	 */
+	Individual & individual(size_t idx, vspID subPop = vspID())
+	{
+#ifndef OPTIMIZED
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function Individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid()) {
+			CHECKRANGEIND(idx);
+		} else {
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
+#endif
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+	}
+
+
+	/** CPPONLY
+	 */
+	const Individual & individual(size_t idx, vspID subPop = vspID()) const
+	{
+#ifndef OPTIMIZED
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function Individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid()) {
+			CHECKRANGEIND(idx);
+		} else {
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
+#endif
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+	}
+
+
 	/** Return a refernce to individual \e idx in the population
 	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
 	 * <tt>subPop=sp</tt>). Virtual subpopulation is not supported. Note that a
@@ -537,9 +574,9 @@ public:
 	 */
 	Individual & individual(double idx, vspID subPop = vspID())
 	{
-		ULONG intIdx = toID(idx);
+		size_t intIdx = toID(idx);
 
-		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+		DBG_FAILIF(fabs(idx - double(intIdx)) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
@@ -575,9 +612,9 @@ public:
 	 */
 	const Individual & individual(double idx, vspID subPop = vspID()) const
 	{
-		ULONG intIdx = toID(idx);
+		size_t intIdx = toID(idx);
 
-		DBG_FAILIF(fabs(idx - intIdx) > 1e-8, ValueError,
+		DBG_FAILIF(fabs(idx - double(intIdx)) > 1e-8, ValueError,
 			"individual index has to be integer (or a double round to full iteger).");
 #ifndef OPTIMIZED
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
@@ -601,12 +638,12 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-	Individual & ancestor(double idx, UINT gen, vspID subPop = vspID());
+	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-	const Individual & ancestor(double idx, UINT gen, vspID subPop = vspID()) const;
+	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
@@ -641,7 +678,7 @@ public:
 	/** CPPONLY Individual iterator: with subPop info.
 	 *  The iterator will skip invisible Individuals
 	 */
-	IndIterator indIterator(UINT subPop)
+	IndIterator indIterator(size_t subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -654,12 +691,12 @@ public:
 	/** CPPONLY Individual iterator: with subPop info and Thread ID.
 	 *  The iterator will skip invisible Individuals
 	 */
-	IndIterator indIterator(UINT subPop, UINT threadID)
+	IndIterator indIterator(size_t subPop, size_t threadID)
 	{
 		CHECKRANGESUBPOP(subPop);
 		DBG_FAILIF(threadID >= numThreads(), RuntimeError,
 			"Thread ID " + toStr(threadID) + " execeed total number of threads " + toStr(numThreads()));
-		UINT blockSize = m_subPopSize[subPop] / numThreads();
+		size_t blockSize = m_subPopSize[subPop] / numThreads();
 		if (threadID + 1 != numThreads())
 			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,
 				m_inds.begin() + m_subPopIndex[subPop] + blockSize * (threadID + 1),
@@ -684,7 +721,7 @@ public:
 	/** CPPONLY Individual iterator: with subPop info.
 	 *  The iterator will skip invisible Individuals
 	 */
-	ConstIndIterator indIterator(UINT subPop) const
+	ConstIndIterator indIterator(size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -712,7 +749,7 @@ public:
 	/** CPPONLY Individual iterator: with subPop info.
 	 * The iterator will skip invisible Individuals
 	 */
-	RawIndIterator rawIndBegin(UINT subPop)
+	RawIndIterator rawIndBegin(size_t subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -722,7 +759,7 @@ public:
 
 	/** CPPONLY Individual iterator: with subPop info.
 	 */
-	RawIndIterator rawIndEnd(UINT subPop)
+	RawIndIterator rawIndEnd(size_t subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -750,7 +787,7 @@ public:
 	/** CPPONLY Individual iterator: with subPop info.
 	 * The iterator will skip invisible Individuals
 	 */
-	ConstRawIndIterator rawIndBegin(UINT subPop) const
+	ConstRawIndIterator rawIndBegin(size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -760,7 +797,7 @@ public:
 
 	/** CPPONLY Individual iterator: with subPop info.
 	 */
-	ConstRawIndIterator rawIndEnd(UINT subPop) const
+	ConstRawIndIterator rawIndEnd(size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -780,11 +817,11 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	IndAlleleIterator alleleIterator(UINT locus);
+	IndAlleleIterator alleleIterator(size_t locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-	IndAlleleIterator alleleIterator(UINT locus, UINT subPop);
+	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
@@ -821,20 +858,20 @@ public:
 	   if order, keep order
 	   if not order, respect subpopulation structure
 	 */
-	GenoIterator genoBegin(UINT subPop, bool order)
+	GenoIterator genoBegin(size_t subPop, bool order)
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 
-		syncIndPointers();
+		syncIndPointers(order);
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
 
 
 	/// CPPONLY allele iterator in a subpopulation.
-	GenoIterator genoEnd(UINT subPop, bool order)
+	GenoIterator genoEnd(size_t subPop, bool order)
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
@@ -846,7 +883,7 @@ public:
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
-	GenoIterator indGenoBegin(ULONG ind) const
+	GenoIterator indGenoBegin(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoBegin();
@@ -854,7 +891,7 @@ public:
 
 
 	/// CPPONLY genoIterator -- end of individual ind.
-	GenoIterator indGenoEnd(ULONG ind) const
+	GenoIterator indGenoEnd(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoEnd();
@@ -862,7 +899,7 @@ public:
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
-	GenoIterator indGenoBegin(ULONG ind, UINT subPop) const
+	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -872,7 +909,7 @@ public:
 
 
 	/// CPPONLY genoIterator -- end of individual ind.
-	GenoIterator indGenoEnd(ULONG ind, UINT subPop) const
+	GenoIterator indGenoEnd(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGESUBPOPMEMBER(ind, subPop);
@@ -928,7 +965,7 @@ public:
 	 *  split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru splitSubPop(UINT subPop, const vectorf & sizes, const vectorstr & names = vectorstr());
+	vectoru splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names = vectorstr());
 
 
 	/** Remove (virtual) subpopulation(s) \e subPops and all their individuals.
@@ -976,7 +1013,7 @@ public:
 	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-	UINT mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
@@ -1015,7 +1052,7 @@ public:
 	 */
 	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
 		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
-		UINT chromType = AUTOSOME);
+		size_t chromType = AUTOSOME);
 
 	/** Insert loci \e lociNames at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
@@ -1156,7 +1193,7 @@ public:
 	 *  Return the current ancestral generation number.
 	 *  <group>6-ancestral</group>
 	 */
-	UINT curAncestralGen() const
+	size_t curAncestralGen() const
 	{
 		return m_curAncestralGen;
 	}
@@ -1167,9 +1204,9 @@ public:
 	 *  \c setAncestralDepth().
 	 *  <group>6-ancestral</group>
 	 */
-	UINT ancestralGens() const
+	int ancestralGens() const
 	{
-		return m_ancestralPops.size();
+		return static_cast<int>(m_ancestralPops.size());
 	}
 
 
@@ -1202,7 +1239,7 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx)
+	IndInfoIterator infoBegin(size_t idx)
 	{
 		CHECKRANGEINFO(idx);
 
@@ -1219,7 +1256,7 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx)
+	IndInfoIterator infoEnd(size_t idx)
 	{
 		CHECKRANGEINFO(idx);
 		if (hasActivatedVirtualSubPop() || !indOrdered())
@@ -1230,9 +1267,9 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, vspID vsp)
+	IndInfoIterator infoBegin(size_t idx, vspID vsp)
 	{
-		SubPopID subPop = vsp.subPop();
+		size_t subPop = vsp.subPop();
 
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
@@ -1252,9 +1289,9 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, vspID vsp)
+	IndInfoIterator infoEnd(size_t idx, vspID vsp)
 	{
-		SubPopID subPop = vsp.subPop();
+		size_t subPop = vsp.subPop();
 
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
@@ -1277,7 +1314,7 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This operation is not allowed when there is an activated virtual subpopulation");
-		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
 		if (subPop.valid()) {
 			activateVirtualSubPop(subPop);
 			vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
@@ -1338,7 +1375,7 @@ public:
 	 *  ancestral generations.
 	 *  <group>6-ancestral</group>
 	 */
-	void useAncestralGen(UINT idx);
+	void useAncestralGen(ssize_t idx);
 
 	//@}
 
@@ -1430,271 +1467,15 @@ public:
 private:
 	friend class boost::serialization::access;
 
-	template<class Archive>
-	void save(Archive & ar, const UINT version) const
-	{
-		// deep adjustment: everyone in order
-		const_cast<Population *>(this)->syncIndPointers();
+	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
 
-		ar & ModuleMaxAllele;
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
-		// GenoStructure genoStru = this->genoStru();
-		ar & genoStru();
-
-		ar & m_subPopSize;
-		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
-#ifdef BINARYALLELE
-		size_t size = m_genotype.size();
-		ar & size;
-		ConstGenoIterator ptr = m_genotype.begin();
-		WORDTYPE data = 0;
-		for (size_t i = 0; i < size; ++i) {
-			data |= (*ptr++) << (i % 32);
-			// end of block of end of data
-			if (i % 32 == 31 || i == size - 1) {
-				// on 64 systems, the upper 32bit of the data might not be 0
-				// so we need to clear the upper 32bit so that the genotype saved
-				// on a 64bit system can be loaded on 32bit systems.
-				data &= 0xFFFFFFFF;
-				ar & data;
-				data = 0;
-			}
-		}
-#else
-		ar & m_genotype;
-#endif
-		DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
-		ar & m_info;
-		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
-		ar & m_inds;
-		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
-		ar & m_ancestralGens;
-		size_t sz = m_ancestralPops.size();
-		ar & sz;
-		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
-			const_cast<Population *>(this)->useAncestralGen(i + 1);
-			// need to make sure ancestral pop also in order
-			const_cast<Population *>(this)->syncIndPointers();
-			ar & m_subPopSize;
-			ar & m_subPopNames;
-#ifdef BINARYALLELE
-			size_t size = m_genotype.size();
-			ar & size;
-			ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				data |= (*ptr++) << (i % 32);
-				// end of block of end of data
-				if (i % 32 == 31 || i == size - 1) {
-					data &= 0xFFFFFFFF;
-					ar & data;
-					data = 0;
-				}
-			}
-#else
-			ar & m_genotype;
-#endif
-			ar & m_info;
-			ar & m_inds;
-		}
-		const_cast<Population *>(this)->useAncestralGen(0);
-
-		// save shared variables as string.
-		// note that many format are not supported.
-		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
-		string vars = varsAsString();
-		ar & vars;
-	}
-
-
-	template<class Archive>
-	void load(Archive & ar, const UINT version)
-	{
-		ULONG ma;
-		ar & ma;
-
-		DBG_WARNIF(ma > ModuleMaxAllele, "Warning: The population is saved in library with more allele states. \n"
-			                             "Unless all alleles are less than " + toStr(ModuleMaxAllele) +
-			", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n");
-
-		GenoStructure stru;
-		DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
-		ar & stru;
-		ar & m_subPopSize;
-		ar & m_subPopNames;
-		DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
-
-#ifdef BINARYALLELE
-		// binary from binary
-		if (ma == 1) {
-			size_t size;
-			ar & size;
-			m_genotype.resize(size);
-			GenoIterator ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << (i % 32))) != 0;
-			}
-		}
-		// binary from others (long types)
-		else {
-			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-			vectoru tmpgeno;
-			ar & tmpgeno;
-			m_genotype.resize(tmpgeno.size());
-			for (size_t i = 0; i < tmpgeno.size(); ++i)
-				m_genotype[i] = ToAllele(tmpgeno[i]);
-		}
-#else
-		// long from binary
-		if (ma == 1) {
-			// for version 2 and higher, archive in 32bit blocks.
-			size_t size;
-			ar & size;
-			m_genotype.resize(size);
-			GenoIterator ptr = m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << (i % 32))) != 0;
-			}
-		}                                                                               // if ma == 1
-		else {                                                                          // for non-binary types, ...
-			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
-			// long from long
-			ar & m_genotype;
-		}
-#endif
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
-		ar & m_info;
-
-		DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
-		ar & m_inds;
-
-		// set genostructure, check duplication
-		// we can not use setGenoStruIdx since stru may be new.
-		this->setGenoStructure(stru);
-
-		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
-
-		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
-
-		if (m_popSize != m_inds.size()) {
-			throw ValueError("Number of individuals does not match population size.\n"
-				             "Please use the same (binary, short or long) module to save and load files.");
-		}
-
-		DBG_DO(DBG_POPULATION, cerr << "Reconstruct individual genotype" << endl);
-		m_subPopIndex.resize(m_subPopSize.size() + 1);
-		UINT i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_subPopSize.size(); ++i)
-			m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
-
-		// assign genotype location and set structure information for individuals
-		GenoIterator ptr = m_genotype.begin();
-		UINT step = genoSize();
-		InfoIterator infoPtr = m_info.begin();
-		UINT infoStep = infoSize();
-		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			m_inds[i].setGenoPtr(ptr);
-			m_inds[i].setInfoPtr(infoPtr);
-		}
-		m_ancestralGens = 0;
-		m_ancestralPops.clear();
-
-		// ancestry populations
-		DBG_DO(DBG_POPULATION, cerr << "Handling ancestral populations" << endl);
-		ar & m_ancestralGens;
-		size_t na;
-		ar & na;
-		for (size_t ap = 0; ap < na; ++ap) {
-			popData pd;
-			ar & pd.m_subPopSize;
-			ar & pd.m_subPopNames;
-#ifdef BINARYALLELE
-			// binary from binary
-			if (ma == 1) {
-				DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
-				size_t size;
-				ar & size;
-				pd.m_genotype.resize(size);
-				ptr = pd.m_genotype.begin();
-				WORDTYPE data = 0;
-				for (size_t i = 0; i < size; ++i) {
-					if (i % 32 == 0)
-						ar & data;
-					*ptr++ = (data & (1UL << i % 32)) != 0;
-				}
-			} else {
-				DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-				// binary from long types
-				vector<unsigned char> tmpgeno;
-				ar & tmpgeno;
-				pd.m_genotype.resize(tmpgeno.size());
-				for (size_t i = 0; i < tmpgeno.size(); ++i)
-					pd.m_genotype[i] = ToAllele(tmpgeno[i]);
-			}
-#else
-			if (ma == 1) {
-				// long type from binary
-				size_t size;
-				ar & size;
-				pd.m_genotype.resize(size);
-				ptr = pd.m_genotype.begin();
-				WORDTYPE data = 0;
-				for (size_t i = 0; i < size; ++i) {
-					if (i % 32 == 0)
-						ar & data;
-					*ptr++ = (data & (1UL << i % 32)) != 0;
-				}
-			} else {
-				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
-				// long type from long type.
-				ar & pd.m_genotype;
-			}
-#endif
-			ar & pd.m_info;
-			ar & pd.m_inds;
-			// set pointer after copy this thing again (push_back)
-			m_ancestralPops.push_back(pd);
-			// now set pointers
-			popData & p = m_ancestralPops.back();
-			// set pointers
-			vector<Individual> & inds = p.m_inds;
-			ULONG ps = inds.size();
-			ptr = p.m_genotype.begin();
-			infoPtr = p.m_info.begin();
-
-			for (ULONG i = 0; i < ps; ++i, ptr += step, infoPtr += infoStep) {
-				inds[i].setGenoPtr(ptr);
-				inds[i].setInfoPtr(infoPtr);
-				// set new genoStructure
-				inds[i].setGenoStruIdx(genoStruIdx());
-			}
-		}
-
-		// load vars from string
-		DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
-		string vars;
-		ar & vars;
-		varsFromString(vars);
-
-		setIndOrdered(true);
-	}
-
+	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 private:
 	/// population size: number of individual
-	ULONG m_popSize;
+	size_t m_popSize;
 
 	/// size of each subpopulation
 	vectoru m_subPopSize;
@@ -1743,32 +1524,32 @@ private:
 	std::deque<popData> m_ancestralPops;
 
 	/// current ancestral depth
-	UINT m_curAncestralGen;
+	int m_curAncestralGen;
 
 	/// whether or not individual genotype and information are in order
 	/// within a population.
 	mutable bool m_indOrdered;
 
-	mutable int m_gen;
-	mutable int m_rep;
+	mutable size_t m_gen;
+	mutable size_t m_rep;
 
 public:
 	/** CPPONLY
 	 *  current replicate in a simulator which is not meaningful for a stand-alone population
 	 *	<group>evolve</group>
 	 */
-	int rep()
+	size_t rep()
 	{
 		return m_rep;
 	}
 
 
 	/// CPPONLY  set rep number
-	void setRep(int rep)
+	void setRep(size_t rep)
 	{
 		m_rep = rep;
 #ifndef STANDALONE_EXECUTABLE
-		m_vars.setIntVar("rep", rep);
+		m_vars.setVar("rep", rep);
 #endif
 	}
 
@@ -1778,18 +1559,18 @@ public:
 	 *  faster than getting generation number from population variable.
 	 *  <group>evolve</group>
 	 */
-	int gen() const
+	size_t gen() const
 	{
 		return m_gen;
 	}
 
 
 	/// CPPONLY
-	void setGen(ULONG gen)
+	void setGen(size_t gen)
 	{
 		m_gen = gen;
 #ifndef STANDALONE_EXECUTABLE
-		m_vars.setIntVar("gen", gen);
+		m_vars.setVar("gen", gen);
 #endif
 	}
 

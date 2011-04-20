@@ -39,7 +39,7 @@ install swig >= 1.3.35 for the generation of Python wrapper files. Please see
 http://simupop.sourceforge.net/main/GetInvolved for details.
 
 """
-import os, sys, platform, shutil, glob, re, tempfile
+import os, sys, platform, shutil, glob, re, tempfile, subprocess
 import distutils.sysconfig
 
 if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
@@ -54,7 +54,10 @@ if os.name == 'nt':
     if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
         USE_OPENMP = False
 else:
-    fin, fout, ferr = os.popen3('gcc -v')
+    p = subprocess.Popen('gcc -v', shell=True,
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        close_fds=True)
+    fin, fout, ferr = (p.stdin, p.stdout, p.stderr)
     try:
         version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', ferr.readlines()[-1]).groups()
     except:
@@ -119,7 +122,7 @@ except ImportError:
 
 def swig_version():
     ''' get the version of swig '''
-    fout = os.popen(SWIG + ' -version')
+    fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
     #
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
@@ -136,7 +139,8 @@ def simuPOP_version():
     if SIMUPOP_VER.endswith('svn'):
         rev = SIMUPOP_REV
         try:
-            rev = os.popen('svnversion .').readline().strip()
+            fout = subprocess.Popen('svnversion .', shell=True, stdout=subprocess.PIPE).stdout
+            rev = fout.readline().strip()
             if ':' in rev:
                 rev = rev.split(':')[1]
             rev = rev.rstrip('M')
@@ -393,15 +397,15 @@ if not os.path.isdir('build'):
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std'), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 2)],
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
 }
@@ -475,19 +479,22 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
         # /EHsc is for VC exception handling,
-        # /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819'] 
+        # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
+        # /wd4996 disables warning messages for unsafe function call in boost/serialization
+        # /wd4068 disables warning messages for unknown pragma set by gcc 
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] 
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
             res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   
     else:
-        res['extra_compile_args'] = ['-O3', '-Wall']
+        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas']
+        if not USE_ICC:   # for gcc, turn on extra warning message
+            res['extra_compile_args'].append('-Wextra')
         if USE_OPENMP:
             res['extra_compile_args'].append('-openmp' if USE_ICC else '-fopenmp')
     # if Intel ICC is used, turn off remark 981
-    if os.getenv('CC', '').endswith('icc') or \
-        (get_config_var('CC') is not None and 'icc' in get_config_var('CC')):
-        res['extra_compile_args'].append('-wd981')
+    if USE_ICC:
+        res['extra_compile_args'].extend(['-wd981', '-wd191'])
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])

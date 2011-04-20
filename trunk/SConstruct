@@ -112,10 +112,35 @@ else:
 
 if os.name == 'nt':
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
-    extra_flags = []
+    # treat warning as error. This is only set for development builds (scons)
+    # because setup.py builds might be built by imcompatible version of compilers
+    extra_flags = ['/WX']
 else:
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
+    # during development, output symbols (for profiling and debugging)
     extra_flags = ['-g']
+    # treat warning as error...
+    extra_flags.append('-Werror')
+    #
+    # GNU gcc:
+    #
+    # -Wconversion will produce a lot of warnings about type conversion. It is
+    # useful but I cannot always turn it on because many warnings from boost will
+    # overwhelm the output, and stop compiling if '-Werror' is defined. Because
+    # MSVC does a reasonable job in detecting conversion problems and we have /WX
+    # turned on for MSVC, we can turn on this option (and disable Werror) from
+    # time to time to pick out warnings not detected by MSVC.
+    #
+    # Intel C++:
+    #
+    # -Wcheck and -Weffc++ give more warnings about coding style etc. They
+    # also should not be turned on by default.
+    #
+    #if USE_ICC:
+    #    extra_flags.extend(['-Wcheck', '-Weffc++'])
+    #else:
+    #    extra_flags.append('-Wconversion')
+    #
 
 #
 def convert_def(defines):
@@ -153,12 +178,15 @@ Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), 'build/gsl/
 #
 # Building a library for common files
 #
+# Note that we suppress warnings when building these external source files
+# using -wd options
 std_common_env = env.Clone()
 std_common_env.VariantDir('build/std_common', '.')
 std_common_lib = std_common_env.StaticLibrary(
     target = 'build/std_common/common',
     source = ['build/std_common/' + x for x in LIB_FILES],
-    CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
+    CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] +\
+        comp.compile_options + (['-wd1125', '-wd2259'] if USE_ICC else []),
     CPPPATH = ['.', 'gsl', 'build', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
     CPPDEFINES = convert_def(ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
@@ -168,12 +196,14 @@ op_common_env.VariantDir('build/op_common', '.')
 op_common_lib = op_common_env.StaticLibrary(
     target = 'build/op_common/common',
     source = ['build/op_common/' + x for x in LIB_FILES],
-    CCFLAGS = ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
+    CCFLAGS = ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + \
+        comp.compile_options + (['-wd1125'] if USE_ICC else []),
     CPPPATH = ['.', 'gsl', 'build', ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
     CPPDEFINES = convert_def(ModuInfo('op', SIMUPOP_VER, SIMUPOP_REV)['define_macros']),
     CPPFLAGS = ccshared + ' ' + opt,
 )
 Alias('common', (std_common_lib, op_common_lib))
+
 #
 # Building modules
 # 
@@ -204,10 +234,24 @@ for mod in targets:
         common_lib = op_common_lib
     else:
         common_lib = std_common_lib
+    mod_wrapper = mod_env.StaticLibrary(
+        target = 'build/%s/src/_simuPOP_wrap_%s' % (mod, mod),
+        source = ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
+        SHLIBPREFIX = "",
+        SHLIBSUFFIX = so_ext,
+        SHLINKFLAGS = comp.ldflags_shared,
+        LIBPATH = info['library_dirs'] + extra_path,
+        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPDEFINES = convert_def(info['define_macros']),
+        # No extra-flags because it can have -Werror and we cannot guarantee that there is
+        # no warning coming out of the wrapper code.
+        CCFLAGS = info['extra_compile_args'] + comp.compile_options,
+        CPPFLAGS = ' '.join([basicflags, ccshared, opt])
+    )
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
-        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES] + ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
-        LIBS = info['libraries'] + [common_lib],
+        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
+        LIBS = info['libraries'] + [mod_wrapper, common_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
@@ -220,16 +264,20 @@ for mod in targets:
     env.Depends('build/%s/src/swigpyrun.h' % mod, 'build/%s/src/utility.cpp' % mod)
     Alias(mod, mod_lib)
     Alias('all', mod_lib)
-    Alias('install', env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
-        'build/%s/src/simuPOP_%s.py' % (mod, mod)))
-    Alias('install', env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
-        mod_lib[0]))
+    pyInstall = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
+        'build/%s/src/simuPOP_%s.py' % (mod, mod))
+    libInstall = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
+        mod_lib[0])
+    mod_env.Depends(pyInstall, libInstall)
+    Alias('install', libInstall)
+    Alias('install', pyInstall)
 
 # module executable, for testing purposes.
 if os.name == 'nt':
-    pylib_name = 'python%d%d' % (sys.version_info[0], sys.version_info[1])
+    pylibs = ['python%d%d' % (sys.version_info[0], sys.version_info[1])]
 else:
-    pylib_name = 'python%d.%d' % (sys.version_info[0], sys.version_info[1])
+    pylibs = ['python%d.%d' % (sys.version_info[0], sys.version_info[1]), 'util']
+
 for mod in exe_targets:
     mod_name = mod.split('_')[0]
     exe_env = env.Clone()
@@ -244,7 +292,7 @@ for mod in exe_targets:
     mod_executable = exe_env.Program(
         target = 'build/simuPOP_%s' % mod,
         source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
-        LIBS = info['libraries'] + [common_lib, pylib_name, 'util'],
+        LIBS = info['libraries'] + [common_lib] + pylibs,
         LIBPATH = info['library_dirs'] + extra_path,
         CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),

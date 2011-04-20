@@ -72,7 +72,11 @@ using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
 #ifndef STANDALONE_EXECUTABLE
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #  include "swigpyrun.h"
+#pragma GCC diagnostic warning "-Wunused-parameter"
+#pragma GCC diagnostic warning "-Wmissing-field-initializers"
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -154,6 +158,14 @@ using std::max_element;
 using std::find;
 using std::sort;
 using std::greater;
+
+// global constant variables
+const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+const size_t InvalidValue = ~size_t(0);
+const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
+
 
 namespace simuPOP {
 
@@ -436,7 +448,8 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	g_RNGs.resize(g_numThreads);
 	g_RNGs[0].set(name, seed);
 	for (size_t i = 1; i < g_RNGs.size(); i++)
-		g_RNGs[i].set(name, g_RNGs[0].seed() + i);
+		// GSL RNG only accept unsigned long seed
+		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
 #else
 	g_RNG.set(name, seed);
 #endif
@@ -543,8 +556,8 @@ floatList::floatList(PyObject * obj) : m_elems()
 	if (PyNumber_Check(obj))
 		m_elems.push_back(PyFloat_AsDouble(obj));
 	else if (PySequence_Check(obj)) {
-		int n = PySequence_Size(obj);
-		for (int j = 0; j < n; ++j) {
+		size_t n = PySequence_Size(obj);
+		for (size_t j = 0; j < n; ++j) {
 			PyObject * val = PySequence_GetItem(obj, j);
 			DBG_ASSERT(PyNumber_Check(val), ValueError,
 				"A list of numbers is expected");
@@ -576,7 +589,7 @@ stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 #endif
 	else if (PySequence_Check(obj)) {
 		// assign values
-		UINT numStr = PySequence_Size(obj);
+		size_t numStr = PySequence_Size(obj);
 		for (size_t i = 0; i < numStr; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			if (PyString_Check(item)) {
@@ -644,7 +657,7 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 			"A list or a nested list of intgers is expected");
 	}
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	bool oneDim = true;
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
@@ -664,8 +677,8 @@ intMatrix::intMatrix(PyObject * obj) : m_elems()
 				m_elems.push_back(vectori(1, PyInt_AsLong(item)));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectori());
-			int n = PySequence_Size(item);
-			for (int j = 0; j < n; ++j) {
+			size_t n = PySequence_Size(item);
+			for (size_t j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
 					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
@@ -695,7 +708,7 @@ floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 			"A list or a nested list of numbers is expected");
 	}
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyNumber_Check(item)) {
@@ -709,8 +722,8 @@ floatMatrix::floatMatrix(PyObject * obj) : m_elems()
 			m_elems[0].push_back(PyFloat_AsDouble(item));
 		} else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorf());
-			int n = PySequence_Size(item);
-			for (int j = 0; j < n; ++j) {
+			size_t n = PySequence_Size(item);
+			for (size_t j = 0; j < n; ++j) {
 				PyObject * val = PySequence_GetItem(item, j);
 				if (!PyNumber_Check(val)) {
 					cerr << "ERROR: A list or nested list of numbers is expected" << endl;
@@ -736,7 +749,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 	DBG_ASSERT(PySequence_Check(obj), ValueError,
 		"A list or a nested list of strings is expected");
 
-	UINT numItems = PySequence_Size(obj);
+	size_t numItems = PySequence_Size(obj);
 	for (size_t i = 0; i < numItems; ++i) {
 		PyObject * item = PySequence_GetItem(obj, i);
 		if (PyString_Check(item)) {
@@ -763,8 +776,8 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 #endif
 		else if (PySequence_Check(item)) {
 			m_elems.push_back(vectorstr());
-			int numStrs = PySequence_Size(item);
-			for (int j = 0; j < numStrs; ++j) {
+			size_t numStrs = PySequence_Size(item);
+			for (size_t j = 0; j < numStrs; ++j) {
 				PyObject * str = PySequence_GetItem(item, j);
 				if (PyString_Check(str)) {
 					string value = PyObj_AsString(str);
@@ -790,7 +803,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
-pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 {
 	if (!m_func.isValid())
 		return;
@@ -805,7 +818,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 			// in this case, a WithArgs object must have been passed.
 			PyObject * args = PyObject_GetAttrString(obj, "__args__");
 			m_numArgs = PySequence_Size(args);
-			for (int i = 0; i < m_numArgs; ++i) {
+			for (size_t i = 0; i < m_numArgs; ++i) {
 				PyObject * item = PySequence_GetItem(args, i);
 				DBG_ASSERT(PyString_Check(item), ValueError,
 					"Attribute args in a simuPOP WithArgs object should be a list of strings");
@@ -882,8 +895,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// probe parameter names
 	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
 	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
-	DBG_ASSERT(m_numArgs >= 0, SystemError, "Number of parameters should be non-negative.");
-	for (int i = 0; i < m_numArgs; ++i) {
+	for (size_t i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(PyObj_AsString(item));
 	}
@@ -891,7 +903,7 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(-1)
 	// accepting arbitrary number of parameters?
 	PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
 	DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
-	m_flags = PyInt_AsLong(co_flag);
+	m_flags = static_cast<unsigned char>(PyInt_AsLong(co_flag));
 	Py_DECREF(co_flag);
 	Py_DECREF(code);
 }
@@ -1074,7 +1086,7 @@ void PyObj_As_Bool(PyObject * obj, bool & val)
 }
 
 
-void PyObj_As_Int(PyObject * obj, long int & val)
+void PyObj_As_Int(PyObject * obj, long & val)
 {
 	if (obj == NULL) {
 		val = 0;
@@ -1085,7 +1097,7 @@ void PyObj_As_Int(PyObject * obj, long int & val)
 	if (res == NULL)
 		throw ValueError("Can not convert object to an integer");
 
-	val = static_cast<int>(PyInt_AsLong(res));
+	val = PyInt_AsLong(res);
 	Py_DECREF(res);
 }
 
@@ -1236,10 +1248,10 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 
 	// we need to keep current parent, key/index, type (0 for array, 1 for dict)
 	// keytype (if curType = 1) (0 for string, 1 for num)
-	int curType = 1;
+	size_t curType = 1;
 	PyObject * curParent = m_dict;                            // should be always valid
 	PyObject * curKey = PyString_FromString(const_cast<char *>(name.substr(0, i).c_str()));
-	int curIdx = 0;
+	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
 	next :
@@ -1590,7 +1602,7 @@ next:
 }
 
 
-PyObject * SharedVariables::setBoolVar(const string & name, const bool val)
+PyObject * SharedVariables::setVar(const string & name, const bool val)
 {
 	PyObject * obj = val ? Py_True : Py_False;
 
@@ -1599,25 +1611,31 @@ PyObject * SharedVariables::setBoolVar(const string & name, const bool val)
 }
 
 
-PyObject * SharedVariables::setIntVar(const string & name, const int val)
+PyObject * SharedVariables::setVar(const string & name, const long val)
 {
 	return setVar(name, PyInt_FromLong(val));
 }
 
 
-PyObject * SharedVariables::setDoubleVar(const string & name, const double val)
+PyObject * SharedVariables::setVar(const string & name, const size_t val)
+{
+	return setVar(name, PyInt_FromSize_t(val));
+}
+
+
+PyObject * SharedVariables::setVar(const string & name, const double val)
 {
 	return setVar(name, PyFloat_FromDouble(val));
 }
 
 
-PyObject * SharedVariables::setStringVar(const string & name, const string & val)
+PyObject * SharedVariables::setVar(const string & name, const string & val)
 {
-	return setVar(name, Py_BuildValue("s", name.c_str()));
+	return setVar(name, Py_BuildValue("s", val.c_str()));
 }
 
 
-PyObject * SharedVariables::setIntVectorVar(const string & name, const vectori & val)
+PyObject * SharedVariables::setVar(const string & name, const vectori & val)
 {
 	PyObject * obj = PyList_New(0);
 	PyObject * item;
@@ -1631,9 +1649,22 @@ PyObject * SharedVariables::setIntVectorVar(const string & name, const vectori &
 	return setVar(name, obj);
 }
 
+PyObject * SharedVariables::setVar(const string & name, const vectoru & val)
+{
+	PyObject * obj = PyList_New(0);
+	PyObject * item;
+
+	for (vectoru::const_iterator it = val.begin();
+	     it < val.end(); ++it) {
+		item = PyInt_FromSize_t(*it);
+		PyList_Append(obj, item);
+		Py_XDECREF(item);
+	}
+	return setVar(name, obj);
+}
 
 //CPPONLY
-PyObject * SharedVariables::setDoubleVectorVar(const string & name, const vectorf & val)
+PyObject * SharedVariables::setVar(const string & name, const vectorf & val)
 {
 	PyObject * obj = PyList_New(0);
 	PyObject * item;
@@ -1648,7 +1679,7 @@ PyObject * SharedVariables::setDoubleVectorVar(const string & name, const vector
 }
 
 
-PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & val)
+PyObject * SharedVariables::setVar(const string & name, const strDict & val)
 {
 	PyObject * obj = PyDict_New();
 	PyObject * v;
@@ -1662,7 +1693,7 @@ PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & v
 }
 
 
-PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & val)
+PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 {
 	PyObject * obj = PyDict_New();
 	PyObject * u, * v;
@@ -1678,14 +1709,14 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 }
 
 
-PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict & val)
+PyObject * SharedVariables::setVar(const string & name, const uintDict & val)
 {
-	PyObject * obj = PyDefDict_New();
+	PyObject * obj = PyDict_New();
 	PyObject * u, * v;
 
-	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
-		PyObject_SetItem(obj,
-			u = PyInt_FromLong(i->first),
+	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
+		PyDict_SetItem(obj,
+			u = PyInt_FromSize_t(i->first),
 			v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(u);
 		Py_XDECREF(v);
@@ -1694,7 +1725,7 @@ PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict 
 }
 
 
-PyObject * SharedVariables::setTupleDefDictVar(const string & name, const tupleDict & val)
+PyObject * SharedVariables::setVar(const string & name, const tupleDict & val)
 {
 	PyObject * obj = PyDefDict_New();
 	PyObject * u, * v;
@@ -1722,7 +1753,7 @@ void save_none(string & str)
 }
 
 
-PyObject * load_none(const string & str, size_t & offset)
+PyObject * load_none(const string & /* str */, size_t & offset)
 {
 	offset++;
 	Py_INCREF(Py_None);
@@ -1758,7 +1789,7 @@ void save_long(string & str, PyObject * args)
 	long l = PyInt_AsLong(args);
 
 	// type +  string + ' '
-	str += 'i' + toStr(l) + ' ';
+	str += 'l' + toStr(l) + ' ';
 }
 
 
@@ -1895,8 +1926,8 @@ PyObject * load_defdict(const string & vars, size_t & offset)
 void save_list(string & str, PyObject * args)
 {
 	str += 'L';                                                                       // dictionary
-	int len = PyList_Size(args);
-	for (int i = 0; i < len; i++) {
+	size_t len = PyList_Size(args);
+	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyList_GET_ITEM((PyListObject *)args, i);
 		saveObj(str, elem);
 	}
@@ -1923,11 +1954,11 @@ PyObject * load_list(const string & vars, size_t & offset)
 void save_tuple(string & str, PyObject * args)
 {
 	str += 't';                                                                       // dictionary
-	int len = PyTuple_Size(args);
+	size_t len = PyTuple_Size(args);
 	// save length
 	str += toStr(len) + ' ';
 	// save items
-	for (int i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyTuple_GET_ITEM((PyTupleObject *)args, i);
 		saveObj(str, elem);
 	}
@@ -2242,13 +2273,13 @@ bool Expression::valueAsBool() const
 }
 
 
-long int Expression::valueAsInt() const
+long Expression::valueAsInt() const
 {
 	PyObject * res = evaluate();
 
 	if (res == NULL)
 		return 0;
-	long int val;
+	long val;
 	PyObj_As_Int(res, val);
 	Py_XDECREF(res);
 	return val;
@@ -2723,7 +2754,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 	} else
 		RESETFLAG(m_flags, m_flagNoOutput);
 
-	int i;
+	ssize_t i;
 	for (i = output.size() - 1; i >= 0; --i)
 		if (output[i] == '>' || output[i] == '|')
 			break;
@@ -2871,13 +2902,13 @@ unsigned long RNG::generateRandomSeed()
 	FILE * devrandom;
 
 	if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
-		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		size_t sz = fread(&seed, sizeof(seed), 1, devrandom);
 		(void)sz; // suppress a warning.
 		DBG_FAILIF(sz != 1, RuntimeError,
 			"Incorrect bits of random digits are read from /dev/urandom");
 		fclose(devrandom);
 	} else if ((devrandom = fopen("/dev/random", "r")) != NULL) {
-		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		size_t sz = fread(&seed, sizeof(seed), 1, devrandom);
 		(void)sz; // suppress a warning.
 		DBG_FAILIF(sz != 1, RuntimeError,
 			"Incorrect bits of random digits are read from /dev/urandom");
@@ -2892,6 +2923,7 @@ unsigned long RNG::generateRandomSeed()
 
 
 #endif
+
 
 // choose an random number generator.
 void RNG::set(const char * rng, unsigned long seed)
@@ -2960,7 +2992,7 @@ bool RNG::randBit()
 }
 
 
-UINT RNG::search_poisson(UINT y, double * z, double p, double lambda)
+ULONG RNG::search_poisson(UINT y, double * z, double p, double lambda)
 {
 	if (*z >= p) { /* search to the left */
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
@@ -2981,7 +3013,7 @@ UINT RNG::search_poisson(UINT y, double * z, double p, double lambda)
 }
 
 
-UINT RNG::randTruncatedPoisson(double lambda)
+ULONG RNG::randTruncatedPoisson(double lambda)
 {
 	DBG_FAILIF(lambda == 0, ValueError, "Zero mu is not allowed for a truncated poisson distribution");
 
@@ -3029,7 +3061,7 @@ UINT RNG::randTruncatedPoisson(double lambda)
 }
 
 
-UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
+ULONG RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 {
 	if (*z >= p) {
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
@@ -3054,7 +3086,7 @@ UINT RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 }
 
 
-UINT RNG::randTruncatedBinomial(UINT n, double pr)
+ULONG RNG::randTruncatedBinomial(UINT n, double pr)
 {
 	// only try once. whatever the probability is, only the successed one will be returned.
 	if (n == 1)
@@ -3117,8 +3149,8 @@ double pvalChiSq(double chisq, unsigned int df)
 
 void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 {
-	UINT m = table.size();
-	UINT n = table[0].size();
+	size_t m = table.size();
+	size_t n = table[0].size();
 	vectoru rowSum(m, 0);
 	vectoru colSum(n, 0);
 	double N = 0;
@@ -3140,7 +3172,7 @@ void chisqTest(const vector<vectoru> & table, double & chisq, double & chisq_p)
 			if (rowSum[i] > 0 && colSum[j] > 0)
 				chisq += pow(table[i][j] - rowSum[i] * colSum[j] / N, 2)
 				         / (rowSum[i] * colSum[j] / N);
-	chisq_p = 1 - gsl_cdf_chisq_P(chisq, (m - 1) * (n - 1));
+	chisq_p = 1 - gsl_cdf_chisq_P(chisq, static_cast<double>((m - 1) * (n - 1)));
 }
 
 
@@ -3149,7 +3181,7 @@ double armitageTrendTest(const vector<vectoru> & table, const vectorf & s)
 	DBG_FAILIF(table.size() != 2 || table[0].size() != 3, ValueError,
 		"Current Cochran-Armitage test can only handle 2 by 3 tables.");
 
-	UINT n = table[0].size();
+	size_t n = table[0].size();
 
 	DBG_FAILIF(s.size() != n, ValueError,
 		"Weight for Cochran-Armitage test should have length 3");
@@ -3199,13 +3231,13 @@ double hweTest(const vectoru & cnt)
 	// number of heterozygotes observed.
 	//
 	// (c) 2003 Jan Wigginton, Goncalo Abecasis
-	int obsAA = cnt[2];                                             // in this algorithm, AA is rare.
-	int obsAB = cnt[1];
-	int obsBB = cnt[0];
+	size_t obsAA = cnt[2];                                             // in this algorithm, AA is rare.
+	size_t obsAB = cnt[1];
+	size_t obsBB = cnt[0];
 
-	int diplotypes = obsAA + obsAB + obsBB;
-	int rare = (obsAA * 2) + obsAB;
-	int hets = obsAB;
+	size_t diplotypes = obsAA + obsAB + obsBB;
+	size_t rare = (obsAA * 2) + obsAB;
+	size_t hets = obsAB;
 
 
 	//make sure "rare" allele is really the rare allele
@@ -3220,15 +3252,15 @@ double hweTest(const vectoru & cnt)
 
 	//start at midpoint
 	//all the casting is to make sure we don't overflow ints if there are 10's of 1000's of inds
-	int mid = (int)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
+	size_t mid = (size_t)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
 
 	//check to ensure that midpoint and rare alleles have same parity
 	if (((rare & 1) ^ (mid & 1)) != 0) {
 		mid++;
 	}
-	int het = mid;
-	int hom_r = (rare - mid) / 2;
-	int hom_c = diplotypes - het - hom_r;
+	size_t het = mid;
+	size_t hom_r = (rare - mid) / 2;
+	size_t hom_c = diplotypes - het - hom_r;
 
 	//Calculate probability for each possible observed heterozygote
 	//count up to a scaling constant, to avoid underflow and overflow
@@ -3257,11 +3289,11 @@ double hweTest(const vectoru & cnt)
 		tailProbs[z] /= sum;
 
 	double top = tailProbs[hets];
-	for (int i = hets + 1; i <= rare; i++)
+	for (size_t i = hets + 1; i <= rare; i++)
 		top += tailProbs[i];
 
 	double otherSide = tailProbs[hets];
-	for (int i = hets - 1; i >= 0; i--)
+	for (ssize_t i = hets - 1; i >= 0; i--)
 		otherSide += tailProbs[i];
 
 	if (top > 0.5 && otherSide > 0.5) {
@@ -3277,9 +3309,9 @@ double hweTest(const vectoru & cnt)
 }
 
 
-void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N, vectoru & count)
+void propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru & count)
 {
-	UINT sz = last - first;
+	size_t sz = last - first;
 
 	count.resize(sz);
 	size_t tot = 0;
@@ -3321,7 +3353,7 @@ string formatDescription(const string & text)
 	lines.push_back(text.substr(pos));
 	// newtext
 	string output;
-	size_t indent = 0;
+	int indent = 0;
 	for (size_t it = 0; it < lines.size(); ++it) {
 		string line = lines[it];
 		// remove leading blanks
@@ -3341,9 +3373,9 @@ string formatDescription(const string & text)
 		} else if (start == "<li>") {
 			string indent_char("*#-.");
 			string leading;
-			if (indent >= 1 && indent <= indent_char.size())
+			if (indent >= 1 && static_cast<unsigned>(indent) <= indent_char.size())
 				leading = string(1, indent_char[indent - 1]) + " ";
-			else if (indent > indent_char.size())
+			else if (static_cast<unsigned>(indent) > indent_char.size())
 				leading = ". ";
 			line = leading + line.substr(4);
 		} else if (start == "<ind") {
@@ -3353,7 +3385,7 @@ string formatDescription(const string & text)
 		line = string(indent * 3, ' ') + line;
 		// break lines
 		if (line.size() > 78) {
-			int lastblank = 0;
+			size_t lastblank = 0;
 			pos = 0;
 			for (size_t i = 0; i < line.size(); ++i) {
 				if (line[i] == ' ')
@@ -3373,9 +3405,9 @@ string formatDescription(const string & text)
 }
 
 
-void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, ULONG N)
+void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N)
 {
-	UINT sz = last - first;
+	size_t sz = last - first;
 
 	// this is the case with unknown number of outputs
 	if (N == 0) {
@@ -3410,7 +3442,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 		}
 		// only one value
 		bool fixed = true;
-		int prevIndex = -1;
+		ssize_t prevIndex = -1;
 		for (size_t i = 0; i < sz; ++i) {
 			if (*(first + i) != 0) {
 				if (prevIndex == -1) {
@@ -3447,9 +3479,9 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 			m_a[i] = i;
 		// use two sets H and L
 		// for efficiency purpose, use a single vector.
-		ULONG * HL = new ULONG[m_N];
-		ULONG * L = HL;
-		ULONG * H = HL + m_N - 1;                                     // point to the end.
+		size_t * HL = new size_t[m_N];
+		size_t * L = HL;
+		size_t * H = HL + m_N - 1;                                     // point to the end.
 
 		for (size_t i = 0; i < m_N; ++i) {
 			if (m_q[i] > 1)
@@ -3459,7 +3491,7 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 		}
 
 		//
-		ULONG j, k;
+		size_t j, k;
 		while (L != HL && H != HL + m_N - 1) {
 			j = *(L - 1);
 			k = *(H + 1);
@@ -3501,7 +3533,8 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 }
 
 
-ULONG WeightedSampler::draw()
+
+size_t WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
@@ -3512,7 +3545,7 @@ ULONG WeightedSampler::draw()
 		return m_param;
 	case 2:
 		// all weights are the same
-		return getRNG().randInt(m_param);
+		return getRNG().randInt(static_cast<ULONG>(m_param));
 	case 3: {
 		double rN = getRNG().randUniform() * m_N;
 
@@ -3582,7 +3615,7 @@ Bernullitrials::~Bernullitrials()
 }
 
 
-void Bernullitrials::setParameter(const vectorf & prob, ULONG trials)
+void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 {
 	m_N = trials;
 	m_prob = prob;
@@ -3691,7 +3724,7 @@ void Bernullitrials::doTrial()
             // set all to 0, then set some to 1
             setAll(cl, false);
             // it may make sense to limit the use of this method to low p,
-            UINT i = 0;
+            size_t i = 0;
             while (true) {
                 // i moves at least one. (# trails until the first success)
                 // 6,3 means (0 0 0 0 0 1) (0 0 1)
@@ -3713,7 +3746,7 @@ void Bernullitrials::doTrial()
             // set all to 1, and then unset some.
             setAll(cl, true);
             // it may make sense to limit the use of this method to low p,
-            UINT i = 0;
+            size_t i = 0;
             prob = 1. - prob;
             while (true) {
                 ULONG step = m_RNG->randGeometric(prob);
@@ -3732,7 +3765,7 @@ void Bernullitrials::doTrial()
 }
 
 
-UINT Bernullitrials::curTrial()
+size_t Bernullitrials::curTrial()
 {
     DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
     return m_cur;
@@ -3823,7 +3856,7 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
     // first block
     BitSet::const_iterator it = bs.begin() + pos;
     WORDTYPE * ptr = BITPTR(it);
-    int offset = BITOFF(it);
+    size_t offset = BITOFF(it);
     size_t i = ptr - BITPTR(bs.begin());
 
     // mask out bits before pos
@@ -3874,7 +3907,7 @@ double Bernullitrials::trialSuccRate(UINT index) const
     for (size_t i = 0; i < trialSize(); ++i)
 		if (getBit(m_pointer[index], i))
 			count++;
-    return count / static_cast<double>(m_table[index].size());
+    return double(count) / static_cast<double>(m_table[index].size());
 }
 
 
@@ -3951,7 +3984,7 @@ protected:
                 else
 					PySys_WriteStderr("%c", c);
 			} else
-				sputc(c);
+				sputc(static_cast<char>(c));
 		}
         return 0;
 	}
@@ -4108,7 +4141,7 @@ PyObject * moduleInfo()
     PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
     // limits
-    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(MaxIndexSize));
+    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
 
     // debug (code)
     PyObject * codes = PyDict_New();
@@ -4153,8 +4186,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 
     WORDTYPE * fr_p = BITPTR(fr);
     WORDTYPE * to_p = BITPTR(to);
-    unsigned int fr_off = BITOFF(fr);
-    unsigned int to_off = BITOFF(to);
+    size_t fr_off = BITOFF(fr);
+    size_t to_off = BITOFF(to);
 
     // if offset is different, can not copy in block.
     if (n < WORDBIT) {
@@ -4352,7 +4385,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 void clearGenotype(GenoIterator to, size_t n)
 {
     WORDTYPE * to_p = BITPTR(to);
-    unsigned int to_off = BITOFF(to);
+    size_t to_off = BITOFF(to);
 
     // This can be made more efficient.
     for (size_t i = 0; i < n; ++i) {
@@ -4453,7 +4486,7 @@ bool initialize()
 }
 
 
-bool intList::match(UINT rep, const vector<bool> * activeRep) const
+bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
 {
     if (m_elems.empty())
 		return m_allAvail;
@@ -4462,7 +4495,7 @@ bool intList::match(UINT rep, const vector<bool> * activeRep) const
     for (; it != it_end; ++it) {
         // positive index is easy
         if (*it >= 0) {
-            if (static_cast<UINT>(*it) == rep)
+            if (*it == rep)
 				return true;
             else
 				continue;
@@ -4474,11 +4507,11 @@ bool intList::match(UINT rep, const vector<bool> * activeRep) const
         DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
 			"Check is avtive should only be done for active replicates");
         // check the simple and most used case
-        if (*it == -1 && activeRep->back() && rep + 1 == activeRep->size())
+        if (*it == -1 && activeRep->back() && static_cast<size_t>(rep + 1) == activeRep->size())
 			return true;
         // find what exactly an negative index refer to
-        int cnt = -*it;
-        int curRep = activeRep->size() - 1;
+        long cnt = -*it;
+        ssize_t curRep = activeRep->size() - 1;
         for (; curRep >= 0; --curRep) {
             if ((*activeRep)[curRep])
 				--cnt;

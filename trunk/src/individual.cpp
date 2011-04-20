@@ -73,11 +73,11 @@ bool Individual::operator==(const Individual & rhs) const
 		return false;
 	}
 
-	for (UINT i = 0, iEnd = genoSize(); i < iEnd; ++i)
+	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 			return false;
 
-	for (UINT i = 0, iEnd = infoSize(); i < iEnd; ++i)
+	for (size_t i = 0, iEnd = infoSize(); i < iEnd; ++i)
 		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i)) {
 			DBG_DO(DBG_POPULATION, cerr << "Information field " << infoField(i) << " differ" << endl);
 			return false;
@@ -92,15 +92,15 @@ int Individual::__cmp__(const Individual & rhs) const
 }
 
 
-bool Individual::validIndex(UINT idx) const
+bool Individual::validIndex(size_t idx) const
 {
-	UINT cnt = totNumLoci();
+	size_t cnt = totNumLoci();
 
 	return validIndex(idx % cnt, idx / cnt);
 }
 
 
-bool Individual::validIndex(UINT idx, UINT p) const
+bool Individual::validIndex(size_t idx, size_t p) const
 {
 	pairu chIdx = chromLocusPair(idx);
 
@@ -108,7 +108,7 @@ bool Individual::validIndex(UINT idx, UINT p) const
 }
 
 
-bool Individual::validIndex(UINT idx, UINT p, UINT ch) const
+bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 {
 	// well, this might change later.
 	if (ploidy() != 2)
@@ -118,7 +118,7 @@ bool Individual::validIndex(UINT idx, UINT p, UINT ch) const
 		return false;
 
 	Sex s = sex();
-	UINT t = chromType(ch);
+	size_t t = chromType(ch);
 	if ((s == FEMALE && t == CHROMOSOME_Y) ||       // female chromsome Y
 	    (s == MALE &&                               // second copy of chromosome X and first copy of chromosome Y
 	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))))
@@ -128,7 +128,7 @@ bool Individual::validIndex(UINT idx, UINT p, UINT ch) const
 }
 
 
-UINT Individual::allele(UINT idx, int p, int chrom) const
+UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -137,18 +137,18 @@ UINT Individual::allele(UINT idx, int p, int chrom) const
 		return static_cast<UINT>(*(m_genoPtr + idx));
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		CHECKRANGECHROM(static_cast<size_t>(chrom));
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 }
 
 
-string Individual::alleleChar(UINT idx, int p, int chrom) const
+string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -157,12 +157,12 @@ string Individual::alleleChar(UINT idx, int p, int chrom) const
 		return validIndex(idx) ? alleleName(allele(idx), idx % totNumLoci()) : "_";
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		return validIndex(idx, p) ? alleleName(allele(idx, p), idx) : "_";
 	} else {
-		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		CHECKRANGECHROM(static_cast<size_t>(chrom));
 
 		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom), idx + chromBegin(chrom)) : "_";
 	}
@@ -191,9 +191,9 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		}
 		beginP = ploidys[0];
 		endP = ploidys[0];
-		CHECKRANGEPLOIDY(static_cast<UINT>(beginP));
+		CHECKRANGEPLOIDY(static_cast<size_t>(beginP));
 		for (size_t i = 1; i < ploidys.size(); ++i) {
-			CHECKRANGEPLOIDY(static_cast<UINT>(ploidys[i]));
+			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
 			if (beginP > ploidys[i])
 				beginP = ploidys[i];
 			if (endP < ploidys[i])
@@ -211,9 +211,9 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		}
 		beginCh = chroms[0];
 		endCh = chroms[0];
-		CHECKRANGECHROM(static_cast<UINT>(beginCh));
+		CHECKRANGECHROM(static_cast<size_t>(beginCh));
 		for (size_t i = 1; i < chroms.size(); ++i) {
-			CHECKRANGECHROM(static_cast<UINT>(chroms[i]));
+			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
 			if (beginCh > chroms[i])
 				beginCh = chroms[i];
 			if (endCh < chroms[i])
@@ -236,23 +236,23 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
-	size_t ply = ploidy();
+	ssize_t ply = ploidy();
 
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 
-	vectori alleles;
+	vector<UINT> alleles;
 
 	if (lociList.allAvail()) {
 
 		alleles.reserve(ply * totNumLoci());
 
-		for (size_t ch = 0; ch < numChrom(); ++ch) {
-			UINT chType = chromType(ch);
+		for (ssize_t ch = 0; ch < static_cast<ssize_t>(numChrom()); ++ch) {
+			size_t chType = chromType(ch);
 			if (chType == CHROMOSOME_Y && sex() == FEMALE)
 				continue;
 			for (size_t idx = 0; idx < numLoci(ch); ++idx) {
-				for (size_t p = 0; p < ply; ++p) {
+				for (ssize_t p = 0; p < ply; ++p) {
 					if (((chType == CHROMOSOME_X && p == 1) ||
 					     (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
@@ -271,7 +271,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 		alleles.reserve(ply * loci.size());
 
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
-			for (size_t p = 0; p < ply; ++p) {
+			for (int p = 0; p < ply; ++p) {
 				if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 					continue;
 				if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
@@ -289,7 +289,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 }
 
 
-void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
+void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -298,12 +298,12 @@ void Individual::setAllele(Allele allele, UINT idx, int p, int chrom)
 		*(m_genoPtr + idx) = allele;
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 	} else {
-		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
-		CHECKRANGEPLOIDY(static_cast<UINT>(p));
-		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		CHECKRANGECHROM(static_cast<size_t>(chrom));
 		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 	}
 }
@@ -313,7 +313,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 {
 	const vectoru & geno = genoList.elems();
 
-	UINT sz = geno.size();
+	size_t sz = geno.size();
 	size_t idx = 0;
 
 	vectoru ploidys = ply.elems();
@@ -324,7 +324,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 	} else {
 #ifndef OPTIMIZED
 		for (size_t i = 0; i < ploidys.size(); ++i) {
-			CHECKRANGEPLOIDY(static_cast<UINT>(ploidys[i]));
+			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
 		}
 #endif
 	}
@@ -335,7 +335,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 	} else {
 #ifndef OPTIMIZED
 		for (size_t i = 0; i < chroms.size(); ++i) {
-			CHECKRANGECHROM(static_cast<UINT>(chroms[i]));
+			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
 		}
 #endif
 	}
@@ -345,7 +345,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 
-			for (UINT i = 0; i < numLoci(chrom); i++, ++idx)
+			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
 				*(ptr + i) = ToAllele(geno[idx % sz]);
 		}
 	}
@@ -361,7 +361,7 @@ void Individual::swap(Individual & ind, bool swapContent)
 
 	if (swapContent) {
 		Allele tmp;
-		for (UINT i = 0, iEnd = genoSize(); i < iEnd; i++) {
+		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
 			tmp = m_genoPtr[i];
 			m_genoPtr[i] = ind.m_genoPtr[i];
 			ind.m_genoPtr[i] = tmp;
@@ -375,11 +375,11 @@ void Individual::swap(Individual & ind, bool swapContent)
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
-	UINT pEnd = ploidy();
-	for (UINT p = 0; p < pEnd; ++p) {
+	int pEnd = ploidy();
+	for (int p = 0; p < pEnd; ++p) {
 		if (loci.empty()) {
-			for (UINT ch = 0, chEnd = numChrom(); ch < chEnd; ++ch) {
-				for (UINT j = 0, jEnd = numLoci(ch); j < jEnd; ++j)
+			for (ssize_t ch = 0, chEnd = numChrom(); ch < chEnd; ++ch) {
+				for (size_t j = 0, jEnd = numLoci(ch); j < jEnd; ++j)
 					out << setw(width) << alleleChar(j, p, ch);
 				out << " ";
 			}

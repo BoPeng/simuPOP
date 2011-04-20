@@ -2633,3 +2633,42 @@ TestIdTagger : loci=10000, size=10000: 13881
 TestIdTagger : loci=10000, size=100000: 1173
 TestIdTagger : 15149, 1431, 14902, 1515, 13881, 1173
 TestIdTagger : End of test TestIdTagger
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 11:04:47 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4106, module short, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 24866
+TestRandomSelection : loci=10, size=100000: 1951
+TestRandomSelection : loci=100, size=10000: 21839
+TestRandomSelection : loci=100, size=100000: 1295
+TestRandomSelection : loci=10000, size=10000: 624
+TestRandomSelection : loci=10000, size=100000: 51
+TestRandomSelection : 24866, 1951, 21839, 1295, 624, 51
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 11:08:05 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4106, module long, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 24654
+TestRandomSelection : loci=10, size=100000: 1548
+TestRandomSelection : loci=100, size=10000: 11402
+TestRandomSelection : loci=100, size=100000: 890
+TestRandomSelection : loci=10000, size=10000: 169
+TestRandomSelection : loci=10000, size=100000: 0
+TestRandomSelection : 24654, 1548, 11402, 890, 169, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: bp9.mdanderson.edu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Mon Apr 18 11:10:43 2011
+TestRandomSelection : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRandomSelection : simuPOP: 1.0.6svn (rev 4106, module binary, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 18774
+TestRandomSelection : loci=10, size=100000: 1579
+TestRandomSelection : loci=100, size=10000: 23949
+TestRandomSelection : loci=100, size=100000: 1791
+TestRandomSelection : loci=10000, size=10000: 3881
+TestRandomSelection : loci=10000, size=100000: 357
+TestRandomSelection : 18774, 1579, 23949, 1791, 3881, 357
+TestRandomSelection : End of test TestRandomSelection

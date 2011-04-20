@@ -126,7 +126,7 @@ public:
 	/** Return the number of replicates.
 	 *  <group>3-pop</group>
 	 */
-	UINT numRep() const
+	size_t numRep() const
 	{
 		return m_pops.size();
 	}
@@ -139,7 +139,7 @@ public:
 	 *  \c simulator.extract() to remove the population from the simulator.
 	 *  <group>3-pop</group>
 	 */
-	Population & population(UINT rep) const;
+	Population & population(size_t rep) const;
 
 	/** Add a population \e pop to the end of an existing simulator. This
 	 *  function by default moves \e pop to the simulator, leaving an empty
@@ -276,7 +276,7 @@ string describeEvolProcess(
 	const opList & postOps = opList(),
 	const opList & finalOps = opList(),
 	int gen = -1,
-	UINT numRep = 1);
+	size_t numRep = 1);
 
 }
 
