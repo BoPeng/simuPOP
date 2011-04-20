@@ -603,7 +603,7 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
-	(void)msg;  /* avoid a warning message of unused parameter in optmized module */
+	(void)msg;  // avoid a warning message of unused parameter in optmized module
 #else
 	DBG_ASSERT(m_info.size() == m_popSize * infoSize(), SystemError,
 		msg + "Wrong information size");
@@ -2697,7 +2697,6 @@ void Population::useAncestralGen(ssize_t idx)
 	m_popSize = m_inds.size();
 	setSubPopStru(m_subPopSize, m_subPopNames);
 }
-
 
 
 //template<class Archive>

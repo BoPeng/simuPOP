@@ -72,11 +72,11 @@ using std::ofstream;
 
 // for PySys_WriteStdout and python expressions
 #ifndef STANDALONE_EXECUTABLE
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#  pragma GCC diagnostic ignored "-Wunused-parameter"
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #  include "swigpyrun.h"
-#pragma GCC diagnostic warning "-Wunused-parameter"
-#pragma GCC diagnostic warning "-Wmissing-field-initializers"
+#  pragma GCC diagnostic warning "-Wunused-parameter"
+#  pragma GCC diagnostic warning "-Wmissing-field-initializers"
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -226,7 +226,7 @@ const char * g_debugCodes[] = {
 void turnOnDebug(const string & codeString)
 {
 #ifdef OPTIMIZED
-	(void) codeString; /* avoid a warning about unused variable */
+	(void)codeString;  // avoid a warning about unused variable
 #else
 	if (codeString == "DBG_ALL")
 		// set all
@@ -265,7 +265,7 @@ void turnOnDebug(const string & codeString)
 void turnOffDebug(const string & codeString)
 {
 #ifdef OPTIMIZED
-	(void) codeString; /* avoid a warning about unused variable */
+	(void)codeString;  // avoid a warning about unused variable
 #else
 	if (codeString == "DBG_ALL")
 		g_dbgCode.reset();
@@ -295,8 +295,6 @@ void turnOffDebug(const string & codeString)
 			}
 		}
 	}
-#else
-	cerr << "Debug info is ignored in optimized mode." << endl;
 #endif
 }
 
@@ -1242,7 +1240,7 @@ SharedVariables::~SharedVariables()
 // setvars C++ ==> Python
 PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 {
-	/* find the first piece */
+	// find the first piece
 	size_t i, s;
 
 	for (i = 0; i < name.size() && name[i] != '[' && name[i] != '{'; ++i) ;
@@ -1653,6 +1651,7 @@ PyObject * SharedVariables::setVar(const string & name, const vectori & val)
 	return setVar(name, obj);
 }
 
+
 PyObject * SharedVariables::setVar(const string & name, const vectoru & val)
 {
 	PyObject * obj = PyList_New(0);
@@ -1666,6 +1665,7 @@ PyObject * SharedVariables::setVar(const string & name, const vectoru & val)
 	}
 	return setVar(name, obj);
 }
+
 
 //CPPONLY
 PyObject * SharedVariables::setVar(const string & name, const vectorf & val)
@@ -2877,7 +2877,7 @@ unsigned long RNG::generateRandomSeed()
 		return static_cast<unsigned long>(time(NULL));
 	}
 
-	/* Acquire context */
+	// Acquire context
 	HCRYPTPROV hCryptProv = 0;
 	if (!pCryptAcquireContext(&hCryptProv, NULL, NULL,
 			PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
@@ -2885,7 +2885,7 @@ unsigned long RNG::generateRandomSeed()
 		return static_cast<unsigned long>(time(NULL));
 	}
 
-	/* Get random data */
+	// Get random data
 	if (!pCryptGenRandom(hCryptProv, sizeof(seed), (unsigned char *)&seed)) {
 		DBG_WARNIF(true, "Failed to get random number");
 		return static_cast<unsigned long>(time(NULL));
@@ -2945,7 +2945,7 @@ void RNG::set(const char * rng, unsigned long seed)
 
 		gsl_rng_default = 0;
 
-		/* check GSL_RNG_TYPE against the names of all the generators */
+		// check GSL_RNG_TYPE against the names of all the generators
 
 		for (t = t0; *t != 0; t++) {
 			// require that a RNG can generate full range of integer from 0 to the max of unsigned long int
@@ -2998,7 +2998,7 @@ bool RNG::randBit()
 
 ULONG RNG::search_poisson(UINT y, double * z, double p, double lambda)
 {
-	if (*z >= p) { /* search to the left */
+	if (*z >= p) { // search to the left
 		DBG_DO(DBG_UTILITY, cerr << "search to the left from " << y << endl);
 		while (true) {
 			DBG_FAILIF(y == 0, RuntimeError, "Zero should not be reached for a truncated Poisson distribution.");
@@ -3006,7 +3006,7 @@ ULONG RNG::search_poisson(UINT y, double * z, double p, double lambda)
 				return y;
 			--y;
 		}
-	} else {        /* search to the right */
+	} else {        // search to the right
 		DBG_DO(DBG_UTILITY, cerr << "search to the right from " << y << endl);
 		while (true) {
 			++y;
@@ -3042,10 +3042,10 @@ ULONG RNG::randTruncatedPoisson(double lambda)
 
 	double mu = lambda;
 	double sigma = sqrt(lambda);
-	/* gamma = sigma; PR#8058 should be kurtosis which is mu^-0.5 */
+	// gamma = sigma; PR#8058 should be kurtosis which is mu^-0.5
 	double gamma = 1.0 / sigma;
 
-	/* y := approx.value (Cornish-Fisher expansion) :  */
+	// y := approx.value (Cornish-Fisher expansion) :
 	double z = gsl_cdf_ugaussian_Pinv(p);
 	UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z * z - 1) / 6) + 0.5));
 
@@ -3057,10 +3057,10 @@ ULONG RNG::randTruncatedPoisson(double lambda)
 	DBG_DO(DBG_UTILITY, cerr	<< "Using inverse cdf with p0=" << p0 << " random quantile " << p
 		                        << " and initial guess " << y << " with cdf " << z << endl);
 
-	/* fuzz to ensure left continuity; 1 - 1e-7 may lose too much : */
+	// fuzz to ensure left continuity; 1 - 1e-7 may lose too much :
 	p *= 1 - 64 * GSL_DBL_EPSILON;
 
-	/* If the mean is not too large a simple search is OK */
+	// If the mean is not too large a simple search is OK
 	return search_poisson(y, &z, p, lambda);
 }
 
@@ -3077,7 +3077,7 @@ ULONG RNG::search_binomial(UINT y, double * z, double p, UINT n, double pr)
 			--y;
 			*z = newz;
 		}
-	} else {      /* search to the right */
+	} else {      // search to the right
 		DBG_DO(DBG_UTILITY, cerr << "search to the right from " << y << endl);
 		while (true) {
 			++y;
@@ -3112,7 +3112,7 @@ ULONG RNG::randTruncatedBinomial(UINT n, double pr)
 
 	double q = 1 - pr;
 	if (q == 0.)
-		return n;  /* covers the full range of the distribution */
+		return n;  // covers the full range of the distribution
 
 	double p0 = gsl_ran_binomial_pdf(0, pr, n);
 	double p = gsl_rng_uniform(m_RNG) * (1 - p0) + p0;
@@ -3123,14 +3123,14 @@ ULONG RNG::randTruncatedBinomial(UINT n, double pr)
 	double sigma = sqrt(n * pr * q);
 	double gamma = (q - pr) / sigma;
 
-	/* y := approx.value (Cornish-Fisher expansion) :  */
+	// y := approx.value (Cornish-Fisher expansion) :
 	double z = gsl_cdf_ugaussian_Pinv(p);
 	UINT y = static_cast<UINT>(floor(mu + sigma * (z + gamma * (z * z - 1) / 6) + 0.5));
 
 	if (y == 0)
 		y = 1;
 
-	if (y > n) /* way off */
+	if (y > n) // way off
 		y = n;
 
 	z = gsl_cdf_binomial_P(y, pr, n);
@@ -3138,7 +3138,7 @@ ULONG RNG::randTruncatedBinomial(UINT n, double pr)
 	DBG_DO(DBG_UTILITY, cerr	<< "Using inverse cdf with p0=" << p0 << " random quantile "
 		                        << p << " and initial guess " << y << " with cdf " << z << endl);
 
-	/* fuzz to ensure left continuity: */
+	// fuzz to ensure left continuity:
 	p *= 1 - 64 * GSL_DBL_EPSILON;
 
 	return search_binomial(y, &z, p, n, pr);
@@ -3535,7 +3535,6 @@ void WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator
 		m_index = 0;
 	}
 }
-
 
 
 size_t WeightedSampler::draw()
@@ -4090,7 +4089,7 @@ PyObject * moduleInfo()
 #  ifdef __GNUC__
 #    define COMPILER "[GCC " __VERSION__ "]"
 #  endif
-#endif                                                                            /* !COMPILER */
+#endif                                                                            // !COMPILER
 
 #ifndef COMPILER
 #  ifdef __cplusplus

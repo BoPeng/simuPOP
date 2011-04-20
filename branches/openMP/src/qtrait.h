@@ -109,7 +109,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.BaseQuanTrait> quantitative trait>" ;
 	}
 
@@ -169,7 +169,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyQuanTrait> a hybrid quantitative trait model";
 	}
 

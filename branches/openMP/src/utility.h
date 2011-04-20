@@ -1074,7 +1074,7 @@ public:
 	///CPPONLY
 	PyObject * setVar(const string & name, const intDict & val);
 
-///CPPONLY
+	///CPPONLY
 	PyObject * setVar(const string & name, const uintDict & val);
 
 	///CPPONLY

@@ -5915,7 +5915,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::ancestor(double idx, size_t gen, vspID subPop=vspID()) const;
+%ignore simuPOP::Population::ancestor(double idx, ssize_t gen, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::Population::individuals "
 
@@ -8435,25 +8435,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::SharedVariables::setBoolVar(const string &name, const bool val);
-
-%ignore simuPOP::SharedVariables::setIntVar(const string &name, const int val);
-
-%ignore simuPOP::SharedVariables::setDoubleVar(const string &name, const double val);
-
-%ignore simuPOP::SharedVariables::setStringVar(const string &name, const string &val);
-
-%ignore simuPOP::SharedVariables::setIntVectorVar(const string &name, const vectori &val);
-
-%ignore simuPOP::SharedVariables::setDoubleVectorVar(const string &name, const vectorf &val);
-
-%ignore simuPOP::SharedVariables::setStrDictVar(const string &name, const strDict &val);
-
-%ignore simuPOP::SharedVariables::setIntDictVar(const string &name, const intDict &val);
-
-%ignore simuPOP::SharedVariables::setIntDefDictVar(const string &name, const intDict &val);
-
-%ignore simuPOP::SharedVariables::setTupleDefDictVar(const string &name, const tupleDict &val);
+%ignore simuPOP::SharedVariables::setVar(const string &name, const bool val);
 
 %ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true) const;
 
@@ -10402,7 +10384,7 @@ Details:
 
 %ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
-%ignore simuPOP::PyObjAsInt(PyObject *obj, int &val);
+%ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
 
 %ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 

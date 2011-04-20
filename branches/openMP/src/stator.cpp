@@ -379,7 +379,7 @@ Stat::Stat(
 	m_structure(structure, subPops, vars, suffix),
 	m_HWE(HWE, subPops, vars, suffix)
 {
-	(void) output; /* avoid warning about unused parameter */
+	(void)output;  // avoid warning about unused parameter
 }
 
 
@@ -1292,7 +1292,7 @@ bool statHaploHomoFreq::apply(Population & pop) const
 
 			size_t chromType = pop.chromType(pop.chromLocusPair(loci[0]).first);
 #ifdef OPTIMIZED
-			(void) chromType; /* avoid a warning message of unused variable */
+			(void)chromType;  // avoid a warning message of unused variable
 #else
 			for (size_t i = 1; i < nLoci; ++i) {
 				DBG_FAILIF(pop.chromType(pop.chromLocusPair(loci[i]).first) != chromType, ValueError,

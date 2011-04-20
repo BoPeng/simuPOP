@@ -86,7 +86,7 @@
  * cause problem with the use of std::min and std::max in the source code.
  * Definition of NOMINMAX before the inclusion of windows.h addresses this problem.
  */
-#define NOMINMAX
+#  define NOMINMAX
 #  include <windows.h>
 #  define ATOMICLONG LONGLONG
 #elif defined(_WIN32)

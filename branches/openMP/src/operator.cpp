@@ -189,7 +189,7 @@ bool BaseOperator::apply(Population & /* pop */) const
 
 
 bool BaseOperator::applyDuringMating(Population & /* pop */, Population & /* offPop */,
-			RawIndIterator /* offspring */,
+                                     RawIndIterator /* offspring */,
                                      Individual * /* dad */, Individual * /* mom */) const
 {
 	DBG_FAILIF(true, RuntimeError,
@@ -394,7 +394,7 @@ IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
 	m_func(PyCallable_Check(cond) ? cond : NULL),
 	m_fixedCond(-1), m_ifOps(ifOps), m_elseOps(elseOps)
 {
-	(void) output; /* avoid warning about unused parameter */
+	(void)output;  // avoid warning about unused parameter
 	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
 		bool c;
 		PyObj_As_Bool(cond, c);
@@ -560,7 +560,7 @@ bool IfElse::apply(Population & pop) const
 
 
 string TerminateIf::describe(bool /* format */) const
-{	
+{
 	return string("<simuPOP.TerminateIf> terminate the evolution of ") +
 	       (m_stopAll ? "all populations" : "the current population") +
 	       " if expression \"" + m_expr.expr() + "\" is evalated to be True";
@@ -595,8 +595,8 @@ DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
 	m_func(PyCallable_Check(cond) ? cond : NULL),
 	m_fixedCond(-1), m_exposeInd(exposeInd), m_dict(NULL),
 	m_lastValues()
-{	
-	(void) output; /* avoid warning about unused parameter */
+{
+	(void)output;  // avoid warning about unused parameter
 	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
 		bool c;
 		PyObj_As_Bool(cond, c);

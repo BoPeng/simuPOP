@@ -73,8 +73,8 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		return true;
 	size_t idx = pop.infoIdx(infoField(0));
 
-	(void) dad; /* avoid a warning message in optimized modules */
-	(void) mom; /* avoid a warning message in optimized modules */
+	(void)dad;  // avoid a warning message in optimized modules
+	(void)mom;  // avoid a warning message in optimized modules
 	DBG_FAILIF(dad != NULL && dad->info(idx) >= g_indID, RuntimeError,
 		"Paternal ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,

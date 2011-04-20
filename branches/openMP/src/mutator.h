@@ -241,7 +241,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MatrixMutator>";
 	}
 
@@ -302,7 +302,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.KAlleleMutator> A k-allele mutation model with K=" +
 		       toStr(m_k);
 	}
@@ -375,7 +375,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.StepwiseMutator> a step-wise mutation model mutator";
 	}
 
@@ -437,7 +437,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyMutator>" ;
 	}
 
@@ -496,7 +496,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MixedMutator>" ;
 	}
 
@@ -571,7 +571,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.ContextMutator> context-dependent mutator>" ;
 	}
 
@@ -631,7 +631,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PointMutator>" ;
 	}
 

@@ -104,7 +104,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
 	 */
-	virtual double penet(Population * , Individual *) const
+	virtual double penet(Population *, Individual *) const
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
 		return 1.;
@@ -129,7 +129,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.penetrance>" ;
 	}
 
@@ -186,7 +186,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MapPenetrance> map penetrance";
 	}
 
@@ -328,7 +328,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.MlPenetrance> multiple-loci penetrance>" ;
 	}
 
@@ -390,7 +390,7 @@ public:
 	/// HIDDEN
 	string describe(bool format = true) const
 	{
-		(void) format; /* avoid warning about unused parameter */
+		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyPenetrance> python penetrance>" ;
 	}
 
