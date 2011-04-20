@@ -1045,46 +1045,40 @@ public:
 	void removeVar(const string & name);
 
 	///CPPONLY
-	PyObject * setBoolVar(const string & name, const bool val);
+	PyObject * setVar(const string & name, const bool val);
 
 	///CPPONLY
-	PyObject * setIntVar(const string & name, const int val);
+	PyObject * setVar(const string & name, const long val);
 
 	///CPPONLY
-	PyObject * setIntVar(const string & name, const size_t val);
+	PyObject * setVar(const string & name, const size_t val);
 
 	///CPPONLY
-	PyObject * setDoubleVar(const string & name, const double val);
+	PyObject * setVar(const string & name, const double val);
 
 	///CPPONLY
-	PyObject * setStringVar(const string & name, const string & val);
+	PyObject * setVar(const string & name, const string & val);
 
 	///CPPONLY
-	PyObject * setIntVectorVar(const string & name, const vectori & val);
+	PyObject * setVar(const string & name, const vectori & val);
 
 	///CPPONLY
-	PyObject * setIntVectorVar(const string & name, const vectoru & val);
+	PyObject * setVar(const string & name, const vectoru & val);
 
 	///CPPONLY
-	PyObject * setDoubleVectorVar(const string & name, const vectorf & val);
+	PyObject * setVar(const string & name, const vectorf & val);
 
 	///CPPONLY
-	PyObject * setStrDictVar(const string & name, const strDict & val);
+	PyObject * setVar(const string & name, const strDict & val);
 
 	///CPPONLY
-	PyObject * setIntDictVar(const string & name, const intDict & val);
+	PyObject * setVar(const string & name, const intDict & val);
+
+///CPPONLY
+	PyObject * setVar(const string & name, const uintDict & val);
 
 	///CPPONLY
-	PyObject * setIntDictVar(const string & name, const uintDict & val);
-
-	///CPPONLY
-	PyObject * setIntDefDictVar(const string & name, const intDict & val);
-
-	///CPPONLY
-	PyObject * setIntDefDictVar(const string & name, const uintDict & val);
-
-	///CPPONLY
-	PyObject * setTupleDefDictVar(const string & name, const tupleDict & val);
+	PyObject * setVar(const string & name, const tupleDict & val);
 
 	/// CPPONLY
 	bool getVarAsBool(const string & name, bool nameError = true) const

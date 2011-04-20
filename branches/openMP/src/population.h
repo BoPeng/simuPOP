@@ -1549,7 +1549,7 @@ public:
 	{
 		m_rep = rep;
 #ifndef STANDALONE_EXECUTABLE
-		m_vars.setIntVar("rep", rep);
+		m_vars.setVar("rep", rep);
 #endif
 	}
 
@@ -1570,7 +1570,7 @@ public:
 	{
 		m_gen = gen;
 #ifndef STANDALONE_EXECUTABLE
-		m_vars.setIntVar("gen", gen);
+		m_vars.setVar("gen", gen);
 #endif
 	}
 

@@ -448,6 +448,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	g_RNGs.resize(g_numThreads);
 	g_RNGs[0].set(name, seed);
 	for (size_t i = 1; i < g_RNGs.size(); i++)
+		// GSL RNG only accept unsigned long seed
 		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
 #else
 	g_RNG.set(name, seed);
@@ -1601,7 +1602,7 @@ next:
 }
 
 
-PyObject * SharedVariables::setBoolVar(const string & name, const bool val)
+PyObject * SharedVariables::setVar(const string & name, const bool val)
 {
 	PyObject * obj = val ? Py_True : Py_False;
 
@@ -1610,31 +1611,31 @@ PyObject * SharedVariables::setBoolVar(const string & name, const bool val)
 }
 
 
-PyObject * SharedVariables::setIntVar(const string & name, const int val)
+PyObject * SharedVariables::setVar(const string & name, const long val)
 {
 	return setVar(name, PyInt_FromLong(val));
 }
 
 
-PyObject * SharedVariables::setIntVar(const string & name, const size_t val)
+PyObject * SharedVariables::setVar(const string & name, const size_t val)
 {
-	return setVar(name, PyInt_FromLong(static_cast<long>(val)));
+	return setVar(name, PyInt_FromSize_t(val));
 }
 
 
-PyObject * SharedVariables::setDoubleVar(const string & name, const double val)
+PyObject * SharedVariables::setVar(const string & name, const double val)
 {
 	return setVar(name, PyFloat_FromDouble(val));
 }
 
 
-PyObject * SharedVariables::setStringVar(const string & name, const string & val)
+PyObject * SharedVariables::setVar(const string & name, const string & val)
 {
 	return setVar(name, Py_BuildValue("s", val.c_str()));
 }
 
 
-PyObject * SharedVariables::setIntVectorVar(const string & name, const vectori & val)
+PyObject * SharedVariables::setVar(const string & name, const vectori & val)
 {
 	PyObject * obj = PyList_New(0);
 	PyObject * item;
@@ -1648,14 +1649,14 @@ PyObject * SharedVariables::setIntVectorVar(const string & name, const vectori &
 	return setVar(name, obj);
 }
 
-PyObject * SharedVariables::setIntVectorVar(const string & name, const vectoru & val)
+PyObject * SharedVariables::setVar(const string & name, const vectoru & val)
 {
 	PyObject * obj = PyList_New(0);
 	PyObject * item;
 
 	for (vectoru::const_iterator it = val.begin();
 	     it < val.end(); ++it) {
-		item = PyInt_FromLong(static_cast<long>(*it));
+		item = PyInt_FromSize_t(*it);
 		PyList_Append(obj, item);
 		Py_XDECREF(item);
 	}
@@ -1663,7 +1664,7 @@ PyObject * SharedVariables::setIntVectorVar(const string & name, const vectoru &
 }
 
 //CPPONLY
-PyObject * SharedVariables::setDoubleVectorVar(const string & name, const vectorf & val)
+PyObject * SharedVariables::setVar(const string & name, const vectorf & val)
 {
 	PyObject * obj = PyList_New(0);
 	PyObject * item;
@@ -1678,7 +1679,7 @@ PyObject * SharedVariables::setDoubleVectorVar(const string & name, const vector
 }
 
 
-PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & val)
+PyObject * SharedVariables::setVar(const string & name, const strDict & val)
 {
 	PyObject * obj = PyDict_New();
 	PyObject * v;
@@ -1692,7 +1693,7 @@ PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & v
 }
 
 
-PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & val)
+PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 {
 	PyObject * obj = PyDict_New();
 	PyObject * u, * v;
@@ -1708,14 +1709,14 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 }
 
 
-PyObject * SharedVariables::setIntDictVar(const string & name, const uintDict & val)
+PyObject * SharedVariables::setVar(const string & name, const uintDict & val)
 {
 	PyObject * obj = PyDict_New();
 	PyObject * u, * v;
 
 	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItem(obj,
-			u = PyInt_FromLong(static_cast<long>(i->first)),
+			u = PyInt_FromSize_t(i->first),
 			v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(u);
 		Py_XDECREF(v);
@@ -1724,37 +1725,7 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const uintDict & 
 }
 
 
-PyObject * SharedVariables::setIntDefDictVar(const string & name, const intDict & val)
-{
-	PyObject * obj = PyDefDict_New();
-	PyObject * u, * v;
-
-	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
-		PyObject_SetItem(obj,
-			u = PyInt_FromLong(i->first),
-			v = PyFloat_FromDouble(i->second));
-		Py_XDECREF(u);
-		Py_XDECREF(v);
-	}
-	return setVar(name, obj);
-}
-
-
-PyObject * SharedVariables::setIntDefDictVar(const string & name, const uintDict & val)
-{
-	PyObject * obj = PyDefDict_New();
-	PyObject * u, * v;
-
-	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
-		PyObject_SetItem(obj,
-			u = PyInt_FromLong(static_cast<long>(i->first)),
-			v = PyFloat_FromDouble(i->second));
-		Py_XDECREF(u);
-		Py_XDECREF(v);
-	}
-	return setVar(name, obj);
-}
-PyObject * SharedVariables::setTupleDefDictVar(const string & name, const tupleDict & val)
+PyObject * SharedVariables::setVar(const string & name, const tupleDict & val)
 {
 	PyObject * obj = PyDefDict_New();
 	PyObject * u, * v;
@@ -1818,7 +1789,7 @@ void save_long(string & str, PyObject * args)
 	long l = PyInt_AsLong(args);
 
 	// type +  string + ' '
-	str += 'i' + toStr(l) + ' ';
+	str += 'l' + toStr(l) + ' ';
 }
 
 
