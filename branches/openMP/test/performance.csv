@@ -150,3 +150,12 @@ TestIdTagger, 2011-04-11 21:03:15,077, bp8.mdacc.tmc.edu, x86_64-4threads, pytho
 TestRandomSelection, 2011-04-18 11:08:04,627, bp9.mdanderson.edu, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4106, short, 24866, 1951, 21839, 1295, 624, 51
 TestRandomSelection, 2011-04-18 11:10:43,023, bp9.mdanderson.edu, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4106, long, 24654, 1548, 11402, 890, 169, 0
 TestRandomSelection, 2011-04-18 11:13:50,263, bp9.mdanderson.edu, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4106, binary, 18774, 1579, 23949, 1791, 3881, 357
+TestRandomSelection, 2011-04-18 12:33:24,382, bp9.mdanderson.edu, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4107, short, 38176, 3311, 32917, 2254, 715, 65
+TestRandomSelection, 2011-04-18 12:36:00,636, bp9.mdanderson.edu, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4107, long, 36172, 2595, 16105, 1297, 191, 0
+TestRandomSelection, 2011-04-18 12:39:08,229, bp9.mdanderson.edu, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4107, binary, 29033, 2721, 35408, 2877, 5223, 492
+TestRandomSelection, 2011-04-18 12:49:03,161, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4107, short, 61838, 5759, 55355, 3836, 731, 64
+TestRandomSelection, 2011-04-18 12:51:39,554, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4107, long, 58587, 4480, 19245, 1544, 184, 0
+TestRandomSelection, 2011-04-18 12:54:46,196, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4107, binary, 50380, 4890, 57714, 5229, 5501, 533
+TestRandomSelection, 2011-04-18 13:01:05,604, bp9.mdanderson.edu, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4107, short, 70608, 6861, 68224, 4607, 735, 66
+TestRandomSelection, 2011-04-18 13:03:42,498, bp9.mdanderson.edu, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4107, long, 77867, 6012, 18566, 1601, 189, 0
+TestRandomSelection, 2011-04-18 13:06:49,612, bp9.mdanderson.edu, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4107, binary, 62479, 6190, 76233, 7308, 5726, 555
