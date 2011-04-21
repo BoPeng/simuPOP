@@ -540,7 +540,6 @@ if __name__ == '__main__':
         if (v1, v2, v3) < (1, 3, 35):
             print('Swig >= 1.3.35 is required, please upgrade it.')
             sys.exit(1)
-        print (v1, v2, v3)
         if sys.version_info[0] >= 3 and sys.version_info[1] >= 2 and (v1, v2, v3) < (2, 0, 4):
             print('Swig >= 2.0.4 is required for Python 3.2 or higher')
             sys.exit(1)
