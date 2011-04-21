@@ -415,13 +415,13 @@ def analyze(test):
             print 'STAT %2d' % (stat - 8),
             # each stat, for different revisions, and type
             for type in ['short', 'long', 'binary']:
-                print '|',
+                print '|' if len(revs) < 4 else '\n %3s|' % type[0],
                 for rev in revs:
                     one = [rec for rec in pfRecords if rec[8] == type and rec[7] == rev]
                     if len(one) > 0:
-                        print '%10s' % (one[0][stat]),
+                        print '%7s' % (one[0][stat]),
                     else:
-                        print '        ??',
+                        print '     ??',
             print
         print
       
