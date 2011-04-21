@@ -119,7 +119,7 @@ extern "C" bool is_defdict(PyTypeObject * type);
 extern "C" int initCustomizedTypes(void);
 
 #else
-PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
+PyObject * newcarrayobject(GenoIterator, GenoIterator )
 {
 	return NULL;
 }
@@ -131,7 +131,7 @@ PyObject * PyDefDict_New()
 }
 
 
-bool is_defdict(PyTypeObject * type)
+bool is_defdict(PyTypeObject * )
 {
 	return true;
 }
@@ -1699,7 +1699,7 @@ PyObject * SharedVariables::setVar(const string & name, const strDict & val)
 
 PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 {
-	PyObject * obj = PyDict_New();
+	PyObject * obj = PyDefDict_New();
 	PyObject * u, * v;
 
 	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
@@ -1715,7 +1715,7 @@ PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 
 PyObject * SharedVariables::setVar(const string & name, const uintDict & val)
 {
-	PyObject * obj = PyDict_New();
+	PyObject * obj = PyDefDict_New();
 	PyObject * u, * v;
 
 	for (uintDict::const_iterator i = val.begin(); i != val.end(); ++i) {
@@ -2111,6 +2111,7 @@ PyObject * pyPopObj(void * p)
 #ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigPopType, 0);
 #else
+	(void)p; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
 }
@@ -2121,6 +2122,7 @@ PyObject * pyIndObj(void * p)
 #ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigIndividual, 0);
 #else
+	(void)p; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
 }
@@ -2128,27 +2130,27 @@ PyObject * pyIndObj(void * p)
 
 void * pyIndPointer(PyObject * obj)
 {
-	void * ptr = 0;
-
 #ifndef STANDALONE_EXECUTABLE
+	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
+	return ptr;
 #else
+	(void)obj; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
-	return ptr;
 }
 
 
 void * pyPopPointer(PyObject * obj)
 {
-	void * ptr = 0;
-
 #ifndef STANDALONE_EXECUTABLE
+	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
+	return ptr;
 #else
+	(void)obj; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
-	return ptr;
 }
 
 

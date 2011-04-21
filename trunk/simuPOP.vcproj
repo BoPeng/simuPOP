@@ -188,7 +188,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4996"
+				AdditionalOptions="/wd4996 /wd4068"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".;gsl;boost_1_45_0;win32;&quot;win32\zlib-1.2.3&quot;;C:\Python27\include"
@@ -266,7 +266,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4996"
+				AdditionalOptions="/wd4996 /wd4068"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".;gsl;boost_1_46_1;win32;&quot;win32\zlib-1.2.3&quot;;C:\Python27\include"
