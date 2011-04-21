@@ -2130,9 +2130,8 @@ PyObject * pyIndObj(void * p)
 
 void * pyIndPointer(PyObject * obj)
 {
-	void * ptr = 0;
-
 #ifndef STANDALONE_EXECUTABLE
+	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
 	return ptr;
 #else
@@ -2144,13 +2143,12 @@ void * pyIndPointer(PyObject * obj)
 
 void * pyPopPointer(PyObject * obj)
 {
-	void * ptr = 0;
-
 #ifndef STANDALONE_EXECUTABLE
+	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
-	(void)obj; // avoid a compiler warning of unused variable.
 	return ptr;
 #else
+	(void)obj; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
 }
