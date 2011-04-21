@@ -58,8 +58,9 @@ else:
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         close_fds=True)
     fin, fout, ferr = (p.stdin, p.stdout, p.stderr)
+    output = ferr.readlines()[-1].decode('utf8')
     try:
-        version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', ferr.readlines()[-1]).groups()
+        version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
     except:
         print('Can not obtain version of gcc.')
     if int(version[0]) < 4 or int(version[1]) < 2:
@@ -123,9 +124,10 @@ except ImportError:
 def swig_version():
     ''' get the version of swig '''
     fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
+    output = fout.readlines()[1].decode('utf8')
     #
     try:
-        version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
+        version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', output).groups()
     except:
         print('Can not obtain swig version, please install swig')
         sys.exit(1)
@@ -516,6 +518,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 if os.name == 'nt':    # Windows
     # copy platform dependent dll files
     machine = platform.uname()[4].lower()
+    if machine == '':  # have to guess
+        machine = 'x86'
     shutil.copy('win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
     shutil.copy('win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
 
@@ -535,6 +539,9 @@ if __name__ == '__main__':
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
             print('Swig >= 1.3.35 is required, please upgrade it.')
+            sys.exit(1)
+        if sys.version_info[0] >= 3 and sys.version_info[1] >= 2 and (v1, v2, v3) < (2, 0, 4):
+            print('Swig >= 2.0.4 is required for Python 3.2 or higher')
             sys.exit(1)
         # generate header file 
         print("Generating external runtime header file src/swigpyrun.h...")
