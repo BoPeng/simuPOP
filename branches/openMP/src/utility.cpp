@@ -119,7 +119,7 @@ extern "C" bool is_defdict(PyTypeObject * type);
 extern "C" int initCustomizedTypes(void);
 
 #else
-PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
+PyObject * newcarrayobject(GenoIterator, GenoIterator )
 {
 	return NULL;
 }
@@ -131,7 +131,7 @@ PyObject * PyDefDict_New()
 }
 
 
-bool is_defdict(PyTypeObject * type)
+bool is_defdict(PyTypeObject * )
 {
 	return true;
 }
@@ -2111,6 +2111,7 @@ PyObject * pyPopObj(void * p)
 #ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigPopType, 0);
 #else
+	(void)p; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
 }
@@ -2121,6 +2122,7 @@ PyObject * pyIndObj(void * p)
 #ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigIndividual, 0);
 #else
+	(void)p; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
 }
@@ -2132,10 +2134,11 @@ void * pyIndPointer(PyObject * obj)
 
 #ifndef STANDALONE_EXECUTABLE
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
+	return ptr;
 #else
+	(void)obj; // avoid a compiler warning of unused variable.
 	return NULL;
 #endif
-	return ptr;
 }
 
 
@@ -2145,10 +2148,11 @@ void * pyPopPointer(PyObject * obj)
 
 #ifndef STANDALONE_EXECUTABLE
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
+	(void)obj; // avoid a compiler warning of unused variable.
+	return ptr;
 #else
 	return NULL;
 #endif
-	return ptr;
 }
 
 
