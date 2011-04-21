@@ -43,7 +43,7 @@ import os, sys, platform, shutil, glob, re, tempfile, subprocess
 import distutils.sysconfig
 
 if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
-    print "simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again."
+    print("simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again.")
     sys.exit(1)
 
 # Change this to False if you would like to compile simuPOP without openMP support
@@ -63,12 +63,12 @@ else:
     except:
         print('Can not obtain version of gcc.')
     if int(version[0]) < 4 or int(version[1]) < 2:
-        print 'Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version
+        print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
         USE_OPENMP = False
 
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
-	USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
+    USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
@@ -125,7 +125,7 @@ def swig_version():
     fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
     #
     try:
-        version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
+        version = re.match(b'SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
     except:
         print('Can not obtain swig version, please install swig')
         sys.exit(1)
@@ -501,9 +501,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
             ('NO_ZLIB', 0), ('NO_BZIP' , 1),
-			# this one disables a lot of warnings about VC Checked iterators.
-			#('_SCL_SECURE_NO_WARNINGS', None)
-			])
+            # this one disables a lot of warnings about VC Checked iterators.
+            #('_SCL_SECURE_NO_WARNINGS', None)
+            ])
     res['undef_macros'] = []
     return res
 
@@ -535,6 +535,10 @@ if __name__ == '__main__':
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
             print('Swig >= 1.3.35 is required, please upgrade it.')
+            sys.exit(1)
+        print (v1, v2, v3)
+        if sys.version_info[0] >= 3 and sys.version_info[1] >= 2 and (v1, v2, v3) < (2, 0, 4):
+            print('Swig >= 2.0.4 is required for Python 3.2 or higher')
             sys.exit(1)
         # generate header file 
         print("Generating external runtime header file src/swigpyrun.h...")
