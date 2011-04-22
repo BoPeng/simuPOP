@@ -418,10 +418,12 @@ def analyze(test):
                 print '|' if len(revs) < 4 else '\n %3s|' % type[0],
                 for rev in revs:
                     one = [rec for rec in pfRecords if rec[8] == type and rec[7] == rev]
-                    if len(one) > 0:
+                    if len(one) == 0:
+                        print '     ??',
+                    elif len(one) == 1:
                         print '%7s' % (one[0][stat]),
                     else:
-                        print '     ??',
+                        print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
             print
         print
       
