@@ -1314,17 +1314,16 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop
 		// in this case, openMP must have been supported with numThreads() > 1
 #ifdef _OPENMP
 		size_t offPopSize = offEnd - offBegin;
-		ssize_t blockSize = m_OffspringGenerator->numOffspring(pop.gen()) * 
-			// (offPopSize / 100);   // control the number of blocks?
-			100;					// control size of blocks?
+		ssize_t nBlocks = numThreads() * 2;
+		ssize_t numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
 		int except = 0;
 		string msg;
 #  pragma omp parallel for 
-		for(int i=0; i <= static_cast<int>(offPopSize/blockSize); i++)
+		for(int i=0; i < nBlocks; i++)
 		{
 		  try {
-				RawIndIterator local_it = offBegin + i*blockSize;
-				RawIndIterator local_offEnd = offEnd - local_it > blockSize ? local_it + blockSize : offEnd;
+				RawIndIterator local_it = offBegin + i * (offPopSize / nBlocks / numOffspring) * numOffspring;
+				RawIndIterator local_offEnd = i == nBlocks - 1 ? offEnd : local_it + (offPopSize / nBlocks / numOffspring) * numOffspring ;
 
 				while (local_it != local_offEnd) {
 					if (except)
