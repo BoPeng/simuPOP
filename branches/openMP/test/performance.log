@@ -3099,3 +3099,231 @@ TestBasicRandomMating : loci=100000, size=10000: 1121
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 369229, 39136, 3657, 394516, 39275, 3645, 219889, 9943, 882, 12262, 1121, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 14:02:40 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module short, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 240433
+TestBasicRandomMating : loci=10, size=10000: 28592
+TestBasicRandomMating : loci=10, size=100000: 2657
+TestBasicRandomMating : loci=100, size=1000: 212011
+TestBasicRandomMating : loci=100, size=10000: 25764
+TestBasicRandomMating : loci=100, size=100000: 2447
+TestBasicRandomMating : loci=10000, size=1000: 22865
+TestBasicRandomMating : loci=10000, size=10000: 2276
+TestBasicRandomMating : loci=10000, size=100000: 197
+TestBasicRandomMating : loci=100000, size=1000: 2111
+TestBasicRandomMating : loci=100000, size=10000: 209
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 240433, 28592, 2657, 212011, 25764, 2447, 22865, 2276, 197, 2111, 209, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 14:13:56 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module long, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 230125
+TestBasicRandomMating : loci=10, size=10000: 26233
+TestBasicRandomMating : loci=10, size=100000: 2308
+TestBasicRandomMating : loci=100, size=1000: 204373
+TestBasicRandomMating : loci=100, size=10000: 24058
+TestBasicRandomMating : loci=100, size=100000: 1849
+TestBasicRandomMating : loci=10000, size=1000: 5263
+TestBasicRandomMating : loci=10000, size=10000: 522
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 524
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 230125, 26233, 2308, 204373, 24058, 1849, 5263, 522, 0, 524, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 14:23:06 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module binary, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 218473
+TestBasicRandomMating : loci=10, size=10000: 26602
+TestBasicRandomMating : loci=10, size=100000: 2257
+TestBasicRandomMating : loci=100, size=1000: 225819
+TestBasicRandomMating : loci=100, size=10000: 24872
+TestBasicRandomMating : loci=100, size=100000: 2228
+TestBasicRandomMating : loci=10000, size=1000: 112366
+TestBasicRandomMating : loci=10000, size=10000: 8192
+TestBasicRandomMating : loci=10000, size=100000: 690
+TestBasicRandomMating : loci=100000, size=1000: 16346
+TestBasicRandomMating : loci=100000, size=10000: 1448
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 218473, 26602, 2257, 225819, 24872, 2228, 112366, 8192, 690, 16346, 1448, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 17:09:48 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module short, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 241931
+TestBasicRandomMating : loci=10, size=10000: 27596
+TestBasicRandomMating : loci=10, size=100000: 2731
+TestBasicRandomMating : loci=100, size=1000: 205426
+TestBasicRandomMating : loci=100, size=10000: 25934
+TestBasicRandomMating : loci=100, size=100000: 2552
+TestBasicRandomMating : loci=10000, size=1000: 22045
+TestBasicRandomMating : loci=10000, size=10000: 2000
+TestBasicRandomMating : loci=10000, size=100000: 196
+TestBasicRandomMating : loci=100000, size=1000: 2103
+TestBasicRandomMating : loci=100000, size=10000: 209
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 241931, 27596, 2731, 205426, 25934, 2552, 22045, 2000, 196, 2103, 209, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 17:21:02 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module long, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 220802
+TestBasicRandomMating : loci=10, size=10000: 26332
+TestBasicRandomMating : loci=10, size=100000: 2903
+TestBasicRandomMating : loci=100, size=1000: 204864
+TestBasicRandomMating : loci=100, size=10000: 20042
+TestBasicRandomMating : loci=100, size=100000: 1822
+TestBasicRandomMating : loci=10000, size=1000: 5559
+TestBasicRandomMating : loci=10000, size=10000: 444
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 622
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 220802, 26332, 2903, 204864, 20042, 1822, 5559, 444, 0, 622, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 17:30:13 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module binary, optimized, 4 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 210076
+TestBasicRandomMating : loci=10, size=10000: 26051
+TestBasicRandomMating : loci=10, size=100000: 2592
+TestBasicRandomMating : loci=100, size=1000: 212498
+TestBasicRandomMating : loci=100, size=10000: 26687
+TestBasicRandomMating : loci=100, size=100000: 2329
+TestBasicRandomMating : loci=10000, size=1000: 111942
+TestBasicRandomMating : loci=10000, size=10000: 8431
+TestBasicRandomMating : loci=10000, size=100000: 682
+TestBasicRandomMating : loci=100000, size=1000: 15677
+TestBasicRandomMating : loci=100000, size=10000: 1642
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 210076, 26051, 2592, 212498, 26687, 2329, 111942, 8431, 682, 15677, 1642, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 18:02:43 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module short, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 283650
+TestBasicRandomMating : loci=10, size=10000: 38359
+TestBasicRandomMating : loci=10, size=100000: 3961
+TestBasicRandomMating : loci=100, size=1000: 262600
+TestBasicRandomMating : loci=100, size=10000: 36506
+TestBasicRandomMating : loci=100, size=100000: 3411
+TestBasicRandomMating : loci=10000, size=1000: 24104
+TestBasicRandomMating : loci=10000, size=10000: 2352
+TestBasicRandomMating : loci=10000, size=100000: 234
+TestBasicRandomMating : loci=100000, size=1000: 2418
+TestBasicRandomMating : loci=100000, size=10000: 241
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 283650, 38359, 3961, 262600, 36506, 3411, 24104, 2352, 234, 2418, 241, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 18:13:58 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module long, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 273171
+TestBasicRandomMating : loci=10, size=10000: 37377
+TestBasicRandomMating : loci=10, size=100000: 3702
+TestBasicRandomMating : loci=100, size=1000: 247813
+TestBasicRandomMating : loci=100, size=10000: 30552
+TestBasicRandomMating : loci=100, size=100000: 2824
+TestBasicRandomMating : loci=10000, size=1000: 5956
+TestBasicRandomMating : loci=10000, size=10000: 596
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 600
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 273171, 37377, 3702, 247813, 30552, 2824, 5956, 596, 0, 600, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 18:23:08 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module binary, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 258522
+TestBasicRandomMating : loci=10, size=10000: 34464
+TestBasicRandomMating : loci=10, size=100000: 3397
+TestBasicRandomMating : loci=100, size=1000: 254208
+TestBasicRandomMating : loci=100, size=10000: 34665
+TestBasicRandomMating : loci=100, size=100000: 3345
+TestBasicRandomMating : loci=10000, size=1000: 153408
+TestBasicRandomMating : loci=10000, size=10000: 12981
+TestBasicRandomMating : loci=10000, size=100000: 1130
+TestBasicRandomMating : loci=100000, size=1000: 19025
+TestBasicRandomMating : loci=100000, size=10000: 1858
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 258522, 34464, 3397, 254208, 34665, 3345, 153408, 12981, 1130, 19025, 1858, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 18:40:02 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module short, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 285049
+TestBasicRandomMating : loci=10, size=10000: 40410
+TestBasicRandomMating : loci=10, size=100000: 4012
+TestBasicRandomMating : loci=100, size=1000: 263476
+TestBasicRandomMating : loci=100, size=10000: 36400
+TestBasicRandomMating : loci=100, size=100000: 3439
+TestBasicRandomMating : loci=10000, size=1000: 24103
+TestBasicRandomMating : loci=10000, size=10000: 2352
+TestBasicRandomMating : loci=10000, size=100000: 234
+TestBasicRandomMating : loci=100000, size=1000: 2407
+TestBasicRandomMating : loci=100000, size=10000: 239
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 285049, 40410, 4012, 263476, 36400, 3439, 24103, 2352, 234, 2407, 239, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 18:51:17 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module long, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 268257
+TestBasicRandomMating : loci=10, size=10000: 37785
+TestBasicRandomMating : loci=10, size=100000: 3700
+TestBasicRandomMating : loci=100, size=1000: 246486
+TestBasicRandomMating : loci=100, size=10000: 30714
+TestBasicRandomMating : loci=100, size=100000: 2797
+TestBasicRandomMating : loci=10000, size=1000: 5976
+TestBasicRandomMating : loci=10000, size=10000: 596
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 601
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 268257, 37785, 3700, 246486, 30714, 2797, 5976, 596, 0, 601, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: bp8.mdacc.tmc.edu (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Fri Apr 22 19:00:27 2011
+TestBasicRandomMating : Python: 2.7 [GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+TestBasicRandomMating : simuPOP: 1.0.6svn (rev 4152, module binary, optimized, 8 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 257432
+TestBasicRandomMating : loci=10, size=10000: 34748
+TestBasicRandomMating : loci=10, size=100000: 3379
+TestBasicRandomMating : loci=100, size=1000: 252384
+TestBasicRandomMating : loci=100, size=10000: 34212
+TestBasicRandomMating : loci=100, size=100000: 3350
+TestBasicRandomMating : loci=10000, size=1000: 154605
+TestBasicRandomMating : loci=10000, size=10000: 12891
+TestBasicRandomMating : loci=10000, size=100000: 1121
+TestBasicRandomMating : loci=100000, size=1000: 18843
+TestBasicRandomMating : loci=100000, size=10000: 1871
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 257432, 34748, 3379, 252384, 34212, 3350, 154605, 12891, 1121, 18843, 1871, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
