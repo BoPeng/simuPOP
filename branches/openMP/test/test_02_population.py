@@ -9,12 +9,21 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 #
-
-import simuOpt
-simuOpt.setOptions(quiet=True)
-
-from simuPOP import *
+  
 import unittest, os, sys, random, copy
+from simuOpt import setOptions
+setOptions(quiet=True)
+new_argv = []
+for arg in sys.argv:
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    elif arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
+    else:
+        new_argv.append(arg) 
+
+sys.argv=new_argv
+from simuPOP import *
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
@@ -78,8 +87,7 @@ class TestPopulation(unittest.TestCase):
         pop.individuals([0, 'x = 10'])
         # with given names
         pop = Population(size=[200, 500], infoFields=['x'], subPopNames=['A', 'B'])
-        for ind in pop.individuals():
-            ind.setInfo(random.randint(10, 20), 'x')
+        for ind in pop.individuals(): ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
         self.assertEqual(pop.numVirtualSubPop(), 5)
         self.assertEqual(pop.subPopName(0), "A")

@@ -7,22 +7,21 @@
 # $LastChangedRevision$
 # $LastChangedDate$
 #
-import simuOpt
-simuOpt.setOptions(quiet=True)
 
-from simuPOP import *
 import unittest, os, sys
-
-NUMTHREADS= ""
-ALLELETYPE = ""
 from simuOpt import setOptions
+setOptions(quiet=True)
+new_argv = []
 for arg in sys.argv:
-   if arg in ['short', 'long', 'binary']:
-       setOptions(alleleType = arg)
-       NUMTHREADS = arg
-   if arg.startswith('-j'):
-       setOptions(numThreads = int(arg[2:]))
-       ALLELETYPE = arg
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    elif arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
+    else:
+        new_argv.append(arg) 
+
+sys.argv=new_argv
+from simuPOP import *
 
 class TestSimulator(unittest.TestCase):
 
@@ -178,8 +177,4 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(len(simu.dvars(rep, 1).alleleFreq), 6)
 
 if __name__ == '__main__':
-     if NUMTHREADS != "" :
-       sys.argv.remove(NUMTHREADS)
-     if ALLELETYPE != "" :
-       sys.argv.remove(ALLELETYPE)
-     unittest.main()
+    unittest.main()
