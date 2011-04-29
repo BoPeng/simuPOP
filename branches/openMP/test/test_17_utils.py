@@ -20,6 +20,17 @@ from simuPOP.gsl import *
 import unittest, os, sys
 import random
 
+NUMTHREADS= ""
+ALLELETYPE = ""
+from simuOpt import setOptions
+for arg in sys.argv:
+   if arg in ['short', 'long', 'binary']:
+       setOptions(alleleType = arg)
+       NUMTHREADS = arg
+   if arg.startswith('-j'):
+       setOptions(numThreads = int(arg[2:]))
+       ALLELETYPE = arg
+
 # for memory leak testing.
 
 _proc_status = '/proc/%d/status' % os.getpid()
@@ -671,4 +682,8 @@ class TestUtility(unittest.TestCase):
         gsl_ran_poisson_pdf(2, 3.4)
 
 if __name__ == '__main__':
-    unittest.main()
+     if NUMTHREADS != "" :
+       sys.argv.remove(NUMTHREADS)
+     if ALLELETYPE != "" :
+       sys.argv.remove(ALLELETYPE)
+     unittest.main()

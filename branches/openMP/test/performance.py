@@ -181,6 +181,28 @@ class TestRandomSelection(PerformanceTest):
         )
         return gens
 
+class TestPolygamousMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Polygamous mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+ 
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields=['father_idx','mother_idx'])
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=PolygamousMating(polySex=MALE, polyNum=2, ops=[MendelianGenoTransmitter()]),
+        )
+        return gens
+
 
 class TestIdTagger(PerformanceTest):
     def __init__(self, logger, time=30):

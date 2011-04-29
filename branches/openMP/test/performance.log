@@ -3327,3 +3327,166 @@ TestBasicRandomMating : loci=100000, size=10000: 1871
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 257432, 34748, 3379, 252384, 34212, 3350, 154605, 12891, 1121, 18843, 1871, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:21:07 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module short, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : loci=10, size=100000: 1141
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:23:00 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module short, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13544
+TestPolygamousMating : loci=10, size=100000: 1082
+TestPolygamousMating : loci=100, size=10000: 11866
+TestPolygamousMating : loci=100, size=100000: 722
+TestPolygamousMating : loci=10000, size=10000: 645
+TestPolygamousMating : loci=10000, size=100000: 48
+TestPolygamousMating : 13544, 1082, 11866, 722, 645, 48
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:26:16 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module long, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13502
+TestPolygamousMating : loci=10, size=100000: 912
+TestPolygamousMating : loci=100, size=10000: 8423
+TestPolygamousMating : loci=100, size=100000: 602
+TestPolygamousMating : loci=10000, size=10000: 174
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 13502, 912, 8423, 602, 174, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:28:51 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module binary, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 10960
+TestPolygamousMating : loci=10, size=100000: 989
+TestPolygamousMating : loci=100, size=10000: 11526
+TestPolygamousMating : loci=100, size=100000: 956
+TestPolygamousMating : loci=10000, size=10000: 2925
+TestPolygamousMating : loci=10000, size=100000: 246
+TestPolygamousMating : 10960, 989, 11526, 956, 2925, 246
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:31:58 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module short, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 14149
+TestPolygamousMating : loci=10, size=100000: 1167
+TestPolygamousMating : loci=100, size=10000: 12639
+TestPolygamousMating : loci=100, size=100000: 768
+TestPolygamousMating : loci=10000, size=10000: 667
+TestPolygamousMating : loci=10000, size=100000: 19
+TestPolygamousMating : 14149, 1167, 12639, 768, 667, 19
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:35:08 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module long, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13960
+TestPolygamousMating : loci=10, size=100000: 927
+TestPolygamousMating : loci=100, size=10000: 8623
+TestPolygamousMating : loci=100, size=100000: 616
+TestPolygamousMating : loci=10000, size=10000: 177
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 13960, 927, 8623, 616, 177, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:37:46 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module binary, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 10878
+TestPolygamousMating : loci=10, size=100000: 972
+TestPolygamousMating : loci=100, size=10000: 11785
+TestPolygamousMating : loci=100, size=100000: 957
+TestPolygamousMating : loci=10000, size=10000: 3040
+TestPolygamousMating : loci=10000, size=100000: 255
+TestPolygamousMating : 10878, 972, 11785, 957, 3040, 255
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:40:54 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module short, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 14260
+TestPolygamousMating : loci=10, size=100000: 1144
+TestPolygamousMating : loci=100, size=10000: 12609
+TestPolygamousMating : loci=100, size=100000: 772
+TestPolygamousMating : loci=10000, size=10000: 660
+TestPolygamousMating : loci=10000, size=100000: 57
+TestPolygamousMating : 14260, 1144, 12609, 772, 660, 57
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:44:05 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module long, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13822
+TestPolygamousMating : loci=10, size=100000: 928
+TestPolygamousMating : loci=100, size=10000: 8308
+TestPolygamousMating : loci=100, size=100000: 618
+TestPolygamousMating : loci=10000, size=10000: 174
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 13822, 928, 8308, 618, 174, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:46:40 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module binary, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 10722
+TestPolygamousMating : loci=10, size=100000: 985
+TestPolygamousMating : loci=100, size=10000: 11574
+TestPolygamousMating : loci=100, size=100000: 985
+TestPolygamousMating : loci=10000, size=10000: 2907
+TestPolygamousMating : loci=10000, size=100000: 244
+TestPolygamousMating : 10722, 985, 11574, 985, 2907, 244
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:49:47 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module short, optimized, 8 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13846
+TestPolygamousMating : loci=10, size=100000: 1144
+TestPolygamousMating : loci=100, size=10000: 12302
+TestPolygamousMating : loci=100, size=100000: 750
+TestPolygamousMating : loci=10000, size=10000: 637
+TestPolygamousMating : loci=10000, size=100000: 58
+TestPolygamousMating : 13846, 1144, 12302, 750, 637, 58
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:52:56 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module long, optimized, 8 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 13897
+TestPolygamousMating : loci=10, size=100000: 959
+TestPolygamousMating : loci=100, size=10000: 8335
+TestPolygamousMating : loci=100, size=100000: 615
+TestPolygamousMating : loci=10000, size=10000: 171
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 13897, 959, 8335, 615, 171, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Wed Apr 27 18:55:32 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4155, module binary, optimized, 8 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 11052
+TestPolygamousMating : loci=10, size=100000: 989
+TestPolygamousMating : loci=100, size=10000: 11966
+TestPolygamousMating : loci=100, size=100000: 928
+TestPolygamousMating : loci=10000, size=10000: 2972
+TestPolygamousMating : loci=10000, size=100000: 245
+TestPolygamousMating : 11052, 989, 11966, 928, 2972, 245
+TestPolygamousMating : End of test TestPolygamousMating

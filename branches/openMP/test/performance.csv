@@ -193,3 +193,15 @@ TestBasicRandomMating, 2011-04-22 18:34:21,162, bp8.mdacc.tmc.edu, x86_64-8threa
 TestBasicRandomMating, 2011-04-22 18:51:17,435, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, short, 285049, 40410, 4012, 263476, 36400, 3439, 24103, 2352, 234, 2407, 239, 0
 TestBasicRandomMating, 2011-04-22 19:00:27,181, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, long, 268257, 37785, 3700, 246486, 30714, 2797, 5976, 596, 0, 601, 0, 0
 TestBasicRandomMating, 2011-04-22 19:11:38,209, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, binary, 257432, 34748, 3379, 252384, 34212, 3350, 154605, 12891, 1121, 18843, 1871, 0
+TestPolygamousMating, 2011-04-27 18:26:15,015, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 13544, 1082, 11866, 722, 645, 48
+TestPolygamousMating, 2011-04-27 18:28:51,155, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13502, 912, 8423, 602, 174, 0
+TestPolygamousMating, 2011-04-27 18:31:58,061, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10960, 989, 11526, 956, 2925, 246
+TestPolygamousMating, 2011-04-27 18:35:08,054, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 14149, 1167, 12639, 768, 667, 19
+TestPolygamousMating, 2011-04-27 18:37:46,459, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13960, 927, 8623, 616, 177, 0
+TestPolygamousMating, 2011-04-27 18:40:53,766, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10878, 972, 11785, 957, 3040, 255
+TestPolygamousMating, 2011-04-27 18:44:05,374, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 14260, 1144, 12609, 772, 660, 57
+TestPolygamousMating, 2011-04-27 18:46:40,515, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13822, 928, 8308, 618, 174, 0
+TestPolygamousMating, 2011-04-27 18:49:46,881, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10722, 985, 11574, 985, 2907, 244
+TestPolygamousMating, 2011-04-27 18:52:55,965, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 13846, 1144, 12302, 750, 637, 58
+TestPolygamousMating, 2011-04-27 18:55:32,354, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13897, 959, 8335, 615, 171, 0
+TestPolygamousMating, 2011-04-27 18:58:38,355, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 11052, 989, 11966, 928, 2972, 245

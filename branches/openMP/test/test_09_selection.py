@@ -16,6 +16,17 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys
 
+NUMTHREADS= ""
+ALLELETYPE = ""
+from simuOpt import setOptions
+for arg in sys.argv:
+   if arg in ['short', 'long', 'binary']:
+       setOptions(alleleType = arg)
+       NUMTHREADS = arg
+   if arg.startswith('-j'):
+       setOptions(numThreads = int(arg[2:]))
+       ALLELETYPE = arg
+
 class TestSelector(unittest.TestCase):
 
     def testMapSelector(self):
@@ -800,4 +811,8 @@ class TestSelector(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+     if NUMTHREADS != "" :
+       sys.argv.remove(NUMTHREADS)
+     if ALLELETYPE != "" :
+       sys.argv.remove(ALLELETYPE)
+     unittest.main()
