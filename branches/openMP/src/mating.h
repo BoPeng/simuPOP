@@ -1077,12 +1077,24 @@ public:
 	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
 		const string & selectionField = "fitness") :
 		ParentChooser(selectionField),
-		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
-		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
+		m_polySex(polySex), m_polyNum(polyNum),
+		m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(), m_femalesampler()
 	{
+#ifdef _OPENMP
+		m_polyCount.resize(numThreads());
+		m_lastParent.resize(numThreads());
+		for (size_t i = 0; i < numThreads(); i++) {
+			m_polyCount[i] = 0;
+			m_lastParent[i] = NULL;
+		}
+#else
+		m_polyCount = 0;
+		m_lastParent = NULL;
+#endif
+
 		DBG_FAILIF(polyNum < 1, ValueError,
 			"Number of sex partners has to be at least one");
 	}
@@ -1103,6 +1115,13 @@ public:
 
 
 	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		return true;
+	}
+
+
+	/// CPPONLY
 	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
@@ -1111,10 +1130,15 @@ public:
 private:
 	Sex m_polySex;
 	UINT m_polyNum;
+#ifdef _OPENMP
+	vector<UINT> m_polyCount;
 
+	vector<Individual *> m_lastParent;
+#else
 	UINT m_polyCount;
 
 	Individual * m_lastParent;
+#endif
 
 	bool m_selection;
 

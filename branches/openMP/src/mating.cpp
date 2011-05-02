@@ -821,7 +821,12 @@ void PolyParentsChooser::initialize(Population & pop, size_t subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
+#ifdef _OPENMP
+	for (size_t i = 0; i < m_polyCount.size(); i++)
+		m_polyCount[i] = 0;
+#else
 	m_polyCount = 0;
+#endif
 
 	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
@@ -880,7 +885,18 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 
 	Individual * dad = NULL;
 	Individual * mom = NULL;
-
+#ifdef _OPENMP
+	int threadID = omp_get_thread_num();
+#endif
+#ifdef _OPENMP
+	if (m_polyNum > 1 && m_polyCount[threadID] > 0) {
+		if (m_polySex == MALE)
+			dad = m_lastParent[threadID];
+		else
+			mom = m_lastParent[threadID];
+		m_polyCount[threadID]--;
+	}
+#else
 	if (m_polyNum > 1 && m_polyCount > 0) {
 		if (m_polySex == MALE)
 			dad = m_lastParent;
@@ -888,6 +904,7 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 			mom = m_lastParent;
 		m_polyCount--;
 	}
+#endif
 
 	// using weidhted sampler.
 	if (dad == NULL) {
@@ -900,8 +917,13 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 			dad = &*(m_maleIndex[getRNG().randInt(static_cast<ULONG>(m_numMale))]);
 
 		if (m_polySex == MALE && m_polyNum > 1) {
+#ifdef _OPENMP
+			m_polyCount[threadID] = m_polyNum - 1;
+			m_lastParent[threadID] = dad;
+#else
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = dad;
+#endif
 		}
 	}
 
@@ -915,8 +937,13 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents(RawIndIterator)
 			mom = &*(m_femaleIndex[getRNG().randInt(static_cast<ULONG>(m_numFemale))]);
 
 		if (m_polySex == FEMALE && m_polyNum > 1) {
+#ifdef _OPENMP
+			m_polyCount[threadID] = m_polyNum - 1;
+			m_lastParent[threadID] = mom;
+#else
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = mom;
+#endif
 		}
 	}
 	return std::make_pair(dad, mom);
@@ -1318,10 +1345,9 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop
 		ssize_t numOffspring = m_OffspringGenerator->numOffspring(pop.gen());
 		int except = 0;
 		string msg;
-#  pragma omp parallel for 
-		for(int i=0; i < nBlocks; i++)
-		{
-		  try {
+#  pragma omp parallel for
+		for (int i = 0; i < nBlocks; i++) {
+			try {
 				RawIndIterator local_it = offBegin + i * (offPopSize / nBlocks / numOffspring) * numOffspring;
 				RawIndIterator local_offEnd = i == nBlocks - 1 ? offEnd : local_it + (offPopSize / nBlocks / numOffspring) * numOffspring ;
 

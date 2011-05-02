@@ -285,6 +285,12 @@ public:
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 };
 
 
