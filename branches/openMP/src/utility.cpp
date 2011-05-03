@@ -454,6 +454,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		// GSL RNG only accept unsigned long seed
 		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
 #else
+    (void) numThreads; // avoid an unused parameter warning
 	g_RNG.set(name, seed);
 #endif
 }
