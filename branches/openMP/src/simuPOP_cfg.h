@@ -97,6 +97,16 @@
 #  define ATOMICLONG unsigned long
 #endif
 
+/*
+ * size_t string format of MSVC, GCC, and Intel compiler is different. The format of MSVC 
+ * is %lu, and others are %zu. 
+ */
+#if defined (_WIN32) || defined (_WIN64)
+#  define SIZE_T_FORMAT "%lu"
+#else
+#  define SIZE_T_FORMAT "%zu"
+#endif
+
 #include <string>
 using std::string;
 
