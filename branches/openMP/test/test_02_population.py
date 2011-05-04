@@ -1553,8 +1553,11 @@ class TestPopulation(unittest.TestCase):
     def testDescribeEvolProcess(self):
         'Testing population::evolve(dryrun=True'
         pop = Population(100, loci=3)
+        tmp = sys.stdout 
+        sys.stdout = open(os.devnull, 'w')
         pop.evolve(preOps=InitSex(),
             matingScheme=RandomMating(), dryrun=True)
+        sys.stdout = tmp
 
     def testAllIndividuals(self):
         'Testing population::allIndividuals'
