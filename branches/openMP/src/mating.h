@@ -1355,6 +1355,14 @@ public:
 		return "<simuPOP.PyParentsChooser> chooses parents according to a user-provided Python function";
 	}
 
+	/** CPPONLY
+ 	 *  PyParentsChooser can't be parallelizable because it call external functions 
+ 	 *  from Python which don't support multi-thread.
+ 	 */
+	virtual bool parallelizable() const
+	{
+		return false;
+	}
 
 	/// CPPONLY
 	void initialize(Population & pop, size_t sp);

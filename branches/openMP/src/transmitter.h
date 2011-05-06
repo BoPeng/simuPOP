@@ -418,6 +418,12 @@ public:
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
 private:
 	// this is user input.
 	const uintList m_chroms;

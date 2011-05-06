@@ -199,7 +199,39 @@ class TestPolygamousMating(PerformanceTest):
         gens = pop.evolve(
             initOps=InitSex(),
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme=PolygamousMating(polySex=MALE, polyNum=2, ops=[MendelianGenoTransmitter()]),
+            matingScheme=PolygamousMating(polySex=MALE, polyNum=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
+        )
+        return gens
+
+class TestPyParentChooser(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'HomoMating scheme with PyParentChooser , results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+ 
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        def retInd(pop, subPop):
+            while True:
+                yield pop.individual(random.randint(0, pop.subPopSize(subPop) - 1)), pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HomoMating(
+                chooser=PyParentsChooser(retInd),
+                generator=OffspringGenerator(
+                    ops=[CloneGenoTransmitter()],
+                    numOffspring=1,
+                    sexMode=RANDOM_SEX),
+            ),
         )
         return gens
 
@@ -226,6 +258,98 @@ class TestIdTagger(PerformanceTest):
             ],
             preOps=TicToc(output='', stopAfter=self.time),
             matingScheme=RandomMating(ops=IdTagger()),
+        )
+        return gens
+
+
+class TestSelfMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Self mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=SelfMating(ops=SelfingGenoTransmitter()),
+        )
+        return gens
+
+
+class TestHaplodiploidMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Haplodiploid mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HaplodiploidMating(ops=HaplodiploidGenoTransmitter()),
+        )
+        return gens
+
+
+class TestMitochondrialGenoTransmitter(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'MitochondrialGenoTransmitter, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=MitochondrialGenoTransmitter()),
+        )
+        return gens
+
+
+class TestRecombinator(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Recombinator, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3,8])),
         )
         return gens
 

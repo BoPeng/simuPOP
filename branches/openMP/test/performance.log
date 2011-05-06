@@ -3646,3 +3646,993 @@ TestPolygamousMating : loci=10000, size=10000: 2801
 TestPolygamousMating : loci=10000, size=100000: 238
 TestPolygamousMating : 10302, 927, 11182, 952, 2801, 238
 TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:26:01 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 7247
+TestPolygamousMating : loci=10, size=100000: 569
+TestPolygamousMating : loci=100, size=10000: failed
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:27:16 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:27:17 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : loci=100, size=100000: 338
+TestPolygamousMating : loci=10, size=100000: 608
+TestPolygamousMating : loci=10, size=100000: 1032
+TestPolygamousMating : loci=100, size=10000: 5640
+TestPolygamousMating : loci=100, size=10000: 9756
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:29:26 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:31:06 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:31:32 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: failed
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:32:34 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 10972
+TestPolygamousMating : loci=10, size=100000: 980
+TestPolygamousMating : loci=100, size=10000: 10682
+TestPolygamousMating : loci=100, size=100000: 832
+TestPolygamousMating : loci=10000, size=10000: 740
+TestPolygamousMating : loci=10000, size=100000: 62
+TestPolygamousMating : 10972, 980, 10682, 832, 740, 62
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:35:46 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 11512
+TestPolygamousMating : loci=10, size=100000: 920
+TestPolygamousMating : loci=100, size=10000: 8563
+TestPolygamousMating : loci=100, size=100000: 739
+TestPolygamousMating : loci=10000, size=10000: 195
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 11512, 920, 8563, 739, 195, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 11:38:23 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 2 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 10067
+TestPolygamousMating : loci=10, size=100000: 954
+TestPolygamousMating : loci=100, size=10000: 10368
+TestPolygamousMating : loci=100, size=100000: 928
+TestPolygamousMating : loci=10000, size=10000: 3797
+TestPolygamousMating : loci=10000, size=100000: 342
+TestPolygamousMating : 10067, 954, 10368, 928, 3797, 342
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 12:08:46 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 14629
+TestPolygamousMating : loci=10, size=100000: 1380
+TestPolygamousMating : loci=100, size=10000: 16365
+TestPolygamousMating : loci=100, size=100000: 1325
+TestPolygamousMating : loci=10000, size=10000: 756
+TestPolygamousMating : loci=10000, size=100000: 67
+TestPolygamousMating : 14629, 1380, 16365, 1325, 756, 67
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 12:11:56 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 14749
+TestPolygamousMating : loci=10, size=100000: 1344
+TestPolygamousMating : loci=100, size=10000: 13044
+TestPolygamousMating : loci=100, size=100000: 1089
+TestPolygamousMating : loci=10000, size=10000: 197
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 14749, 1344, 13044, 1089, 197, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Mon May  2 12:14:32 2011
+TestPolygamousMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPolygamousMating : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 4 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 16078
+TestPolygamousMating : loci=10, size=100000: 1488
+TestPolygamousMating : loci=100, size=10000: 16702
+TestPolygamousMating : loci=100, size=100000: 1500
+TestPolygamousMating : loci=10000, size=10000: 5196
+TestPolygamousMating : loci=10000, size=100000: 475
+TestPolygamousMating : 16078, 1488, 16702, 1500, 5196, 475
+TestPolygamousMating : End of test TestPolygamousMating
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:19:25 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: failed
+TestPyParentChooser : loci=10, size=100000: failed
+TestPyParentChooser : loci=100, size=10000: failed
+TestPyParentChooser : loci=100, size=100000: failed
+TestPyParentChooser : loci=10000, size=10000: failed
+TestPyParentChooser : loci=10000, size=100000: failed
+TestPyParentChooser : 0, 0, 0, 0, 0, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:26:06 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: failed
+TestPyParentChooser : loci=10, size=100000: failed
+TestPyParentChooser : loci=100, size=10000: failed
+TestPyParentChooser : loci=100, size=100000: failed
+TestPyParentChooser : loci=10000, size=10000: failed
+TestPyParentChooser : loci=10000, size=100000: failed
+TestPyParentChooser : 0, 0, 0, 0, 0, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:27:08 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:27:50 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: failed
+TestPyParentChooser : loci=10, size=100000: failed
+TestPyParentChooser : loci=100, size=10000: failed
+TestPyParentChooser : loci=100, size=100000: failed
+TestPyParentChooser : loci=10000, size=10000: failed
+TestPyParentChooser : loci=10000, size=100000: failed
+TestPyParentChooser : 0, 0, 0, 0, 0, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:28:23 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:30:08 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 257
+TestPyParentChooser : loci=10, size=100000: 27
+TestPyParentChooser : loci=100, size=10000: 276
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 184
+TestPyParentChooser : loci=10000, size=100000: 14
+TestPyParentChooser : 257, 27, 276, 27, 184, 14
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:33:21 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 272
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 264
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 97
+TestPyParentChooser : loci=10000, size=100000: 0
+TestPyParentChooser : 272, 28, 264, 27, 97, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:35:57 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 281
+TestPyParentChooser : loci=10, size=100000: 29
+TestPyParentChooser : loci=100, size=10000: 291
+TestPyParentChooser : loci=100, size=100000: 28
+TestPyParentChooser : loci=10000, size=10000: 274
+TestPyParentChooser : loci=10000, size=100000: 27
+TestPyParentChooser : 281, 29, 291, 28, 274, 27
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:39:05 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 2 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 296
+TestPyParentChooser : loci=10, size=100000: 30
+TestPyParentChooser : loci=100, size=10000: 296
+TestPyParentChooser : loci=100, size=100000: 29
+TestPyParentChooser : loci=10000, size=10000: 196
+TestPyParentChooser : loci=10000, size=100000: 17
+TestPyParentChooser : 296, 30, 296, 29, 196, 17
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:42:17 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 2 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 274
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 273
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 97
+TestPyParentChooser : loci=10000, size=100000: 0
+TestPyParentChooser : 274, 28, 273, 27, 97, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:44:52 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 2 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 277
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 264
+TestPyParentChooser : loci=100, size=100000: 26
+TestPyParentChooser : loci=10000, size=10000: 255
+TestPyParentChooser : loci=10000, size=100000: 26
+TestPyParentChooser : 277, 28, 264, 26, 255, 26
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:47:58 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 4 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 284
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 272
+TestPyParentChooser : loci=100, size=100000: 28
+TestPyParentChooser : loci=10000, size=10000: 195
+TestPyParentChooser : loci=10000, size=100000: 17
+TestPyParentChooser : 284, 28, 272, 28, 195, 17
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:51:10 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 4 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 272
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 277
+TestPyParentChooser : loci=100, size=100000: 28
+TestPyParentChooser : loci=10000, size=10000: 96
+TestPyParentChooser : loci=10000, size=100000: 0
+TestPyParentChooser : 272, 28, 277, 28, 96, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:53:45 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 4 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 272
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 284
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 266
+TestPyParentChooser : loci=10000, size=100000: 25
+TestPyParentChooser : 272, 28, 284, 27, 266, 25
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 15:56:51 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module short, optimized, 8 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 286
+TestPyParentChooser : loci=10, size=100000: 29
+TestPyParentChooser : loci=100, size=10000: 295
+TestPyParentChooser : loci=100, size=100000: 29
+TestPyParentChooser : loci=10000, size=10000: 191
+TestPyParentChooser : loci=10000, size=100000: 17
+TestPyParentChooser : 286, 29, 295, 29, 191, 17
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 16:00:01 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module long, optimized, 8 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 273
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 274
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 97
+TestPyParentChooser : loci=10000, size=100000: 0
+TestPyParentChooser : 273, 28, 274, 27, 97, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Mon May  2 16:02:36 2011
+TestPyParentChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPyParentChooser : simuPOP: 1.0.6svn (rev 4157, module binary, optimized, 8 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 282
+TestPyParentChooser : loci=10, size=100000: 29
+TestPyParentChooser : loci=100, size=10000: 293
+TestPyParentChooser : loci=100, size=100000: 29
+TestPyParentChooser : loci=10000, size=10000: 267
+TestPyParentChooser : loci=10000, size=100000: 27
+TestPyParentChooser : 282, 29, 293, 29, 267, 27
+TestPyParentChooser : End of test TestPyParentChooser
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 10:37:52 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4159, module short, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 17320
+TestSelfMating : loci=10, size=100000: 1501
+TestSelfMating : loci=100, size=10000: 14929
+TestSelfMating : loci=100, size=100000: 1019
+TestSelfMating : loci=10000, size=10000: 726
+TestSelfMating : loci=10000, size=100000: failed
+TestSelfMating : 17320, 1501, 14929, 1019, 726, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 15:36:43 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: failed
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 15:37:12 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=100000: 3056
+TestHaplodiploidMating : loci=10, size=10000: 23215
+TestHaplodiploidMating : loci=10, size=100000: failed
+TestSelfMating : loci=100, size=10000: 23082
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 15:38:46 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: failed
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 15:39:17 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: failed
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:43:12 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 18034
+TestSelfMating : loci=10, size=100000: 1539
+TestSelfMating : loci=100, size=10000: 16709
+TestSelfMating : loci=100, size=100000: 1081
+TestSelfMating : loci=10000, size=10000: 722
+TestSelfMating : loci=10000, size=100000: 67
+TestSelfMating : 18034, 1539, 16709, 1081, 722, 67
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:46:23 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 17719
+TestSelfMating : loci=10, size=100000: 1297
+TestSelfMating : loci=100, size=10000: 10261
+TestSelfMating : loci=100, size=100000: 863
+TestSelfMating : loci=10000, size=10000: 192
+TestSelfMating : loci=10000, size=100000: 0
+TestSelfMating : 17719, 1297, 10261, 863, 192, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:48:59 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 13214
+TestSelfMating : loci=10, size=100000: 1268
+TestSelfMating : loci=100, size=10000: 14782
+TestSelfMating : loci=100, size=100000: 1299
+TestSelfMating : loci=10000, size=10000: 3673
+TestSelfMating : loci=10000, size=100000: 342
+TestSelfMating : 13214, 1268, 14782, 1299, 3673, 342
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:52:07 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 2 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 23989
+TestSelfMating : loci=10, size=100000: 2199
+TestSelfMating : loci=100, size=10000: 22542
+TestSelfMating : loci=100, size=100000: 1699
+TestSelfMating : loci=10000, size=10000: 862
+TestSelfMating : loci=10000, size=100000: 77
+TestSelfMating : 23989, 2199, 22542, 1699, 862, 77
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:55:18 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 2 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 21920
+TestSelfMating : loci=10, size=100000: 1855
+TestSelfMating : loci=100, size=10000: 14499
+TestSelfMating : loci=100, size=100000: 1297
+TestSelfMating : loci=10000, size=10000: 225
+TestSelfMating : loci=10000, size=100000: 0
+TestSelfMating : 21920, 1855, 14499, 1297, 225, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 19:57:54 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 2 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 17240
+TestSelfMating : loci=10, size=100000: 1732
+TestSelfMating : loci=100, size=10000: 19006
+TestSelfMating : loci=100, size=100000: 1732
+TestSelfMating : loci=10000, size=10000: 5493
+TestSelfMating : loci=10000, size=100000: 522
+TestSelfMating : 17240, 1732, 19006, 1732, 5493, 522
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:01:02 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 33991
+TestSelfMating : loci=10, size=100000: 3345
+TestSelfMating : loci=100, size=10000: 32608
+TestSelfMating : loci=100, size=100000: 2792
+TestSelfMating : loci=10000, size=10000: 861
+TestSelfMating : loci=10000, size=100000: 77
+TestSelfMating : 33991, 3345, 32608, 2792, 861, 77
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:04:14 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 4 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 32399
+TestSelfMating : loci=10, size=100000: 3094
+TestSelfMating : loci=100, size=10000: 20745
+TestSelfMating : loci=100, size=100000: 1764
+TestSelfMating : loci=10000, size=10000: 212
+TestSelfMating : loci=10000, size=100000: 0
+TestSelfMating : 32399, 3094, 20745, 1764, 212, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:06:49 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 4 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 24838
+TestSelfMating : loci=10, size=100000: 2476
+TestSelfMating : loci=100, size=10000: 24733
+TestSelfMating : loci=100, size=100000: 2506
+TestSelfMating : loci=10000, size=10000: 6082
+TestSelfMating : loci=10000, size=100000: 585
+TestSelfMating : 24838, 2476, 24733, 2506, 6082, 585
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:09:57 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 8 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 47806
+TestSelfMating : loci=10, size=100000: 4829
+TestSelfMating : loci=100, size=10000: 43563
+TestSelfMating : loci=100, size=100000: 3653
+TestSelfMating : loci=10000, size=10000: 791
+TestSelfMating : loci=10000, size=100000: 72
+TestSelfMating : 47806, 4829, 43563, 3653, 791, 72
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:13:07 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 8 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 43147
+TestSelfMating : loci=10, size=100000: 4023
+TestSelfMating : loci=100, size=10000: 20828
+TestSelfMating : loci=100, size=100000: 1749
+TestSelfMating : loci=10000, size=10000: 205
+TestSelfMating : loci=10000, size=100000: 0
+TestSelfMating : 43147, 4023, 20828, 1749, 205, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: bp9 (Linux, x86_64, x86_64)
+TestSelfMating : Time: Wed May  4 20:15:44 2011
+TestSelfMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSelfMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 8 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 37246
+TestSelfMating : loci=10, size=100000: 3772
+TestSelfMating : loci=100, size=10000: 40477
+TestSelfMating : loci=100, size=100000: 3761
+TestSelfMating : loci=10000, size=10000: 6253
+TestSelfMating : loci=10000, size=100000: 565
+TestSelfMating : 37246, 3772, 40477, 3761, 6253, 565
+TestSelfMating : End of test TestSelfMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:18:51 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 15587
+TestHaplodiploidMating : loci=10, size=100000: 1330
+TestHaplodiploidMating : loci=100, size=10000: 14624
+TestHaplodiploidMating : loci=100, size=100000: 922
+TestHaplodiploidMating : loci=10000, size=10000: 866
+TestHaplodiploidMating : loci=10000, size=100000: 78
+TestHaplodiploidMating : 15587, 1330, 14624, 922, 866, 78
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:22:01 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 15188
+TestHaplodiploidMating : loci=10, size=100000: 1077
+TestHaplodiploidMating : loci=100, size=10000: 10351
+TestHaplodiploidMating : loci=100, size=100000: 679
+TestHaplodiploidMating : loci=10000, size=10000: 230
+TestHaplodiploidMating : loci=10000, size=100000: 0
+TestHaplodiploidMating : 15188, 1077, 10351, 679, 230, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:24:37 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 12444
+TestHaplodiploidMating : loci=10, size=100000: 1174
+TestHaplodiploidMating : loci=100, size=10000: 13753
+TestHaplodiploidMating : loci=100, size=100000: 1140
+TestHaplodiploidMating : loci=10000, size=10000: 3154
+TestHaplodiploidMating : loci=10000, size=100000: 256
+TestHaplodiploidMating : 12444, 1174, 13753, 1140, 3154, 256
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:27:44 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 2 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 20546
+TestHaplodiploidMating : loci=10, size=100000: 1912
+TestHaplodiploidMating : loci=100, size=10000: 19864
+TestHaplodiploidMating : loci=100, size=100000: 1473
+TestHaplodiploidMating : loci=10000, size=10000: 1008
+TestHaplodiploidMating : loci=10000, size=100000: 93
+TestHaplodiploidMating : 20546, 1912, 19864, 1473, 1008, 93
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:30:55 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 2 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 25436
+TestHaplodiploidMating : loci=10, size=100000: 1947
+TestHaplodiploidMating : loci=100, size=10000: 16674
+TestHaplodiploidMating : loci=100, size=100000: 1174
+TestHaplodiploidMating : loci=10000, size=10000: 273
+TestHaplodiploidMating : loci=10000, size=100000: 0
+TestHaplodiploidMating : 25436, 1947, 16674, 1174, 273, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:33:31 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 2 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 22514
+TestHaplodiploidMating : loci=10, size=100000: 2106
+TestHaplodiploidMating : loci=100, size=10000: 24612
+TestHaplodiploidMating : loci=100, size=100000: 1995
+TestHaplodiploidMating : loci=10000, size=10000: 5358
+TestHaplodiploidMating : loci=10000, size=100000: 428
+TestHaplodiploidMating : 22514, 2106, 24612, 1995, 5358, 428
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:36:37 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 29196
+TestHaplodiploidMating : loci=10, size=100000: 2938
+TestHaplodiploidMating : loci=100, size=10000: 29028
+TestHaplodiploidMating : loci=100, size=100000: 2443
+TestHaplodiploidMating : loci=10000, size=10000: 1012
+TestHaplodiploidMating : loci=10000, size=100000: 91
+TestHaplodiploidMating : 29196, 2938, 29028, 2443, 1012, 91
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:39:48 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 4 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 36386
+TestHaplodiploidMating : loci=10, size=100000: 2839
+TestHaplodiploidMating : loci=100, size=10000: 23310
+TestHaplodiploidMating : loci=100, size=100000: 1638
+TestHaplodiploidMating : loci=10000, size=10000: 264
+TestHaplodiploidMating : loci=10000, size=100000: 0
+TestHaplodiploidMating : 36386, 2839, 23310, 1638, 264, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:42:23 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 4 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 31956
+TestHaplodiploidMating : loci=10, size=100000: 3036
+TestHaplodiploidMating : loci=100, size=10000: 34497
+TestHaplodiploidMating : loci=100, size=100000: 3030
+TestHaplodiploidMating : loci=10000, size=10000: 6751
+TestHaplodiploidMating : loci=10000, size=100000: 591
+TestHaplodiploidMating : 31956, 3036, 34497, 3030, 6751, 591
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:45:30 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 8 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 41095
+TestHaplodiploidMating : loci=10, size=100000: 3935
+TestHaplodiploidMating : loci=100, size=10000: 38848
+TestHaplodiploidMating : loci=100, size=100000: 3252
+TestHaplodiploidMating : loci=10000, size=10000: 959
+TestHaplodiploidMating : loci=10000, size=100000: 86
+TestHaplodiploidMating : 41095, 3935, 38848, 3252, 959, 86
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:48:41 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 8 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 37989
+TestHaplodiploidMating : loci=10, size=100000: 3315
+TestHaplodiploidMating : loci=100, size=10000: 22692
+TestHaplodiploidMating : loci=100, size=100000: 1792
+TestHaplodiploidMating : loci=10000, size=10000: 242
+TestHaplodiploidMating : loci=10000, size=100000: 0
+TestHaplodiploidMating : 37989, 3315, 22692, 1792, 242, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Wed May  4 20:51:16 2011
+TestHaplodiploidMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHaplodiploidMating : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 8 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 34334
+TestHaplodiploidMating : loci=10, size=100000: 3249
+TestHaplodiploidMating : loci=100, size=10000: 35080
+TestHaplodiploidMating : loci=100, size=100000: 3438
+TestHaplodiploidMating : loci=10000, size=10000: 6690
+TestHaplodiploidMating : loci=10000, size=100000: 620
+TestHaplodiploidMating : 34334, 3249, 35080, 3438, 6690, 620
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 20:54:22 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25288
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2384
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25257
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2347
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25317
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2132
+TestMitochondrialGenoTransmitter : 25288, 2384, 25257, 2347, 25317, 2132
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 20:57:34 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25104
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2384
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25507
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2339
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25560
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 0
+TestMitochondrialGenoTransmitter : 25104, 2384, 25507, 2339, 25560, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:00:10 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25771
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2351
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 24546
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2291
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25587
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2317
+TestMitochondrialGenoTransmitter : 25771, 2351, 24546, 2291, 25587, 2317
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:03:19 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 2 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 26090
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2444
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25950
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2433
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 26038
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2116
+TestMitochondrialGenoTransmitter : 26090, 2444, 25950, 2433, 26038, 2116
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:06:30 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 2 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 26315
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2373
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 26528
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2454
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 26665
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 0
+TestMitochondrialGenoTransmitter : 26315, 2373, 26528, 2454, 26665, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:09:07 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 2 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 27191
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2444
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 26157
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2380
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25813
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2471
+TestMitochondrialGenoTransmitter : 27191, 2444, 26157, 2380, 25813, 2471
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:12:15 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 26501
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2415
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 26341
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2460
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 26238
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2181
+TestMitochondrialGenoTransmitter : 26501, 2415, 26341, 2460, 26238, 2181
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:15:28 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 4 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 26116
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2443
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25631
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2444
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25535
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 0
+TestMitochondrialGenoTransmitter : 26116, 2443, 25631, 2444, 25535, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:18:03 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 4 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25322
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2351
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25174
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2322
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25600
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2309
+TestMitochondrialGenoTransmitter : 25322, 2351, 25174, 2322, 25600, 2309
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:21:09 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 8 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25605
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2420
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 26499
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2382
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 26249
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2163
+TestMitochondrialGenoTransmitter : 25605, 2420, 26499, 2382, 26249, 2163
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:24:20 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 8 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 25930
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2413
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25691
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2381
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25543
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 0
+TestMitochondrialGenoTransmitter : 25930, 2413, 25691, 2381, 25543, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: bp9 (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Wed May  4 21:26:55 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 8 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 26099
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2352
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 25660
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2349
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 25098
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2318
+TestMitochondrialGenoTransmitter : 26099, 2352, 25660, 2349, 25098, 2318
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:30:02 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5787
+TestRecombinator : loci=10, size=100000: 566
+TestRecombinator : loci=100, size=10000: 3496
+TestRecombinator : loci=100, size=100000: 282
+TestRecombinator : loci=10000, size=10000: 76
+TestRecombinator : loci=10000, size=100000: 7
+TestRecombinator : 5787, 566, 3496, 282, 76, 7
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:33:13 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 6091
+TestRecombinator : loci=10, size=100000: 505
+TestRecombinator : loci=100, size=10000: 2989
+TestRecombinator : loci=100, size=100000: 255
+TestRecombinator : loci=10000, size=10000: 82
+TestRecombinator : loci=10000, size=100000: 0
+TestRecombinator : 6091, 505, 2989, 255, 82, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:35:50 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4147
+TestRecombinator : loci=10, size=100000: 414
+TestRecombinator : loci=100, size=10000: 1206
+TestRecombinator : loci=100, size=100000: 118
+TestRecombinator : loci=10000, size=10000: 15
+TestRecombinator : loci=10000, size=100000: 2
+TestRecombinator : 4147, 414, 1206, 118, 15, 2
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:39:09 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 2 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5851
+TestRecombinator : loci=10, size=100000: 555
+TestRecombinator : loci=100, size=10000: 3439
+TestRecombinator : loci=100, size=100000: 293
+TestRecombinator : loci=10000, size=10000: 77
+TestRecombinator : loci=10000, size=100000: 7
+TestRecombinator : 5851, 555, 3439, 293, 77, 7
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:42:21 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 2 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5839
+TestRecombinator : loci=10, size=100000: 504
+TestRecombinator : loci=100, size=10000: 3067
+TestRecombinator : loci=100, size=100000: 255
+TestRecombinator : loci=10000, size=10000: 80
+TestRecombinator : loci=10000, size=100000: 0
+TestRecombinator : 5839, 504, 3067, 255, 80, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:44:57 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 2 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4150
+TestRecombinator : loci=10, size=100000: 415
+TestRecombinator : loci=100, size=10000: 1199
+TestRecombinator : loci=100, size=100000: 118
+TestRecombinator : loci=10000, size=10000: 15
+TestRecombinator : loci=10000, size=100000: 2
+TestRecombinator : 4150, 415, 1199, 118, 15, 2
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:48:15 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 4 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5916
+TestRecombinator : loci=10, size=100000: 556
+TestRecombinator : loci=100, size=10000: 3355
+TestRecombinator : loci=100, size=100000: 285
+TestRecombinator : loci=10000, size=10000: 76
+TestRecombinator : loci=10000, size=100000: 7
+TestRecombinator : 5916, 556, 3355, 285, 76, 7
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:51:27 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 4 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 6030
+TestRecombinator : loci=10, size=100000: 505
+TestRecombinator : loci=100, size=10000: 3032
+TestRecombinator : loci=100, size=100000: 246
+TestRecombinator : loci=10000, size=10000: 84
+TestRecombinator : loci=10000, size=100000: 0
+TestRecombinator : 6030, 505, 3032, 246, 84, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:54:04 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 4 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4155
+TestRecombinator : loci=10, size=100000: 414
+TestRecombinator : loci=100, size=10000: 1204
+TestRecombinator : loci=100, size=100000: 118
+TestRecombinator : loci=10000, size=10000: 15
+TestRecombinator : loci=10000, size=100000: 2
+TestRecombinator : 4155, 414, 1204, 118, 15, 2
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 21:57:22 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module short, optimized, 8 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5886
+TestRecombinator : loci=10, size=100000: 543
+TestRecombinator : loci=100, size=10000: 3465
+TestRecombinator : loci=100, size=100000: 293
+TestRecombinator : loci=10000, size=10000: 75
+TestRecombinator : loci=10000, size=100000: 7
+TestRecombinator : 5886, 543, 3465, 293, 75, 7
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 22:00:33 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module long, optimized, 8 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 5861
+TestRecombinator : loci=10, size=100000: 504
+TestRecombinator : loci=100, size=10000: 3072
+TestRecombinator : loci=100, size=100000: 255
+TestRecombinator : loci=10000, size=10000: 84
+TestRecombinator : loci=10000, size=100000: 0
+TestRecombinator : 5861, 504, 3072, 255, 84, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: bp9 (Linux, x86_64, x86_64)
+TestRecombinator : Time: Wed May  4 22:03:11 2011
+TestRecombinator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestRecombinator : simuPOP: 1.0.6svn (rev 4160, module binary, optimized, 8 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4145
+TestRecombinator : loci=10, size=100000: 414
+TestRecombinator : loci=100, size=10000: 1162
+TestRecombinator : loci=100, size=100000: 118
+TestRecombinator : loci=10000, size=10000: 15
+TestRecombinator : loci=10000, size=100000: 2
+TestRecombinator : 4145, 414, 1162, 118, 15, 2
+TestRecombinator : End of test TestRecombinator
