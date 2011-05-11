@@ -420,9 +420,10 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
-	m_bt(getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-	m_algorithm(0), m_debugOutput(NULL), m_intendedSize(1024)
+	m_bt(numThreads(),getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
+	m_algorithm(0), m_debugOutput(NULL)
 {
+
 	DBG_FAILIF(m_convMode.empty(), ValueError,
 		"Please specify a conversion mode");
 
@@ -588,7 +589,8 @@ void Recombinator::initialize(const Individual & ind) const
 
 	// if the operator is called directly, there is no way to know population size so we
 	// a variable to tell it.
-	m_bt.setParameter(vecP, m_intendedSize);
+	for(int i = 0;i<numThreads();i++)
+		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
 
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
@@ -610,6 +612,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
                                     Individual & offspring, int ploidy) const
 {
 	initializeIfNeeded(offspring);
+
+	//Bernullitrial for each thread
+	Bernullitrials &bt = m_bt[omp_get_thread_num()];
+
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
 
@@ -625,6 +631,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	int forceFirstEnd = -1;
 	int forceSecondBegin = -1;
 	int forceSecondEnd = -1;
+	
 	// from maternal, ignore chromosome Y
 	if (ploidy == 0 && m_chromY > 0) {
 		ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
@@ -643,9 +650,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		}
 	}
 	// get a new set of values.
-	// const BoolResults& bs = m_bt.trial();
-	m_bt.trial();
-	int curCp = m_bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
+	// const BoolResults& bs = bt.trial();
+	bt.trial();
+	int curCp = bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
 	curCp = forceFirstBegin == 0 ? 0 : (forceSecondBegin == 0 ? 1 : curCp);
 
 	if (m_debugOutput)
@@ -653,7 +660,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 
 	// the last one does not count, because it determines
 	// the initial copy of paternal chromosome
-	m_bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
+	bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
 
 	// algorithm one:
 	//
@@ -709,7 +716,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 						*m_debugOutput << ' ' << gt;
 					curCp = 1;
 					convCount = -1;
-				} else if (convCount < 0 && m_bt.trialSucc(bl)) {
+				} else if (convCount < 0 && bt.trialSucc(bl)) {
 					// recombination (if convCount == 0, a conversion event is ending)
 					curCp = (curCp + 1) % 2;
 					if (m_debugOutput)
@@ -731,7 +738,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	} else {
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
-		size_t pos = m_bt.probFirstSucc();
+		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -749,7 +756,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = m_bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
 				// copy from last to this recombination point, but
 				// there might be a conversion event in between
 				gtEnd = m_recBeforeLoci[pos];
@@ -798,7 +805,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			off[gt] = cp[curCp][gt];
 #else
 		size_t gt = 0, gtEnd = 0;
-		size_t pos = m_bt.probFirstSucc();
+		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -816,7 +823,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = m_bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
 				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;
@@ -882,10 +889,7 @@ bool Recombinator::applyDuringMating(Population & pop, Population & offPop, RawI
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	// this tells the recombinator how to initialize m_bt.
-	// if the recombinator member function is used directly, this information will
-	// not be available.
-	m_intendedSize = pop.popSize();
+
 	initializeIfNeeded(*offspring);
 
 	DBG_FAILIF(dad == NULL && mom == NULL,

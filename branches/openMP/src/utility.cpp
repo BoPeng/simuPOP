@@ -3591,26 +3591,31 @@ vectoru WeightedSampler::drawSamples(ULONG num)
 // this is used for Bernullitrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
 
-Bernullitrials::Bernullitrials(RNG & rng)
-	: m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
+Bernullitrials::Bernullitrials(RNG & /* rng */)
+	: m_N(0), m_prob(0), m_table(0), m_pointer(0),
 	m_cur(npos)
 {
 }
 
 
-Bernullitrials::Bernullitrials(RNG & rng, const vectorf & prob, ULONG trials)
-	: m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
+Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG /* trials */)
+	: m_N(0), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
 	m_cur(npos)
 {
-	DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
+	//DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
+
+	if(*min_element(prob.begin(),prob.end()) < 0.0000001)
+	    m_N = 1024 * 4;
+	else
+	    m_N = 1024;
 
 	// initialize the table
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
-		m_table[i].resize(trials);
+		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
 }
@@ -3622,22 +3627,25 @@ Bernullitrials::~Bernullitrials()
 }
 
 
-void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
+void Bernullitrials::setParameter(const vectorf & prob, size_t /* trials */)
 {
-	m_N = trials;
+	if(*min_element(prob.begin(),prob.end()) < 0.0000001)
+	    m_N = 1024 * 4;
+	else
+	    m_N = 1024;
 	m_prob = prob;
 	m_table.resize(m_prob.size());
 	m_pointer.resize(m_prob.size());
 	m_cur = npos;                                                             // will trigger doTrial.
 
-	DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
+	//DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
-		m_table[i].resize(trials);
+		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
 }
@@ -3735,7 +3743,7 @@ void Bernullitrials::doTrial()
             while (true) {
                 // i moves at least one. (# trails until the first success)
                 // 6,3 means (0 0 0 0 0 1) (0 0 1)
-                ULONG step = m_RNG->randGeometric(prob);
+                ULONG step = getRNG().randGeometric(prob);
                 if (step == 0)
 					// gsl_ran_geometric sometimes return 0 when prob is really small.
 					break;
@@ -3756,7 +3764,7 @@ void Bernullitrials::doTrial()
             size_t i = 0;
             prob = 1. - prob;
             while (true) {
-                ULONG step = m_RNG->randGeometric(prob);
+                ULONG step = getRNG().randGeometric(prob);
                 if (step == 0)
 					// gsl_ran_geometric sometimes return 0 when prob is really small.
 					break;
