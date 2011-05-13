@@ -420,7 +420,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
-	m_bt(numThreads(),getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
+	m_bt(numThreads(), getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 	m_algorithm(0), m_debugOutput(NULL)
 {
 
@@ -589,7 +589,7 @@ void Recombinator::initialize(const Individual & ind) const
 
 	// if the operator is called directly, there is no way to know population size so we
 	// a variable to tell it.
-	for(int i = 0;i<numThreads();i++)
+	for (size_t i = 0; i < numThreads(); i++)
 		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
 
 	// choose an algorithm
@@ -614,7 +614,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	initializeIfNeeded(offspring);
 
 	//Bernullitrial for each thread
-	Bernullitrials &bt = m_bt[omp_get_thread_num()];
+	Bernullitrials & bt = m_bt[omp_get_thread_num()];
 
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
@@ -631,7 +631,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	int forceFirstEnd = -1;
 	int forceSecondBegin = -1;
 	int forceSecondEnd = -1;
-	
+
 	// from maternal, ignore chromosome Y
 	if (ploidy == 0 && m_chromY > 0) {
 		ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));

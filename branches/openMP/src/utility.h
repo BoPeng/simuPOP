@@ -1968,10 +1968,7 @@ public:
 	Bernullitrials(RNG & /* rng */);
 
 	///
-	Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG /* trials */);
-
-	/// CPPONLY Copy contructor, needed because of m_bt
-	//Bernullitrials(const Bernullitrials &);
+	Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG trials = 0);
 
 	///
 	~Bernullitrials();
@@ -1992,7 +1989,7 @@ public:
 
 
 	/// CPPONLY
-	void setParameter(const vectorf & prob, size_t /* trials */);
+	void setParameter(const vectorf & prob, size_t trials = 0);
 
 	/// generate the trial table, reset m_cur
 	void doTrial();

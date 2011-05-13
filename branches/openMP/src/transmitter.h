@@ -424,6 +424,7 @@ public:
 		return true;
 	}
 
+
 private:
 	// this is user input.
 	const uintList m_chroms;
@@ -602,6 +603,7 @@ public:
 		return true;
 	}
 
+
 private:
 	/// determine number of markers to convert
 	size_t markersConverted(size_t index, const Individual & ind) const;
@@ -622,7 +624,7 @@ private:
 	const vectorf m_convMode;
 
 	/// bernulli trials
-	 mutable vector<Bernullitrials> m_bt;
+	mutable vector<Bernullitrials> m_bt;
 
 	// locataion of special chromosomes
 	mutable int m_chromX;
