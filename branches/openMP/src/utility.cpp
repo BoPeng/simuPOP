@@ -430,10 +430,13 @@ int simuPOP_getch(void)
 UINT g_numThreads;
 
 // random number generator. a global variable.
-RNG g_RNG;
 #ifdef _OPENMP
-// random number generators for each thread
+vector<RNG> g_RNGs;
+RNG * g_RNG = NULL;
+// each thread has its own g_RNG
 #  pragma omp threadprivate(g_RNG)
+#else
+RNG g_RNG;
 #endif
 
 void setOptions(const int numThreads, const char * name, unsigned long seed)
@@ -446,6 +449,13 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
+	g_RNGs.resize(g_numThreads);
+	g_RNGs[0].set(name, seed);
+	for (size_t i = 1; i < g_RNGs.size(); i++)
+		// GSL RNG only accept unsigned long seed
+		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
+#pragma omp parallel
+	g_RNG = &g_RNGs[omp_get_thread_num()];	
 #else
 	(void)numThreads;  // avoid an unused parameter warning
 	g_RNG.set(name, seed);
@@ -483,7 +493,11 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 // return the global RNG
 RNG & getRNG()
 {
+#ifdef _OPENMP
+	return *g_RNG;
+#else
 	return g_RNG;
+#endif
 }
 
 
